@@ -1,0 +1,443 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "" : {
+
+    },
+    "%lld" : {
+
+    },
+    "Cancel" : {
+      "comment" : "Cancel",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        }
+      }
+    },
+    "Create Bookmark" : {
+      "comment" : "Label to show for creating bookmarks in plus menu",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bookmark"
+          }
+        }
+      }
+    },
+    "Create Collection" : {
+
+    },
+    "Create Folder" : {
+      "comment" : "Label to show for creating folders in plus menu",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Folder"
+          }
+        }
+      }
+    },
+    "Create Folder Placeholder" : {
+      "comment" : "Placeholder to show in textfield while creating a tag",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name your folder"
+          }
+        }
+      }
+    },
+    "Create Folder Title" : {
+      "comment" : "Title to show while creating a folder",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create Folder"
+          }
+        }
+      }
+    },
+    "Create Tag" : {
+      "comment" : "Label to show for creating tags in plus menu",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tag"
+          }
+        }
+      }
+    },
+    "Create Tag Placeholder" : {
+      "comment" : "Placeholder to show in textfield while creating a tag",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name your tag"
+          }
+        }
+      }
+    },
+    "Create Tag Title" : {
+      "comment" : "Title to show while creating a tag",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create Tag"
+          }
+        }
+      }
+    },
+    "Delete" : {
+      "comment" : "Label to show on delete related actions",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete"
+          }
+        }
+      }
+    },
+    "Delete Content Message %@" : {
+      "comment" : "Message to show in alert when user tries to delete it.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Are you sure you want to delete %@? This operation can not be undone!"
+          }
+        }
+      }
+    },
+    "Delete Folder Title" : {
+
+    },
+    "Delete Tag Title" : {
+      "comment" : "Title to show in dialog when a tag is deleting",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete Tag"
+          }
+        }
+      }
+    },
+    "Done" : {
+      "comment" : "Done",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Done"
+          }
+        }
+      }
+    },
+    "Edit" : {
+      "comment" : "Label to show on edit related actions",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit"
+          }
+        }
+      }
+    },
+    "Edit Folder Title" : {
+      "comment" : "Title to show when editing a folder",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit Folder"
+          }
+        }
+      }
+    },
+    "Edit Tag Title" : {
+      "comment" : "Title to show when editing a tag",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit Tag"
+          }
+        }
+      }
+    },
+    "Folders Title" : {
+      "comment" : "Title for folders",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Folders"
+          }
+        }
+      }
+    },
+    "Home Search Prompt" : {
+      "comment" : "Text prompt to let user to search in bookmarks",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search in bookmarks…"
+          }
+        }
+      }
+    },
+    "LELE" : {
+
+    },
+    "Lele Detial" : {
+
+    },
+    "Name" : {
+      "comment" : "Collection name title to show in macOS",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name:"
+          }
+        }
+      }
+    },
+    "No Bookmarks Message" : {
+      "comment" : "Message to show when no bookmarks added yet in home search",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seems like no bookmarks have added yet! Use + button in home to create your first bookmark."
+          }
+        }
+      }
+    },
+    "No Bookmarks Title" : {
+      "comment" : "Title to show when no bookmarks have added and user is searching",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Bookmarks Yet"
+          }
+        }
+      }
+    },
+    "No Folders Message" : {
+      "comment" : "Message to show when no folders found",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "It seems like you have not created any folder yet! Tap the + button to create your first folder."
+          }
+        }
+      }
+    },
+    "No Folders Title" : {
+      "comment" : "Title to show when no folders found",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "device" : {
+              "mac" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "No folders found"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "No Folders Found"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "No Selected Collection Message" : {
+      "comment" : "Message to show in macOS and iPadOS when no collection selected yet.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select a collection to start exploring your bookmarks"
+          }
+        }
+      }
+    },
+    "No Selected Collection Title" : {
+      "comment" : "Title to show in macOS and iPadOS when no collection selected yet.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start Exploring"
+          }
+        }
+      }
+    },
+    "No Tags Message" : {
+      "comment" : "Message to show when to tags found",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "It seems like you have not created any tags yet! Tap the + button to create your first tag."
+          }
+        }
+      }
+    },
+    "No Tags Title" : {
+      "comment" : "Title to show when no tags found",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "device" : {
+              "mac" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "No tags found"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "No Tags Found"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Pick Icon" : {
+      "comment" : "Title to show when user open the icon picker",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pick an Icon"
+          }
+        }
+      }
+    },
+    "Pick Icon Variant" : {
+      "comment" : "Title to show when a selected icon also has variants",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pick a Variant"
+          }
+        }
+      }
+    },
+    "Search Collection %@" : {
+      "comment" : "Prompt to show in search in collection detail view",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search in %@"
+          }
+        }
+      }
+    },
+    "Search Icons" : {
+      "comment" : "Prompt to show when user search in icons",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search in icons…"
+          }
+        }
+      }
+    },
+    "Select Color Title" : {
+      "comment" : "Title to show when color picker is open",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select a Color"
+          }
+        }
+      }
+    },
+    "Tags Title" : {
+      "comment" : "Title for tags",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tags"
+          }
+        }
+      }
+    },
+    "YABA" : {
+      "comment" : "App name",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YABA"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

@@ -1,0 +1,12850 @@
+//
+//  IconPickerData.swift
+//  YABA
+//
+//  Created by Ali Taha on 19.04.2025.
+//
+
+import Foundation
+import SwiftUI
+
+@MainActor
+@Observable
+class IconPickerData {
+    @ObservationIgnored
+    private var icons: [String: [String]] = [
+        "square.and.arrow.up": [
+          "square.and.arrow.up",
+          "square.and.arrow.up.fill",
+          "square.and.arrow.up.circle",
+          "square.and.arrow.up.circle.fill",
+          "square.and.arrow.up.badge.clock",
+          "square.and.arrow.up.badge.clock.fill",
+          "square.and.arrow.up.trianglebadge.exclamationmark",
+          "square.and.arrow.up.trianglebadge.exclamationmark.fill"
+        ],
+        "square.and.arrow.down": [
+          "square.and.arrow.down",
+          "square.and.arrow.down.fill",
+          "square.and.arrow.down.badge.clock",
+          "square.and.arrow.down.badge.clock.fill"
+        ],
+        "square.and.arrow.up.on.square": [
+          "square.and.arrow.up.on.square",
+          "square.and.arrow.up.on.square.fill"
+        ],
+        "square.and.arrow.down.on.square": [
+          "square.and.arrow.down.on.square",
+          "square.and.arrow.down.on.square.fill"
+        ],
+        "rectangle.portrait.and.arrow.right": [
+          "rectangle.portrait.and.arrow.right",
+          "rectangle.portrait.and.arrow.right.fill"
+        ],
+        "rectangle.portrait.and.arrow.forward": [
+          "rectangle.portrait.and.arrow.forward",
+          "rectangle.portrait.and.arrow.forward.fill"
+        ],
+        "pencil": [
+          "pencil",
+          "pencil.circle",
+          "pencil.circle.fill"
+        ],
+        "pencil.slash": [
+          "pencil.slash"
+        ],
+        "pencil.line": [
+          "pencil.line"
+        ],
+        "eraser": [
+          "eraser",
+          "eraser.fill"
+        ],
+        "eraser.line.dashed": [
+          "eraser.line.dashed",
+          "eraser.line.dashed.fill"
+        ],
+        "square.and.pencil": [
+          "square.and.pencil",
+          "square.and.pencil.circle",
+          "square.and.pencil.circle.fill"
+        ],
+        "rectangle.and.pencil.and.ellipsis": [
+          "rectangle.and.pencil.and.ellipsis"
+        ],
+        "scribble": [
+          "scribble"
+        ],
+        "scribble.variable": [
+          "scribble.variable"
+        ],
+        "pencil.and.scribble": [
+          "pencil.and.scribble"
+        ],
+        "highlighter": [
+          "highlighter"
+        ],
+        "pencil.and.outline": [
+          "pencil.and.outline"
+        ],
+        "pencil.tip": [
+          "pencil.tip"
+        ],
+        "pencil.tip.crop": [
+          "pencil.tip.crop.circle",
+          "pencil.tip.crop.circle.fill",
+          "pencil.tip.crop.circle.badge.plus",
+          "pencil.tip.crop.circle.badge.plus.fill",
+          "pencil.tip.crop.circle.badge.minus",
+          "pencil.tip.crop.circle.badge.minus.fill",
+          "pencil.tip.crop.circle.badge.arrow.forward",
+          "pencil.tip.crop.circle.badge.arrow.forward.fill"
+        ],
+        "lasso": [
+          "lasso",
+          "lasso.badge.sparkles"
+        ],
+        "trash": [
+          "trash",
+          "trash.fill",
+          "trash.circle",
+          "trash.circle.fill"
+        ],
+        "trash.square": [
+          "trash.square",
+          "trash.square.fill"
+        ],
+        "trash.slash": [
+          "trash.slash",
+          "trash.slash.fill",
+          "trash.slash.circle",
+          "trash.slash.circle.fill"
+        ],
+        "trash.slash.square": [
+          "trash.slash.square",
+          "trash.slash.square.fill"
+        ],
+        "arrow.up.trash": [
+          "arrow.up.trash",
+          "arrow.up.trash.fill"
+        ],
+        "folder": [
+          "folder",
+          "folder.fill",
+          "folder.circle",
+          "folder.circle.fill",
+          "folder.badge.plus",
+          "folder.fill.badge.plus",
+          "folder.badge.minus",
+          "folder.fill.badge.minus",
+          "folder.badge.questionmark",
+          "folder.fill.badge.questionmark",
+          "folder.badge.person.crop",
+          "folder.fill.badge.person.crop",
+          "folder.badge.gearshape",
+          "folder.fill.badge.gearshape"
+        ],
+        "square.grid.3x1.folder": [
+          "square.grid.3x1.folder.badge.plus",
+          "square.grid.3x1.folder.fill.badge.plus"
+        ],
+        "plus.rectangle.on.folder": [
+          "plus.rectangle.on.folder",
+          "plus.rectangle.on.folder.fill"
+        ],
+        "questionmark.folder": [
+          "questionmark.folder",
+          "questionmark.folder.fill"
+        ],
+        "paperplane": [
+          "paperplane",
+          "paperplane.fill",
+          "paperplane.circle",
+          "paperplane.circle.fill"
+        ],
+        "tray": [
+          "tray",
+          "tray.fill",
+          "tray.circle",
+          "tray.circle.fill"
+        ],
+        "tray.full": [
+          "tray.full",
+          "tray.full.fill"
+        ],
+        "tray.and.arrow.up": [
+          "tray.and.arrow.up",
+          "tray.and.arrow.up.fill"
+        ],
+        "tray.and.arrow.down": [
+          "tray.and.arrow.down",
+          "tray.and.arrow.down.fill"
+        ],
+        "tray.2": [
+          "tray.2",
+          "tray.2.fill"
+        ],
+        "externaldrive": [
+          "externaldrive",
+          "externaldrive.fill",
+          "externaldrive.badge.plus",
+          "externaldrive.fill.badge.plus",
+          "externaldrive.badge.minus",
+          "externaldrive.fill.badge.minus",
+          "externaldrive.badge.checkmark",
+          "externaldrive.fill.badge.checkmark",
+          "externaldrive.badge.xmark",
+          "externaldrive.fill.badge.xmark",
+          "externaldrive.badge.questionmark",
+          "externaldrive.fill.badge.questionmark",
+          "externaldrive.badge.exclamationmark",
+          "externaldrive.fill.badge.exclamationmark",
+          "externaldrive.badge.person.crop",
+          "externaldrive.fill.badge.person.crop",
+          "externaldrive.badge.wifi",
+          "externaldrive.fill.badge.wifi",
+          "externaldrive.badge.icloud",
+          "externaldrive.fill.badge.icloud",
+          "externaldrive.trianglebadge.exclamationmark",
+          "externaldrive.fill.trianglebadge.exclamationmark",
+          "externaldrive.badge.timemachine",
+          "externaldrive.fill.badge.timemachine"
+        ],
+        "internaldrive": [
+          "internaldrive",
+          "internaldrive.fill"
+        ],
+        "opticaldiscdrive": [
+          "opticaldiscdrive",
+          "opticaldiscdrive.fill"
+        ],
+        "externaldrive.connected.to.line.below": [
+          "externaldrive.connected.to.line.below",
+          "externaldrive.connected.to.line.below.fill"
+        ],
+        "archivebox": [
+          "archivebox",
+          "archivebox.fill",
+          "archivebox.circle",
+          "archivebox.circle.fill"
+        ],
+        "xmark.bin": [
+          "xmark.bin",
+          "xmark.bin.fill",
+          "xmark.bin.circle",
+          "xmark.bin.circle.fill"
+        ],
+        "arrow.up.bin": [
+          "arrow.up.bin",
+          "arrow.up.bin.fill"
+        ],
+        "document": [
+          "document",
+          "document.fill",
+          "document.circle",
+          "document.circle.fill",
+          "document.badge.plus",
+          "document.badge.plus.fill",
+          "document.badge.arrow.up",
+          "document.badge.arrow.up.fill",
+          "document.badge.ellipsis",
+          "document.badge.ellipsis.fill",
+          "document.badge.clock",
+          "document.badge.clock.fill",
+          "document.badge.gearshape",
+          "document.badge.gearshape.fill"
+        ],
+        "lock.document": [
+          "lock.document",
+          "lock.document.fill"
+        ],
+        "arrow.up.document": [
+          "arrow.up.document",
+          "arrow.up.document.fill"
+        ],
+        "arrow.down.document": [
+          "arrow.down.document",
+          "arrow.down.document.fill"
+        ],
+        "text.document": [
+          "text.document",
+          "text.document.fill"
+        ],
+        "zipper.page": [
+          "zipper.page"
+        ],
+        "document.on.document": [
+          "document.on.document",
+          "document.on.document.fill"
+        ],
+        "document.on.clipboard": [
+          "document.on.clipboard",
+          "document.on.clipboard.fill"
+        ],
+        "arrow.right.page.on.clipboard": [
+          "arrow.right.page.on.clipboard"
+        ],
+        "arrow.up.page.on.clipboard": [
+          "arrow.up.page.on.clipboard"
+        ],
+        "arrow.trianglehead.2.clockwise.rotate.90.page.on.clipboard": [
+          "arrow.trianglehead.2.clockwise.rotate.90.page.on.clipboard"
+        ],
+        "clipboard": [
+          "clipboard",
+          "clipboard.fill"
+        ],
+        "list.bullet.clipboard": [
+          "list.bullet.clipboard",
+          "list.bullet.clipboard.fill"
+        ],
+        "list.clipboard": [
+          "list.clipboard",
+          "list.clipboard.fill"
+        ],
+        "pencil.and.list.clipboard": [
+          "pencil.and.list.clipboard"
+        ],
+        "heart.text.clipboard": [
+          "heart.text.clipboard",
+          "heart.text.clipboard.fill"
+        ],
+        "chart.line.text.clipboard": [
+          "chart.line.text.clipboard",
+          "chart.line.text.clipboard.fill"
+        ],
+        "richtext.page": [
+          "richtext.page",
+          "richtext.page.fill"
+        ],
+        "text.page": [
+          "text.page",
+          "text.page.fill",
+          "text.page.badge.magnifyingglass"
+        ],
+        "text.page.slash": [
+          "text.page.slash",
+          "text.page.slash.fill"
+        ],
+        "append.page": [
+          "append.page",
+          "append.page.fill"
+        ],
+        "ecg.text.page": [
+          "ecg.text.page",
+          "ecg.text.page.fill"
+        ],
+        "checkmark.seal.text.page": [
+          "checkmark.seal.text.page",
+          "checkmark.seal.text.page.fill"
+        ],
+        "questionmark.text.page": [
+          "questionmark.text.page",
+          "questionmark.text.page.fill"
+        ],
+        "chart.bar.horizontal.page": [
+          "chart.bar.horizontal.page",
+          "chart.bar.horizontal.page.fill"
+        ],
+        "book.pages": [
+          "book.pages",
+          "book.pages.fill"
+        ],
+        "list.bullet.rectangle.portrait": [
+          "list.bullet.rectangle.portrait",
+          "list.bullet.rectangle.portrait.fill"
+        ],
+        "list.bullet.rectangle": [
+          "list.bullet.rectangle",
+          "list.bullet.rectangle.fill"
+        ],
+        "list.dash.header.rectangle": [
+          "list.dash.header.rectangle"
+        ],
+        "apple.terminal": [
+          "apple.terminal",
+          "apple.terminal.fill",
+          "apple.terminal.circle",
+          "apple.terminal.circle.fill"
+        ],
+        "apple.terminal.on.rectangle": [
+          "apple.terminal.on.rectangle",
+          "apple.terminal.on.rectangle.fill"
+        ],
+        "note": [
+          "note"
+        ],
+        "note.text": [
+          "note.text",
+          "note.text.badge.plus"
+        ],
+        "calendar": [
+          "calendar",
+          "calendar.circle",
+          "calendar.circle.fill",
+          "calendar.badge.plus",
+          "calendar.badge.minus",
+          "calendar.badge.clock",
+          "calendar.badge.exclamationmark",
+          "calendar.badge.checkmark"
+        ],
+        "calendar.and.person": [
+          "calendar.and.person"
+        ],
+        "calendar.day.timeline.left": [
+          "calendar.day.timeline.left"
+        ],
+        "calendar.day.timeline.right": [
+          "calendar.day.timeline.right"
+        ],
+        "calendar.day.timeline.leading": [
+          "calendar.day.timeline.leading"
+        ],
+        "calendar.day.timeline.trailing": [
+          "calendar.day.timeline.trailing"
+        ],
+        "widget.small": [
+          "widget.small",
+          "widget.small.badge.plus"
+        ],
+        "widget.medium": [
+          "widget.medium",
+          "widget.medium.badge.plus"
+        ],
+        "widget.large": [
+          "widget.large",
+          "widget.large.badge.plus"
+        ],
+        "widget.extralarge": [
+          "widget.extralarge",
+          "widget.extralarge.badge.plus"
+        ],
+        "arrowshape.left": [
+          "arrowshape.left",
+          "arrowshape.left.fill",
+          "arrowshape.left.circle",
+          "arrowshape.left.circle.fill"
+        ],
+        "arrowshape.backward": [
+          "arrowshape.backward",
+          "arrowshape.backward.fill",
+          "arrowshape.backward.circle",
+          "arrowshape.backward.circle.fill"
+        ],
+        "arrowshape.right": [
+          "arrowshape.right",
+          "arrowshape.right.fill",
+          "arrowshape.right.circle",
+          "arrowshape.right.circle.fill"
+        ],
+        "arrowshape.forward": [
+          "arrowshape.forward",
+          "arrowshape.forward.fill",
+          "arrowshape.forward.circle",
+          "arrowshape.forward.circle.fill"
+        ],
+        "arrowshape.up": [
+          "arrowshape.up",
+          "arrowshape.up.fill",
+          "arrowshape.up.circle",
+          "arrowshape.up.circle.fill"
+        ],
+        "arrowshape.down": [
+          "arrowshape.down",
+          "arrowshape.down.fill",
+          "arrowshape.down.circle",
+          "arrowshape.down.circle.fill"
+        ],
+        "arrowshape.left.arrowshape.right": [
+          "arrowshape.left.arrowshape.right",
+          "arrowshape.left.arrowshape.right.fill"
+        ],
+        "arrowshape.turn.up.left": [
+          "arrowshape.turn.up.left",
+          "arrowshape.turn.up.left.fill",
+          "arrowshape.turn.up.left.circle",
+          "arrowshape.turn.up.left.circle.fill"
+        ],
+        "arrowshape.turn.up.backward": [
+          "arrowshape.turn.up.backward",
+          "arrowshape.turn.up.backward.fill",
+          "arrowshape.turn.up.backward.circle",
+          "arrowshape.turn.up.backward.circle.fill",
+          "arrowshape.turn.up.backward.badge.clock",
+          "arrowshape.turn.up.backward.badge.clock.fill"
+        ],
+        "arrowshape.turn.up.right": [
+          "arrowshape.turn.up.right",
+          "arrowshape.turn.up.right.fill",
+          "arrowshape.turn.up.right.circle",
+          "arrowshape.turn.up.right.circle.fill"
+        ],
+        "arrowshape.turn.up.forward": [
+          "arrowshape.turn.up.forward",
+          "arrowshape.turn.up.forward.fill",
+          "arrowshape.turn.up.forward.circle",
+          "arrowshape.turn.up.forward.circle.fill"
+        ],
+        "arrowshape.turn.up.left.2": [
+          "arrowshape.turn.up.left.2",
+          "arrowshape.turn.up.left.2.fill",
+          "arrowshape.turn.up.left.2.circle",
+          "arrowshape.turn.up.left.2.circle.fill"
+        ],
+        "arrowshape.turn.up.backward.2": [
+          "arrowshape.turn.up.backward.2",
+          "arrowshape.turn.up.backward.2.fill",
+          "arrowshape.turn.up.backward.2.circle",
+          "arrowshape.turn.up.backward.2.circle.fill"
+        ],
+        "arrowshape.zigzag.right": [
+          "arrowshape.zigzag.right",
+          "arrowshape.zigzag.right.fill"
+        ],
+        "arrowshape.zigzag.forward": [
+          "arrowshape.zigzag.forward",
+          "arrowshape.zigzag.forward.fill"
+        ],
+        "arrowshape.bounce.right": [
+          "arrowshape.bounce.right",
+          "arrowshape.bounce.right.fill"
+        ],
+        "arrowshape.bounce.forward": [
+          "arrowshape.bounce.forward",
+          "arrowshape.bounce.forward.fill"
+        ],
+        "book": [
+          "book",
+          "book.fill",
+          "book.circle",
+          "book.circle.fill"
+        ],
+        "books.vertical": [
+          "books.vertical",
+          "books.vertical.fill",
+          "books.vertical.circle",
+          "books.vertical.circle.fill"
+        ],
+        "book.closed": [
+          "book.closed",
+          "book.closed.fill",
+          "book.closed.circle",
+          "book.closed.circle.fill"
+        ],
+        "character.book.closed": [
+          "character.book.closed",
+          "character.book.closed.fill"
+        ],
+        "text.book.closed": [
+          "text.book.closed",
+          "text.book.closed.fill"
+        ],
+        "menucard": [
+          "menucard",
+          "menucard.fill"
+        ],
+        "greetingcard": [
+          "greetingcard",
+          "greetingcard.fill"
+        ],
+        "magazine": [
+          "magazine",
+          "magazine.fill"
+        ],
+        "newspaper": [
+          "newspaper",
+          "newspaper.fill",
+          "newspaper.circle",
+          "newspaper.circle.fill"
+        ],
+        "text.rectangle.page": [
+          "text.rectangle.page",
+          "text.rectangle.page.fill"
+        ],
+        "bookmark": [
+          "bookmark",
+          "bookmark.fill",
+          "bookmark.circle",
+          "bookmark.circle.fill"
+        ],
+        "bookmark.square": [
+          "bookmark.square",
+          "bookmark.square.fill"
+        ],
+        "bookmark.slash": [
+          "bookmark.slash",
+          "bookmark.slash.fill"
+        ],
+        "graduationcap": [
+          "graduationcap",
+          "graduationcap.fill",
+          "graduationcap.circle",
+          "graduationcap.circle.fill"
+        ],
+        "pencil.and.ruler": [
+          "pencil.and.ruler",
+          "pencil.and.ruler.fill"
+        ],
+        "ruler": [
+          "ruler",
+          "ruler.fill"
+        ],
+        "backpack": [
+          "backpack",
+          "backpack.fill",
+          "backpack.circle",
+          "backpack.circle.fill"
+        ],
+        "studentdesk": [
+          "studentdesk"
+        ],
+        "paperclip": [
+          "paperclip",
+          "paperclip.circle",
+          "paperclip.circle.fill",
+          "paperclip.badge.ellipsis"
+        ],
+        "rectangle.and.paperclip": [
+          "rectangle.and.paperclip"
+        ],
+        "rectangle.dashed.and.paperclip": [
+          "rectangle.dashed.and.paperclip"
+        ],
+        "link": [
+          "link",
+          "link.circle",
+          "link.circle.fill",
+          "link.badge.plus"
+        ],
+        "personalhotspot": [
+          "personalhotspot",
+          "personalhotspot.circle",
+          "personalhotspot.circle.fill"
+        ],
+        "personalhotspot.slash": [
+          "personalhotspot.slash"
+        ],
+        "person": [
+          "person",
+          "person.fill",
+          "person.circle",
+          "person.circle.fill",
+          "person.fill.turn.right",
+          "person.fill.turn.down",
+          "person.fill.turn.left",
+          "person.fill.checkmark",
+          "person.fill.xmark",
+          "person.fill.questionmark",
+          "person.badge.plus",
+          "person.fill.badge.plus",
+          "person.badge.minus",
+          "person.fill.badge.minus",
+          "person.badge.clock",
+          "person.badge.clock.fill",
+          "person.badge.shield.checkmark",
+          "person.badge.shield.checkmark.fill",
+          "person.badge.shield.exclamationmark",
+          "person.badge.shield.exclamationmark.fill",
+          "person.badge.key",
+          "person.badge.key.fill",
+          "person.fill.and.arrow.left.and.arrow.right.outward",
+          "person.fill.viewfinder"
+        ],
+        "person.slash": [
+          "person.slash",
+          "person.slash.fill"
+        ],
+        "shareplay": [
+          "shareplay"
+        ],
+        "shareplay.slash": [
+          "shareplay.slash"
+        ],
+        "inset": [
+          "inset.filled.rectangle.and.person.filled",
+          "inset.filled.rectangle.badge.record",
+          "inset.filled.rectangle.and.cursorarrow",
+          "inset.filled.circle",
+          "inset.filled.circle.dashed",
+          "inset.filled.square",
+          "inset.filled.topthird.square",
+          "inset.filled.bottomthird.square",
+          "inset.filled.leftthird.square",
+          "inset.filled.rightthird.square",
+          "inset.filled.leadingthird.square",
+          "inset.filled.trailingthird.square",
+          "inset.filled.square.dashed",
+          "inset.filled.rectangle",
+          "inset.filled.tophalf.rectangle",
+          "inset.filled.bottomhalf.rectangle",
+          "inset.filled.lefthalf.rectangle",
+          "inset.filled.righthalf.rectangle",
+          "inset.filled.leadinghalf.rectangle",
+          "inset.filled.trailinghalf.rectangle",
+          "inset.filled.lefthalf.arrow.left.rectangle",
+          "inset.filled.righthalf.arrow.right.rectangle",
+          "inset.filled.leadinghalf.arrow.leading.rectangle",
+          "inset.filled.trailinghalf.arrow.trailing.rectangle",
+          "inset.filled.righthalf.lefthalf.rectangle",
+          "inset.filled.lefthalf.righthalf.rectangle",
+          "inset.filled.trailinghalf.leadinghalf.rectangle",
+          "inset.filled.leadinghalf.trailinghalf.rectangle",
+          "inset.filled.topleft.bottomleft.righthalf.rectangle",
+          "inset.filled.lefthalf.topright.bottomright.rectangle",
+          "inset.filled.topleading.bottomleading.trailinghalf.rectangle",
+          "inset.filled.leadinghalf.toptrailing.bottomtrailing.rectangle",
+          "inset.filled.tophalf.bottomhalf.rectangle",
+          "inset.filled.bottomhalf.tophalf.rectangle",
+          "inset.filled.tophalf.bottomleft.bottomright.rectangle",
+          "inset.filled.topleft.topright.bottomhalf.rectangle",
+          "inset.filled.topleft.topright.bottomleft.bottomright.rectangle",
+          "inset.filled.topthird.rectangle",
+          "inset.filled.bottomthird.rectangle",
+          "inset.filled.leftthird.rectangle",
+          "inset.filled.rightthird.rectangle",
+          "inset.filled.leadingthird.rectangle",
+          "inset.filled.trailingthird.rectangle",
+          "inset.filled.center.rectangle",
+          "inset.filled.center.rectangle.badge.plus",
+          "inset.filled.topleft.rectangle",
+          "inset.filled.topright.rectangle",
+          "inset.filled.topleading.rectangle",
+          "inset.filled.toptrailing.rectangle",
+          "inset.filled.bottomleft.rectangle",
+          "inset.filled.bottomright.rectangle",
+          "inset.filled.bottomleading.rectangle",
+          "inset.filled.bottomtrailing.rectangle",
+          "inset.filled.rectangle.on.rectangle",
+          "inset.filled.rectangle.portrait",
+          "inset.filled.tophalf.rectangle.portrait",
+          "inset.filled.bottomhalf.rectangle.portrait",
+          "inset.filled.lefthalf.rectangle.portrait",
+          "inset.filled.righthalf.rectangle.portrait",
+          "inset.filled.leadinghalf.rectangle.portrait",
+          "inset.filled.trailinghalf.rectangle.portrait",
+          "inset.filled.topthird.rectangle.portrait",
+          "inset.filled.bottomthird.rectangle.portrait",
+          "inset.filled.leftthird.rectangle.portrait",
+          "inset.filled.rightthird.rectangle.portrait",
+          "inset.filled.leadingthird.rectangle.portrait",
+          "inset.filled.trailingthird.rectangle.portrait",
+          "inset.filled.center.rectangle.portrait",
+          "inset.filled.topleft.rectangle.portrait",
+          "inset.filled.topright.rectangle.portrait",
+          "inset.filled.topleading.rectangle.portrait",
+          "inset.filled.toptrailing.rectangle.portrait",
+          "inset.filled.bottomleft.rectangle.portrait",
+          "inset.filled.bottomright.rectangle.portrait",
+          "inset.filled.bottomleading.rectangle.portrait",
+          "inset.filled.bottomtrailing.rectangle.portrait",
+          "inset.filled.capsule",
+          "inset.filled.capsule.portrait",
+          "inset.filled.oval",
+          "inset.filled.oval.portrait",
+          "inset.filled.triangle",
+          "inset.filled.diamond",
+          "inset.filled.applewatch.case",
+          "inset.filled.tv"
+        ],
+        "sharedwithyou": [
+          "sharedwithyou",
+          "sharedwithyou.circle",
+          "sharedwithyou.circle.fill"
+        ],
+        "sharedwithyou.slash": [
+          "sharedwithyou.slash"
+        ],
+        "person.and.arrow.left.and.arrow.right.outward": [
+          "person.and.arrow.left.and.arrow.right.outward"
+        ],
+        "person.2": [
+          "person.2",
+          "person.2.fill",
+          "person.2.circle",
+          "person.2.circle.fill",
+          "person.2.badge.plus",
+          "person.2.badge.plus.fill",
+          "person.2.badge.minus",
+          "person.2.badge.minus.fill",
+          "person.2.badge.gearshape",
+          "person.2.badge.gearshape.fill",
+          "person.2.badge.key",
+          "person.2.badge.key.fill"
+        ],
+        "person.2.slash": [
+          "person.2.slash",
+          "person.2.slash.fill"
+        ],
+        "person.wave.2": [
+          "person.wave.2",
+          "person.wave.2.fill"
+        ],
+        "person.2.wave.2": [
+          "person.2.wave.2",
+          "person.2.wave.2.fill"
+        ],
+        "person.line.dotted.person": [
+          "person.line.dotted.person",
+          "person.line.dotted.person.fill"
+        ],
+        "person.3": [
+          "person.3",
+          "person.3.fill"
+        ],
+        "person.3.sequence": [
+          "person.3.sequence",
+          "person.3.sequence.fill"
+        ],
+        "lanyardcard": [
+          "lanyardcard",
+          "lanyardcard.fill"
+        ],
+        "person.crop": [
+          "person.crop.circle",
+          "person.crop.circle.fill",
+          "person.crop.circle.badge.plus",
+          "person.crop.circle.fill.badge.plus",
+          "person.crop.circle.badge.minus",
+          "person.crop.circle.fill.badge.minus",
+          "person.crop.circle.badge.checkmark",
+          "person.crop.circle.fill.badge.checkmark",
+          "person.crop.circle.badge.xmark",
+          "person.crop.circle.fill.badge.xmark",
+          "person.crop.circle.badge.questionmark",
+          "person.crop.circle.badge.questionmark.fill",
+          "person.crop.circle.badge.exclamationmark",
+          "person.crop.circle.badge.exclamationmark.fill",
+          "person.crop.circle.badge.moon",
+          "person.crop.circle.badge.moon.fill",
+          "person.crop.circle.badge.clock",
+          "person.crop.circle.badge.clock.fill",
+          "person.crop.badge.magnifyingglass",
+          "person.crop.badge.magnifyingglass.fill",
+          "person.crop.circle.badge",
+          "person.crop.circle.badge.fill",
+          "person.crop.circle.dashed",
+          "person.crop.circle.dashed.circle",
+          "person.crop.circle.dashed.circle.fill"
+        ],
+        "person.crop.square": [
+          "person.crop.square",
+          "person.crop.square.fill",
+          "person.crop.square.badge.camera",
+          "person.crop.square.badge.camera.fill",
+          "person.crop.square.badge.video",
+          "person.crop.square.badge.video.fill",
+          "person.crop.square.filled.and.at.rectangle",
+          "person.crop.square.filled.and.at.rectangle.fill"
+        ],
+        "person.crop.square.on.square.angled": [
+          "person.crop.square.on.square.angled",
+          "person.crop.square.on.square.angled.fill"
+        ],
+        "person.crop.artframe": [
+          "person.crop.artframe"
+        ],
+        "photo.artframe": [
+          "photo.artframe",
+          "photo.artframe.circle",
+          "photo.artframe.circle.fill"
+        ],
+        "person.bust": [
+          "person.bust",
+          "person.bust.fill",
+          "person.bust.circle",
+          "person.bust.circle.fill"
+        ],
+        "person.crop.rectangle.stack": [
+          "person.crop.rectangle.stack",
+          "person.crop.rectangle.stack.fill"
+        ],
+        "person.2.crop.square.stack": [
+          "person.2.crop.square.stack",
+          "person.2.crop.square.stack.fill"
+        ],
+        "person.crop.rectangle": [
+          "person.crop.rectangle",
+          "person.crop.rectangle.fill",
+          "person.crop.rectangle.badge.plus",
+          "person.crop.rectangle.badge.plus.fill"
+        ],
+        "arrow.up.and.person.rectangle.portrait": [
+          "arrow.up.and.person.rectangle.portrait"
+        ],
+        "arrow.up.and.person.rectangle.turn.right": [
+          "arrow.up.and.person.rectangle.turn.right"
+        ],
+        "arrow.up.and.person.rectangle.turn.left": [
+          "arrow.up.and.person.rectangle.turn.left"
+        ],
+        "square.and.at.rectangle": [
+          "square.and.at.rectangle",
+          "square.and.at.rectangle.fill"
+        ],
+        "person.text.rectangle": [
+          "person.text.rectangle",
+          "person.text.rectangle.fill"
+        ],
+        "rectangle.pattern.checkered": [
+          "rectangle.pattern.checkered"
+        ],
+        "person.and.background.dotted": [
+          "person.and.background.dotted"
+        ],
+        "person.and.background.striped.horizontal": [
+          "person.and.background.striped.horizontal"
+        ],
+        "figure.stand": [
+          "figure.stand"
+        ],
+        "figure.stand.line.dotted.figure.stand": [
+          "figure.stand.line.dotted.figure.stand"
+        ],
+        "figure.stand.dress": [
+          "figure.stand.dress"
+        ],
+        "figure.stand.dress.line.vertical.figure": [
+          "figure.stand.dress.line.vertical.figure"
+        ],
+        "figure.arms.open": [
+          "figure.arms.open"
+        ],
+        "figure.2.arms.open": [
+          "figure.2.arms.open"
+        ],
+        "figure.2.right.holdinghands": [
+          "figure.2.right.holdinghands"
+        ],
+        "figure.2.left.holdinghands": [
+          "figure.2.left.holdinghands"
+        ],
+        "figure.2.and.child.holdinghands": [
+          "figure.2.and.child.holdinghands"
+        ],
+        "figure.and.child.holdinghands": [
+          "figure.and.child.holdinghands"
+        ],
+        "figure": [
+          "figure"
+        ],
+        "accessibility": [
+          "accessibility",
+          "accessibility.fill",
+          "accessibility.badge.arrow.up.right"
+        ],
+        "voiceover": [
+          "voiceover"
+        ],
+        "figure.2": [
+          "figure.2",
+          "figure.2.circle",
+          "figure.2.circle.fill"
+        ],
+        "figure.walk": [
+          "figure.walk",
+          "figure.walk.circle",
+          "figure.walk.circle.fill"
+        ],
+        "figure.walk.diamond": [
+          "figure.walk.diamond",
+          "figure.walk.diamond.fill"
+        ],
+        "figure.walk.triangle": [
+          "figure.walk.triangle",
+          "figure.walk.triangle.fill"
+        ],
+        "figure.walk.arrival": [
+          "figure.walk.arrival"
+        ],
+        "figure.walk.departure": [
+          "figure.walk.departure"
+        ],
+        "figure.walk.motion": [
+          "figure.walk.motion",
+          "figure.walk.motion.trianglebadge.exclamationmark"
+        ],
+        "figure.wave": [
+          "figure.wave",
+          "figure.wave.circle",
+          "figure.wave.circle.fill"
+        ],
+        "figure.fall": [
+          "figure.fall",
+          "figure.fall.circle",
+          "figure.fall.circle.fill"
+        ],
+        "figure.run": [
+          "figure.run",
+          "figure.run.circle",
+          "figure.run.circle.fill"
+        ],
+        "figure.run.square.stack": [
+          "figure.run.square.stack",
+          "figure.run.square.stack.fill"
+        ],
+        "figure.run.treadmill": [
+          "figure.run.treadmill",
+          "figure.run.treadmill.circle",
+          "figure.run.treadmill.circle.fill"
+        ],
+        "figure.walk.treadmill": [
+          "figure.walk.treadmill",
+          "figure.walk.treadmill.circle",
+          "figure.walk.treadmill.circle.fill"
+        ],
+        "figure.roll": [
+          "figure.roll",
+          "figure.roll.circle",
+          "figure.roll.circle.fill"
+        ],
+        "figure.roll.runningpace": [
+          "figure.roll.runningpace",
+          "figure.roll.runningpace.circle",
+          "figure.roll.runningpace.circle.fill"
+        ],
+        "figure.american.football": [
+          "figure.american.football",
+          "figure.american.football.circle",
+          "figure.american.football.circle.fill"
+        ],
+        "figure.archery": [
+          "figure.archery",
+          "figure.archery.circle",
+          "figure.archery.circle.fill"
+        ],
+        "figure.australian.football": [
+          "figure.australian.football",
+          "figure.australian.football.circle",
+          "figure.australian.football.circle.fill"
+        ],
+        "figure.badminton": [
+          "figure.badminton",
+          "figure.badminton.circle",
+          "figure.badminton.circle.fill"
+        ],
+        "figure.barre": [
+          "figure.barre",
+          "figure.barre.circle",
+          "figure.barre.circle.fill"
+        ],
+        "figure.baseball": [
+          "figure.baseball",
+          "figure.baseball.circle",
+          "figure.baseball.circle.fill"
+        ],
+        "figure.basketball": [
+          "figure.basketball",
+          "figure.basketball.circle",
+          "figure.basketball.circle.fill"
+        ],
+        "figure.bowling": [
+          "figure.bowling",
+          "figure.bowling.circle",
+          "figure.bowling.circle.fill"
+        ],
+        "figure.boxing": [
+          "figure.boxing",
+          "figure.boxing.circle",
+          "figure.boxing.circle.fill"
+        ],
+        "figure.climbing": [
+          "figure.climbing",
+          "figure.climbing.circle",
+          "figure.climbing.circle.fill"
+        ],
+        "figure.cooldown": [
+          "figure.cooldown",
+          "figure.cooldown.circle",
+          "figure.cooldown.circle.fill"
+        ],
+        "figure.core.training": [
+          "figure.core.training",
+          "figure.core.training.circle",
+          "figure.core.training.circle.fill"
+        ],
+        "figure.cricket": [
+          "figure.cricket",
+          "figure.cricket.circle",
+          "figure.cricket.circle.fill"
+        ],
+        "figure.skiing.crosscountry": [
+          "figure.skiing.crosscountry",
+          "figure.skiing.crosscountry.circle",
+          "figure.skiing.crosscountry.circle.fill"
+        ],
+        "figure.cross.training": [
+          "figure.cross.training",
+          "figure.cross.training.circle",
+          "figure.cross.training.circle.fill"
+        ],
+        "figure.curling": [
+          "figure.curling",
+          "figure.curling.circle",
+          "figure.curling.circle.fill"
+        ],
+        "figure.dance": [
+          "figure.dance",
+          "figure.dance.circle",
+          "figure.dance.circle.fill"
+        ],
+        "figure.disc.sports": [
+          "figure.disc.sports",
+          "figure.disc.sports.circle",
+          "figure.disc.sports.circle.fill"
+        ],
+        "figure.skiing.downhill": [
+          "figure.skiing.downhill",
+          "figure.skiing.downhill.circle",
+          "figure.skiing.downhill.circle.fill"
+        ],
+        "figure.elliptical": [
+          "figure.elliptical",
+          "figure.elliptical.circle",
+          "figure.elliptical.circle.fill"
+        ],
+        "figure.equestrian.sports": [
+          "figure.equestrian.sports",
+          "figure.equestrian.sports.circle",
+          "figure.equestrian.sports.circle.fill"
+        ],
+        "figure.fencing": [
+          "figure.fencing",
+          "figure.fencing.circle",
+          "figure.fencing.circle.fill"
+        ],
+        "figure.fishing": [
+          "figure.fishing",
+          "figure.fishing.circle",
+          "figure.fishing.circle.fill"
+        ],
+        "figure.flexibility": [
+          "figure.flexibility",
+          "figure.flexibility.circle",
+          "figure.flexibility.circle.fill"
+        ],
+        "figure.strengthtraining.functional": [
+          "figure.strengthtraining.functional",
+          "figure.strengthtraining.functional.circle",
+          "figure.strengthtraining.functional.circle.fill"
+        ],
+        "figure.golf": [
+          "figure.golf",
+          "figure.golf.circle",
+          "figure.golf.circle.fill"
+        ],
+        "figure.gymnastics": [
+          "figure.gymnastics",
+          "figure.gymnastics.circle",
+          "figure.gymnastics.circle.fill"
+        ],
+        "figure.hand.cycling": [
+          "figure.hand.cycling",
+          "figure.hand.cycling.circle",
+          "figure.hand.cycling.circle.fill"
+        ],
+        "figure.handball": [
+          "figure.handball",
+          "figure.handball.circle",
+          "figure.handball.circle.fill"
+        ],
+        "figure.highintensity.intervaltraining": [
+          "figure.highintensity.intervaltraining",
+          "figure.highintensity.intervaltraining.circle",
+          "figure.highintensity.intervaltraining.circle.fill"
+        ],
+        "figure.hiking": [
+          "figure.hiking",
+          "figure.hiking.circle",
+          "figure.hiking.circle.fill"
+        ],
+        "figure.hockey": [
+          "figure.hockey",
+          "figure.hockey.circle",
+          "figure.hockey.circle.fill"
+        ],
+        "figure.field.hockey": [
+          "figure.field.hockey",
+          "figure.field.hockey.circle",
+          "figure.field.hockey.circle.fill"
+        ],
+        "figure.ice.hockey": [
+          "figure.ice.hockey",
+          "figure.ice.hockey.circle",
+          "figure.ice.hockey.circle.fill"
+        ],
+        "figure.hunting": [
+          "figure.hunting",
+          "figure.hunting.circle",
+          "figure.hunting.circle.fill"
+        ],
+        "figure.indoor.cycle": [
+          "figure.indoor.cycle",
+          "figure.indoor.cycle.circle",
+          "figure.indoor.cycle.circle.fill"
+        ],
+        "figure.jumprope": [
+          "figure.jumprope",
+          "figure.jumprope.circle",
+          "figure.jumprope.circle.fill"
+        ],
+        "figure.kickboxing": [
+          "figure.kickboxing",
+          "figure.kickboxing.circle",
+          "figure.kickboxing.circle.fill"
+        ],
+        "figure.lacrosse": [
+          "figure.lacrosse",
+          "figure.lacrosse.circle",
+          "figure.lacrosse.circle.fill"
+        ],
+        "figure.martial.arts": [
+          "figure.martial.arts",
+          "figure.martial.arts.circle",
+          "figure.martial.arts.circle.fill"
+        ],
+        "figure.mind.and.body": [
+          "figure.mind.and.body",
+          "figure.mind.and.body.circle",
+          "figure.mind.and.body.circle.fill"
+        ],
+        "figure.mixed.cardio": [
+          "figure.mixed.cardio",
+          "figure.mixed.cardio.circle",
+          "figure.mixed.cardio.circle.fill"
+        ],
+        "figure.open.water.swim": [
+          "figure.open.water.swim",
+          "figure.open.water.swim.circle",
+          "figure.open.water.swim.circle.fill"
+        ],
+        "figure.outdoor.cycle": [
+          "figure.outdoor.cycle",
+          "figure.outdoor.cycle.circle",
+          "figure.outdoor.cycle.circle.fill"
+        ],
+        "oar.2.crossed": [
+          "oar.2.crossed",
+          "oar.2.crossed.circle",
+          "oar.2.crossed.circle.fill"
+        ],
+        "figure.pickleball": [
+          "figure.pickleball",
+          "figure.pickleball.circle",
+          "figure.pickleball.circle.fill"
+        ],
+        "figure.pilates": [
+          "figure.pilates",
+          "figure.pilates.circle",
+          "figure.pilates.circle.fill"
+        ],
+        "figure.play": [
+          "figure.play",
+          "figure.play.circle",
+          "figure.play.circle.fill"
+        ],
+        "figure.pool.swim": [
+          "figure.pool.swim",
+          "figure.pool.swim.circle",
+          "figure.pool.swim.circle.fill"
+        ],
+        "figure.racquetball": [
+          "figure.racquetball",
+          "figure.racquetball.circle",
+          "figure.racquetball.circle.fill"
+        ],
+        "figure.rolling": [
+          "figure.rolling",
+          "figure.rolling.circle",
+          "figure.rolling.circle.fill"
+        ],
+        "figure.indoor.rowing": [
+          "figure.indoor.rowing",
+          "figure.indoor.rowing.circle",
+          "figure.indoor.rowing.circle.fill"
+        ],
+        "figure.outdoor.rowing": [
+          "figure.outdoor.rowing",
+          "figure.outdoor.rowing.circle",
+          "figure.outdoor.rowing.circle.fill"
+        ],
+        "figure.rugby": [
+          "figure.rugby",
+          "figure.rugby.circle",
+          "figure.rugby.circle.fill"
+        ],
+        "figure.sailing": [
+          "figure.sailing",
+          "figure.sailing.circle",
+          "figure.sailing.circle.fill"
+        ],
+        "figure.skateboarding": [
+          "figure.skateboarding",
+          "figure.skateboarding.circle",
+          "figure.skateboarding.circle.fill"
+        ],
+        "figure.ice.skating": [
+          "figure.ice.skating",
+          "figure.ice.skating.circle",
+          "figure.ice.skating.circle.fill"
+        ],
+        "figure.snowboarding": [
+          "figure.snowboarding",
+          "figure.snowboarding.circle",
+          "figure.snowboarding.circle.fill"
+        ],
+        "figure.indoor.soccer": [
+          "figure.indoor.soccer",
+          "figure.indoor.soccer.circle",
+          "figure.indoor.soccer.circle.fill"
+        ],
+        "figure.outdoor.soccer": [
+          "figure.outdoor.soccer",
+          "figure.outdoor.soccer.circle",
+          "figure.outdoor.soccer.circle.fill"
+        ],
+        "figure.socialdance": [
+          "figure.socialdance",
+          "figure.socialdance.circle",
+          "figure.socialdance.circle.fill"
+        ],
+        "figure.softball": [
+          "figure.softball",
+          "figure.softball.circle",
+          "figure.softball.circle.fill"
+        ],
+        "figure.squash": [
+          "figure.squash",
+          "figure.squash.circle",
+          "figure.squash.circle.fill"
+        ],
+        "figure.stair.stepper": [
+          "figure.stair.stepper",
+          "figure.stair.stepper.circle",
+          "figure.stair.stepper.circle.fill"
+        ],
+        "figure.stairs": [
+          "figure.stairs",
+          "figure.stairs.circle",
+          "figure.stairs.circle.fill"
+        ],
+        "figure.step.training": [
+          "figure.step.training",
+          "figure.step.training.circle",
+          "figure.step.training.circle.fill"
+        ],
+        "figure.surfing": [
+          "figure.surfing",
+          "figure.surfing.circle",
+          "figure.surfing.circle.fill"
+        ],
+        "figure.table.tennis": [
+          "figure.table.tennis",
+          "figure.table.tennis.circle",
+          "figure.table.tennis.circle.fill"
+        ],
+        "figure.taichi": [
+          "figure.taichi",
+          "figure.taichi.circle",
+          "figure.taichi.circle.fill"
+        ],
+        "figure.tennis": [
+          "figure.tennis",
+          "figure.tennis.circle",
+          "figure.tennis.circle.fill"
+        ],
+        "figure.track.and.field": [
+          "figure.track.and.field",
+          "figure.track.and.field.circle",
+          "figure.track.and.field.circle.fill"
+        ],
+        "figure.strengthtraining.traditional": [
+          "figure.strengthtraining.traditional",
+          "figure.strengthtraining.traditional.circle",
+          "figure.strengthtraining.traditional.circle.fill"
+        ],
+        "figure.volleyball": [
+          "figure.volleyball",
+          "figure.volleyball.circle",
+          "figure.volleyball.circle.fill"
+        ],
+        "figure.water.fitness": [
+          "figure.water.fitness",
+          "figure.water.fitness.circle",
+          "figure.water.fitness.circle.fill"
+        ],
+        "figure.waterpolo": [
+          "figure.waterpolo",
+          "figure.waterpolo.circle",
+          "figure.waterpolo.circle.fill"
+        ],
+        "figure.wrestling": [
+          "figure.wrestling",
+          "figure.wrestling.circle",
+          "figure.wrestling.circle.fill"
+        ],
+        "figure.yoga": [
+          "figure.yoga",
+          "figure.yoga.circle",
+          "figure.yoga.circle.fill"
+        ],
+        "baseball.diamond.bases": [
+          "baseball.diamond.bases"
+        ],
+        "baseball.diamond.bases.outs.indicator": [
+          "baseball.diamond.bases.outs.indicator"
+        ],
+        "dumbbell": [
+          "dumbbell",
+          "dumbbell.fill"
+        ],
+        "sportscourt": [
+          "sportscourt",
+          "sportscourt.fill",
+          "sportscourt.circle",
+          "sportscourt.circle.fill"
+        ],
+        "lane": [
+          "lane"
+        ],
+        "1.lane": [
+          "1.lane"
+        ],
+        "2.lane": [
+          "2.lane"
+        ],
+        "3.lane": [
+          "3.lane"
+        ],
+        "4.lane": [
+          "4.lane"
+        ],
+        "5.lane": [
+          "5.lane"
+        ],
+        "6.lane": [
+          "6.lane"
+        ],
+        "7.lane": [
+          "7.lane"
+        ],
+        "8.lane": [
+          "8.lane"
+        ],
+        "9.lane": [
+          "9.lane"
+        ],
+        "10.lane": [
+          "10.lane"
+        ],
+        "11.lane": [
+          "11.lane"
+        ],
+        "12.lane": [
+          "12.lane"
+        ],
+        "soccerball": [
+          "soccerball",
+          "soccerball.circle",
+          "soccerball.circle.inverse",
+          "soccerball.circle.fill",
+          "soccerball.circle.fill.inverse"
+        ],
+        "soccerball.inverse": [
+          "soccerball.inverse"
+        ],
+        "baseball": [
+          "baseball",
+          "baseball.fill",
+          "baseball.circle",
+          "baseball.circle.fill"
+        ],
+        "basketball": [
+          "basketball",
+          "basketball.fill",
+          "basketball.circle",
+          "basketball.circle.fill"
+        ],
+        "american.football": [
+          "american.football",
+          "american.football.fill",
+          "american.football.circle",
+          "american.football.circle.fill"
+        ],
+        "american.football.professional": [
+          "american.football.professional",
+          "american.football.professional.fill",
+          "american.football.professional.circle",
+          "american.football.professional.circle.fill"
+        ],
+        "australian.football": [
+          "australian.football",
+          "australian.football.fill",
+          "australian.football.circle",
+          "australian.football.circle.fill"
+        ],
+        "rugbyball": [
+          "rugbyball",
+          "rugbyball.fill",
+          "rugbyball.circle",
+          "rugbyball.circle.fill"
+        ],
+        "tennis.racket": [
+          "tennis.racket",
+          "tennis.racket.circle",
+          "tennis.racket.circle.fill"
+        ],
+        "hockey.puck": [
+          "hockey.puck",
+          "hockey.puck.fill",
+          "hockey.puck.circle",
+          "hockey.puck.circle.fill"
+        ],
+        "cricket.ball": [
+          "cricket.ball",
+          "cricket.ball.fill",
+          "cricket.ball.circle",
+          "cricket.ball.circle.fill"
+        ],
+        "tennisball": [
+          "tennisball",
+          "tennisball.fill",
+          "tennisball.circle",
+          "tennisball.circle.fill"
+        ],
+        "volleyball": [
+          "volleyball",
+          "volleyball.fill",
+          "volleyball.circle",
+          "volleyball.circle.fill"
+        ],
+        "skateboard": [
+          "skateboard",
+          "skateboard.fill"
+        ],
+        "skis": [
+          "skis",
+          "skis.fill"
+        ],
+        "snowboard": [
+          "snowboard",
+          "snowboard.fill"
+        ],
+        "surfboard": [
+          "surfboard",
+          "surfboard.fill"
+        ],
+        "duffle.bag": [
+          "duffle.bag",
+          "duffle.bag.fill"
+        ],
+        "rosette": [
+          "rosette"
+        ],
+        "trophy": [
+          "trophy",
+          "trophy.fill",
+          "trophy.circle",
+          "trophy.circle.fill"
+        ],
+        "medal": [
+          "medal",
+          "medal.fill"
+        ],
+        "command": [
+          "command",
+          "command.circle",
+          "command.circle.fill"
+        ],
+        "command.square": [
+          "command.square",
+          "command.square.fill"
+        ],
+        "space": [
+          "space"
+        ],
+        "option": [
+          "option"
+        ],
+        "alt": [
+          "alt"
+        ],
+        "control": [
+          "control"
+        ],
+        "projective": [
+          "projective"
+        ],
+        "chevron.left.to.line": [
+          "chevron.left.to.line"
+        ],
+        "chevron.right.to.line": [
+          "chevron.right.to.line"
+        ],
+        "chevron.backward.to.line": [
+          "chevron.backward.to.line"
+        ],
+        "chevron.forward.to.line": [
+          "chevron.forward.to.line"
+        ],
+        "escape": [
+          "escape"
+        ],
+        "restart": [
+          "restart",
+          "restart.circle",
+          "restart.circle.fill"
+        ],
+        "sleep": [
+          "sleep",
+          "sleep.circle",
+          "sleep.circle.fill"
+        ],
+        "wake": [
+          "wake",
+          "wake.circle",
+          "wake.circle.fill"
+        ],
+        "fn": [
+          "fn"
+        ],
+        "light.min": [
+          "light.min"
+        ],
+        "light.max": [
+          "light.max"
+        ],
+        "power": [
+          "power",
+          "power.circle",
+          "power.circle.fill"
+        ],
+        "power.dotted": [
+          "power.dotted"
+        ],
+        "togglepower": [
+          "togglepower"
+        ],
+        "poweron": [
+          "poweron"
+        ],
+        "poweroff": [
+          "poweroff"
+        ],
+        "powersleep": [
+          "powersleep"
+        ],
+        "directcurrent": [
+          "directcurrent"
+        ],
+        "alternatingcurrent": [
+          "alternatingcurrent"
+        ],
+        "clear": [
+          "clear",
+          "clear.fill"
+        ],
+        "delete.left": [
+          "delete.left",
+          "delete.left.fill"
+        ],
+        "delete.backward": [
+          "delete.backward",
+          "delete.backward.fill"
+        ],
+        "delete.right": [
+          "delete.right",
+          "delete.right.fill"
+        ],
+        "delete.forward": [
+          "delete.forward",
+          "delete.forward.fill"
+        ],
+        "shift": [
+          "shift",
+          "shift.fill"
+        ],
+        "capslock": [
+          "capslock",
+          "capslock.fill"
+        ],
+        "eject": [
+          "eject",
+          "eject.fill",
+          "eject.circle",
+          "eject.circle.fill"
+        ],
+        "mount": [
+          "mount",
+          "mount.fill"
+        ],
+        "progress.indicator": [
+          "progress.indicator"
+        ],
+        "rays": [
+          "rays"
+        ],
+        "cursorarrow.rays": [
+          "cursorarrow.rays"
+        ],
+        "slowmo": [
+          "slowmo"
+        ],
+        "timelapse": [
+          "timelapse"
+        ],
+        "cursorarrow": [
+          "cursorarrow"
+        ],
+        "cursorarrow.square": [
+          "cursorarrow.square",
+          "cursorarrow.square.fill"
+        ],
+        "cursorarrow.slash": [
+          "cursorarrow.slash"
+        ],
+        "cursorarrow.slash.square": [
+          "cursorarrow.slash.square",
+          "cursorarrow.slash.square.fill"
+        ],
+        "cursorarrow.motionlines": [
+          "cursorarrow.motionlines"
+        ],
+        "cursorarrow.motionlines.click": [
+          "cursorarrow.motionlines.click"
+        ],
+        "cursorarrow.click": [
+          "cursorarrow.click.badge.clock",
+          "cursorarrow.click"
+        ],
+        "cursorarrow.click.2": [
+          "cursorarrow.click.2"
+        ],
+        "cursorarrow.and.square.on.square.dashed": [
+          "cursorarrow.and.square.on.square.dashed"
+        ],
+        "rectangle.on.rectangle": [
+          "rectangle.on.rectangle.badge.gearshape",
+          "rectangle.on.rectangle",
+          "rectangle.on.rectangle.circle",
+          "rectangle.on.rectangle.circle.fill"
+        ],
+        "contextualmenu.and.cursorarrow": [
+          "contextualmenu.and.cursorarrow"
+        ],
+        "filemenu.and.cursorarrow": [
+          "filemenu.and.cursorarrow"
+        ],
+        "dots.and.line.vertical.and.cursorarrow.rectangle": [
+          "dots.and.line.vertical.and.cursorarrow.rectangle"
+        ],
+        "filemenu.and.selection": [
+          "filemenu.and.selection"
+        ],
+        "dot": [
+          "dot.circle.and.hand.point.up.left.fill",
+          "dot.circle.and.cursorarrow",
+          "dot.circle.viewfinder"
+        ],
+        "beziercurve": [
+          "beziercurve"
+        ],
+        "keyboard": [
+          "keyboard",
+          "keyboard.fill",
+          "keyboard.badge.ellipsis",
+          "keyboard.badge.ellipsis.fill",
+          "keyboard.badge.eye",
+          "keyboard.badge.eye.fill"
+        ],
+        "keyboard.chevron.compact.down": [
+          "keyboard.chevron.compact.down",
+          "keyboard.chevron.compact.down.fill"
+        ],
+        "keyboard.chevron.compact.left": [
+          "keyboard.chevron.compact.left",
+          "keyboard.chevron.compact.left.fill"
+        ],
+        "keyboard.onehanded.left": [
+          "keyboard.onehanded.left",
+          "keyboard.onehanded.left.fill"
+        ],
+        "keyboard.onehanded.right": [
+          "keyboard.onehanded.right",
+          "keyboard.onehanded.right.fill"
+        ],
+        "peacesign": [
+          "peacesign"
+        ],
+        "globe": [
+          "globe",
+          "globe.badge.chevron.backward"
+        ],
+        "network": [
+          "network",
+          "network.badge.shield.half.filled"
+        ],
+        "network.slash": [
+          "network.slash"
+        ],
+        "globe.americas": [
+          "globe.americas",
+          "globe.americas.fill"
+        ],
+        "globe.europe.africa": [
+          "globe.europe.africa",
+          "globe.europe.africa.fill"
+        ],
+        "globe.asia.australia": [
+          "globe.asia.australia",
+          "globe.asia.australia.fill"
+        ],
+        "globe.central.south.asia": [
+          "globe.central.south.asia",
+          "globe.central.south.asia.fill"
+        ],
+        "sun.min": [
+          "sun.min",
+          "sun.min.fill"
+        ],
+        "sun.max": [
+          "sun.max",
+          "sun.max.fill",
+          "sun.max.circle",
+          "sun.max.circle.fill",
+          "sun.max.trianglebadge.exclamationmark",
+          "sun.max.trianglebadge.exclamationmark.fill"
+        ],
+        "sun.lefthalf": [
+          "sun.lefthalf.filled"
+        ],
+        "sun.righthalf": [
+          "sun.righthalf.filled"
+        ],
+        "sunrise": [
+          "sunrise",
+          "sunrise.fill",
+          "sunrise.circle",
+          "sunrise.circle.fill"
+        ],
+        "sunset": [
+          "sunset",
+          "sunset.fill",
+          "sunset.circle",
+          "sunset.circle.fill"
+        ],
+        "sun.horizon": [
+          "sun.horizon",
+          "sun.horizon.fill",
+          "sun.horizon.circle",
+          "sun.horizon.circle.fill"
+        ],
+        "sun.dust": [
+          "sun.dust",
+          "sun.dust.fill",
+          "sun.dust.circle",
+          "sun.dust.circle.fill"
+        ],
+        "sun.haze": [
+          "sun.haze",
+          "sun.haze.fill",
+          "sun.haze.circle",
+          "sun.haze.circle.fill"
+        ],
+        "sun.rain": [
+          "sun.rain",
+          "sun.rain.fill",
+          "sun.rain.circle",
+          "sun.rain.circle.fill"
+        ],
+        "sun.snow": [
+          "sun.snow",
+          "sun.snow.fill",
+          "sun.snow.circle",
+          "sun.snow.circle.fill"
+        ],
+        "moonphase.new.moon": [
+          "moonphase.new.moon"
+        ],
+        "moonphase.waxing.crescent": [
+          "moonphase.waxing.crescent"
+        ],
+        "moonphase.first.quarter": [
+          "moonphase.first.quarter"
+        ],
+        "moonphase.waxing.gibbous": [
+          "moonphase.waxing.gibbous"
+        ],
+        "moonphase.full.moon": [
+          "moonphase.full.moon"
+        ],
+        "moonphase.waning.gibbous": [
+          "moonphase.waning.gibbous"
+        ],
+        "moonphase.last.quarter": [
+          "moonphase.last.quarter"
+        ],
+        "moonphase.waning.crescent": [
+          "moonphase.waning.crescent"
+        ],
+        "moonphase.new.moon.inverse": [
+          "moonphase.new.moon.inverse"
+        ],
+        "moonphase.waxing.crescent.inverse": [
+          "moonphase.waxing.crescent.inverse"
+        ],
+        "moonphase.first.quarter.inverse": [
+          "moonphase.first.quarter.inverse"
+        ],
+        "moonphase.waxing.gibbous.inverse": [
+          "moonphase.waxing.gibbous.inverse"
+        ],
+        "moonphase.full.moon.inverse": [
+          "moonphase.full.moon.inverse"
+        ],
+        "moonphase.waning.gibbous.inverse": [
+          "moonphase.waning.gibbous.inverse"
+        ],
+        "moonphase.last.quarter.inverse": [
+          "moonphase.last.quarter.inverse"
+        ],
+        "moonphase.waning.crescent.inverse": [
+          "moonphase.waning.crescent.inverse"
+        ],
+        "zzz": [
+          "zzz"
+        ],
+        "moon": [
+          "moon",
+          "moon.fill",
+          "moon.circle",
+          "moon.circle.fill"
+        ],
+        "moonrise": [
+          "moonrise",
+          "moonrise.fill",
+          "moonrise.circle",
+          "moonrise.circle.fill"
+        ],
+        "moonset": [
+          "moonset",
+          "moonset.fill",
+          "moonset.circle",
+          "moonset.circle.fill"
+        ],
+        "moon.dust": [
+          "moon.dust",
+          "moon.dust.fill",
+          "moon.dust.circle",
+          "moon.dust.circle.fill"
+        ],
+        "moon.haze": [
+          "moon.haze",
+          "moon.haze.fill",
+          "moon.haze.circle",
+          "moon.haze.circle.fill"
+        ],
+        "moon.zzz": [
+          "moon.zzz",
+          "moon.zzz.fill"
+        ],
+        "sparkle": [
+          "sparkle"
+        ],
+        "sparkles": [
+          "sparkles"
+        ],
+        "moon.stars": [
+          "moon.stars",
+          "moon.stars.fill",
+          "moon.stars.circle",
+          "moon.stars.circle.fill"
+        ],
+        "cloud": [
+          "cloud",
+          "cloud.fill",
+          "cloud.circle",
+          "cloud.circle.fill"
+        ],
+        "cloud.drizzle": [
+          "cloud.drizzle",
+          "cloud.drizzle.fill",
+          "cloud.drizzle.circle",
+          "cloud.drizzle.circle.fill"
+        ],
+        "cloud.rain": [
+          "cloud.rain",
+          "cloud.rain.fill",
+          "cloud.rain.circle",
+          "cloud.rain.circle.fill"
+        ],
+        "cloud.heavyrain": [
+          "cloud.heavyrain",
+          "cloud.heavyrain.fill",
+          "cloud.heavyrain.circle",
+          "cloud.heavyrain.circle.fill"
+        ],
+        "cloud.fog": [
+          "cloud.fog",
+          "cloud.fog.fill",
+          "cloud.fog.circle",
+          "cloud.fog.circle.fill"
+        ],
+        "cloud.hail": [
+          "cloud.hail",
+          "cloud.hail.fill",
+          "cloud.hail.circle",
+          "cloud.hail.circle.fill"
+        ],
+        "cloud.snow": [
+          "cloud.snow",
+          "cloud.snow.fill",
+          "cloud.snow.circle",
+          "cloud.snow.circle.fill"
+        ],
+        "cloud.sleet": [
+          "cloud.sleet",
+          "cloud.sleet.fill",
+          "cloud.sleet.circle",
+          "cloud.sleet.circle.fill"
+        ],
+        "cloud.bolt": [
+          "cloud.bolt",
+          "cloud.bolt.fill",
+          "cloud.bolt.circle",
+          "cloud.bolt.circle.fill"
+        ],
+        "cloud.bolt.rain": [
+          "cloud.bolt.rain",
+          "cloud.bolt.rain.fill",
+          "cloud.bolt.rain.circle",
+          "cloud.bolt.rain.circle.fill"
+        ],
+        "cloud.sun": [
+          "cloud.sun",
+          "cloud.sun.fill",
+          "cloud.sun.circle",
+          "cloud.sun.circle.fill"
+        ],
+        "cloud.sun.rain": [
+          "cloud.sun.rain",
+          "cloud.sun.rain.fill",
+          "cloud.sun.rain.circle",
+          "cloud.sun.rain.circle.fill"
+        ],
+        "cloud.sun.bolt": [
+          "cloud.sun.bolt",
+          "cloud.sun.bolt.fill",
+          "cloud.sun.bolt.circle",
+          "cloud.sun.bolt.circle.fill"
+        ],
+        "cloud.moon": [
+          "cloud.moon",
+          "cloud.moon.fill",
+          "cloud.moon.circle",
+          "cloud.moon.circle.fill"
+        ],
+        "cloud.moon.rain": [
+          "cloud.moon.rain",
+          "cloud.moon.rain.fill",
+          "cloud.moon.rain.circle",
+          "cloud.moon.rain.circle.fill"
+        ],
+        "cloud.moon.bolt": [
+          "cloud.moon.bolt",
+          "cloud.moon.bolt.fill",
+          "cloud.moon.bolt.circle",
+          "cloud.moon.bolt.circle.fill"
+        ],
+        "smoke": [
+          "smoke",
+          "smoke.fill",
+          "smoke.circle",
+          "smoke.circle.fill"
+        ],
+        "wind": [
+          "wind",
+          "wind.circle",
+          "wind.circle.fill"
+        ],
+        "wind.snow": [
+          "wind.snow",
+          "wind.snow.circle",
+          "wind.snow.circle.fill"
+        ],
+        "snowflake": [
+          "snowflake",
+          "snowflake.circle",
+          "snowflake.circle.fill"
+        ],
+        "snowflake.slash": [
+          "snowflake.slash"
+        ],
+        "tornado": [
+          "tornado",
+          "tornado.circle",
+          "tornado.circle.fill"
+        ],
+        "tropicalstorm": [
+          "tropicalstorm",
+          "tropicalstorm.circle",
+          "tropicalstorm.circle.fill"
+        ],
+        "hurricane": [
+          "hurricane",
+          "hurricane.circle",
+          "hurricane.circle.fill"
+        ],
+        "thermometer.sun": [
+          "thermometer.sun",
+          "thermometer.sun.fill",
+          "thermometer.sun.circle",
+          "thermometer.sun.circle.fill"
+        ],
+        "thermometer.snowflake": [
+          "thermometer.snowflake",
+          "thermometer.snowflake.circle",
+          "thermometer.snowflake.circle.fill"
+        ],
+        "thermometer.variable": [
+          "thermometer.variable"
+        ],
+        "thermometer.variable.and.figure": [
+          "thermometer.variable.and.figure",
+          "thermometer.variable.and.figure.circle",
+          "thermometer.variable.and.figure.circle.fill"
+        ],
+        "thermometer.low": [
+          "thermometer.low"
+        ],
+        "thermometer.medium": [
+          "thermometer.medium"
+        ],
+        "thermometer.high": [
+          "thermometer.high"
+        ],
+        "thermometer.medium.slash": [
+          "thermometer.medium.slash"
+        ],
+        "degreesign.fahrenheit": [
+          "degreesign.fahrenheit"
+        ],
+        "degreesign.celsius": [
+          "degreesign.celsius"
+        ],
+        "aqi.low": [
+          "aqi.low"
+        ],
+        "aqi.medium": [
+          "aqi.medium"
+        ],
+        "aqi.high": [
+          "aqi.high"
+        ],
+        "humidity": [
+          "humidity",
+          "humidity.fill"
+        ],
+        "rainbow": [
+          "rainbow"
+        ],
+        "cloud.rainbow.crop": [
+          "cloud.rainbow.crop",
+          "cloud.rainbow.crop.fill"
+        ],
+        "water.waves": [
+          "water.waves"
+        ],
+        "water.waves.slash": [
+          "water.waves.slash"
+        ],
+        "water.waves.and.arrow.trianglehead.up": [
+          "water.waves.and.arrow.trianglehead.up"
+        ],
+        "water.waves.and.arrow.trianglehead.down": [
+          "water.waves.and.arrow.trianglehead.down",
+          "water.waves.and.arrow.trianglehead.down.trianglebadge.exclamationmark"
+        ],
+        "drop": [
+          "drop",
+          "drop.fill",
+          "drop.circle",
+          "drop.circle.fill"
+        ],
+        "drop.triangle": [
+          "drop.triangle",
+          "drop.triangle.fill"
+        ],
+        "drop.degreesign": [
+          "drop.degreesign",
+          "drop.degreesign.fill"
+        ],
+        "drop.degreesign.slash": [
+          "drop.degreesign.slash",
+          "drop.degreesign.slash.fill"
+        ],
+        "flame": [
+          "flame",
+          "flame.fill",
+          "flame.circle",
+          "flame.circle.fill"
+        ],
+        "fire.extinguisher": [
+          "fire.extinguisher",
+          "fire.extinguisher.fill"
+        ],
+        "beach.umbrella": [
+          "beach.umbrella",
+          "beach.umbrella.fill"
+        ],
+        "umbrella": [
+          "umbrella",
+          "umbrella.fill"
+        ],
+        "umbrella.percent": [
+          "umbrella.percent",
+          "umbrella.percent.fill"
+        ],
+        "play": [
+          "play",
+          "play.fill",
+          "play.circle",
+          "play.circle.fill"
+        ],
+        "play.square": [
+          "play.square",
+          "play.square.fill"
+        ],
+        "play.rectangle": [
+          "play.rectangle",
+          "play.rectangle.fill"
+        ],
+        "play.square.stack": [
+          "play.square.stack",
+          "play.square.stack.fill"
+        ],
+        "play.slash": [
+          "play.slash",
+          "play.slash.fill"
+        ],
+        "pause": [
+          "pause",
+          "pause.fill",
+          "pause.circle",
+          "pause.circle.fill"
+        ],
+        "pause.rectangle": [
+          "pause.rectangle",
+          "pause.rectangle.fill"
+        ],
+        "stop": [
+          "stop",
+          "stop.fill",
+          "stop.circle",
+          "stop.circle.fill"
+        ],
+        "record": [
+          "record.circle",
+          "record.circle.fill"
+        ],
+        "playpause": [
+          "playpause",
+          "playpause.fill",
+          "playpause.circle",
+          "playpause.circle.fill"
+        ],
+        "backward": [
+          "backward",
+          "backward.fill",
+          "backward.circle",
+          "backward.circle.fill"
+        ],
+        "forward": [
+          "forward",
+          "forward.fill",
+          "forward.circle",
+          "forward.circle.fill"
+        ],
+        "backward.end": [
+          "backward.end",
+          "backward.end.fill",
+          "backward.end.circle",
+          "backward.end.circle.fill"
+        ],
+        "forward.end": [
+          "forward.end",
+          "forward.end.fill",
+          "forward.end.circle",
+          "forward.end.circle.fill"
+        ],
+        "backward.end.alt": [
+          "backward.end.alt",
+          "backward.end.alt.fill"
+        ],
+        "forward.end.alt": [
+          "forward.end.alt",
+          "forward.end.alt.fill"
+        ],
+        "backward.frame": [
+          "backward.frame",
+          "backward.frame.fill"
+        ],
+        "forward.frame": [
+          "forward.frame",
+          "forward.frame.fill"
+        ],
+        "memories": [
+          "memories",
+          "memories.badge.plus",
+          "memories.badge.minus"
+        ],
+        "shuffle": [
+          "shuffle",
+          "shuffle.circle",
+          "shuffle.circle.fill"
+        ],
+        "repeat": [
+          "repeat",
+          "repeat.circle",
+          "repeat.circle.fill"
+        ],
+        "repeat.1": [
+          "repeat.1",
+          "repeat.1.circle",
+          "repeat.1.circle.fill"
+        ],
+        "infinity": [
+          "infinity",
+          "infinity.circle",
+          "infinity.circle.fill"
+        ],
+        "sos": [
+          "sos",
+          "sos.circle",
+          "sos.circle.fill"
+        ],
+        "megaphone": [
+          "megaphone",
+          "megaphone.fill"
+        ],
+        "speaker": [
+          "speaker",
+          "speaker.fill",
+          "speaker.circle",
+          "speaker.circle.fill",
+          "speaker.badge.exclamationmark",
+          "speaker.badge.exclamationmark.fill"
+        ],
+        "speaker.square": [
+          "speaker.square",
+          "speaker.square.fill"
+        ],
+        "speaker.plus": [
+          "speaker.plus",
+          "speaker.plus.fill"
+        ],
+        "speaker.minus": [
+          "speaker.minus",
+          "speaker.minus.fill"
+        ],
+        "speaker.slash": [
+          "speaker.slash",
+          "speaker.slash.fill",
+          "speaker.slash.circle",
+          "speaker.slash.circle.fill"
+        ],
+        "speaker.zzz": [
+          "speaker.zzz",
+          "speaker.zzz.fill"
+        ],
+        "speaker.wave.1.arrowtriangles.up.right.down.left": [
+          "speaker.wave.1.arrowtriangles.up.right.down.left"
+        ],
+        "speaker.wave.1": [
+          "speaker.wave.1",
+          "speaker.wave.1.fill"
+        ],
+        "speaker.wave.2": [
+          "speaker.wave.2",
+          "speaker.wave.2.fill",
+          "speaker.wave.2.circle",
+          "speaker.wave.2.circle.fill"
+        ],
+        "speaker.wave.3": [
+          "speaker.wave.3",
+          "speaker.wave.3.fill"
+        ],
+        "badge.plus.radiowaves.right": [
+          "badge.plus.radiowaves.right"
+        ],
+        "badge.plus.radiowaves.forward": [
+          "badge.plus.radiowaves.forward"
+        ],
+        "music.note": [
+          "music.note"
+        ],
+        "music.note.list": [
+          "music.note.list"
+        ],
+        "music.quarternote.3": [
+          "music.quarternote.3"
+        ],
+        "music.microphone": [
+          "music.microphone",
+          "music.microphone.circle",
+          "music.microphone.circle.fill"
+        ],
+        "arrow.trianglehead.clockwise": [
+          "arrow.trianglehead.clockwise"
+        ],
+        "5.arrow.trianglehead.clockwise": [
+          "5.arrow.trianglehead.clockwise"
+        ],
+        "10.arrow.trianglehead.clockwise": [
+          "10.arrow.trianglehead.clockwise"
+        ],
+        "15.arrow.trianglehead.clockwise": [
+          "15.arrow.trianglehead.clockwise"
+        ],
+        "30.arrow.trianglehead.clockwise": [
+          "30.arrow.trianglehead.clockwise"
+        ],
+        "45.arrow.trianglehead.clockwise": [
+          "45.arrow.trianglehead.clockwise"
+        ],
+        "60.arrow.trianglehead.clockwise": [
+          "60.arrow.trianglehead.clockwise"
+        ],
+        "75.arrow.trianglehead.clockwise": [
+          "75.arrow.trianglehead.clockwise"
+        ],
+        "90.arrow.trianglehead.clockwise": [
+          "90.arrow.trianglehead.clockwise"
+        ],
+        "plus.arrow.trianglehead.clockwise": [
+          "plus.arrow.trianglehead.clockwise"
+        ],
+        "leaf.arrow.trianglehead.clockwise": [
+          "leaf.arrow.trianglehead.clockwise"
+        ],
+        "arrow.trianglehead.counterclockwise": [
+          "arrow.trianglehead.counterclockwise"
+        ],
+        "5.arrow.trianglehead.counterclockwise": [
+          "5.arrow.trianglehead.counterclockwise"
+        ],
+        "10.arrow.trianglehead.counterclockwise": [
+          "10.arrow.trianglehead.counterclockwise"
+        ],
+        "15.arrow.trianglehead.counterclockwise": [
+          "15.arrow.trianglehead.counterclockwise"
+        ],
+        "30.arrow.trianglehead.counterclockwise": [
+          "30.arrow.trianglehead.counterclockwise"
+        ],
+        "45.arrow.trianglehead.counterclockwise": [
+          "45.arrow.trianglehead.counterclockwise"
+        ],
+        "60.arrow.trianglehead.counterclockwise": [
+          "60.arrow.trianglehead.counterclockwise"
+        ],
+        "75.arrow.trianglehead.counterclockwise": [
+          "75.arrow.trianglehead.counterclockwise"
+        ],
+        "90.arrow.trianglehead.counterclockwise": [
+          "90.arrow.trianglehead.counterclockwise"
+        ],
+        "minus.arrow.trianglehead.counterclockwise": [
+          "minus.arrow.trianglehead.counterclockwise"
+        ],
+        "checkmark.arrow.trianglehead.counterclockwise": [
+          "checkmark.arrow.trianglehead.counterclockwise"
+        ],
+        "person.2.arrow.trianglehead.counterclockwise": [
+          "person.2.arrow.trianglehead.counterclockwise"
+        ],
+        "slider.horizontal.2.arrow.trianglehead.counterclockwise": [
+          "slider.horizontal.2.arrow.trianglehead.counterclockwise"
+        ],
+        "arrow.trianglehead.2.clockwise": [
+          "arrow.trianglehead.2.clockwise"
+        ],
+        "arrow.trianglehead.2.counterclockwise": [
+          "arrow.trianglehead.2.counterclockwise"
+        ],
+        "arrow.trianglehead.clockwise.rotate.90": [
+          "arrow.trianglehead.clockwise.rotate.90"
+        ],
+        "arrow.trianglehead.counterclockwise.rotate.90": [
+          "arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "australsign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "australsign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "australiandollarsign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "australiandollarsign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "bahtsign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "bahtsign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "bitcoinsign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "bitcoinsign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "brazilianrealsign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "brazilianrealsign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "cedisign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "cedisign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "centsign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "centsign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "chineseyuanrenminbisign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "chineseyuanrenminbisign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "coloncurrencysign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "coloncurrencysign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "cruzeirosign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "cruzeirosign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "danishkronesign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "danishkronesign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "dongsign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "dongsign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "dollarsign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "dollarsign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "eurosign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "eurosign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "eurozonesign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "eurozonesign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "florinsign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "florinsign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "francsign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "francsign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "guaranisign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "guaranisign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "hryvniasign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "hryvniasign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "indianrupeesign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "indianrupeesign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "kipsign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "kipsign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "larisign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "larisign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "lirasign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "lirasign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "manatsign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "manatsign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "malaysianringgitsign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "malaysianringgitsign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "millsign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "millsign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "nairasign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "nairasign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "norwegiankronesign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "norwegiankronesign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "peruviansolessign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "peruviansolessign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "pesetasign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "pesetasign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "pesosign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "pesosign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "polishzlotysign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "polishzlotysign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "rublesign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "rublesign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "rupeesign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "rupeesign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "shekelsign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "shekelsign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "singaporedollarsign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "singaporedollarsign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "sterlingsign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "sterlingsign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "swedishkronasign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "swedishkronasign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "tengesign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "tengesign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "tugriksign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "tugriksign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "turkishlirasign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "turkishlirasign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "yensign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "yensign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "wonsign.arrow.trianglehead.counterclockwise.rotate.90": [
+          "wonsign.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "clock.arrow.trianglehead.counterclockwise.rotate.90": [
+          "clock.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "exclamationmark.arrow.trianglehead.counterclockwise.rotate.90": [
+          "exclamationmark.arrow.trianglehead.counterclockwise.rotate.90"
+        ],
+        "arrow.trianglehead.2.clockwise.rotate.90": [
+          "arrow.trianglehead.2.clockwise.rotate.90",
+          "arrow.trianglehead.2.clockwise.rotate.90.circle",
+          "arrow.trianglehead.2.clockwise.rotate.90.circle.fill"
+        ],
+        "exclamationmark.arrow.trianglehead.2.clockwise.rotate.90": [
+          "exclamationmark.arrow.trianglehead.2.clockwise.rotate.90"
+        ],
+        "gearshape.arrow.trianglehead.2.clockwise.rotate.90": [
+          "gearshape.arrow.trianglehead.2.clockwise.rotate.90"
+        ],
+        "arrow.trianglehead.2.counterclockwise.rotate.90": [
+          "arrow.trianglehead.2.counterclockwise.rotate.90"
+        ],
+        "clock.arrow.trianglehead.2.counterclockwise.rotate.90": [
+          "clock.arrow.trianglehead.2.counterclockwise.rotate.90"
+        ],
+        "arrow.trianglehead.topright.capsulepath.clockwise": [
+          "arrow.trianglehead.topright.capsulepath.clockwise"
+        ],
+        "arrow.trianglehead.bottomleft.capsulepath.clockwise": [
+          "arrow.trianglehead.bottomleft.capsulepath.clockwise"
+        ],
+        "arrow.trianglehead.rectanglepath": [
+          "arrow.trianglehead.rectanglepath"
+        ],
+        "swift": [
+          "swift"
+        ],
+        "swiftdata": [
+          "swiftdata"
+        ],
+        "magnifyingglass": [
+          "magnifyingglass",
+          "magnifyingglass.circle",
+          "magnifyingglass.circle.fill"
+        ],
+        "plus.magnifyingglass": [
+          "plus.magnifyingglass"
+        ],
+        "minus.magnifyingglass": [
+          "minus.magnifyingglass"
+        ],
+        "exclamationmark.magnifyingglass": [
+          "exclamationmark.magnifyingglass"
+        ],
+        "1.magnifyingglass": [
+          "1.magnifyingglass"
+        ],
+        "arrow.up.left.and.down.right.magnifyingglass": [
+          "arrow.up.left.and.down.right.magnifyingglass"
+        ],
+        "text.magnifyingglass": [
+          "text.magnifyingglass"
+        ],
+        "sparkle.magnifyingglass": [
+          "sparkle.magnifyingglass"
+        ],
+        "location.magnifyingglass": [
+          "location.magnifyingglass"
+        ],
+        "loupe": [
+          "loupe"
+        ],
+        "microphone": [
+          "microphone",
+          "microphone.fill",
+          "microphone.circle",
+          "microphone.circle.fill",
+          "microphone.badge.plus",
+          "microphone.badge.plus.fill",
+          "microphone.badge.xmark",
+          "microphone.badge.xmark.fill",
+          "microphone.badge.ellipsis",
+          "microphone.badge.ellipsis.fill"
+        ],
+        "microphone.square": [
+          "microphone.square",
+          "microphone.square.fill"
+        ],
+        "microphone.slash": [
+          "microphone.slash",
+          "microphone.slash.fill",
+          "microphone.slash.circle",
+          "microphone.slash.circle.fill"
+        ],
+        "microphone.and.signal.meter": [
+          "microphone.and.signal.meter",
+          "microphone.and.signal.meter.fill"
+        ],
+        "line.diagonal": [
+          "line.diagonal"
+        ],
+        "line.diagonal.arrow": [
+          "line.diagonal.arrow"
+        ],
+        "righttriangle": [
+          "righttriangle",
+          "righttriangle.fill"
+        ],
+        "righttriangle.split.diagonal": [
+          "righttriangle.split.diagonal",
+          "righttriangle.split.diagonal.fill"
+        ],
+        "drop.halffull": [
+          "drop.halffull"
+        ],
+        "swirl": [
+          "swirl.circle.righthalf.filled",
+          "swirl.circle.righthalf.filled.inverse"
+        ],
+        "circle.lefthalf": [
+          "circle.lefthalf.filled.righthalf.striped.horizontal",
+          "circle.lefthalf.filled.righthalf.striped.horizontal.inverse",
+          "circle.lefthalf.filled",
+          "circle.lefthalf.filled.inverse"
+        ],
+        "circle.lefthalf.striped.horizontal": [
+          "circle.lefthalf.striped.horizontal"
+        ],
+        "circle.lefthalf.striped.horizontal.inverse": [
+          "circle.lefthalf.striped.horizontal.inverse"
+        ],
+        "circle.dotted": [
+          "circle.dotted.circle",
+          "circle.dotted.circle.fill",
+          "circle.dotted"
+        ],
+        "circle.bottomrighthalf.pattern.checkered": [
+          "circle.bottomrighthalf.pattern.checkered"
+        ],
+        "lightspectrum.horizontal": [
+          "lightspectrum.horizontal"
+        ],
+        "circle": [
+          "circle",
+          "circle.fill",
+          "circle.badge.plus",
+          "circle.badge.plus.fill",
+          "circle.badge.minus",
+          "circle.badge.minus.fill",
+          "circle.badge.checkmark",
+          "circle.badge.checkmark.fill",
+          "circle.badge.xmark",
+          "circle.badge.xmark.fill",
+          "circle.badge.questionmark",
+          "circle.badge.questionmark.fill",
+          "circle.badge.exclamationmark",
+          "circle.badge.exclamationmark.fill",
+          "circle.filled.iphone",
+          "circle.filled.iphone.fill",
+          "circle.filled.ipad",
+          "circle.filled.ipad.fill",
+          "circle.filled.ipad.landscape",
+          "circle.filled.ipad.landscape.fill",
+          "circle.filled.pattern.diagonalline.rectangle",
+          "circle.circle",
+          "circle.circle.fill"
+        ],
+        "circle.slash": [
+          "circle.slash",
+          "circle.slash.fill"
+        ],
+        "circle.righthalf": [
+          "circle.righthalf.filled",
+          "circle.righthalf.filled.inverse"
+        ],
+        "circle.tophalf": [
+          "circle.tophalf.filled",
+          "circle.tophalf.filled.inverse"
+        ],
+        "circle.bottomhalf": [
+          "circle.bottomhalf.filled",
+          "circle.bottomhalf.filled.inverse"
+        ],
+        "smallcircle": [
+          "smallcircle.filled.circle",
+          "smallcircle.filled.circle.fill",
+          "smallcircle.circle",
+          "smallcircle.circle.fill"
+        ],
+        "target": [
+          "target"
+        ],
+        "circle.dashed": [
+          "circle.dashed"
+        ],
+        "plus": [
+          "plus.circle.dashed",
+          "plus",
+          "plus.circle",
+          "plus.circle.fill"
+        ],
+        "questionmark": [
+          "questionmark.circle.dashed",
+          "questionmark",
+          "questionmark.circle",
+          "questionmark.circle.fill"
+        ],
+        "circlebadge": [
+          "circlebadge",
+          "circlebadge.fill"
+        ],
+        "circlebadge.2": [
+          "circlebadge.2",
+          "circlebadge.2.fill"
+        ],
+        "circle.grid.2x1": [
+          "circle.grid.2x1",
+          "circle.grid.2x1.fill"
+        ],
+        "circle.grid.2x1.left": [
+          "circle.grid.2x1.left.filled"
+        ],
+        "circle.grid.2x1.right": [
+          "circle.grid.2x1.right.filled"
+        ],
+        "circle.grid.2x2": [
+          "circle.grid.2x2",
+          "circle.grid.2x2.fill"
+        ],
+        "circle.grid.3x3": [
+          "circle.grid.3x3",
+          "circle.grid.3x3.fill",
+          "circle.grid.3x3.circle",
+          "circle.grid.3x3.circle.fill"
+        ],
+        "circle.hexagonpath": [
+          "circle.hexagonpath",
+          "circle.hexagonpath.fill"
+        ],
+        "circle.hexagongrid": [
+          "circle.hexagongrid",
+          "circle.hexagongrid.fill",
+          "circle.hexagongrid.circle",
+          "circle.hexagongrid.circle.fill"
+        ],
+        "placeholdertext": [
+          "placeholdertext.fill"
+        ],
+        "square": [
+          "square",
+          "square.fill",
+          "square.fill.on.square.fill",
+          "square.filled.on.square",
+          "square.fill.on.circle.fill",
+          "square.badge.plus",
+          "square.badge.plus.fill",
+          "square.fill.and.line.vertical.and.square.fill",
+          "square.filled.and.line.vertical.and.square",
+          "square.circle",
+          "square.circle.fill",
+          "square.fill.text.grid.1x2"
+        ],
+        "square.slash": [
+          "square.slash",
+          "square.slash.fill"
+        ],
+        "square.lefthalf": [
+          "square.lefthalf.filled"
+        ],
+        "square.righthalf": [
+          "square.righthalf.filled"
+        ],
+        "square.tophalf": [
+          "square.tophalf.filled"
+        ],
+        "square.bottomhalf": [
+          "square.bottomhalf.filled"
+        ],
+        "square.split.2x1": [
+          "square.split.2x1",
+          "square.split.2x1.fill"
+        ],
+        "square.split.1x2": [
+          "square.split.1x2",
+          "square.split.1x2.fill"
+        ],
+        "square.split.2x2": [
+          "square.split.2x2",
+          "square.split.2x2.fill"
+        ],
+        "square.split.diagonal.2x2": [
+          "square.split.diagonal.2x2",
+          "square.split.diagonal.2x2.fill"
+        ],
+        "square.split.diagonal": [
+          "square.split.diagonal",
+          "square.split.diagonal.fill"
+        ],
+        "square.dotted": [
+          "square.dotted"
+        ],
+        "square.dashed": [
+          "square.dashed"
+        ],
+        "plus.square.dashed": [
+          "plus.square.dashed"
+        ],
+        "questionmark.square.dashed": [
+          "questionmark.square.dashed"
+        ],
+        "dot.square": [
+          "dot.square",
+          "dot.square.fill"
+        ],
+        "circle.square": [
+          "circle.square",
+          "circle.square.fill"
+        ],
+        "square.on.square": [
+          "square.on.square",
+          "square.on.square.badge.person.crop",
+          "square.on.square.badge.person.crop.fill"
+        ],
+        "hand.raised.square.on.square": [
+          "hand.raised.square.on.square",
+          "hand.raised.square.on.square.fill"
+        ],
+        "star.square.on.square": [
+          "star.square.on.square",
+          "star.square.on.square.fill"
+        ],
+        "sparkles.square": [
+          "sparkles.square.filled.on.square"
+        ],
+        "square.on.square.dashed": [
+          "square.on.square.dashed"
+        ],
+        "square.on.square.intersection.dashed": [
+          "square.on.square.intersection.dashed"
+        ],
+        "plus.square.on.square": [
+          "plus.square.on.square"
+        ],
+        "plus.square": [
+          "plus.square.fill.on.square.fill",
+          "plus.square",
+          "plus.square.fill"
+        ],
+        "square.on": [
+          "square.on.circle"
+        ],
+        "r.square.on.square": [
+          "r.square.on.square",
+          "r.square.on.square.fill"
+        ],
+        "j.square.on.square": [
+          "j.square.on.square",
+          "j.square.on.square.fill"
+        ],
+        "h.square.on.square": [
+          "h.square.on.square",
+          "h.square.on.square.fill"
+        ],
+        "square.stack": [
+          "square.stack",
+          "square.stack.fill"
+        ],
+        "square.grid.3x3": [
+          "square.grid.3x3",
+          "square.grid.3x3.fill"
+        ],
+        "square.grid.3x3.topleft": [
+          "square.grid.3x3.topleft.filled"
+        ],
+        "square.grid.3x3.topmiddle": [
+          "square.grid.3x3.topmiddle.filled"
+        ],
+        "square.grid.3x3.topright": [
+          "square.grid.3x3.topright.filled"
+        ],
+        "square.grid.3x3.middleleft": [
+          "square.grid.3x3.middleleft.filled"
+        ],
+        "square.grid.3x3.middle": [
+          "square.grid.3x3.middle.filled"
+        ],
+        "square.grid.3x3.middleright": [
+          "square.grid.3x3.middleright.filled"
+        ],
+        "square.grid.3x3.bottomleft": [
+          "square.grid.3x3.bottomleft.filled"
+        ],
+        "square.grid.3x3.bottommiddle": [
+          "square.grid.3x3.bottommiddle.filled"
+        ],
+        "square.grid.3x3.bottomright": [
+          "square.grid.3x3.bottomright.filled"
+        ],
+        "square.grid.3x1.below.line.grid.1x2": [
+          "square.grid.3x1.below.line.grid.1x2",
+          "square.grid.3x1.below.line.grid.1x2.fill"
+        ],
+        "square.grid.4x3": [
+          "square.grid.4x3.fill"
+        ],
+        "squareshape": [
+          "squareshape",
+          "squareshape.fill"
+        ],
+        "dot.squareshape": [
+          "dot.squareshape",
+          "dot.squareshape.fill"
+        ],
+        "squareshape.dotted.squareshape": [
+          "squareshape.dotted.squareshape"
+        ],
+        "squareshape.squareshape.dotted": [
+          "squareshape.squareshape.dotted"
+        ],
+        "app": [
+          "app",
+          "app.fill",
+          "app.badge",
+          "app.badge.fill",
+          "app.badge.checkmark",
+          "app.badge.checkmark.fill",
+          "app.badge.clock",
+          "app.badge.clock.fill"
+        ],
+        "plus.app": [
+          "plus.app",
+          "plus.app.fill"
+        ],
+        "arrow.down.app": [
+          "arrow.down.app",
+          "arrow.down.app.fill"
+        ],
+        "arrow.up.forward.app": [
+          "arrow.up.forward.app",
+          "arrow.up.forward.app.fill"
+        ],
+        "xmark.app": [
+          "xmark.app",
+          "xmark.app.fill"
+        ],
+        "questionmark.app": [
+          "questionmark.app",
+          "questionmark.app.fill"
+        ],
+        "app.dashed": [
+          "app.dashed"
+        ],
+        "arrow.down.app.dashed": [
+          "arrow.down.app.dashed",
+          "arrow.down.app.dashed.trianglebadge.exclamationmark"
+        ],
+        "questionmark.app.dashed": [
+          "questionmark.app.dashed"
+        ],
+        "lock.app.dashed": [
+          "lock.app.dashed"
+        ],
+        "appclip": [
+          "appclip"
+        ],
+        "app.gift": [
+          "app.gift",
+          "app.gift.fill"
+        ],
+        "rectangle": [
+          "rectangle",
+          "rectangle.fill",
+          "rectangle.fill.on.rectangle.fill",
+          "rectangle.filled.and.hand.point.up.left",
+          "rectangle.badge.plus",
+          "rectangle.fill.badge.plus",
+          "rectangle.badge.minus",
+          "rectangle.fill.badge.minus",
+          "rectangle.badge.checkmark",
+          "rectangle.fill.badge.checkmark",
+          "rectangle.badge.xmark",
+          "rectangle.fill.badge.xmark",
+          "rectangle.badge.person.crop",
+          "rectangle.fill.badge.person.crop",
+          "rectangle.fill.on.rectangle.angled.fill"
+        ],
+        "rectangle.slash": [
+          "rectangle.slash",
+          "rectangle.slash.fill"
+        ],
+        "rectangle.lefthalf": [
+          "rectangle.lefthalf.filled"
+        ],
+        "rectangle.righthalf": [
+          "rectangle.righthalf.filled"
+        ],
+        "rectangle.leadinghalf": [
+          "rectangle.leadinghalf.filled"
+        ],
+        "rectangle.trailinghalf": [
+          "rectangle.trailinghalf.filled"
+        ],
+        "rectangle.tophalf": [
+          "rectangle.tophalf.filled"
+        ],
+        "rectangle.bottomhalf": [
+          "rectangle.bottomhalf.filled"
+        ],
+        "rectangle.split.2x1": [
+          "rectangle.split.2x1",
+          "rectangle.split.2x1.fill"
+        ],
+        "rectangle.split.2x1.slash": [
+          "rectangle.split.2x1.slash",
+          "rectangle.split.2x1.slash.fill"
+        ],
+        "rectangle.split.1x2": [
+          "rectangle.split.1x2",
+          "rectangle.split.1x2.fill"
+        ],
+        "rectangle.split.3x1": [
+          "rectangle.split.3x1",
+          "rectangle.split.3x1.fill"
+        ],
+        "rectangle.split.2x2": [
+          "rectangle.split.2x2",
+          "rectangle.split.2x2.fill"
+        ],
+        "tablecells": [
+          "tablecells",
+          "tablecells.fill",
+          "tablecells.badge.ellipsis",
+          "tablecells.fill.badge.ellipsis"
+        ],
+        "rectangle.split.3x3": [
+          "rectangle.split.3x3",
+          "rectangle.split.3x3.fill"
+        ],
+        "appwindow.swipe.rectangle": [
+          "appwindow.swipe.rectangle"
+        ],
+        "arrow.down.left.topright.rectangle": [
+          "arrow.down.left.topright.rectangle",
+          "arrow.down.left.topright.rectangle.fill"
+        ],
+        "arrow.down.backward.toptrailing.rectangle": [
+          "arrow.down.backward.toptrailing.rectangle",
+          "arrow.down.backward.toptrailing.rectangle.fill"
+        ],
+        "arrow.up.left.bottomright.rectangle": [
+          "arrow.up.left.bottomright.rectangle",
+          "arrow.up.left.bottomright.rectangle.fill"
+        ],
+        "arrow.up.backward.bottomtrailing.rectangle": [
+          "arrow.up.backward.bottomtrailing.rectangle",
+          "arrow.up.backward.bottomtrailing.rectangle.fill"
+        ],
+        "arrow.up.right.bottomleft.rectangle": [
+          "arrow.up.right.bottomleft.rectangle",
+          "arrow.up.right.bottomleft.rectangle.fill"
+        ],
+        "arrow.up.forward.bottomleading.rectangle": [
+          "arrow.up.forward.bottomleading.rectangle",
+          "arrow.up.forward.bottomleading.rectangle.fill"
+        ],
+        "arrow.down.right.topleft.rectangle": [
+          "arrow.down.right.topleft.rectangle",
+          "arrow.down.right.topleft.rectangle.fill"
+        ],
+        "arrow.down.forward.topleading.rectangle": [
+          "arrow.down.forward.topleading.rectangle",
+          "arrow.down.forward.topleading.rectangle.fill"
+        ],
+        "arrow.up.left.and.arrow.down.right.rectangle": [
+          "arrow.up.left.and.arrow.down.right.rectangle",
+          "arrow.up.left.and.arrow.down.right.rectangle.fill"
+        ],
+        "arrow.up.backward.and.arrow.down.forward.rectangle": [
+          "arrow.up.backward.and.arrow.down.forward.rectangle",
+          "arrow.up.backward.and.arrow.down.forward.rectangle.fill"
+        ],
+        "arrow.down.left.and.arrow.up.right.rectangle": [
+          "arrow.down.left.and.arrow.up.right.rectangle",
+          "arrow.down.left.and.arrow.up.right.rectangle.fill"
+        ],
+        "arrow.down.backward.and.arrow.up.forward.rectangle": [
+          "arrow.down.backward.and.arrow.up.forward.rectangle",
+          "arrow.down.backward.and.arrow.up.forward.rectangle.fill"
+        ],
+        "arrow.down.right.and.arrow.up.left.rectangle": [
+          "arrow.down.right.and.arrow.up.left.rectangle",
+          "arrow.down.right.and.arrow.up.left.rectangle.fill"
+        ],
+        "arrow.down.forward.and.arrow.up.backward.rectangle": [
+          "arrow.down.forward.and.arrow.up.backward.rectangle",
+          "arrow.down.forward.and.arrow.up.backward.rectangle.fill"
+        ],
+        "arrow.up.right.and.arrow.down.left.rectangle": [
+          "arrow.up.right.and.arrow.down.left.rectangle",
+          "arrow.up.right.and.arrow.down.left.rectangle.fill"
+        ],
+        "arrow.up.forward.and.arrow.down.backward.rectangle": [
+          "arrow.up.forward.and.arrow.down.backward.rectangle",
+          "arrow.up.forward.and.arrow.down.backward.rectangle.fill"
+        ],
+        "rectangle.on.rectangle.square": [
+          "rectangle.on.rectangle.square",
+          "rectangle.on.rectangle.square.fill"
+        ],
+        "rectangle.on.rectangle.slash": [
+          "rectangle.on.rectangle.slash",
+          "rectangle.on.rectangle.slash.fill",
+          "rectangle.on.rectangle.slash.circle",
+          "rectangle.on.rectangle.slash.circle.fill"
+        ],
+        "play.rectangle.on.rectangle": [
+          "play.rectangle.on.rectangle",
+          "play.rectangle.on.rectangle.fill",
+          "play.rectangle.on.rectangle.circle",
+          "play.rectangle.on.rectangle.circle.fill"
+        ],
+        "plus.rectangle.on.rectangle": [
+          "plus.rectangle.on.rectangle"
+        ],
+        "plus.rectangle": [
+          "plus.rectangle.fill.on.rectangle.fill",
+          "plus.rectangle",
+          "plus.rectangle.fill"
+        ],
+        "rectangle.on.rectangle.dashed": [
+          "rectangle.on.rectangle.dashed"
+        ],
+        "lock.rectangle.on.rectangle.dashed": [
+          "lock.rectangle.on.rectangle.dashed"
+        ],
+        "rectangle.3.group": [
+          "rectangle.3.group",
+          "rectangle.3.group.fill"
+        ],
+        "square.grid.2x2": [
+          "square.grid.2x2",
+          "square.grid.2x2.fill"
+        ],
+        "rectangle.grid.2x2": [
+          "rectangle.grid.2x2",
+          "rectangle.grid.2x2.fill"
+        ],
+        "square.grid.3x2": [
+          "square.grid.3x2",
+          "square.grid.3x2.fill"
+        ],
+        "rectangle.grid.3x2": [
+          "rectangle.grid.3x2",
+          "rectangle.grid.3x2.fill"
+        ],
+        "rectangle.grid.3x3": [
+          "rectangle.grid.3x3",
+          "rectangle.grid.3x3.fill"
+        ],
+        "rectangle.grid.1x2": [
+          "rectangle.grid.1x2",
+          "rectangle.grid.1x2.fill"
+        ],
+        "rectangle.portrait": [
+          "rectangle.portrait",
+          "rectangle.portrait.fill",
+          "rectangle.portrait.badge.plus",
+          "rectangle.portrait.badge.plus.fill"
+        ],
+        "rectangle.portrait.slash": [
+          "rectangle.portrait.slash",
+          "rectangle.portrait.slash.fill"
+        ],
+        "rectangle.portrait.lefthalf": [
+          "rectangle.portrait.lefthalf.filled"
+        ],
+        "rectangle.portrait.righthalf": [
+          "rectangle.portrait.righthalf.filled"
+        ],
+        "rectangle.portrait.tophalf": [
+          "rectangle.portrait.tophalf.filled"
+        ],
+        "rectangle.portrait.bottomhalf": [
+          "rectangle.portrait.bottomhalf.filled"
+        ],
+        "rectangle.portrait.on.rectangle.portrait": [
+          "rectangle.portrait.on.rectangle.portrait",
+          "rectangle.portrait.on.rectangle.portrait.fill"
+        ],
+        "rectangle.portrait.on.rectangle.portrait.slash": [
+          "rectangle.portrait.on.rectangle.portrait.slash",
+          "rectangle.portrait.on.rectangle.portrait.slash.fill"
+        ],
+        "rectangle.portrait.on.rectangle.portrait.angled": [
+          "rectangle.portrait.on.rectangle.portrait.angled",
+          "rectangle.portrait.on.rectangle.portrait.angled.fill"
+        ],
+        "rectangle.portrait.split.2x1": [
+          "rectangle.portrait.split.2x1",
+          "rectangle.portrait.split.2x1.fill"
+        ],
+        "rectangle.portrait.split.2x1.slash": [
+          "rectangle.portrait.split.2x1.slash",
+          "rectangle.portrait.split.2x1.slash.fill"
+        ],
+        "capsule": [
+          "capsule",
+          "capsule.fill"
+        ],
+        "capsule.lefthalf": [
+          "capsule.lefthalf.filled"
+        ],
+        "capsule.righthalf": [
+          "capsule.righthalf.filled"
+        ],
+        "capsule.tophalf": [
+          "capsule.tophalf.filled"
+        ],
+        "capsule.bottomhalf": [
+          "capsule.bottomhalf.filled"
+        ],
+        "capsule.on.capsule": [
+          "capsule.on.capsule",
+          "capsule.on.capsule.fill"
+        ],
+        "capsule.on.rectangle": [
+          "capsule.on.rectangle",
+          "capsule.on.rectangle.fill"
+        ],
+        "capsule.portrait": [
+          "capsule.portrait",
+          "capsule.portrait.fill"
+        ],
+        "capsule.portrait.lefthalf": [
+          "capsule.portrait.lefthalf.filled"
+        ],
+        "capsule.portrait.righthalf": [
+          "capsule.portrait.righthalf.filled"
+        ],
+        "capsule.portrait.tophalf": [
+          "capsule.portrait.tophalf.filled"
+        ],
+        "capsule.portrait.bottomhalf": [
+          "capsule.portrait.bottomhalf.filled"
+        ],
+        "oval": [
+          "oval",
+          "oval.fill"
+        ],
+        "oval.lefthalf": [
+          "oval.lefthalf.filled"
+        ],
+        "oval.righthalf": [
+          "oval.righthalf.filled"
+        ],
+        "oval.tophalf": [
+          "oval.tophalf.filled"
+        ],
+        "oval.bottomhalf": [
+          "oval.bottomhalf.filled"
+        ],
+        "oval.portrait": [
+          "oval.portrait",
+          "oval.portrait.fill"
+        ],
+        "oval.portrait.lefthalf": [
+          "oval.portrait.lefthalf.filled"
+        ],
+        "oval.portrait.righthalf": [
+          "oval.portrait.righthalf.filled"
+        ],
+        "oval.portrait.tophalf": [
+          "oval.portrait.tophalf.filled"
+        ],
+        "oval.portrait.bottomhalf": [
+          "oval.portrait.bottomhalf.filled"
+        ],
+        "triangle": [
+          "triangle",
+          "triangle.fill",
+          "triangle.circle",
+          "triangle.circle.fill"
+        ],
+        "triangle.lefthalf": [
+          "triangle.lefthalf.filled"
+        ],
+        "triangle.righthalf": [
+          "triangle.righthalf.filled"
+        ],
+        "triangle.tophalf": [
+          "triangle.tophalf.filled"
+        ],
+        "triangle.bottomhalf": [
+          "triangle.bottomhalf.filled"
+        ],
+        "exclamationmark.triangle": [
+          "exclamationmark.triangle",
+          "exclamationmark.triangle.fill"
+        ],
+        "triangleshape": [
+          "triangleshape",
+          "triangleshape.fill"
+        ],
+        "diamond": [
+          "diamond",
+          "diamond.fill",
+          "diamond.circle",
+          "diamond.circle.fill"
+        ],
+        "diamond.lefthalf": [
+          "diamond.lefthalf.filled"
+        ],
+        "diamond.righthalf": [
+          "diamond.righthalf.filled"
+        ],
+        "diamond.tophalf": [
+          "diamond.tophalf.filled"
+        ],
+        "diamond.bottomhalf": [
+          "diamond.bottomhalf.filled"
+        ],
+        "octagon": [
+          "octagon",
+          "octagon.fill"
+        ],
+        "octagon.lefthalf": [
+          "octagon.lefthalf.filled"
+        ],
+        "octagon.righthalf": [
+          "octagon.righthalf.filled"
+        ],
+        "octagon.tophalf": [
+          "octagon.tophalf.filled"
+        ],
+        "octagon.bottomhalf": [
+          "octagon.bottomhalf.filled"
+        ],
+        "hexagon": [
+          "hexagon",
+          "hexagon.fill"
+        ],
+        "hexagon.lefthalf": [
+          "hexagon.lefthalf.filled"
+        ],
+        "hexagon.righthalf": [
+          "hexagon.righthalf.filled"
+        ],
+        "hexagon.tophalf": [
+          "hexagon.tophalf.filled"
+        ],
+        "hexagon.bottomhalf": [
+          "hexagon.bottomhalf.filled"
+        ],
+        "pentagon": [
+          "pentagon",
+          "pentagon.fill"
+        ],
+        "pentagon.lefthalf": [
+          "pentagon.lefthalf.filled"
+        ],
+        "pentagon.righthalf": [
+          "pentagon.righthalf.filled"
+        ],
+        "pentagon.tophalf": [
+          "pentagon.tophalf.filled"
+        ],
+        "pentagon.bottomhalf": [
+          "pentagon.bottomhalf.filled"
+        ],
+        "seal": [
+          "seal",
+          "seal.fill"
+        ],
+        "checkmark.seal": [
+          "checkmark.seal",
+          "checkmark.seal.fill"
+        ],
+        "xmark.seal": [
+          "xmark.seal",
+          "xmark.seal.fill"
+        ],
+        "heart": [
+          "heart",
+          "heart.fill",
+          "heart.circle",
+          "heart.circle.fill"
+        ],
+        "heart.square": [
+          "heart.square",
+          "heart.square.fill"
+        ],
+        "heart.rectangle": [
+          "heart.rectangle",
+          "heart.rectangle.fill"
+        ],
+        "heart.slash": [
+          "heart.slash",
+          "heart.slash.fill",
+          "heart.slash.circle",
+          "heart.slash.circle.fill"
+        ],
+        "bolt.heart": [
+          "bolt.heart",
+          "bolt.heart.fill"
+        ],
+        "arrow.up.heart": [
+          "arrow.up.heart",
+          "arrow.up.heart.fill"
+        ],
+        "arrow.down.heart": [
+          "arrow.down.heart",
+          "arrow.down.heart.fill"
+        ],
+        "arrow.trianglehead.clockwise.heart": [
+          "arrow.trianglehead.clockwise.heart",
+          "arrow.trianglehead.clockwise.heart.fill"
+        ],
+        "fleuron": [
+          "fleuron",
+          "fleuron.fill"
+        ],
+        "suit.heart": [
+          "suit.heart",
+          "suit.heart.fill"
+        ],
+        "suit.club": [
+          "suit.club",
+          "suit.club.fill"
+        ],
+        "suit.diamond": [
+          "suit.diamond",
+          "suit.diamond.fill"
+        ],
+        "suit.spade": [
+          "suit.spade",
+          "suit.spade.fill"
+        ],
+        "star": [
+          "star",
+          "star.fill",
+          "star.circle",
+          "star.circle.fill"
+        ],
+        "star.leadinghalf": [
+          "star.leadinghalf.filled"
+        ],
+        "star.slash": [
+          "star.slash",
+          "star.slash.fill"
+        ],
+        "star.square": [
+          "star.square",
+          "star.square.fill"
+        ],
+        "line.horizontal.star": [
+          "line.horizontal.star.fill.line.horizontal"
+        ],
+        "medal.star": [
+          "medal.star",
+          "medal.star.fill"
+        ],
+        "rhombus": [
+          "rhombus",
+          "rhombus.fill"
+        ],
+        "shield": [
+          "shield",
+          "shield.fill"
+        ],
+        "shield.lefthalf": [
+          "shield.lefthalf.filled",
+          "shield.lefthalf.filled.badge.checkmark",
+          "shield.lefthalf.filled.trianglebadge.exclamationmark",
+          "shield.lefthalf.filled.slash"
+        ],
+        "shield.righthalf": [
+          "shield.righthalf.filled"
+        ],
+        "shield.slash": [
+          "shield.slash",
+          "shield.slash.fill"
+        ],
+        "shield.pattern.checkered": [
+          "shield.pattern.checkered"
+        ],
+        "staroflife.shield": [
+          "staroflife.shield",
+          "staroflife.shield.fill"
+        ],
+        "firewall": [
+          "firewall",
+          "firewall.fill"
+        ],
+        "flag": [
+          "flag",
+          "flag.fill",
+          "flag.circle",
+          "flag.circle.fill",
+          "flag.badge.ellipsis",
+          "flag.badge.ellipsis.fill",
+          "flag.filled.and.flag.crossed"
+        ],
+        "flag.square": [
+          "flag.square",
+          "flag.square.fill"
+        ],
+        "flag.slash": [
+          "flag.slash",
+          "flag.slash.fill",
+          "flag.slash.circle",
+          "flag.slash.circle.fill"
+        ],
+        "flag.pattern.checkered": [
+          "flag.pattern.checkered",
+          "flag.pattern.checkered.circle",
+          "flag.pattern.checkered.circle.fill"
+        ],
+        "flag.2.crossed": [
+          "flag.2.crossed",
+          "flag.2.crossed.fill",
+          "flag.2.crossed.circle",
+          "flag.2.crossed.circle.fill"
+        ],
+        "flag.and.flag": [
+          "flag.and.flag.filled.crossed"
+        ],
+        "flag.pattern.checkered.2.crossed": [
+          "flag.pattern.checkered.2.crossed"
+        ],
+        "location": [
+          "location",
+          "location.fill",
+          "location.circle",
+          "location.circle.fill",
+          "location.fill.viewfinder"
+        ],
+        "location.square": [
+          "location.square",
+          "location.square.fill"
+        ],
+        "location.app": [
+          "location.app",
+          "location.app.fill"
+        ],
+        "location.slash": [
+          "location.slash",
+          "location.slash.fill",
+          "location.slash.circle",
+          "location.slash.circle.fill"
+        ],
+        "location.north": [
+          "location.north",
+          "location.north.fill",
+          "location.north.circle",
+          "location.north.circle.fill"
+        ],
+        "location.north.line": [
+          "location.north.line",
+          "location.north.line.fill"
+        ],
+        "bell": [
+          "bell",
+          "bell.fill",
+          "bell.circle",
+          "bell.circle.fill",
+          "bell.badge.waveform",
+          "bell.badge.waveform.fill",
+          "bell.badge",
+          "bell.badge.fill",
+          "bell.badge.circle",
+          "bell.badge.circle.fill",
+          "bell.badge.slash",
+          "bell.badge.slash.fill"
+        ],
+        "bell.square": [
+          "bell.square",
+          "bell.square.fill"
+        ],
+        "bell.slash": [
+          "bell.slash",
+          "bell.slash.fill",
+          "bell.slash.circle",
+          "bell.slash.circle.fill"
+        ],
+        "bell.and.waves.left.and.right": [
+          "bell.and.waves.left.and.right",
+          "bell.and.waves.left.and.right.fill"
+        ],
+        "tag": [
+          "tag",
+          "tag.fill",
+          "tag.circle",
+          "tag.circle.fill"
+        ],
+        "tag.square": [
+          "tag.square",
+          "tag.square.fill"
+        ],
+        "tag.slash": [
+          "tag.slash",
+          "tag.slash.fill"
+        ],
+        "bolt": [
+          "bolt",
+          "bolt.fill",
+          "bolt.circle",
+          "bolt.circle.fill",
+          "bolt.badge.clock",
+          "bolt.badge.clock.fill",
+          "bolt.badge.automatic",
+          "bolt.badge.automatic.fill",
+          "bolt.badge.checkmark",
+          "bolt.badge.checkmark.fill",
+          "bolt.badge.xmark",
+          "bolt.badge.xmark.fill",
+          "bolt.trianglebadge.exclamationmark",
+          "bolt.trianglebadge.exclamationmark.fill"
+        ],
+        "bolt.square": [
+          "bolt.square",
+          "bolt.square.fill"
+        ],
+        "bolt.shield": [
+          "bolt.shield",
+          "bolt.shield.fill"
+        ],
+        "bolt.slash": [
+          "bolt.slash",
+          "bolt.slash.fill",
+          "bolt.slash.circle",
+          "bolt.slash.circle.fill"
+        ],
+        "bolt.ring.closed": [
+          "bolt.ring.closed"
+        ],
+        "bolt.horizontal": [
+          "bolt.horizontal",
+          "bolt.horizontal.fill",
+          "bolt.horizontal.circle",
+          "bolt.horizontal.circle.fill"
+        ],
+        "icloud": [
+          "icloud",
+          "icloud.fill",
+          "icloud.circle",
+          "icloud.circle.fill"
+        ],
+        "icloud.square": [
+          "icloud.square",
+          "icloud.square.fill"
+        ],
+        "icloud.slash": [
+          "icloud.slash",
+          "icloud.slash.fill"
+        ],
+        "exclamationmark.icloud": [
+          "exclamationmark.icloud",
+          "exclamationmark.icloud.fill"
+        ],
+        "checkmark.icloud": [
+          "checkmark.icloud",
+          "checkmark.icloud.fill"
+        ],
+        "xmark.icloud": [
+          "xmark.icloud",
+          "xmark.icloud.fill"
+        ],
+        "link.icloud": [
+          "link.icloud",
+          "link.icloud.fill"
+        ],
+        "bolt.horizontal.icloud": [
+          "bolt.horizontal.icloud",
+          "bolt.horizontal.icloud.fill"
+        ],
+        "person.icloud": [
+          "person.icloud",
+          "person.icloud.fill"
+        ],
+        "lock.icloud": [
+          "lock.icloud",
+          "lock.icloud.fill"
+        ],
+        "key.icloud": [
+          "key.icloud",
+          "key.icloud.fill"
+        ],
+        "arrow.trianglehead.clockwise.icloud": [
+          "arrow.trianglehead.clockwise.icloud",
+          "arrow.trianglehead.clockwise.icloud.fill"
+        ],
+        "arrow.trianglehead.counterclockwise.icloud": [
+          "arrow.trianglehead.counterclockwise.icloud",
+          "arrow.trianglehead.counterclockwise.icloud.fill"
+        ],
+        "arrow.trianglehead.2.clockwise.rotate.90.icloud": [
+          "arrow.trianglehead.2.clockwise.rotate.90.icloud",
+          "arrow.trianglehead.2.clockwise.rotate.90.icloud.fill"
+        ],
+        "icloud.and.arrow.down": [
+          "icloud.and.arrow.down",
+          "icloud.and.arrow.down.fill"
+        ],
+        "icloud.and.arrow.up": [
+          "icloud.and.arrow.up",
+          "icloud.and.arrow.up.fill"
+        ],
+        "squareroot": [
+          "squareroot"
+        ],
+        "x.squareroot": [
+          "x.squareroot"
+        ],
+        "flashlight.off": [
+          "flashlight.off.fill",
+          "flashlight.off.circle",
+          "flashlight.off.circle.fill"
+        ],
+        "flashlight.on": [
+          "flashlight.on.fill",
+          "flashlight.on.circle",
+          "flashlight.on.circle.fill"
+        ],
+        "flashlight.slash": [
+          "flashlight.slash",
+          "flashlight.slash.circle",
+          "flashlight.slash.circle.fill"
+        ],
+        "camera": [
+          "camera",
+          "camera.fill",
+          "camera.circle",
+          "camera.circle.fill",
+          "camera.badge.clock",
+          "camera.badge.clock.fill",
+          "camera.badge.ellipsis",
+          "camera.badge.ellipsis.fill"
+        ],
+        "camera.shutter.button": [
+          "camera.shutter.button",
+          "camera.shutter.button.fill"
+        ],
+        "arrow.trianglehead.2.clockwise.rotate.90.camera": [
+          "arrow.trianglehead.2.clockwise.rotate.90.camera",
+          "arrow.trianglehead.2.clockwise.rotate.90.camera.fill"
+        ],
+        "camera.on.rectangle": [
+          "camera.on.rectangle",
+          "camera.on.rectangle.fill"
+        ],
+        "message": [
+          "message",
+          "message.fill",
+          "message.circle",
+          "message.circle.fill",
+          "message.badge",
+          "message.badge.filled.fill",
+          "message.badge.circle",
+          "message.badge.circle.fill",
+          "message.badge.fill",
+          "message.badge.waveform",
+          "message.badge.waveform.fill"
+        ],
+        "checkmark.message": [
+          "checkmark.message",
+          "checkmark.message.fill"
+        ],
+        "arrow.up.message": [
+          "arrow.up.message",
+          "arrow.up.message.fill"
+        ],
+        "arrow.down.message": [
+          "arrow.down.message",
+          "arrow.down.message.fill"
+        ],
+        "plus.message": [
+          "plus.message",
+          "plus.message.fill"
+        ],
+        "ellipsis.message": [
+          "ellipsis.message",
+          "ellipsis.message.fill"
+        ],
+        "bubble": [
+          "bubble",
+          "bubble.fill",
+          "bubble.circle",
+          "bubble.circle.fill"
+        ],
+        "bubble.right": [
+          "bubble.right",
+          "bubble.right.fill",
+          "bubble.right.circle",
+          "bubble.right.circle.fill"
+        ],
+        "bubble.left": [
+          "bubble.left",
+          "bubble.left.fill",
+          "bubble.left.circle",
+          "bubble.left.circle.fill"
+        ],
+        "exclamationmark.bubble": [
+          "exclamationmark.bubble",
+          "exclamationmark.bubble.fill",
+          "exclamationmark.bubble.circle",
+          "exclamationmark.bubble.circle.fill"
+        ],
+        "quote.opening": [
+          "quote.opening"
+        ],
+        "quote.closing": [
+          "quote.closing"
+        ],
+        "quote.bubble": [
+          "quote.bubble",
+          "quote.bubble.fill"
+        ],
+        "star.bubble": [
+          "star.bubble",
+          "star.bubble.fill"
+        ],
+        "character.bubble": [
+          "character.bubble",
+          "character.bubble.fill"
+        ],
+        "text.bubble": [
+          "text.bubble",
+          "text.bubble.fill",
+          "text.bubble.badge.clock",
+          "text.bubble.badge.clock.fill"
+        ],
+        "captions.bubble": [
+          "captions.bubble",
+          "captions.bubble.fill"
+        ],
+        "info.bubble": [
+          "info.bubble",
+          "info.bubble.fill"
+        ],
+        "questionmark.bubble": [
+          "questionmark.bubble",
+          "questionmark.bubble.fill"
+        ],
+        "plus.bubble": [
+          "plus.bubble",
+          "plus.bubble.fill"
+        ],
+        "checkmark.bubble": [
+          "checkmark.bubble",
+          "checkmark.bubble.fill"
+        ],
+        "rectangle.3.group.bubble": [
+          "rectangle.3.group.bubble",
+          "rectangle.3.group.bubble.fill"
+        ],
+        "ellipsis.bubble": [
+          "ellipsis.bubble",
+          "ellipsis.bubble.fill"
+        ],
+        "ellipsis.vertical.bubble": [
+          "ellipsis.vertical.bubble",
+          "ellipsis.vertical.bubble.fill"
+        ],
+        "phone.bubble": [
+          "phone.bubble",
+          "phone.bubble.fill"
+        ],
+        "video.bubble": [
+          "video.bubble",
+          "video.bubble.fill"
+        ],
+        "speaker.wave.2.bubble": [
+          "speaker.wave.2.bubble",
+          "speaker.wave.2.bubble.fill"
+        ],
+        "person.bubble": [
+          "person.bubble",
+          "person.bubble.fill"
+        ],
+        "bubble.and.pencil": [
+          "bubble.and.pencil"
+        ],
+        "bubble.middle.bottom": [
+          "bubble.middle.bottom",
+          "bubble.middle.bottom.fill"
+        ],
+        "bubble.middle.top": [
+          "bubble.middle.top",
+          "bubble.middle.top.fill"
+        ],
+        "bubble.left.and.bubble.right": [
+          "bubble.left.and.bubble.right",
+          "bubble.left.and.bubble.right.fill"
+        ],
+        "bubble.left.and.exclamationmark.bubble.right": [
+          "bubble.left.and.exclamationmark.bubble.right",
+          "bubble.left.and.exclamationmark.bubble.right.fill"
+        ],
+        "bubble.left.and.text.bubble.right": [
+          "bubble.left.and.text.bubble.right",
+          "bubble.left.and.text.bubble.right.fill"
+        ],
+        "translate": [
+          "translate"
+        ],
+        "phone": [
+          "phone",
+          "phone.fill",
+          "phone.circle",
+          "phone.circle.fill",
+          "phone.badge.plus",
+          "phone.fill.badge.plus",
+          "phone.badge.checkmark",
+          "phone.fill.badge.checkmark",
+          "phone.badge.clock",
+          "phone.badge.clock.fill",
+          "phone.badge.waveform",
+          "phone.badge.waveform.fill"
+        ],
+        "phone.connection": [
+          "phone.connection",
+          "phone.connection.fill"
+        ],
+        "phone.arrow.up.right": [
+          "phone.arrow.up.right",
+          "phone.arrow.up.right.fill",
+          "phone.arrow.up.right.circle",
+          "phone.arrow.up.right.circle.fill"
+        ],
+        "phone.arrow.down.left": [
+          "phone.arrow.down.left",
+          "phone.arrow.down.left.fill"
+        ],
+        "phone.arrow.right": [
+          "phone.arrow.right",
+          "phone.arrow.right.fill"
+        ],
+        "phone.down": [
+          "phone.down",
+          "phone.down.fill",
+          "phone.down.circle",
+          "phone.down.circle.fill"
+        ],
+        "phone.down.waves.left.and.right": [
+          "phone.down.waves.left.and.right"
+        ],
+        "teletype": [
+          "teletype",
+          "teletype.circle",
+          "teletype.circle.fill"
+        ],
+        "teletype.answer": [
+          "teletype.answer",
+          "teletype.answer.circle",
+          "teletype.answer.circle.fill"
+        ],
+        "video": [
+          "video",
+          "video.fill",
+          "video.circle",
+          "video.circle.fill",
+          "video.badge.plus",
+          "video.fill.badge.plus",
+          "video.badge.checkmark",
+          "video.fill.badge.checkmark",
+          "video.badge.ellipsis",
+          "video.fill.badge.ellipsis",
+          "video.badge.waveform",
+          "video.badge.waveform.fill"
+        ],
+        "video.square": [
+          "video.square",
+          "video.square.fill"
+        ],
+        "video.slash": [
+          "video.slash",
+          "video.slash.fill",
+          "video.slash.circle",
+          "video.slash.circle.fill"
+        ],
+        "arrow.up.right.video": [
+          "arrow.up.right.video",
+          "arrow.up.right.video.fill"
+        ],
+        "arrow.down.left.video": [
+          "arrow.down.left.video",
+          "arrow.down.left.video.fill"
+        ],
+        "questionmark.video": [
+          "questionmark.video",
+          "questionmark.video.fill"
+        ],
+        "deskview": [
+          "deskview",
+          "deskview.fill"
+        ],
+        "field.of.view.ultrawide": [
+          "field.of.view.ultrawide",
+          "field.of.view.ultrawide.fill"
+        ],
+        "field.of.view.wide": [
+          "field.of.view.wide",
+          "field.of.view.wide.fill"
+        ],
+        "envelope.front": [
+          "envelope.front",
+          "envelope.front.fill"
+        ],
+        "envelope": [
+          "envelope",
+          "envelope.fill",
+          "envelope.circle",
+          "envelope.circle.fill",
+          "envelope.badge",
+          "envelope.badge.fill",
+          "envelope.badge.person.crop",
+          "envelope.badge.person.crop.fill",
+          "envelope.badge.shield.half.filled",
+          "envelope.badge.shield.half.filled.fill"
+        ],
+        "envelope.and.arrow.trianglehead.branch": [
+          "envelope.and.arrow.trianglehead.branch",
+          "envelope.and.arrow.trianglehead.branch.fill"
+        ],
+        "envelope.open": [
+          "envelope.open",
+          "envelope.open.fill",
+          "envelope.open.badge.clock"
+        ],
+        "mail.stack": [
+          "mail.stack",
+          "mail.stack.fill"
+        ],
+        "mail": [
+          "mail",
+          "mail.fill"
+        ],
+        "mail.and.text.magnifyingglass": [
+          "mail.and.text.magnifyingglass"
+        ],
+        "rectangle.and.text.magnifyingglass": [
+          "rectangle.and.text.magnifyingglass"
+        ],
+        "gear": [
+          "gear",
+          "gear.circle",
+          "gear.circle.fill",
+          "gear.badge.checkmark",
+          "gear.badge.xmark",
+          "gear.badge.questionmark",
+          "gear.badge"
+        ],
+        "gearshape": [
+          "gearshape",
+          "gearshape.fill",
+          "gearshape.circle",
+          "gearshape.circle.fill"
+        ],
+        "gearshape.2": [
+          "gearshape.2",
+          "gearshape.2.fill"
+        ],
+        "signature": [
+          "signature"
+        ],
+        "line.3.crossed.swirl": [
+          "line.3.crossed.swirl.circle",
+          "line.3.crossed.swirl.circle.fill"
+        ],
+        "apple.intelligence": [
+          "apple.intelligence"
+        ],
+        "apple.image.playground": [
+          "apple.image.playground",
+          "apple.image.playground.fill"
+        ],
+        "apple.haptics.and.music.note": [
+          "apple.haptics.and.music.note"
+        ],
+        "apple.haptics.and.music.note.slash": [
+          "apple.haptics.and.music.note.slash"
+        ],
+        "apple.haptics.and.exclamationmark.triangle": [
+          "apple.haptics.and.exclamationmark.triangle"
+        ],
+        "scissors": [
+          "scissors",
+          "scissors.circle",
+          "scissors.circle.fill",
+          "scissors.badge.ellipsis"
+        ],
+        "ellipsis": [
+          "ellipsis",
+          "ellipsis.circle",
+          "ellipsis.circle.fill"
+        ],
+        "ellipsis.rectangle": [
+          "ellipsis.rectangle",
+          "ellipsis.rectangle.fill"
+        ],
+        "bag": [
+          "bag",
+          "bag.fill",
+          "bag.circle",
+          "bag.circle.fill",
+          "bag.badge.plus",
+          "bag.fill.badge.plus",
+          "bag.badge.minus",
+          "bag.fill.badge.minus",
+          "bag.badge.questionmark",
+          "bag.fill.badge.questionmark"
+        ],
+        "cart": [
+          "cart",
+          "cart.fill",
+          "cart.circle",
+          "cart.circle.fill",
+          "cart.badge.plus",
+          "cart.fill.badge.plus",
+          "cart.badge.minus",
+          "cart.fill.badge.minus",
+          "cart.badge.questionmark",
+          "cart.fill.badge.questionmark",
+          "cart.badge.clock",
+          "cart.badge.clock.fill"
+        ],
+        "basket": [
+          "basket",
+          "basket.fill"
+        ],
+        "creditcard": [
+          "creditcard",
+          "creditcard.fill",
+          "creditcard.circle",
+          "creditcard.circle.fill",
+          "creditcard.trianglebadge.exclamationmark",
+          "creditcard.trianglebadge.exclamationmark.fill"
+        ],
+        "creditcard.and.123": [
+          "creditcard.and.123"
+        ],
+        "giftcard": [
+          "giftcard",
+          "giftcard.fill"
+        ],
+        "wallet.pass": [
+          "wallet.pass",
+          "wallet.pass.fill"
+        ],
+        "wallet.bifold": [
+          "wallet.bifold",
+          "wallet.bifold.fill"
+        ],
+        "wand.and.rays": [
+          "wand.and.rays"
+        ],
+        "wand.and.rays.inverse": [
+          "wand.and.rays.inverse"
+        ],
+        "wand.and.sparkles": [
+          "wand.and.sparkles"
+        ],
+        "wand.and.sparkles.inverse": [
+          "wand.and.sparkles.inverse"
+        ],
+        "crop": [
+          "crop"
+        ],
+        "crop.rotate": [
+          "crop.rotate"
+        ],
+        "rectangle.portrait.rotate": [
+          "rectangle.portrait.rotate"
+        ],
+        "rectangle.landscape.rotate": [
+          "rectangle.landscape.rotate"
+        ],
+        "dial.low": [
+          "dial.low",
+          "dial.low.fill"
+        ],
+        "dial.medium": [
+          "dial.medium",
+          "dial.medium.fill"
+        ],
+        "dial.high": [
+          "dial.high",
+          "dial.high.fill"
+        ],
+        "gyroscope": [
+          "gyroscope"
+        ],
+        "nosign": [
+          "nosign"
+        ],
+        "nosign.app": [
+          "nosign.app",
+          "nosign.app.fill"
+        ],
+        "gauge.with.dots.needle.bottom.0percent": [
+          "gauge.with.dots.needle.bottom.0percent"
+        ],
+        "gauge.with.dots.needle.bottom.50percent": [
+          "gauge.with.dots.needle.bottom.50percent",
+          "gauge.with.dots.needle.bottom.50percent.badge.plus",
+          "gauge.with.dots.needle.bottom.50percent.badge.minus"
+        ],
+        "gauge.with.dots.needle.bottom.100percent": [
+          "gauge.with.dots.needle.bottom.100percent"
+        ],
+        "gauge.with.dots.needle.0percent": [
+          "gauge.with.dots.needle.0percent"
+        ],
+        "gauge.with.dots.needle.33percent": [
+          "gauge.with.dots.needle.33percent"
+        ],
+        "gauge.with.dots.needle.50percent": [
+          "gauge.with.dots.needle.50percent"
+        ],
+        "gauge.with.dots.needle.67percent": [
+          "gauge.with.dots.needle.67percent"
+        ],
+        "gauge.with.dots.needle.100percent": [
+          "gauge.with.dots.needle.100percent"
+        ],
+        "barometer": [
+          "barometer"
+        ],
+        "metronome": [
+          "metronome",
+          "metronome.fill"
+        ],
+        "amplifier": [
+          "amplifier"
+        ],
+        "dice": [
+          "dice",
+          "dice.fill"
+        ],
+        "die.face.1": [
+          "die.face.1",
+          "die.face.1.fill"
+        ],
+        "die.face.2": [
+          "die.face.2",
+          "die.face.2.fill"
+        ],
+        "die.face.3": [
+          "die.face.3",
+          "die.face.3.fill"
+        ],
+        "die.face.4": [
+          "die.face.4",
+          "die.face.4.fill"
+        ],
+        "die.face.5": [
+          "die.face.5",
+          "die.face.5.fill"
+        ],
+        "die.face.6": [
+          "die.face.6",
+          "die.face.6.fill"
+        ],
+        "square.grid.3x3.square": [
+          "square.grid.3x3.square",
+          "square.grid.3x3.square.badge.ellipsis"
+        ],
+        "pianokeys": [
+          "pianokeys"
+        ],
+        "pianokeys.inverse": [
+          "pianokeys.inverse"
+        ],
+        "tuningfork": [
+          "tuningfork"
+        ],
+        "paintbrush": [
+          "paintbrush",
+          "paintbrush.fill"
+        ],
+        "paintbrush.pointed": [
+          "paintbrush.pointed",
+          "paintbrush.pointed.fill"
+        ],
+        "level": [
+          "level",
+          "level.fill"
+        ],
+        "lines.measurement.horizontal": [
+          "lines.measurement.horizontal"
+        ],
+        "lines.measurement.vertical": [
+          "lines.measurement.vertical"
+        ],
+        "wrench.adjustable": [
+          "wrench.adjustable",
+          "wrench.adjustable.fill"
+        ],
+        "hammer": [
+          "hammer",
+          "hammer.fill",
+          "hammer.circle",
+          "hammer.circle.fill"
+        ],
+        "screwdriver": [
+          "screwdriver",
+          "screwdriver.fill"
+        ],
+        "eyedropper": [
+          "eyedropper"
+        ],
+        "eyedropper.halffull": [
+          "eyedropper.halffull"
+        ],
+        "eyedropper.full": [
+          "eyedropper.full"
+        ],
+        "wrench.and.screwdriver": [
+          "wrench.and.screwdriver",
+          "wrench.and.screwdriver.fill"
+        ],
+        "applescript": [
+          "applescript",
+          "applescript.fill"
+        ],
+        "scroll": [
+          "scroll",
+          "scroll.fill"
+        ],
+        "stethoscope": [
+          "stethoscope",
+          "stethoscope.circle",
+          "stethoscope.circle.fill"
+        ],
+        "inhaler": [
+          "inhaler",
+          "inhaler.fill"
+        ],
+        "printer": [
+          "printer",
+          "printer.fill",
+          "printer.filled.and.paper",
+          "printer.filled.and.paper.inverse"
+        ],
+        "printer.inverse": [
+          "printer.inverse"
+        ],
+        "printer.dotmatrix": [
+          "printer.dotmatrix",
+          "printer.dotmatrix.fill",
+          "printer.dotmatrix.filled.and.paper",
+          "printer.dotmatrix.filled.and.paper.inverse"
+        ],
+        "printer.dotmatrix.inverse": [
+          "printer.dotmatrix.inverse"
+        ],
+        "scanner": [
+          "scanner",
+          "scanner.fill"
+        ],
+        "faxmachine": [
+          "faxmachine",
+          "faxmachine.fill"
+        ],
+        "handbag": [
+          "handbag",
+          "handbag.fill",
+          "handbag.circle",
+          "handbag.circle.fill"
+        ],
+        "briefcase": [
+          "briefcase",
+          "briefcase.fill",
+          "briefcase.circle",
+          "briefcase.circle.fill"
+        ],
+        "case": [
+          "case",
+          "case.fill"
+        ],
+        "latch.2.case": [
+          "latch.2.case",
+          "latch.2.case.fill"
+        ],
+        "cross.case": [
+          "cross.case",
+          "cross.case.fill",
+          "cross.case.circle",
+          "cross.case.circle.fill"
+        ],
+        "suitcase": [
+          "suitcase",
+          "suitcase.fill"
+        ],
+        "suitcase.cart": [
+          "suitcase.cart",
+          "suitcase.cart.fill"
+        ],
+        "suitcase.rolling": [
+          "suitcase.rolling",
+          "suitcase.rolling.fill"
+        ],
+        "theatermasks": [
+          "theatermasks",
+          "theatermasks.fill",
+          "theatermasks.circle",
+          "theatermasks.circle.fill"
+        ],
+        "theatermask.and.paintbrush": [
+          "theatermask.and.paintbrush",
+          "theatermask.and.paintbrush.fill"
+        ],
+        "puzzlepiece.extension": [
+          "puzzlepiece.extension",
+          "puzzlepiece.extension.fill"
+        ],
+        "puzzlepiece": [
+          "puzzlepiece",
+          "puzzlepiece.fill"
+        ],
+        "matter.logo": [
+          "matter.logo"
+        ],
+        "homekit": [
+          "homekit"
+        ],
+        "house": [
+          "house",
+          "house.fill",
+          "house.circle",
+          "house.circle.fill",
+          "house.badge.exclamationmark",
+          "house.badge.exclamationmark.fill",
+          "house.badge.wifi",
+          "house.badge.wifi.fill"
+        ],
+        "house.slash": [
+          "house.slash",
+          "house.slash.fill"
+        ],
+        "music.note.house": [
+          "music.note.house",
+          "music.note.house.fill"
+        ],
+        "play.house": [
+          "play.house",
+          "play.house.fill"
+        ],
+        "storefront": [
+          "storefront",
+          "storefront.fill",
+          "storefront.circle",
+          "storefront.circle.fill"
+        ],
+        "building.columns": [
+          "building.columns",
+          "building.columns.fill",
+          "building.columns.circle",
+          "building.columns.circle.fill"
+        ],
+        "lightbulb": [
+          "lightbulb",
+          "lightbulb.fill",
+          "lightbulb.circle",
+          "lightbulb.circle.fill"
+        ],
+        "lightbulb.slash": [
+          "lightbulb.slash",
+          "lightbulb.slash.fill"
+        ],
+        "lightbulb.min": [
+          "lightbulb.min",
+          "lightbulb.min.fill",
+          "lightbulb.min.badge.exclamationmark",
+          "lightbulb.min.badge.exclamationmark.fill"
+        ],
+        "lightbulb.max": [
+          "lightbulb.max",
+          "lightbulb.max.fill"
+        ],
+        "lightbulb.2": [
+          "lightbulb.2",
+          "lightbulb.2.fill"
+        ],
+        "lightbulb.led": [
+          "lightbulb.led",
+          "lightbulb.led.fill"
+        ],
+        "lightbulb.led.wide": [
+          "lightbulb.led.wide",
+          "lightbulb.led.wide.fill"
+        ],
+        "fan.oscillation": [
+          "fan.oscillation",
+          "fan.oscillation.fill"
+        ],
+        "fan": [
+          "fan",
+          "fan.fill",
+          "fan.badge.automatic",
+          "fan.badge.automatic.fill"
+        ],
+        "fan.slash": [
+          "fan.slash",
+          "fan.slash.fill"
+        ],
+        "fan.desk": [
+          "fan.desk",
+          "fan.desk.fill"
+        ],
+        "fan.floor": [
+          "fan.floor",
+          "fan.floor.fill"
+        ],
+        "fan.ceiling": [
+          "fan.ceiling",
+          "fan.ceiling.fill"
+        ],
+        "fan.and.light.ceiling": [
+          "fan.and.light.ceiling",
+          "fan.and.light.ceiling.fill"
+        ],
+        "lamp.desk": [
+          "lamp.desk",
+          "lamp.desk.fill"
+        ],
+        "lamp.table": [
+          "lamp.table",
+          "lamp.table.fill"
+        ],
+        "lamp.floor": [
+          "lamp.floor",
+          "lamp.floor.fill"
+        ],
+        "lamp.ceiling": [
+          "lamp.ceiling",
+          "lamp.ceiling.fill"
+        ],
+        "lamp.ceiling.inverse": [
+          "lamp.ceiling.inverse"
+        ],
+        "light.recessed": [
+          "light.recessed",
+          "light.recessed.fill"
+        ],
+        "light.recessed.inverse": [
+          "light.recessed.inverse"
+        ],
+        "light.recessed.3": [
+          "light.recessed.3",
+          "light.recessed.3.fill"
+        ],
+        "light.recessed.3.inverse": [
+          "light.recessed.3.inverse"
+        ],
+        "light.panel": [
+          "light.panel",
+          "light.panel.fill"
+        ],
+        "light.cylindrical.ceiling": [
+          "light.cylindrical.ceiling",
+          "light.cylindrical.ceiling.fill"
+        ],
+        "light.cylindrical.ceiling.inverse": [
+          "light.cylindrical.ceiling.inverse"
+        ],
+        "light.strip.2": [
+          "light.strip.2",
+          "light.strip.2.fill"
+        ],
+        "light.ribbon": [
+          "light.ribbon",
+          "light.ribbon.fill"
+        ],
+        "chandelier": [
+          "chandelier",
+          "chandelier.fill"
+        ],
+        "lightswitch.on": [
+          "lightswitch.on",
+          "lightswitch.on.fill"
+        ],
+        "lightswitch.on.square": [
+          "lightswitch.on.square",
+          "lightswitch.on.square.fill"
+        ],
+        "lightswitch.off": [
+          "lightswitch.off",
+          "lightswitch.off.fill"
+        ],
+        "lightswitch.off.square": [
+          "lightswitch.off.square",
+          "lightswitch.off.square.fill"
+        ],
+        "button.programmable": [
+          "button.programmable"
+        ],
+        "button.programmable.square": [
+          "button.programmable.square",
+          "button.programmable.square.fill"
+        ],
+        "switch.programmable": [
+          "switch.programmable",
+          "switch.programmable.fill"
+        ],
+        "switch.programmable.square": [
+          "switch.programmable.square",
+          "switch.programmable.square.fill"
+        ],
+        "poweroutlet.type.a": [
+          "poweroutlet.type.a",
+          "poweroutlet.type.a.fill"
+        ],
+        "poweroutlet.type.a.square": [
+          "poweroutlet.type.a.square",
+          "poweroutlet.type.a.square.fill"
+        ],
+        "poweroutlet.type.b": [
+          "poweroutlet.type.b",
+          "poweroutlet.type.b.fill"
+        ],
+        "poweroutlet.type.b.square": [
+          "poweroutlet.type.b.square",
+          "poweroutlet.type.b.square.fill"
+        ],
+        "poweroutlet.type.c": [
+          "poweroutlet.type.c",
+          "poweroutlet.type.c.fill"
+        ],
+        "poweroutlet.type.c.square": [
+          "poweroutlet.type.c.square",
+          "poweroutlet.type.c.square.fill"
+        ],
+        "poweroutlet.type.d": [
+          "poweroutlet.type.d",
+          "poweroutlet.type.d.fill"
+        ],
+        "poweroutlet.type.d.square": [
+          "poweroutlet.type.d.square",
+          "poweroutlet.type.d.square.fill"
+        ],
+        "poweroutlet.type.e": [
+          "poweroutlet.type.e",
+          "poweroutlet.type.e.fill"
+        ],
+        "poweroutlet.type.e.square": [
+          "poweroutlet.type.e.square",
+          "poweroutlet.type.e.square.fill"
+        ],
+        "poweroutlet.type.f": [
+          "poweroutlet.type.f",
+          "poweroutlet.type.f.fill"
+        ],
+        "poweroutlet.type.f.square": [
+          "poweroutlet.type.f.square",
+          "poweroutlet.type.f.square.fill"
+        ],
+        "poweroutlet.type.g": [
+          "poweroutlet.type.g",
+          "poweroutlet.type.g.fill"
+        ],
+        "poweroutlet.type.g.square": [
+          "poweroutlet.type.g.square",
+          "poweroutlet.type.g.square.fill"
+        ],
+        "poweroutlet.type.h": [
+          "poweroutlet.type.h",
+          "poweroutlet.type.h.fill"
+        ],
+        "poweroutlet.type.h.square": [
+          "poweroutlet.type.h.square",
+          "poweroutlet.type.h.square.fill"
+        ],
+        "poweroutlet.type.i": [
+          "poweroutlet.type.i",
+          "poweroutlet.type.i.fill"
+        ],
+        "poweroutlet.type.i.square": [
+          "poweroutlet.type.i.square",
+          "poweroutlet.type.i.square.fill"
+        ],
+        "poweroutlet.type.j": [
+          "poweroutlet.type.j",
+          "poweroutlet.type.j.fill"
+        ],
+        "poweroutlet.type.j.square": [
+          "poweroutlet.type.j.square",
+          "poweroutlet.type.j.square.fill"
+        ],
+        "poweroutlet.type.k": [
+          "poweroutlet.type.k",
+          "poweroutlet.type.k.fill"
+        ],
+        "poweroutlet.type.k.square": [
+          "poweroutlet.type.k.square",
+          "poweroutlet.type.k.square.fill"
+        ],
+        "poweroutlet.type.l": [
+          "poweroutlet.type.l",
+          "poweroutlet.type.l.fill"
+        ],
+        "poweroutlet.type.l.square": [
+          "poweroutlet.type.l.square",
+          "poweroutlet.type.l.square.fill"
+        ],
+        "poweroutlet.type.m": [
+          "poweroutlet.type.m",
+          "poweroutlet.type.m.fill"
+        ],
+        "poweroutlet.type.m.square": [
+          "poweroutlet.type.m.square",
+          "poweroutlet.type.m.square.fill"
+        ],
+        "poweroutlet.type.n": [
+          "poweroutlet.type.n",
+          "poweroutlet.type.n.fill"
+        ],
+        "poweroutlet.type.n.square": [
+          "poweroutlet.type.n.square",
+          "poweroutlet.type.n.square.fill"
+        ],
+        "poweroutlet.type.o": [
+          "poweroutlet.type.o",
+          "poweroutlet.type.o.fill"
+        ],
+        "poweroutlet.type.o.square": [
+          "poweroutlet.type.o.square",
+          "poweroutlet.type.o.square.fill"
+        ],
+        "poweroutlet.strip": [
+          "poweroutlet.strip",
+          "poweroutlet.strip.fill"
+        ],
+        "australsign.gauge.chart.lefthalf.righthalf": [
+          "australsign.gauge.chart.lefthalf.righthalf"
+        ],
+        "australiandollarsign.gauge.chart.lefthalf.righthalf": [
+          "australiandollarsign.gauge.chart.lefthalf.righthalf"
+        ],
+        "bahtsign.gauge.chart.lefthalf.righthalf": [
+          "bahtsign.gauge.chart.lefthalf.righthalf"
+        ],
+        "bitcoinsign.gauge.chart.lefthalf.righthalf": [
+          "bitcoinsign.gauge.chart.lefthalf.righthalf"
+        ],
+        "brazilianrealsign.gauge.chart.lefthalf.righthalf": [
+          "brazilianrealsign.gauge.chart.lefthalf.righthalf"
+        ],
+        "cedisign.gauge.chart.lefthalf.righthalf": [
+          "cedisign.gauge.chart.lefthalf.righthalf"
+        ],
+        "centsign.gauge.chart.lefthalf.righthalf": [
+          "centsign.gauge.chart.lefthalf.righthalf"
+        ],
+        "chineseyuanrenminbisign.gauge.chart.lefthalf.righthalf": [
+          "chineseyuanrenminbisign.gauge.chart.lefthalf.righthalf"
+        ],
+        "coloncurrencysign.gauge.chart.lefthalf.righthalf": [
+          "coloncurrencysign.gauge.chart.lefthalf.righthalf"
+        ],
+        "cruzeirosign.gauge.chart.lefthalf.righthalf": [
+          "cruzeirosign.gauge.chart.lefthalf.righthalf"
+        ],
+        "danishkronesign.gauge.chart.lefthalf.righthalf": [
+          "danishkronesign.gauge.chart.lefthalf.righthalf"
+        ],
+        "dongsign.gauge.chart.lefthalf.righthalf": [
+          "dongsign.gauge.chart.lefthalf.righthalf"
+        ],
+        "dollarsign.gauge.chart.lefthalf.righthalf": [
+          "dollarsign.gauge.chart.lefthalf.righthalf"
+        ],
+        "eurosign.gauge.chart.lefthalf.righthalf": [
+          "eurosign.gauge.chart.lefthalf.righthalf"
+        ],
+        "eurozonesign.gauge.chart.lefthalf.righthalf": [
+          "eurozonesign.gauge.chart.lefthalf.righthalf"
+        ],
+        "florinsign.gauge.chart.lefthalf.righthalf": [
+          "florinsign.gauge.chart.lefthalf.righthalf"
+        ],
+        "francsign.gauge.chart.lefthalf.righthalf": [
+          "francsign.gauge.chart.lefthalf.righthalf"
+        ],
+        "guaranisign.gauge.chart.lefthalf.righthalf": [
+          "guaranisign.gauge.chart.lefthalf.righthalf"
+        ],
+        "hryvniasign.gauge.chart.lefthalf.righthalf": [
+          "hryvniasign.gauge.chart.lefthalf.righthalf"
+        ],
+        "indianrupeesign.gauge.chart.lefthalf.righthalf": [
+          "indianrupeesign.gauge.chart.lefthalf.righthalf"
+        ],
+        "kipsign.gauge.chart.lefthalf.righthalf": [
+          "kipsign.gauge.chart.lefthalf.righthalf"
+        ],
+        "larisign.gauge.chart.lefthalf.righthalf": [
+          "larisign.gauge.chart.lefthalf.righthalf"
+        ],
+        "lirasign.gauge.chart.lefthalf.righthalf": [
+          "lirasign.gauge.chart.lefthalf.righthalf"
+        ],
+        "manatsign.gauge.chart.lefthalf.righthalf": [
+          "manatsign.gauge.chart.lefthalf.righthalf"
+        ],
+        "malaysianringgitsign.gauge.chart.lefthalf.righthalf": [
+          "malaysianringgitsign.gauge.chart.lefthalf.righthalf"
+        ],
+        "millsign.gauge.chart.lefthalf.righthalf": [
+          "millsign.gauge.chart.lefthalf.righthalf"
+        ],
+        "nairasign.gauge.chart.lefthalf.righthalf": [
+          "nairasign.gauge.chart.lefthalf.righthalf"
+        ],
+        "norwegiankronesign.gauge.chart.lefthalf.righthalf": [
+          "norwegiankronesign.gauge.chart.lefthalf.righthalf"
+        ],
+        "peruviansolessign.gauge.chart.lefthalf.righthalf": [
+          "peruviansolessign.gauge.chart.lefthalf.righthalf"
+        ],
+        "pesetasign.gauge.chart.lefthalf.righthalf": [
+          "pesetasign.gauge.chart.lefthalf.righthalf"
+        ],
+        "pesosign.gauge.chart.lefthalf.righthalf": [
+          "pesosign.gauge.chart.lefthalf.righthalf"
+        ],
+        "polishzlotysign.gauge.chart.lefthalf.righthalf": [
+          "polishzlotysign.gauge.chart.lefthalf.righthalf"
+        ],
+        "rublesign.gauge.chart.lefthalf.righthalf": [
+          "rublesign.gauge.chart.lefthalf.righthalf"
+        ],
+        "rupeesign.gauge.chart.lefthalf.righthalf": [
+          "rupeesign.gauge.chart.lefthalf.righthalf"
+        ],
+        "shekelsign.gauge.chart.lefthalf.righthalf": [
+          "shekelsign.gauge.chart.lefthalf.righthalf"
+        ],
+        "singaporedollarsign.gauge.chart.lefthalf.righthalf": [
+          "singaporedollarsign.gauge.chart.lefthalf.righthalf"
+        ],
+        "sterlingsign.gauge.chart.lefthalf.righthalf": [
+          "sterlingsign.gauge.chart.lefthalf.righthalf"
+        ],
+        "swedishkronasign.gauge.chart.lefthalf.righthalf": [
+          "swedishkronasign.gauge.chart.lefthalf.righthalf"
+        ],
+        "tengesign.gauge.chart.lefthalf.righthalf": [
+          "tengesign.gauge.chart.lefthalf.righthalf"
+        ],
+        "tugriksign.gauge.chart.lefthalf.righthalf": [
+          "tugriksign.gauge.chart.lefthalf.righthalf"
+        ],
+        "turkishlirasign.gauge.chart.lefthalf.righthalf": [
+          "turkishlirasign.gauge.chart.lefthalf.righthalf"
+        ],
+        "yensign.gauge.chart.lefthalf.righthalf": [
+          "yensign.gauge.chart.lefthalf.righthalf"
+        ],
+        "wonsign.gauge.chart.lefthalf.righthalf": [
+          "wonsign.gauge.chart.lefthalf.righthalf"
+        ],
+        "australsign.gauge.chart.leftthird.topthird.rightthird": [
+          "australsign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "australiandollarsign.gauge.chart.leftthird.topthird.rightthird": [
+          "australiandollarsign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "bahtsign.gauge.chart.leftthird.topthird.rightthird": [
+          "bahtsign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "bitcoinsign.gauge.chart.leftthird.topthird.rightthird": [
+          "bitcoinsign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "brazilianrealsign.gauge.chart.leftthird.topthird.rightthird": [
+          "brazilianrealsign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "cedisign.gauge.chart.leftthird.topthird.rightthird": [
+          "cedisign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "centsign.gauge.chart.leftthird.topthird.rightthird": [
+          "centsign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "chineseyuanrenminbisign.gauge.chart.leftthird.topthird.rightthird": [
+          "chineseyuanrenminbisign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "coloncurrencysign.gauge.chart.leftthird.topthird.rightthird": [
+          "coloncurrencysign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "cruzeirosign.gauge.chart.leftthird.topthird.rightthird": [
+          "cruzeirosign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "danishkronesign.gauge.chart.leftthird.topthird.rightthird": [
+          "danishkronesign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "dongsign.gauge.chart.leftthird.topthird.rightthird": [
+          "dongsign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "dollarsign.gauge.chart.leftthird.topthird.rightthird": [
+          "dollarsign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "eurosign.gauge.chart.leftthird.topthird.rightthird": [
+          "eurosign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "eurozonesign.gauge.chart.leftthird.topthird.rightthird": [
+          "eurozonesign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "florinsign.gauge.chart.leftthird.topthird.rightthird": [
+          "florinsign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "francsign.gauge.chart.leftthird.topthird.rightthird": [
+          "francsign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "guaranisign.gauge.chart.leftthird.topthird.rightthird": [
+          "guaranisign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "hryvniasign.gauge.chart.leftthird.topthird.rightthird": [
+          "hryvniasign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "indianrupeesign.gauge.chart.leftthird.topthird.rightthird": [
+          "indianrupeesign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "kipsign.gauge.chart.leftthird.topthird.rightthird": [
+          "kipsign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "larisign.gauge.chart.leftthird.topthird.rightthird": [
+          "larisign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "lirasign.gauge.chart.leftthird.topthird.rightthird": [
+          "lirasign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "manatsign.gauge.chart.leftthird.topthird.rightthird": [
+          "manatsign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "malaysianringgitsign.gauge.chart.leftthird.topthird.rightthird": [
+          "malaysianringgitsign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "millsign.gauge.chart.leftthird.topthird.rightthird": [
+          "millsign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "nairasign.gauge.chart.leftthird.topthird.rightthird": [
+          "nairasign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "norwegiankronesign.gauge.chart.leftthird.topthird.rightthird": [
+          "norwegiankronesign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "peruviansolessign.gauge.chart.leftthird.topthird.rightthird": [
+          "peruviansolessign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "pesetasign.gauge.chart.leftthird.topthird.rightthird": [
+          "pesetasign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "pesosign.gauge.chart.leftthird.topthird.rightthird": [
+          "pesosign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "polishzlotysign.gauge.chart.leftthird.topthird.rightthird": [
+          "polishzlotysign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "rublesign.gauge.chart.leftthird.topthird.rightthird": [
+          "rublesign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "rupeesign.gauge.chart.leftthird.topthird.rightthird": [
+          "rupeesign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "shekelsign.gauge.chart.leftthird.topthird.rightthird": [
+          "shekelsign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "singaporedollarsign.gauge.chart.leftthird.topthird.rightthird": [
+          "singaporedollarsign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "sterlingsign.gauge.chart.leftthird.topthird.rightthird": [
+          "sterlingsign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "swedishkronasign.gauge.chart.leftthird.topthird.rightthird": [
+          "swedishkronasign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "tengesign.gauge.chart.leftthird.topthird.rightthird": [
+          "tengesign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "tugriksign.gauge.chart.leftthird.topthird.rightthird": [
+          "tugriksign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "turkishlirasign.gauge.chart.leftthird.topthird.rightthird": [
+          "turkishlirasign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "yensign.gauge.chart.leftthird.topthird.rightthird": [
+          "yensign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "wonsign.gauge.chart.leftthird.topthird.rightthird": [
+          "wonsign.gauge.chart.leftthird.topthird.rightthird"
+        ],
+        "australsign.ring.dashed": [
+          "australsign.ring.dashed"
+        ],
+        "australiandollarsign.ring.dashed": [
+          "australiandollarsign.ring.dashed"
+        ],
+        "bahtsign.ring.dashed": [
+          "bahtsign.ring.dashed"
+        ],
+        "bitcoinsign.ring.dashed": [
+          "bitcoinsign.ring.dashed"
+        ],
+        "brazilianrealsign.ring.dashed": [
+          "brazilianrealsign.ring.dashed"
+        ],
+        "cedisign.ring.dashed": [
+          "cedisign.ring.dashed"
+        ],
+        "centsign.ring.dashed": [
+          "centsign.ring.dashed"
+        ],
+        "chineseyuanrenminbisign.ring.dashed": [
+          "chineseyuanrenminbisign.ring.dashed"
+        ],
+        "coloncurrencysign.ring.dashed": [
+          "coloncurrencysign.ring.dashed"
+        ],
+        "cruzeirosign.ring.dashed": [
+          "cruzeirosign.ring.dashed"
+        ],
+        "danishkronesign.ring.dashed": [
+          "danishkronesign.ring.dashed"
+        ],
+        "dongsign.ring.dashed": [
+          "dongsign.ring.dashed"
+        ],
+        "dollarsign.ring.dashed": [
+          "dollarsign.ring.dashed"
+        ],
+        "eurosign.ring.dashed": [
+          "eurosign.ring.dashed"
+        ],
+        "eurozonesign.ring.dashed": [
+          "eurozonesign.ring.dashed"
+        ],
+        "florinsign.ring.dashed": [
+          "florinsign.ring.dashed"
+        ],
+        "francsign.ring.dashed": [
+          "francsign.ring.dashed"
+        ],
+        "guaranisign.ring.dashed": [
+          "guaranisign.ring.dashed"
+        ],
+        "hryvniasign.ring.dashed": [
+          "hryvniasign.ring.dashed"
+        ],
+        "indianrupeesign.ring.dashed": [
+          "indianrupeesign.ring.dashed"
+        ],
+        "kipsign.ring.dashed": [
+          "kipsign.ring.dashed"
+        ],
+        "larisign.ring.dashed": [
+          "larisign.ring.dashed"
+        ],
+        "lirasign.ring.dashed": [
+          "lirasign.ring.dashed"
+        ],
+        "manatsign.ring.dashed": [
+          "manatsign.ring.dashed"
+        ],
+        "malaysianringgitsign.ring.dashed": [
+          "malaysianringgitsign.ring.dashed"
+        ],
+        "millsign.ring.dashed": [
+          "millsign.ring.dashed"
+        ],
+        "nairasign.ring.dashed": [
+          "nairasign.ring.dashed"
+        ],
+        "norwegiankronesign.ring.dashed": [
+          "norwegiankronesign.ring.dashed"
+        ],
+        "peruviansolessign.ring.dashed": [
+          "peruviansolessign.ring.dashed"
+        ],
+        "pesetasign.ring.dashed": [
+          "pesetasign.ring.dashed"
+        ],
+        "pesosign.ring.dashed": [
+          "pesosign.ring.dashed"
+        ],
+        "polishzlotysign.ring.dashed": [
+          "polishzlotysign.ring.dashed"
+        ],
+        "rublesign.ring.dashed": [
+          "rublesign.ring.dashed"
+        ],
+        "rupeesign.ring.dashed": [
+          "rupeesign.ring.dashed"
+        ],
+        "shekelsign.ring.dashed": [
+          "shekelsign.ring.dashed"
+        ],
+        "singaporedollarsign.ring.dashed": [
+          "singaporedollarsign.ring.dashed"
+        ],
+        "sterlingsign.ring.dashed": [
+          "sterlingsign.ring.dashed"
+        ],
+        "swedishkronasign.ring.dashed": [
+          "swedishkronasign.ring.dashed"
+        ],
+        "tengesign.ring.dashed": [
+          "tengesign.ring.dashed"
+        ],
+        "tugriksign.ring.dashed": [
+          "tugriksign.ring.dashed"
+        ],
+        "turkishlirasign.ring.dashed": [
+          "turkishlirasign.ring.dashed"
+        ],
+        "yensign.ring.dashed": [
+          "yensign.ring.dashed"
+        ],
+        "wonsign.ring.dashed": [
+          "wonsign.ring.dashed"
+        ],
+        "australsign.ring": [
+          "australsign.ring"
+        ],
+        "australiandollarsign.ring": [
+          "australiandollarsign.ring"
+        ],
+        "bahtsign.ring": [
+          "bahtsign.ring"
+        ],
+        "bitcoinsign.ring": [
+          "bitcoinsign.ring"
+        ],
+        "brazilianrealsign.ring": [
+          "brazilianrealsign.ring"
+        ],
+        "cedisign.ring": [
+          "cedisign.ring"
+        ],
+        "centsign.ring": [
+          "centsign.ring"
+        ],
+        "chineseyuanrenminbisign.ring": [
+          "chineseyuanrenminbisign.ring"
+        ],
+        "coloncurrencysign.ring": [
+          "coloncurrencysign.ring"
+        ],
+        "cruzeirosign.ring": [
+          "cruzeirosign.ring"
+        ],
+        "danishkronesign.ring": [
+          "danishkronesign.ring"
+        ],
+        "dongsign.ring": [
+          "dongsign.ring"
+        ],
+        "dollarsign.ring": [
+          "dollarsign.ring"
+        ],
+        "eurosign.ring": [
+          "eurosign.ring"
+        ],
+        "eurozonesign.ring": [
+          "eurozonesign.ring"
+        ],
+        "florinsign.ring": [
+          "florinsign.ring"
+        ],
+        "francsign.ring": [
+          "francsign.ring"
+        ],
+        "guaranisign.ring": [
+          "guaranisign.ring"
+        ],
+        "hryvniasign.ring": [
+          "hryvniasign.ring"
+        ],
+        "indianrupeesign.ring": [
+          "indianrupeesign.ring"
+        ],
+        "kipsign.ring": [
+          "kipsign.ring"
+        ],
+        "larisign.ring": [
+          "larisign.ring"
+        ],
+        "lirasign.ring": [
+          "lirasign.ring"
+        ],
+        "manatsign.ring": [
+          "manatsign.ring"
+        ],
+        "malaysianringgitsign.ring": [
+          "malaysianringgitsign.ring"
+        ],
+        "millsign.ring": [
+          "millsign.ring"
+        ],
+        "nairasign.ring": [
+          "nairasign.ring"
+        ],
+        "norwegiankronesign.ring": [
+          "norwegiankronesign.ring"
+        ],
+        "peruviansolessign.ring": [
+          "peruviansolessign.ring"
+        ],
+        "pesetasign.ring": [
+          "pesetasign.ring"
+        ],
+        "pesosign.ring": [
+          "pesosign.ring"
+        ],
+        "polishzlotysign.ring": [
+          "polishzlotysign.ring"
+        ],
+        "rublesign.ring": [
+          "rublesign.ring"
+        ],
+        "rupeesign.ring": [
+          "rupeesign.ring"
+        ],
+        "shekelsign.ring": [
+          "shekelsign.ring"
+        ],
+        "singaporedollarsign.ring": [
+          "singaporedollarsign.ring"
+        ],
+        "sterlingsign.ring": [
+          "sterlingsign.ring"
+        ],
+        "swedishkronasign.ring": [
+          "swedishkronasign.ring"
+        ],
+        "tengesign.ring": [
+          "tengesign.ring"
+        ],
+        "tugriksign.ring": [
+          "tugriksign.ring"
+        ],
+        "turkishlirasign.ring": [
+          "turkishlirasign.ring"
+        ],
+        "yensign.ring": [
+          "yensign.ring"
+        ],
+        "wonsign.ring": [
+          "wonsign.ring"
+        ],
+        "powerplug.portrait": [
+          "powerplug.portrait",
+          "powerplug.portrait.fill"
+        ],
+        "powerplug": [
+          "powerplug",
+          "powerplug.fill"
+        ],
+        "powercord": [
+          "powercord",
+          "powercord.fill"
+        ],
+        "light.beacon.min": [
+          "light.beacon.min",
+          "light.beacon.min.fill"
+        ],
+        "light.beacon.max": [
+          "light.beacon.max",
+          "light.beacon.max.fill"
+        ],
+        "web.camera": [
+          "web.camera",
+          "web.camera.fill"
+        ],
+        "video.doorbell": [
+          "video.doorbell",
+          "video.doorbell.fill"
+        ],
+        "entry.lever.keypad": [
+          "entry.lever.keypad",
+          "entry.lever.keypad.fill",
+          "entry.lever.keypad.trianglebadge.exclamationmark",
+          "entry.lever.keypad.trianglebadge.exclamationmark.fill"
+        ],
+        "door.left.hand.open": [
+          "door.left.hand.open"
+        ],
+        "door.left.hand.closed": [
+          "door.left.hand.closed"
+        ],
+        "door.right.hand.open": [
+          "door.right.hand.open"
+        ],
+        "door.right.hand.closed": [
+          "door.right.hand.closed"
+        ],
+        "door.sliding.left.hand.open": [
+          "door.sliding.left.hand.open"
+        ],
+        "door.sliding.left.hand.closed": [
+          "door.sliding.left.hand.closed"
+        ],
+        "door.sliding.right.hand.open": [
+          "door.sliding.right.hand.open"
+        ],
+        "door.sliding.right.hand.closed": [
+          "door.sliding.right.hand.closed"
+        ],
+        "door.garage.open": [
+          "door.garage.open",
+          "door.garage.open.trianglebadge.exclamationmark"
+        ],
+        "door.garage.closed": [
+          "door.garage.closed",
+          "door.garage.closed.trianglebadge.exclamationmark"
+        ],
+        "door.garage.double.bay.open": [
+          "door.garage.double.bay.open",
+          "door.garage.double.bay.open.trianglebadge.exclamationmark"
+        ],
+        "door.garage.double.bay.closed": [
+          "door.garage.double.bay.closed",
+          "door.garage.double.bay.closed.trianglebadge.exclamationmark"
+        ],
+        "door.french.open": [
+          "door.french.open"
+        ],
+        "door.french.closed": [
+          "door.french.closed"
+        ],
+        "pedestrian.gate.closed": [
+          "pedestrian.gate.closed"
+        ],
+        "pedestrian.gate.open": [
+          "pedestrian.gate.open"
+        ],
+        "window.vertical.open": [
+          "window.vertical.open"
+        ],
+        "window.vertical.closed": [
+          "window.vertical.closed"
+        ],
+        "window.horizontal": [
+          "window.horizontal"
+        ],
+        "window.horizontal.closed": [
+          "window.horizontal.closed"
+        ],
+        "window.ceiling": [
+          "window.ceiling"
+        ],
+        "window.ceiling.closed": [
+          "window.ceiling.closed"
+        ],
+        "window.casement": [
+          "window.casement"
+        ],
+        "window.casement.closed": [
+          "window.casement.closed"
+        ],
+        "window.awning": [
+          "window.awning"
+        ],
+        "window.awning.closed": [
+          "window.awning.closed"
+        ],
+        "blinds.vertical.open": [
+          "blinds.vertical.open"
+        ],
+        "blinds.vertical.closed": [
+          "blinds.vertical.closed"
+        ],
+        "blinds.horizontal.open": [
+          "blinds.horizontal.open"
+        ],
+        "blinds.horizontal.closed": [
+          "blinds.horizontal.closed"
+        ],
+        "window.shade.open": [
+          "window.shade.open"
+        ],
+        "window.shade.closed": [
+          "window.shade.closed"
+        ],
+        "roller.shade.open": [
+          "roller.shade.open"
+        ],
+        "roller.shade.closed": [
+          "roller.shade.closed"
+        ],
+        "roman.shade.open": [
+          "roman.shade.open"
+        ],
+        "roman.shade.closed": [
+          "roman.shade.closed"
+        ],
+        "curtains.open": [
+          "curtains.open"
+        ],
+        "curtains.closed": [
+          "curtains.closed"
+        ],
+        "air.purifier": [
+          "air.purifier",
+          "air.purifier.fill"
+        ],
+        "dehumidifier": [
+          "dehumidifier",
+          "dehumidifier.fill"
+        ],
+        "humidifier": [
+          "humidifier",
+          "humidifier.fill"
+        ],
+        "humidifier.and.droplets": [
+          "humidifier.and.droplets",
+          "humidifier.and.droplets.fill"
+        ],
+        "heater.vertical": [
+          "heater.vertical",
+          "heater.vertical.fill"
+        ],
+        "air.conditioner.vertical": [
+          "air.conditioner.vertical",
+          "air.conditioner.vertical.fill"
+        ],
+        "air.conditioner.horizontal": [
+          "air.conditioner.horizontal",
+          "air.conditioner.horizontal.fill"
+        ],
+        "sprinkler": [
+          "sprinkler",
+          "sprinkler.fill"
+        ],
+        "sprinkler.and.droplets": [
+          "sprinkler.and.droplets",
+          "sprinkler.and.droplets.fill"
+        ],
+        "spigot": [
+          "spigot",
+          "spigot.fill"
+        ],
+        "drop.keypad.rectangle": [
+          "drop.keypad.rectangle",
+          "drop.keypad.rectangle.fill"
+        ],
+        "shower.sidejet": [
+          "shower.sidejet",
+          "shower.sidejet.fill"
+        ],
+        "shower": [
+          "shower",
+          "shower.fill"
+        ],
+        "shower.handheld": [
+          "shower.handheld",
+          "shower.handheld.fill"
+        ],
+        "bathtub": [
+          "bathtub",
+          "bathtub.fill"
+        ],
+        "contact.sensor": [
+          "contact.sensor",
+          "contact.sensor.fill"
+        ],
+        "sensor": [
+          "sensor",
+          "sensor.fill"
+        ],
+        "carbon.monoxide.cloud": [
+          "carbon.monoxide.cloud",
+          "carbon.monoxide.cloud.fill"
+        ],
+        "carbon.dioxide.cloud": [
+          "carbon.dioxide.cloud",
+          "carbon.dioxide.cloud.fill"
+        ],
+        "pipe.and.drop": [
+          "pipe.and.drop",
+          "pipe.and.drop.fill"
+        ],
+        "hifireceiver": [
+          "hifireceiver",
+          "hifireceiver.fill"
+        ],
+        "videoprojector": [
+          "videoprojector",
+          "videoprojector.fill"
+        ],
+        "wifi.router": [
+          "wifi.router",
+          "wifi.router.fill"
+        ],
+        "party.popper": [
+          "party.popper",
+          "party.popper.fill"
+        ],
+        "balloon": [
+          "balloon",
+          "balloon.fill"
+        ],
+        "balloon.2": [
+          "balloon.2",
+          "balloon.2.fill"
+        ],
+        "laser.burst": [
+          "laser.burst"
+        ],
+        "fireworks": [
+          "fireworks"
+        ],
+        "frying.pan": [
+          "frying.pan",
+          "frying.pan.fill"
+        ],
+        "popcorn": [
+          "popcorn",
+          "popcorn.fill",
+          "popcorn.circle",
+          "popcorn.circle.fill"
+        ],
+        "bed.double": [
+          "bed.double",
+          "bed.double.fill",
+          "bed.double.circle",
+          "bed.double.circle.fill"
+        ],
+        "sofa": [
+          "sofa",
+          "sofa.fill"
+        ],
+        "chair.lounge": [
+          "chair.lounge",
+          "chair.lounge.fill"
+        ],
+        "chair": [
+          "chair",
+          "chair.fill"
+        ],
+        "table.furniture": [
+          "table.furniture",
+          "table.furniture.fill"
+        ],
+        "cabinet": [
+          "cabinet",
+          "cabinet.fill"
+        ],
+        "fireplace": [
+          "fireplace",
+          "fireplace.fill"
+        ],
+        "washer": [
+          "washer",
+          "washer.fill",
+          "washer.circle",
+          "washer.circle.fill"
+        ],
+        "dryer": [
+          "dryer",
+          "dryer.fill",
+          "dryer.circle",
+          "dryer.circle.fill"
+        ],
+        "dishwasher": [
+          "dishwasher",
+          "dishwasher.fill",
+          "dishwasher.circle",
+          "dishwasher.circle.fill"
+        ],
+        "oven": [
+          "oven",
+          "oven.fill"
+        ],
+        "stove": [
+          "stove",
+          "stove.fill"
+        ],
+        "cooktop": [
+          "cooktop",
+          "cooktop.fill"
+        ],
+        "microwave": [
+          "microwave",
+          "microwave.fill"
+        ],
+        "refrigerator": [
+          "refrigerator",
+          "refrigerator.fill"
+        ],
+        "robotic.vacuum": [
+          "robotic.vacuum",
+          "robotic.vacuum.fill"
+        ],
+        "sink": [
+          "sink",
+          "sink.fill"
+        ],
+        "toilet": [
+          "toilet",
+          "toilet.fill",
+          "toilet.circle",
+          "toilet.circle.fill"
+        ],
+        "stairs": [
+          "stairs"
+        ],
+        "tent": [
+          "tent",
+          "tent.fill",
+          "tent.circle",
+          "tent.circle.fill"
+        ],
+        "tent.2": [
+          "tent.2",
+          "tent.2.fill",
+          "tent.2.circle",
+          "tent.2.circle.fill"
+        ],
+        "house.lodge": [
+          "house.lodge",
+          "house.lodge.fill",
+          "house.lodge.circle",
+          "house.lodge.circle.fill"
+        ],
+        "house.and.flag": [
+          "house.and.flag",
+          "house.and.flag.fill",
+          "house.and.flag.circle",
+          "house.and.flag.circle.fill"
+        ],
+        "signpost.left": [
+          "signpost.left",
+          "signpost.left.fill",
+          "signpost.left.circle",
+          "signpost.left.circle.fill"
+        ],
+        "signpost.right": [
+          "signpost.right",
+          "signpost.right.fill",
+          "signpost.right.circle",
+          "signpost.right.circle.fill"
+        ],
+        "signpost.right.and.left": [
+          "signpost.right.and.left",
+          "signpost.right.and.left.fill",
+          "signpost.right.and.left.circle",
+          "signpost.right.and.left.circle.fill"
+        ],
+        "signpost.and.arrowtriangle.up": [
+          "signpost.and.arrowtriangle.up",
+          "signpost.and.arrowtriangle.up.fill",
+          "signpost.and.arrowtriangle.up.circle",
+          "signpost.and.arrowtriangle.up.circle.fill"
+        ],
+        "mountain.2": [
+          "mountain.2",
+          "mountain.2.fill",
+          "mountain.2.circle",
+          "mountain.2.circle.fill"
+        ],
+        "square.split.bottomrightquarter": [
+          "square.split.bottomrightquarter",
+          "square.split.bottomrightquarter.fill"
+        ],
+        "building": [
+          "building",
+          "building.fill"
+        ],
+        "building.2": [
+          "building.2",
+          "building.2.fill"
+        ],
+        "building.2.crop": [
+          "building.2.crop.circle",
+          "building.2.crop.circle.fill"
+        ],
+        "lock": [
+          "lock",
+          "lock.fill",
+          "lock.circle",
+          "lock.circle.fill",
+          "lock.circle.dotted",
+          "lock.trianglebadge.exclamationmark",
+          "lock.trianglebadge.exclamationmark.fill",
+          "lock.badge.clock",
+          "lock.badge.clock.fill"
+        ],
+        "lock.square": [
+          "lock.square",
+          "lock.square.fill"
+        ],
+        "lock.square.stack": [
+          "lock.square.stack",
+          "lock.square.stack.fill"
+        ],
+        "lock.rectangle": [
+          "lock.rectangle",
+          "lock.rectangle.fill"
+        ],
+        "lock.rectangle.stack": [
+          "lock.rectangle.stack",
+          "lock.rectangle.stack.fill"
+        ],
+        "lock.rectangle.on.rectangle": [
+          "lock.rectangle.on.rectangle",
+          "lock.rectangle.on.rectangle.fill"
+        ],
+        "lock.shield": [
+          "lock.shield",
+          "lock.shield.fill"
+        ],
+        "lock.slash": [
+          "lock.slash",
+          "lock.slash.fill"
+        ],
+        "exclamationmark.lock": [
+          "exclamationmark.lock",
+          "exclamationmark.lock.fill"
+        ],
+        "lock.open": [
+          "lock.open",
+          "lock.open.fill",
+          "lock.open.trianglebadge.exclamationmark",
+          "lock.open.trianglebadge.exclamationmark.fill"
+        ],
+        "lock.rotation": [
+          "lock.rotation"
+        ],
+        "lock.open.rotation": [
+          "lock.open.rotation"
+        ],
+        "key": [
+          "key",
+          "key.fill"
+        ],
+        "key.slash": [
+          "key.slash",
+          "key.slash.fill"
+        ],
+        "key.radiowaves.forward": [
+          "key.radiowaves.forward",
+          "key.radiowaves.forward.fill"
+        ],
+        "key.radiowaves.forward.slash": [
+          "key.radiowaves.forward.slash",
+          "key.radiowaves.forward.slash.fill"
+        ],
+        "key.2.on.ring": [
+          "key.2.on.ring",
+          "key.2.on.ring.fill"
+        ],
+        "key.horizontal": [
+          "key.horizontal",
+          "key.horizontal.fill"
+        ],
+        "questionmark.key": [
+          "questionmark.key.filled"
+        ],
+        "wifi": [
+          "wifi",
+          "wifi.circle",
+          "wifi.circle.fill"
+        ],
+        "wifi.square": [
+          "wifi.square",
+          "wifi.square.fill"
+        ],
+        "wifi.slash": [
+          "wifi.slash"
+        ],
+        "wifi.exclamationmark": [
+          "wifi.exclamationmark",
+          "wifi.exclamationmark.circle",
+          "wifi.exclamationmark.circle.fill"
+        ],
+        "pin": [
+          "pin",
+          "pin.fill",
+          "pin.circle",
+          "pin.circle.fill"
+        ],
+        "pin.square": [
+          "pin.square",
+          "pin.square.fill"
+        ],
+        "pin.slash": [
+          "pin.slash",
+          "pin.slash.fill"
+        ],
+        "mappin": [
+          "mappin",
+          "mappin.circle",
+          "mappin.circle.fill"
+        ],
+        "mappin.square": [
+          "mappin.square",
+          "mappin.square.fill"
+        ],
+        "mappin.slash": [
+          "mappin.slash",
+          "mappin.slash.circle",
+          "mappin.slash.circle.fill"
+        ],
+        "mappin.and.ellipse": [
+          "mappin.and.ellipse",
+          "mappin.and.ellipse.circle",
+          "mappin.and.ellipse.circle.fill"
+        ],
+        "map": [
+          "map",
+          "map.fill",
+          "map.circle",
+          "map.circle.fill"
+        ],
+        "safari": [
+          "safari",
+          "safari.fill"
+        ],
+        "move.3d": [
+          "move.3d"
+        ],
+        "scale.3d": [
+          "scale.3d"
+        ],
+        "rotate.3d": [
+          "rotate.3d",
+          "rotate.3d.fill",
+          "rotate.3d.circle",
+          "rotate.3d.circle.fill"
+        ],
+        "torus": [
+          "torus"
+        ],
+        "rotate.left": [
+          "rotate.left",
+          "rotate.left.fill"
+        ],
+        "rotate.right": [
+          "rotate.right",
+          "rotate.right.fill"
+        ],
+        "selection.pin.in.out": [
+          "selection.pin.in.out"
+        ],
+        "faceid": [
+          "faceid"
+        ],
+        "cpu": [
+          "cpu",
+          "cpu.fill"
+        ],
+        "memorychip": [
+          "memorychip",
+          "memorychip.fill"
+        ],
+        "opticaldisc": [
+          "opticaldisc",
+          "opticaldisc.fill"
+        ],
+        "sensor.tag.radiowaves.forward": [
+          "sensor.tag.radiowaves.forward",
+          "sensor.tag.radiowaves.forward.fill"
+        ],
+        "airtag.radiowaves.forward": [
+          "airtag.radiowaves.forward",
+          "airtag.radiowaves.forward.fill"
+        ],
+        "airtag": [
+          "airtag",
+          "airtag.fill"
+        ],
+        "display": [
+          "display",
+          "display.trianglebadge.exclamationmark"
+        ],
+        "play.display": [
+          "play.display"
+        ],
+        "lock.display": [
+          "lock.display"
+        ],
+        "lock.open.display": [
+          "lock.open.display"
+        ],
+        "display.and.arrow.down": [
+          "display.and.arrow.down"
+        ],
+        "dot.scope.display": [
+          "dot.scope.display"
+        ],
+        "display.2": [
+          "display.2"
+        ],
+        "desktopcomputer": [
+          "desktopcomputer",
+          "desktopcomputer.trianglebadge.exclamationmark"
+        ],
+        "play.desktopcomputer": [
+          "play.desktopcomputer"
+        ],
+        "lock.desktopcomputer": [
+          "lock.desktopcomputer"
+        ],
+        "lock.open.desktopcomputer": [
+          "lock.open.desktopcomputer"
+        ],
+        "desktopcomputer.and.arrow.down": [
+          "desktopcomputer.and.arrow.down"
+        ],
+        "desktopcomputer.and.macbook": [
+          "desktopcomputer.and.macbook"
+        ],
+        "pc": [
+          "pc"
+        ],
+        "macpro.gen1": [
+          "macpro.gen1",
+          "macpro.gen1.fill"
+        ],
+        "macpro.gen2": [
+          "macpro.gen2",
+          "macpro.gen2.fill"
+        ],
+        "macpro.gen3": [
+          "macpro.gen3",
+          "macpro.gen3.fill"
+        ],
+        "macpro.gen3.server": [
+          "macpro.gen3.server"
+        ],
+        "server.rack": [
+          "server.rack"
+        ],
+        "xserve": [
+          "xserve"
+        ],
+        "xserve.raid": [
+          "xserve.raid"
+        ],
+        "laptopcomputer": [
+          "laptopcomputer",
+          "laptopcomputer.trianglebadge.exclamationmark"
+        ],
+        "laptopcomputer.slash": [
+          "laptopcomputer.slash"
+        ],
+        "play.laptopcomputer": [
+          "play.laptopcomputer"
+        ],
+        "lock.laptopcomputer": [
+          "lock.laptopcomputer"
+        ],
+        "lock.open.laptopcomputer": [
+          "lock.open.laptopcomputer"
+        ],
+        "laptopcomputer.and.arrow.down": [
+          "laptopcomputer.and.arrow.down"
+        ],
+        "dot.scope.laptopcomputer": [
+          "dot.scope.laptopcomputer"
+        ],
+        "macbook.gen1": [
+          "macbook.gen1"
+        ],
+        "macbook.gen2": [
+          "macbook.gen2"
+        ],
+        "macbook": [
+          "macbook"
+        ],
+        "macbook.slash": [
+          "macbook.slash"
+        ],
+        "macbook.and.iphone": [
+          "macbook.and.iphone"
+        ],
+        "macbook.and.ipad": [
+          "macbook.and.ipad"
+        ],
+        "macbook.and.applewatch": [
+          "macbook.and.applewatch"
+        ],
+        "macmini": [
+          "macmini",
+          "macmini.fill"
+        ],
+        "macstudio": [
+          "macstudio",
+          "macstudio.fill"
+        ],
+        "airport.express": [
+          "airport.express"
+        ],
+        "airport.extreme": [
+          "airport.extreme"
+        ],
+        "airport.extreme.tower": [
+          "airport.extreme.tower"
+        ],
+        "ipod": [
+          "ipod"
+        ],
+        "ipod.shuffle.gen1": [
+          "ipod.shuffle.gen1"
+        ],
+        "ipod.shuffle.gen2": [
+          "ipod.shuffle.gen2"
+        ],
+        "ipod.shuffle.gen3": [
+          "ipod.shuffle.gen3"
+        ],
+        "ipod.shuffle.gen4": [
+          "ipod.shuffle.gen4"
+        ],
+        "ipod.touch": [
+          "ipod.touch"
+        ],
+        "ipod.touch.slash": [
+          "ipod.touch.slash"
+        ],
+        "ipod.touch.landscape": [
+          "ipod.touch.landscape"
+        ],
+        "flipphone": [
+          "flipphone"
+        ],
+        "candybarphone": [
+          "candybarphone"
+        ],
+        "iphone.gen1": [
+          "iphone.gen1",
+          "iphone.gen1.circle",
+          "iphone.gen1.circle.fill",
+          "iphone.gen1.badge.play",
+          "iphone.gen1.badge.exclamationmark",
+          "iphone.gen1.badge.location"
+        ],
+        "iphone.gen1.crop": [
+          "iphone.gen1.crop.circle"
+        ],
+        "iphone.gen1.landscape": [
+          "iphone.gen1.landscape"
+        ],
+        "iphone.gen1.landscape.slash": [
+          "iphone.gen1.landscape.slash"
+        ],
+        "iphone.gen1.radiowaves.left.and.right": [
+          "iphone.gen1.radiowaves.left.and.right",
+          "iphone.gen1.radiowaves.left.and.right.circle",
+          "iphone.gen1.radiowaves.left.and.right.circle.fill"
+        ],
+        "iphone.gen1.slash": [
+          "iphone.gen1.slash",
+          "iphone.gen1.slash.circle",
+          "iphone.gen1.slash.circle.fill"
+        ],
+        "iphone.gen1.motion": [
+          "iphone.gen1.motion"
+        ],
+        "iphone.gen1.and.arrow.left": [
+          "iphone.gen1.and.arrow.left"
+        ],
+        "iphone.gen2": [
+          "iphone.gen2",
+          "iphone.gen2.circle",
+          "iphone.gen2.circle.fill",
+          "iphone.gen2.badge.play",
+          "iphone.gen2.badge.exclamationmark",
+          "iphone.gen2.badge.location"
+        ],
+        "iphone.gen2.crop": [
+          "iphone.gen2.crop.circle"
+        ],
+        "iphone.gen2.landscape": [
+          "iphone.gen2.landscape"
+        ],
+        "iphone.gen2.landscape.slash": [
+          "iphone.gen2.landscape.slash"
+        ],
+        "iphone.gen2.radiowaves.left.and.right": [
+          "iphone.gen2.radiowaves.left.and.right",
+          "iphone.gen2.radiowaves.left.and.right.circle",
+          "iphone.gen2.radiowaves.left.and.right.circle.fill"
+        ],
+        "iphone.gen2.slash": [
+          "iphone.gen2.slash",
+          "iphone.gen2.slash.circle",
+          "iphone.gen2.slash.circle.fill"
+        ],
+        "iphone.gen2.motion": [
+          "iphone.gen2.motion"
+        ],
+        "iphone.gen2.and.arrow.left.and.arrow.right.inward": [
+          "iphone.gen2.and.arrow.left.and.arrow.right.inward"
+        ],
+        "iphone.gen3": [
+          "iphone.gen3",
+          "iphone.gen3.circle",
+          "iphone.gen3.circle.fill",
+          "iphone.gen3.badge.play",
+          "iphone.gen3.badge.exclamationmark",
+          "iphone.gen3.badge.location"
+        ],
+        "iphone.gen3.crop": [
+          "iphone.gen3.crop.circle"
+        ],
+        "iphone.gen3.landscape": [
+          "iphone.gen3.landscape"
+        ],
+        "iphone.gen3.landscape.slash": [
+          "iphone.gen3.landscape.slash"
+        ],
+        "iphone.gen3.radiowaves.left.and.right": [
+          "iphone.gen3.radiowaves.left.and.right",
+          "iphone.gen3.radiowaves.left.and.right.circle",
+          "iphone.gen3.radiowaves.left.and.right.circle.fill"
+        ],
+        "iphone.gen3.slash": [
+          "iphone.gen3.slash",
+          "iphone.gen3.slash.circle",
+          "iphone.gen3.slash.circle.fill"
+        ],
+        "iphone.gen3.motion": [
+          "iphone.gen3.motion"
+        ],
+        "iphone.gen3.and.arrow.left.and.arrow.right.inward": [
+          "iphone.gen3.and.arrow.left.and.arrow.right.inward"
+        ],
+        "iphone": [
+          "iphone",
+          "iphone.circle",
+          "iphone.circle.fill",
+          "iphone.badge.play",
+          "iphone.badge.exclamationmark",
+          "iphone.badge.location"
+        ],
+        "iphone.crop": [
+          "iphone.crop.circle"
+        ],
+        "iphone.landscape": [
+          "iphone.landscape"
+        ],
+        "iphone.radiowaves.left.and.right": [
+          "iphone.radiowaves.left.and.right",
+          "iphone.radiowaves.left.and.right.circle",
+          "iphone.radiowaves.left.and.right.circle.fill"
+        ],
+        "iphone.slash": [
+          "iphone.slash",
+          "iphone.slash.circle",
+          "iphone.slash.circle.fill"
+        ],
+        "iphone.motion": [
+          "iphone.motion"
+        ],
+        "iphone.and.arrow.left.and.arrow.right.inward": [
+          "iphone.and.arrow.left.and.arrow.right.inward"
+        ],
+        "lock.iphone": [
+          "lock.iphone"
+        ],
+        "lock.open.iphone": [
+          "lock.open.iphone"
+        ],
+        "iphone.and.arrow.right.inward": [
+          "iphone.and.arrow.right.inward"
+        ],
+        "iphone.and.arrow.forward.inward": [
+          "iphone.and.arrow.forward.inward"
+        ],
+        "iphone.and.arrow.right.outward": [
+          "iphone.and.arrow.right.outward"
+        ],
+        "iphone.and.arrow.forward.outward": [
+          "iphone.and.arrow.forward.outward"
+        ],
+        "iphone.app.switcher": [
+          "iphone.app.switcher"
+        ],
+        "arrow.turn.up.forward.iphone": [
+          "arrow.turn.up.forward.iphone",
+          "arrow.turn.up.forward.iphone.fill"
+        ],
+        "iphone.rear.camera": [
+          "iphone.rear.camera"
+        ],
+        "apps.iphone": [
+          "apps.iphone",
+          "apps.iphone.badge.plus"
+        ],
+        "apps.iphone.landscape": [
+          "apps.iphone.landscape"
+        ],
+        "platter": [
+          "platter.filled.top.iphone",
+          "platter.filled.bottom.iphone",
+          "platter.filled.top.and.arrow.up.iphone",
+          "platter.filled.bottom.and.arrow.down.iphone",
+          "platter.filled.top.applewatch.case",
+          "platter.filled.bottom.applewatch.case"
+        ],
+        "platter.2": [
+          "platter.2.filled.iphone",
+          "platter.2.filled.iphone.landscape",
+          "platter.2.filled.ipad",
+          "platter.2.filled.ipad.landscape"
+        ],
+        "iphone.smartbatterycase.gen2": [
+          "iphone.smartbatterycase.gen2"
+        ],
+        "iphone.smartbatterycase.gen1": [
+          "iphone.smartbatterycase.gen1"
+        ],
+        "ipad.gen1": [
+          "ipad.gen1",
+          "ipad.gen1.badge.play",
+          "ipad.gen1.badge.exclamationmark",
+          "ipad.gen1.badge.location"
+        ],
+        "ipad.gen1.slash": [
+          "ipad.gen1.slash"
+        ],
+        "ipad.gen1.landscape": [
+          "ipad.gen1.landscape",
+          "ipad.gen1.landscape.badge.play",
+          "ipad.gen1.landscape.badge.exclamationmark",
+          "ipad.gen1.landscape.badge.location"
+        ],
+        "ipad.gen1.landscape.slash": [
+          "ipad.gen1.landscape.slash"
+        ],
+        "ipad.gen2": [
+          "ipad.gen2",
+          "ipad.gen2.badge.play",
+          "ipad.gen2.badge.exclamationmark",
+          "ipad.gen2.badge.location"
+        ],
+        "ipad.gen2.slash": [
+          "ipad.gen2.slash"
+        ],
+        "ipad.gen2.landscape": [
+          "ipad.gen2.landscape",
+          "ipad.gen2.landscape.badge.play",
+          "ipad.gen2.landscape.badge.exclamationmark",
+          "ipad.gen2.landscape.badge.location"
+        ],
+        "ipad.gen2.landscape.slash": [
+          "ipad.gen2.landscape.slash"
+        ],
+        "ipad": [
+          "ipad",
+          "ipad.badge.play",
+          "ipad.badge.exclamationmark",
+          "ipad.badge.location"
+        ],
+        "ipad.landscape": [
+          "ipad.landscape",
+          "ipad.landscape.badge.play",
+          "ipad.landscape.badge.exclamationmark",
+          "ipad.landscape.badge.location"
+        ],
+        "ipad.landscape.and.iphone": [
+          "ipad.landscape.and.iphone"
+        ],
+        "ipad.landscape.and.iphone.slash": [
+          "ipad.landscape.and.iphone.slash"
+        ],
+        "lock.ipad": [
+          "lock.ipad"
+        ],
+        "lock.open.ipad": [
+          "lock.open.ipad"
+        ],
+        "ipad.and.arrow.forward": [
+          "ipad.and.arrow.forward"
+        ],
+        "ipad.rear.camera": [
+          "ipad.rear.camera"
+        ],
+        "apps.ipad": [
+          "apps.ipad"
+        ],
+        "apps.ipad.landscape": [
+          "apps.ipad.landscape"
+        ],
+        "iphone.case": [
+          "iphone.case"
+        ],
+        "ipad.case": [
+          "ipad.case"
+        ],
+        "ipad.case.and.iphone.case": [
+          "ipad.case.and.iphone.case"
+        ],
+        "applewatch.case.sizes": [
+          "applewatch.case.sizes"
+        ],
+        "iphone.sizes": [
+          "iphone.sizes"
+        ],
+        "ipad.sizes": [
+          "ipad.sizes"
+        ],
+        "smartphone": [
+          "smartphone"
+        ],
+        "vision.pro": [
+          "vision.pro",
+          "vision.pro.fill",
+          "vision.pro.circle",
+          "vision.pro.circle.fill",
+          "vision.pro.badge.exclamationmark",
+          "vision.pro.badge.exclamationmark.fill",
+          "vision.pro.badge.play",
+          "vision.pro.badge.play.fill",
+          "vision.pro.trianglebadge.exclamationmark",
+          "vision.pro.trianglebadge.exclamationmark.fill"
+        ],
+        "vision.pro.slash": [
+          "vision.pro.slash",
+          "vision.pro.slash.fill",
+          "vision.pro.slash.circle",
+          "vision.pro.slash.circle.fill"
+        ],
+        "vision.pro.and.arrow.forward": [
+          "vision.pro.and.arrow.forward",
+          "vision.pro.and.arrow.forward.fill"
+        ],
+        "macbook.and.vision.pro": [
+          "macbook.and.vision.pro"
+        ],
+        "head.profile.arrow.forward.and.vision.pro": [
+          "head.profile.arrow.forward.and.vision.pro"
+        ],
+        "opticid": [
+          "opticid",
+          "opticid.fill"
+        ],
+        "pano": [
+          "pano",
+          "pano.fill",
+          "pano.badge.play",
+          "pano.badge.play.fill"
+        ],
+        "viewfinder.rectangular": [
+          "viewfinder.rectangular"
+        ],
+        "applepencil.gen1": [
+          "applepencil.gen1"
+        ],
+        "applepencil.gen2": [
+          "applepencil.gen2"
+        ],
+        "applepencil": [
+          "applepencil"
+        ],
+        "applepencil.and.scribble": [
+          "applepencil.and.scribble"
+        ],
+        "applepencil.hover": [
+          "applepencil.hover"
+        ],
+        "applepencil.squeeze": [
+          "applepencil.squeeze"
+        ],
+        "applepencil.doubletap": [
+          "applepencil.doubletap"
+        ],
+        "applepencil.tip": [
+          "applepencil.tip"
+        ],
+        "applepencil.adapter.usb.c": [
+          "applepencil.adapter.usb.c",
+          "applepencil.adapter.usb.c.fill"
+        ],
+        "magicmouse": [
+          "magicmouse",
+          "magicmouse.fill"
+        ],
+        "computermouse": [
+          "computermouse",
+          "computermouse.fill"
+        ],
+        "watch.analog": [
+          "watch.analog"
+        ],
+        "applewatch": [
+          "applewatch"
+        ],
+        "applewatch.watchface": [
+          "applewatch.watchface"
+        ],
+        "exclamationmark.applewatch": [
+          "exclamationmark.applewatch"
+        ],
+        "lock.applewatch": [
+          "lock.applewatch"
+        ],
+        "lock.open.applewatch": [
+          "lock.open.applewatch"
+        ],
+        "checkmark.applewatch": [
+          "checkmark.applewatch"
+        ],
+        "arrow.down.applewatch": [
+          "arrow.down.applewatch"
+        ],
+        "applewatch.and.arrow.forward": [
+          "applewatch.and.arrow.forward"
+        ],
+        "applewatch.radiowaves.left.and.right": [
+          "applewatch.radiowaves.left.and.right"
+        ],
+        "applewatch.slash": [
+          "applewatch.slash"
+        ],
+        "applewatch.side.right": [
+          "applewatch.side.right"
+        ],
+        "watchface.applewatch.case": [
+          "watchface.applewatch.case"
+        ],
+        "platter.top.applewatch.case": [
+          "platter.top.applewatch.case"
+        ],
+        "platter.bottom.applewatch.case": [
+          "platter.bottom.applewatch.case"
+        ],
+        "arrow.up.and.down.and.sparkles": [
+          "arrow.up.and.down.and.sparkles"
+        ],
+        "digitalcrown.arrow.clockwise": [
+          "digitalcrown.arrow.clockwise",
+          "digitalcrown.arrow.clockwise.fill"
+        ],
+        "digitalcrown.arrow.counterclockwise": [
+          "digitalcrown.arrow.counterclockwise",
+          "digitalcrown.arrow.counterclockwise.fill"
+        ],
+        "digitalcrown.press": [
+          "digitalcrown.press",
+          "digitalcrown.press.fill"
+        ],
+        "digitalcrown.horizontal.arrow.clockwise": [
+          "digitalcrown.horizontal.arrow.clockwise",
+          "digitalcrown.horizontal.arrow.clockwise.fill"
+        ],
+        "digitalcrown.horizontal.arrow.counterclockwise": [
+          "digitalcrown.horizontal.arrow.counterclockwise",
+          "digitalcrown.horizontal.arrow.counterclockwise.fill"
+        ],
+        "digitalcrown.horizontal.press": [
+          "digitalcrown.horizontal.press",
+          "digitalcrown.horizontal.press.fill"
+        ],
+        "button.vertical.right.press": [
+          "button.vertical.right.press",
+          "button.vertical.right.press.fill"
+        ],
+        "button.vertical.left.press": [
+          "button.vertical.left.press",
+          "button.vertical.left.press.fill"
+        ],
+        "button.horizontal.top.press": [
+          "button.horizontal.top.press",
+          "button.horizontal.top.press.fill"
+        ],
+        "airpods.max": [
+          "airpods.max"
+        ],
+        "beats.headphones": [
+          "beats.headphones"
+        ],
+        "headphones": [
+          "headphones",
+          "headphones.circle",
+          "headphones.circle.fill"
+        ],
+        "headphones.slash": [
+          "headphones.slash"
+        ],
+        "headset": [
+          "headset",
+          "headset.circle",
+          "headset.circle.fill"
+        ],
+        "earbuds": [
+          "earbuds"
+        ],
+        "earbuds.case": [
+          "earbuds.case",
+          "earbuds.case.fill"
+        ],
+        "earpods": [
+          "earpods"
+        ],
+        "airpods": [
+          "airpods"
+        ],
+        "airpod.right": [
+          "airpod.right"
+        ],
+        "airpod.left": [
+          "airpod.left"
+        ],
+        "airpods.chargingcase": [
+          "airpods.chargingcase",
+          "airpods.chargingcase.fill"
+        ],
+        "airpods.chargingcase.wireless": [
+          "airpods.chargingcase.wireless",
+          "airpods.chargingcase.wireless.fill"
+        ],
+        "airpods.gen3": [
+          "airpods.gen3"
+        ],
+        "airpod.gen3.right": [
+          "airpod.gen3.right"
+        ],
+        "airpod.gen3.left": [
+          "airpod.gen3.left"
+        ],
+        "airpods.gen3.chargingcase.wireless": [
+          "airpods.gen3.chargingcase.wireless",
+          "airpods.gen3.chargingcase.wireless.fill"
+        ],
+        "airpods.pro": [
+          "airpods.pro"
+        ],
+        "airpods.pro.right": [
+          "airpods.pro.right"
+        ],
+        "airpods.pro.left": [
+          "airpods.pro.left"
+        ],
+        "airpods.pro.chargingcase.wireless": [
+          "airpods.pro.chargingcase.wireless",
+          "airpods.pro.chargingcase.wireless.fill"
+        ],
+        "airpods.pro.chargingcase.wireless.radiowaves.left.and.right": [
+          "airpods.pro.chargingcase.wireless.radiowaves.left.and.right",
+          "airpods.pro.chargingcase.wireless.radiowaves.left.and.right.fill"
+        ],
+        "beats.earphones": [
+          "beats.earphones"
+        ],
+        "beats.powerbeats.pro": [
+          "beats.powerbeats.pro"
+        ],
+        "beats.powerbeats.pro.right": [
+          "beats.powerbeats.pro.right"
+        ],
+        "beats.powerbeats.pro.left": [
+          "beats.powerbeats.pro.left"
+        ],
+        "beats.powerbeats.pro.chargingcase": [
+          "beats.powerbeats.pro.chargingcase",
+          "beats.powerbeats.pro.chargingcase.fill"
+        ],
+        "beats.powerbeats": [
+          "beats.powerbeats"
+        ],
+        "beats.powerbeats.right": [
+          "beats.powerbeats.right"
+        ],
+        "beats.powerbeats.left": [
+          "beats.powerbeats.left"
+        ],
+        "beats.powerbeats3": [
+          "beats.powerbeats3"
+        ],
+        "beats.powerbeats3.right": [
+          "beats.powerbeats3.right"
+        ],
+        "beats.powerbeats3.left": [
+          "beats.powerbeats3.left"
+        ],
+        "beats.studiobuds": [
+          "beats.studiobuds"
+        ],
+        "beats.studiobuds.left": [
+          "beats.studiobuds.left"
+        ],
+        "beats.studiobuds.right": [
+          "beats.studiobuds.right"
+        ],
+        "beats.studiobuds.chargingcase": [
+          "beats.studiobuds.chargingcase",
+          "beats.studiobuds.chargingcase.fill"
+        ],
+        "beats.studiobuds.plus": [
+          "beats.studiobuds.plus"
+        ],
+        "beats.studiobuds.plus.left": [
+          "beats.studiobuds.plus.left"
+        ],
+        "beats.studiobuds.plus.right": [
+          "beats.studiobuds.plus.right"
+        ],
+        "beats.studiobuds.plus.chargingcase": [
+          "beats.studiobuds.plus.chargingcase",
+          "beats.studiobuds.plus.chargingcase.fill"
+        ],
+        "beats.solobuds": [
+          "beats.solobuds"
+        ],
+        "beats.solobuds.right": [
+          "beats.solobuds.right"
+        ],
+        "beats.solobuds.left": [
+          "beats.solobuds.left"
+        ],
+        "beats.solobuds.chargingcase": [
+          "beats.solobuds.chargingcase",
+          "beats.solobuds.chargingcase.fill"
+        ],
+        "beats.fitpro": [
+          "beats.fitpro"
+        ],
+        "beats.fitpro.left": [
+          "beats.fitpro.left"
+        ],
+        "beats.fitpro.right": [
+          "beats.fitpro.right"
+        ],
+        "beats.fitpro.chargingcase": [
+          "beats.fitpro.chargingcase",
+          "beats.fitpro.chargingcase.fill"
+        ],
+        "beats.pill": [
+          "beats.pill",
+          "beats.pill.fill"
+        ],
+        "homepod.mini": [
+          "homepod.mini",
+          "homepod.mini.fill",
+          "homepod.mini.badge.plus",
+          "homepod.mini.badge.plus.fill",
+          "homepod.mini.badge.minus",
+          "homepod.mini.badge.minus.fill"
+        ],
+        "homepod.mini.arrow.forward": [
+          "homepod.mini.arrow.forward",
+          "homepod.mini.arrow.forward.fill"
+        ],
+        "homepod.mini.2": [
+          "homepod.mini.2",
+          "homepod.mini.2.fill",
+          "homepod.mini.2.badge.plus",
+          "homepod.mini.2.badge.plus.fill",
+          "homepod.mini.2.badge.minus",
+          "homepod.mini.2.badge.minus.fill"
+        ],
+        "homepod.and.homepod.mini": [
+          "homepod.and.homepod.mini",
+          "homepod.and.homepod.mini.fill",
+          "homepod.and.homepod.mini.badge.plus",
+          "homepod.and.homepod.mini.badge.plus.fill",
+          "homepod.and.homepod.mini.badge.minus",
+          "homepod.and.homepod.mini.badge.minus.fill"
+        ],
+        "hifispeaker.and.homepod.mini": [
+          "hifispeaker.and.homepod.mini",
+          "hifispeaker.and.homepod.mini.fill",
+          "hifispeaker.and.homepod.mini.badge.plus",
+          "hifispeaker.and.homepod.mini.badge.plus.fill",
+          "hifispeaker.and.homepod.mini.badge.minus",
+          "hifispeaker.and.homepod.mini.badge.minus.fill"
+        ],
+        "homepod": [
+          "homepod",
+          "homepod.fill",
+          "homepod.badge.plus",
+          "homepod.badge.plus.fill",
+          "homepod.badge.minus",
+          "homepod.badge.minus.fill"
+        ],
+        "homepod.arrow.forward": [
+          "homepod.arrow.forward",
+          "homepod.arrow.forward.fill"
+        ],
+        "homepod.2": [
+          "homepod.2",
+          "homepod.2.fill",
+          "homepod.2.badge.plus",
+          "homepod.2.badge.plus.fill",
+          "homepod.2.badge.minus",
+          "homepod.2.badge.minus.fill"
+        ],
+        "hifispeaker.and.homepod": [
+          "hifispeaker.and.homepod",
+          "hifispeaker.and.homepod.fill",
+          "hifispeaker.and.homepod.badge.plus",
+          "hifispeaker.and.homepod.badge.plus.fill",
+          "hifispeaker.and.homepod.badge.minus",
+          "hifispeaker.and.homepod.badge.minus.fill"
+        ],
+        "hifispeaker": [
+          "hifispeaker",
+          "hifispeaker.fill",
+          "hifispeaker.badge.plus",
+          "hifispeaker.badge.plus.fill",
+          "hifispeaker.badge.minus",
+          "hifispeaker.badge.minus.fill"
+        ],
+        "hifispeaker.arrow.forward": [
+          "hifispeaker.arrow.forward",
+          "hifispeaker.arrow.forward.fill"
+        ],
+        "hifispeaker.2": [
+          "hifispeaker.2",
+          "hifispeaker.2.fill",
+          "hifispeaker.2.badge.plus",
+          "hifispeaker.2.badge.plus.fill",
+          "hifispeaker.2.badge.minus",
+          "hifispeaker.2.badge.minus.fill"
+        ],
+        "appletv": [
+          "appletv",
+          "appletv.fill"
+        ],
+        "homepod.and.appletv": [
+          "homepod.and.appletv",
+          "homepod.and.appletv.fill"
+        ],
+        "homepodmini.and.appletv": [
+          "homepodmini.and.appletv",
+          "homepodmini.and.appletv.fill"
+        ],
+        "hifispeaker.and.appletv": [
+          "hifispeaker.and.appletv",
+          "hifispeaker.and.appletv.fill"
+        ],
+        "appletvremote.gen1": [
+          "appletvremote.gen1",
+          "appletvremote.gen1.fill"
+        ],
+        "appletvremote.gen2": [
+          "appletvremote.gen2",
+          "appletvremote.gen2.fill"
+        ],
+        "appletvremote.gen3": [
+          "appletvremote.gen3",
+          "appletvremote.gen3.fill"
+        ],
+        "appletvremote.gen4": [
+          "appletvremote.gen4",
+          "appletvremote.gen4.fill"
+        ],
+        "av.remote": [
+          "av.remote",
+          "av.remote.fill"
+        ],
+        "magsafe.batterypack": [
+          "magsafe.batterypack",
+          "magsafe.batterypack.fill"
+        ],
+        "mediastick": [
+          "mediastick"
+        ],
+        "cable.connector": [
+          "cable.connector"
+        ],
+        "cable.connector.slash": [
+          "cable.connector.slash"
+        ],
+        "cable.connector.horizontal": [
+          "cable.connector.horizontal"
+        ],
+        "cable.coaxial": [
+          "cable.coaxial"
+        ],
+        "audio.jack.stereo": [
+          "audio.jack.stereo"
+        ],
+        "audio.jack.mono": [
+          "audio.jack.mono"
+        ],
+        "tv": [
+          "tv",
+          "tv.fill",
+          "tv.circle",
+          "tv.circle.fill",
+          "tv.badge.wifi",
+          "tv.badge.wifi.fill"
+        ],
+        "tv.slash": [
+          "tv.slash",
+          "tv.slash.fill"
+        ],
+        "sparkles.tv": [
+          "sparkles.tv",
+          "sparkles.tv.fill"
+        ],
+        "4k.tv": [
+          "4k.tv",
+          "4k.tv.fill"
+        ],
+        "music.note.tv": [
+          "music.note.tv",
+          "music.note.tv.fill"
+        ],
+        "play.tv": [
+          "play.tv",
+          "play.tv.fill"
+        ],
+        "photo.tv": [
+          "photo.tv"
+        ],
+        "tv.and.hifispeaker": [
+          "tv.and.hifispeaker.fill"
+        ],
+        "tv.and.mediabox": [
+          "tv.and.mediabox",
+          "tv.and.mediabox.fill"
+        ],
+        "airplay.video": [
+          "airplay.video",
+          "airplay.video.circle",
+          "airplay.video.circle.fill",
+          "airplay.video.badge.exclamationmark"
+        ],
+        "airplay.audio": [
+          "airplay.audio",
+          "airplay.audio.circle",
+          "airplay.audio.circle.fill",
+          "airplay.audio.badge.exclamationmark"
+        ],
+        "radio": [
+          "radio",
+          "radio.fill"
+        ],
+        "shazam.logo": [
+          "shazam.logo",
+          "shazam.logo.fill"
+        ],
+        "dot.radiowaves.left.and.right": [
+          "dot.radiowaves.left.and.right"
+        ],
+        "dot.radiowaves.right": [
+          "dot.radiowaves.right"
+        ],
+        "dot.radiowaves.forward": [
+          "dot.radiowaves.forward"
+        ],
+        "wave.3.up": [
+          "wave.3.up",
+          "wave.3.up.circle",
+          "wave.3.up.circle.fill"
+        ],
+        "wave.3.down": [
+          "wave.3.down",
+          "wave.3.down.circle",
+          "wave.3.down.circle.fill"
+        ],
+        "wave.3.left": [
+          "wave.3.left",
+          "wave.3.left.circle",
+          "wave.3.left.circle.fill"
+        ],
+        "wave.3.backward": [
+          "wave.3.backward",
+          "wave.3.backward.circle",
+          "wave.3.backward.circle.fill"
+        ],
+        "wave.3.right": [
+          "wave.3.right",
+          "wave.3.right.circle",
+          "wave.3.right.circle.fill"
+        ],
+        "wave.3.forward": [
+          "wave.3.forward",
+          "wave.3.forward.circle",
+          "wave.3.forward.circle.fill"
+        ],
+        "dot.radiowaves.up.forward": [
+          "dot.radiowaves.up.forward"
+        ],
+        "antenna.radiowaves.left.and.right": [
+          "antenna.radiowaves.left.and.right",
+          "antenna.radiowaves.left.and.right.circle",
+          "antenna.radiowaves.left.and.right.circle.fill"
+        ],
+        "antenna.radiowaves.left.and.right.slash": [
+          "antenna.radiowaves.left.and.right.slash",
+          "antenna.radiowaves.left.and.right.slash.circle",
+          "antenna.radiowaves.left.and.right.slash.circle.fill"
+        ],
+        "pip": [
+          "pip",
+          "pip.fill"
+        ],
+        "pip.exit": [
+          "pip.exit"
+        ],
+        "pip.enter": [
+          "pip.enter"
+        ],
+        "pip.swap": [
+          "pip.swap"
+        ],
+        "pip.remove": [
+          "pip.remove"
+        ],
+        "timeline.selection": [
+          "timeline.selection"
+        ],
+        "square.arrowtriangle.4.outward": [
+          "square.arrowtriangle.4.outward"
+        ],
+        "rectangle.arrowtriangle.2.outward": [
+          "rectangle.arrowtriangle.2.outward"
+        ],
+        "rectangle.arrowtriangle.2.inward": [
+          "rectangle.arrowtriangle.2.inward"
+        ],
+        "rectangle.portrait.arrowtriangle.2.outward": [
+          "rectangle.portrait.arrowtriangle.2.outward"
+        ],
+        "rectangle.portrait.arrowtriangle.2.inward": [
+          "rectangle.portrait.arrowtriangle.2.inward"
+        ],
+        "rectangle.2.swap": [
+          "rectangle.2.swap"
+        ],
+        "guitars": [
+          "guitars",
+          "guitars.fill"
+        ],
+        "airplane": [
+          "airplane",
+          "airplane.circle",
+          "airplane.circle.fill"
+        ],
+        "airplane.arrival": [
+          "airplane.arrival"
+        ],
+        "airplane.departure": [
+          "airplane.departure"
+        ],
+        "car": [
+          "car",
+          "car.fill",
+          "car.circle",
+          "car.circle.fill",
+          "car.badge.gearshape",
+          "car.badge.gearshape.fill"
+        ],
+        "car.front.waves.up": [
+          "car.front.waves.up",
+          "car.front.waves.up.fill"
+        ],
+        "car.front.waves.down": [
+          "car.front.waves.down",
+          "car.front.waves.down.fill"
+        ],
+        "car.front.waves.left.and.right.and.up": [
+          "car.front.waves.left.and.right.and.up",
+          "car.front.waves.left.and.right.and.up.fill"
+        ],
+        "car.rear": [
+          "car.rear",
+          "car.rear.fill"
+        ],
+        "car.rear.waves.up": [
+          "car.rear.waves.up",
+          "car.rear.waves.up.fill"
+        ],
+        "car.rear.and.tire.marks": [
+          "car.rear.and.tire.marks"
+        ],
+        "car.rear.and.tire.marks.slash": [
+          "car.rear.and.tire.marks.slash"
+        ],
+        "car.rear.and.tire.marks.off": [
+          "car.rear.and.tire.marks.off"
+        ],
+        "bolt.car": [
+          "bolt.car",
+          "bolt.car.fill",
+          "bolt.car.circle",
+          "bolt.car.circle.fill"
+        ],
+        "car.2": [
+          "car.2",
+          "car.2.fill"
+        ],
+        "bus": [
+          "bus",
+          "bus.fill"
+        ],
+        "bus.doubledecker": [
+          "bus.doubledecker",
+          "bus.doubledecker.fill"
+        ],
+        "tram": [
+          "tram",
+          "tram.fill",
+          "tram.circle",
+          "tram.circle.fill",
+          "tram.fill.tunnel"
+        ],
+        "cablecar": [
+          "cablecar",
+          "cablecar.fill"
+        ],
+        "lightrail": [
+          "lightrail",
+          "lightrail.fill"
+        ],
+        "ferry": [
+          "ferry",
+          "ferry.fill"
+        ],
+        "car.ferry": [
+          "car.ferry",
+          "car.ferry.fill"
+        ],
+        "sailboat": [
+          "sailboat",
+          "sailboat.fill",
+          "sailboat.circle",
+          "sailboat.circle.fill"
+        ],
+        "train.side.front.car": [
+          "train.side.front.car"
+        ],
+        "train.side.middle.car": [
+          "train.side.middle.car"
+        ],
+        "train.side.rear.car": [
+          "train.side.rear.car"
+        ],
+        "truck.box": [
+          "truck.box",
+          "truck.box.fill",
+          "truck.box.badge.clock",
+          "truck.box.badge.clock.fill"
+        ],
+        "drone": [
+          "drone",
+          "drone.fill"
+        ],
+        "wheelchair": [
+          "wheelchair"
+        ],
+        "bicycle": [
+          "bicycle",
+          "bicycle.circle",
+          "bicycle.circle.fill"
+        ],
+        "helmet": [
+          "helmet",
+          "helmet.fill"
+        ],
+        "moped": [
+          "moped",
+          "moped.fill"
+        ],
+        "motorcycle": [
+          "motorcycle",
+          "motorcycle.fill"
+        ],
+        "scooter": [
+          "scooter"
+        ],
+        "stroller": [
+          "stroller",
+          "stroller.fill"
+        ],
+        "parkingsign": [
+          "parkingsign",
+          "parkingsign.circle",
+          "parkingsign.circle.fill"
+        ],
+        "parkingsign.square": [
+          "parkingsign.square",
+          "parkingsign.square.fill"
+        ],
+        "parkingsign.radiowaves.left.and.right": [
+          "parkingsign.radiowaves.left.and.right"
+        ],
+        "parkingsign.radiowaves.left.and.right.slash": [
+          "parkingsign.radiowaves.left.and.right.slash"
+        ],
+        "parkingsign.radiowaves.down.right.off": [
+          "parkingsign.radiowaves.down.right.off"
+        ],
+        "parkingsign.radiowaves.right.and.safetycone": [
+          "parkingsign.radiowaves.right.and.safetycone"
+        ],
+        "fuelpump": [
+          "fuelpump",
+          "fuelpump.fill",
+          "fuelpump.circle",
+          "fuelpump.circle.fill"
+        ],
+        "fuelpump.slash": [
+          "fuelpump.slash",
+          "fuelpump.slash.fill"
+        ],
+        "fuelpump.exclamationmark": [
+          "fuelpump.exclamationmark",
+          "fuelpump.exclamationmark.fill"
+        ],
+        "fuelpump.and.filter": [
+          "fuelpump.and.filter"
+        ],
+        "fuelpump.arrowtriangle.left": [
+          "fuelpump.arrowtriangle.left",
+          "fuelpump.arrowtriangle.left.fill"
+        ],
+        "fuelpump.arrowtriangle.right": [
+          "fuelpump.arrowtriangle.right",
+          "fuelpump.arrowtriangle.right.fill"
+        ],
+        "ev.charger": [
+          "ev.charger",
+          "ev.charger.fill"
+        ],
+        "ev.charger.slash": [
+          "ev.charger.slash",
+          "ev.charger.slash.fill"
+        ],
+        "ev.charger.exclamationmark": [
+          "ev.charger.exclamationmark",
+          "ev.charger.exclamationmark.fill"
+        ],
+        "ev.charger.arrowtriangle.left": [
+          "ev.charger.arrowtriangle.left",
+          "ev.charger.arrowtriangle.left.fill"
+        ],
+        "ev.charger.arrowtriangle.right": [
+          "ev.charger.arrowtriangle.right",
+          "ev.charger.arrowtriangle.right.fill"
+        ],
+        "engine.combustion": [
+          "engine.combustion",
+          "engine.combustion.fill",
+          "engine.combustion.badge.exclamationmark",
+          "engine.combustion.badge.exclamationmark.fill"
+        ],
+        "headlight.high.beam": [
+          "headlight.high.beam",
+          "headlight.high.beam.fill"
+        ],
+        "automatic.headlight.high.beam": [
+          "automatic.headlight.high.beam",
+          "automatic.headlight.high.beam.fill"
+        ],
+        "headlight.low.beam": [
+          "headlight.low.beam",
+          "headlight.low.beam.fill"
+        ],
+        "automatic.headlight.low.beam": [
+          "automatic.headlight.low.beam",
+          "automatic.headlight.low.beam.fill"
+        ],
+        "headlight.fog": [
+          "headlight.fog",
+          "headlight.fog.fill"
+        ],
+        "taillight.fog": [
+          "taillight.fog",
+          "taillight.fog.fill"
+        ],
+        "headlight.daytime": [
+          "headlight.daytime",
+          "headlight.daytime.fill"
+        ],
+        "parkinglight": [
+          "parkinglight",
+          "parkinglight.fill"
+        ],
+        "warninglight": [
+          "warninglight",
+          "warninglight.fill"
+        ],
+        "exclamationmark.warninglight": [
+          "exclamationmark.warninglight",
+          "exclamationmark.warninglight.fill"
+        ],
+        "light.overhead.right": [
+          "light.overhead.right",
+          "light.overhead.right.fill"
+        ],
+        "light.overhead.left": [
+          "light.overhead.left",
+          "light.overhead.left.fill"
+        ],
+        "glowplug": [
+          "glowplug"
+        ],
+        "tirepressure": [
+          "tirepressure"
+        ],
+        "exclamationmark.tirepressure": [
+          "exclamationmark.tirepressure"
+        ],
+        "traction.control.tirepressure": [
+          "traction.control.tirepressure"
+        ],
+        "traction.control.tirepressure.slash": [
+          "traction.control.tirepressure.slash"
+        ],
+        "traction.control.tirepressure.exclamationmark": [
+          "traction.control.tirepressure.exclamationmark"
+        ],
+        "heat.waves": [
+          "heat.waves"
+        ],
+        "info.windshield": [
+          "info.windshield"
+        ],
+        "heat.element.windshield": [
+          "heat.element.windshield"
+        ],
+        "windshield.front.and.wiper": [
+          "windshield.front.and.wiper"
+        ],
+        "windshield.front.and.spray": [
+          "windshield.front.and.spray"
+        ],
+        "windshield.front.and.wiper.and.spray": [
+          "windshield.front.and.wiper.and.spray"
+        ],
+        "windshield.front.and.fluid.and.spray": [
+          "windshield.front.and.fluid.and.spray"
+        ],
+        "windshield.front.and.wiper.intermittent": [
+          "windshield.front.and.wiper.intermittent"
+        ],
+        "windshield.front.and.wiper.and.drop": [
+          "windshield.front.and.wiper.and.drop"
+        ],
+        "windshield.front.and.heat.waves": [
+          "windshield.front.and.heat.waves"
+        ],
+        "windshield.front.and.wiper.exclamationmark": [
+          "windshield.front.and.wiper.exclamationmark"
+        ],
+        "windshield.rear.and.wiper": [
+          "windshield.rear.and.wiper"
+        ],
+        "windshield.rear.and.spray": [
+          "windshield.rear.and.spray"
+        ],
+        "windshield.rear.and.wiper.and.spray": [
+          "windshield.rear.and.wiper.and.spray"
+        ],
+        "windshield.rear.and.fluid.and.spray": [
+          "windshield.rear.and.fluid.and.spray"
+        ],
+        "windshield.rear.and.wiper.intermittent": [
+          "windshield.rear.and.wiper.intermittent"
+        ],
+        "windshield.rear.and.wiper.and.drop": [
+          "windshield.rear.and.wiper.and.drop"
+        ],
+        "windshield.rear.and.heat.waves": [
+          "windshield.rear.and.heat.waves"
+        ],
+        "windshield.rear.and.wiper.exclamationmark": [
+          "windshield.rear.and.wiper.exclamationmark"
+        ],
+        "mirror.side.left": [
+          "mirror.side.left"
+        ],
+        "mirror.side.right": [
+          "mirror.side.right"
+        ],
+        "mirror.side.left.and.heat.waves": [
+          "mirror.side.left.and.heat.waves"
+        ],
+        "mirror.side.right.and.heat.waves": [
+          "mirror.side.right.and.heat.waves"
+        ],
+        "mirror.side.left.and.arrow.turn.down.right": [
+          "mirror.side.left.and.arrow.turn.down.right"
+        ],
+        "mirror.side.right.and.arrow.turn.down.left": [
+          "mirror.side.right.and.arrow.turn.down.left"
+        ],
+        "brakesignal": [
+          "brakesignal"
+        ],
+        "exclamationmark.brakesignal": [
+          "exclamationmark.brakesignal"
+        ],
+        "1.brakesignal": [
+          "1.brakesignal"
+        ],
+        "2.brakesignal": [
+          "2.brakesignal"
+        ],
+        "automatic.brakesignal": [
+          "automatic.brakesignal"
+        ],
+        "parkingsign.brakesignal": [
+          "parkingsign.brakesignal"
+        ],
+        "parkingsign.brakesignal.slash": [
+          "parkingsign.brakesignal.slash"
+        ],
+        "abs.brakesignal": [
+          "abs.brakesignal"
+        ],
+        "abs.brakesignal.slash": [
+          "abs.brakesignal.slash"
+        ],
+        "hold.brakesignal": [
+          "hold.brakesignal"
+        ],
+        "thermometer.brakesignal": [
+          "thermometer.brakesignal"
+        ],
+        "bolt.brakesignal": [
+          "bolt.brakesignal"
+        ],
+        "hand.raised.brakesignal": [
+          "hand.raised.brakesignal"
+        ],
+        "hand.raised.brakesignal.slash": [
+          "hand.raised.brakesignal.slash"
+        ],
+        "retarder.brakesignal": [
+          "retarder.brakesignal"
+        ],
+        "retarder.brakesignal.slash": [
+          "retarder.brakesignal.slash"
+        ],
+        "retarder.brakesignal.and.exclamationmark": [
+          "retarder.brakesignal.and.exclamationmark"
+        ],
+        "fluid.brakesignal": [
+          "fluid.brakesignal"
+        ],
+        "brakesignal.dashed": [
+          "brakesignal.dashed"
+        ],
+        "transmission": [
+          "transmission"
+        ],
+        "exclamationmark.transmission": [
+          "exclamationmark.transmission"
+        ],
+        "thermometer.transmission": [
+          "thermometer.transmission"
+        ],
+        "fluid.transmission": [
+          "fluid.transmission"
+        ],
+        "drop.transmission": [
+          "drop.transmission"
+        ],
+        "oilcan": [
+          "oilcan",
+          "oilcan.fill"
+        ],
+        "oilcan.and.thermometer": [
+          "oilcan.and.thermometer",
+          "oilcan.and.thermometer.fill"
+        ],
+        "figure.seated.seatbelt": [
+          "figure.seated.seatbelt"
+        ],
+        "figure.seated.seatbelt.left.drive.seats.3.3.3": [
+          "figure.seated.seatbelt.left.drive.seats.3.3.3",
+          "figure.seated.seatbelt.left.drive.seats.3.3.3.fill"
+        ],
+        "figure.seated.seatbelt.left.drive.seats.2.3.3": [
+          "figure.seated.seatbelt.left.drive.seats.2.3.3",
+          "figure.seated.seatbelt.left.drive.seats.2.3.3.fill"
+        ],
+        "figure.seated.seatbelt.left.drive.seats.2.3.2": [
+          "figure.seated.seatbelt.left.drive.seats.2.3.2",
+          "figure.seated.seatbelt.left.drive.seats.2.3.2.fill"
+        ],
+        "figure.seated.seatbelt.left.drive.seats.2.2.2": [
+          "figure.seated.seatbelt.left.drive.seats.2.2.2",
+          "figure.seated.seatbelt.left.drive.seats.2.2.2.fill"
+        ],
+        "figure.seated.seatbelt.left.drive.seats.2.2.3": [
+          "figure.seated.seatbelt.left.drive.seats.2.2.3",
+          "figure.seated.seatbelt.left.drive.seats.2.2.3.fill"
+        ],
+        "figure.seated.seatbelt.left.drive.seats.3.3": [
+          "figure.seated.seatbelt.left.drive.seats.3.3",
+          "figure.seated.seatbelt.left.drive.seats.3.3.fill"
+        ],
+        "figure.seated.seatbelt.left.drive.seats.2.3": [
+          "figure.seated.seatbelt.left.drive.seats.2.3",
+          "figure.seated.seatbelt.left.drive.seats.2.3.fill"
+        ],
+        "figure.seated.seatbelt.left.drive.seats.2.2": [
+          "figure.seated.seatbelt.left.drive.seats.2.2",
+          "figure.seated.seatbelt.left.drive.seats.2.2.fill"
+        ],
+        "figure.seated.seatbelt.left.drive.seats.1.2": [
+          "figure.seated.seatbelt.left.drive.seats.1.2",
+          "figure.seated.seatbelt.left.drive.seats.1.2.fill"
+        ],
+        "figure.seated.seatbelt.left.drive.seats.1.1": [
+          "figure.seated.seatbelt.left.drive.seats.1.1",
+          "figure.seated.seatbelt.left.drive.seats.1.1.fill"
+        ],
+        "figure.seated.seatbelt.left.drive.seats.3": [
+          "figure.seated.seatbelt.left.drive.seats.3",
+          "figure.seated.seatbelt.left.drive.seats.3.fill"
+        ],
+        "figure.seated.seatbelt.left.drive.seats.2": [
+          "figure.seated.seatbelt.left.drive.seats.2",
+          "figure.seated.seatbelt.left.drive.seats.2.fill"
+        ],
+        "figure.seated.seatbelt.left.drive.seats.1": [
+          "figure.seated.seatbelt.left.drive.seats.1",
+          "figure.seated.seatbelt.left.drive.seats.1.fill"
+        ],
+        "figure.seated.seatbelt.and.airbag.on": [
+          "figure.seated.seatbelt.and.airbag.on"
+        ],
+        "figure.seated.seatbelt.and.airbag.off": [
+          "figure.seated.seatbelt.and.airbag.off"
+        ],
+        "figure.seated.side.left.airbag.on": [
+          "figure.seated.side.left.airbag.on"
+        ],
+        "figure.seated.side.left.airbag.off": [
+          "figure.seated.side.left.airbag.off"
+        ],
+        "figure.seated.side.left.airbag.on.2": [
+          "figure.seated.side.left.airbag.on.2"
+        ],
+        "figure.seated.side.left.airbag.off.2": [
+          "figure.seated.side.left.airbag.off.2"
+        ],
+        "figure.seated.side.right.airbag.on": [
+          "figure.seated.side.right.airbag.on"
+        ],
+        "figure.seated.side.right.airbag.off": [
+          "figure.seated.side.right.airbag.off"
+        ],
+        "figure.seated.side.right.airbag.on.2": [
+          "figure.seated.side.right.airbag.on.2"
+        ],
+        "figure.seated.side.right.airbag.off.2": [
+          "figure.seated.side.right.airbag.off.2"
+        ],
+        "figure.seated.side.left": [
+          "figure.seated.side.left"
+        ],
+        "figure.seated.side.left.air.distribution.upper": [
+          "figure.seated.side.left.air.distribution.upper"
+        ],
+        "figure.seated.side.left.air.distribution.lower": [
+          "figure.seated.side.left.air.distribution.lower"
+        ],
+        "figure.seated.side.left.air.distribution.middle": [
+          "figure.seated.side.left.air.distribution.middle"
+        ],
+        "figure.seated.side.left.air.distribution.middle.and.lower": [
+          "figure.seated.side.left.air.distribution.middle.and.lower"
+        ],
+        "figure.seated.side.left.air.distribution.upper.angled.and.middle": [
+          "figure.seated.side.left.air.distribution.upper.angled.and.middle"
+        ],
+        "figure.seated.side.left.air.distribution.upper.angled.and.lower.angled": [
+          "figure.seated.side.left.air.distribution.upper.angled.and.lower.angled"
+        ],
+        "figure.seated.side.left.air.distribution.middle.and.lower.angled": [
+          "figure.seated.side.left.air.distribution.middle.and.lower.angled"
+        ],
+        "figure.seated.side.left.air.distribution.upper.angled.and.middle.and.lower.angled": [
+          "figure.seated.side.left.air.distribution.upper.angled.and.middle.and.lower.angled"
+        ],
+        "figure.seated.side.right": [
+          "figure.seated.side.right"
+        ],
+        "figure.seated.side.right.air.distribution.upper": [
+          "figure.seated.side.right.air.distribution.upper"
+        ],
+        "figure.seated.side.right.air.distribution.lower": [
+          "figure.seated.side.right.air.distribution.lower"
+        ],
+        "figure.seated.side.right.air.distribution.middle": [
+          "figure.seated.side.right.air.distribution.middle"
+        ],
+        "figure.seated.side.right.air.distribution.middle.and.lower": [
+          "figure.seated.side.right.air.distribution.middle.and.lower"
+        ],
+        "figure.seated.side.right.air.distribution.upper.angled.and.middle": [
+          "figure.seated.side.right.air.distribution.upper.angled.and.middle"
+        ],
+        "figure.seated.side.right.air.distribution.upper.angled.and.lower.angled": [
+          "figure.seated.side.right.air.distribution.upper.angled.and.lower.angled"
+        ],
+        "figure.seated.side.right.air.distribution.middle.and.lower.angled": [
+          "figure.seated.side.right.air.distribution.middle.and.lower.angled"
+        ],
+        "figure.seated.side.right.air.distribution.upper.angled.and.middle.and.lower.angled": [
+          "figure.seated.side.right.air.distribution.upper.angled.and.middle.and.lower.angled"
+        ],
+        "figure.seated.side.left.windshield.front.and.heat.waves": [
+          "figure.seated.side.left.windshield.front.and.heat.waves"
+        ],
+        "figure.seated.side.left.windshield.front.and.heat.waves.air.distribution.upper.and.middle.and.lower": [
+          "figure.seated.side.left.windshield.front.and.heat.waves.air.distribution.upper.and.middle.and.lower"
+        ],
+        "figure.seated.side.left.windshield.front.and.heat.waves.air.distribution.middle.and.lower": [
+          "figure.seated.side.left.windshield.front.and.heat.waves.air.distribution.middle.and.lower"
+        ],
+        "figure.seated.side.left.windshield.front.and.heat.waves.air.distribution.upper.and.middle": [
+          "figure.seated.side.left.windshield.front.and.heat.waves.air.distribution.upper.and.middle"
+        ],
+        "figure.seated.side.left.windshield.front.and.heat.waves.air.distribution.upper.and.lower": [
+          "figure.seated.side.left.windshield.front.and.heat.waves.air.distribution.upper.and.lower"
+        ],
+        "figure.seated.side.left.windshield.front.and.heat.waves.air.distribution.upper": [
+          "figure.seated.side.left.windshield.front.and.heat.waves.air.distribution.upper"
+        ],
+        "figure.seated.side.left.windshield.front.and.heat.waves.air.distribution.lower": [
+          "figure.seated.side.left.windshield.front.and.heat.waves.air.distribution.lower"
+        ],
+        "figure.seated.side.left.windshield.front.and.heat.waves.air.distribution.middle": [
+          "figure.seated.side.left.windshield.front.and.heat.waves.air.distribution.middle"
+        ],
+        "figure.seated.side.right.windshield.front.and.heat.waves": [
+          "figure.seated.side.right.windshield.front.and.heat.waves"
+        ],
+        "figure.seated.side.right.windshield.front.and.heat.waves.air.distribution.upper.and.middle.and.lower": [
+          "figure.seated.side.right.windshield.front.and.heat.waves.air.distribution.upper.and.middle.and.lower"
+        ],
+        "figure.seated.side.right.windshield.front.and.heat.waves.air.distribution.middle.and.lower": [
+          "figure.seated.side.right.windshield.front.and.heat.waves.air.distribution.middle.and.lower"
+        ],
+        "figure.seated.side.right.windshield.front.and.heat.waves.air.distribution.upper.and.middle": [
+          "figure.seated.side.right.windshield.front.and.heat.waves.air.distribution.upper.and.middle"
+        ],
+        "figure.seated.side.right.windshield.front.and.heat.waves.air.distribution.upper.and.lower": [
+          "figure.seated.side.right.windshield.front.and.heat.waves.air.distribution.upper.and.lower"
+        ],
+        "figure.seated.side.right.windshield.front.and.heat.waves.air.distribution.upper": [
+          "figure.seated.side.right.windshield.front.and.heat.waves.air.distribution.upper"
+        ],
+        "figure.seated.side.right.windshield.front.and.heat.waves.air.distribution.lower": [
+          "figure.seated.side.right.windshield.front.and.heat.waves.air.distribution.lower"
+        ],
+        "figure.seated.side.right.windshield.front.and.heat.waves.air.distribution.middle": [
+          "figure.seated.side.right.windshield.front.and.heat.waves.air.distribution.middle"
+        ],
+        "figure.seated.side.left.steeringwheel": [
+          "figure.seated.side.left.steeringwheel"
+        ],
+        "figure.seated.side.right.steeringwheel": [
+          "figure.seated.side.right.steeringwheel"
+        ],
+        "figure.seated.side.left.automatic": [
+          "figure.seated.side.left.automatic"
+        ],
+        "figure.seated.side.right.automatic": [
+          "figure.seated.side.right.automatic"
+        ],
+        "figure.seated.side.left.fan": [
+          "figure.seated.side.left.fan"
+        ],
+        "figure.seated.side.right.fan": [
+          "figure.seated.side.right.fan"
+        ],
+        "heat.waves.and.fan": [
+          "heat.waves.and.fan"
+        ],
+        "figure.child": [
+          "figure.child",
+          "figure.child.circle",
+          "figure.child.circle.fill"
+        ],
+        "figure.child.and.lock": [
+          "figure.child.and.lock",
+          "figure.child.and.lock.fill"
+        ],
+        "figure.child.and.lock.open": [
+          "figure.child.and.lock.open",
+          "figure.child.and.lock.open.fill"
+        ],
+        "car.rear.hazardsign": [
+          "car.rear.hazardsign",
+          "car.rear.hazardsign.fill"
+        ],
+        "hazardsign": [
+          "hazardsign",
+          "hazardsign.fill"
+        ],
+        "yieldsign": [
+          "yieldsign",
+          "yieldsign.fill"
+        ],
+        "wrongwaysign": [
+          "wrongwaysign",
+          "wrongwaysign.fill"
+        ],
+        "thermometer.and.liquid.waves": [
+          "thermometer.and.liquid.waves",
+          "thermometer.and.liquid.waves.trianglebadge.exclamationmark"
+        ],
+        "thermometer.and.liquid.waves.snowflake": [
+          "thermometer.and.liquid.waves.snowflake"
+        ],
+        "steeringwheel": [
+          "steeringwheel",
+          "steeringwheel.circle",
+          "steeringwheel.circle.fill",
+          "steeringwheel.badge.exclamationmark"
+        ],
+        "steeringwheel.slash": [
+          "steeringwheel.slash"
+        ],
+        "steeringwheel.arrowtriangle.left": [
+          "steeringwheel.arrowtriangle.left"
+        ],
+        "steeringwheel.arrowtriangle.right": [
+          "steeringwheel.arrowtriangle.right"
+        ],
+        "steeringwheel.and.heat.waves": [
+          "steeringwheel.and.heat.waves"
+        ],
+        "steeringwheel.exclamationmark": [
+          "steeringwheel.exclamationmark"
+        ],
+        "steeringwheel.and.key": [
+          "steeringwheel.and.key"
+        ],
+        "steeringwheel.and.lock": [
+          "steeringwheel.and.lock"
+        ],
+        "steeringwheel.and.liquid.wave": [
+          "steeringwheel.and.liquid.wave"
+        ],
+        "steeringwheel.and.hands": [
+          "steeringwheel.and.hands"
+        ],
+        "parkingsign.steeringwheel": [
+          "parkingsign.steeringwheel"
+        ],
+        "steeringwheel.arrow.trianglehead.counterclockwise.and.clockwise": [
+          "steeringwheel.arrow.trianglehead.counterclockwise.and.clockwise"
+        ],
+        "tire": [
+          "tire",
+          "tire.badge.snowflake"
+        ],
+        "tow.hitch": [
+          "tow.hitch",
+          "tow.hitch.fill"
+        ],
+        "tow.hitch.exclamationmark": [
+          "tow.hitch.exclamationmark",
+          "tow.hitch.exclamationmark.fill"
+        ],
+        "carseat.left": [
+          "carseat.left",
+          "carseat.left.fill"
+        ],
+        "carseat.right": [
+          "carseat.right",
+          "carseat.right.fill"
+        ],
+        "carseat.left.and.heat.waves": [
+          "carseat.left.and.heat.waves",
+          "carseat.left.and.heat.waves.fill"
+        ],
+        "carseat.right.and.heat.waves": [
+          "carseat.right.and.heat.waves",
+          "carseat.right.and.heat.waves.fill"
+        ],
+        "carseat.left.massage": [
+          "carseat.left.massage",
+          "carseat.left.massage.fill"
+        ],
+        "carseat.right.massage": [
+          "carseat.right.massage",
+          "carseat.right.massage.fill"
+        ],
+        "carseat.left.fan": [
+          "carseat.left.fan",
+          "carseat.left.fan.fill"
+        ],
+        "carseat.right.fan": [
+          "carseat.right.fan",
+          "carseat.right.fan.fill"
+        ],
+        "carseat.left.1": [
+          "carseat.left.1",
+          "carseat.left.1.fill"
+        ],
+        "carseat.right.1": [
+          "carseat.right.1",
+          "carseat.right.1.fill"
+        ],
+        "carseat.left.2": [
+          "carseat.left.2",
+          "carseat.left.2.fill"
+        ],
+        "carseat.right.2": [
+          "carseat.right.2",
+          "carseat.right.2.fill"
+        ],
+        "carseat.left.3": [
+          "carseat.left.3",
+          "carseat.left.3.fill"
+        ],
+        "carseat.right.3": [
+          "carseat.right.3",
+          "carseat.right.3.fill"
+        ],
+        "carseat.left.forward.and.backward": [
+          "carseat.left.forward.and.backward",
+          "carseat.left.forward.and.backward.fill"
+        ],
+        "carseat.right.forward.and.backward": [
+          "carseat.right.forward.and.backward",
+          "carseat.right.forward.and.backward.fill"
+        ],
+        "carseat.left.backrest.up.and.down": [
+          "carseat.left.backrest.up.and.down",
+          "carseat.left.backrest.up.and.down.fill"
+        ],
+        "carseat.right.backrest.up.and.down": [
+          "carseat.right.backrest.up.and.down",
+          "carseat.right.backrest.up.and.down.fill"
+        ],
+        "carseat.left.up.and.down": [
+          "carseat.left.up.and.down",
+          "carseat.left.up.and.down.fill"
+        ],
+        "carseat.right.up.and.down": [
+          "carseat.right.up.and.down",
+          "carseat.right.up.and.down.fill"
+        ],
+        "car.side": [
+          "car.side",
+          "car.side.fill"
+        ],
+        "car.side.front.open": [
+          "car.side.front.open",
+          "car.side.front.open.fill"
+        ],
+        "car.side.rear.open": [
+          "car.side.rear.open",
+          "car.side.rear.open.fill"
+        ],
+        "car.side.front.open.crop": [
+          "car.side.front.open.crop",
+          "car.side.front.open.crop.fill"
+        ],
+        "car.side.rear.open.crop": [
+          "car.side.rear.open.crop",
+          "car.side.rear.open.crop.fill"
+        ],
+        "car.side.rear.tow.hitch": [
+          "car.side.rear.tow.hitch",
+          "car.side.rear.tow.hitch.fill"
+        ],
+        "car.side.rear.crop.trunk.partition": [
+          "car.side.rear.crop.trunk.partition",
+          "car.side.rear.crop.trunk.partition.fill"
+        ],
+        "car.side.roof.cargo.carrier": [
+          "car.side.roof.cargo.carrier",
+          "car.side.roof.cargo.carrier.fill"
+        ],
+        "car.side.roof.cargo.carrier.slash": [
+          "car.side.roof.cargo.carrier.slash",
+          "car.side.roof.cargo.carrier.slash.fill"
+        ],
+        "car.side.air.circulate": [
+          "car.side.air.circulate",
+          "car.side.air.circulate.fill"
+        ],
+        "car.side.air.fresh": [
+          "car.side.air.fresh",
+          "car.side.air.fresh.fill"
+        ],
+        "car.side.and.exclamationmark": [
+          "car.side.and.exclamationmark",
+          "car.side.and.exclamationmark.fill"
+        ],
+        "car.side.arrowtriangle.up.arrowtriangle.down": [
+          "car.side.arrowtriangle.up.arrowtriangle.down",
+          "car.side.arrowtriangle.up.arrowtriangle.down.fill"
+        ],
+        "car.side.arrowtriangle.up": [
+          "car.side.arrowtriangle.up",
+          "car.side.arrowtriangle.up.fill"
+        ],
+        "car.side.arrowtriangle.down": [
+          "car.side.arrowtriangle.down",
+          "car.side.arrowtriangle.down.fill"
+        ],
+        "car.side.lock": [
+          "car.side.lock",
+          "car.side.lock.fill"
+        ],
+        "car.side.lock.open": [
+          "car.side.lock.open",
+          "car.side.lock.open.fill"
+        ],
+        "air.car.side": [
+          "air.car.side",
+          "air.car.side.fill"
+        ],
+        "wave.3.down.car.side": [
+          "wave.3.down.car.side",
+          "wave.3.down.car.side.fill"
+        ],
+        "suv.side": [
+          "suv.side",
+          "suv.side.fill"
+        ],
+        "suv.side.front.open": [
+          "suv.side.front.open",
+          "suv.side.front.open.fill"
+        ],
+        "suv.side.rear.open": [
+          "suv.side.rear.open",
+          "suv.side.rear.open.fill"
+        ],
+        "suv.side.front.open.crop": [
+          "suv.side.front.open.crop",
+          "suv.side.front.open.crop.fill"
+        ],
+        "suv.side.rear.open.crop": [
+          "suv.side.rear.open.crop",
+          "suv.side.rear.open.crop.fill"
+        ],
+        "suv.side.roof.cargo.carrier": [
+          "suv.side.roof.cargo.carrier",
+          "suv.side.roof.cargo.carrier.fill"
+        ],
+        "suv.side.roof.cargo.carrier.slash": [
+          "suv.side.roof.cargo.carrier.slash",
+          "suv.side.roof.cargo.carrier.slash.fill"
+        ],
+        "suv.side.air.circulate": [
+          "suv.side.air.circulate",
+          "suv.side.air.circulate.fill"
+        ],
+        "suv.side.air.fresh": [
+          "suv.side.air.fresh",
+          "suv.side.air.fresh.fill"
+        ],
+        "suv.side.and.exclamationmark": [
+          "suv.side.and.exclamationmark",
+          "suv.side.and.exclamationmark.fill"
+        ],
+        "suv.side.arrowtriangle.up.arrowtriangle.down": [
+          "suv.side.arrowtriangle.up.arrowtriangle.down",
+          "suv.side.arrowtriangle.up.arrowtriangle.down.fill"
+        ],
+        "suv.side.arrowtriangle.up": [
+          "suv.side.arrowtriangle.up",
+          "suv.side.arrowtriangle.up.fill"
+        ],
+        "suv.side.arrowtriangle.down": [
+          "suv.side.arrowtriangle.down",
+          "suv.side.arrowtriangle.down.fill"
+        ],
+        "suv.side.lock": [
+          "suv.side.lock",
+          "suv.side.lock.fill"
+        ],
+        "suv.side.lock.open": [
+          "suv.side.lock.open",
+          "suv.side.lock.open.fill"
+        ],
+        "air.suv.side": [
+          "air.suv.side",
+          "air.suv.side.fill"
+        ],
+        "wave.3.down.suv.side": [
+          "wave.3.down.suv.side",
+          "wave.3.down.suv.side.fill"
+        ],
+        "truck.pickup.side": [
+          "truck.pickup.side",
+          "truck.pickup.side.fill"
+        ],
+        "truck.pickup.side.front.open": [
+          "truck.pickup.side.front.open",
+          "truck.pickup.side.front.open.fill"
+        ],
+        "truck.pickup.side.front.open.crop": [
+          "truck.pickup.side.front.open.crop",
+          "truck.pickup.side.front.open.crop.fill"
+        ],
+        "truck.side.roof.cargo.carrier": [
+          "truck.side.roof.cargo.carrier",
+          "truck.side.roof.cargo.carrier.fill"
+        ],
+        "truck.side.roof.cargo.carrier.slash": [
+          "truck.side.roof.cargo.carrier.slash",
+          "truck.side.roof.cargo.carrier.slash.fill"
+        ],
+        "truck.pickup.side.air.circulate": [
+          "truck.pickup.side.air.circulate",
+          "truck.pickup.side.air.circulate.fill"
+        ],
+        "truck.pickup.side.air.fresh": [
+          "truck.pickup.side.air.fresh",
+          "truck.pickup.side.air.fresh.fill"
+        ],
+        "truck.pickup.side.and.exclamationmark": [
+          "truck.pickup.side.and.exclamationmark",
+          "truck.pickup.side.and.exclamationmark.fill"
+        ],
+        "truck.pickup.side.arrowtriangle.up.arrowtriangle.down": [
+          "truck.pickup.side.arrowtriangle.up.arrowtriangle.down",
+          "truck.pickup.side.arrowtriangle.up.arrowtriangle.down.fill"
+        ],
+        "truck.pickup.side.arrowtriangle.up": [
+          "truck.pickup.side.arrowtriangle.up",
+          "truck.pickup.side.arrowtriangle.up.fill"
+        ],
+        "truck.pickup.side.arrowtriangle.down": [
+          "truck.pickup.side.arrowtriangle.down",
+          "truck.pickup.side.arrowtriangle.down.fill"
+        ],
+        "truck.pickup.side.lock": [
+          "truck.pickup.side.lock",
+          "truck.pickup.side.lock.fill"
+        ],
+        "truck.pickup.side.lock.open": [
+          "truck.pickup.side.lock.open",
+          "truck.pickup.side.lock.open.fill"
+        ],
+        "air.pickup.side": [
+          "air.pickup.side",
+          "air.pickup.side.fill"
+        ],
+        "wave.3.down.pickup.side": [
+          "wave.3.down.pickup.side",
+          "wave.3.down.pickup.side.fill"
+        ],
+        "convertible.side": [
+          "convertible.side",
+          "convertible.side.fill"
+        ],
+        "convertible.side.front.open": [
+          "convertible.side.front.open",
+          "convertible.side.front.open.fill"
+        ],
+        "convertible.side.front.open.crop": [
+          "convertible.side.front.open.crop",
+          "convertible.side.front.open.crop.fill"
+        ],
+        "convertible.side.air.circulate": [
+          "convertible.side.air.circulate",
+          "convertible.side.air.circulate.fill"
+        ],
+        "convertible.side.air.fresh": [
+          "convertible.side.air.fresh",
+          "convertible.side.air.fresh.fill"
+        ],
+        "convertible.side.and.exclamationmark": [
+          "convertible.side.and.exclamationmark",
+          "convertible.side.and.exclamationmark.fill"
+        ],
+        "convertible.side.arrowtriangle.up.arrowtriangle.down": [
+          "convertible.side.arrowtriangle.up.arrowtriangle.down",
+          "convertible.side.arrowtriangle.up.arrowtriangle.down.fill"
+        ],
+        "convertible.side.arrowtriangle.up": [
+          "convertible.side.arrowtriangle.up",
+          "convertible.side.arrowtriangle.up.fill"
+        ],
+        "convertible.side.arrowtriangle.down": [
+          "convertible.side.arrowtriangle.down",
+          "convertible.side.arrowtriangle.down.fill"
+        ],
+        "convertible.side.lock": [
+          "convertible.side.lock",
+          "convertible.side.lock.fill"
+        ],
+        "convertible.side.lock.open": [
+          "convertible.side.lock.open",
+          "convertible.side.lock.open.fill"
+        ],
+        "air.convertible.side": [
+          "air.convertible.side",
+          "air.convertible.side.fill"
+        ],
+        "wave.3.down.convertible.side": [
+          "wave.3.down.convertible.side",
+          "wave.3.down.convertible.side.fill"
+        ],
+        "convertible.side.arrow.trianglehead.forward": [
+          "convertible.side.arrow.trianglehead.forward",
+          "convertible.side.arrow.trianglehead.forward.fill"
+        ],
+        "convertible.side.arrow.trianglehead.backward": [
+          "convertible.side.arrow.trianglehead.backward",
+          "convertible.side.arrow.trianglehead.backward.fill"
+        ],
+        "convertible.side.arrow.trianglehead.forward.and.backward": [
+          "convertible.side.arrow.trianglehead.forward.and.backward",
+          "convertible.side.arrow.trianglehead.forward.and.backward.fill"
+        ],
+        "car.side.hill.up": [
+          "car.side.hill.up",
+          "car.side.hill.up.fill"
+        ],
+        "suv.side.hill.up": [
+          "suv.side.hill.up",
+          "suv.side.hill.up.fill"
+        ],
+        "truck.pickup.side.hill.up": [
+          "truck.pickup.side.hill.up",
+          "truck.pickup.side.hill.up.fill"
+        ],
+        "convertible.side.hill.up": [
+          "convertible.side.hill.up",
+          "convertible.side.hill.up.fill"
+        ],
+        "car.side.hill.down": [
+          "car.side.hill.down",
+          "car.side.hill.down.fill"
+        ],
+        "suv.side.hill.down": [
+          "suv.side.hill.down",
+          "suv.side.hill.down.fill"
+        ],
+        "truck.pickup.side.hill.down": [
+          "truck.pickup.side.hill.down",
+          "truck.pickup.side.hill.down.fill"
+        ],
+        "convertible.side.hill.down": [
+          "convertible.side.hill.down",
+          "convertible.side.hill.down.fill"
+        ],
+        "car.side.hill.descent.control": [
+          "car.side.hill.descent.control",
+          "car.side.hill.descent.control.fill"
+        ],
+        "suv.side.hill.descent.control": [
+          "suv.side.hill.descent.control",
+          "suv.side.hill.descent.control.fill"
+        ],
+        "truck.side.hill.descent.control": [
+          "truck.side.hill.descent.control",
+          "truck.side.hill.descent.control.fill"
+        ],
+        "convertible.side.hill.descent.control": [
+          "convertible.side.hill.descent.control",
+          "convertible.side.hill.descent.control.fill"
+        ],
+        "car.side.rear.and.collision.and.car.side.front": [
+          "car.side.rear.and.collision.and.car.side.front"
+        ],
+        "car.side.rear.and.collision.and.car.side.front.slash": [
+          "car.side.rear.and.collision.and.car.side.front.slash"
+        ],
+        "car.side.rear.and.wave.3.and.car.side.front": [
+          "car.side.rear.and.wave.3.and.car.side.front"
+        ],
+        "car.side.rear.and.exclamationmark.and.car.side.front": [
+          "car.side.rear.and.exclamationmark.and.car.side.front"
+        ],
+        "car.side.rear.and.exclamationmark.and.car.side.front.off": [
+          "car.side.rear.and.exclamationmark.and.car.side.front.off"
+        ],
+        "car.top.door.front.left.open": [
+          "car.top.door.front.left.open",
+          "car.top.door.front.left.open.fill"
+        ],
+        "car.top.door.front.right.open": [
+          "car.top.door.front.right.open",
+          "car.top.door.front.right.open.fill"
+        ],
+        "car.top.door.rear.left.open": [
+          "car.top.door.rear.left.open",
+          "car.top.door.rear.left.open.fill"
+        ],
+        "car.top.door.rear.right.open": [
+          "car.top.door.rear.right.open",
+          "car.top.door.rear.right.open.fill"
+        ],
+        "car.top.door.front.left.and.front.right.open": [
+          "car.top.door.front.left.and.front.right.open",
+          "car.top.door.front.left.and.front.right.open.fill"
+        ],
+        "car.top.door.rear.left.and.rear.right.open": [
+          "car.top.door.rear.left.and.rear.right.open",
+          "car.top.door.rear.left.and.rear.right.open.fill"
+        ],
+        "car.top.door.front.left.and.rear.left.open": [
+          "car.top.door.front.left.and.rear.left.open",
+          "car.top.door.front.left.and.rear.left.open.fill"
+        ],
+        "car.top.door.front.right.and.rear.right.open": [
+          "car.top.door.front.right.and.rear.right.open",
+          "car.top.door.front.right.and.rear.right.open.fill"
+        ],
+        "car.top.door.front.left.and.rear.right.open": [
+          "car.top.door.front.left.and.rear.right.open",
+          "car.top.door.front.left.and.rear.right.open.fill"
+        ],
+        "car.top.door.front.right.and.rear.left.open": [
+          "car.top.door.front.right.and.rear.left.open",
+          "car.top.door.front.right.and.rear.left.open.fill"
+        ],
+        "car.top.door.front.left.and.front.right.and.rear.left.open": [
+          "car.top.door.front.left.and.front.right.and.rear.left.open",
+          "car.top.door.front.left.and.front.right.and.rear.left.open.fill"
+        ],
+        "car.top.door.front.left.and.front.right.and.rear.right.open": [
+          "car.top.door.front.left.and.front.right.and.rear.right.open",
+          "car.top.door.front.left.and.front.right.and.rear.right.open.fill"
+        ],
+        "car.top.door.front.left.and.rear.left.and.rear.right.open": [
+          "car.top.door.front.left.and.rear.left.and.rear.right.open",
+          "car.top.door.front.left.and.rear.left.and.rear.right.open.fill"
+        ],
+        "car.top.door.front.right.and.rear.left.and.rear.right.open": [
+          "car.top.door.front.right.and.rear.left.and.rear.right.open",
+          "car.top.door.front.right.and.rear.left.and.rear.right.open.fill"
+        ],
+        "car.top.door.front.left.and.front.right.and.rear.left.and.rear.right.open": [
+          "car.top.door.front.left.and.front.right.and.rear.left.and.rear.right.open",
+          "car.top.door.front.left.and.front.right.and.rear.left.and.rear.right.open.fill"
+        ],
+        "car.top.door.sliding.left.open": [
+          "car.top.door.sliding.left.open",
+          "car.top.door.sliding.left.open.fill"
+        ],
+        "car.top.door.sliding.right.open": [
+          "car.top.door.sliding.right.open",
+          "car.top.door.sliding.right.open.fill"
+        ],
+        "car.top.arrowtriangle.front.left": [
+          "car.top.arrowtriangle.front.left",
+          "car.top.arrowtriangle.front.left.fill"
+        ],
+        "car.top.arrowtriangle.rear.left": [
+          "car.top.arrowtriangle.rear.left",
+          "car.top.arrowtriangle.rear.left.fill"
+        ],
+        "car.top.arrowtriangle.front.right": [
+          "car.top.arrowtriangle.front.right",
+          "car.top.arrowtriangle.front.right.fill"
+        ],
+        "car.top.arrowtriangle.rear.right": [
+          "car.top.arrowtriangle.rear.right",
+          "car.top.arrowtriangle.rear.right.fill"
+        ],
+        "car.top.video.rear.left": [
+          "car.top.video.rear.left",
+          "car.top.video.rear.left.fill"
+        ],
+        "car.top.video.rear.right": [
+          "car.top.video.rear.right",
+          "car.top.video.rear.right.fill"
+        ],
+        "car.top.radiowaves.rear.right": [
+          "car.top.radiowaves.rear.right",
+          "car.top.radiowaves.rear.right.fill",
+          "car.top.radiowaves.rear.right.badge.xmark",
+          "car.top.radiowaves.rear.right.badge.xmark.fill",
+          "car.top.radiowaves.rear.right.badge.exclamationmark",
+          "car.top.radiowaves.rear.right.badge.exclamationmark.fill"
+        ],
+        "car.top.radiowaves.rear.right.car.top.front": [
+          "car.top.radiowaves.rear.right.car.top.front",
+          "car.top.radiowaves.rear.right.car.top.front.fill"
+        ],
+        "car.top.radiowaves.rear.left": [
+          "car.top.radiowaves.rear.left",
+          "car.top.radiowaves.rear.left.fill"
+        ],
+        "car.top.radiowaves.rear.left.car.top.front": [
+          "car.top.radiowaves.rear.left.car.top.front",
+          "car.top.radiowaves.rear.left.car.top.front.fill"
+        ],
+        "car.top.front.radiowaves.front.left.and.front.and.front.right": [
+          "car.top.front.radiowaves.front.left.and.front.and.front.right",
+          "car.top.front.radiowaves.front.left.and.front.and.front.right.fill"
+        ],
+        "car.top.rear.radiowaves.rear.left.and.rear.and.rear.right": [
+          "car.top.rear.radiowaves.rear.left.and.rear.and.rear.right",
+          "car.top.rear.radiowaves.rear.left.and.rear.and.rear.right.fill"
+        ],
+        "car.top.radiowaves.front": [
+          "car.top.radiowaves.front",
+          "car.top.radiowaves.front.fill"
+        ],
+        "car.top.radiowaves.rear": [
+          "car.top.radiowaves.rear",
+          "car.top.radiowaves.rear.fill"
+        ],
+        "car.top.radiowaves.rear.left.and.rear.right": [
+          "car.top.radiowaves.rear.left.and.rear.right",
+          "car.top.radiowaves.rear.left.and.rear.right.fill"
+        ],
+        "car.top.lane.dashed.departure.left": [
+          "car.top.lane.dashed.departure.left",
+          "car.top.lane.dashed.departure.left.fill"
+        ],
+        "car.top.lane.dashed.departure.right": [
+          "car.top.lane.dashed.departure.right",
+          "car.top.lane.dashed.departure.right.fill"
+        ],
+        "car.top.lane.dashed.arrowtriangle.inward": [
+          "car.top.lane.dashed.arrowtriangle.inward",
+          "car.top.lane.dashed.arrowtriangle.inward.fill"
+        ],
+        "car.top.lane.dashed": [
+          "car.top.lane.dashed.badge.steeringwheel",
+          "car.top.lane.dashed.badge.steeringwheel.fill"
+        ],
+        "suspension.shock": [
+          "suspension.shock"
+        ],
+        "axle.2": [
+          "axle.2"
+        ],
+        "axle.2.front.engaged": [
+          "axle.2.front.engaged"
+        ],
+        "axle.2.rear.engaged": [
+          "axle.2.rear.engaged"
+        ],
+        "axle.2.front.and.rear.engaged": [
+          "axle.2.front.and.rear.engaged"
+        ],
+        "axle.2.front.disengaged": [
+          "axle.2.front.disengaged"
+        ],
+        "axle.2.rear.disengaged": [
+          "axle.2.rear.disengaged"
+        ],
+        "axle.2.driveshaft.disengaged": [
+          "axle.2.driveshaft.disengaged"
+        ],
+        "axle.2.rear.lock": [
+          "axle.2.rear.lock"
+        ],
+        "autostartstop": [
+          "autostartstop",
+          "autostartstop.trianglebadge.exclamationmark"
+        ],
+        "autostartstop.slash": [
+          "autostartstop.slash"
+        ],
+        "car.window.right": [
+          "car.window.right",
+          "car.window.right.badge.exclamationmark",
+          "car.window.right.badge.xmark"
+        ],
+        "arrowtriangle.up.arrowtriangle.down.window.right": [
+          "arrowtriangle.up.arrowtriangle.down.window.right"
+        ],
+        "car.window.right.exclamationmark": [
+          "car.window.right.exclamationmark"
+        ],
+        "car.window.right.xmark": [
+          "car.window.right.xmark"
+        ],
+        "car.window.left": [
+          "car.window.left",
+          "car.window.left.badge.exclamationmark",
+          "car.window.left.badge.xmark"
+        ],
+        "arrowtriangle.up.arrowtriangle.down.window.left": [
+          "arrowtriangle.up.arrowtriangle.down.window.left"
+        ],
+        "car.window.left.exclamationmark": [
+          "car.window.left.exclamationmark"
+        ],
+        "car.window.left.xmark": [
+          "car.window.left.xmark"
+        ],
+        "key.card": [
+          "key.card",
+          "key.card.fill"
+        ],
+        "key.car.radiowaves.forward": [
+          "key.car.radiowaves.forward",
+          "key.car.radiowaves.forward.fill"
+        ],
+        "batteryblock": [
+          "batteryblock",
+          "batteryblock.fill"
+        ],
+        "batteryblock.slash": [
+          "batteryblock.slash",
+          "batteryblock.slash.fill"
+        ],
+        "minus.plus.batteryblock": [
+          "minus.plus.batteryblock",
+          "minus.plus.batteryblock.fill"
+        ],
+        "minus.plus.batteryblock.slash": [
+          "minus.plus.batteryblock.slash",
+          "minus.plus.batteryblock.slash.fill"
+        ],
+        "fluid.batteryblock": [
+          "fluid.batteryblock"
+        ],
+        "minus.plus.and.fluid.batteryblock": [
+          "minus.plus.and.fluid.batteryblock"
+        ],
+        "minus.plus.batteryblock.exclamationmark": [
+          "minus.plus.batteryblock.exclamationmark",
+          "minus.plus.batteryblock.exclamationmark.fill"
+        ],
+        "batteryblock.stack": [
+          "batteryblock.stack",
+          "batteryblock.stack.fill",
+          "batteryblock.stack.badge.snowflake",
+          "batteryblock.stack.badge.snowflake.fill",
+          "batteryblock.stack.trianglebadge.exclamationmark",
+          "batteryblock.stack.trianglebadge.exclamationmark.fill"
+        ],
+        "minus.plus.batteryblock.stack": [
+          "minus.plus.batteryblock.stack",
+          "minus.plus.batteryblock.stack.fill"
+        ],
+        "minus.plus.batteryblock.stack.exclamationmark": [
+          "minus.plus.batteryblock.stack.exclamationmark",
+          "minus.plus.batteryblock.stack.exclamationmark.fill"
+        ],
+        "bolt.batteryblock": [
+          "bolt.batteryblock",
+          "bolt.batteryblock.fill"
+        ],
+        "fluid.coolant": [
+          "fluid.coolant"
+        ],
+        "road.lanes": [
+          "road.lanes"
+        ],
+        "moon.road.lanes": [
+          "moon.road.lanes"
+        ],
+        "road.lanes.curved.left": [
+          "road.lanes.curved.left"
+        ],
+        "road.lanes.curved.right": [
+          "road.lanes.curved.right"
+        ],
+        "car.rear.tilt.road.lanes.curved.right": [
+          "car.rear.tilt.road.lanes.curved.right"
+        ],
+        "road.lane.arrowtriangle.2.inward": [
+          "road.lane.arrowtriangle.2.inward"
+        ],
+        "car.rear.road.lane": [
+          "car.rear.road.lane"
+        ],
+        "car.rear.road.lane.off": [
+          "car.rear.road.lane.off"
+        ],
+        "car.rear.road.lane.wave.up": [
+          "car.rear.road.lane.wave.up"
+        ],
+        "car.rear.road.lane.dashed": [
+          "car.rear.road.lane.dashed"
+        ],
+        "snowflake.road.lane": [
+          "snowflake.road.lane"
+        ],
+        "snowflake.road.lane.dashed": [
+          "snowflake.road.lane.dashed"
+        ],
+        "steeringwheel.road.lane": [
+          "steeringwheel.road.lane"
+        ],
+        "steeringwheel.road.lane.dashed": [
+          "steeringwheel.road.lane.dashed"
+        ],
+        "car.rear.and.collision.road.lane": [
+          "car.rear.and.collision.road.lane"
+        ],
+        "car.rear.and.collision.road.lane.slash": [
+          "car.rear.and.collision.road.lane.slash"
+        ],
+        "car.rear.road.lane.distance.1": [
+          "car.rear.road.lane.distance.1"
+        ],
+        "car.rear.road.lane.distance.2": [
+          "car.rear.road.lane.distance.2"
+        ],
+        "car.rear.road.lane.distance.3": [
+          "car.rear.road.lane.distance.3"
+        ],
+        "car.rear.road.lane.distance.4": [
+          "car.rear.road.lane.distance.4"
+        ],
+        "car.rear.road.lane.distance.5": [
+          "car.rear.road.lane.distance.5"
+        ],
+        "car.rear.road.lane.distance.1.and.gauge.open.with.lines.needle.67percent.and.arrowtriangle": [
+          "car.rear.road.lane.distance.1.and.gauge.open.with.lines.needle.67percent.and.arrowtriangle"
+        ],
+        "car.rear.road.lane.distance.2.and.gauge.open.with.lines.needle.67percent.and.arrowtriangle": [
+          "car.rear.road.lane.distance.2.and.gauge.open.with.lines.needle.67percent.and.arrowtriangle"
+        ],
+        "car.rear.road.lane.distance.3.and.gauge.open.with.lines.needle.67percent.and.arrowtriangle": [
+          "car.rear.road.lane.distance.3.and.gauge.open.with.lines.needle.67percent.and.arrowtriangle"
+        ],
+        "car.rear.road.lane.distance.4.and.gauge.open.with.lines.needle.67percent.and.arrowtriangle": [
+          "car.rear.road.lane.distance.4.and.gauge.open.with.lines.needle.67percent.and.arrowtriangle"
+        ],
+        "car.rear.road.lane.distance.5.and.gauge.open.with.lines.needle.67percent.and.arrowtriangle": [
+          "car.rear.road.lane.distance.5.and.gauge.open.with.lines.needle.67percent.and.arrowtriangle"
+        ],
+        "tachometer": [
+          "tachometer"
+        ],
+        "powermeter": [
+          "powermeter"
+        ],
+        "gauge.open.with.lines.needle.33percent": [
+          "gauge.open.with.lines.needle.33percent"
+        ],
+        "gauge.open.with.lines.needle.33percent.and.arrowtriangle": [
+          "gauge.open.with.lines.needle.33percent.and.arrowtriangle"
+        ],
+        "gauge.open.with.lines.needle.33percent.and.arrow.trianglehead.from.0percent.to.50percent": [
+          "gauge.open.with.lines.needle.33percent.and.arrow.trianglehead.from.0percent.to.50percent"
+        ],
+        "gauge.open.with.lines.needle.67percent.and.arrowtriangle": [
+          "gauge.open.with.lines.needle.67percent.and.arrowtriangle"
+        ],
+        "gauge.open.with.lines.needle.67percent.and.arrowtriangle.and.car": [
+          "gauge.open.with.lines.needle.67percent.and.arrowtriangle.and.car"
+        ],
+        "gauge.open.with.lines.needle.84percent.exclamation": [
+          "gauge.open.with.lines.needle.84percent.exclamation"
+        ],
+        "book.and.wrench": [
+          "book.and.wrench",
+          "book.and.wrench.fill"
+        ],
+        "horn": [
+          "horn",
+          "horn.fill"
+        ],
+        "horn.blast": [
+          "horn.blast",
+          "horn.blast.fill"
+        ],
+        "arrow.right": [
+          "arrow.right.filled.filter.arrow.right",
+          "arrow.right",
+          "arrow.right.circle",
+          "arrow.right.circle.fill",
+          "arrow.right.circle.dotted"
+        ],
+        "engine.emission.and.filter": [
+          "engine.emission.and.filter"
+        ],
+        "engine.emission.and.exclamationmark": [
+          "engine.emission.and.exclamationmark"
+        ],
+        "abs": [
+          "abs",
+          "abs.circle",
+          "abs.circle.fill"
+        ],
+        "mph": [
+          "mph",
+          "mph.circle",
+          "mph.circle.fill"
+        ],
+        "kph": [
+          "kph",
+          "kph.circle",
+          "kph.circle.fill"
+        ],
+        "tsa": [
+          "tsa",
+          "tsa.circle",
+          "tsa.circle.fill"
+        ],
+        "tsa.slash": [
+          "tsa.slash"
+        ],
+        "2h": [
+          "2h",
+          "2h.circle",
+          "2h.circle.fill"
+        ],
+        "4h": [
+          "4h",
+          "4h.circle",
+          "4h.circle.fill"
+        ],
+        "4l": [
+          "4l",
+          "4l.circle",
+          "4l.circle.fill"
+        ],
+        "4a": [
+          "4a",
+          "4a.circle",
+          "4a.circle.fill"
+        ],
+        "licenseplate": [
+          "licenseplate",
+          "licenseplate.fill"
+        ],
+        "mecca": [
+          "mecca"
+        ],
+        "ev.plug.ac.type.1": [
+          "ev.plug.ac.type.1",
+          "ev.plug.ac.type.1.fill"
+        ],
+        "ev.plug.ac.type.2": [
+          "ev.plug.ac.type.2",
+          "ev.plug.ac.type.2.fill"
+        ],
+        "ev.plug.ac.gb.t": [
+          "ev.plug.ac.gb.t",
+          "ev.plug.ac.gb.t.fill"
+        ],
+        "ev.plug.dc.ccs1": [
+          "ev.plug.dc.ccs1",
+          "ev.plug.dc.ccs1.fill"
+        ],
+        "ev.plug.dc.ccs2": [
+          "ev.plug.dc.ccs2",
+          "ev.plug.dc.ccs2.fill"
+        ],
+        "ev.plug.dc.chademo": [
+          "ev.plug.dc.chademo",
+          "ev.plug.dc.chademo.fill"
+        ],
+        "ev.plug.dc.gb.t": [
+          "ev.plug.dc.gb.t",
+          "ev.plug.dc.gb.t.fill"
+        ],
+        "ev.plug.dc.nacs": [
+          "ev.plug.dc.nacs",
+          "ev.plug.dc.nacs.fill"
+        ],
+        "lungs": [
+          "lungs",
+          "lungs.fill"
+        ],
+        "apple.meditate": [
+          "apple.meditate",
+          "apple.meditate.circle",
+          "apple.meditate.circle.fill"
+        ],
+        "apple.meditate.square.stack": [
+          "apple.meditate.square.stack",
+          "apple.meditate.square.stack.fill"
+        ],
+        "allergens": [
+          "allergens",
+          "allergens.fill"
+        ],
+        "microbe": [
+          "microbe",
+          "microbe.fill",
+          "microbe.circle",
+          "microbe.circle.fill"
+        ],
+        "bubbles.and.sparkles": [
+          "bubbles.and.sparkles",
+          "bubbles.and.sparkles.fill"
+        ],
+        "medical.thermometer": [
+          "medical.thermometer",
+          "medical.thermometer.fill"
+        ],
+        "bandage": [
+          "bandage",
+          "bandage.fill"
+        ],
+        "syringe": [
+          "syringe",
+          "syringe.fill"
+        ],
+        "facemask": [
+          "facemask",
+          "facemask.fill"
+        ],
+        "pill": [
+          "pill",
+          "pill.fill",
+          "pill.circle",
+          "pill.circle.fill"
+        ],
+        "pills": [
+          "pills",
+          "pills.fill",
+          "pills.circle",
+          "pills.circle.fill"
+        ],
+        "cross": [
+          "cross",
+          "cross.fill",
+          "cross.circle",
+          "cross.circle.fill"
+        ],
+        "flask": [
+          "flask",
+          "flask.fill"
+        ],
+        "testtube.2": [
+          "testtube.2"
+        ],
+        "ivfluid.bag": [
+          "ivfluid.bag",
+          "ivfluid.bag.fill"
+        ],
+        "cross.vial": [
+          "cross.vial",
+          "cross.vial.fill"
+        ],
+        "staroflife": [
+          "staroflife",
+          "staroflife.fill",
+          "staroflife.circle",
+          "staroflife.circle.fill"
+        ],
+        "heart.text.square": [
+          "heart.text.square",
+          "heart.text.square.fill"
+        ],
+        "square.text.square": [
+          "square.text.square",
+          "square.text.square.fill"
+        ],
+        "hare": [
+          "hare",
+          "hare.fill",
+          "hare.circle",
+          "hare.circle.fill"
+        ],
+        "tortoise": [
+          "tortoise",
+          "tortoise.fill",
+          "tortoise.circle",
+          "tortoise.circle.fill"
+        ],
+        "dog": [
+          "dog",
+          "dog.fill",
+          "dog.circle",
+          "dog.circle.fill"
+        ],
+        "cat": [
+          "cat",
+          "cat.fill",
+          "cat.circle",
+          "cat.circle.fill"
+        ],
+        "lizard": [
+          "lizard",
+          "lizard.fill",
+          "lizard.circle",
+          "lizard.circle.fill"
+        ],
+        "bird": [
+          "bird",
+          "bird.fill",
+          "bird.circle",
+          "bird.circle.fill"
+        ],
+        "ant": [
+          "ant",
+          "ant.fill",
+          "ant.circle",
+          "ant.circle.fill"
+        ],
+        "ladybug": [
+          "ladybug",
+          "ladybug.fill",
+          "ladybug.circle",
+          "ladybug.circle.fill"
+        ],
+        "ladybug.slash": [
+          "ladybug.slash",
+          "ladybug.slash.fill",
+          "ladybug.slash.circle",
+          "ladybug.slash.circle.fill"
+        ],
+        "fish": [
+          "fish",
+          "fish.fill",
+          "fish.circle",
+          "fish.circle.fill"
+        ],
+        "pawprint": [
+          "pawprint",
+          "pawprint.fill",
+          "pawprint.circle",
+          "pawprint.circle.fill"
+        ],
+        "teddybear": [
+          "teddybear",
+          "teddybear.fill"
+        ],
+        "leaf": [
+          "leaf",
+          "leaf.fill",
+          "leaf.circle",
+          "leaf.circle.fill"
+        ],
+        "laurel.leading": [
+          "laurel.leading"
+        ],
+        "laurel.trailing": [
+          "laurel.trailing"
+        ],
+        "camera.macro": [
+          "camera.macro",
+          "camera.macro.circle",
+          "camera.macro.circle.fill"
+        ],
+        "camera.macro.slash": [
+          "camera.macro.slash",
+          "camera.macro.slash.circle",
+          "camera.macro.slash.circle.fill"
+        ],
+        "tree": [
+          "tree",
+          "tree.fill",
+          "tree.circle",
+          "tree.circle.fill"
+        ],
+        "hanger": [
+          "hanger"
+        ],
+        "crown": [
+          "crown",
+          "crown.fill"
+        ],
+        "hat.widebrim": [
+          "hat.widebrim",
+          "hat.widebrim.fill"
+        ],
+        "hat.cap": [
+          "hat.cap",
+          "hat.cap.fill"
+        ],
+        "tshirt": [
+          "tshirt",
+          "tshirt.fill",
+          "tshirt.circle",
+          "tshirt.circle.fill"
+        ],
+        "jacket": [
+          "jacket",
+          "jacket.fill"
+        ],
+        "coat": [
+          "coat",
+          "coat.fill"
+        ],
+        "shoe": [
+          "shoe",
+          "shoe.fill",
+          "shoe.circle",
+          "shoe.circle.fill"
+        ],
+        "shoe.2": [
+          "shoe.2",
+          "shoe.2.fill"
+        ],
+        "shoeprints": [
+          "shoeprints.fill"
+        ],
+        "film": [
+          "film",
+          "film.fill",
+          "film.circle",
+          "film.circle.fill"
+        ],
+        "film.stack": [
+          "film.stack",
+          "film.stack.fill"
+        ],
+        "movieclapper": [
+          "movieclapper",
+          "movieclapper.fill"
+        ],
+        "ticket": [
+          "ticket",
+          "ticket.fill"
+        ],
+        "face.smiling": [
+          "face.smiling"
+        ],
+        "face.smiling.inverse": [
+          "face.smiling.inverse"
+        ],
+        "face.dashed": [
+          "face.dashed",
+          "face.dashed.fill"
+        ],
+        "eye": [
+          "eye",
+          "eye.fill",
+          "eye.circle",
+          "eye.circle.fill",
+          "eye.trianglebadge.exclamationmark",
+          "eye.trianglebadge.exclamationmark.fill"
+        ],
+        "eye.square": [
+          "eye.square",
+          "eye.square.fill"
+        ],
+        "eye.slash": [
+          "eye.slash",
+          "eye.slash.fill",
+          "eye.slash.circle",
+          "eye.slash.circle.fill"
+        ],
+        "eyes": [
+          "eyes"
+        ],
+        "eyes.inverse": [
+          "eyes.inverse"
+        ],
+        "eyebrow": [
+          "eyebrow"
+        ],
+        "nose": [
+          "nose",
+          "nose.fill"
+        ],
+        "comb": [
+          "comb",
+          "comb.fill"
+        ],
+        "mustache": [
+          "mustache",
+          "mustache.fill"
+        ],
+        "mouth": [
+          "mouth",
+          "mouth.fill"
+        ],
+        "eyeglasses": [
+          "eyeglasses"
+        ],
+        "eyeglasses.slash": [
+          "eyeglasses.slash"
+        ],
+        "sunglasses": [
+          "sunglasses",
+          "sunglasses.fill"
+        ],
+        "brain.head.profile": [
+          "brain.head.profile",
+          "brain.head.profile.fill"
+        ],
+        "brain": [
+          "brain.filled.head.profile",
+          "brain",
+          "brain.fill"
+        ],
+        "ear": [
+          "ear",
+          "ear.fill",
+          "ear.badge.checkmark",
+          "ear.trianglebadge.exclamationmark",
+          "ear.badge.waveform"
+        ],
+        "hearingdevice.ear": [
+          "hearingdevice.ear",
+          "hearingdevice.ear.fill"
+        ],
+        "hearingdevice.and.signal.meter": [
+          "hearingdevice.and.signal.meter",
+          "hearingdevice.and.signal.meter.fill"
+        ],
+        "xmark.triangle": [
+          "xmark.triangle.circle.square",
+          "xmark.triangle.circle.square.fill"
+        ],
+        "hand.raised": [
+          "hand.raised",
+          "hand.raised.fill",
+          "hand.raised.circle",
+          "hand.raised.circle.fill"
+        ],
+        "hand.raised.square": [
+          "hand.raised.square",
+          "hand.raised.square.fill"
+        ],
+        "hand.raised.app": [
+          "hand.raised.app",
+          "hand.raised.app.fill"
+        ],
+        "hand.raised.slash": [
+          "hand.raised.slash",
+          "hand.raised.slash.fill"
+        ],
+        "hand.raised.palm.facing": [
+          "hand.raised.palm.facing",
+          "hand.raised.palm.facing.fill"
+        ],
+        "hand.raised.fingers.spread": [
+          "hand.raised.fingers.spread",
+          "hand.raised.fingers.spread.fill"
+        ],
+        "hand.thumbsup": [
+          "hand.thumbsup",
+          "hand.thumbsup.fill",
+          "hand.thumbsup.circle",
+          "hand.thumbsup.circle.fill"
+        ],
+        "hand.thumbsdown": [
+          "hand.thumbsdown",
+          "hand.thumbsdown.fill",
+          "hand.thumbsdown.circle",
+          "hand.thumbsdown.circle.fill"
+        ],
+        "hand.point.up.left": [
+          "hand.point.up.left",
+          "hand.point.up.left.fill"
+        ],
+        "hand.draw": [
+          "hand.draw",
+          "hand.draw.fill",
+          "hand.draw.badge.ellipsis",
+          "hand.draw.badge.ellipsis.fill"
+        ],
+        "hand.tap": [
+          "hand.tap",
+          "hand.tap.fill"
+        ],
+        "hand.rays": [
+          "hand.rays",
+          "hand.rays.fill"
+        ],
+        "hand.point.up.left.and.text": [
+          "hand.point.up.left.and.text",
+          "hand.point.up.left.and.text.fill"
+        ],
+        "rectangle.and.hand.point.up.left": [
+          "rectangle.and.hand.point.up.left",
+          "rectangle.and.hand.point.up.left.fill",
+          "rectangle.and.hand.point.up.left.filled"
+        ],
+        "hand.point.left": [
+          "hand.point.left",
+          "hand.point.left.fill"
+        ],
+        "hand.point.right": [
+          "hand.point.right",
+          "hand.point.right.fill"
+        ],
+        "hand.point.up": [
+          "hand.point.up",
+          "hand.point.up.fill"
+        ],
+        "hand.point.up.braille": [
+          "hand.point.up.braille",
+          "hand.point.up.braille.fill",
+          "hand.point.up.braille.badge.ellipsis",
+          "hand.point.up.braille.badge.ellipsis.fill"
+        ],
+        "hand.point.down": [
+          "hand.point.down",
+          "hand.point.down.fill"
+        ],
+        "hand.wave": [
+          "hand.wave",
+          "hand.wave.fill"
+        ],
+        "hand.palm.facing": [
+          "hand.palm.facing",
+          "hand.palm.facing.fill"
+        ],
+        "hands.clap": [
+          "hands.clap",
+          "hands.clap.fill"
+        ],
+        "hands.and.sparkles": [
+          "hands.and.sparkles",
+          "hands.and.sparkles.fill"
+        ],
+        "hand.pinch": [
+          "hand.pinch",
+          "hand.pinch.fill"
+        ],
+        "qrcode": [
+          "qrcode"
+        ],
+        "barcode": [
+          "barcode"
+        ],
+        "viewfinder": [
+          "viewfinder",
+          "viewfinder.circle",
+          "viewfinder.circle.fill",
+          "viewfinder.trianglebadge.exclamationmark"
+        ],
+        "barcode.viewfinder": [
+          "barcode.viewfinder"
+        ],
+        "qrcode.viewfinder": [
+          "qrcode.viewfinder"
+        ],
+        "plus.viewfinder": [
+          "plus.viewfinder"
+        ],
+        "camera.viewfinder": [
+          "camera.viewfinder"
+        ],
+        "document.viewfinder": [
+          "document.viewfinder",
+          "document.viewfinder.fill"
+        ],
+        "location.viewfinder": [
+          "location.viewfinder"
+        ],
+        "ellipsis.viewfinder": [
+          "ellipsis.viewfinder"
+        ],
+        "text.viewfinder": [
+          "text.viewfinder"
+        ],
+        "dot.viewfinder": [
+          "dot.viewfinder"
+        ],
+        "key.viewfinder": [
+          "key.viewfinder"
+        ],
+        "creditcard.viewfinder": [
+          "creditcard.viewfinder"
+        ],
+        "vial.viewfinder": [
+          "vial.viewfinder"
+        ],
+        "iphone.dock.motorized.viewfinder": [
+          "iphone.dock.motorized.viewfinder"
+        ],
+        "photo": [
+          "photo",
+          "photo.fill",
+          "photo.circle",
+          "photo.circle.fill",
+          "photo.badge.plus",
+          "photo.badge.plus.fill",
+          "photo.badge.arrow.down",
+          "photo.badge.arrow.down.fill",
+          "photo.badge.checkmark",
+          "photo.badge.checkmark.fill",
+          "photo.badge.exclamationmark",
+          "photo.badge.exclamationmark.fill",
+          "photo.fill.on.rectangle.fill"
+        ],
+        "text.below.photo": [
+          "text.below.photo",
+          "text.below.photo.fill"
+        ],
+        "camera.metering.center.weighted.average": [
+          "camera.metering.center.weighted.average"
+        ],
+        "camera.metering.center.weighted": [
+          "camera.metering.center.weighted"
+        ],
+        "camera.metering.matrix": [
+          "camera.metering.matrix"
+        ],
+        "camera.metering.multispot": [
+          "camera.metering.multispot"
+        ],
+        "camera.metering.none": [
+          "camera.metering.none"
+        ],
+        "camera.metering.partial": [
+          "camera.metering.partial"
+        ],
+        "camera.metering.spot": [
+          "camera.metering.spot"
+        ],
+        "camera.metering.unknown": [
+          "camera.metering.unknown"
+        ],
+        "camera.aperture": [
+          "camera.aperture"
+        ],
+        "circle.rectangle": [
+          "circle.rectangle.filled.pattern.diagonalline"
+        ],
+        "circle.dashed.rectangle": [
+          "circle.dashed.rectangle"
+        ],
+        "circle.rectangle.dashed": [
+          "circle.rectangle.dashed"
+        ],
+        "rectangle.dashed": [
+          "rectangle.dashed",
+          "rectangle.dashed.badge.record"
+        ],
+        "photo.on.rectangle": [
+          "photo.on.rectangle"
+        ],
+        "rectangle.on.rectangle.angled": [
+          "rectangle.on.rectangle.angled"
+        ],
+        "photo.on.rectangle.angled": [
+          "photo.on.rectangle.angled",
+          "photo.on.rectangle.angled.fill"
+        ],
+        "rectangle.stack": [
+          "rectangle.stack",
+          "rectangle.stack.fill",
+          "rectangle.stack.badge.plus",
+          "rectangle.stack.fill.badge.plus",
+          "rectangle.stack.badge.minus",
+          "rectangle.stack.fill.badge.minus",
+          "rectangle.stack.badge.person.crop",
+          "rectangle.stack.badge.person.crop.fill",
+          "rectangle.stack.badge.play",
+          "rectangle.stack.badge.play.fill"
+        ],
+        "photo.stack": [
+          "photo.stack",
+          "photo.stack.fill"
+        ],
+        "sparkles.rectangle.stack": [
+          "sparkles.rectangle.stack",
+          "sparkles.rectangle.stack.fill"
+        ],
+        "checkmark.rectangle.stack": [
+          "checkmark.rectangle.stack",
+          "checkmark.rectangle.stack.fill"
+        ],
+        "sidebar.left": [
+          "sidebar.left"
+        ],
+        "sidebar.right": [
+          "sidebar.right"
+        ],
+        "sidebar.leading": [
+          "sidebar.leading"
+        ],
+        "sidebar.trailing": [
+          "sidebar.trailing"
+        ],
+        "sidebar.squares.left": [
+          "sidebar.squares.left"
+        ],
+        "sidebar.squares.right": [
+          "sidebar.squares.right"
+        ],
+        "sidebar.squares.leading": [
+          "sidebar.squares.leading"
+        ],
+        "sidebar.squares.trailing": [
+          "sidebar.squares.trailing"
+        ],
+        "squares.below.rectangle": [
+          "squares.below.rectangle"
+        ],
+        "squares.leading.rectangle": [
+          "squares.leading.rectangle",
+          "squares.leading.rectangle.fill"
+        ],
+        "macwindow": [
+          "macwindow",
+          "macwindow.badge.plus"
+        ],
+        "macwindow.and.cursorarrow": [
+          "macwindow.and.cursorarrow"
+        ],
+        "slider.horizontal.2.rectangle.and.arrow.trianglehead.2.clockwise.rotate.90": [
+          "slider.horizontal.2.rectangle.and.arrow.trianglehead.2.clockwise.rotate.90"
+        ],
+        "dock.rectangle": [
+          "dock.rectangle"
+        ],
+        "dock.arrow.up.rectangle": [
+          "dock.arrow.up.rectangle"
+        ],
+        "dock.arrow.down.rectangle": [
+          "dock.arrow.down.rectangle"
+        ],
+        "menubar.rectangle": [
+          "menubar.rectangle"
+        ],
+        "menubar.dock.rectangle": [
+          "menubar.dock.rectangle",
+          "menubar.dock.rectangle.badge.record"
+        ],
+        "menubar.arrow.up.rectangle": [
+          "menubar.arrow.up.rectangle"
+        ],
+        "menubar.arrow.down.rectangle": [
+          "menubar.arrow.down.rectangle"
+        ],
+        "macwindow.on.rectangle": [
+          "macwindow.on.rectangle"
+        ],
+        "text.and.command.macwindow": [
+          "text.and.command.macwindow"
+        ],
+        "keyboard.macwindow": [
+          "keyboard.macwindow"
+        ],
+        "uiwindow.split.2x1": [
+          "uiwindow.split.2x1"
+        ],
+        "mosaic": [
+          "mosaic",
+          "mosaic.fill"
+        ],
+        "square.on.square.squareshape.controlhandles": [
+          "square.on.square.squareshape.controlhandles"
+        ],
+        "squareshape.controlhandles.on.squareshape.controlhandles": [
+          "squareshape.controlhandles.on.squareshape.controlhandles"
+        ],
+        "square.and.line.vertical.and.square": [
+          "square.and.line.vertical.and.square",
+          "square.and.line.vertical.and.square.filled"
+        ],
+        "rectangle.connected.to.line.below": [
+          "rectangle.connected.to.line.below"
+        ],
+        "flowchart": [
+          "flowchart",
+          "flowchart.fill"
+        ],
+        "align.horizontal.left": [
+          "align.horizontal.left",
+          "align.horizontal.left.fill"
+        ],
+        "align.horizontal.center": [
+          "align.horizontal.center",
+          "align.horizontal.center.fill"
+        ],
+        "align.horizontal.right": [
+          "align.horizontal.right",
+          "align.horizontal.right.fill"
+        ],
+        "align.vertical.top": [
+          "align.vertical.top",
+          "align.vertical.top.fill"
+        ],
+        "align.vertical.center": [
+          "align.vertical.center",
+          "align.vertical.center.fill"
+        ],
+        "align.vertical.bottom": [
+          "align.vertical.bottom",
+          "align.vertical.bottom.fill"
+        ],
+        "distribute.vertical": [
+          "distribute.vertical",
+          "distribute.vertical.fill"
+        ],
+        "distribute.vertical.top": [
+          "distribute.vertical.top",
+          "distribute.vertical.top.fill"
+        ],
+        "distribute.vertical.center": [
+          "distribute.vertical.center",
+          "distribute.vertical.center.fill"
+        ],
+        "distribute.vertical.bottom": [
+          "distribute.vertical.bottom",
+          "distribute.vertical.bottom.fill"
+        ],
+        "distribute.horizontal": [
+          "distribute.horizontal",
+          "distribute.horizontal.fill"
+        ],
+        "distribute.horizontal.left": [
+          "distribute.horizontal.left",
+          "distribute.horizontal.left.fill"
+        ],
+        "distribute.horizontal.center": [
+          "distribute.horizontal.center",
+          "distribute.horizontal.center.fill"
+        ],
+        "distribute.horizontal.right": [
+          "distribute.horizontal.right",
+          "distribute.horizontal.right.fill"
+        ],
+        "switch.2": [
+          "switch.2"
+        ],
+        "app.connected.to.app.below": [
+          "app.connected.to.app.below.fill"
+        ],
+        "point.topleft.down.to.point.bottomright.curvepath": [
+          "point.topleft.down.to.point.bottomright.curvepath",
+          "point.topleft.down.to.point.bottomright.curvepath.fill"
+        ],
+        "point.topleft.down.to.point.bottomright": [
+          "point.topleft.down.to.point.bottomright.filled.curvepath"
+        ],
+        "point.topleft": [
+          "point.topleft.filled.down.to.point.bottomright.curvepath"
+        ],
+        "point.bottomleft.forward.to.point.topright.scurvepath": [
+          "point.bottomleft.forward.to.point.topright.scurvepath",
+          "point.bottomleft.forward.to.point.topright.scurvepath.fill"
+        ],
+        "point.bottomleft.forward.to.point.topright": [
+          "point.bottomleft.forward.to.point.topright.filled.scurvepath"
+        ],
+        "point.bottomleft": [
+          "point.bottomleft.filled.forward.to.point.topright.scurvepath"
+        ],
+        "point.bottomleft.forward.to.arrow.triangle.uturn.scurvepath": [
+          "point.bottomleft.forward.to.arrow.triangle.uturn.scurvepath",
+          "point.bottomleft.forward.to.arrow.triangle.uturn.scurvepath.fill"
+        ],
+        "point.topright.arrow.triangle.backward.to.point.bottomleft.scurvepath": [
+          "point.topright.arrow.triangle.backward.to.point.bottomleft.scurvepath",
+          "point.topright.arrow.triangle.backward.to.point.bottomleft.scurvepath.fill"
+        ],
+        "point.topright": [
+          "point.topright.filled.arrow.triangle.backward.to.point.bottomleft.scurvepath"
+        ],
+        "point.topright.arrow.triangle.backward.to.point.bottomleft": [
+          "point.topright.arrow.triangle.backward.to.point.bottomleft.filled.scurvepath"
+        ],
+        "point.bottomleft.forward.to.arrow.triangle.scurvepath": [
+          "point.bottomleft.forward.to.arrow.triangle.scurvepath",
+          "point.bottomleft.forward.to.arrow.triangle.scurvepath.fill"
+        ],
+        "point.forward.to.point.capsulepath": [
+          "point.forward.to.point.capsulepath",
+          "point.forward.to.point.capsulepath.fill"
+        ],
+        "lineweight": [
+          "lineweight"
+        ],
+        "slider.horizontal.3": [
+          "slider.horizontal.3"
+        ],
+        "slider.horizontal.2.square.on.square": [
+          "slider.horizontal.2.square.on.square"
+        ],
+        "slider.horizontal.2.square": [
+          "slider.horizontal.2.square",
+          "slider.horizontal.2.square.badge.arrow.down"
+        ],
+        "slider.horizontal.below.rectangle": [
+          "slider.horizontal.below.rectangle"
+        ],
+        "slider.horizontal.below.square": [
+          "slider.horizontal.below.square.filled.and.square"
+        ],
+        "slider.horizontal.below.square.and.square": [
+          "slider.horizontal.below.square.and.square.filled"
+        ],
+        "slider.horizontal.below.sun.max": [
+          "slider.horizontal.below.sun.max"
+        ],
+        "slider.vertical.3": [
+          "slider.vertical.3"
+        ],
+        "cube": [
+          "cube",
+          "cube.fill"
+        ],
+        "cube.transparent": [
+          "cube.transparent",
+          "cube.transparent.fill"
+        ],
+        "shippingbox": [
+          "shippingbox",
+          "shippingbox.fill",
+          "shippingbox.circle",
+          "shippingbox.circle.fill"
+        ],
+        "shippingbox.and.arrow.backward": [
+          "shippingbox.and.arrow.backward",
+          "shippingbox.and.arrow.backward.fill"
+        ],
+        "arkit": [
+          "arkit",
+          "arkit.badge.xmark"
+        ],
+        "cone": [
+          "cone",
+          "cone.fill"
+        ],
+        "pyramid": [
+          "pyramid",
+          "pyramid.fill"
+        ],
+        "square.stack.3d.down.right": [
+          "square.stack.3d.down.right",
+          "square.stack.3d.down.right.fill"
+        ],
+        "square.stack.3d.down.forward": [
+          "square.stack.3d.down.forward",
+          "square.stack.3d.down.forward.fill"
+        ],
+        "square.stack.3d.up": [
+          "square.stack.3d.up",
+          "square.stack.3d.up.fill",
+          "square.stack.3d.up.badge.automatic",
+          "square.stack.3d.up.badge.automatic.fill",
+          "square.stack.3d.up.trianglebadge.exclamationmark",
+          "square.stack.3d.up.trianglebadge.exclamationmark.fill"
+        ],
+        "square.stack.3d.up.slash": [
+          "square.stack.3d.up.slash",
+          "square.stack.3d.up.slash.fill"
+        ],
+        "square.stack.3d.forward.dottedline": [
+          "square.stack.3d.forward.dottedline",
+          "square.stack.3d.forward.dottedline.fill"
+        ],
+        "livephoto": [
+          "livephoto",
+          "livephoto.badge.automatic"
+        ],
+        "livephoto.slash": [
+          "livephoto.slash"
+        ],
+        "livephoto.play": [
+          "livephoto.play"
+        ],
+        "f.cursive": [
+          "f.cursive",
+          "f.cursive.circle",
+          "f.cursive.circle.fill"
+        ],
+        "scope": [
+          "scope"
+        ],
+        "dot.scope": [
+          "dot.scope"
+        ],
+        "helm": [
+          "helm"
+        ],
+        "clock": [
+          "clock",
+          "clock.fill",
+          "clock.circle",
+          "clock.circle.fill",
+          "clock.badge",
+          "clock.badge.fill",
+          "clock.badge.checkmark",
+          "clock.badge.checkmark.fill",
+          "clock.badge.xmark",
+          "clock.badge.xmark.fill",
+          "clock.badge.questionmark",
+          "clock.badge.questionmark.fill",
+          "clock.badge.exclamationmark",
+          "clock.badge.exclamationmark.fill"
+        ],
+        "deskclock": [
+          "deskclock",
+          "deskclock.fill"
+        ],
+        "alarm": [
+          "alarm",
+          "alarm.fill"
+        ],
+        "alarm.waves.left.and.right": [
+          "alarm.waves.left.and.right",
+          "alarm.waves.left.and.right.fill"
+        ],
+        "stopwatch": [
+          "stopwatch",
+          "stopwatch.fill"
+        ],
+        "chart.xyaxis.line": [
+          "chart.xyaxis.line"
+        ],
+        "gauge.with.needle": [
+          "gauge.with.needle",
+          "gauge.with.needle.fill"
+        ],
+        "timer": [
+          "timer",
+          "timer.circle",
+          "timer.circle.fill"
+        ],
+        "timer.square": [
+          "timer.square"
+        ],
+        "arcade.stick.console": [
+          "arcade.stick.console",
+          "arcade.stick.console.fill"
+        ],
+        "arcade.stick": [
+          "arcade.stick"
+        ],
+        "arcade.stick.and.arrow.left.and.arrow.right.outward": [
+          "arcade.stick.and.arrow.left.and.arrow.right.outward"
+        ],
+        "arcade.stick.and.arrow.left": [
+          "arcade.stick.and.arrow.left"
+        ],
+        "arcade.stick.and.arrow.right": [
+          "arcade.stick.and.arrow.right"
+        ],
+        "arcade.stick.and.arrow.up.and.arrow.down": [
+          "arcade.stick.and.arrow.up.and.arrow.down"
+        ],
+        "arcade.stick.and.arrow.up": [
+          "arcade.stick.and.arrow.up"
+        ],
+        "arcade.stick.and.arrow.down": [
+          "arcade.stick.and.arrow.down"
+        ],
+        "l.joystick": [
+          "l.joystick",
+          "l.joystick.fill"
+        ],
+        "r.joystick": [
+          "r.joystick",
+          "r.joystick.fill"
+        ],
+        "l.joystick.press.down": [
+          "l.joystick.press.down",
+          "l.joystick.press.down.fill"
+        ],
+        "r.joystick.press.down": [
+          "r.joystick.press.down",
+          "r.joystick.press.down.fill"
+        ],
+        "l.joystick.tilt.left": [
+          "l.joystick.tilt.left",
+          "l.joystick.tilt.left.fill"
+        ],
+        "l.joystick.tilt.right": [
+          "l.joystick.tilt.right",
+          "l.joystick.tilt.right.fill"
+        ],
+        "l.joystick.tilt.up": [
+          "l.joystick.tilt.up",
+          "l.joystick.tilt.up.fill"
+        ],
+        "l.joystick.tilt.down": [
+          "l.joystick.tilt.down",
+          "l.joystick.tilt.down.fill"
+        ],
+        "r.joystick.tilt.left": [
+          "r.joystick.tilt.left",
+          "r.joystick.tilt.left.fill"
+        ],
+        "r.joystick.tilt.right": [
+          "r.joystick.tilt.right",
+          "r.joystick.tilt.right.fill"
+        ],
+        "r.joystick.tilt.up": [
+          "r.joystick.tilt.up",
+          "r.joystick.tilt.up.fill"
+        ],
+        "r.joystick.tilt.down": [
+          "r.joystick.tilt.down",
+          "r.joystick.tilt.down.fill"
+        ],
+        "circle.grid.cross": [
+          "circle.grid.cross",
+          "circle.grid.cross.fill"
+        ],
+        "circle.grid.cross.left": [
+          "circle.grid.cross.left.filled"
+        ],
+        "circle.grid.cross.up": [
+          "circle.grid.cross.up.filled"
+        ],
+        "circle.grid.cross.right": [
+          "circle.grid.cross.right.filled"
+        ],
+        "circle.grid.cross.down": [
+          "circle.grid.cross.down.filled"
+        ],
+        "dpad": [
+          "dpad",
+          "dpad.fill"
+        ],
+        "dpad.left": [
+          "dpad.left.filled"
+        ],
+        "dpad.up": [
+          "dpad.up.filled"
+        ],
+        "dpad.right": [
+          "dpad.right.filled"
+        ],
+        "dpad.down": [
+          "dpad.down.filled"
+        ],
+        "arrowkeys": [
+          "arrowkeys",
+          "arrowkeys.fill"
+        ],
+        "arrowkeys.up": [
+          "arrowkeys.up.filled"
+        ],
+        "arrowkeys.down": [
+          "arrowkeys.down.filled"
+        ],
+        "arrowkeys.left": [
+          "arrowkeys.left.filled"
+        ],
+        "arrowkeys.right": [
+          "arrowkeys.right.filled"
+        ],
+        "paddleshifter.left": [
+          "paddleshifter.left",
+          "paddleshifter.left.fill"
+        ],
+        "paddleshifter.right": [
+          "paddleshifter.right",
+          "paddleshifter.right.fill"
+        ],
+        "l1": [
+          "l1.circle",
+          "l1.circle.fill"
+        ],
+        "lb": [
+          "lb.circle",
+          "lb.circle.fill"
+        ],
+        "l2": [
+          "l2.circle",
+          "l2.circle.fill"
+        ],
+        "lt": [
+          "lt.circle",
+          "lt.circle.fill"
+        ],
+        "r1": [
+          "r1.circle",
+          "r1.circle.fill"
+        ],
+        "rb": [
+          "rb.circle",
+          "rb.circle.fill"
+        ],
+        "r2": [
+          "r2.circle",
+          "r2.circle.fill"
+        ],
+        "rt": [
+          "rt.circle",
+          "rt.circle.fill"
+        ],
+        "button.horizontal": [
+          "button.horizontal",
+          "button.horizontal.fill"
+        ],
+        "l4.button.horizontal": [
+          "l4.button.horizontal",
+          "l4.button.horizontal.fill"
+        ],
+        "r4.button.horizontal": [
+          "r4.button.horizontal",
+          "r4.button.horizontal.fill"
+        ],
+        "lm.button.horizontal": [
+          "lm.button.horizontal",
+          "lm.button.horizontal.fill"
+        ],
+        "rm.button.horizontal": [
+          "rm.button.horizontal",
+          "rm.button.horizontal.fill"
+        ],
+        "m1.button.horizontal": [
+          "m1.button.horizontal",
+          "m1.button.horizontal.fill"
+        ],
+        "m2.button.horizontal": [
+          "m2.button.horizontal",
+          "m2.button.horizontal.fill"
+        ],
+        "m3.button.horizontal": [
+          "m3.button.horizontal",
+          "m3.button.horizontal.fill"
+        ],
+        "m4.button.horizontal": [
+          "m4.button.horizontal",
+          "m4.button.horizontal.fill"
+        ],
+        "p1.button.horizontal": [
+          "p1.button.horizontal",
+          "p1.button.horizontal.fill"
+        ],
+        "p2.button.horizontal": [
+          "p2.button.horizontal",
+          "p2.button.horizontal.fill"
+        ],
+        "p3.button.horizontal": [
+          "p3.button.horizontal",
+          "p3.button.horizontal.fill"
+        ],
+        "p4.button.horizontal": [
+          "p4.button.horizontal",
+          "p4.button.horizontal.fill"
+        ],
+        "button.roundedtop.horizontal": [
+          "button.roundedtop.horizontal",
+          "button.roundedtop.horizontal.fill"
+        ],
+        "l2.button.roundedtop.horizontal": [
+          "l2.button.roundedtop.horizontal",
+          "l2.button.roundedtop.horizontal.fill"
+        ],
+        "r2.button.roundedtop.horizontal": [
+          "r2.button.roundedtop.horizontal",
+          "r2.button.roundedtop.horizontal.fill"
+        ],
+        "lt.button.roundedtop.horizontal": [
+          "lt.button.roundedtop.horizontal",
+          "lt.button.roundedtop.horizontal.fill"
+        ],
+        "rt.button.roundedtop.horizontal": [
+          "rt.button.roundedtop.horizontal",
+          "rt.button.roundedtop.horizontal.fill"
+        ],
+        "zl.button.roundedtop.horizontal": [
+          "zl.button.roundedtop.horizontal",
+          "zl.button.roundedtop.horizontal.fill"
+        ],
+        "zr.button.roundedtop.horizontal": [
+          "zr.button.roundedtop.horizontal",
+          "zr.button.roundedtop.horizontal.fill"
+        ],
+        "button.roundedbottom.horizontal": [
+          "button.roundedbottom.horizontal",
+          "button.roundedbottom.horizontal.fill"
+        ],
+        "l.button.roundedbottom.horizontal": [
+          "l.button.roundedbottom.horizontal",
+          "l.button.roundedbottom.horizontal.fill"
+        ],
+        "l1.button.roundedbottom.horizontal": [
+          "l1.button.roundedbottom.horizontal",
+          "l1.button.roundedbottom.horizontal.fill"
+        ],
+        "r.button.roundedbottom.horizontal": [
+          "r.button.roundedbottom.horizontal",
+          "r.button.roundedbottom.horizontal.fill"
+        ],
+        "r1.button.roundedbottom.horizontal": [
+          "r1.button.roundedbottom.horizontal",
+          "r1.button.roundedbottom.horizontal.fill"
+        ],
+        "lb.button.roundedbottom.horizontal": [
+          "lb.button.roundedbottom.horizontal",
+          "lb.button.roundedbottom.horizontal.fill"
+        ],
+        "rb.button.roundedbottom.horizontal": [
+          "rb.button.roundedbottom.horizontal",
+          "rb.button.roundedbottom.horizontal.fill"
+        ],
+        "button.angledtop.vertical.left": [
+          "button.angledtop.vertical.left",
+          "button.angledtop.vertical.left.fill"
+        ],
+        "l2.button.angledtop.vertical.left": [
+          "l2.button.angledtop.vertical.left",
+          "l2.button.angledtop.vertical.left.fill"
+        ],
+        "rectangle.on.rectangle.button.angledtop.vertical.left": [
+          "rectangle.on.rectangle.button.angledtop.vertical.left",
+          "rectangle.on.rectangle.button.angledtop.vertical.left.fill"
+        ],
+        "button.angledtop.vertical.right": [
+          "button.angledtop.vertical.right",
+          "button.angledtop.vertical.right.fill"
+        ],
+        "r2.button.angledtop.vertical.right": [
+          "r2.button.angledtop.vertical.right",
+          "r2.button.angledtop.vertical.right.fill"
+        ],
+        "line.3.horizontal.button.angledtop.vertical.right": [
+          "line.3.horizontal.button.angledtop.vertical.right",
+          "line.3.horizontal.button.angledtop.vertical.right.fill"
+        ],
+        "button.angledbottom.horizontal.left": [
+          "button.angledbottom.horizontal.left",
+          "button.angledbottom.horizontal.left.fill"
+        ],
+        "l3.button.angledbottom.horizontal.left": [
+          "l3.button.angledbottom.horizontal.left",
+          "l3.button.angledbottom.horizontal.left.fill"
+        ],
+        "lsb.button.angledbottom.horizontal.left": [
+          "lsb.button.angledbottom.horizontal.left",
+          "lsb.button.angledbottom.horizontal.left.fill"
+        ],
+        "button.angledbottom.horizontal.right": [
+          "button.angledbottom.horizontal.right",
+          "button.angledbottom.horizontal.right.fill"
+        ],
+        "r3.button.angledbottom.horizontal.right": [
+          "r3.button.angledbottom.horizontal.right",
+          "r3.button.angledbottom.horizontal.right.fill"
+        ],
+        "rsb.button.angledbottom.horizontal.right": [
+          "rsb.button.angledbottom.horizontal.right",
+          "rsb.button.angledbottom.horizontal.right.fill"
+        ],
+        "pedal.accelerator": [
+          "pedal.accelerator",
+          "pedal.accelerator.fill"
+        ],
+        "pedal.brake": [
+          "pedal.brake",
+          "pedal.brake.fill"
+        ],
+        "pedal.clutch": [
+          "pedal.clutch",
+          "pedal.clutch.fill"
+        ],
+        "gearshift.layout.sixspeed": [
+          "gearshift.layout.sixspeed"
+        ],
+        "playstation.logo": [
+          "playstation.logo"
+        ],
+        "xbox.logo": [
+          "xbox.logo"
+        ],
+        "gamecontroller": [
+          "gamecontroller",
+          "gamecontroller.fill",
+          "gamecontroller.circle",
+          "gamecontroller.circle.fill"
+        ],
+        "formfitting.gamecontroller": [
+          "formfitting.gamecontroller",
+          "formfitting.gamecontroller.fill"
+        ],
+        "paintpalette": [
+          "paintpalette",
+          "paintpalette.fill"
+        ],
+        "swatchpalette": [
+          "swatchpalette",
+          "swatchpalette.fill"
+        ],
+        "cup.and.saucer": [
+          "cup.and.saucer",
+          "cup.and.saucer.fill"
+        ],
+        "cup.and.heat.waves": [
+          "cup.and.heat.waves",
+          "cup.and.heat.waves.fill"
+        ],
+        "mug": [
+          "mug",
+          "mug.fill"
+        ],
+        "takeoutbag.and.cup.and.straw": [
+          "takeoutbag.and.cup.and.straw",
+          "takeoutbag.and.cup.and.straw.fill"
+        ],
+        "wineglass": [
+          "wineglass",
+          "wineglass.fill"
+        ],
+        "waterbottle": [
+          "waterbottle",
+          "waterbottle.fill"
+        ],
+        "birthday.cake": [
+          "birthday.cake",
+          "birthday.cake.fill"
+        ],
+        "carrot": [
+          "carrot",
+          "carrot.fill"
+        ],
+        "fork.knife": [
+          "fork.knife",
+          "fork.knife.circle",
+          "fork.knife.circle.fill"
+        ],
+        "rectangle.compress.vertical": [
+          "rectangle.compress.vertical"
+        ],
+        "rectangle.expand.vertical": [
+          "rectangle.expand.vertical"
+        ],
+        "rectangle.expand.diagonal": [
+          "rectangle.expand.diagonal"
+        ],
+        "rectangle.and.arrow.up.right.and.arrow.down.left": [
+          "rectangle.and.arrow.up.right.and.arrow.down.left"
+        ],
+        "rectangle.and.arrow.up.right.and.arrow.down.left.slash": [
+          "rectangle.and.arrow.up.right.and.arrow.down.left.slash"
+        ],
+        "square.2.layers.3d": [
+          "square.2.layers.3d",
+          "square.2.layers.3d.fill"
+        ],
+        "square.2.layers.3d.top": [
+          "square.2.layers.3d.top.filled"
+        ],
+        "square.2.layers.3d.bottom": [
+          "square.2.layers.3d.bottom.filled"
+        ],
+        "square.3.layers.3d.down.right": [
+          "square.3.layers.3d.down.right"
+        ],
+        "square.3.layers.3d.down.right.slash": [
+          "square.3.layers.3d.down.right.slash"
+        ],
+        "square.3.layers.3d.down.left": [
+          "square.3.layers.3d.down.left"
+        ],
+        "square.3.layers.3d.down.left.slash": [
+          "square.3.layers.3d.down.left.slash"
+        ],
+        "square.3.layers.3d.down.forward": [
+          "square.3.layers.3d.down.forward"
+        ],
+        "square.3.layers.3d.down.backward": [
+          "square.3.layers.3d.down.backward"
+        ],
+        "square.3.layers.3d": [
+          "square.3.layers.3d"
+        ],
+        "square.3.layers.3d.slash": [
+          "square.3.layers.3d.slash"
+        ],
+        "square.3.layers.3d.top": [
+          "square.3.layers.3d.top.filled"
+        ],
+        "square.3.layers.3d.middle": [
+          "square.3.layers.3d.middle.filled"
+        ],
+        "square.3.layers.3d.bottom": [
+          "square.3.layers.3d.bottom.filled"
+        ],
+        "circle.dotted.and": [
+          "circle.dotted.and.circle"
+        ],
+        "cylinder": [
+          "cylinder",
+          "cylinder.fill"
+        ],
+        "cylinder.split.1x2": [
+          "cylinder.split.1x2",
+          "cylinder.split.1x2.fill"
+        ],
+        "chart.bar": [
+          "chart.bar",
+          "chart.bar.fill"
+        ],
+        "cellularbars": [
+          "cellularbars"
+        ],
+        "chart.pie": [
+          "chart.pie",
+          "chart.pie.fill"
+        ],
+        "chart.bar.xaxis": [
+          "chart.bar.xaxis"
+        ],
+        "chart.bar.xaxis.ascending": [
+          "chart.bar.xaxis.ascending",
+          "chart.bar.xaxis.ascending.badge.clock"
+        ],
+        "chart.bar.yaxis": [
+          "chart.bar.yaxis"
+        ],
+        "chart.line.uptrend.xyaxis": [
+          "chart.line.uptrend.xyaxis",
+          "chart.line.uptrend.xyaxis.circle",
+          "chart.line.uptrend.xyaxis.circle.fill"
+        ],
+        "chart.line.downtrend.xyaxis": [
+          "chart.line.downtrend.xyaxis",
+          "chart.line.downtrend.xyaxis.circle",
+          "chart.line.downtrend.xyaxis.circle.fill"
+        ],
+        "chart.line.flattrend.xyaxis": [
+          "chart.line.flattrend.xyaxis",
+          "chart.line.flattrend.xyaxis.circle",
+          "chart.line.flattrend.xyaxis.circle.fill"
+        ],
+        "chart.dots.scatter": [
+          "chart.dots.scatter"
+        ],
+        "dot.squareshape.split.2x2": [
+          "dot.squareshape.split.2x2"
+        ],
+        "squareshape.dotted.split.2x2": [
+          "squareshape.dotted.split.2x2"
+        ],
+        "squareshape.split.2x2.dotted": [
+          "squareshape.split.2x2.dotted"
+        ],
+        "squareshape.split.2x2": [
+          "squareshape.split.2x2"
+        ],
+        "squareshape.split.3x3": [
+          "squareshape.split.3x3"
+        ],
+        "burst": [
+          "burst",
+          "burst.fill"
+        ],
+        "waveform.path.ecg": [
+          "waveform.path.ecg"
+        ],
+        "waveform.path.ecg.rectangle": [
+          "waveform.path.ecg.rectangle",
+          "waveform.path.ecg.rectangle.fill"
+        ],
+        "waveform.path": [
+          "waveform.path",
+          "waveform.path.badge.plus",
+          "waveform.path.badge.minus"
+        ],
+        "point.3.connected.trianglepath.dotted": [
+          "point.3.connected.trianglepath.dotted"
+        ],
+        "point.3": [
+          "point.3.filled.connected.trianglepath.dotted"
+        ],
+        "waveform": [
+          "waveform",
+          "waveform.circle",
+          "waveform.circle.fill",
+          "waveform.badge.plus",
+          "waveform.badge.minus",
+          "waveform.badge.exclamationmark",
+          "waveform.badge.magnifyingglass",
+          "waveform.badge.microphone"
+        ],
+        "waveform.slash": [
+          "waveform.slash"
+        ],
+        "waveform.and.person": [
+          "waveform.and.person.filled"
+        ],
+        "simcard": [
+          "simcard",
+          "simcard.fill"
+        ],
+        "simcard.2": [
+          "simcard.2",
+          "simcard.2.fill"
+        ],
+        "sdcard": [
+          "sdcard",
+          "sdcard.fill"
+        ],
+        "esim": [
+          "esim",
+          "esim.fill"
+        ],
+        "touchid": [
+          "touchid"
+        ],
+        "bonjour": [
+          "bonjour"
+        ],
+        "atom": [
+          "atom"
+        ],
+        "scalemass": [
+          "scalemass",
+          "scalemass.fill"
+        ],
+        "angle": [
+          "angle"
+        ],
+        "compass.drawing": [
+          "compass.drawing"
+        ],
+        "globe.desk": [
+          "globe.desk",
+          "globe.desk.fill"
+        ],
+        "fossil.shell": [
+          "fossil.shell",
+          "fossil.shell.fill"
+        ],
+        "gift": [
+          "gift",
+          "gift.fill",
+          "gift.circle",
+          "gift.circle.fill"
+        ],
+        "hourglass": [
+          "hourglass",
+          "hourglass.circle",
+          "hourglass.circle.fill",
+          "hourglass.badge.plus",
+          "hourglass.badge.eye"
+        ],
+        "hourglass.and.lock": [
+          "hourglass.and.lock"
+        ],
+        "hourglass.bottomhalf": [
+          "hourglass.bottomhalf.filled"
+        ],
+        "hourglass.tophalf": [
+          "hourglass.tophalf.filled"
+        ],
+        "banknote": [
+          "banknote",
+          "banknote.fill"
+        ],
+        "australsign.bank.building": [
+          "australsign.bank.building",
+          "australsign.bank.building.fill"
+        ],
+        "australiandollarsign.bank.building": [
+          "australiandollarsign.bank.building",
+          "australiandollarsign.bank.building.fill"
+        ],
+        "bahtsign.bank.building": [
+          "bahtsign.bank.building",
+          "bahtsign.bank.building.fill"
+        ],
+        "bitcoinsign.bank.building": [
+          "bitcoinsign.bank.building",
+          "bitcoinsign.bank.building.fill"
+        ],
+        "brazilianrealsign.bank.building": [
+          "brazilianrealsign.bank.building",
+          "brazilianrealsign.bank.building.fill"
+        ],
+        "cedisign.bank.building": [
+          "cedisign.bank.building",
+          "cedisign.bank.building.fill"
+        ],
+        "centsign.bank.building": [
+          "centsign.bank.building",
+          "centsign.bank.building.fill"
+        ],
+        "chineseyuanrenminbisign.bank.building": [
+          "chineseyuanrenminbisign.bank.building",
+          "chineseyuanrenminbisign.bank.building.fill"
+        ],
+        "coloncurrencysign.bank.building": [
+          "coloncurrencysign.bank.building",
+          "coloncurrencysign.bank.building.fill"
+        ],
+        "cruzeirosign.bank.building": [
+          "cruzeirosign.bank.building",
+          "cruzeirosign.bank.building.fill"
+        ],
+        "danishkronesign.bank.building": [
+          "danishkronesign.bank.building",
+          "danishkronesign.bank.building.fill"
+        ],
+        "dollarsign.bank.building": [
+          "dollarsign.bank.building",
+          "dollarsign.bank.building.fill"
+        ],
+        "dongsign.bank.building": [
+          "dongsign.bank.building",
+          "dongsign.bank.building.fill"
+        ],
+        "eurosign.bank.building": [
+          "eurosign.bank.building",
+          "eurosign.bank.building.fill"
+        ],
+        "eurozonesign.bank.building": [
+          "eurozonesign.bank.building",
+          "eurozonesign.bank.building.fill"
+        ],
+        "florinsign.bank.building": [
+          "florinsign.bank.building",
+          "florinsign.bank.building.fill"
+        ],
+        "francsign.bank.building": [
+          "francsign.bank.building",
+          "francsign.bank.building.fill"
+        ],
+        "guaranisign.bank.building": [
+          "guaranisign.bank.building",
+          "guaranisign.bank.building.fill"
+        ],
+        "hryvniasign.bank.building": [
+          "hryvniasign.bank.building",
+          "hryvniasign.bank.building.fill"
+        ],
+        "indianrupeesign.bank.building": [
+          "indianrupeesign.bank.building",
+          "indianrupeesign.bank.building.fill"
+        ],
+        "kipsign.bank.building": [
+          "kipsign.bank.building",
+          "kipsign.bank.building.fill"
+        ],
+        "larisign.bank.building": [
+          "larisign.bank.building",
+          "larisign.bank.building.fill"
+        ],
+        "lirasign.bank.building": [
+          "lirasign.bank.building",
+          "lirasign.bank.building.fill"
+        ],
+        "malaysianringgitsign.bank.building": [
+          "malaysianringgitsign.bank.building",
+          "malaysianringgitsign.bank.building.fill"
+        ],
+        "manatsign.bank.building": [
+          "manatsign.bank.building",
+          "manatsign.bank.building.fill"
+        ],
+        "millsign.bank.building": [
+          "millsign.bank.building",
+          "millsign.bank.building.fill"
+        ],
+        "nairasign.bank.building": [
+          "nairasign.bank.building",
+          "nairasign.bank.building.fill"
+        ],
+        "norwegiankronesign.bank.building": [
+          "norwegiankronesign.bank.building",
+          "norwegiankronesign.bank.building.fill"
+        ],
+        "peruviansolessign.bank.building": [
+          "peruviansolessign.bank.building",
+          "peruviansolessign.bank.building.fill"
+        ],
+        "pesetasign.bank.building": [
+          "pesetasign.bank.building",
+          "pesetasign.bank.building.fill"
+        ],
+        "pesosign.bank.building": [
+          "pesosign.bank.building",
+          "pesosign.bank.building.fill"
+        ],
+        "polishzlotysign.bank.building": [
+          "polishzlotysign.bank.building",
+          "polishzlotysign.bank.building.fill"
+        ],
+        "rublesign.bank.building": [
+          "rublesign.bank.building",
+          "rublesign.bank.building.fill"
+        ],
+        "rupeesign.bank.building": [
+          "rupeesign.bank.building",
+          "rupeesign.bank.building.fill"
+        ],
+        "shekelsign.bank.building": [
+          "shekelsign.bank.building",
+          "shekelsign.bank.building.fill"
+        ],
+        "singaporedollarsign.bank.building": [
+          "singaporedollarsign.bank.building",
+          "singaporedollarsign.bank.building.fill"
+        ],
+        "sterlingsign.bank.building": [
+          "sterlingsign.bank.building",
+          "sterlingsign.bank.building.fill"
+        ],
+        "swedishkronasign.bank.building": [
+          "swedishkronasign.bank.building",
+          "swedishkronasign.bank.building.fill"
+        ],
+        "tengesign.bank.building": [
+          "tengesign.bank.building",
+          "tengesign.bank.building.fill"
+        ],
+        "tugriksign.bank.building": [
+          "tugriksign.bank.building",
+          "tugriksign.bank.building.fill"
+        ],
+        "turkishlirasign.bank.building": [
+          "turkishlirasign.bank.building",
+          "turkishlirasign.bank.building.fill"
+        ],
+        "yensign.bank.building": [
+          "yensign.bank.building",
+          "yensign.bank.building.fill"
+        ],
+        "wonsign.bank.building": [
+          "wonsign.bank.building",
+          "wonsign.bank.building.fill"
+        ],
+        "purchased": [
+          "purchased",
+          "purchased.circle",
+          "purchased.circle.fill"
+        ],
+        "perspective": [
+          "perspective"
+        ],
+        "circle.and.line.horizontal": [
+          "circle.and.line.horizontal",
+          "circle.and.line.horizontal.fill"
+        ],
+        "trapezoid.and.line.vertical": [
+          "trapezoid.and.line.vertical",
+          "trapezoid.and.line.vertical.fill"
+        ],
+        "trapezoid.and.line.horizontal": [
+          "trapezoid.and.line.horizontal",
+          "trapezoid.and.line.horizontal.fill"
+        ],
+        "aspectratio": [
+          "aspectratio",
+          "aspectratio.fill"
+        ],
+        "camera.filters": [
+          "camera.filters"
+        ],
+        "square.resize.up": [
+          "square.resize.up"
+        ],
+        "square.resize.down": [
+          "square.resize.down"
+        ],
+        "square.resize": [
+          "square.resize"
+        ],
+        "rectangle.ratio.3.to.4": [
+          "rectangle.ratio.3.to.4",
+          "rectangle.ratio.3.to.4.fill"
+        ],
+        "rectangle.ratio.4.to.3": [
+          "rectangle.ratio.4.to.3",
+          "rectangle.ratio.4.to.3.fill"
+        ],
+        "rectangle.ratio.9.to.16": [
+          "rectangle.ratio.9.to.16",
+          "rectangle.ratio.9.to.16.fill"
+        ],
+        "rectangle.ratio.16.to.9": [
+          "rectangle.ratio.16.to.9",
+          "rectangle.ratio.16.to.9.fill"
+        ],
+        "skew": [
+          "skew"
+        ],
+        "arrow.trianglehead.left.and.right.righttriangle.left.righttriangle.right": [
+          "arrow.trianglehead.left.and.right.righttriangle.left.righttriangle.right",
+          "arrow.trianglehead.left.and.right.righttriangle.left.righttriangle.right.fill"
+        ],
+        "arrow.trianglehead.up.and.down.righttriangle.up.righttriangle.down": [
+          "arrow.trianglehead.up.and.down.righttriangle.up.righttriangle.down",
+          "arrow.trianglehead.up.and.down.righttriangle.up.righttriangle.down.fill"
+        ],
+        "arrowtriangle.left.and.line.vertical.and.arrowtriangle.right": [
+          "arrowtriangle.left.and.line.vertical.and.arrowtriangle.right",
+          "arrowtriangle.left.and.line.vertical.and.arrowtriangle.right.fill"
+        ],
+        "arrowtriangle.right.and.line.vertical.and.arrowtriangle.left": [
+          "arrowtriangle.right.and.line.vertical.and.arrowtriangle.left",
+          "arrowtriangle.right.and.line.vertical.and.arrowtriangle.left.fill"
+        ],
+        "grid": [
+          "grid",
+          "grid.circle",
+          "grid.circle.fill"
+        ],
+        "burn": [
+          "burn"
+        ],
+        "lifepreserver": [
+          "lifepreserver",
+          "lifepreserver.fill"
+        ],
+        "dot.arrowtriangles.up.right.down.left": [
+          "dot.arrowtriangles.up.right.down.left.circle"
+        ],
+        "recordingtape": [
+          "recordingtape",
+          "recordingtape.circle",
+          "recordingtape.circle.fill"
+        ],
+        "binoculars": [
+          "binoculars",
+          "binoculars.fill",
+          "binoculars.circle",
+          "binoculars.circle.fill"
+        ],
+        "battery.100percent": [
+          "battery.100percent",
+          "battery.100percent.circle",
+          "battery.100percent.circle.fill"
+        ],
+        "battery.75percent": [
+          "battery.75percent"
+        ],
+        "battery.50percent": [
+          "battery.50percent"
+        ],
+        "battery.25percent": [
+          "battery.25percent"
+        ],
+        "battery.0percent": [
+          "battery.0percent"
+        ],
+        "battery.100percent.bolt": [
+          "battery.100percent.bolt"
+        ],
+        "fibrechannel": [
+          "fibrechannel"
+        ],
+        "checklist.unchecked": [
+          "checklist.unchecked"
+        ],
+        "checklist": [
+          "checklist"
+        ],
+        "checklist.checked": [
+          "checklist.checked"
+        ],
+        "list.bullet": [
+          "list.bullet",
+          "list.bullet.circle",
+          "list.bullet.circle.fill"
+        ],
+        "list.dash": [
+          "list.dash"
+        ],
+        "list.triangle": [
+          "list.triangle"
+        ],
+        "list.bullet.indent": [
+          "list.bullet.indent"
+        ],
+        "list.number": [
+          "list.number"
+        ],
+        "list.star": [
+          "list.star"
+        ],
+        "increase.indent": [
+          "increase.indent"
+        ],
+        "decrease.indent": [
+          "decrease.indent"
+        ],
+        "decrease.quotelevel": [
+          "decrease.quotelevel"
+        ],
+        "increase.quotelevel": [
+          "increase.quotelevel"
+        ],
+        "quotelevel": [
+          "quotelevel"
+        ],
+        "list.bullet.below.rectangle": [
+          "list.bullet.below.rectangle"
+        ],
+        "text": [
+          "text.badge.plus",
+          "text.badge.minus",
+          "text.badge.checkmark",
+          "text.badge.xmark",
+          "text.badge.star"
+        ],
+        "text.insert": [
+          "text.insert"
+        ],
+        "text.append": [
+          "text.append"
+        ],
+        "text.line.first.and.arrowtriangle.forward": [
+          "text.line.first.and.arrowtriangle.forward"
+        ],
+        "text.line.last.and.arrowtriangle.forward": [
+          "text.line.last.and.arrowtriangle.forward"
+        ],
+        "text.quote": [
+          "text.quote"
+        ],
+        "text.alignleft": [
+          "text.alignleft"
+        ],
+        "text.aligncenter": [
+          "text.aligncenter"
+        ],
+        "text.alignright": [
+          "text.alignright"
+        ],
+        "text.justify": [
+          "text.justify"
+        ],
+        "text.justify.left": [
+          "text.justify.left"
+        ],
+        "text.justify.right": [
+          "text.justify.right"
+        ],
+        "text.justify.leading": [
+          "text.justify.leading"
+        ],
+        "text.justify.trailing": [
+          "text.justify.trailing"
+        ],
+        "text.line.magnify": [
+          "text.line.magnify"
+        ],
+        "text.redaction": [
+          "text.redaction"
+        ],
+        "text.word.spacing": [
+          "text.word.spacing"
+        ],
+        "arrow.up.and.down.text.horizontal": [
+          "arrow.up.and.down.text.horizontal"
+        ],
+        "arrow.left.and.right.text.vertical": [
+          "arrow.left.and.right.text.vertical"
+        ],
+        "list.and.film": [
+          "list.and.film"
+        ],
+        "line.3.horizontal": [
+          "line.3.horizontal",
+          "line.3.horizontal.circle",
+          "line.3.horizontal.circle.fill"
+        ],
+        "line.3.horizontal.decrease": [
+          "line.3.horizontal.decrease",
+          "line.3.horizontal.decrease.circle",
+          "line.3.horizontal.decrease.circle.fill"
+        ],
+        "line.2.horizontal.decrease": [
+          "line.2.horizontal.decrease.circle",
+          "line.2.horizontal.decrease.circle.fill"
+        ],
+        "character": [
+          "character",
+          "character.circle",
+          "character.circle.fill"
+        ],
+        "character.square": [
+          "character.square",
+          "character.square.fill"
+        ],
+        "textformat.size.smaller": [
+          "textformat.size.smaller"
+        ],
+        "textformat.size.larger": [
+          "textformat.size.larger"
+        ],
+        "textformat.size": [
+          "textformat.size"
+        ],
+        "textformat": [
+          "textformat"
+        ],
+        "textformat.alt": [
+          "textformat.alt"
+        ],
+        "textformat.superscript": [
+          "textformat.superscript"
+        ],
+        "textformat.subscript": [
+          "textformat.subscript"
+        ],
+        "characters.uppercase": [
+          "characters.uppercase"
+        ],
+        "characters.lowercase": [
+          "characters.lowercase"
+        ],
+        "textformat.characters": [
+          "textformat.characters"
+        ],
+        "textformat.characters.dottedunderline": [
+          "textformat.characters.dottedunderline"
+        ],
+        "textformat.characters.arrow.left.and.right": [
+          "textformat.characters.arrow.left.and.right"
+        ],
+        "kashida.arabic": [
+          "kashida.arabic"
+        ],
+        "bold": [
+          "bold"
+        ],
+        "italic": [
+          "italic"
+        ],
+        "underline": [
+          "underline"
+        ],
+        "strikethrough": [
+          "strikethrough"
+        ],
+        "shadow": [
+          "shadow"
+        ],
+        "bold.italic.underline": [
+          "bold.italic.underline"
+        ],
+        "bold.underline": [
+          "bold.underline"
+        ],
+        "view.2d": [
+          "view.2d"
+        ],
+        "view.3d": [
+          "view.3d"
+        ],
+        "character.cursor.ibeam": [
+          "character.cursor.ibeam"
+        ],
+        "fx": [
+          "fx"
+        ],
+        "k": [
+          "k",
+          "k.circle",
+          "k.circle.fill"
+        ],
+        "sum": [
+          "sum"
+        ],
+        "percent": [
+          "percent"
+        ],
+        "function": [
+          "function"
+        ],
+        "numbers": [
+          "numbers"
+        ],
+        "numbers.rectangle": [
+          "numbers.rectangle",
+          "numbers.rectangle.fill"
+        ],
+        "textformat.numbers": [
+          "textformat.numbers"
+        ],
+        "character.textbox": [
+          "character.textbox"
+        ],
+        "numbersign": [
+          "numbersign"
+        ],
+        "character.sutton": [
+          "character.sutton"
+        ],
+        "character.duployan": [
+          "character.duployan"
+        ],
+        "character.phonetic": [
+          "character.phonetic"
+        ],
+        "character.magnify": [
+          "character.magnify"
+        ],
+        "paragraphsign": [
+          "paragraphsign"
+        ],
+        "info": [
+          "info",
+          "info.circle",
+          "info.circle.fill"
+        ],
+        "info.square": [
+          "info.square",
+          "info.square.fill"
+        ],
+        "at": [
+          "at",
+          "at.circle",
+          "at.circle.fill",
+          "at.badge.plus",
+          "at.badge.minus"
+        ],
+        "exclamationmark.questionmark": [
+          "exclamationmark.questionmark"
+        ],
+        "questionmark.square": [
+          "questionmark.square",
+          "questionmark.square.fill"
+        ],
+        "questionmark.diamond": [
+          "questionmark.diamond",
+          "questionmark.diamond.fill"
+        ],
+        "exclamationmark": [
+          "exclamationmark",
+          "exclamationmark.circle",
+          "exclamationmark.circle.fill"
+        ],
+        "exclamationmark.2": [
+          "exclamationmark.2"
+        ],
+        "exclamationmark.3": [
+          "exclamationmark.3"
+        ],
+        "exclamationmark.square": [
+          "exclamationmark.square",
+          "exclamationmark.square.fill"
+        ],
+        "exclamationmark.octagon": [
+          "exclamationmark.octagon",
+          "exclamationmark.octagon.fill"
+        ],
+        "exclamationmark.shield": [
+          "exclamationmark.shield",
+          "exclamationmark.shield.fill"
+        ],
+        "plus.rectangle.portrait": [
+          "plus.rectangle.portrait",
+          "plus.rectangle.portrait.fill"
+        ],
+        "plus.diamond": [
+          "plus.diamond",
+          "plus.diamond.fill"
+        ],
+        "minus": [
+          "minus",
+          "minus.circle",
+          "minus.circle.fill"
+        ],
+        "minus.square": [
+          "minus.square",
+          "minus.square.fill"
+        ],
+        "minus.rectangle": [
+          "minus.rectangle",
+          "minus.rectangle.fill"
+        ],
+        "minus.rectangle.portrait": [
+          "minus.rectangle.portrait",
+          "minus.rectangle.portrait.fill"
+        ],
+        "minus.diamond": [
+          "minus.diamond",
+          "minus.diamond.fill"
+        ],
+        "plusminus": [
+          "plusminus",
+          "plusminus.circle",
+          "plusminus.circle.fill"
+        ],
+        "plus.forwardslash.minus": [
+          "plus.forwardslash.minus"
+        ],
+        "minus.forwardslash.plus": [
+          "minus.forwardslash.plus"
+        ],
+        "multiply": [
+          "multiply",
+          "multiply.circle",
+          "multiply.circle.fill"
+        ],
+        "multiply.square": [
+          "multiply.square",
+          "multiply.square.fill"
+        ],
+        "divide": [
+          "divide",
+          "divide.circle",
+          "divide.circle.fill"
+        ],
+        "divide.square": [
+          "divide.square",
+          "divide.square.fill"
+        ],
+        "equal": [
+          "equal",
+          "equal.circle",
+          "equal.circle.fill"
+        ],
+        "equal.square": [
+          "equal.square",
+          "equal.square.fill"
+        ],
+        "notequal": [
+          "notequal",
+          "notequal.circle",
+          "notequal.circle.fill"
+        ],
+        "notequal.square": [
+          "notequal.square",
+          "notequal.square.fill"
+        ],
+        "lessthan": [
+          "lessthan",
+          "lessthan.circle",
+          "lessthan.circle.fill"
+        ],
+        "lessthan.square": [
+          "lessthan.square",
+          "lessthan.square.fill"
+        ],
+        "lessthanorequalto": [
+          "lessthanorequalto",
+          "lessthanorequalto.circle",
+          "lessthanorequalto.circle.fill"
+        ],
+        "lessthanorequalto.square": [
+          "lessthanorequalto.square",
+          "lessthanorequalto.square.fill"
+        ],
+        "greaterthan": [
+          "greaterthan",
+          "greaterthan.circle",
+          "greaterthan.circle.fill"
+        ],
+        "greaterthan.square": [
+          "greaterthan.square",
+          "greaterthan.square.fill"
+        ],
+        "greaterthanorequalto": [
+          "greaterthanorequalto",
+          "greaterthanorequalto.circle",
+          "greaterthanorequalto.circle.fill"
+        ],
+        "greaterthanorequalto.square": [
+          "greaterthanorequalto.square",
+          "greaterthanorequalto.square.fill"
+        ],
+        "chevron.left.forwardslash.chevron.right": [
+          "chevron.left.forwardslash.chevron.right"
+        ],
+        "parentheses": [
+          "parentheses"
+        ],
+        "curlybraces": [
+          "curlybraces"
+        ],
+        "curlybraces.square": [
+          "curlybraces.square",
+          "curlybraces.square.fill"
+        ],
+        "ellipsis.curlybraces": [
+          "ellipsis.curlybraces"
+        ],
+        "number": [
+          "number",
+          "number.circle",
+          "number.circle.fill"
+        ],
+        "number.square": [
+          "number.square",
+          "number.square.fill"
+        ],
+        "xmark": [
+          "xmark",
+          "xmark.circle",
+          "xmark.circle.fill"
+        ],
+        "xmark.square": [
+          "xmark.square",
+          "xmark.square.fill"
+        ],
+        "xmark.rectangle": [
+          "xmark.rectangle",
+          "xmark.rectangle.fill"
+        ],
+        "xmark.rectangle.portrait": [
+          "xmark.rectangle.portrait",
+          "xmark.rectangle.portrait.fill"
+        ],
+        "xmark.diamond": [
+          "xmark.diamond",
+          "xmark.diamond.fill"
+        ],
+        "xmark.shield": [
+          "xmark.shield",
+          "xmark.shield.fill"
+        ],
+        "xmark.octagon": [
+          "xmark.octagon",
+          "xmark.octagon.fill"
+        ],
+        "checkmark": [
+          "checkmark",
+          "checkmark.circle",
+          "checkmark.circle.fill",
+          "checkmark.circle.badge.questionmark",
+          "checkmark.circle.badge.questionmark.fill",
+          "checkmark.circle.badge.xmark",
+          "checkmark.circle.badge.xmark.fill",
+          "checkmark.circle.trianglebadge.exclamationmark"
+        ],
+        "checkmark.square": [
+          "checkmark.square",
+          "checkmark.square.fill"
+        ],
+        "checkmark.rectangle": [
+          "checkmark.rectangle",
+          "checkmark.rectangle.fill"
+        ],
+        "checkmark.rectangle.portrait": [
+          "checkmark.rectangle.portrait",
+          "checkmark.rectangle.portrait.fill"
+        ],
+        "checkmark.diamond": [
+          "checkmark.diamond",
+          "checkmark.diamond.fill"
+        ],
+        "checkmark.shield": [
+          "checkmark.shield",
+          "checkmark.shield.fill"
+        ],
+        "chevron.left": [
+          "chevron.left",
+          "chevron.left.circle",
+          "chevron.left.circle.fill"
+        ],
+        "chevron.left.square": [
+          "chevron.left.square",
+          "chevron.left.square.fill"
+        ],
+        "chevron.backward": [
+          "chevron.backward",
+          "chevron.backward.circle",
+          "chevron.backward.circle.fill"
+        ],
+        "chevron.backward.square": [
+          "chevron.backward.square",
+          "chevron.backward.square.fill"
+        ],
+        "chevron.right": [
+          "chevron.right",
+          "chevron.right.circle",
+          "chevron.right.circle.fill"
+        ],
+        "chevron.right.square": [
+          "chevron.right.square",
+          "chevron.right.square.fill"
+        ],
+        "chevron.forward": [
+          "chevron.forward",
+          "chevron.forward.circle",
+          "chevron.forward.circle.fill"
+        ],
+        "chevron.forward.square": [
+          "chevron.forward.square",
+          "chevron.forward.square.fill"
+        ],
+        "chevron.left.2": [
+          "chevron.left.2"
+        ],
+        "chevron.backward.2": [
+          "chevron.backward.2"
+        ],
+        "chevron.left.chevron.left.dotted": [
+          "chevron.left.chevron.left.dotted"
+        ],
+        "chevron.backward.chevron.backward.dotted": [
+          "chevron.backward.chevron.backward.dotted"
+        ],
+        "chevron.right.2": [
+          "chevron.right.2"
+        ],
+        "chevron.forward.2": [
+          "chevron.forward.2"
+        ],
+        "chevron.right.dotted.chevron.right": [
+          "chevron.right.dotted.chevron.right"
+        ],
+        "chevron.forward.dotted.chevron.forward": [
+          "chevron.forward.dotted.chevron.forward"
+        ],
+        "chevron.up": [
+          "chevron.up",
+          "chevron.up.circle",
+          "chevron.up.circle.fill"
+        ],
+        "chevron.up.square": [
+          "chevron.up.square",
+          "chevron.up.square.fill"
+        ],
+        "chevron.down": [
+          "chevron.down",
+          "chevron.down.circle",
+          "chevron.down.circle.fill"
+        ],
+        "chevron.down.square": [
+          "chevron.down.square",
+          "chevron.down.square.fill"
+        ],
+        "chevron.up.2": [
+          "chevron.up.2"
+        ],
+        "chevron.down.2": [
+          "chevron.down.2"
+        ],
+        "chevron.up.dotted.2": [
+          "chevron.up.dotted.2"
+        ],
+        "chevron.down.dotted.2": [
+          "chevron.down.dotted.2"
+        ],
+        "chevron.up.right.2": [
+          "chevron.up.right.2"
+        ],
+        "chevron.up.forward.2": [
+          "chevron.up.forward.2"
+        ],
+        "chevron.up.right.dotted.2": [
+          "chevron.up.right.dotted.2"
+        ],
+        "chevron.up.forward.dotted.2": [
+          "chevron.up.forward.dotted.2"
+        ],
+        "chevron.down.right.2": [
+          "chevron.down.right.2"
+        ],
+        "chevron.down.forward.2": [
+          "chevron.down.forward.2"
+        ],
+        "chevron.down.right.dotted.2": [
+          "chevron.down.right.dotted.2"
+        ],
+        "chevron.down.forward.dotted.2": [
+          "chevron.down.forward.dotted.2"
+        ],
+        "chevron.up.chevron.down": [
+          "chevron.up.chevron.down"
+        ],
+        "chevron.up.chevron.down.square": [
+          "chevron.up.chevron.down.square",
+          "chevron.up.chevron.down.square.fill"
+        ],
+        "chevron.left.chevron.right": [
+          "chevron.left.chevron.right"
+        ],
+        "chevron.up.chevron.right.chevron.down.chevron.left": [
+          "chevron.up.chevron.right.chevron.down.chevron.left"
+        ],
+        "chevron.compact.up": [
+          "chevron.compact.up"
+        ],
+        "chevron.compact.down": [
+          "chevron.compact.down"
+        ],
+        "chevron.compact.left": [
+          "chevron.compact.left"
+        ],
+        "chevron.compact.right": [
+          "chevron.compact.right"
+        ],
+        "chevron.compact.backward": [
+          "chevron.compact.backward"
+        ],
+        "chevron.compact.forward": [
+          "chevron.compact.forward"
+        ],
+        "chevron.compact.up.chevron.compact.down": [
+          "chevron.compact.up.chevron.compact.down"
+        ],
+        "chevron.compact.left.chevron.compact.right": [
+          "chevron.compact.left.chevron.compact.right"
+        ],
+        "chevron.compact.up.chevron.compact.right.chevron.compact.down.chevron.compact.left": [
+          "chevron.compact.up.chevron.compact.right.chevron.compact.down.chevron.compact.left"
+        ],
+        "base.unit": [
+          "base.unit"
+        ],
+        "arrow.left": [
+          "arrow.left",
+          "arrow.left.circle",
+          "arrow.left.circle.fill",
+          "arrow.left.circle.dotted"
+        ],
+        "arrow.left.square": [
+          "arrow.left.square",
+          "arrow.left.square.fill"
+        ],
+        "arrow.backward": [
+          "arrow.backward",
+          "arrow.backward.circle",
+          "arrow.backward.circle.fill",
+          "arrow.backward.circle.dotted"
+        ],
+        "arrow.backward.square": [
+          "arrow.backward.square",
+          "arrow.backward.square.fill"
+        ],
+        "arrow.right.square": [
+          "arrow.right.square",
+          "arrow.right.square.fill"
+        ],
+        "arrow.forward": [
+          "arrow.forward",
+          "arrow.forward.circle",
+          "arrow.forward.circle.fill",
+          "arrow.forward.circle.dotted"
+        ],
+        "arrow.forward.square": [
+          "arrow.forward.square",
+          "arrow.forward.square.fill"
+        ],
+        "arrow.up": [
+          "arrow.up",
+          "arrow.up.circle",
+          "arrow.up.circle.fill",
+          "arrow.up.circle.dotted",
+          "arrow.up.circle.badge.clock"
+        ],
+        "arrow.up.square": [
+          "arrow.up.square",
+          "arrow.up.square.fill"
+        ],
+        "arrow.down": [
+          "arrow.down",
+          "arrow.down.circle",
+          "arrow.down.circle.fill",
+          "arrow.down.circle.dotted"
+        ],
+        "arrow.down.square": [
+          "arrow.down.square",
+          "arrow.down.square.fill"
+        ],
+        "arrow.up.left": [
+          "arrow.up.left",
+          "arrow.up.left.circle",
+          "arrow.up.left.circle.fill",
+          "arrow.up.left.circle.dotted"
+        ],
+        "arrow.up.left.square": [
+          "arrow.up.left.square",
+          "arrow.up.left.square.fill"
+        ],
+        "arrow.up.backward": [
+          "arrow.up.backward",
+          "arrow.up.backward.circle",
+          "arrow.up.backward.circle.fill",
+          "arrow.up.backward.circle.dotted"
+        ],
+        "arrow.up.backward.square": [
+          "arrow.up.backward.square",
+          "arrow.up.backward.square.fill"
+        ],
+        "arrow.up.right": [
+          "arrow.up.right",
+          "arrow.up.right.circle",
+          "arrow.up.right.circle.fill",
+          "arrow.up.right.circle.dotted"
+        ],
+        "arrow.up.right.square": [
+          "arrow.up.right.square",
+          "arrow.up.right.square.fill"
+        ],
+        "arrow.up.forward": [
+          "arrow.up.forward",
+          "arrow.up.forward.circle",
+          "arrow.up.forward.circle.fill",
+          "arrow.up.forward.circle.dotted"
+        ],
+        "arrow.up.forward.square": [
+          "arrow.up.forward.square",
+          "arrow.up.forward.square.fill"
+        ],
+        "arrow.down.left": [
+          "arrow.down.left",
+          "arrow.down.left.circle",
+          "arrow.down.left.circle.fill",
+          "arrow.down.left.circle.dotted"
+        ],
+        "arrow.down.left.square": [
+          "arrow.down.left.square",
+          "arrow.down.left.square.fill"
+        ],
+        "arrow.down.backward": [
+          "arrow.down.backward",
+          "arrow.down.backward.circle",
+          "arrow.down.backward.circle.fill",
+          "arrow.down.backward.circle.dotted"
+        ],
+        "arrow.down.backward.square": [
+          "arrow.down.backward.square",
+          "arrow.down.backward.square.fill"
+        ],
+        "arrow.down.right": [
+          "arrow.down.right",
+          "arrow.down.right.circle",
+          "arrow.down.right.circle.fill",
+          "arrow.down.right.circle.dotted"
+        ],
+        "arrow.down.right.square": [
+          "arrow.down.right.square",
+          "arrow.down.right.square.fill"
+        ],
+        "arrow.down.forward": [
+          "arrow.down.forward",
+          "arrow.down.forward.circle",
+          "arrow.down.forward.circle.fill",
+          "arrow.down.forward.circle.dotted"
+        ],
+        "arrow.down.forward.square": [
+          "arrow.down.forward.square",
+          "arrow.down.forward.square.fill"
+        ],
+        "arrow.left.arrow.right": [
+          "arrow.left.arrow.right",
+          "arrow.left.arrow.right.circle",
+          "arrow.left.arrow.right.circle.fill"
+        ],
+        "arrow.left.arrow.right.square": [
+          "arrow.left.arrow.right.square",
+          "arrow.left.arrow.right.square.fill"
+        ],
+        "arrow.up.arrow.down": [
+          "arrow.up.arrow.down",
+          "arrow.up.arrow.down.circle",
+          "arrow.up.arrow.down.circle.fill"
+        ],
+        "arrow.up.arrow.down.square": [
+          "arrow.up.arrow.down.square",
+          "arrow.up.arrow.down.square.fill"
+        ],
+        "arrow.down.left.arrow.up.right": [
+          "arrow.down.left.arrow.up.right",
+          "arrow.down.left.arrow.up.right.circle",
+          "arrow.down.left.arrow.up.right.circle.fill"
+        ],
+        "arrow.down.left.arrow.up.right.square": [
+          "arrow.down.left.arrow.up.right.square",
+          "arrow.down.left.arrow.up.right.square.fill"
+        ],
+        "arrow.up.left.arrow.down.right": [
+          "arrow.up.left.arrow.down.right",
+          "arrow.up.left.arrow.down.right.circle",
+          "arrow.up.left.arrow.down.right.circle.fill"
+        ],
+        "arrow.up.left.arrow.down.right.square": [
+          "arrow.up.left.arrow.down.right.square",
+          "arrow.up.left.arrow.down.right.square.fill"
+        ],
+        "arrow.turn.down.left": [
+          "arrow.turn.down.left"
+        ],
+        "arrow.turn.up.left": [
+          "arrow.turn.up.left"
+        ],
+        "arrow.turn.down.right": [
+          "arrow.turn.down.right"
+        ],
+        "arrow.turn.up.right": [
+          "arrow.turn.up.right"
+        ],
+        "arrow.turn.right.up": [
+          "arrow.turn.right.up"
+        ],
+        "arrow.turn.left.up": [
+          "arrow.turn.left.up"
+        ],
+        "arrow.turn.right.down": [
+          "arrow.turn.right.down"
+        ],
+        "arrow.turn.left.down": [
+          "arrow.turn.left.down"
+        ],
+        "arrow.uturn.left": [
+          "arrow.uturn.left",
+          "arrow.uturn.left.circle",
+          "arrow.uturn.left.circle.fill",
+          "arrow.uturn.left.circle.badge.ellipsis"
+        ],
+        "arrow.uturn.left.square": [
+          "arrow.uturn.left.square",
+          "arrow.uturn.left.square.fill"
+        ],
+        "arrow.uturn.backward": [
+          "arrow.uturn.backward",
+          "arrow.uturn.backward.circle",
+          "arrow.uturn.backward.circle.fill",
+          "arrow.uturn.backward.circle.badge.ellipsis"
+        ],
+        "arrow.uturn.backward.square": [
+          "arrow.uturn.backward.square",
+          "arrow.uturn.backward.square.fill"
+        ],
+        "arrow.uturn.right": [
+          "arrow.uturn.right",
+          "arrow.uturn.right.circle",
+          "arrow.uturn.right.circle.fill"
+        ],
+        "arrow.uturn.right.square": [
+          "arrow.uturn.right.square",
+          "arrow.uturn.right.square.fill"
+        ],
+        "arrow.uturn.forward": [
+          "arrow.uturn.forward",
+          "arrow.uturn.forward.circle",
+          "arrow.uturn.forward.circle.fill"
+        ],
+        "arrow.uturn.forward.square": [
+          "arrow.uturn.forward.square",
+          "arrow.uturn.forward.square.fill"
+        ],
+        "arrow.uturn.up": [
+          "arrow.uturn.up",
+          "arrow.uturn.up.circle",
+          "arrow.uturn.up.circle.fill"
+        ],
+        "arrow.uturn.up.square": [
+          "arrow.uturn.up.square",
+          "arrow.uturn.up.square.fill"
+        ],
+        "arrow.uturn.down": [
+          "arrow.uturn.down",
+          "arrow.uturn.down.circle",
+          "arrow.uturn.down.circle.fill"
+        ],
+        "arrow.uturn.down.square": [
+          "arrow.uturn.down.square",
+          "arrow.uturn.down.square.fill"
+        ],
+        "arrow.up.and.down.and.arrow.left.and.right": [
+          "arrow.up.and.down.and.arrow.left.and.right"
+        ],
+        "arrow.up.left.and.down.right.and.arrow.up.right.and.down.left": [
+          "arrow.up.left.and.down.right.and.arrow.up.right.and.down.left"
+        ],
+        "arrow.left.and.right": [
+          "arrow.left.and.right",
+          "arrow.left.and.right.circle",
+          "arrow.left.and.right.circle.fill"
+        ],
+        "arrow.left.and.right.square": [
+          "arrow.left.and.right.square",
+          "arrow.left.and.right.square.fill"
+        ],
+        "arrow.up.and.down": [
+          "arrow.up.and.down",
+          "arrow.up.and.down.circle",
+          "arrow.up.and.down.circle.fill"
+        ],
+        "arrow.up.and.down.square": [
+          "arrow.up.and.down.square",
+          "arrow.up.and.down.square.fill"
+        ],
+        "arrow.up.to.line": [
+          "arrow.up.to.line",
+          "arrow.up.to.line.circle",
+          "arrow.up.to.line.circle.fill"
+        ],
+        "arrow.up.to.line.compact": [
+          "arrow.up.to.line.compact"
+        ],
+        "arrow.up.to.line.square": [
+          "arrow.up.to.line.square",
+          "arrow.up.to.line.square.fill"
+        ],
+        "arrow.down.to.line": [
+          "arrow.down.to.line",
+          "arrow.down.to.line.circle",
+          "arrow.down.to.line.circle.fill"
+        ],
+        "arrow.down.to.line.compact": [
+          "arrow.down.to.line.compact"
+        ],
+        "arrow.down.to.line.square": [
+          "arrow.down.to.line.square",
+          "arrow.down.to.line.square.fill"
+        ],
+        "arrow.left.to.line": [
+          "arrow.left.to.line",
+          "arrow.left.to.line.circle",
+          "arrow.left.to.line.circle.fill"
+        ],
+        "arrow.left.to.line.compact": [
+          "arrow.left.to.line.compact"
+        ],
+        "arrow.left.to.line.square": [
+          "arrow.left.to.line.square",
+          "arrow.left.to.line.square.fill"
+        ],
+        "arrow.backward.to.line": [
+          "arrow.backward.to.line",
+          "arrow.backward.to.line.circle",
+          "arrow.backward.to.line.circle.fill"
+        ],
+        "arrow.backward.to.line.square": [
+          "arrow.backward.to.line.square",
+          "arrow.backward.to.line.square.fill"
+        ],
+        "arrow.right.to.line": [
+          "arrow.right.to.line",
+          "arrow.right.to.line.circle",
+          "arrow.right.to.line.circle.fill"
+        ],
+        "arrow.right.to.line.compact": [
+          "arrow.right.to.line.compact"
+        ],
+        "arrow.right.to.line.square": [
+          "arrow.right.to.line.square",
+          "arrow.right.to.line.square.fill"
+        ],
+        "arrow.forward.to.line": [
+          "arrow.forward.to.line",
+          "arrow.forward.to.line.circle",
+          "arrow.forward.to.line.circle.fill"
+        ],
+        "arrow.forward.to.line.square": [
+          "arrow.forward.to.line.square",
+          "arrow.forward.to.line.square.fill"
+        ],
+        "arrow.left.and.line.vertical.and.arrow.right": [
+          "arrow.left.and.line.vertical.and.arrow.right"
+        ],
+        "arrow.right.and.line.vertical.and.arrow.left": [
+          "arrow.right.and.line.vertical.and.arrow.left"
+        ],
+        "arrow.down.and.line.horizontal.and.arrow.up": [
+          "arrow.down.and.line.horizontal.and.arrow.up"
+        ],
+        "arrow.up.and.line.horizontal.and.arrow.down": [
+          "arrow.up.and.line.horizontal.and.arrow.down"
+        ],
+        "arrow.clockwise": [
+          "arrow.clockwise",
+          "arrow.clockwise.circle",
+          "arrow.clockwise.circle.fill"
+        ],
+        "arrow.clockwise.square": [
+          "arrow.clockwise.square",
+          "arrow.clockwise.square.fill"
+        ],
+        "arrow.counterclockwise": [
+          "arrow.counterclockwise",
+          "arrow.counterclockwise.circle",
+          "arrow.counterclockwise.circle.fill"
+        ],
+        "arrow.counterclockwise.square": [
+          "arrow.counterclockwise.square",
+          "arrow.counterclockwise.square.fill"
+        ],
+        "arrow.up.left.and.arrow.down.right": [
+          "arrow.up.left.and.arrow.down.right",
+          "arrow.up.left.and.arrow.down.right.circle",
+          "arrow.up.left.and.arrow.down.right.circle.fill"
+        ],
+        "arrow.up.left.and.arrow.down.right.square": [
+          "arrow.up.left.and.arrow.down.right.square",
+          "arrow.up.left.and.arrow.down.right.square.fill"
+        ],
+        "arrow.up.backward.and.arrow.down.forward": [
+          "arrow.up.backward.and.arrow.down.forward",
+          "arrow.up.backward.and.arrow.down.forward.circle",
+          "arrow.up.backward.and.arrow.down.forward.circle.fill"
+        ],
+        "arrow.up.backward.and.arrow.down.forward.square": [
+          "arrow.up.backward.and.arrow.down.forward.square",
+          "arrow.up.backward.and.arrow.down.forward.square.fill"
+        ],
+        "arrow.down.left.and.arrow.up.right": [
+          "arrow.down.left.and.arrow.up.right",
+          "arrow.down.left.and.arrow.up.right.circle",
+          "arrow.down.left.and.arrow.up.right.circle.fill"
+        ],
+        "arrow.down.left.and.arrow.up.right.square": [
+          "arrow.down.left.and.arrow.up.right.square",
+          "arrow.down.left.and.arrow.up.right.square.fill"
+        ],
+        "arrow.down.backward.and.arrow.up.forward": [
+          "arrow.down.backward.and.arrow.up.forward",
+          "arrow.down.backward.and.arrow.up.forward.circle",
+          "arrow.down.backward.and.arrow.up.forward.circle.fill"
+        ],
+        "arrow.down.backward.and.arrow.up.forward.square": [
+          "arrow.down.backward.and.arrow.up.forward.square",
+          "arrow.down.backward.and.arrow.up.forward.square.fill"
+        ],
+        "arrow.down.right.and.arrow.up.left": [
+          "arrow.down.right.and.arrow.up.left",
+          "arrow.down.right.and.arrow.up.left.circle",
+          "arrow.down.right.and.arrow.up.left.circle.fill"
+        ],
+        "arrow.down.right.and.arrow.up.left.square": [
+          "arrow.down.right.and.arrow.up.left.square",
+          "arrow.down.right.and.arrow.up.left.square.fill"
+        ],
+        "arrow.down.forward.and.arrow.up.backward": [
+          "arrow.down.forward.and.arrow.up.backward",
+          "arrow.down.forward.and.arrow.up.backward.circle",
+          "arrow.down.forward.and.arrow.up.backward.circle.fill"
+        ],
+        "arrow.down.forward.and.arrow.up.backward.square": [
+          "arrow.down.forward.and.arrow.up.backward.square",
+          "arrow.down.forward.and.arrow.up.backward.square.fill"
+        ],
+        "arrow.up.right.and.arrow.down.left": [
+          "arrow.up.right.and.arrow.down.left",
+          "arrow.up.right.and.arrow.down.left.circle",
+          "arrow.up.right.and.arrow.down.left.circle.fill"
+        ],
+        "arrow.up.right.and.arrow.down.left.square": [
+          "arrow.up.right.and.arrow.down.left.square",
+          "arrow.up.right.and.arrow.down.left.square.fill"
+        ],
+        "arrow.up.forward.and.arrow.down.backward": [
+          "arrow.up.forward.and.arrow.down.backward",
+          "arrow.up.forward.and.arrow.down.backward.circle",
+          "arrow.up.forward.and.arrow.down.backward.circle.fill"
+        ],
+        "arrow.up.forward.and.arrow.down.backward.square": [
+          "arrow.up.forward.and.arrow.down.backward.square",
+          "arrow.up.forward.and.arrow.down.backward.square.fill"
+        ],
+        "return": [
+          "return"
+        ],
+        "return.left": [
+          "return.left"
+        ],
+        "return.right": [
+          "return.right"
+        ],
+        "arrow.2.squarepath": [
+          "arrow.2.squarepath"
+        ],
+        "arrow.3.trianglepath": [
+          "arrow.3.trianglepath"
+        ],
+        "arrow.trianglehead.turn.up.right.diamond": [
+          "arrow.trianglehead.turn.up.right.diamond",
+          "arrow.trianglehead.turn.up.right.diamond.fill"
+        ],
+        "arrow.trianglehead.turn.up.right": [
+          "arrow.trianglehead.turn.up.right.circle",
+          "arrow.trianglehead.turn.up.right.circle.fill"
+        ],
+        "arrow.trianglehead.merge": [
+          "arrow.trianglehead.merge"
+        ],
+        "arrow.trianglehead.swap": [
+          "arrow.trianglehead.swap"
+        ],
+        "arrow.trianglehead.branch": [
+          "arrow.trianglehead.branch"
+        ],
+        "arrow.trianglehead.pull": [
+          "arrow.trianglehead.pull"
+        ],
+        "arrowtriangle.left": [
+          "arrowtriangle.left",
+          "arrowtriangle.left.fill",
+          "arrowtriangle.left.circle",
+          "arrowtriangle.left.circle.fill"
+        ],
+        "arrowtriangle.left.square": [
+          "arrowtriangle.left.square",
+          "arrowtriangle.left.square.fill"
+        ],
+        "arrowtriangle.backward": [
+          "arrowtriangle.backward",
+          "arrowtriangle.backward.fill",
+          "arrowtriangle.backward.circle",
+          "arrowtriangle.backward.circle.fill"
+        ],
+        "arrowtriangle.backward.square": [
+          "arrowtriangle.backward.square",
+          "arrowtriangle.backward.square.fill"
+        ],
+        "arrowtriangle.right": [
+          "arrowtriangle.right",
+          "arrowtriangle.right.fill",
+          "arrowtriangle.right.circle",
+          "arrowtriangle.right.circle.fill"
+        ],
+        "arrowtriangle.right.square": [
+          "arrowtriangle.right.square",
+          "arrowtriangle.right.square.fill"
+        ],
+        "arrowtriangle.forward": [
+          "arrowtriangle.forward",
+          "arrowtriangle.forward.fill",
+          "arrowtriangle.forward.circle",
+          "arrowtriangle.forward.circle.fill"
+        ],
+        "arrowtriangle.forward.square": [
+          "arrowtriangle.forward.square",
+          "arrowtriangle.forward.square.fill"
+        ],
+        "arrowtriangle.up": [
+          "arrowtriangle.up",
+          "arrowtriangle.up.fill",
+          "arrowtriangle.up.circle",
+          "arrowtriangle.up.circle.fill"
+        ],
+        "arrowtriangle.up.square": [
+          "arrowtriangle.up.square",
+          "arrowtriangle.up.square.fill"
+        ],
+        "arrowtriangle.down": [
+          "arrowtriangle.down",
+          "arrowtriangle.down.fill",
+          "arrowtriangle.down.circle",
+          "arrowtriangle.down.circle.fill"
+        ],
+        "arrowtriangle.down.square": [
+          "arrowtriangle.down.square",
+          "arrowtriangle.down.square.fill"
+        ],
+        "slash": [
+          "slash.circle",
+          "slash.circle.fill"
+        ],
+        "asterisk": [
+          "asterisk",
+          "asterisk.circle",
+          "asterisk.circle.fill"
+        ],
+        "left": [
+          "left",
+          "left.circle",
+          "left.circle.fill"
+        ],
+        "right": [
+          "right",
+          "right.circle",
+          "right.circle.fill"
+        ],
+        "a": [
+          "a.circle",
+          "a.circle.fill"
+        ],
+        "a.square": [
+          "a.square",
+          "a.square.fill"
+        ],
+        "b": [
+          "b.circle",
+          "b.circle.fill"
+        ],
+        "b.square": [
+          "b.square",
+          "b.square.fill"
+        ],
+        "c": [
+          "c.circle",
+          "c.circle.fill"
+        ],
+        "c.square": [
+          "c.square",
+          "c.square.fill"
+        ],
+        "d": [
+          "d.circle",
+          "d.circle.fill"
+        ],
+        "d.square": [
+          "d.square",
+          "d.square.fill"
+        ],
+        "e": [
+          "e.circle",
+          "e.circle.fill"
+        ],
+        "e.square": [
+          "e.square",
+          "e.square.fill"
+        ],
+        "f": [
+          "f.circle",
+          "f.circle.fill"
+        ],
+        "f.square": [
+          "f.square",
+          "f.square.fill"
+        ],
+        "g": [
+          "g.circle",
+          "g.circle.fill"
+        ],
+        "g.square": [
+          "g.square",
+          "g.square.fill"
+        ],
+        "h": [
+          "h.circle",
+          "h.circle.fill"
+        ],
+        "h.square": [
+          "h.square",
+          "h.square.fill"
+        ],
+        "i": [
+          "i.circle",
+          "i.circle.fill"
+        ],
+        "i.square": [
+          "i.square",
+          "i.square.fill"
+        ],
+        "j": [
+          "j.circle",
+          "j.circle.fill"
+        ],
+        "j.square": [
+          "j.square",
+          "j.square.fill"
+        ],
+        "k.square": [
+          "k.square",
+          "k.square.fill"
+        ],
+        "l": [
+          "l.circle",
+          "l.circle.fill"
+        ],
+        "l.square": [
+          "l.square",
+          "l.square.fill"
+        ],
+        "m": [
+          "m.circle",
+          "m.circle.fill"
+        ],
+        "m.square": [
+          "m.square",
+          "m.square.fill"
+        ],
+        "n": [
+          "n.circle",
+          "n.circle.fill"
+        ],
+        "n.square": [
+          "n.square",
+          "n.square.fill"
+        ],
+        "o": [
+          "o.circle",
+          "o.circle.fill"
+        ],
+        "o.square": [
+          "o.square",
+          "o.square.fill"
+        ],
+        "p": [
+          "p.circle",
+          "p.circle.fill"
+        ],
+        "p.square": [
+          "p.square",
+          "p.square.fill"
+        ],
+        "q": [
+          "q.circle",
+          "q.circle.fill"
+        ],
+        "q.square": [
+          "q.square",
+          "q.square.fill"
+        ],
+        "r": [
+          "r.circle",
+          "r.circle.fill"
+        ],
+        "r.square": [
+          "r.square",
+          "r.square.fill"
+        ],
+        "s": [
+          "s.circle",
+          "s.circle.fill"
+        ],
+        "s.square": [
+          "s.square",
+          "s.square.fill"
+        ],
+        "t": [
+          "t.circle",
+          "t.circle.fill"
+        ],
+        "t.square": [
+          "t.square",
+          "t.square.fill"
+        ],
+        "u": [
+          "u.circle",
+          "u.circle.fill"
+        ],
+        "u.square": [
+          "u.square",
+          "u.square.fill"
+        ],
+        "v": [
+          "v.circle",
+          "v.circle.fill"
+        ],
+        "v.square": [
+          "v.square",
+          "v.square.fill"
+        ],
+        "w": [
+          "w.circle",
+          "w.circle.fill"
+        ],
+        "w.square": [
+          "w.square",
+          "w.square.fill"
+        ],
+        "x": [
+          "x.circle",
+          "x.circle.fill"
+        ],
+        "x.square": [
+          "x.square",
+          "x.square.fill"
+        ],
+        "y": [
+          "y.circle",
+          "y.circle.fill"
+        ],
+        "y.square": [
+          "y.square",
+          "y.square.fill"
+        ],
+        "z": [
+          "z.circle",
+          "z.circle.fill"
+        ],
+        "z.square": [
+          "z.square",
+          "z.square.fill"
+        ],
+        "australsign": [
+          "australsign",
+          "australsign.circle",
+          "australsign.circle.fill"
+        ],
+        "australsign.square": [
+          "australsign.square",
+          "australsign.square.fill"
+        ],
+        "australiandollarsign": [
+          "australiandollarsign",
+          "australiandollarsign.circle",
+          "australiandollarsign.circle.fill"
+        ],
+        "australiandollarsign.square": [
+          "australiandollarsign.square",
+          "australiandollarsign.square.fill"
+        ],
+        "bahtsign": [
+          "bahtsign",
+          "bahtsign.circle",
+          "bahtsign.circle.fill"
+        ],
+        "bahtsign.square": [
+          "bahtsign.square",
+          "bahtsign.square.fill"
+        ],
+        "bitcoinsign": [
+          "bitcoinsign",
+          "bitcoinsign.circle",
+          "bitcoinsign.circle.fill"
+        ],
+        "bitcoinsign.square": [
+          "bitcoinsign.square",
+          "bitcoinsign.square.fill"
+        ],
+        "brazilianrealsign": [
+          "brazilianrealsign",
+          "brazilianrealsign.circle",
+          "brazilianrealsign.circle.fill"
+        ],
+        "brazilianrealsign.square": [
+          "brazilianrealsign.square",
+          "brazilianrealsign.square.fill"
+        ],
+        "cedisign": [
+          "cedisign",
+          "cedisign.circle",
+          "cedisign.circle.fill"
+        ],
+        "cedisign.square": [
+          "cedisign.square",
+          "cedisign.square.fill"
+        ],
+        "centsign": [
+          "centsign",
+          "centsign.circle",
+          "centsign.circle.fill"
+        ],
+        "centsign.square": [
+          "centsign.square",
+          "centsign.square.fill"
+        ],
+        "chineseyuanrenminbisign": [
+          "chineseyuanrenminbisign",
+          "chineseyuanrenminbisign.circle",
+          "chineseyuanrenminbisign.circle.fill"
+        ],
+        "chineseyuanrenminbisign.square": [
+          "chineseyuanrenminbisign.square",
+          "chineseyuanrenminbisign.square.fill"
+        ],
+        "coloncurrencysign": [
+          "coloncurrencysign",
+          "coloncurrencysign.circle",
+          "coloncurrencysign.circle.fill"
+        ],
+        "coloncurrencysign.square": [
+          "coloncurrencysign.square",
+          "coloncurrencysign.square.fill"
+        ],
+        "cruzeirosign": [
+          "cruzeirosign",
+          "cruzeirosign.circle",
+          "cruzeirosign.circle.fill"
+        ],
+        "cruzeirosign.square": [
+          "cruzeirosign.square",
+          "cruzeirosign.square.fill"
+        ],
+        "danishkronesign": [
+          "danishkronesign",
+          "danishkronesign.circle",
+          "danishkronesign.circle.fill"
+        ],
+        "danishkronesign.square": [
+          "danishkronesign.square",
+          "danishkronesign.square.fill"
+        ],
+        "dongsign": [
+          "dongsign",
+          "dongsign.circle",
+          "dongsign.circle.fill"
+        ],
+        "dongsign.square": [
+          "dongsign.square",
+          "dongsign.square.fill"
+        ],
+        "dollarsign": [
+          "dollarsign",
+          "dollarsign.circle",
+          "dollarsign.circle.fill"
+        ],
+        "dollarsign.square": [
+          "dollarsign.square",
+          "dollarsign.square.fill"
+        ],
+        "eurosign": [
+          "eurosign",
+          "eurosign.circle",
+          "eurosign.circle.fill"
+        ],
+        "eurosign.square": [
+          "eurosign.square",
+          "eurosign.square.fill"
+        ],
+        "eurozonesign": [
+          "eurozonesign",
+          "eurozonesign.circle",
+          "eurozonesign.circle.fill"
+        ],
+        "eurozonesign.square": [
+          "eurozonesign.square",
+          "eurozonesign.square.fill"
+        ],
+        "florinsign": [
+          "florinsign",
+          "florinsign.circle",
+          "florinsign.circle.fill"
+        ],
+        "florinsign.square": [
+          "florinsign.square",
+          "florinsign.square.fill"
+        ],
+        "francsign": [
+          "francsign",
+          "francsign.circle",
+          "francsign.circle.fill"
+        ],
+        "francsign.square": [
+          "francsign.square",
+          "francsign.square.fill"
+        ],
+        "guaranisign": [
+          "guaranisign",
+          "guaranisign.circle",
+          "guaranisign.circle.fill"
+        ],
+        "guaranisign.square": [
+          "guaranisign.square",
+          "guaranisign.square.fill"
+        ],
+        "hryvniasign": [
+          "hryvniasign",
+          "hryvniasign.circle",
+          "hryvniasign.circle.fill"
+        ],
+        "hryvniasign.square": [
+          "hryvniasign.square",
+          "hryvniasign.square.fill"
+        ],
+        "indianrupeesign": [
+          "indianrupeesign",
+          "indianrupeesign.circle",
+          "indianrupeesign.circle.fill"
+        ],
+        "indianrupeesign.square": [
+          "indianrupeesign.square",
+          "indianrupeesign.square.fill"
+        ],
+        "kipsign": [
+          "kipsign",
+          "kipsign.circle",
+          "kipsign.circle.fill"
+        ],
+        "kipsign.square": [
+          "kipsign.square",
+          "kipsign.square.fill"
+        ],
+        "larisign": [
+          "larisign",
+          "larisign.circle",
+          "larisign.circle.fill"
+        ],
+        "larisign.square": [
+          "larisign.square",
+          "larisign.square.fill"
+        ],
+        "lirasign": [
+          "lirasign",
+          "lirasign.circle",
+          "lirasign.circle.fill"
+        ],
+        "lirasign.square": [
+          "lirasign.square",
+          "lirasign.square.fill"
+        ],
+        "malaysianringgitsign": [
+          "malaysianringgitsign",
+          "malaysianringgitsign.circle",
+          "malaysianringgitsign.circle.fill"
+        ],
+        "malaysianringgitsign.square": [
+          "malaysianringgitsign.square",
+          "malaysianringgitsign.square.fill"
+        ],
+        "manatsign": [
+          "manatsign",
+          "manatsign.circle",
+          "manatsign.circle.fill"
+        ],
+        "manatsign.square": [
+          "manatsign.square",
+          "manatsign.square.fill"
+        ],
+        "millsign": [
+          "millsign",
+          "millsign.circle",
+          "millsign.circle.fill"
+        ],
+        "millsign.square": [
+          "millsign.square",
+          "millsign.square.fill"
+        ],
+        "nairasign": [
+          "nairasign",
+          "nairasign.circle",
+          "nairasign.circle.fill"
+        ],
+        "nairasign.square": [
+          "nairasign.square",
+          "nairasign.square.fill"
+        ],
+        "norwegiankronesign": [
+          "norwegiankronesign",
+          "norwegiankronesign.circle",
+          "norwegiankronesign.circle.fill"
+        ],
+        "norwegiankronesign.square": [
+          "norwegiankronesign.square",
+          "norwegiankronesign.square.fill"
+        ],
+        "peruviansolessign": [
+          "peruviansolessign",
+          "peruviansolessign.circle",
+          "peruviansolessign.circle.fill"
+        ],
+        "peruviansolessign.square": [
+          "peruviansolessign.square",
+          "peruviansolessign.square.fill"
+        ],
+        "pesetasign": [
+          "pesetasign",
+          "pesetasign.circle",
+          "pesetasign.circle.fill"
+        ],
+        "pesetasign.square": [
+          "pesetasign.square",
+          "pesetasign.square.fill"
+        ],
+        "pesosign": [
+          "pesosign",
+          "pesosign.circle",
+          "pesosign.circle.fill"
+        ],
+        "pesosign.square": [
+          "pesosign.square",
+          "pesosign.square.fill"
+        ],
+        "polishzlotysign": [
+          "polishzlotysign",
+          "polishzlotysign.circle",
+          "polishzlotysign.circle.fill"
+        ],
+        "polishzlotysign.square": [
+          "polishzlotysign.square",
+          "polishzlotysign.square.fill"
+        ],
+        "rublesign": [
+          "rublesign",
+          "rublesign.circle",
+          "rublesign.circle.fill"
+        ],
+        "rublesign.square": [
+          "rublesign.square",
+          "rublesign.square.fill"
+        ],
+        "rupeesign": [
+          "rupeesign",
+          "rupeesign.circle",
+          "rupeesign.circle.fill"
+        ],
+        "rupeesign.square": [
+          "rupeesign.square",
+          "rupeesign.square.fill"
+        ],
+        "shekelsign": [
+          "shekelsign",
+          "shekelsign.circle",
+          "shekelsign.circle.fill"
+        ],
+        "shekelsign.square": [
+          "shekelsign.square",
+          "shekelsign.square.fill"
+        ],
+        "singaporedollarsign": [
+          "singaporedollarsign",
+          "singaporedollarsign.circle",
+          "singaporedollarsign.circle.fill"
+        ],
+        "singaporedollarsign.square": [
+          "singaporedollarsign.square",
+          "singaporedollarsign.square.fill"
+        ],
+        "sterlingsign": [
+          "sterlingsign",
+          "sterlingsign.circle",
+          "sterlingsign.circle.fill"
+        ],
+        "sterlingsign.square": [
+          "sterlingsign.square",
+          "sterlingsign.square.fill"
+        ],
+        "swedishkronasign": [
+          "swedishkronasign",
+          "swedishkronasign.circle",
+          "swedishkronasign.circle.fill"
+        ],
+        "swedishkronasign.square": [
+          "swedishkronasign.square",
+          "swedishkronasign.square.fill"
+        ],
+        "tengesign": [
+          "tengesign",
+          "tengesign.circle",
+          "tengesign.circle.fill"
+        ],
+        "tengesign.square": [
+          "tengesign.square",
+          "tengesign.square.fill"
+        ],
+        "tugriksign": [
+          "tugriksign",
+          "tugriksign.circle",
+          "tugriksign.circle.fill"
+        ],
+        "tugriksign.square": [
+          "tugriksign.square",
+          "tugriksign.square.fill"
+        ],
+        "turkishlirasign": [
+          "turkishlirasign",
+          "turkishlirasign.circle",
+          "turkishlirasign.circle.fill"
+        ],
+        "turkishlirasign.square": [
+          "turkishlirasign.square",
+          "turkishlirasign.square.fill"
+        ],
+        "wonsign": [
+          "wonsign",
+          "wonsign.circle",
+          "wonsign.circle.fill"
+        ],
+        "wonsign.square": [
+          "wonsign.square",
+          "wonsign.square.fill"
+        ],
+        "yensign": [
+          "yensign",
+          "yensign.circle",
+          "yensign.circle.fill"
+        ],
+        "yensign.square": [
+          "yensign.square",
+          "yensign.square.fill"
+        ],
+        "0": [
+          "0.circle",
+          "0.circle.fill"
+        ],
+        "0.square": [
+          "0.square",
+          "0.square.fill"
+        ],
+        "1": [
+          "1.circle",
+          "1.circle.fill"
+        ],
+        "1.square": [
+          "1.square",
+          "1.square.fill"
+        ],
+        "2": [
+          "2.circle",
+          "2.circle.fill"
+        ],
+        "2.square": [
+          "2.square",
+          "2.square.fill"
+        ],
+        "3": [
+          "3.circle",
+          "3.circle.fill"
+        ],
+        "3.square": [
+          "3.square",
+          "3.square.fill"
+        ],
+        "4": [
+          "4.circle",
+          "4.circle.fill"
+        ],
+        "4.square": [
+          "4.square",
+          "4.square.fill"
+        ],
+        "4.alt": [
+          "4.alt.circle",
+          "4.alt.circle.fill"
+        ],
+        "4.alt.square": [
+          "4.alt.square",
+          "4.alt.square.fill"
+        ],
+        "5": [
+          "5.circle",
+          "5.circle.fill"
+        ],
+        "5.square": [
+          "5.square",
+          "5.square.fill"
+        ],
+        "6": [
+          "6.circle",
+          "6.circle.fill"
+        ],
+        "6.square": [
+          "6.square",
+          "6.square.fill"
+        ],
+        "6.alt": [
+          "6.alt.circle",
+          "6.alt.circle.fill"
+        ],
+        "6.alt.square": [
+          "6.alt.square",
+          "6.alt.square.fill"
+        ],
+        "7": [
+          "7.circle",
+          "7.circle.fill"
+        ],
+        "7.square": [
+          "7.square",
+          "7.square.fill"
+        ],
+        "8": [
+          "8.circle",
+          "8.circle.fill"
+        ],
+        "8.square": [
+          "8.square",
+          "8.square.fill"
+        ],
+        "9": [
+          "9.circle",
+          "9.circle.fill"
+        ],
+        "9.square": [
+          "9.square",
+          "9.square.fill"
+        ],
+        "9.alt": [
+          "9.alt.circle",
+          "9.alt.circle.fill"
+        ],
+        "9.alt.square": [
+          "9.alt.square",
+          "9.alt.square.fill"
+        ],
+        "00": [
+          "00.circle",
+          "00.circle.fill"
+        ],
+        "00.square": [
+          "00.square",
+          "00.square.fill"
+        ],
+        "01": [
+          "01.circle",
+          "01.circle.fill"
+        ],
+        "01.square": [
+          "01.square",
+          "01.square.fill"
+        ],
+        "02": [
+          "02.circle",
+          "02.circle.fill"
+        ],
+        "02.square": [
+          "02.square",
+          "02.square.fill"
+        ],
+        "03": [
+          "03.circle",
+          "03.circle.fill"
+        ],
+        "03.square": [
+          "03.square",
+          "03.square.fill"
+        ],
+        "04": [
+          "04.circle",
+          "04.circle.fill"
+        ],
+        "04.square": [
+          "04.square",
+          "04.square.fill"
+        ],
+        "05": [
+          "05.circle",
+          "05.circle.fill"
+        ],
+        "05.square": [
+          "05.square",
+          "05.square.fill"
+        ],
+        "06": [
+          "06.circle",
+          "06.circle.fill"
+        ],
+        "06.square": [
+          "06.square",
+          "06.square.fill"
+        ],
+        "07": [
+          "07.circle",
+          "07.circle.fill"
+        ],
+        "07.square": [
+          "07.square",
+          "07.square.fill"
+        ],
+        "08": [
+          "08.circle",
+          "08.circle.fill"
+        ],
+        "08.square": [
+          "08.square",
+          "08.square.fill"
+        ],
+        "09": [
+          "09.circle",
+          "09.circle.fill"
+        ],
+        "09.square": [
+          "09.square",
+          "09.square.fill"
+        ],
+        "10": [
+          "10.circle",
+          "10.circle.fill"
+        ],
+        "10.square": [
+          "10.square",
+          "10.square.fill"
+        ],
+        "11": [
+          "11.circle",
+          "11.circle.fill"
+        ],
+        "11.square": [
+          "11.square",
+          "11.square.fill"
+        ],
+        "12": [
+          "12.circle",
+          "12.circle.fill"
+        ],
+        "12.square": [
+          "12.square",
+          "12.square.fill"
+        ],
+        "13": [
+          "13.circle",
+          "13.circle.fill"
+        ],
+        "13.square": [
+          "13.square",
+          "13.square.fill"
+        ],
+        "14": [
+          "14.circle",
+          "14.circle.fill"
+        ],
+        "14.square": [
+          "14.square",
+          "14.square.fill"
+        ],
+        "15": [
+          "15.circle",
+          "15.circle.fill"
+        ],
+        "15.square": [
+          "15.square",
+          "15.square.fill"
+        ],
+        "16": [
+          "16.circle",
+          "16.circle.fill"
+        ],
+        "16.square": [
+          "16.square",
+          "16.square.fill"
+        ],
+        "17": [
+          "17.circle",
+          "17.circle.fill"
+        ],
+        "17.square": [
+          "17.square",
+          "17.square.fill"
+        ],
+        "18": [
+          "18.circle",
+          "18.circle.fill"
+        ],
+        "18.square": [
+          "18.square",
+          "18.square.fill"
+        ],
+        "19": [
+          "19.circle",
+          "19.circle.fill"
+        ],
+        "19.square": [
+          "19.square",
+          "19.square.fill"
+        ],
+        "20": [
+          "20.circle",
+          "20.circle.fill"
+        ],
+        "20.square": [
+          "20.square",
+          "20.square.fill"
+        ],
+        "21": [
+          "21.circle",
+          "21.circle.fill"
+        ],
+        "21.square": [
+          "21.square",
+          "21.square.fill"
+        ],
+        "22": [
+          "22.circle",
+          "22.circle.fill"
+        ],
+        "22.square": [
+          "22.square",
+          "22.square.fill"
+        ],
+        "23": [
+          "23.circle",
+          "23.circle.fill"
+        ],
+        "23.square": [
+          "23.square",
+          "23.square.fill"
+        ],
+        "24": [
+          "24.circle",
+          "24.circle.fill"
+        ],
+        "24.square": [
+          "24.square",
+          "24.square.fill"
+        ],
+        "25": [
+          "25.circle",
+          "25.circle.fill"
+        ],
+        "25.square": [
+          "25.square",
+          "25.square.fill"
+        ],
+        "26": [
+          "26.circle",
+          "26.circle.fill"
+        ],
+        "26.square": [
+          "26.square",
+          "26.square.fill"
+        ],
+        "27": [
+          "27.circle",
+          "27.circle.fill"
+        ],
+        "27.square": [
+          "27.square",
+          "27.square.fill"
+        ],
+        "28": [
+          "28.circle",
+          "28.circle.fill"
+        ],
+        "28.square": [
+          "28.square",
+          "28.square.fill"
+        ],
+        "29": [
+          "29.circle",
+          "29.circle.fill"
+        ],
+        "29.square": [
+          "29.square",
+          "29.square.fill"
+        ],
+        "30": [
+          "30.circle",
+          "30.circle.fill"
+        ],
+        "30.square": [
+          "30.square",
+          "30.square.fill"
+        ],
+        "31": [
+          "31.circle",
+          "31.circle.fill"
+        ],
+        "31.square": [
+          "31.square",
+          "31.square.fill"
+        ],
+        "32": [
+          "32.circle",
+          "32.circle.fill"
+        ],
+        "32.square": [
+          "32.square",
+          "32.square.fill"
+        ],
+        "33": [
+          "33.circle",
+          "33.circle.fill"
+        ],
+        "33.square": [
+          "33.square",
+          "33.square.fill"
+        ],
+        "34": [
+          "34.circle",
+          "34.circle.fill"
+        ],
+        "34.square": [
+          "34.square",
+          "34.square.fill"
+        ],
+        "35": [
+          "35.circle",
+          "35.circle.fill"
+        ],
+        "35.square": [
+          "35.square",
+          "35.square.fill"
+        ],
+        "36": [
+          "36.circle",
+          "36.circle.fill"
+        ],
+        "36.square": [
+          "36.square",
+          "36.square.fill"
+        ],
+        "37": [
+          "37.circle",
+          "37.circle.fill"
+        ],
+        "37.square": [
+          "37.square",
+          "37.square.fill"
+        ],
+        "38": [
+          "38.circle",
+          "38.circle.fill"
+        ],
+        "38.square": [
+          "38.square",
+          "38.square.fill"
+        ],
+        "39": [
+          "39.circle",
+          "39.circle.fill"
+        ],
+        "39.square": [
+          "39.square",
+          "39.square.fill"
+        ],
+        "40": [
+          "40.circle",
+          "40.circle.fill"
+        ],
+        "40.square": [
+          "40.square",
+          "40.square.fill"
+        ],
+        "41": [
+          "41.circle",
+          "41.circle.fill"
+        ],
+        "41.square": [
+          "41.square",
+          "41.square.fill"
+        ],
+        "42": [
+          "42.circle",
+          "42.circle.fill"
+        ],
+        "42.square": [
+          "42.square",
+          "42.square.fill"
+        ],
+        "43": [
+          "43.circle",
+          "43.circle.fill"
+        ],
+        "43.square": [
+          "43.square",
+          "43.square.fill"
+        ],
+        "44": [
+          "44.circle",
+          "44.circle.fill"
+        ],
+        "44.square": [
+          "44.square",
+          "44.square.fill"
+        ],
+        "45": [
+          "45.circle",
+          "45.circle.fill"
+        ],
+        "45.square": [
+          "45.square",
+          "45.square.fill"
+        ],
+        "46": [
+          "46.circle",
+          "46.circle.fill"
+        ],
+        "46.square": [
+          "46.square",
+          "46.square.fill"
+        ],
+        "47": [
+          "47.circle",
+          "47.circle.fill"
+        ],
+        "47.square": [
+          "47.square",
+          "47.square.fill"
+        ],
+        "48": [
+          "48.circle",
+          "48.circle.fill"
+        ],
+        "48.square": [
+          "48.square",
+          "48.square.fill"
+        ],
+        "49": [
+          "49.circle",
+          "49.circle.fill"
+        ],
+        "49.square": [
+          "49.square",
+          "49.square.fill"
+        ],
+        "50": [
+          "50.circle",
+          "50.circle.fill"
+        ],
+        "50.square": [
+          "50.square",
+          "50.square.fill"
+        ],
+        "apple.logo": [
+          "apple.logo"
+        ]
+      ]
+    
+    var iconKeys: [String] = []
+    var iconValues: [String] = []
+    
+    init() {
+        iconKeys = icons.keys.sorted()
+    }
+    
+    func getIconValues(for key: String) -> [String] {
+        return icons[key]?.sorted() ?? []
+    }
+    
+    func onQueryChange(_ newQuery: String) {
+        iconKeys = if newQuery.isEmpty {
+            icons.keys.sorted()
+        } else {
+            icons.keys.filter {
+                $0.lowercased().localizedStandardContains(newQuery.lowercased())
+            }.sorted()
+        }
+    }
+}
