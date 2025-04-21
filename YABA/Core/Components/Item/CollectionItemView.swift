@@ -30,42 +30,53 @@ struct CollectionItemView: View {
     var selectedCollection: YabaCollection?
     
     var body: some View {
+        mainButton
+            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                swipeActionItems
+            }
+            #if os(macOS)
+            .padding(.leading)
+            .onHover { hovered in
+                isHovered = hovered
+            }
+            #endif
+            .contextMenu {
+                menuActionItems
+            }
+            .alert(
+                "Delete Folder Title",
+                isPresented: $shouldShowDeleteDialog,
+            ) {
+                alertActionItems
+            } message: {
+                if let selectedCollectionToPerformActions {
+                    Text("Delete Content Message \(selectedCollectionToPerformActions.label)")
+                }
+            }
+            .sheet(isPresented: $shouldShowEditSheet) {
+                if let selectedCollectionToPerformActions {
+                    CollectionCreationContent(
+                        collectionType: selectedCollectionToPerformActions.collectionType,
+                        collectionToEdit: $selectedCollectionToPerformActions
+                    )
+                }
+            }
+    }
+    
+    @ViewBuilder
+    private var mainButton: some View {
+        #if os(macOS)
         Button {
             selectedCollection = collection
         } label: {
             mainLabel
+        }.buttonStyle(.plain)
+        #elseif os(iOS)
+        NavigationLink(value: collection) {
+            mainLabel
         }
         .buttonStyle(.plain)
-        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-            swipeActionItems
-        }
-        #if os(macOS)
-        .padding(.leading)
-        .onHover { hovered in
-            isHovered = hovered
-        }
-        .contextMenu {
-            menuActionItems
-        }
         #endif
-        .alert(
-            "Delete Folder Title",
-            isPresented: $shouldShowDeleteDialog,
-        ) {
-            alertActionItems
-        } message: {
-            if let selectedCollectionToPerformActions {
-                Text("Delete Content Message \(selectedCollectionToPerformActions.label)")
-            }
-        }
-        .sheet(isPresented: $shouldShowEditSheet) {
-            if let selectedCollectionToPerformActions {
-                CollectionCreationContent(
-                    collectionType: selectedCollectionToPerformActions.collectionType,
-                    collectionToEdit: $selectedCollectionToPerformActions
-                )
-            }
-        }
     }
     
     @ViewBuilder
@@ -84,16 +95,12 @@ struct CollectionItemView: View {
                         menuActionItems
                     } label: {
                         Image(systemName: "ellipsis.circle")
-                    }
+                    }.menuStyle(.button)
                 }
                 #endif
                 Text("\(collection.bookmarks.count)")
-                #if os(iOS)
-                Image(systemName: "chevron.right")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 12, height: 12)
-                #endif
+                    .foregroundStyle(.secondary)
+                    .fontWeight(.medium)
             }.foregroundStyle(.secondary)
         }
         .contentShape(Rectangle())
@@ -111,7 +118,7 @@ struct CollectionItemView: View {
             }
         }.tint(.orange)
         Divider()
-        Button {
+        Button(role: .destructive) {
             selectedCollectionToPerformActions = collection
             shouldShowDeleteDialog = true
         } label: {

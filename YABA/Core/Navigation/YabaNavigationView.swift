@@ -20,8 +20,17 @@ struct YabaNavigationView: View {
     @State
     private var selectedBookmark: Bookmark?
     
+    @State
+    private var columnVisibility: NavigationSplitViewVisibility = .all
+    
+    @State
+    private var prefferedColumn: NavigationSplitViewColumn = .sidebar
+    
     var body: some View {
-        NavigationSplitView {
+        NavigationSplitView(
+            columnVisibility: $columnVisibility,
+            preferredCompactColumn: $prefferedColumn,
+        ) {
             HomeView(
                 selectedCollection: $selectedCollection,
                 selectedAppTint: $appTint
@@ -34,6 +43,7 @@ struct YabaNavigationView: View {
         } detail: {
             Text("Lele Detial")
         }
+        .navigationSplitViewStyle(.balanced)
         .tint(appTint)
         .onChange(of: selectedCollection) { _, newValue in
             if let color = newValue?.color.getUIColor() {
