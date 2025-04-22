@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 
+@MainActor
 struct HomeCollectionView: View {
     @Query
     private var collections: [YabaCollection]
@@ -58,7 +59,8 @@ struct HomeCollectionView: View {
                 ForEach(collections) { collection in
                     CollectionItemView(
                         collection: collection,
-                        selectedCollection: $selectedCollection
+                        selectedCollection: $selectedCollection,
+                        isInSelectionMode: false
                     )
                     #if os(macOS)
                     .listRowBackground(

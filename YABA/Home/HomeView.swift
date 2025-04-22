@@ -63,6 +63,8 @@ struct HomeView: View {
                         case .folder:
                             homeState.selectedContentCreationType = .folder
                             homeState.shouldShowCreateContentSheet = true
+                        case .bookmark:
+                            homeState.shouldShowCreateBookmarkSheet = true
                         default:
                             break
                         }
@@ -99,6 +101,11 @@ struct HomeView: View {
                     collectionToEdit: .constant(nil)
                 )
             }
+        }
+        .sheet(isPresented: $homeState.shouldShowCreateBookmarkSheet) {
+            BookmarkCreationContent(
+                bookmarkToEdit: .constant(nil)
+            )
         }
         .navigationTitle("YABA")
     }

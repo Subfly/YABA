@@ -29,6 +29,8 @@ struct CollectionItemView: View {
     @Binding
     var selectedCollection: YabaCollection?
     
+    let isInSelectionMode: Bool
+    
     var body: some View {
         mainButton
             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
@@ -65,18 +67,22 @@ struct CollectionItemView: View {
     
     @ViewBuilder
     private var mainButton: some View {
-        #if os(macOS)
-        Button {
-            selectedCollection = collection
-        } label: {
+        if isInSelectionMode {
             mainLabel
-        }.buttonStyle(.plain)
-        #elseif os(iOS)
-        NavigationLink(value: collection) {
-            mainLabel
+        } else {
+            #if os(macOS)
+            Button {
+                selectedCollection = collection
+            } label: {
+                mainLabel
+            }.buttonStyle(.plain)
+            #elseif os(iOS)
+            NavigationLink(value: collection) {
+                mainLabel
+            }
+            .buttonStyle(.plain)
+            #endif
         }
-        .buttonStyle(.plain)
-        #endif
     }
     
     @ViewBuilder

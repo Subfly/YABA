@@ -7,6 +7,30 @@
     "%lld" : {
 
     },
+    "Bookmark Description Placeholder" : {
+      "comment" : "Placeholder to show when bookmark description is empty",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Description"
+          }
+        }
+      }
+    },
+    "Bookmark Title Placeholder" : {
+      "comment" : "Placeholder to show when bookmark title is empty",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Title"
+          }
+        }
+      }
+    },
     "Cancel" : {
       "comment" : "Cancel",
       "extractionState" : "manual",
@@ -19,6 +43,18 @@
         }
       }
     },
+    "Collection" : {
+      "comment" : "Collection",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Collection"
+          }
+        }
+      }
+    },
     "Create Bookmark" : {
       "comment" : "Label to show for creating bookmarks in plus menu",
       "extractionState" : "manual",
@@ -27,6 +63,126 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bookmark"
+          }
+        }
+      }
+    },
+    "Create Bookmark Add Tags" : {
+      "comment" : "Button name to show for adding more tags",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add"
+          }
+        }
+      }
+    },
+    "Create Bookmark Description Placeholder" : {
+      "comment" : "Placeholder to show when user creating a bookmark",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Describe the contents of your bookmark"
+          }
+        }
+      }
+    },
+    "Create Bookmark Edit Tags" : {
+      "comment" : "Button name to show for editing tags",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit"
+          }
+        }
+      }
+    },
+    "Create Bookmark Folder Placeholder" : {
+      "comment" : "Placeholder to show when user creating a bookmark",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select a folder"
+          }
+        }
+      }
+    },
+    "Create Bookmark No Tags Selected Description" : {
+      "comment" : "Description to show in bookmark creation when no tags are selected",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add some tags by using the button above"
+          }
+        }
+      }
+    },
+    "Create Bookmark No Tags Selected Title" : {
+      "comment" : "Title to show in bookmark creation when no tags are selected",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Tags Selected"
+          }
+        }
+      }
+    },
+    "Create Bookmark Title" : {
+      "comment" : "Title to show while creating a bookmark",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create Bookmark"
+          }
+        }
+      }
+    },
+    "Create Bookmark Title Placeholder" : {
+      "comment" : "Placeholder to show when user creating a bookmark",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name your bookmark"
+          }
+        }
+      }
+    },
+    "Create Bookmark Type Placeholder" : {
+      "comment" : "Placeholder to show when user creating a bookmark",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bookmark type"
+          }
+        }
+      }
+    },
+    "Create Bookmark URL Placeholder" : {
+      "comment" : "A placeholder to show when user creating a bookmark",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL of your bookmark"
           }
         }
       }
@@ -168,6 +324,18 @@
         }
       }
     },
+    "Edit Bookmark Title" : {
+      "comment" : "Title to show when editing a bookmark",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit Bookmark"
+          }
+        }
+      }
+    },
     "Edit Folder Title" : {
       "comment" : "Title to show when editing a folder",
       "extractionState" : "manual",
@@ -188,6 +356,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Edit Tag"
+          }
+        }
+      }
+    },
+    "Folder" : {
+      "comment" : "Placeholder for naming \"Folder\"",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Folder"
+          }
+        }
+      }
+    },
+    "Folder Search Prompt" : {
+      "comment" : "Prompt to show while searching in folder selection",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search in folders..."
           }
         }
       }
@@ -216,6 +408,21 @@
         }
       }
     },
+    "Info" : {
+      "comment" : "Section header to show for info related items",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Info"
+          }
+        }
+      }
+    },
+    "Key" : {
+      "extractionState" : "manual"
+    },
     "LELE" : {
 
     },
@@ -230,6 +437,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Name:"
+          }
+        }
+      }
+    },
+    "New" : {
+      "comment" : "New",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New"
           }
         }
       }
@@ -378,6 +597,18 @@
         }
       }
     },
+    "Preview" : {
+      "comment" : "Title to show while previewing an item",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preview"
+          }
+        }
+      }
+    },
     "Search Collection %@" : {
       "comment" : "Prompt to show in search in collection detail view",
       "extractionState" : "manual",
@@ -410,6 +641,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Select a Color"
+          }
+        }
+      }
+    },
+    "Select Folder Title" : {
+      "comment" : "Title to show when folder picker is open",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select a Folder"
+          }
+        }
+      }
+    },
+    "Select Tags Title" : {
+      "comment" : "Title to show when tags picker is open",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select Tags"
           }
         }
       }

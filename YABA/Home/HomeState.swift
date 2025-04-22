@@ -15,6 +15,7 @@ internal class HomeState {
     var searchQuery: String = ""
     var isFABActive: Bool = false
     var shouldShowCreateContentSheet: Bool = false
+    var shouldShowCreateBookmarkSheet: Bool = false
     var selectedContentCreationType: CollectionType? = nil
     var shouldShowBackground: Bool = false
 }

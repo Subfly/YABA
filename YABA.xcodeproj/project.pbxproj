@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		96A8E0B82DB5CAFF00A47601 /* YABAShare.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 96A8E0AE2DB5CAFF00A47601 /* YABAShare.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		96A8E0D52DB5D8C100A47601 /* YABAShareMac.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 96A8E0C82DB5D8C000A47601 /* YABAShareMac.appex */; platformFilters = (macos, ); settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		96A8E0DE2DB669F700A47601 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 96A8E0DD2DB669F700A47601 /* Kingfisher */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,9 +69,11 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Core/Model/Bookmark.swift,
+				Core/Model/BookmarkType.swift,
 				Core/Model/CollectionType.swift,
 				Core/Model/YabaCollection.swift,
 				Core/Model/YabaColor.swift,
+				Core/Model/YabaLinkPreview.swift,
 			);
 			target = 96A8E0AD2DB5CAFF00A47601 /* YABAShare */;
 		};
@@ -116,6 +119,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				96A8E0DE2DB669F700A47601 /* Kingfisher in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -179,6 +183,7 @@
 			);
 			name = YABA;
 			packageProductDependencies = (
+				96A8E0DD2DB669F700A47601 /* Kingfisher */,
 			);
 			productName = YABA;
 			productReference = 96A8DFC22DB2F5A500A47601 /* YABA.app */;
@@ -258,6 +263,9 @@
 			);
 			mainGroup = 96A8DFB92DB2F5A500A47601;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				96A8E0DC2DB669F700A47601 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 96A8DFC32DB2F5A500A47601 /* Products */;
 			projectDirPath = "";
@@ -695,6 +703,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		96A8E0DC2DB669F700A47601 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.3.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		96A8E0DD2DB669F700A47601 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 96A8E0DC2DB669F700A47601 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 96A8DFBA2DB2F5A500A47601 /* Project object */;
 }

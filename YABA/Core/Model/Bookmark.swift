@@ -27,7 +27,12 @@ final class Bookmark {
     var domain: String
     var createdAt: Date
     var videoUrl: String?
+    var type: Int
     var collections: [YabaCollection]
+    
+    var bookmarkType: BookmarkType {
+        BookmarkType(rawValue: type) ?? .none
+    }
 
     init(
         link: String,
@@ -38,6 +43,7 @@ final class Bookmark {
         imageData: Data?,
         iconData: Data?,
         videoUrl: String?,
+        type: BookmarkType,
         collections: [YabaCollection] = []
     ) {
         self.link = link
@@ -48,19 +54,21 @@ final class Bookmark {
         self.imageData = imageData
         self.iconData = iconData
         self.videoUrl = videoUrl
+        self.type = type.rawValue
         self.collections = collections
     }
     
     static func empty() -> Bookmark {
         Bookmark(
-            link: "",
-            label: "",
-            bookmarkDescription: "",
-            domain: "",
+            link: "https://www.google.com/",
+            label: "Google",
+            bookmarkDescription: "Google Web Site",
+            domain: "google.com",
             createdAt: .now,
             imageData: nil,
             iconData: nil,
             videoUrl: nil,
+            type: .none,
             collections: []
         )
     }
@@ -75,6 +83,7 @@ final class Bookmark {
             imageData: nil,
             iconData: nil,
             videoUrl: nil,
+            type: .none,
             collections: []
         )
     }

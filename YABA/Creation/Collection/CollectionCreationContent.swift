@@ -108,6 +108,7 @@ struct CollectionCreationContent: View {
             }
         }
         .presentationDetents([.fraction(0.25)])
+        .presentationDragIndicator(.visible)
         .onAppear(perform: onAppear)
     }
     
