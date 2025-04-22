@@ -9,12 +9,51 @@ import SwiftUI
 import Kingfisher
 
 struct BookmarkItemView: View {
+    @Environment(\.modelContext)
+    private var modelContext
+    
+    @State
+    private var selectedBookmarkToPerformActions: Bookmark?
+    
+    @State
+    private var shouldShowDeleteDialog: Bool = false
+    
+    @State
+    private var shouldShowEditSheet: Bool = false
+    
     @Binding
     var selectedBookmark: Bookmark?
     
-    let bookmark: Bookmark
+    var bookmark: Bookmark
     
     var body: some View {
+        mainButton
+            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                swipeActionItems
+            }
+            .contextMenu {
+                menuActionItems
+            }
+            .alert(
+                LocalizedStringKey("Delete Bookmark Title"),
+                isPresented: $shouldShowDeleteDialog,
+            ) {
+                alertActionItems
+            } message: {
+                Text("Delete Content Message \(bookmark.label)")
+            }
+            .sheet(isPresented: $shouldShowEditSheet) {
+                if selectedBookmarkToPerformActions != nil {
+                    BookmarkCreationContent(
+                        bookmarkToEdit: $selectedBookmarkToPerformActions,
+                        initialCollection: .constant(nil)
+                    )
+                }
+            }
+    }
+    
+    @ViewBuilder
+    private var mainButton: some View {
         #if os(iOS)
         NavigationLink(value: bookmark) {
             mainContent
@@ -70,6 +109,73 @@ struct BookmarkItemView: View {
                         .foregroundStyle(.tint)
                         .frame(width: 32, height: 32)
                 }
+        }
+    }
+    
+    @ViewBuilder
+    private var swipeActionItems: some View {
+        Button {
+            selectedBookmarkToPerformActions = bookmark
+            shouldShowDeleteDialog = true
+        } label: {
+            VStack {
+                Image(systemName: "trash")
+                Text("Delete")
+            }
+        }.tint(.red)
+        Button {
+            selectedBookmarkToPerformActions = bookmark
+            shouldShowEditSheet = true
+        } label: {
+            VStack {
+                Image(systemName: "pencil")
+                Text("Edit")
+            }
+        }.tint(.orange)
+    }
+    
+    @ViewBuilder
+    private var menuActionItems: some View {
+        Button {
+            selectedBookmarkToPerformActions = bookmark
+            shouldShowEditSheet = true
+        } label: {
+            VStack {
+                Image(systemName: "pencil")
+                Text("Edit")
+            }
+        }.tint(.orange)
+        Divider()
+        Button(role: .destructive) {
+            selectedBookmarkToPerformActions = bookmark
+            shouldShowDeleteDialog = true
+        } label: {
+            VStack {
+                Image(systemName: "trash")
+                Text("Delete")
+            }
+        }.tint(.red)
+    }
+    
+    @ViewBuilder
+    private var alertActionItems: some View {
+        Button(role: .cancel) {
+            selectedBookmarkToPerformActions = nil
+            shouldShowDeleteDialog = false
+        } label: {
+            Text("Cancel")
+        }
+        Button(role: .destructive) {
+            withAnimation {
+                if let bookmark = selectedBookmarkToPerformActions {
+                    modelContext.delete(bookmark)
+                    try? modelContext.save()
+                    selectedBookmarkToPerformActions = nil
+                    shouldShowDeleteDialog = false
+                }
+            }
+        } label: {
+            Text("Delete")
         }
     }
 }

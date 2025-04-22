@@ -274,6 +274,18 @@
         }
       }
     },
+    "Delete Bookmark Title" : {
+      "comment" : "Title to show in dialog when a bookmark is deleting",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete Bookmark"
+          }
+        }
+      }
+    },
     "Delete Content Message %@" : {
       "comment" : "Message to show in alert when user tries to delete it.",
       "localizations" : {
@@ -286,7 +298,15 @@
       }
     },
     "Delete Folder Title" : {
-
+      "comment" : "Title to show in dialog when a folder is deleting",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete Folder"
+          }
+        }
+      }
     },
     "Delete Tag Title" : {
       "comment" : "Title to show in dialog when a tag is deleting",
@@ -419,12 +439,6 @@
           }
         }
       }
-    },
-    "Key" : {
-      "extractionState" : "manual"
-    },
-    "LELE" : {
-
     },
     "Lele Detial" : {
 
@@ -645,6 +659,57 @@
         }
       }
     },
+    "Select Folder No Folder Found In Search Description %@" : {
+      "comment" : "Description to show when user is searching for a folder but query is empty in bookmark creation",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No folders found with the name containing “%@”"
+          }
+        }
+      }
+    },
+    "Select Folder No Folder Found In Search Title" : {
+      "comment" : "Title to show when user is searching for a folder but query is empty in bookmark creation",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing Here"
+          }
+        }
+      }
+    },
+    "Select Folder No Folders Available Description" : {
+      "comment" : "Description to show when user is adding a folder but there are no folders.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "It seems like you have not created any folders yet! Create your first tag by tapping the + button above"
+          }
+        }
+      }
+    },
+    "Select Folder No Folders Available Title" : {
+
+    },
+    "Select Folder No Tags Available Title" : {
+      "comment" : "Title to show when user is adding a folder but there are no folders.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Folders Available"
+          }
+        }
+      }
+    },
     "Select Folder Title" : {
       "comment" : "Title to show when folder picker is open",
       "extractionState" : "manual",
@@ -657,6 +722,102 @@
         }
       }
     },
+    "Select Tags No More Tags Left Description" : {
+      "comment" : "Description to show when user added all the tags available during bookmark creation.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "It seems like you added all the tags. You can create more by using + button above"
+          }
+        }
+      }
+    },
+    "Select Tags No More Tags Left Title" : {
+      "comment" : "Title to show when user added all the tags available during bookmark creation.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No More Tags"
+          }
+        }
+      }
+    },
+    "Select Tags No Tags Available Description" : {
+      "comment" : "Description to show when user is adding tags but there are no tags.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "It seems like you have not created any tags yet! Create your first tag by tapping the + button above"
+          }
+        }
+      }
+    },
+    "Select Tags No Tags Available Title" : {
+      "comment" : "Title to show when user is adding tags but there are no tags.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Tags Available"
+          }
+        }
+      }
+    },
+    "Select Tags No Tags Found In Search Description %@" : {
+      "comment" : "Description to show when user is searching for a tag but query is empty in bookmark creation",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No tags found with the name containing “%@”"
+          }
+        }
+      }
+    },
+    "Select Tags No Tags Found In Search Title" : {
+      "comment" : "Title to show when user is searching for a tag but query is empty in bookmark creation",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing Here"
+          }
+        }
+      }
+    },
+    "Select Tags No Tags Selected Message" : {
+      "comment" : "Description to show in content unavailable view when user has not selected any tag yet while creating a bookmark",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap on one or more available tags below to add tags"
+          }
+        }
+      }
+    },
+    "Select Tags No Tags Selected Title" : {
+      "comment" : "Title to show in content unavailable view when user has not selected any tag yet while creating a bookmark",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Tags Selected"
+          }
+        }
+      }
+    },
     "Select Tags Title" : {
       "comment" : "Title to show when tags picker is open",
       "extractionState" : "manual",
@@ -665,6 +826,42 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Select Tags"
+          }
+        }
+      }
+    },
+    "Selectable Tags Label Title" : {
+      "comment" : "Title to show in header of the selectable tags when user is selecting tags for the bookmark",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selectable Tags"
+          }
+        }
+      }
+    },
+    "Selected Tags Label Title" : {
+      "comment" : "Title to show in header of the selected tags when user is selecting tags for the bookmark",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selected Tags"
+          }
+        }
+      }
+    },
+    "Tags Search Prompt" : {
+      "comment" : "Prompt to show while searching in tags selection",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search in tags…"
           }
         }
       }

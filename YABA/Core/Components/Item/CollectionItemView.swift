@@ -31,6 +31,9 @@ struct CollectionItemView: View {
     
     let isInSelectionMode: Bool
     
+    let onDeleteCallback: (YabaCollection) -> Void
+    let onEditCallback: (YabaCollection) -> Void
+    
     var body: some View {
         mainButton
             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
@@ -46,7 +49,11 @@ struct CollectionItemView: View {
                 menuActionItems
             }
             .alert(
-                "Delete Folder Title",
+                LocalizedStringKey(
+                    collection.collectionType == .folder
+                    ? "Delete Folder Title"
+                    : "Delete Tag Title"
+                ),
                 isPresented: $shouldShowDeleteDialog,
             ) {
                 alertActionItems
@@ -59,7 +66,8 @@ struct CollectionItemView: View {
                 if let selectedCollectionToPerformActions {
                     CollectionCreationContent(
                         collectionType: selectedCollectionToPerformActions.collectionType,
-                        collectionToEdit: $selectedCollectionToPerformActions
+                        collectionToEdit: $selectedCollectionToPerformActions,
+                        onEditCallback: onEditCallback
                     )
                 }
             }
@@ -163,22 +171,23 @@ struct CollectionItemView: View {
             selectedCollectionToPerformActions = nil
             shouldShowDeleteDialog = false
         } label: {
-            Text(verbatim: "Cancel")
+            Text("Cancel")
         }
         Button(role: .destructive) {
             withAnimation {
-                if let folder = selectedCollectionToPerformActions {
-                    folder.bookmarks.forEach { bookmark in
+                if let collection = selectedCollectionToPerformActions {
+                    collection.bookmarks.forEach { bookmark in
                         modelContext.delete(bookmark)
                     }
-                    modelContext.delete(folder)
+                    modelContext.delete(collection)
                     try? modelContext.save()
+                    onDeleteCallback(collection)
                     selectedCollectionToPerformActions = nil
                     shouldShowDeleteDialog = false
                 }
             }
         } label: {
-            Text(verbatim: "Delete")
+            Text("Delete")
         }
     }
 }

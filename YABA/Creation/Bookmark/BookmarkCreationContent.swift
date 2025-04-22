@@ -20,14 +20,21 @@ struct BookmarkCreationContent: View {
     @Binding
     var bookmarkToEdit: Bookmark?
     
+    @Binding
+    var initialCollection: YabaCollection?
+    
     private let navigationTitle: String
     
-    init(bookmarkToEdit: Binding<Bookmark?>) {
+    init(
+        bookmarkToEdit: Binding<Bookmark?>,
+        initialCollection: Binding<YabaCollection?>
+    ) {
         _bookmarkToEdit = bookmarkToEdit
-        if bookmarkToEdit.wrappedValue == nil {
-            navigationTitle = "Create Bookmark Title"
-        } else {
+        _initialCollection = initialCollection
+        if let _ = bookmarkToEdit.wrappedValue {
             navigationTitle = "Edit Bookmark Title"
+        } else {
+            navigationTitle = "Create Bookmark Title"
         }
     }
     
@@ -80,6 +87,23 @@ struct BookmarkCreationContent: View {
                 )
             }
             .navigationTitle(LocalizedStringKey(navigationTitle))
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel", role: .cancel) {
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") {
+                        onDone()
+                    }.disabled(
+                        state.url.isEmpty
+                        || state.label.isEmpty
+                        || state.selectedFolder == nil
+                        || state.hasError
+                    )
+                }
+            }
         }
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
@@ -88,13 +112,7 @@ struct BookmarkCreationContent: View {
             ? .accentColor
             : state.selectedFolder?.color.getUIColor() ?? .accentColor
         )
-        .onAppear {
-            state.listenUrlChanges { url in
-                Task {
-                    await state.fetchData(with: url)
-                }
-            }
-        }
+        .onAppear(perform: onAppear)
     }
     
     @ViewBuilder
@@ -212,6 +230,7 @@ struct BookmarkCreationContent: View {
             }
         }
         .foregroundStyle(.tint)
+        .id(state.selectedFolder)
     }
     
     @ViewBuilder
@@ -269,7 +288,7 @@ struct BookmarkCreationContent: View {
             )
             Spacer()
             NavigationLink {
-                
+                SelectTagsContent(selectedTags: $state.selectedTags)
             } label: {
                 Label(
                     state.selectedTags.isEmpty
@@ -282,12 +301,102 @@ struct BookmarkCreationContent: View {
             }
         }
     }
+    
+    private func onDone() {
+        guard let selectedFolder = state.selectedFolder else {
+            dismiss()
+            return
+        }
+        
+        if let bookmarkToEdit {
+            bookmarkToEdit.label = state.label
+            bookmarkToEdit.link = state.url
+            bookmarkToEdit.domain = state.host
+            bookmarkToEdit.bookmarkDescription = state.description
+            bookmarkToEdit.videoUrl = state.videoUrl
+            bookmarkToEdit.type = state.selectedType.rawValue
+            bookmarkToEdit.iconData = state.iconData
+            bookmarkToEdit.imageData = state.imageData
+            
+            // Folder changing
+            if let lastSelectedFolderIndex = bookmarkToEdit.collections.firstIndex(
+                where: { $0.collectionType == .folder }
+            ) {
+                let lastSelectedFolder = bookmarkToEdit.collections[lastSelectedFolderIndex]
+                if lastSelectedFolder.hasChanges(with: selectedFolder) {
+                    bookmarkToEdit.collections.remove(at: lastSelectedFolderIndex)
+                    bookmarkToEdit.collections.append(selectedFolder)
+                }
+            }
+            
+            // Tags changing
+            bookmarkToEdit.collections.removeAll { $0.collectionType == .tag }
+            bookmarkToEdit.collections.append(contentsOf: state.selectedTags)
+        } else {
+            var collections = state.selectedTags
+            collections.append(selectedFolder)
+            
+            let newBookmark = Bookmark(
+                link: state.url,
+                label: state.label,
+                bookmarkDescription: state.description,
+                domain: state.host,
+                createdAt: .now,
+                imageData: state.imageData,
+                iconData: state.iconData,
+                videoUrl: state.videoUrl,
+                type: state.selectedType,
+                collections: collections
+            )
+            modelContext.insert(newBookmark)
+            try? modelContext.save()
+        }
+        dismiss()
+    }
+    
+    private func onAppear() {
+        state.listenUrlChanges { url in
+            Task {
+                await state.fetchData(with: url)
+            }
+        }
+        
+        if let bookmarkToEdit {
+            state.url = bookmarkToEdit.link
+            state.label = bookmarkToEdit.label
+            state.description = bookmarkToEdit.bookmarkDescription
+            state.host = bookmarkToEdit.domain
+            state.imageData = bookmarkToEdit.imageData
+            state.iconData = bookmarkToEdit.iconData
+            state.videoUrl = bookmarkToEdit.videoUrl
+            state.selectedType = bookmarkToEdit.bookmarkType
+            state.selectedFolder = bookmarkToEdit.collections.first(where: {
+                $0.collectionType == .folder
+            })
+            state.selectedTags = bookmarkToEdit.collections.filter { $0.collectionType == .tag }
+        }
+        
+        if let initialCollection {
+            switch initialCollection.collectionType {
+            case .folder:
+                state.selectedFolder = initialCollection
+            case .tag:
+                state.selectedTags.append(initialCollection)
+            }
+        }
+    }
 }
 
 #Preview {
-    BookmarkCreationContent(bookmarkToEdit: .constant(nil))
+    BookmarkCreationContent(
+        bookmarkToEdit: .constant(nil),
+        initialCollection: .constant(nil)
+    )
 }
 
 #Preview {
-    BookmarkCreationContent(bookmarkToEdit: .constant(.empty()))
+    BookmarkCreationContent(
+        bookmarkToEdit: .constant(.empty()),
+        initialCollection: .constant(nil)
+    )
 }

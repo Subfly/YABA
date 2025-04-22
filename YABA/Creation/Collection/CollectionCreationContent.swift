@@ -23,13 +23,16 @@ struct CollectionCreationContent: View {
     @Binding
     var collectionToEdit: YabaCollection?
     let collectionType: CollectionType
+    let onEditCallback: (YabaCollection) -> Void
     
     init(
         collectionType: CollectionType,
-        collectionToEdit: Binding<YabaCollection?>
+        collectionToEdit: Binding<YabaCollection?>,
+        onEditCallback: @escaping (YabaCollection) -> Void
     ) {
         _collectionToEdit = collectionToEdit
         self.collectionType = collectionType
+        self.onEditCallback = onEditCallback
         
         if let content = collectionToEdit.wrappedValue {
             self.navigationTitle = switch content.collectionType {
@@ -254,6 +257,7 @@ struct CollectionCreationContent: View {
                 collectionToEdit.label = state.collectionName
                 collectionToEdit.icon = state.selectedIconName
                 collectionToEdit.color = state.selectedColor
+                onEditCallback(collectionToEdit)
                 dismiss()
             } else {
                 let collection = YabaCollection(
@@ -274,6 +278,7 @@ struct CollectionCreationContent: View {
 #Preview {
     CollectionCreationContent(
         collectionType: .folder,
-        collectionToEdit: .constant(.empty())
+        collectionToEdit: .constant(.empty()),
+        onEditCallback: { _ in }
     )
 }

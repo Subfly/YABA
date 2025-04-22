@@ -49,4 +49,12 @@ final class YabaCollection {
             type: .folder
         )
     }
+    
+    func hasChanges(with other: YabaCollection) -> Bool {
+        let idHasChanges = self.id != other.id
+        let labelHasChanges = self.label.localizedStandardCompare(other.label) != .orderedSame
+        let iconHasChanges = self.icon.localizedStandardCompare(other.icon) != .orderedSame
+        let colorHasChanges = self.color != other.color
+        return idHasChanges || labelHasChanges || iconHasChanges || colorHasChanges
+    }
 }

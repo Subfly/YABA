@@ -60,7 +60,9 @@ struct HomeCollectionView: View {
                     CollectionItemView(
                         collection: collection,
                         selectedCollection: $selectedCollection,
-                        isInSelectionMode: false
+                        isInSelectionMode: false,
+                        onDeleteCallback: { _ in },
+                        onEditCallback: { _ in }
                     )
                     #if os(macOS)
                     .listRowBackground(

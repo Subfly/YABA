@@ -98,13 +98,15 @@ struct HomeView: View {
             if let creationType = homeState.selectedContentCreationType {
                 CollectionCreationContent(
                     collectionType: creationType,
-                    collectionToEdit: .constant(nil)
+                    collectionToEdit: .constant(nil),
+                    onEditCallback: { _ in }
                 )
             }
         }
         .sheet(isPresented: $homeState.shouldShowCreateBookmarkSheet) {
             BookmarkCreationContent(
-                bookmarkToEdit: .constant(nil)
+                bookmarkToEdit: .constant(nil),
+                initialCollection: .constant(nil)
             )
         }
         .navigationTitle("YABA")

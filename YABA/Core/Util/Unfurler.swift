@@ -21,7 +21,6 @@ class Unfurler {
     
     func unfurl(urlString: String) async throws -> YabaLinkPreview? {
         let provider: LPMetadataProvider = .init()
-        
         // Try to create the URL
         guard let url = URL(string: urlString) else {
             self.logger.log(level: .error, "[UNFURLER] Cannot create url for: \(urlString)")

@@ -38,6 +38,7 @@ class BookmarkCreationState {
     var selectedTags: [YabaCollection] = []
     
     var isLoading: Bool = false
+    var hasError: Bool = false
     var shouldShowFolderSelection: Bool = false
     var shouldShowTagsSelection: Bool = false
     
@@ -48,19 +49,22 @@ class BookmarkCreationState {
         }
         do {
             if let fetched = try await unfurler.unfurl(urlString: urlString) {
-                self.url = fetched.url
                 self.host = fetched.host
                 self.label = fetched.title
                 self.videoUrl = fetched.videoURL
                 self.iconData = fetched.iconData
                 self.imageData = fetched.imageData
             }
+            hasError = false
         } catch UnfurlError.cannotCreateURL(let message) {
-            
+            // TODO: ADD TOAST
+            hasError = true
         } catch UnfurlError.unableToUnfurl(let message) {
-            
+            // TODO: ADD TOAST
+            hasError = true
         } catch {
-            
+            // TODO: ADD TOAST
+            hasError = true
         }
     }
     

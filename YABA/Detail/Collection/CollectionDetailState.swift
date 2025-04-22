@@ -12,4 +12,5 @@ import SwiftUI
 @Observable
 internal class CollectionDetailState {
     var searchQuery: String = ""
+    var shouldShowCreateBookmarkSheet: Bool = false
 }

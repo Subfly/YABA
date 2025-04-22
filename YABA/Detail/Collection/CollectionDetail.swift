@@ -30,16 +30,30 @@ struct CollectionDetail: View {
                         systemImage: "bookmark",
                         description: Text("No Bookmarks Message")
                     )
-                    .navigationTitle(collection.label)
                 } else {
                     List(selection: $selectedBookmark) {
-                        Text("LELE")
+                        ForEach(
+                            collection.bookmarks.filter {
+                                if state.searchQuery.isEmpty {
+                                    true
+                                } else {
+                                    $0.label.localizedStandardContains(state.searchQuery)
+                                    || $0.bookmarkDescription.localizedStandardContains(state.searchQuery)
+                                }
+                            }
+                        ) { bookmark in
+                            BookmarkItemView(
+                                selectedBookmark: $selectedBookmark,
+                                bookmark: bookmark
+                            )
+                        }
                     }
+                    .listStyle(.sidebar)
+                    .scrollContentBackground(.hidden)
                     .searchable(
                         text: $state.searchQuery,
                         prompt: Text("Search Collection \(collection.label)")
                     )
-                    .navigationTitle(collection.label)
                 }
             } else {
                 ContentUnavailableView(
@@ -48,6 +62,22 @@ struct CollectionDetail: View {
                     description: Text("No Selected Collection Message")
                 )
             }
+        }
+        .navigationTitle(collection?.label ?? "")
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    state.shouldShowCreateBookmarkSheet = true
+                } label: {
+                    Image(systemName: "plus.circle")
+                }
+            }
+        }
+        .sheet(isPresented: $state.shouldShowCreateBookmarkSheet) {
+            BookmarkCreationContent(
+                bookmarkToEdit: .constant(nil),
+                initialCollection: $collection
+            )
         }
     }
 }
