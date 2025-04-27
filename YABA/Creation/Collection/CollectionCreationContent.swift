@@ -258,7 +258,6 @@ struct CollectionCreationContent: View {
                 collectionToEdit.icon = state.selectedIconName
                 collectionToEdit.color = state.selectedColor
                 onEditCallback(collectionToEdit)
-                dismiss()
             } else {
                 let collection = YabaCollection(
                     label: state.collectionName,
@@ -268,9 +267,9 @@ struct CollectionCreationContent: View {
                     type: collectionType
                 )
                 modelContext.insert(collection)
-                try? modelContext.save()
-                dismiss()
             }
+            try? modelContext.save()
+            dismiss()
         }
     }
 }

@@ -31,6 +31,7 @@ struct BookmarkCreationContent: View {
     ) {
         _bookmarkToEdit = bookmarkToEdit
         _initialCollection = initialCollection
+        
         if let _ = bookmarkToEdit.wrappedValue {
             navigationTitle = "Edit Bookmark Title"
         } else {
@@ -303,55 +304,57 @@ struct BookmarkCreationContent: View {
     }
     
     private func onDone() {
-        guard let selectedFolder = state.selectedFolder else {
-            dismiss()
-            return
-        }
-        
-        if let bookmarkToEdit {
-            bookmarkToEdit.label = state.label
-            bookmarkToEdit.link = state.url
-            bookmarkToEdit.domain = state.host
-            bookmarkToEdit.bookmarkDescription = state.description
-            bookmarkToEdit.videoUrl = state.videoUrl
-            bookmarkToEdit.type = state.selectedType.rawValue
-            bookmarkToEdit.iconData = state.iconData
-            bookmarkToEdit.imageData = state.imageData
-            
-            // Folder changing
-            if let lastSelectedFolderIndex = bookmarkToEdit.collections.firstIndex(
-                where: { $0.collectionType == .folder }
-            ) {
-                let lastSelectedFolder = bookmarkToEdit.collections[lastSelectedFolderIndex]
-                if lastSelectedFolder.hasChanges(with: selectedFolder) {
-                    bookmarkToEdit.collections.remove(at: lastSelectedFolderIndex)
-                    bookmarkToEdit.collections.append(selectedFolder)
-                }
+        withAnimation {
+            guard let selectedFolder = state.selectedFolder else {
+                dismiss()
+                return
             }
             
-            // Tags changing
-            bookmarkToEdit.collections.removeAll { $0.collectionType == .tag }
-            bookmarkToEdit.collections.append(contentsOf: state.selectedTags)
-        } else {
-            var collections = state.selectedTags
-            collections.append(selectedFolder)
-            
-            let newBookmark = Bookmark(
-                link: state.url,
-                label: state.label,
-                bookmarkDescription: state.description,
-                domain: state.host,
-                createdAt: .now,
-                imageData: state.imageData,
-                iconData: state.iconData,
-                videoUrl: state.videoUrl,
-                type: state.selectedType,
-                collections: collections
-            )
-            modelContext.insert(newBookmark)
+            if let bookmarkToEdit {
+                bookmarkToEdit.label = state.label
+                bookmarkToEdit.link = state.url
+                bookmarkToEdit.domain = state.host
+                bookmarkToEdit.bookmarkDescription = state.description
+                bookmarkToEdit.videoUrl = state.videoUrl
+                bookmarkToEdit.type = state.selectedType.rawValue
+                bookmarkToEdit.iconData = state.iconData
+                bookmarkToEdit.imageData = state.imageData
+                
+                // Folder changing
+                if let lastSelectedFolderIndex = bookmarkToEdit.collections.firstIndex(
+                    where: { $0.collectionType == .folder }
+                ) {
+                    let lastSelectedFolder = bookmarkToEdit.collections[lastSelectedFolderIndex]
+                    if lastSelectedFolder.hasChanges(with: selectedFolder) {
+                        bookmarkToEdit.collections.remove(at: lastSelectedFolderIndex)
+                        bookmarkToEdit.collections.append(selectedFolder)
+                    }
+                }
+                
+                // Tags changing
+                bookmarkToEdit.collections.removeAll { $0.collectionType == .tag }
+                bookmarkToEdit.collections.append(contentsOf: state.selectedTags)
+            } else {
+                var collections = state.selectedTags
+                collections.append(selectedFolder)
+                
+                let newBookmark = Bookmark(
+                    link: state.url,
+                    label: state.label,
+                    bookmarkDescription: state.description,
+                    domain: state.host,
+                    createdAt: .now,
+                    imageData: state.imageData,
+                    iconData: state.iconData,
+                    videoUrl: state.videoUrl,
+                    type: state.selectedType,
+                    collections: collections
+                )
+                modelContext.insert(newBookmark)
+            }
             try? modelContext.save()
+            dismiss()
         }
-        dismiss()
     }
     
     private func onAppear() {

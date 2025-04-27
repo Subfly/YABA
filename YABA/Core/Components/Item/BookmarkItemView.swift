@@ -18,9 +18,6 @@ struct BookmarkItemView: View {
     @State
     private var shouldShowDeleteDialog: Bool = false
     
-    @State
-    private var shouldShowEditSheet: Bool = false
-    
     @Binding
     var selectedBookmark: Bookmark?
     
@@ -42,13 +39,16 @@ struct BookmarkItemView: View {
             } message: {
                 Text("Delete Content Message \(bookmark.label)")
             }
-            .sheet(isPresented: $shouldShowEditSheet) {
-                if selectedBookmarkToPerformActions != nil {
-                    BookmarkCreationContent(
-                        bookmarkToEdit: $selectedBookmarkToPerformActions,
-                        initialCollection: .constant(nil)
-                    )
-                }
+            .sheet(item: $selectedBookmarkToPerformActions) { bookmark in
+                BookmarkCreationContent(
+                    bookmarkToEdit: Binding(
+                        get: { bookmark },
+                        set: { newValue in
+                            self.selectedBookmarkToPerformActions = newValue
+                        }
+                    ),
+                    initialCollection: .constant(nil)
+                )
             }
     }
     
@@ -125,7 +125,6 @@ struct BookmarkItemView: View {
         }.tint(.red)
         Button {
             selectedBookmarkToPerformActions = bookmark
-            shouldShowEditSheet = true
         } label: {
             VStack {
                 Image(systemName: "pencil")
@@ -138,7 +137,6 @@ struct BookmarkItemView: View {
     private var menuActionItems: some View {
         Button {
             selectedBookmarkToPerformActions = bookmark
-            shouldShowEditSheet = true
         } label: {
             VStack {
                 Image(systemName: "pencil")

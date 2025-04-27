@@ -176,8 +176,10 @@ struct CollectionItemView: View {
         Button(role: .destructive) {
             withAnimation {
                 if let collection = selectedCollectionToPerformActions {
-                    collection.bookmarks.forEach { bookmark in
-                        modelContext.delete(bookmark)
+                    if collection.collectionType == .folder {
+                        collection.bookmarks.forEach { bookmark in
+                            modelContext.delete(bookmark)
+                        }
                     }
                     modelContext.delete(collection)
                     try? modelContext.save()
