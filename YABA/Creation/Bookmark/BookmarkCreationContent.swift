@@ -48,11 +48,11 @@ struct BookmarkCreationContent: View {
     }
     
     var body: some View {
-#if os(iOS)
+        #if os(iOS)
         iOSView
-#elseif os(macOS)
+        #elseif os(macOS)
         macOSView
-#endif
+        #endif
     }
     
     @ViewBuilder
@@ -156,6 +156,11 @@ struct BookmarkCreationContent: View {
                 
                 Section {
                     bookmarkFolderSelectionView
+                        .padding()
+                        .background {
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(.gray.opacity(0.1))
+                        }
                 } header: {
                     Label(
                         "Folder",
@@ -165,6 +170,11 @@ struct BookmarkCreationContent: View {
                 
                 Section {
                     bookmarkInfoSectionItems
+                        .padding()
+                        .background {
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(.gray.opacity(0.1))
+                        }
                 } header: {
                     Label(
                         "Info",
@@ -174,6 +184,11 @@ struct BookmarkCreationContent: View {
                 
                 Section {
                     bookmarkAddTagsView
+                        .padding()
+                        .background {
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(.gray.opacity(0.1))
+                        }
                 } header: {
                     bookmarkAddOrEditTagsButton
                 }.listRowSeparator(.visible, edges: [.bottom])
@@ -232,17 +247,17 @@ struct BookmarkCreationContent: View {
     private var bookmarkPreviewItemImage: some View {
         if let imageData = state.imageData,
            let image = UIImage(data: imageData) {
-#if os(iOS)
+            #if os(iOS)
             Image(uiImage: image)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 50, height: 50)
-#elseif os(macOS)
+            #elseif os(macOS)
             Image(nsImage: image)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 50, height: 50)
-#endif
+            #endif
         } else {
             RoundedRectangle(cornerRadius: 8)
                 .fill(.tint.opacity(0.3))
@@ -283,9 +298,6 @@ struct BookmarkCreationContent: View {
                 .frame(width: 20, height: 20)
                 .foregroundStyle(.tint)
         }
-#if os(macOS)
-        .padding(.bottom)
-#endif
         
         TextField(
             "",
@@ -299,9 +311,6 @@ struct BookmarkCreationContent: View {
                 .frame(width: 20, height: 20)
                 .foregroundStyle(.tint)
         }
-#if os(macOS)
-        .padding(.bottom)
-#endif
         
         HStack(alignment: .top) {
             Image(systemName: "text.page")
@@ -317,31 +326,13 @@ struct BookmarkCreationContent: View {
             )
             .lineLimit(5, reservesSpace: true)
         }
-#if os(macOS)
-        .padding(.bottom)
-#endif
         
-        Picker(selection: $state.selectedType) {
-            ForEach(BookmarkType.allCases, id: \.self) { type in
-                Label(type.getUITitle(), systemImage: type.getIconName())
-            }
-        } label: {
-            HStack {
-                Image(systemName: state.selectedType.getIconName())
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 20, height: 20)
-                    .foregroundStyle(.tint)
-                Text("Create Bookmark Type Placeholder")
-            }
-        }
-        .foregroundStyle(.tint)
-        .id(state.selectedFolder)
+        bookmarkTypePicker
     }
     
     @ViewBuilder
     private var bookmarkFolderSelectionView: some View {
-#if os(iOS)
+        #if os(iOS)
         NavigationLink {
             SelectFolderContent(selectedFolder: $state.selectedFolder)
         } label: {
@@ -365,7 +356,7 @@ struct BookmarkCreationContent: View {
                 }
             }
         }
-#elseif os(macOS)
+        #elseif os(macOS)
         HStack {
             if let folder = state.selectedFolder {
                 HStack {
@@ -397,7 +388,7 @@ struct BookmarkCreationContent: View {
         .popover(isPresented: $state.shouldShowFolderSelection) {
             SelectFolderContent(selectedFolder: $state.selectedFolder)
         }
-#endif
+        #endif
     }
     
     @ViewBuilder
@@ -409,6 +400,7 @@ struct BookmarkCreationContent: View {
                 description: Text("Create Bookmark No Tags Selected Description")
             )
         } else {
+            #if os(iOS)
             ForEach(state.selectedTags) { tag in
                 HStack {
                     Image(systemName: tag.icon)
@@ -416,6 +408,29 @@ struct BookmarkCreationContent: View {
                     Text(tag.label)
                 }
             }
+            #elseif os(macOS)
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack {
+                    ForEach(state.selectedTags) { tag in
+                        HStack {
+                            VStack(spacing: 6) {
+                                Image(systemName: tag.icon)
+                                    .foregroundStyle(tag.color.getUIColor())
+                                Text(tag.label)
+                            }
+                            .padding(8)
+                            .background {
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(tag.color.getUIColor().opacity(0.1))
+                            }
+                            if tag.id != state.selectedTags.last?.id {
+                                Divider()
+                            }
+                        }
+                    }
+                }
+            }
+            #endif
         }
     }
     
@@ -426,7 +441,7 @@ struct BookmarkCreationContent: View {
                 "Tags Title",
                 systemImage: "tag"
             )
-#if os(iOS)
+            #if os(iOS)
             Spacer()
             NavigationLink {
                 SelectTagsContent(selectedTags: $state.selectedTags)
@@ -440,7 +455,7 @@ struct BookmarkCreationContent: View {
                     : "pencil"
                 ).textCase(.none)
             }
-#elseif os(macOS)
+            #elseif os(macOS)
             Button {
                 state.shouldShowTagsSelection = true
             } label: {
@@ -458,8 +473,68 @@ struct BookmarkCreationContent: View {
             .popover(isPresented: $state.shouldShowTagsSelection) {
                 SelectTagsContent(selectedTags: $state.selectedTags)
             }
-#endif
+            #endif
         }
+    }
+    
+    @ViewBuilder
+    private var bookmarkTypePicker: some View {
+        #if os(iOS)
+        Picker(selection: $state.selectedType) {
+            ForEach(BookmarkType.allCases, id: \.self) { type in
+                Label(type.getUITitle(), systemImage: type.getIconName())
+            }
+        } label: {
+            HStack {
+                Image(systemName: state.selectedType.getIconName())
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 20, height: 20)
+                    .foregroundStyle(.tint)
+                Text("Create Bookmark Type Placeholder")
+            }
+        }
+        .foregroundStyle(.tint)
+        .id(state.selectedFolder)
+        #elseif os(macOS)
+        HStack {
+            Image(systemName: state.selectedType.getIconName())
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 20, height: 20)
+                .foregroundStyle(.tint)
+            Text("Create Bookmark Type Placeholder")
+            Spacer()
+            Button {
+                state.shouldShowTypeSelection.toggle()
+            } label: {
+                HStack {
+                    Text(state.selectedType.getUITitle())
+                    Image(systemName: "chevron.up.chevron.down")
+                        .foregroundStyle(.tint)
+                }
+            }
+            .buttonStyle(.plain)
+            .popover(isPresented: $state.shouldShowTypeSelection) {
+                VStack(alignment: .leading) {
+                    ForEach(BookmarkType.allCases, id: \.self) { type in
+                        Button {
+                            state.selectedType = type
+                            state.shouldShowTypeSelection = false
+                        } label: {
+                            Label {
+                                Text(type.getUITitle())
+                            } icon: {
+                                Image(systemName: type.getIconName())
+                                    .foregroundStyle(.tint)
+                            }
+                        }
+                        .buttonStyle(.plain)
+                    }.padding(4)
+                }.padding(8)
+            }
+        }
+        #endif
     }
     
     private func onDone() {

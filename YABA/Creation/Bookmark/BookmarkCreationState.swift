@@ -39,8 +39,11 @@ class BookmarkCreationState {
     
     var isLoading: Bool = false
     var hasError: Bool = false
+    
+    /// MARK: MACOS ONLY
     var shouldShowFolderSelection: Bool = false
     var shouldShowTagsSelection: Bool = false
+    var shouldShowTypeSelection: Bool = false
     
     func fetchData(with urlString: String) async {
         if urlString.isEmpty {
