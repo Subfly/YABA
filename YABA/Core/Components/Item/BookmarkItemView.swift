@@ -6,14 +6,16 @@
 //
 
 import SwiftUI
-import Kingfisher
 
 struct BookmarkItemView: View {
     @Environment(\.modelContext)
     private var modelContext
     
     @State
-    private var selectedBookmarkToPerformActions: Bookmark?
+    private var selectedBookmarkToDelete: Bookmark?
+    
+    @State
+    private var selectedBookmarkToEdit: Bookmark?
     
     @State
     private var shouldShowDeleteDialog: Bool = false
@@ -39,15 +41,17 @@ struct BookmarkItemView: View {
             } message: {
                 Text("Delete Content Message \(bookmark.label)")
             }
-            .sheet(item: $selectedBookmarkToPerformActions) { bookmark in
+            .sheet(item: $selectedBookmarkToEdit) { bookmark in
                 BookmarkCreationContent(
                     bookmarkToEdit: Binding(
                         get: { bookmark },
                         set: { newValue in
-                            self.selectedBookmarkToPerformActions = newValue
+                            self.selectedBookmarkToEdit = newValue
                         }
                     ),
-                    initialCollection: .constant(nil)
+                    initialCollection: .constant(nil),
+                    link: nil,
+                    onExitRequested: {}
                 )
             }
     }
@@ -79,6 +83,7 @@ struct BookmarkItemView: View {
                     .lineLimit(1)
                 Text(bookmark.bookmarkDescription)
                     .lineLimit(2)
+                    .multilineTextAlignment(.leading)
             }
         }
     }
@@ -90,12 +95,12 @@ struct BookmarkItemView: View {
             #if os(iOS)
             Image(uiImage: image)
                 .resizable()
-                .aspectRatio(contentMode: .fit)
+                .aspectRatio(contentMode: .fill)
                 .frame(width: 50, height: 50)
             #elseif os(macOS)
             Image(nsImage: image)
                 .resizable()
-                .aspectRatio(contentMode: .fit)
+                .aspectRatio(contentMode: .fill)
                 .frame(width: 50, height: 50)
             #endif
         } else {
@@ -115,7 +120,7 @@ struct BookmarkItemView: View {
     @ViewBuilder
     private var swipeActionItems: some View {
         Button {
-            selectedBookmarkToPerformActions = bookmark
+            selectedBookmarkToDelete = bookmark
             shouldShowDeleteDialog = true
         } label: {
             VStack {
@@ -124,7 +129,7 @@ struct BookmarkItemView: View {
             }
         }.tint(.red)
         Button {
-            selectedBookmarkToPerformActions = bookmark
+            selectedBookmarkToEdit = bookmark
         } label: {
             VStack {
                 Image(systemName: "pencil")
@@ -136,7 +141,7 @@ struct BookmarkItemView: View {
     @ViewBuilder
     private var menuActionItems: some View {
         Button {
-            selectedBookmarkToPerformActions = bookmark
+            selectedBookmarkToEdit = bookmark
         } label: {
             VStack {
                 Image(systemName: "pencil")
@@ -145,7 +150,7 @@ struct BookmarkItemView: View {
         }.tint(.orange)
         Divider()
         Button(role: .destructive) {
-            selectedBookmarkToPerformActions = bookmark
+            selectedBookmarkToDelete = bookmark
             shouldShowDeleteDialog = true
         } label: {
             VStack {
@@ -158,17 +163,17 @@ struct BookmarkItemView: View {
     @ViewBuilder
     private var alertActionItems: some View {
         Button(role: .cancel) {
-            selectedBookmarkToPerformActions = nil
+            selectedBookmarkToDelete = nil
             shouldShowDeleteDialog = false
         } label: {
             Text("Cancel")
         }
         Button(role: .destructive) {
             withAnimation {
-                if let bookmark = selectedBookmarkToPerformActions {
+                if let bookmark = selectedBookmarkToDelete {
                     modelContext.delete(bookmark)
                     try? modelContext.save()
-                    selectedBookmarkToPerformActions = nil
+                    selectedBookmarkToDelete = nil
                     shouldShowDeleteDialog = false
                 }
             }

@@ -43,10 +43,15 @@ class BookmarkCreationState {
     var shouldShowTagsSelection: Bool = false
     
     func fetchData(with urlString: String) async {
+        if urlString.isEmpty {
+            return
+        }
+        
         isLoading = true
         defer {
             isLoading = false
         }
+        
         do {
             if let fetched = try await unfurler.unfurl(urlString: urlString) {
                 self.host = fetched.host
@@ -70,10 +75,7 @@ class BookmarkCreationState {
     
     func listenUrlChanges(_ perform: @escaping (String) -> Void) {
         debouncedUrl.debounce(for: 0.75, scheduler: RunLoop.main)
-            .dropFirst()
-            .sink {
-                perform($0)
-            }
+            .sink { perform($0) }
             .store(in: &cancels)
     }
 }

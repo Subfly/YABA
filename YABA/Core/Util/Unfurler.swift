@@ -8,7 +8,6 @@
 import Foundation
 import UniformTypeIdentifiers
 import LinkPresentation
-import Kingfisher
 import OSLog
 
 enum UnfurlError: Error {
@@ -16,6 +15,7 @@ enum UnfurlError: Error {
     case unableToUnfurl(String)
 }
 
+@MainActor
 class Unfurler {
     private let logger: Logger = .init()
     

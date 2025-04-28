@@ -12,14 +12,20 @@ struct HomeSearchView: View {
     @Query
     private var bookmarks: [Bookmark]
     
-    init(searchQuery: String) {
+    @Binding
+    var searchQuery: String
+    
+    init(searchQuery: Binding<String>) {
+        _searchQuery = searchQuery
+        let query = searchQuery.wrappedValue
         _bookmarks = Query(
             FetchDescriptor(
                 predicate: #Predicate { bookmark in
-                    if searchQuery.isEmpty {
+                    if query.isEmpty {
                         true
                     } else {
-                        bookmark.label.localizedStandardContains(searchQuery) || bookmark.bookmarkDescription.localizedStandardContains(searchQuery)
+                        bookmark.label.localizedStandardContains(query)
+                        || bookmark.bookmarkDescription.localizedStandardContains(query)
                     }
                 }
             )
@@ -28,10 +34,18 @@ struct HomeSearchView: View {
     
     var body: some View {
         if bookmarks.isEmpty {
-            ContentUnavailableView {
-                Label("No Bookmarks Title", systemImage: "bookmark")
-            } description: {
-                Text("No Bookmarks Message")
+            if searchQuery.isEmpty {
+                ContentUnavailableView {
+                    Label("No Bookmarks Title", systemImage: "bookmark")
+                } description: {
+                    Text("No Bookmarks Message")
+                }
+            } else {
+                ContentUnavailableView(
+                    "Search No Bookmarks Found Title",
+                    systemImage: "bookmark.slash",
+                    description: Text("Search No Bookmarks Found Description \(searchQuery)")
+                )
             }
         } else {
             ForEach(bookmarks) { bookmark in
@@ -42,5 +56,5 @@ struct HomeSearchView: View {
 }
 
 #Preview {
-    HomeSearchView(searchQuery: "")
+    HomeSearchView(searchQuery: .constant(""))
 }

@@ -22,6 +22,15 @@ struct SelectTagsContent: View {
     var selectedTags: [YabaCollection]
     
     var body: some View {
+        #if os(iOS)
+        iOSView
+        #elseif os(macOS)
+        macOSView
+        #endif
+    }
+    
+    @ViewBuilder
+    private var iOSView: some View {
         SelectTagsSearchableContent(
             selectedTags: $selectedTags,
             searchQuery: $searchQuery
@@ -30,6 +39,7 @@ struct SelectTagsContent: View {
         .searchable(text: $searchQuery, prompt: "Tags Search Prompt")
         .navigationTitle("Select Tags Title")
         .toolbar {
+            #if os(iOS)
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     showTagCreationSheet = true
@@ -37,6 +47,7 @@ struct SelectTagsContent: View {
                     Image(systemName: "plus")
                 }
             }
+            #endif
             ToolbarItem(placement: .primaryAction) {
                 Button {
                     dismiss()
@@ -45,6 +56,41 @@ struct SelectTagsContent: View {
                 }
             }
         }
+        .sheet(isPresented: $showTagCreationSheet) {
+            CollectionCreationContent(
+                collectionType: .tag,
+                collectionToEdit: .constant(nil),
+                onEditCallback: { _ in }
+            )
+        }
+    }
+    
+    @ViewBuilder
+    private var macOSView: some View {
+        VStack {
+            HStack {
+                Text("Select Tags Title")
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                Spacer()
+                TextField(
+                    "",
+                    text: $searchQuery,
+                    prompt: Text("Tags Search Prompt")
+                ).frame(width: 125)
+                Button {
+                    showTagCreationSheet = true
+                } label: {
+                    Image(systemName: "plus")
+                }
+            }
+            .padding([.top, .leading, .trailing], 12)
+            SelectTagsSearchableContent(
+                selectedTags: $selectedTags,
+                searchQuery: $searchQuery
+            )
+        }
+        .frame(width: 325, height: 400)
         .sheet(isPresented: $showTagCreationSheet) {
             CollectionCreationContent(
                 collectionType: .tag,
@@ -191,6 +237,9 @@ private struct SelectTagsSearchableContent: View {
                 Label("Selectable Tags Label Title", systemImage: "tag")
             }
         }
+        #if os(macOS)
+        .listStyle(.sidebar)
+        #endif
     }
 }
 

@@ -2,10 +2,10 @@
   "sourceLanguage" : "en",
   "strings" : {
     "" : {
-
+      "shouldTranslate" : false
     },
     "%lld" : {
-
+      "shouldTranslate" : false
     },
     "Bookmark Description Placeholder" : {
       "comment" : "Placeholder to show when bookmark description is empty",
@@ -647,6 +647,30 @@
         }
       }
     },
+    "Search No Bookmarks Found Description %@" : {
+      "comment" : "Description to show when searching a bookmark",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "There are no bookmarks that containing “%@”"
+          }
+        }
+      }
+    },
+    "Search No Bookmarks Found Title" : {
+      "comment" : "Title to show when searching a bookmark",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Bookmarks Found"
+          }
+        }
+      }
+    },
     "Select Color Title" : {
       "comment" : "Title to show when color picker is open",
       "extractionState" : "manual",
@@ -696,16 +720,24 @@
       }
     },
     "Select Folder No Folders Available Title" : {
-
-    },
-    "Select Folder No Tags Available Title" : {
       "comment" : "Title to show when user is adding a folder but there are no folders.",
-      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "No Folders Available"
+          }
+        }
+      }
+    },
+    "Select Folder No Tags Available Title" : {
+      "comment" : "Title to show when user is adding tags but there are no tags.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Tags Available"
           }
         }
       }

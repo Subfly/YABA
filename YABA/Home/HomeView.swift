@@ -33,7 +33,7 @@ struct HomeView: View {
             #endif
             List(selection: $selectedCollection) {
                 if searching {
-                    HomeSearchView(searchQuery: homeState.searchQuery)
+                    HomeSearchView(searchQuery: $homeState.searchQuery)
                 } else {
                     HomeCollectionView(
                         collectionType: .tag,
@@ -106,7 +106,9 @@ struct HomeView: View {
         .sheet(isPresented: $homeState.shouldShowCreateBookmarkSheet) {
             BookmarkCreationContent(
                 bookmarkToEdit: .constant(nil),
-                initialCollection: .constant(nil)
+                initialCollection: $selectedCollection,
+                link: nil,
+                onExitRequested: {}
             )
         }
         .navigationTitle("YABA")

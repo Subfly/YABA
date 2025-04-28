@@ -22,6 +22,15 @@ struct SelectFolderContent: View {
     var selectedFolder: YabaCollection?
     
     var body: some View {
+        #if os(macOS)
+        macOSView
+        #elseif os(iOS)
+        iOSView
+        #endif
+    }
+    
+    @ViewBuilder
+    private var iOSView: some View {
         SelectFolderSearchableContent(
             selectedFolder: $selectedFolder,
             searchQuery: $searchQuery
@@ -38,6 +47,40 @@ struct SelectFolderContent: View {
                 }
             }
         }
+        .sheet(isPresented: $showFolderCreationSheet) {
+            CollectionCreationContent(
+                collectionType: .folder,
+                collectionToEdit: .constant(nil),
+                onEditCallback: { _ in }
+            )
+        }
+    }
+    
+    @ViewBuilder
+    private var macOSView: some View {
+        VStack {
+            HStack {
+                Text("Select Folder Title")
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                Spacer()
+                TextField(
+                    "",
+                    text: $searchQuery,
+                    prompt: Text("Folder Search Prompt")
+                ).frame(width: 125)
+                Button {
+                    showFolderCreationSheet = true
+                } label: {
+                    Image(systemName: "folder.badge.plus")
+                }
+            }.padding([.top, .leading, .trailing])
+            SelectFolderSearchableContent(
+                selectedFolder: $selectedFolder,
+                searchQuery: $searchQuery
+            )
+        }
+        .frame(width: 325, height: 250)
         .sheet(isPresented: $showFolderCreationSheet) {
             CollectionCreationContent(
                 collectionType: .folder,
@@ -136,6 +179,9 @@ private struct SelectFolderSearchableContent: View {
                 }
             }
         }
+        #if os(macOS)
+        .listStyle(.sidebar)
+        #endif
     }
 }
 

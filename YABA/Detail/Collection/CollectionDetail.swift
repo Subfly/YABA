@@ -31,25 +31,34 @@ struct CollectionDetail: View {
                         description: Text("No Bookmarks Message")
                     )
                 } else {
-                    List(selection: $selectedBookmark) {
-                        ForEach(
-                            collection.bookmarks.filter {
-                                if state.searchQuery.isEmpty {
-                                    true
-                                } else {
-                                    $0.label.localizedStandardContains(state.searchQuery)
-                                    || $0.bookmarkDescription.localizedStandardContains(state.searchQuery)
-                                }
-                            }
-                        ) { bookmark in
-                            BookmarkItemView(
-                                selectedBookmark: $selectedBookmark,
-                                bookmark: bookmark
-                            )
+                    let filtered = collection.bookmarks.filter {
+                        if state.searchQuery.isEmpty {
+                            true
+                        } else {
+                            $0.label.localizedStandardContains(state.searchQuery)
+                            || $0.bookmarkDescription.localizedStandardContains(state.searchQuery)
                         }
                     }
-                    .listStyle(.sidebar)
-                    .scrollContentBackground(.hidden)
+                    Group {
+                        if filtered.isEmpty {
+                            ContentUnavailableView(
+                                "Search No Bookmarks Found Title",
+                                systemImage: "bookmark.slash",
+                                description: Text("Search No Bookmarks Found Description \(state.searchQuery)")
+                            )
+                        } else {
+                            List(selection: $selectedBookmark) {
+                                ForEach(filtered) { bookmark in
+                                    BookmarkItemView(
+                                        selectedBookmark: $selectedBookmark,
+                                        bookmark: bookmark
+                                    )
+                                }
+                            }
+                            .listStyle(.sidebar)
+                            .scrollContentBackground(.hidden)
+                        }
+                    }
                     .searchable(
                         text: $state.searchQuery,
                         prompt: Text("Search Collection \(collection.label)")
@@ -63,6 +72,7 @@ struct CollectionDetail: View {
                 )
             }
         }
+        #if os(iOS)
         .navigationTitle(collection?.label ?? "")
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
@@ -73,10 +83,13 @@ struct CollectionDetail: View {
                 }
             }
         }
+        #endif
         .sheet(isPresented: $state.shouldShowCreateBookmarkSheet) {
             BookmarkCreationContent(
                 bookmarkToEdit: .constant(nil),
-                initialCollection: $collection
+                initialCollection: $collection,
+                link: nil,
+                onExitRequested: {}
             )
         }
     }

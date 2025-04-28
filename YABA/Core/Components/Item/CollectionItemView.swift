@@ -22,6 +22,9 @@ struct CollectionItemView: View {
     private var shouldShowEditSheet: Bool = false
     
     @State
+    private var shouldShowMenuItems: Bool = false
+    
+    @State
     private var selectedCollectionToPerformActions: YabaCollection?
     
     let collection: YabaCollection
@@ -40,7 +43,7 @@ struct CollectionItemView: View {
                 swipeActionItems
             }
             #if os(macOS)
-            .padding(.leading)
+            .padding(.leading, isInSelectionMode ? 0 : 8)
             .onHover { hovered in
                 isHovered = hovered
             }
@@ -104,12 +107,13 @@ struct CollectionItemView: View {
             Spacer()
             HStack {
                 #if os(macOS)
-                if isHovered {
+                if isHovered && !isInSelectionMode {
                     Menu {
                         menuActionItems
                     } label: {
                         Image(systemName: "ellipsis.circle")
-                    }.menuStyle(.button)
+                    }
+                    .menuStyle(.button)
                 }
                 #endif
                 Text("\(collection.bookmarks.count)")

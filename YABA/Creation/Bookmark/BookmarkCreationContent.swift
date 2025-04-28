@@ -23,14 +23,22 @@ struct BookmarkCreationContent: View {
     @Binding
     var initialCollection: YabaCollection?
     
+    /// MARK: SHARE EXTENSION RELATED
+    let link: String?
+    let onExitRequested: () -> Void
+    
     private let navigationTitle: String
     
     init(
         bookmarkToEdit: Binding<Bookmark?>,
-        initialCollection: Binding<YabaCollection?>
+        initialCollection: Binding<YabaCollection?>,
+        link: String?,
+        onExitRequested: @escaping () -> Void
     ) {
         _bookmarkToEdit = bookmarkToEdit
         _initialCollection = initialCollection
+        self.link = link
+        self.onExitRequested = onExitRequested
         
         if let _ = bookmarkToEdit.wrappedValue {
             navigationTitle = "Edit Bookmark Title"
@@ -40,6 +48,15 @@ struct BookmarkCreationContent: View {
     }
     
     var body: some View {
+#if os(iOS)
+        iOSView
+#elseif os(macOS)
+        macOSView
+#endif
+    }
+    
+    @ViewBuilder
+    private var iOSView: some View {
         NavigationStack {
             ZStack {
                 if let folderColor = state.selectedFolder?.color.getUIColor() {
@@ -64,7 +81,7 @@ struct BookmarkCreationContent: View {
                             systemImage: "info.circle"
                         )
                     }
-
+                    
                     Section {
                         bookmarkFolderSelectionView
                     } header: {
@@ -91,6 +108,7 @@ struct BookmarkCreationContent: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel", role: .cancel) {
+                        onExitRequested()
                         dismiss()
                     }
                 }
@@ -108,6 +126,79 @@ struct BookmarkCreationContent: View {
         }
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
+        .tint(
+            state.selectedFolder == nil
+            ? .accentColor
+            : state.selectedFolder?.color.getUIColor() ?? .accentColor
+        )
+        .onAppear(perform: onAppear)
+    }
+    
+    @ViewBuilder
+    private var macOSView: some View {
+        VStack {
+            HStack {
+                Text(LocalizedStringKey(navigationTitle))
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                Spacer()
+            }.padding([.top, .leading, .trailing])
+            List {
+                Section {
+                    bookmarkPreviewItem
+                        .redacted(reason: state.isLoading ? .placeholder : [])
+                } header: {
+                    Label(
+                        "Preview",
+                        systemImage: "rectangle.and.text.magnifyingglass"
+                    )
+                }.listRowSeparator(.visible, edges: [.bottom])
+                
+                Section {
+                    bookmarkFolderSelectionView
+                } header: {
+                    Label(
+                        "Folder",
+                        systemImage: "folder"
+                    )
+                }.listRowSeparator(.visible, edges: [.bottom])
+                
+                Section {
+                    bookmarkInfoSectionItems
+                } header: {
+                    Label(
+                        "Info",
+                        systemImage: "info.circle"
+                    )
+                }.listRowSeparator(.visible, edges: [.bottom])
+                
+                Section {
+                    bookmarkAddTagsView
+                } header: {
+                    bookmarkAddOrEditTagsButton
+                }.listRowSeparator(.visible, edges: [.bottom])
+            }
+            .listStyle(.sidebar)
+        }
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Cancel", role: .cancel) {
+                    onExitRequested()
+                    dismiss()
+                }
+            }
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Done") {
+                    onDone()
+                }.disabled(
+                    state.url.isEmpty
+                    || state.label.isEmpty
+                    || state.selectedFolder == nil
+                    || state.hasError
+                )
+            }
+        }
+        .frame(width: 400, height: 400)
         .tint(
             state.selectedFolder == nil
             ? .accentColor
@@ -141,17 +232,17 @@ struct BookmarkCreationContent: View {
     private var bookmarkPreviewItemImage: some View {
         if let imageData = state.imageData,
            let image = UIImage(data: imageData) {
-            #if os(iOS)
+#if os(iOS)
             Image(uiImage: image)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 50, height: 50)
-            #elseif os(macOS)
+#elseif os(macOS)
             Image(nsImage: image)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 50, height: 50)
-            #endif
+#endif
         } else {
             RoundedRectangle(cornerRadius: 8)
                 .fill(.tint.opacity(0.3))
@@ -181,27 +272,37 @@ struct BookmarkCreationContent: View {
     @ViewBuilder
     private var bookmarkInfoSectionItems: some View {
         TextField(
-            "Create Bookmark URL Placeholder",
+            "",
             text: $state.url,
             prompt: Text("Create Bookmark URL Placeholder")
-        ).safeAreaInset(edge: .leading) {
+        )
+        .safeAreaInset(edge: .leading) {
             Image(systemName: "link.circle")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 20, height: 20)
                 .foregroundStyle(.tint)
         }
+#if os(macOS)
+        .padding(.bottom)
+#endif
+        
         TextField(
-            "Create Bookmark Title Placeholder",
+            "",
             text: $state.label,
             prompt: Text("Create Bookmark Title Placeholder")
-        ).safeAreaInset(edge: .leading) {
+        )
+        .safeAreaInset(edge: .leading) {
             Image(systemName: "t.square")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 20, height: 20)
                 .foregroundStyle(.tint)
         }
+#if os(macOS)
+        .padding(.bottom)
+#endif
+        
         HStack(alignment: .top) {
             Image(systemName: "text.page")
                 .resizable()
@@ -209,13 +310,17 @@ struct BookmarkCreationContent: View {
                 .frame(width: 20, height: 20)
                 .foregroundStyle(.tint)
             TextField(
-                "Create Bookmark Description Placeholder",
+                "",
                 text: $state.description,
                 prompt: Text("Create Bookmark Description Placeholder"),
                 axis: .vertical,
             )
             .lineLimit(5, reservesSpace: true)
         }
+#if os(macOS)
+        .padding(.bottom)
+#endif
+        
         Picker(selection: $state.selectedType) {
             ForEach(BookmarkType.allCases, id: \.self) { type in
                 Label(type.getUITitle(), systemImage: type.getIconName())
@@ -236,6 +341,7 @@ struct BookmarkCreationContent: View {
     
     @ViewBuilder
     private var bookmarkFolderSelectionView: some View {
+#if os(iOS)
         NavigationLink {
             SelectFolderContent(selectedFolder: $state.selectedFolder)
         } label: {
@@ -259,6 +365,39 @@ struct BookmarkCreationContent: View {
                 }
             }
         }
+#elseif os(macOS)
+        HStack {
+            if let folder = state.selectedFolder {
+                HStack {
+                    Image(systemName: folder.icon)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 20, height: 20)
+                        .foregroundStyle(.tint)
+                    Text(folder.label)
+                }
+            } else {
+                HStack {
+                    Image(systemName: "folder")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 20, height: 20)
+                        .foregroundStyle(.tint)
+                    Text("Create Bookmark Folder Placeholder")
+                }
+            }
+            Spacer()
+            Image(systemName: "chevron.right")
+                .foregroundStyle(.tint)
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            state.shouldShowFolderSelection.toggle()
+        }
+        .popover(isPresented: $state.shouldShowFolderSelection) {
+            SelectFolderContent(selectedFolder: $state.selectedFolder)
+        }
+#endif
     }
     
     @ViewBuilder
@@ -287,6 +426,7 @@ struct BookmarkCreationContent: View {
                 "Tags Title",
                 systemImage: "tag"
             )
+#if os(iOS)
             Spacer()
             NavigationLink {
                 SelectTagsContent(selectedTags: $state.selectedTags)
@@ -300,12 +440,32 @@ struct BookmarkCreationContent: View {
                     : "pencil"
                 ).textCase(.none)
             }
+#elseif os(macOS)
+            Button {
+                state.shouldShowTagsSelection = true
+            } label: {
+                Label(
+                    state.selectedTags.isEmpty
+                    ? "Create Bookmark Add Tags"
+                    : "Create Bookmark Edit Tags",
+                    systemImage: state.selectedTags.isEmpty
+                    ? "plus"
+                    : "pencil"
+                )
+                .textCase(.none)
+            }
+            .buttonStyle(.plain)
+            .popover(isPresented: $state.shouldShowTagsSelection) {
+                SelectTagsContent(selectedTags: $state.selectedTags)
+            }
+#endif
         }
     }
     
     private func onDone() {
         withAnimation {
             guard let selectedFolder = state.selectedFolder else {
+                onExitRequested()
                 dismiss()
                 return
             }
@@ -353,6 +513,7 @@ struct BookmarkCreationContent: View {
                 modelContext.insert(newBookmark)
             }
             try? modelContext.save()
+            onExitRequested()
             dismiss()
         }
     }
@@ -379,6 +540,10 @@ struct BookmarkCreationContent: View {
             state.selectedTags = bookmarkToEdit.collections.filter { $0.collectionType == .tag }
         }
         
+        if let link {
+            state.url = link
+        }
+        
         if let initialCollection {
             switch initialCollection.collectionType {
             case .folder:
@@ -393,13 +558,17 @@ struct BookmarkCreationContent: View {
 #Preview {
     BookmarkCreationContent(
         bookmarkToEdit: .constant(nil),
-        initialCollection: .constant(nil)
+        initialCollection: .constant(nil),
+        link: nil,
+        onExitRequested: {}
     )
 }
 
 #Preview {
     BookmarkCreationContent(
         bookmarkToEdit: .constant(.empty()),
-        initialCollection: .constant(nil)
+        initialCollection: .constant(nil),
+        link: nil,
+        onExitRequested: {}
     )
 }
