@@ -81,9 +81,11 @@ struct BookmarkItemView: View {
                     .font(.title3)
                     .fontWeight(.medium)
                     .lineLimit(1)
-                Text(bookmark.bookmarkDescription)
-                    .lineLimit(2)
-                    .multilineTextAlignment(.leading)
+                if !bookmark.bookmarkDescription.isEmpty {
+                    Text(bookmark.bookmarkDescription)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                }
             }
         }
     }

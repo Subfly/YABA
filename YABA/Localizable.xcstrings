@@ -19,6 +19,72 @@
         }
       }
     },
+    "Bookmark Detail Image Error Description" : {
+      "comment" : "Detail to show when bookmark image can not be accessed in detail",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The image of the bookmark can not be fetched currently, maybe it is removed or blocked?"
+          }
+        }
+      }
+    },
+    "Bookmark Detail Image Error Title" : {
+      "comment" : "Title to show when bookmark image can not be accessed in detail",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Image not Found"
+          }
+        }
+      }
+    },
+    "Bookmark Detail Image Header Title" : {
+      "comment" : "Title to show on top of image in bookmark detail",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Image"
+          }
+        }
+      }
+    },
+    "Bookmark Detail No Description Provided" : {
+      "comment" : "Description placeholder in bookmark detail",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No description provided. You can add a description by editing this bookmark."
+          }
+        }
+      }
+    },
+    "Bookmark Detail No Label Provided" : {
+      "comment" : "Never be visible",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No label provided"
+          }
+        }
+      }
+    },
+    "Bookmark Detail Title" : {
+      "comment" : "Title to show in bookmark detail view",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bookmark Detail"
+          }
+        }
+      }
+    },
     "Bookmark Title Placeholder" : {
       "comment" : "Placeholder to show when bookmark title is empty",
       "extractionState" : "manual",
@@ -439,9 +505,6 @@
           }
         }
       }
-    },
-    "Lele Detial" : {
-
     },
     "Name" : {
       "comment" : "Collection name title to show in macOS",

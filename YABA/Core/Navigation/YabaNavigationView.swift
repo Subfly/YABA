@@ -41,7 +41,10 @@ struct YabaNavigationView: View {
                 selectedBookmark: $selectedBookmark
             )
         } detail: {
-            Text("Lele Detial")
+            BookmarkDetail(
+                selectedCollection: $selectedCollection,
+                bookmark: $selectedBookmark
+            )
         }
         .navigationSplitViewStyle(.balanced)
         .tint(appTint)
