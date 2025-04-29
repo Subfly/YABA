@@ -12,6 +12,9 @@ struct YabaNavigationView: View {
     private var hasPassedOnboarding: Bool = false
     
     @State
+    private var path: NavigationPath = .init()
+    
+    @State
     private var appTint: Color = .accentColor
     
     @State
@@ -27,26 +30,87 @@ struct YabaNavigationView: View {
     private var prefferedColumn: NavigationSplitViewColumn = .sidebar
     
     var body: some View {
+        #if os(macOS)
+        genericNavigationView
+        #elseif os(iOS)
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            genericNavigationView
+        } else {
+            mobileNavigationView
+        }
+        #endif
+    }
+    
+    @ViewBuilder
+    private var genericNavigationView: some View {
         NavigationSplitView(
             columnVisibility: $columnVisibility,
             preferredCompactColumn: $prefferedColumn,
         ) {
             HomeView(
                 selectedCollection: $selectedCollection,
-                selectedAppTint: $appTint
+                selectedAppTint: $appTint,
+                onNavigationCallback: { _ in }
             )
         } content: {
             CollectionDetail(
                 collection: $selectedCollection,
-                selectedBookmark: $selectedBookmark
+                selectedBookmark: $selectedBookmark,
+                onNavigationCallback: { _ in }
             )
         } detail: {
             BookmarkDetail(
                 selectedCollection: $selectedCollection,
-                bookmark: $selectedBookmark
+                bookmark: $selectedBookmark,
+                onNavigationCallback: { _ in }
             )
         }
         .navigationSplitViewStyle(.balanced)
+        .tint(appTint)
+        .onChange(of: selectedCollection) { _, newValue in
+            if let color = newValue?.color.getUIColor() {
+                withAnimation {
+                    appTint = color
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var mobileNavigationView: some View {
+        NavigationStack(path: $path) {
+            HomeView(
+                selectedCollection: $selectedCollection,
+                selectedAppTint: $appTint,
+                onNavigationCallback: { collection in
+                    path.append(collection)
+                }
+            )
+            .navigationDestination(for: YabaCollection.self) { collection in
+                CollectionDetail(
+                    collection: .init(
+                        get: { collection },
+                        set: { _ in }
+                    ),
+                    selectedBookmark: $selectedBookmark,
+                    onNavigationCallback: { bookmark in
+                        path.append(bookmark)
+                    }
+                )
+            }
+            .navigationDestination(for: Bookmark.self) { bookmark in
+                BookmarkDetail(
+                    selectedCollection: $selectedCollection,
+                    bookmark: .init(
+                        get: { bookmark },
+                        set: { _ in }
+                    ),
+                    onNavigationCallback: { collection in
+                        path.append(collection)
+                    }
+                )
+            }
+        }
         .tint(appTint)
         .onChange(of: selectedCollection) { _, newValue in
             if let color = newValue?.color.getUIColor() {

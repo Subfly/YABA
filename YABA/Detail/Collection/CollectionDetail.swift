@@ -18,6 +18,8 @@ struct CollectionDetail: View {
     @Binding
     var selectedBookmark: Bookmark?
     
+    let onNavigationCallback: (Bookmark) -> Void
+    
     var body: some View {
         ZStack {
             AnimatedMeshGradient(
@@ -51,7 +53,8 @@ struct CollectionDetail: View {
                                 ForEach(filtered) { bookmark in
                                     BookmarkItemView(
                                         selectedBookmark: $selectedBookmark,
-                                        bookmark: bookmark
+                                        bookmark: bookmark,
+                                        onNavigationCallback: onNavigationCallback
                                     )
                                 }
                             }
@@ -98,6 +101,7 @@ struct CollectionDetail: View {
 #Preview {
     CollectionDetail(
         collection: .constant(.empty()),
-        selectedBookmark: .constant(.empty())
+        selectedBookmark: .constant(.empty()),
+        onNavigationCallback: { _ in }
     )
 }

@@ -19,6 +19,8 @@ struct HomeCollectionView: View {
     @Binding
     var selectedCollection: YabaCollection?
     
+    let onNavigationCallback: (YabaCollection) -> Void
+    
     private let labelTitle: String
     private let noCollectionsTitle: String
     private let noCollectionsMessage: String
@@ -27,7 +29,8 @@ struct HomeCollectionView: View {
     init(
         collectionType: CollectionType,
         isExpanded: Binding<Bool>,
-        selectedCollection: Binding<YabaCollection?>
+        selectedCollection: Binding<YabaCollection?>,
+        onNavigationCallback: @escaping (YabaCollection) -> Void
     ) {
         _isExpanded = isExpanded
         _selectedCollection = selectedCollection
@@ -36,6 +39,7 @@ struct HomeCollectionView: View {
                 $0.type == collectionType.rawValue
             }
         )
+        self.onNavigationCallback = onNavigationCallback
         
         switch collectionType {
         case .folder:
@@ -62,7 +66,8 @@ struct HomeCollectionView: View {
                         selectedCollection: $selectedCollection,
                         isInSelectionMode: false,
                         onDeleteCallback: { _ in },
-                        onEditCallback: { _ in }
+                        onEditCallback: { _ in },
+                        onNavigationCallback: onNavigationCallback
                     )
                     #if os(macOS)
                     .listRowBackground(
@@ -103,7 +108,8 @@ struct HomeCollectionView: View {
     HomeCollectionView(
         collectionType: .folder,
         isExpanded: .constant(true),
-        selectedCollection: .constant(.empty())
+        selectedCollection: .constant(.empty()),
+        onNavigationCallback: { _ in }
     )
 }
 
@@ -111,6 +117,7 @@ struct HomeCollectionView: View {
     HomeCollectionView(
         collectionType: .tag,
         isExpanded: .constant(true),
-        selectedCollection: .constant(.empty())
+        selectedCollection: .constant(.empty()),
+        onNavigationCallback: { _ in }
     )
 }

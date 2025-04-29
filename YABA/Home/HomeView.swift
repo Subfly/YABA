@@ -21,15 +21,15 @@ struct HomeView: View {
     @Binding
     var selectedAppTint: Color
     
+    let onNavigationCallback: (YabaCollection) -> Void
+    
     var body: some View {
         let searching = isSearchActive || !homeState.searchQuery.isEmpty
         
         ZStack {
             #if os(iOS)
-            if homeState.shouldShowBackground {
-                AnimatedMeshGradient(collectionColor: selectedAppTint)
-                    .transition(.identity)
-            }
+            AnimatedMeshGradient(collectionColor: selectedAppTint)
+            
             #endif
             List(selection: $selectedCollection) {
                 if searching {
@@ -38,17 +38,31 @@ struct HomeView: View {
                     HomeCollectionView(
                         collectionType: .tag,
                         isExpanded: $homeState.isTagsExpanded,
-                        selectedCollection: $selectedCollection
+                        selectedCollection: $selectedCollection,
+                        onNavigationCallback: onNavigationCallback
                     )
                     HomeCollectionView(
                         collectionType: .folder,
                         isExpanded: $homeState.isFoldersExpanded,
-                        selectedCollection: $selectedCollection
+                        selectedCollection: $selectedCollection,
+                        onNavigationCallback: onNavigationCallback
                     )
                 }
             }
             #if os(iOS)
             .scrollContentBackground(.hidden)
+            .searchable(
+                text: $homeState.searchQuery,
+                prompt: "Home Search Prompt"
+            )
+            .searchFocused($isSearchActive)
+            .onChange(of: searching) { _, isSearching in
+                if isSearching {
+                    withAnimation {
+                        homeState.isFABActive = false
+                    }
+                }
+            }
             #endif
             HomeCreateContentFAB(
                 isActive: $homeState.isFABActive,
@@ -75,25 +89,6 @@ struct HomeView: View {
             .transition(.blurReplace)
             .ignoresSafeArea()
         }
-        #if os(iOS)
-        .searchable(
-            text: $homeState.searchQuery,
-            prompt: "Home Search Prompt"
-        )
-        .searchFocused($isSearchActive)
-        .onChange(of: searching) { _, isSearching in
-            if isSearching {
-                withAnimation {
-                    homeState.isFABActive = false
-                }
-            }
-        }
-        .onAppear {
-            withAnimation(.smooth.delay(1.25)) {
-                homeState.shouldShowBackground = true
-            }
-        }
-        #endif
         .sheet(isPresented: $homeState.shouldShowCreateContentSheet) {
             if let creationType = homeState.selectedContentCreationType {
                 CollectionCreationContent(
@@ -118,7 +113,8 @@ struct HomeView: View {
 #Preview {
     HomeView(
         selectedCollection: .constant(.empty()),
-        selectedAppTint: .constant(.accentColor)
+        selectedAppTint: .constant(.accentColor),
+        onNavigationCallback: { _ in }
     )
     .modelContainer(
         for: [YabaCollection.self, Bookmark.self],

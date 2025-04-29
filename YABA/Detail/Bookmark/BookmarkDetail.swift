@@ -17,6 +17,8 @@ struct BookmarkDetail: View {
     @Binding
     var bookmark: Bookmark?
     
+    let onNavigationCallback: (YabaCollection) -> Void
+    
     var body: some View {
         ZStack {
             AnimatedMeshGradient(
@@ -169,9 +171,10 @@ struct BookmarkDetail: View {
                 CollectionItemView(
                     collection: folder,
                     selectedCollection: $selectedCollection,
-                    isInSelectionMode: true,
+                    isInSelectionMode: false,
                     onDeleteCallback: { _ in },
-                    onEditCallback: { _ in }
+                    onEditCallback: { _ in },
+                    onNavigationCallback: onNavigationCallback
                 )
             } header: {
                 Label(
@@ -194,9 +197,10 @@ struct BookmarkDetail: View {
                         CollectionItemView(
                             collection: tag,
                             selectedCollection: $selectedCollection,
-                            isInSelectionMode: true,
+                            isInSelectionMode: false,
                             onDeleteCallback: { _ in },
-                            onEditCallback: { _ in }
+                            onEditCallback: { _ in },
+                            onNavigationCallback: onNavigationCallback
                         )
                     }
                 } header: {
@@ -213,6 +217,7 @@ struct BookmarkDetail: View {
 #Preview {
     BookmarkDetail(
         selectedCollection: .constant(nil),
-        bookmark: .constant(nil)
+        bookmark: .constant(nil),
+        onNavigationCallback: { _ in }
     )
 }

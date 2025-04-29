@@ -36,6 +36,7 @@ struct CollectionItemView: View {
     
     let onDeleteCallback: (YabaCollection) -> Void
     let onEditCallback: (YabaCollection) -> Void
+    let onNavigationCallback: (YabaCollection) -> Void
     
     var body: some View {
         mainButton
@@ -88,10 +89,21 @@ struct CollectionItemView: View {
                 mainLabel
             }.buttonStyle(.plain)
             #elseif os(iOS)
-            NavigationLink(value: collection) {
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                NavigationLink(value: collection) {
+                    mainLabel
+                }
+                .buttonStyle(.plain)
+            } else {
                 mainLabel
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        withAnimation {
+                            selectedCollection = collection
+                            onNavigationCallback(collection)
+                        }
+                    }
             }
-            .buttonStyle(.plain)
             #endif
         }
     }
@@ -120,6 +132,15 @@ struct CollectionItemView: View {
                     .foregroundStyle(.secondary)
                     .fontWeight(.medium)
             }.foregroundStyle(.secondary)
+            #if os(iOS)
+            if UIDevice.current.userInterfaceIdiom == .phone && !isInSelectionMode {
+                Image(systemName: "chevron.right")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 12, height: 12)
+                    .foregroundStyle(.tertiary)
+            }
+            #endif
         }
         .contentShape(Rectangle())
     }

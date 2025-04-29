@@ -25,6 +25,8 @@ struct BookmarkItemView: View {
     
     var bookmark: Bookmark
     
+    let onNavigationCallback: (Bookmark) -> Void
+    
     var body: some View {
         mainButton
             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
@@ -59,9 +61,18 @@ struct BookmarkItemView: View {
     @ViewBuilder
     private var mainButton: some View {
         #if os(iOS)
-        NavigationLink(value: bookmark) {
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            NavigationLink(value: bookmark) {
+                mainContent
+            }.buttonStyle(.plain)
+        } else {
             mainContent
-        }.buttonStyle(.plain)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    selectedBookmark = bookmark
+                    onNavigationCallback(bookmark)
+                }
+        }
         #elseif os(macOS)
         Button {
             selectedBookmark = bookmark
@@ -87,6 +98,16 @@ struct BookmarkItemView: View {
                         .multilineTextAlignment(.leading)
                 }
             }
+            #if os(iOS)
+            if UIDevice.current.userInterfaceIdiom == .phone {
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 12, height: 12)
+                    .foregroundStyle(.tertiary)
+            }
+            #endif
         }
     }
     
@@ -188,6 +209,7 @@ struct BookmarkItemView: View {
 #Preview {
     BookmarkItemView(
         selectedBookmark: .constant(.empty()),
-        bookmark: .empty()
+        bookmark: .empty(),
+        onNavigationCallback: { _ in }
     ).tint(.indigo)
 }

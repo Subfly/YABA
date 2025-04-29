@@ -164,7 +164,8 @@ private struct SelectTagsSearchableContent: View {
                                         selectedTags[indexOfTag] = collection
                                     }
                                 }
-                            }
+                            },
+                            onNavigationCallback: { _ in }
                         )
                         .contentShape(Rectangle())
                         .onTapGesture {
@@ -223,7 +224,8 @@ private struct SelectTagsSearchableContent: View {
                             selectedCollection: .constant(nil),
                             isInSelectionMode: true,
                             onDeleteCallback: { _ in },
-                            onEditCallback: { _ in }
+                            onEditCallback: { _ in },
+                            onNavigationCallback: { _ in }
                         )
                         .contentShape(Rectangle())
                         .onTapGesture {

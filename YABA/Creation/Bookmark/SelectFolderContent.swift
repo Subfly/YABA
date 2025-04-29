@@ -167,7 +167,8 @@ private struct SelectFolderSearchableContent: View {
                                     selectedFolder = collection
                                 }
                             }
-                        }
+                        },
+                        onNavigationCallback: { _ in }
                     )
                     .contentShape(Rectangle())
                     .onTapGesture {
