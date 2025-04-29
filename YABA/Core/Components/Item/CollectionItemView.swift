@@ -33,6 +33,8 @@ struct CollectionItemView: View {
     var selectedCollection: YabaCollection?
     
     let isInSelectionMode: Bool
+    /// MARK: IPAD ONLY
+    let isInBookmarkDetail: Bool
     
     let onDeleteCallback: (YabaCollection) -> Void
     let onEditCallback: (YabaCollection) -> Void
@@ -84,16 +86,27 @@ struct CollectionItemView: View {
         } else {
             #if os(macOS)
             Button {
-                selectedCollection = collection
+                withAnimation {
+                    selectedCollection = collection
+                }
             } label: {
                 mainLabel
             }.buttonStyle(.plain)
             #elseif os(iOS)
             if UIDevice.current.userInterfaceIdiom == .pad {
-                NavigationLink(value: collection) {
-                    mainLabel
+                if isInBookmarkDetail {
+                    Button {
+                        withAnimation {
+                            selectedCollection = collection
+                        }
+                    } label: {
+                        mainLabel
+                    }.buttonStyle(.plain)
+                } else {
+                    NavigationLink(value: collection) {
+                        mainLabel
+                    }.buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
             } else {
                 mainLabel
                     .contentShape(Rectangle())

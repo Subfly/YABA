@@ -172,6 +172,7 @@ struct BookmarkDetail: View {
                     collection: folder,
                     selectedCollection: $selectedCollection,
                     isInSelectionMode: false,
+                    isInBookmarkDetail: true,
                     onDeleteCallback: { _ in },
                     onEditCallback: { _ in },
                     onNavigationCallback: onNavigationCallback
@@ -198,6 +199,7 @@ struct BookmarkDetail: View {
                             collection: tag,
                             selectedCollection: $selectedCollection,
                             isInSelectionMode: false,
+                            isInBookmarkDetail: true,
                             onDeleteCallback: { _ in },
                             onEditCallback: { _ in },
                             onNavigationCallback: onNavigationCallback

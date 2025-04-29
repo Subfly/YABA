@@ -69,16 +69,28 @@ struct BookmarkItemView: View {
             mainContent
                 .contentShape(Rectangle())
                 .onTapGesture {
-                    selectedBookmark = bookmark
-                    onNavigationCallback(bookmark)
+                    withAnimation {
+                        selectedBookmark = bookmark
+                        onNavigationCallback(bookmark)
+                    }
                 }
         }
         #elseif os(macOS)
         Button {
-            selectedBookmark = bookmark
+            withAnimation {
+                selectedBookmark = bookmark
+            }
         } label: {
             mainContent
-        }.buttonStyle(.borderless)
+        }
+        .buttonStyle(.borderless)
+        .padding(8)
+        .background {
+            if selectedBookmark?.id == bookmark.id {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(.gray.opacity(0.2))
+            }
+        }
         #endif
     }
     
@@ -107,6 +119,8 @@ struct BookmarkItemView: View {
                     .frame(width: 12, height: 12)
                     .foregroundStyle(.tertiary)
             }
+            #elseif os(macOS)
+            Spacer()
             #endif
         }
     }

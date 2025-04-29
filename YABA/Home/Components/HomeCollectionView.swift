@@ -65,6 +65,7 @@ struct HomeCollectionView: View {
                         collection: collection,
                         selectedCollection: $selectedCollection,
                         isInSelectionMode: false,
+                        isInBookmarkDetail: false,
                         onDeleteCallback: { _ in },
                         onEditCallback: { _ in },
                         onNavigationCallback: onNavigationCallback

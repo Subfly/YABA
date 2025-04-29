@@ -154,6 +154,7 @@ private struct SelectFolderSearchableContent: View {
                         collection: folder,
                         selectedCollection: .constant(nil),
                         isInSelectionMode: true,
+                        isInBookmarkDetail: false,
                         onDeleteCallback: { collection in
                             withAnimation {
                                 if selectedFolder?.id == collection.id {

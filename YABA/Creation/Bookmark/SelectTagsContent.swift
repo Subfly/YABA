@@ -151,6 +151,7 @@ private struct SelectTagsSearchableContent: View {
                             collection: tag,
                             selectedCollection: .constant(nil),
                             isInSelectionMode: true,
+                            isInBookmarkDetail: false,
                             onDeleteCallback: { collection in
                                 withAnimation {
                                     if let indexOfTag = selectedTags.firstIndex(of: collection) {
@@ -223,6 +224,7 @@ private struct SelectTagsSearchableContent: View {
                             collection: tag,
                             selectedCollection: .constant(nil),
                             isInSelectionMode: true,
+                            isInBookmarkDetail: false,
                             onDeleteCallback: { _ in },
                             onEditCallback: { _ in },
                             onNavigationCallback: { _ in }
