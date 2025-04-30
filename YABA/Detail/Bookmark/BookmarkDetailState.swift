@@ -14,14 +14,12 @@ internal class BookmarkDetailState {
     var meshColor: Color = .accentColor
     
     func onClickOpenLink(using bookmark: Bookmark?) {
-        #if os(iOS)
         if let link = bookmark?.link,
            let url = URL(string: link) {
             if UIApplication.shared.canOpenURL(url) {
                 UIApplication.shared.open(url)
             }
         }
-        #endif
     }
 }
 

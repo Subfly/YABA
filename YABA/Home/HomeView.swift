@@ -19,37 +19,43 @@ struct HomeView: View {
     var selectedCollection: YabaCollection?
     
     @Binding
+    var selectedBookmark: Bookmark?
+    
+    @Binding
     var selectedAppTint: Color
     
-    let onNavigationCallback: (YabaCollection) -> Void
+    let onNavigationCallbackForCollection: (YabaCollection) -> Void
+    let onNavigationCallbackForBookmark: (Bookmark) -> Void
     
     var body: some View {
         let searching = isSearchActive || !homeState.searchQuery.isEmpty
         
         ZStack {
-            #if os(iOS)
+            #if !targetEnvironment(macCatalyst)
             AnimatedMeshGradient(collectionColor: selectedAppTint)
-            
             #endif
             List(selection: $selectedCollection) {
                 if searching {
-                    HomeSearchView(searchQuery: $homeState.searchQuery)
+                    HomeSearchView(
+                        searchQuery: $homeState.searchQuery,
+                        selectedBookmark: $selectedBookmark,
+                        onNavigationCallback: onNavigationCallbackForBookmark
+                    )
                 } else {
                     HomeCollectionView(
                         collectionType: .tag,
                         isExpanded: $homeState.isTagsExpanded,
                         selectedCollection: $selectedCollection,
-                        onNavigationCallback: onNavigationCallback
+                        onNavigationCallback: onNavigationCallbackForCollection
                     )
                     HomeCollectionView(
                         collectionType: .folder,
                         isExpanded: $homeState.isFoldersExpanded,
                         selectedCollection: $selectedCollection,
-                        onNavigationCallback: onNavigationCallback
+                        onNavigationCallback: onNavigationCallbackForCollection
                     )
                 }
             }
-            #if os(iOS)
             .scrollContentBackground(.hidden)
             .searchable(
                 text: $homeState.searchQuery,
@@ -63,7 +69,10 @@ struct HomeView: View {
                     }
                 }
             }
+            #if targetEnvironment(macCatalyst)
+            .listStyle(.automatic)
             #endif
+            
             HomeCreateContentFAB(
                 isActive: $homeState.isFABActive,
                 selectedAppTint: $selectedAppTint,
@@ -113,8 +122,10 @@ struct HomeView: View {
 #Preview {
     HomeView(
         selectedCollection: .constant(.empty()),
+        selectedBookmark: .constant(.empty()),
         selectedAppTint: .constant(.accentColor),
-        onNavigationCallback: { _ in }
+        onNavigationCallbackForCollection: { _ in },
+        onNavigationCallbackForBookmark: { _ in }
     )
     .modelContainer(
         for: [YabaCollection.self, Bookmark.self],

@@ -46,15 +46,9 @@ struct HomeCreateContentFAB: View {
                 } label: {
                     fab(isMini: false, type: .main)
                 }
-                #if os(macOS)
-                .buttonStyle(.borderless)
-                .tint(selectedAppTint)
-                #endif
             }
             .padding(.bottom)
-            #if os(iOS)
             .padding(.bottom)
-            #endif
         }
     }
 
@@ -62,25 +56,14 @@ struct HomeCreateContentFAB: View {
     private func fab(isMini: Bool, type: CreationType) -> some View {
         ZStack(alignment: .center) {
             Circle()
-            #if os(iOS)
                 .frame(
                     width: isMini ? 48 : 72,
                     height: isMini ? 48 : 72
                 )
-            #elseif os(macOS)
-                .frame(
-                    width: isMini ? 36 : 52,
-                    height: isMini ? 36 : 52
-                )
-            #endif
             Image(systemName: type.getIcon())
                 .foregroundStyle(.white)
                 .fontWeight(.bold)
-                #if os(iOS)
                 .font(.system(size: isMini ? 18 : 24))
-                #elseif os(macOS)
-                .font(.system(size: isMini ? 12 : 18))
-                #endif
         }
         .shadow(radius: 4)
         .rotationEffect(Angle(degrees: isMini ? 0 : isActive ? 45 : 0))
@@ -109,10 +92,6 @@ struct HomeCreateContentFAB: View {
         .opacity(isActive ? 1 : 0)
         .animation(.easeInOut.delay(duration), value: isActive)
         .transition(.slide)
-        #if os(macOS)
-        .buttonStyle(.borderless)
-        .tint(selectedAppTint)
-        #endif
     }
 }
 

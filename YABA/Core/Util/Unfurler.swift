@@ -58,11 +58,7 @@ class Unfurler {
                 
                 if item is UIImage {
                     let image = item as? UIImage
-                    #if os(macOS)
-                    return image?.data
-                    #elseif os(iOS)
                     return image?.pngData()
-                    #endif
                 }
                 
                 if item is URL {

@@ -18,7 +18,15 @@ struct YABAApp: App {
                     inMemory: false,
                     isAutosaveEnabled: false,
                     isUndoEnabled: false
-                )
+                ).onAppear {
+                    hideTitleBarOnCatalyst()
+                }
         }
+    }
+    
+    func hideTitleBarOnCatalyst() {
+        #if targetEnvironment(macCatalyst)
+            (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.titlebar?.titleVisibility = .hidden
+        #endif
     }
 }

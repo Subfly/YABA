@@ -70,17 +70,6 @@ struct HomeCollectionView: View {
                         onEditCallback: { _ in },
                         onNavigationCallback: onNavigationCallback
                     )
-                    #if os(macOS)
-                    .listRowBackground(
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(
-                                collection.id == selectedCollection?.id
-                                ? collection.color.getUIColor().opacity(0.2)
-                                : Color.clear
-                            )
-                            .padding(.horizontal, 10)
-                    )
-                    #endif
                 }
             }
         } header: {
@@ -91,17 +80,11 @@ struct HomeCollectionView: View {
     
     @ViewBuilder
     private var noCollectionsView: some View {
-        #if os(macOS)
-        Text(LocalizedStringKey(noCollectionsTitle))
-            .font(.caption)
-            .foregroundStyle(.secondary)
-        #else
         ContentUnavailableView {
             Label(LocalizedStringKey(noCollectionsTitle), systemImage: collectionIcon)
         } description: {
             Text(LocalizedStringKey(noCollectionsMessage))
         }
-        #endif
     }
 }
 

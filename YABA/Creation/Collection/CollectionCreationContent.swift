@@ -56,15 +56,6 @@ struct CollectionCreationContent: View {
     }
     
     var body: some View {
-        #if os(iOS)
-        iOSView
-        #elseif os(macOS)
-        macOSView
-        #endif
-    }
-    
-    @ViewBuilder
-    private var iOSView: some View {
         NavigationView {
             HStack(alignment: .center, spacing: 24) {
                 generateIconPickerButton(
@@ -112,51 +103,6 @@ struct CollectionCreationContent: View {
         }
         .presentationDetents([.fraction(0.25)])
         .presentationDragIndicator(.visible)
-        .onAppear(perform: onAppear)
-    }
-    
-    @ViewBuilder
-    private var macOSView: some View {
-        VStack(alignment: .leading) {
-            Text(LocalizedStringKey(navigationTitle))
-                .font(.title2)
-                .fontWeight(.bold)
-            HStack(alignment: .center, spacing: 8) {
-                generateIconPickerButton(
-                    frameSize: 20,
-                    backgroundSize: 32
-                )
-                .popover(isPresented: $state.shouldShowIconPicker) {
-                    iconPicker
-                }
-                textField
-                generateColorPickerButton(
-                    frameSize: 20,
-                    backgroundSize: 32
-                )
-                .popover(isPresented: $state.shouldShowColorPicker) {
-                    colorPicker
-                }
-            }
-            .padding()
-            Divider()
-            HStack {
-                Spacer()
-                Button(role: .cancel) {
-                    dismiss()
-                } label: {
-                    Text("Cancel")
-                }
-                Button {
-                    onDone()
-                } label: {
-                    Text("Done")
-                }.tint(state.selectedColor.getUIColor())
-                .disabled(state.collectionName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-            }
-        }
-        .padding(.horizontal)
-        .frame(width: 350, height: 150)
         .onAppear(perform: onAppear)
     }
     

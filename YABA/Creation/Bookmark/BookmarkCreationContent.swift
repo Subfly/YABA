@@ -48,15 +48,6 @@ struct BookmarkCreationContent: View {
     }
     
     var body: some View {
-        #if os(iOS)
-        iOSView
-        #elseif os(macOS)
-        macOSView
-        #endif
-    }
-    
-    @ViewBuilder
-    private var iOSView: some View {
         NavigationStack {
             ZStack {
                 if let folderColor = state.selectedFolder?.color.getUIColor() {
@@ -135,94 +126,6 @@ struct BookmarkCreationContent: View {
     }
     
     @ViewBuilder
-    private var macOSView: some View {
-        VStack {
-            HStack {
-                Text(LocalizedStringKey(navigationTitle))
-                    .font(.title3)
-                    .fontWeight(.semibold)
-                Spacer()
-            }.padding([.top, .leading, .trailing])
-            List {
-                Section {
-                    bookmarkPreviewItem
-                        .redacted(reason: state.isLoading ? .placeholder : [])
-                } header: {
-                    Label(
-                        "Preview",
-                        systemImage: "rectangle.and.text.magnifyingglass"
-                    )
-                }.listRowSeparator(.visible, edges: [.bottom])
-                
-                Section {
-                    bookmarkFolderSelectionView
-                        .padding()
-                        .background {
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(.gray.opacity(0.1))
-                        }
-                } header: {
-                    Label(
-                        "Folder",
-                        systemImage: "folder"
-                    )
-                }.listRowSeparator(.visible, edges: [.bottom])
-                
-                Section {
-                    bookmarkInfoSectionItems
-                        .padding()
-                        .background {
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(.gray.opacity(0.1))
-                        }
-                } header: {
-                    Label(
-                        "Info",
-                        systemImage: "info.circle"
-                    )
-                }.listRowSeparator(.visible, edges: [.bottom])
-                
-                Section {
-                    bookmarkAddTagsView
-                        .padding()
-                        .background {
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(.gray.opacity(0.1))
-                        }
-                } header: {
-                    bookmarkAddOrEditTagsButton
-                }.listRowSeparator(.visible, edges: [.bottom])
-            }
-            .listStyle(.sidebar)
-        }
-        .toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-                Button("Cancel", role: .cancel) {
-                    onExitRequested()
-                    dismiss()
-                }
-            }
-            ToolbarItem(placement: .confirmationAction) {
-                Button("Done") {
-                    onDone()
-                }.disabled(
-                    state.url.isEmpty
-                    || state.label.isEmpty
-                    || state.selectedFolder == nil
-                    || state.hasError
-                )
-            }
-        }
-        .frame(width: 400, height: 400)
-        .tint(
-            state.selectedFolder == nil
-            ? .accentColor
-            : state.selectedFolder?.color.getUIColor() ?? .accentColor
-        )
-        .onAppear(perform: onAppear)
-    }
-    
-    @ViewBuilder
     private var bookmarkPreviewItem: some View {
         HStack(alignment: .center) {
             bookmarkPreviewItemImage
@@ -247,17 +150,10 @@ struct BookmarkCreationContent: View {
     private var bookmarkPreviewItemImage: some View {
         if let imageData = state.imageData,
            let image = UIImage(data: imageData) {
-            #if os(iOS)
             Image(uiImage: image)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 50, height: 50)
-            #elseif os(macOS)
-            Image(nsImage: image)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 50, height: 50)
-            #endif
         } else {
             RoundedRectangle(cornerRadius: 8)
                 .fill(.tint.opacity(0.3))
@@ -332,7 +228,6 @@ struct BookmarkCreationContent: View {
     
     @ViewBuilder
     private var bookmarkFolderSelectionView: some View {
-        #if os(iOS)
         NavigationLink {
             SelectFolderContent(selectedFolder: $state.selectedFolder)
         } label: {
@@ -356,39 +251,6 @@ struct BookmarkCreationContent: View {
                 }
             }
         }
-        #elseif os(macOS)
-        HStack {
-            if let folder = state.selectedFolder {
-                HStack {
-                    Image(systemName: folder.icon)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 20, height: 20)
-                        .foregroundStyle(.tint)
-                    Text(folder.label)
-                }
-            } else {
-                HStack {
-                    Image(systemName: "folder")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 20, height: 20)
-                        .foregroundStyle(.tint)
-                    Text("Create Bookmark Folder Placeholder")
-                }
-            }
-            Spacer()
-            Image(systemName: "chevron.right")
-                .foregroundStyle(.tint)
-        }
-        .contentShape(Rectangle())
-        .onTapGesture {
-            state.shouldShowFolderSelection.toggle()
-        }
-        .popover(isPresented: $state.shouldShowFolderSelection) {
-            SelectFolderContent(selectedFolder: $state.selectedFolder)
-        }
-        #endif
     }
     
     @ViewBuilder
@@ -400,7 +262,6 @@ struct BookmarkCreationContent: View {
                 description: Text("Create Bookmark No Tags Selected Description")
             )
         } else {
-            #if os(iOS)
             ForEach(state.selectedTags) { tag in
                 HStack {
                     Image(systemName: tag.icon)
@@ -408,29 +269,6 @@ struct BookmarkCreationContent: View {
                     Text(tag.label)
                 }
             }
-            #elseif os(macOS)
-            ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack {
-                    ForEach(state.selectedTags) { tag in
-                        HStack {
-                            VStack(spacing: 6) {
-                                Image(systemName: tag.icon)
-                                    .foregroundStyle(tag.color.getUIColor())
-                                Text(tag.label)
-                            }
-                            .padding(8)
-                            .background {
-                                RoundedRectangle(cornerRadius: 8)
-                                    .fill(tag.color.getUIColor().opacity(0.1))
-                            }
-                            if tag.id != state.selectedTags.last?.id {
-                                Divider()
-                            }
-                        }
-                    }
-                }
-            }
-            #endif
         }
     }
     
@@ -441,7 +279,6 @@ struct BookmarkCreationContent: View {
                 "Tags Title",
                 systemImage: "tag"
             )
-            #if os(iOS)
             Spacer()
             NavigationLink {
                 SelectTagsContent(selectedTags: $state.selectedTags)
@@ -455,31 +292,11 @@ struct BookmarkCreationContent: View {
                     : "pencil"
                 ).textCase(.none)
             }
-            #elseif os(macOS)
-            Button {
-                state.shouldShowTagsSelection = true
-            } label: {
-                Label(
-                    state.selectedTags.isEmpty
-                    ? "Create Bookmark Add Tags"
-                    : "Create Bookmark Edit Tags",
-                    systemImage: state.selectedTags.isEmpty
-                    ? "plus"
-                    : "pencil"
-                )
-                .textCase(.none)
-            }
-            .buttonStyle(.plain)
-            .popover(isPresented: $state.shouldShowTagsSelection) {
-                SelectTagsContent(selectedTags: $state.selectedTags)
-            }
-            #endif
         }
     }
     
     @ViewBuilder
     private var bookmarkTypePicker: some View {
-        #if os(iOS)
         Picker(selection: $state.selectedType) {
             ForEach(BookmarkType.allCases, id: \.self) { type in
                 Label(type.getUITitle(), systemImage: type.getIconName())
@@ -496,45 +313,6 @@ struct BookmarkCreationContent: View {
         }
         .foregroundStyle(.tint)
         .id(state.selectedFolder)
-        #elseif os(macOS)
-        HStack {
-            Image(systemName: state.selectedType.getIconName())
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 20, height: 20)
-                .foregroundStyle(.tint)
-            Text("Create Bookmark Type Placeholder")
-            Spacer()
-            Button {
-                state.shouldShowTypeSelection.toggle()
-            } label: {
-                HStack {
-                    Text(state.selectedType.getUITitle())
-                    Image(systemName: "chevron.up.chevron.down")
-                        .foregroundStyle(.tint)
-                }
-            }
-            .buttonStyle(.plain)
-            .popover(isPresented: $state.shouldShowTypeSelection) {
-                VStack(alignment: .leading) {
-                    ForEach(BookmarkType.allCases, id: \.self) { type in
-                        Button {
-                            state.selectedType = type
-                            state.shouldShowTypeSelection = false
-                        } label: {
-                            Label {
-                                Text(type.getUITitle())
-                            } icon: {
-                                Image(systemName: type.getIconName())
-                                    .foregroundStyle(.tint)
-                            }
-                        }
-                        .buttonStyle(.plain)
-                    }.padding(4)
-                }.padding(8)
-            }
-        }
-        #endif
     }
     
     private func onDone() {

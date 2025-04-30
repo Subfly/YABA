@@ -45,12 +45,10 @@ struct CollectionItemView: View {
             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                 swipeActionItems
             }
-            #if os(macOS)
             .padding(.leading, isInSelectionMode ? 0 : 8)
             .onHover { hovered in
                 isHovered = hovered
             }
-            #endif
             .contextMenu {
                 menuActionItems
             }
@@ -84,15 +82,6 @@ struct CollectionItemView: View {
         if isInSelectionMode {
             mainLabel
         } else {
-            #if os(macOS)
-            Button {
-                withAnimation {
-                    selectedCollection = collection
-                }
-            } label: {
-                mainLabel
-            }.buttonStyle(.plain)
-            #elseif os(iOS)
             if UIDevice.current.userInterfaceIdiom == .pad {
                 if isInBookmarkDetail {
                     Button {
@@ -117,7 +106,6 @@ struct CollectionItemView: View {
                         }
                     }
             }
-            #endif
         }
     }
     
@@ -131,7 +119,6 @@ struct CollectionItemView: View {
             }
             Spacer()
             HStack {
-                #if os(macOS)
                 if isHovered && !isInSelectionMode {
                     Menu {
                         menuActionItems
@@ -140,12 +127,10 @@ struct CollectionItemView: View {
                     }
                     .menuStyle(.button)
                 }
-                #endif
                 Text("\(collection.bookmarks.count)")
                     .foregroundStyle(.secondary)
                     .fontWeight(.medium)
             }.foregroundStyle(.secondary)
-            #if os(iOS)
             if UIDevice.current.userInterfaceIdiom == .phone && !isInSelectionMode {
                 Image(systemName: "chevron.right")
                     .resizable()
@@ -153,7 +138,6 @@ struct CollectionItemView: View {
                     .frame(width: 12, height: 12)
                     .foregroundStyle(.tertiary)
             }
-            #endif
         }
         .contentShape(Rectangle())
     }

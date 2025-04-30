@@ -13,10 +13,22 @@ struct HomeSearchView: View {
     private var bookmarks: [Bookmark]
     
     @Binding
+    var selectedBookmark: Bookmark?
+    
+    @Binding
     var searchQuery: String
     
-    init(searchQuery: Binding<String>) {
+    let onNavigationCallback: (Bookmark) -> Void
+    
+    init(
+        searchQuery: Binding<String>,
+        selectedBookmark: Binding<Bookmark?>,
+        onNavigationCallback: @escaping (Bookmark) -> Void
+    ) {
         _searchQuery = searchQuery
+        _selectedBookmark = selectedBookmark
+        self.onNavigationCallback = onNavigationCallback
+        
         let query = searchQuery.wrappedValue
         _bookmarks = Query(
             FetchDescriptor(
@@ -49,12 +61,20 @@ struct HomeSearchView: View {
             }
         } else {
             ForEach(bookmarks) { bookmark in
-                Text(bookmark.label)
+                BookmarkItemView(
+                    selectedBookmark: $selectedBookmark,
+                    bookmark: bookmark,
+                    onNavigationCallback: onNavigationCallback
+                )
             }
         }
     }
 }
 
 #Preview {
-    HomeSearchView(searchQuery: .constant(""))
+    HomeSearchView(
+        searchQuery: .constant(""),
+        selectedBookmark: .constant(nil),
+        onNavigationCallback: { _ in }
+    )
 }

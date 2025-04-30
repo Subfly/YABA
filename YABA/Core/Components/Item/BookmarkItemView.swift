@@ -60,7 +60,6 @@ struct BookmarkItemView: View {
     
     @ViewBuilder
     private var mainButton: some View {
-        #if os(iOS)
         if UIDevice.current.userInterfaceIdiom == .pad {
             NavigationLink(value: bookmark) {
                 mainContent
@@ -75,23 +74,6 @@ struct BookmarkItemView: View {
                     }
                 }
         }
-        #elseif os(macOS)
-        Button {
-            withAnimation {
-                selectedBookmark = bookmark
-            }
-        } label: {
-            mainContent
-        }
-        .buttonStyle(.borderless)
-        .padding(8)
-        .background {
-            if selectedBookmark?.id == bookmark.id {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(.gray.opacity(0.2))
-            }
-        }
-        #endif
     }
     
     @ViewBuilder
@@ -110,7 +92,6 @@ struct BookmarkItemView: View {
                         .multilineTextAlignment(.leading)
                 }
             }
-            #if os(iOS)
             if UIDevice.current.userInterfaceIdiom == .phone {
                 Spacer()
                 Image(systemName: "chevron.right")
@@ -119,9 +100,6 @@ struct BookmarkItemView: View {
                     .frame(width: 12, height: 12)
                     .foregroundStyle(.tertiary)
             }
-            #elseif os(macOS)
-            Spacer()
-            #endif
         }
     }
     
@@ -129,17 +107,10 @@ struct BookmarkItemView: View {
     private var bookmarkImage: some View {
         if let imageData = bookmark.imageData,
            let image = UIImage(data: imageData) {
-            #if os(iOS)
             Image(uiImage: image)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .frame(width: 50, height: 50)
-            #elseif os(macOS)
-            Image(nsImage: image)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: 50, height: 50)
-            #endif
         } else {
             RoundedRectangle(cornerRadius: 8)
                 .fill(.tint.opacity(0.3))

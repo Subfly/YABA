@@ -33,9 +33,6 @@ struct BookmarkDetail: View {
                     tagsSection
                 }
                 .scrollContentBackground(.hidden)
-                #if os(macOS)
-                .listStyle(.sidebar)
-                #endif
             } else {
                 
             }
@@ -48,17 +45,10 @@ struct BookmarkDetail: View {
         Section {
             if let imageData = self.bookmark?.imageData,
                let image = UIImage(data: imageData) {
-                #if os(iOS)
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFill()
                     .frame(idealHeight: 250, alignment: .center)
-                #elseif os(macOS)
-                Image(nsImage: image)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(idealHeight: 250, alignment: .center)
-                #endif
             } else {
                 ContentUnavailableView(
                     "Bookmark Detail Image Error Title",
@@ -75,17 +65,10 @@ struct BookmarkDetail: View {
             HStack {
                 if let iconData = self.bookmark?.iconData,
                    let image = UIImage(data: iconData) {
-                    #if os(iOS)
                     Image(uiImage: image)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 18, height: 18)
-                    #elseif os(macOS)
-                    Image(nsImage: image)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 30, height: 30)
-                    #endif
                 } else {
                     Image(systemName: "link.circle.fill")
                 }

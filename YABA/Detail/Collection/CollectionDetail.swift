@@ -75,7 +75,6 @@ struct CollectionDetail: View {
                 )
             }
         }
-        #if os(iOS)
         .navigationTitle(collection?.label ?? "")
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
@@ -86,7 +85,6 @@ struct CollectionDetail: View {
                 }
             }
         }
-        #endif
         .sheet(isPresented: $state.shouldShowCreateBookmarkSheet) {
             BookmarkCreationContent(
                 bookmarkToEdit: .constant(nil),

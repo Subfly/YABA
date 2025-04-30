@@ -30,15 +30,11 @@ struct YabaNavigationView: View {
     private var prefferedColumn: NavigationSplitViewColumn = .sidebar
     
     var body: some View {
-        #if os(macOS)
-        genericNavigationView
-        #elseif os(iOS)
         if UIDevice.current.userInterfaceIdiom == .pad {
             genericNavigationView
         } else {
             mobileNavigationView
         }
-        #endif
     }
     
     @ViewBuilder
@@ -49,8 +45,10 @@ struct YabaNavigationView: View {
         ) {
             HomeView(
                 selectedCollection: $selectedCollection,
+                selectedBookmark: $selectedBookmark,
                 selectedAppTint: $appTint,
-                onNavigationCallback: { _ in }
+                onNavigationCallbackForCollection: { _  in },
+                onNavigationCallbackForBookmark: { _  in },
             )
         } content: {
             CollectionDetail(
@@ -65,6 +63,9 @@ struct YabaNavigationView: View {
                 onNavigationCallback: { _ in }
             )
         }
+        #if targetEnvironment(macCatalyst)
+        .background(.clear)
+        #endif
         .navigationSplitViewStyle(.balanced)
         .tint(appTint)
         .onChange(of: selectedCollection) { _, newValue in
@@ -81,9 +82,13 @@ struct YabaNavigationView: View {
         NavigationStack(path: $path) {
             HomeView(
                 selectedCollection: $selectedCollection,
+                selectedBookmark: $selectedBookmark,
                 selectedAppTint: $appTint,
-                onNavigationCallback: { collection in
+                onNavigationCallbackForCollection: { collection in
                     path.append(collection)
+                },
+                onNavigationCallbackForBookmark: { bookmark in
+                    path.append(bookmark)
                 }
             )
             .navigationDestination(for: YabaCollection.self) { collection in
