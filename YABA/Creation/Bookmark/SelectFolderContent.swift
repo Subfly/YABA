@@ -26,7 +26,9 @@ struct SelectFolderContent: View {
             selectedFolder: $selectedFolder,
             searchQuery: $searchQuery
         )
+        #if !os(visionOS)
         .scrollDismissesKeyboard(.immediately)
+        #endif
         .searchable(text: $searchQuery, prompt: "Folder Search Prompt")
         .navigationTitle("Select Folder Title")
         .toolbar {

@@ -30,11 +30,15 @@ struct YabaNavigationView: View {
     private var prefferedColumn: NavigationSplitViewColumn = .sidebar
     
     var body: some View {
+        #if os(visionOS)
+        genericNavigationView
+        #else
         if UIDevice.current.userInterfaceIdiom == .pad {
             genericNavigationView
         } else {
             mobileNavigationView
         }
+        #endif
     }
     
     @ViewBuilder

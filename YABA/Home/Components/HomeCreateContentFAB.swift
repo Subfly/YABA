@@ -46,6 +46,9 @@ struct HomeCreateContentFAB: View {
                 } label: {
                     fab(isMini: false, type: .main)
                 }
+                #if os(visionOS)
+                .buttonStyle(.plain)
+                #endif
             }
             .padding(.bottom)
             .padding(.bottom)
@@ -64,6 +67,9 @@ struct HomeCreateContentFAB: View {
     private func fab(isMini: Bool, type: CreationType) -> some View {
         ZStack(alignment: .center) {
             Circle()
+            #if os(visionOS)
+                .fill(selectedAppTint)
+            #endif
                 .frame(
                     width: isMini ? 48 : 72,
                     height: isMini ? 48 : 72
@@ -100,6 +106,9 @@ struct HomeCreateContentFAB: View {
         .opacity(isActive ? 1 : 0)
         .animation(.easeInOut.delay(duration), value: isActive)
         .transition(.slide)
+        #if os(visionOS)
+        .buttonStyle(.plain)
+        #endif
     }
 }
 

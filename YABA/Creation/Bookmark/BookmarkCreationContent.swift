@@ -88,7 +88,9 @@ struct BookmarkCreationContent: View {
                         bookmarkAddOrEditTagsButton
                     }
                 }
+                #if !os(visionOS)
                 .scrollDismissesKeyboard(.immediately)
+                #endif
                 .scrollContentBackground(
                     state.selectedFolder == nil
                     ? .visible

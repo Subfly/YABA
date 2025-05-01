@@ -26,7 +26,9 @@ struct SelectTagsContent: View {
             selectedTags: $selectedTags,
             searchQuery: $searchQuery
         )
+        #if !os(visionOS)
         .scrollDismissesKeyboard(.immediately)
+        #endif
         .searchable(text: $searchQuery, prompt: "Tags Search Prompt")
         .navigationTitle("Select Tags Title")
         .toolbar {
