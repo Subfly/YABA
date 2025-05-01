@@ -35,7 +35,6 @@ struct YABAApp: App {
         UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.forEach { windowScene in
             windowScene.sizeRestrictions?.minimumSize = CGSize(width: 1600, height: 960)
         }
-        UIView.appearance().backgroundColor = .clear
         #endif
     }
 }
