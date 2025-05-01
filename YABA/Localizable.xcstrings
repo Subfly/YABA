@@ -984,6 +984,18 @@
           }
         }
       }
+    },
+    "YABA Description" : {
+      "comment" : "Description of the app name",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yet Another Bookmarks App"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

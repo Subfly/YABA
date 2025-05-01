@@ -42,6 +42,13 @@ struct CollectionItemView: View {
     
     var body: some View {
         mainButton
+        #if targetEnvironment(macCatalyst)
+            .listRowBackground(
+                collection.id == selectedCollection?.id
+                ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
+                : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
+            )
+        #endif
             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                 swipeActionItems
             }
@@ -82,20 +89,15 @@ struct CollectionItemView: View {
         if isInSelectionMode {
             mainLabel
         } else {
-            if UIDevice.current.userInterfaceIdiom == .pad {
-                if isInBookmarkDetail {
-                    Button {
-                        withAnimation {
-                            selectedCollection = collection
-                        }
-                    } label: {
-                        mainLabel
-                    }.buttonStyle(.plain)
-                } else {
-                    NavigationLink(value: collection) {
-                        mainLabel
-                    }.buttonStyle(.plain)
-                }
+            if isInBookmarkDetail {
+                Button {
+                    withAnimation {
+                        selectedCollection = collection
+                        onNavigationCallback(collection)
+                    }
+                } label: {
+                    mainLabel
+                }.buttonStyle(.plain)
             } else {
                 mainLabel
                     .contentShape(Rectangle())
@@ -125,7 +127,6 @@ struct CollectionItemView: View {
                     } label: {
                         Image(systemName: "ellipsis.circle")
                     }
-                    .menuStyle(.button)
                 }
                 Text("\(collection.bookmarks.count)")
                     .foregroundStyle(.secondary)

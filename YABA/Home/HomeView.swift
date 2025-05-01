@@ -70,7 +70,7 @@ struct HomeView: View {
                 }
             }
             #if targetEnvironment(macCatalyst)
-            .listStyle(.automatic)
+            .listStyle(.sidebar)
             #endif
             
             HomeCreateContentFAB(

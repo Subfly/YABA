@@ -64,6 +64,7 @@ struct HomeSearchView: View {
                 BookmarkItemView(
                     selectedBookmark: $selectedBookmark,
                     bookmark: bookmark,
+                    isSearching: true,
                     onNavigationCallback: onNavigationCallback
                 )
             }

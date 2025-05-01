@@ -54,6 +54,7 @@ struct CollectionDetail: View {
                                     BookmarkItemView(
                                         selectedBookmark: $selectedBookmark,
                                         bookmark: bookmark,
+                                        isSearching: false,
                                         onNavigationCallback: onNavigationCallback
                                     )
                                 }
@@ -77,11 +78,13 @@ struct CollectionDetail: View {
         }
         .navigationTitle(collection?.label ?? "")
         .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Button {
-                    state.shouldShowCreateBookmarkSheet = true
-                } label: {
-                    Image(systemName: "plus.circle")
+            if collection != nil {
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        state.shouldShowCreateBookmarkSheet = true
+                    } label: {
+                        Image(systemName: "plus.circle")
+                    }
                 }
             }
         }

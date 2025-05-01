@@ -116,7 +116,9 @@ struct BookmarkCreationContent: View {
             }
         }
         .presentationDetents([.large])
+        #if !targetEnvironment(macCatalyst)
         .presentationDragIndicator(.visible)
+        #endif
         .tint(
             state.selectedFolder == nil
             ? .accentColor

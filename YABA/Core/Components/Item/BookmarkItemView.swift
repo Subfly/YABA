@@ -25,6 +25,8 @@ struct BookmarkItemView: View {
     
     var bookmark: Bookmark
     
+    let isSearching: Bool
+    
     let onNavigationCallback: (Bookmark) -> Void
     
     var body: some View {
@@ -60,20 +62,22 @@ struct BookmarkItemView: View {
     
     @ViewBuilder
     private var mainButton: some View {
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            NavigationLink(value: bookmark) {
-                mainContent
-            }.buttonStyle(.plain)
-        } else {
-            mainContent
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    withAnimation {
-                        selectedBookmark = bookmark
-                        onNavigationCallback(bookmark)
-                    }
+        mainContent
+            .contentShape(Rectangle())
+            .onTapGesture {
+                withAnimation {
+                    selectedBookmark = bookmark
+                    onNavigationCallback(bookmark)
                 }
-        }
+            }
+        #if targetEnvironment(macCatalyst)
+            .listRowSpacing(isSearching ? 16 : 8)
+            .listRowBackground(
+                bookmark.id == selectedBookmark?.id
+                ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
+                : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
+            )
+        #endif
     }
     
     @ViewBuilder
@@ -195,6 +199,7 @@ struct BookmarkItemView: View {
     BookmarkItemView(
         selectedBookmark: .constant(.empty()),
         bookmark: .empty(),
+        isSearching: false,
         onNavigationCallback: { _ in }
     ).tint(.indigo)
 }

@@ -49,6 +49,14 @@ struct HomeCreateContentFAB: View {
             }
             .padding(.bottom)
             .padding(.bottom)
+            #if targetEnvironment(macCatalyst)
+            // I appreciate any PR for this SwiftUI abomination...
+            .padding(.leading)
+            .padding(.leading)
+            .padding(.leading)
+            .padding(.leading)
+            .padding(.leading)
+            #endif
         }
     }
 

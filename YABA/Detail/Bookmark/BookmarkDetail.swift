@@ -34,10 +34,18 @@ struct BookmarkDetail: View {
                 }
                 .scrollContentBackground(.hidden)
             } else {
-                
+                ContentUnavailableView(
+                    "YABA",
+                    image: "UIAppIcon",
+                    description: Text("YABA Description")
+                )
             }
         }
-        .navigationTitle("Bookmark Detail Title")
+        .navigationTitle(
+            bookmark != nil
+            ? LocalizedStringKey("Bookmark Detail Title")
+            : ""
+        )
     }
     
     @ViewBuilder

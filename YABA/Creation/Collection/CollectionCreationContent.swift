@@ -102,7 +102,9 @@ struct CollectionCreationContent: View {
             }
         }
         .presentationDetents([.fraction(0.25)])
+        #if !targetEnvironment(macCatalyst)
         .presentationDragIndicator(.visible)
+        #endif
         .onAppear(perform: onAppear)
     }
     

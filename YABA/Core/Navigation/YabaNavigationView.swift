@@ -50,6 +50,9 @@ struct YabaNavigationView: View {
                 onNavigationCallbackForCollection: { _  in },
                 onNavigationCallbackForBookmark: { _  in },
             )
+            #if targetEnvironment(macCatalyst)
+            .background(.clear)
+            #endif
         } content: {
             CollectionDetail(
                 collection: $selectedCollection,
@@ -63,9 +66,6 @@ struct YabaNavigationView: View {
                 onNavigationCallback: { _ in }
             )
         }
-        #if targetEnvironment(macCatalyst)
-        .background(.clear)
-        #endif
         .navigationSplitViewStyle(.balanced)
         .tint(appTint)
         .onChange(of: selectedCollection) { _, newValue in
