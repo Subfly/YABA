@@ -26,6 +26,18 @@ struct BookmarkDetail: View {
             )
             
             if bookmark != nil {
+                #if targetEnvironment(macCatalyst)
+                GeometryReader { proxy in
+                    List {
+                        imageSection
+                        infoSection
+                        folderSection
+                        tagsSection
+                    }
+                    .scrollContentBackground(.hidden)
+                    .padding(.horizontal, proxy.size.width * 0.1)
+                }
+                #else
                 List {
                     imageSection
                     infoSection
@@ -33,6 +45,7 @@ struct BookmarkDetail: View {
                     tagsSection
                 }
                 .scrollContentBackground(.hidden)
+                #endif
             } else {
                 ContentUnavailableView(
                     "YABA",
@@ -180,11 +193,15 @@ struct BookmarkDetail: View {
     @ViewBuilder
     private var tagsSection: some View {
         if let collections = bookmark?.collections {
-            let tags = collections.filter({ $0.collectionType == .tag })
-            if tags.isEmpty {
-                
-            } else {
-                Section {
+            Section {
+                let tags = collections.filter({ $0.collectionType == .tag })
+                if tags.isEmpty {
+                    ContentUnavailableView(
+                        "Bookmark Detail No Tags Added Title",
+                        systemImage: "tag.slash",
+                        description: Text("Bookmark Detail No Tags Added Description")
+                    )
+                } else {
                     ForEach(tags) { tag in
                         CollectionItemView(
                             collection: tag,
@@ -196,12 +213,12 @@ struct BookmarkDetail: View {
                             onNavigationCallback: onNavigationCallback
                         )
                     }
-                } header: {
-                    Label(
-                        "Tags Title",
-                        systemImage: "tag"
-                    )
                 }
+            } header: {
+                Label(
+                    "Tags Title",
+                    systemImage: "tag"
+                )
             }
         }
     }

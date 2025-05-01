@@ -9,10 +9,12 @@ import Foundation
 import UniformTypeIdentifiers
 import LinkPresentation
 import OSLog
+import SwiftUI
 
+@MainActor
 enum UnfurlError: Error {
-    case cannotCreateURL(String)
-    case unableToUnfurl(String)
+    case cannotCreateURL(LocalizedStringKey)
+    case unableToUnfurl(LocalizedStringKey)
 }
 
 @MainActor
@@ -24,7 +26,7 @@ class Unfurler {
         // Try to create the URL
         guard let url = URL(string: urlString) else {
             self.logger.log(level: .error, "[UNFURLER] Cannot create url for: \(urlString)")
-            throw UnfurlError.cannotCreateURL("Can not create the URL from the link")
+            throw UnfurlError.cannotCreateURL(LocalizedStringKey("URL Error Text"))
         }
         
         do {
@@ -40,7 +42,7 @@ class Unfurler {
                 videoURL: metadata.remoteVideoURL?.absoluteString
             )
         } catch {
-            throw UnfurlError.unableToUnfurl("Can not load preview for given.")
+            throw UnfurlError.unableToUnfurl(LocalizedStringKey("Unfurl Error Text"))
         }
     }
     

@@ -74,7 +74,9 @@ struct HomeCollectionView: View {
             }
         } header: {
             Label(LocalizedStringKey(labelTitle), systemImage: collectionIcon)
+            #if targetEnvironment(macCatalyst)
                 .font(.headline)
+            #endif
         }
     }
     

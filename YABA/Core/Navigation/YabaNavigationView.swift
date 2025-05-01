@@ -54,9 +54,6 @@ struct YabaNavigationView: View {
                 onNavigationCallbackForCollection: { _  in },
                 onNavigationCallbackForBookmark: { _  in },
             )
-            #if targetEnvironment(macCatalyst)
-            .background(.clear)
-            #endif
         } content: {
             CollectionDetail(
                 collection: $selectedCollection,

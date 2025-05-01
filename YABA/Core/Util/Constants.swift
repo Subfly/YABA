@@ -9,4 +9,6 @@ import Foundation
 
 struct Constants {
     static let hasPassedOnboardingKey = "hasPassedOnboarding"
+    
+    static let toastAnimationDuration: UInt64 = 3_000_000
 }

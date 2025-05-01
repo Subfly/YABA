@@ -74,6 +74,30 @@
         }
       }
     },
+    "Bookmark Detail No Tags Added Description" : {
+      "comment" : "Description to show when no tags added in bookmark detail view",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You can add tags to your bookmark by editing"
+          }
+        }
+      }
+    },
+    "Bookmark Detail No Tags Added Title" : {
+      "comment" : "Title to show when no tags added in bookmark detail view",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Tags Added"
+          }
+        }
+      }
+    },
     "Bookmark Detail Title" : {
       "comment" : "Title to show in bookmark detail view",
       "localizations" : {
@@ -478,6 +502,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Folders"
+          }
+        }
+      }
+    },
+    "Generic Unfurl Error Text" : {
+      "comment" : "A generic error text to show in toasts",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An unexpected error occurred. Please try again later."
+          }
+        }
+      }
+    },
+    "Generic Unfurl Success Text" : {
+      "comment" : "A generic success text to show in toasts in bookmark creation",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Successfully fetched the URL details"
           }
         }
       }
@@ -969,6 +1017,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tags"
+          }
+        }
+      }
+    },
+    "Unfurl Error Text" : {
+      "comment" : "Error to show when a url can not be unfurled",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can not load preview for given URL"
+          }
+        }
+      }
+    },
+    "URL Error Text" : {
+      "comment" : "Error to show when a url can not be created",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can not create the URL from the link"
           }
         }
       }

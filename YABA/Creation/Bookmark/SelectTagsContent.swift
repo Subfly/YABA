@@ -96,7 +96,7 @@ private struct SelectTagsSearchableContent: View {
                 if selectedTags.isEmpty {
                     ContentUnavailableView(
                         "Select Tags No Tags Selected Title",
-                        systemImage: "x.circle",
+                        systemImage: "tag.slash",
                         description: Text(
                             LocalizedStringKey("Select Tags No Tags Selected Message")
                         )

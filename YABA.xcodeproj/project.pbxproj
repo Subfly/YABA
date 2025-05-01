@@ -63,12 +63,19 @@
 				Core/Components/IconPicker/IconPickerView.swift,
 				Core/Components/Item/BookmarkItemView.swift,
 				Core/Components/Item/CollectionItemView.swift,
+				Core/Components/Toast/ToastDuration.swift,
+				Core/Components/Toast/ToastIconType.swift,
+				Core/Components/Toast/ToastManager.swift,
+				Core/Components/Toast/ToastPosition.swift,
+				Core/Components/Toast/ToastState.swift,
+				Core/Components/Toast/YABAToast.swift,
 				Core/Model/Bookmark.swift,
 				Core/Model/BookmarkType.swift,
 				Core/Model/CollectionType.swift,
 				Core/Model/YabaCollection.swift,
 				Core/Model/YabaColor.swift,
 				Core/Model/YabaLinkPreview.swift,
+				Core/Util/Constants.swift,
 				Core/Util/CreationType.swift,
 				Core/Util/Unfurler.swift,
 				Creation/Bookmark/BookmarkCreationContent.swift,
@@ -494,7 +501,7 @@
 				INFOPLIST_FILE = YABAShare/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = YABAShare;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -525,7 +532,7 @@
 				INFOPLIST_FILE = YABAShare/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = YABAShare;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

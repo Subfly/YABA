@@ -40,6 +40,8 @@ class BookmarkCreationState {
     var isLoading: Bool = false
     var hasError: Bool = false
     
+    let toastManager: ToastManager = .init()
+    
     func fetchData(with urlString: String) async {
         if urlString.isEmpty {
             return
@@ -59,14 +61,31 @@ class BookmarkCreationState {
                 self.imageData = fetched.imageData
             }
             hasError = false
+            toastManager.show(
+                message: LocalizedStringKey("Generic Unfurl Success Text"),
+                accentColor: .green,
+                iconType: .success,
+            )
         } catch UnfurlError.cannotCreateURL(let message) {
-            // TODO: ADD TOAST
+            toastManager.show(
+                message: message,
+                accentColor: .red,
+                iconType: .error,
+            )
             hasError = true
         } catch UnfurlError.unableToUnfurl(let message) {
-            // TODO: ADD TOAST
+            toastManager.show(
+                message: message,
+                accentColor: .red,
+                iconType: .error,
+            )
             hasError = true
         } catch {
-            // TODO: ADD TOAST
+            toastManager.show(
+                message: LocalizedStringKey("Generic Unfurl Error Text"),
+                accentColor: .red,
+                iconType: .error,
+            )
             hasError = true
         }
     }

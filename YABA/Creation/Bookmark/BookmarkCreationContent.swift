@@ -127,6 +127,32 @@ struct BookmarkCreationContent: View {
             : state.selectedFolder?.color.getUIColor() ?? .accentColor
         )
         .onAppear(perform: onAppear)
+        .overlay(
+            alignment: state.toastManager.toastState.position == .top
+            ? .top
+            : .bottom
+        ) {
+            if state.toastManager.toastState.position == .top {
+                YABAToast(
+                    state: state.toastManager.toastState,
+                    onDismissRequest: {
+                        state.toastManager.hide()
+                    }
+                )
+                .offset(y: state.toastManager.isShowing ? 75 : -1000)
+                .transition(.move(edge: .top))
+            } else {
+                YABAToast(
+                    state: state.toastManager.toastState,
+                    onDismissRequest: {
+                        state.toastManager.hide()
+                    }
+                )
+                .offset(y: state.toastManager.isShowing ? -75 : 1000)
+                .transition(.move(edge: .bottom))
+            }
+        }
+        .animation(.easeInOut(duration: 0.3), value: state.toastManager.isShowing)
     }
     
     @ViewBuilder
@@ -156,7 +182,7 @@ struct BookmarkCreationContent: View {
            let image = UIImage(data: imageData) {
             Image(uiImage: image)
                 .resizable()
-                .aspectRatio(contentMode: .fit)
+                .aspectRatio(contentMode: .fill)
                 .frame(width: 50, height: 50)
         } else {
             RoundedRectangle(cornerRadius: 8)
@@ -377,9 +403,7 @@ struct BookmarkCreationContent: View {
     
     private func onAppear() {
         state.listenUrlChanges { url in
-            Task {
-                await state.fetchData(with: url)
-            }
+            Task { await state.fetchData(with: url) }
         }
         
         if let bookmarkToEdit {
