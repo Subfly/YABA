@@ -205,12 +205,14 @@ struct CollectionCreationContent: View {
                 collectionToEdit.label = state.collectionName
                 collectionToEdit.icon = state.selectedIconName
                 collectionToEdit.color = state.selectedColor
+                collectionToEdit.editedAt = .now
                 onEditCallback(collectionToEdit)
             } else {
                 let collection = YabaCollection(
                     label: state.collectionName,
                     icon: state.selectedIconName,
                     createdAt: .now,
+                    editedAt: .now,
                     color: state.selectedColor,
                     type: collectionType
                 )

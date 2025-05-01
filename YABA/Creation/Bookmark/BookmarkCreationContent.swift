@@ -362,6 +362,7 @@ struct BookmarkCreationContent: View {
                 bookmarkToEdit.type = state.selectedType.rawValue
                 bookmarkToEdit.iconData = state.iconData
                 bookmarkToEdit.imageData = state.imageData
+                bookmarkToEdit.editedAt = .now
                 
                 // Folder changing
                 if let lastSelectedFolderIndex = bookmarkToEdit.collections.firstIndex(
@@ -387,6 +388,7 @@ struct BookmarkCreationContent: View {
                     bookmarkDescription: state.description,
                     domain: state.host,
                     createdAt: .now,
+                    editedAt: .now,
                     imageData: state.imageData,
                     iconData: state.iconData,
                     videoUrl: state.videoUrl,

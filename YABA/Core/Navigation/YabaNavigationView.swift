@@ -64,7 +64,10 @@ struct YabaNavigationView: View {
             BookmarkDetail(
                 selectedCollection: $selectedCollection,
                 bookmark: $selectedBookmark,
-                onNavigationCallback: { _ in }
+                onCollectionNavigationCallback: { _ in },
+                onDeleteBookmarkCallback: {
+                    selectedBookmark = nil
+                }
             )
         }
         .navigationSplitViewStyle(.balanced)
@@ -111,8 +114,11 @@ struct YabaNavigationView: View {
                         get: { bookmark },
                         set: { _ in }
                     ),
-                    onNavigationCallback: { collection in
+                    onCollectionNavigationCallback: { collection in
                         path.append(collection)
+                    },
+                    onDeleteBookmarkCallback: {
+                        path.removeLast(path.count)
                     }
                 )
             }

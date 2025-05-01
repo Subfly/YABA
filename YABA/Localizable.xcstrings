@@ -554,6 +554,18 @@
         }
       }
     },
+    "Move" : {
+      "comment" : "Label to show for move related functionality",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Move"
+          }
+        }
+      }
+    },
     "Name" : {
       "comment" : "Collection name title to show in macOS",
       "extractionState" : "manual",
@@ -730,6 +742,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Preview"
+          }
+        }
+      }
+    },
+    "Refresh" : {
+      "comment" : "Label to show for refresh related functions",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Refresh"
           }
         }
       }

@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct BookmarkDetail: View {
+    @Environment(\.modelContext)
+    private var modelContext
+    
     @State
     private var state: BookmarkDetailState = .init()
     
@@ -17,7 +20,9 @@ struct BookmarkDetail: View {
     @Binding
     var bookmark: Bookmark?
     
-    let onNavigationCallback: (YabaCollection) -> Void
+    let onCollectionNavigationCallback: (YabaCollection) -> Void
+    
+    let onDeleteBookmarkCallback: () -> Void
     
     var body: some View {
         ZStack {
@@ -59,6 +64,29 @@ struct BookmarkDetail: View {
             ? LocalizedStringKey("Bookmark Detail Title")
             : ""
         )
+        .toolbar {
+            if bookmark != nil {
+                optionsSection
+            }
+        }
+        .alert(
+            LocalizedStringKey("Delete Bookmark Title"),
+            isPresented: $state.shouldShowDeleteDialog,
+        ) {
+            alertActionItems
+        } message: {
+            if let bookmark {
+                Text("Delete Content Message \(bookmark.label)")
+            }
+        }
+        .sheet(isPresented: $state.shouldShowEditBookmarkSheet) {
+            BookmarkCreationContent(
+                bookmarkToEdit: $bookmark,
+                initialCollection: .constant(nil),
+                link: nil,
+                onExitRequested: {}
+            )
+        }
     }
     
     @ViewBuilder
@@ -179,7 +207,7 @@ struct BookmarkDetail: View {
                     isInBookmarkDetail: true,
                     onDeleteCallback: { _ in },
                     onEditCallback: { _ in },
-                    onNavigationCallback: onNavigationCallback
+                    onNavigationCallback: onCollectionNavigationCallback
                 )
             } header: {
                 Label(
@@ -210,7 +238,7 @@ struct BookmarkDetail: View {
                             isInBookmarkDetail: true,
                             onDeleteCallback: { _ in },
                             onEditCallback: { _ in },
-                            onNavigationCallback: onNavigationCallback
+                            onNavigationCallback: onCollectionNavigationCallback
                         )
                     }
                 }
@@ -222,12 +250,70 @@ struct BookmarkDetail: View {
             }
         }
     }
+    
+    @ViewBuilder
+    private var optionsSection: some View {
+        #if targetEnvironment(macCatalyst)
+        HStack {
+            MacOSHoverableToolbarIcon(
+                systemImage: "pencil",
+                onPressed: {
+                    state.shouldShowEditBookmarkSheet = true
+                }
+            )
+            MacOSHoverableToolbarIcon(
+                systemImage: "trash",
+                onPressed: {
+                    state.shouldShowDeleteDialog = true
+                }
+            )
+            .tint(.red)
+        }
+        #else
+        Menu {
+            Button {
+                state.shouldShowEditBookmarkSheet = true
+            } label: {
+                Label("Edit", systemImage: "pencil")
+            }.tint(.orange)
+            Button(role: .destructive) {
+                state.shouldShowDeleteDialog = true
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }.tint(.red)
+        } label: {
+            Image(systemName: "ellipsis.circle")
+        }
+        #endif
+    }
+    
+    @ViewBuilder
+    private var alertActionItems: some View {
+        Button(role: .cancel) {
+            state.shouldShowDeleteDialog = false
+        } label: {
+            Text("Cancel")
+        }
+        Button(role: .destructive) {
+            withAnimation {
+                if let bookmark {
+                    modelContext.delete(bookmark)
+                    try? modelContext.save()
+                    state.shouldShowDeleteDialog = false
+                    onDeleteBookmarkCallback()
+                }
+            }
+        } label: {
+            Text("Delete")
+        }
+    }
 }
 
 #Preview {
     BookmarkDetail(
         selectedCollection: .constant(nil),
         bookmark: .constant(nil),
-        onNavigationCallback: { _ in }
+        onCollectionNavigationCallback: { _ in },
+        onDeleteBookmarkCallback: {}
     )
 }

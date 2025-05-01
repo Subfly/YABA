@@ -80,11 +80,20 @@ struct CollectionDetail: View {
         .toolbar {
             if collection != nil {
                 ToolbarItem(placement: .primaryAction) {
+                    #if targetEnvironment(macCatalyst)
+                    MacOSHoverableToolbarIcon(
+                        systemImage: "plus.circle",
+                        onPressed: {
+                            state.shouldShowCreateBookmarkSheet = true
+                        }
+                    )
+                    #else
                     Button {
                         state.shouldShowCreateBookmarkSheet = true
                     } label: {
                         Image(systemName: "plus.circle")
                     }
+                    #endif
                 }
             }
         }

@@ -12,6 +12,8 @@ import SwiftUI
 @Observable
 internal class BookmarkDetailState {
     var meshColor: Color = .accentColor
+    var shouldShowEditBookmarkSheet = false
+    var shouldShowDeleteDialog = false
     
     func onClickOpenLink(using bookmark: Bookmark?) {
         if let link = bookmark?.link,

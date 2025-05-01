@@ -25,6 +25,9 @@ struct CollectionItemView: View {
     private var shouldShowMenuItems: Bool = false
     
     @State
+    private var shouldShowCreateBookmarkSheet: Bool = false
+    
+    @State
     private var selectedCollectionToPerformActions: YabaCollection?
     
     let collection: YabaCollection
@@ -82,6 +85,15 @@ struct CollectionItemView: View {
                     )
                 }
             }
+            .sheet(isPresented: $shouldShowCreateBookmarkSheet) {
+                BookmarkCreationContent(
+                    bookmarkToEdit: .constant(nil),
+                    initialCollection: $selectedCollectionToPerformActions,
+                    link: nil,
+                    onExitRequested: {}
+                )
+            }
+
     }
     
     @ViewBuilder
@@ -147,6 +159,15 @@ struct CollectionItemView: View {
     private var menuActionItems: some View {
         Button {
             selectedCollectionToPerformActions = collection
+            shouldShowCreateBookmarkSheet = true
+        } label: {
+            VStack {
+                Image(systemName: "bookmark")
+                Text("New")
+            }
+        }.tint(.mint)
+        Button {
+            selectedCollectionToPerformActions = collection
             shouldShowEditSheet = true
         } label: {
             VStack {
@@ -154,7 +175,6 @@ struct CollectionItemView: View {
                 Text("Edit")
             }
         }.tint(.orange)
-        Divider()
         Button(role: .destructive) {
             selectedCollectionToPerformActions = collection
             shouldShowDeleteDialog = true
@@ -186,6 +206,15 @@ struct CollectionItemView: View {
                 Text("Edit")
             }
         }.tint(.orange)
+        Button {
+            selectedCollectionToPerformActions = collection
+            shouldShowCreateBookmarkSheet = true
+        } label: {
+            VStack {
+                Image(systemName: "bookmark")
+                Text("New")
+            }
+        }.tint(.mint)
     }
     
     @ViewBuilder

@@ -26,6 +26,7 @@ final class Bookmark {
     var link: String
     var domain: String
     var createdAt: Date
+    var editedAt: Date
     var videoUrl: String?
     var type: Int
     var collections: [YabaCollection]
@@ -40,6 +41,7 @@ final class Bookmark {
         bookmarkDescription: String,
         domain: String,
         createdAt: Date,
+        editedAt: Date,
         imageData: Data?,
         iconData: Data?,
         videoUrl: String?,
@@ -51,6 +53,7 @@ final class Bookmark {
         self.bookmarkDescription = bookmarkDescription
         self.domain = domain
         self.createdAt = createdAt
+        self.editedAt = editedAt
         self.imageData = imageData
         self.iconData = iconData
         self.videoUrl = videoUrl
@@ -65,6 +68,7 @@ final class Bookmark {
             bookmarkDescription: "Google Web Site",
             domain: "google.com",
             createdAt: .now,
+            editedAt: .now,
             imageData: nil,
             iconData: nil,
             videoUrl: nil,
@@ -80,6 +84,7 @@ final class Bookmark {
             bookmarkDescription: "",
             domain: "",
             createdAt: .now,
+            editedAt: .now,
             imageData: nil,
             iconData: nil,
             videoUrl: nil,

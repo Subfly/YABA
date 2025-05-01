@@ -25,6 +25,7 @@ struct PreloadCollection: Codable {
             label: self.label,
             icon: self.icon,
             createdAt: .now,
+            editedAt: .now,
             bookmarks: [],
             color: self.color,
             type: .folder

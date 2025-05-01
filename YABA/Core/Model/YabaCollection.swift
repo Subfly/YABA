@@ -16,6 +16,7 @@ final class YabaCollection {
     var label: String
     var icon: String
     var createdAt: Date
+    var editedAt: Date
     var color: YabaColor
     var type: Int
     
@@ -27,12 +28,14 @@ final class YabaCollection {
         label: String,
         icon: String,
         createdAt: Date,
+        editedAt: Date,
         bookmarks: [Bookmark] = [],
         color: YabaColor,
         type: CollectionType
     ) {
         self.label = label
         self.createdAt = createdAt
+        self.editedAt = editedAt
         self.bookmarks = bookmarks
         self.icon = icon
         self.color = color
@@ -44,6 +47,7 @@ final class YabaCollection {
             label: "",
             icon: "",
             createdAt: .now,
+            editedAt: .now,
             bookmarks: [],
             color: .none,
             type: .folder

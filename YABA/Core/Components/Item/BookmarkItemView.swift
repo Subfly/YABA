@@ -160,7 +160,6 @@ struct BookmarkItemView: View {
                 Text("Edit")
             }
         }.tint(.orange)
-        Divider()
         Button(role: .destructive) {
             selectedBookmarkToDelete = bookmark
             shouldShowDeleteDialog = true
