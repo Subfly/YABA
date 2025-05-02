@@ -1,0 +1,15 @@
+{
+  "images" : [
+    {
+      "filename" : "lift-truck.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  },
+  "properties" : {
+    "preserves-vector-representation" : true
+  }
+}

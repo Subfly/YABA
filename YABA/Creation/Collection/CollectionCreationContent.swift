@@ -113,8 +113,7 @@ struct CollectionCreationContent: View {
         frameSize: CGFloat,
         backgroundSize: CGFloat,
     ) -> some View {
-        Image(systemName: state.selectedIconName)
-            .resizable()
+        YabaIconView(bundleKey: state.selectedIconName)
             .aspectRatio(contentMode: .fit)
             .foregroundStyle(state.selectedColor.getUIColor())
             .frame(width: frameSize, height: frameSize)
@@ -133,8 +132,7 @@ struct CollectionCreationContent: View {
         frameSize: CGFloat,
         backgroundSize: CGFloat,
     ) -> some View {
-        Image(systemName: "swatchpalette")
-            .resizable()
+        YabaIconView(bundleKey: "paint-board")
             .aspectRatio(contentMode: .fit)
             .foregroundStyle(state.selectedColor.getUIColor())
             .frame(width: frameSize, height: frameSize)
@@ -187,9 +185,9 @@ struct CollectionCreationContent: View {
     func onAppear() {
         switch collectionType {
         case .folder:
-            state.selectedIconName = "folder"
+            state.selectedIconName = "folder-01"
         case .tag:
-            state.selectedIconName = "tag"
+            state.selectedIconName = "tag-01"
         }
         
         if let collectionToEdit {

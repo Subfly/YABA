@@ -1,0 +1,15 @@
+{
+  "images" : [
+    {
+      "filename" : "arrange-by-numbers-9-1.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  },
+  "properties" : {
+    "preserves-vector-representation" : true
+  }
+}

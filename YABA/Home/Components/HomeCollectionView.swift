@@ -46,12 +46,12 @@ struct HomeCollectionView: View {
             labelTitle = "Folders Title"
             noCollectionsTitle = "No Folders Title"
             noCollectionsMessage = "No Folders Message"
-            collectionIcon = "folder"
+            collectionIcon = "folder-01"
         case .tag:
             labelTitle = "Tags Title"
             noCollectionsTitle = "No Tags Title"
             noCollectionsMessage = "No Tags Message"
-            collectionIcon = "tag"
+            collectionIcon = "tag-01"
         }
     }
     
@@ -73,17 +73,29 @@ struct HomeCollectionView: View {
                 }
             }
         } header: {
-            Label(LocalizedStringKey(labelTitle), systemImage: collectionIcon)
-            #if targetEnvironment(macCatalyst)
-                .font(.headline)
-            #endif
+            Label {
+                Text(LocalizedStringKey(labelTitle))
+                #if targetEnvironment(macCatalyst)
+                    .font(.headline)
+                #endif
+            } icon: {
+                YabaIconView(bundleKey: collectionIcon)
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
+            }
         }
     }
     
     @ViewBuilder
     private var noCollectionsView: some View {
         ContentUnavailableView {
-            Label(LocalizedStringKey(noCollectionsTitle), systemImage: collectionIcon)
+            Label {
+                Text(LocalizedStringKey(noCollectionsTitle))
+            } icon: {
+                YabaIconView(bundleKey: collectionIcon)
+                    .scaledToFit()
+                    .frame(width: 52, height: 52)
+            }
         } description: {
             Text(LocalizedStringKey(noCollectionsMessage))
         }

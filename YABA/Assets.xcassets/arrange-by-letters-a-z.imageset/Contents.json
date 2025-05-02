@@ -1,0 +1,15 @@
+{
+  "images" : [
+    {
+      "filename" : "arrange-by-letters-a-z.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  },
+  "properties" : {
+    "preserves-vector-representation" : true
+  }
+}

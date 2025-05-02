@@ -11,14 +11,16 @@ struct MacOSHoverableToolbarIcon: View {
     @State
     private var isHovered: Bool = false
     
-    let systemImage: String
+    let bundleKey: String
     let onPressed: () -> Void
     
     var body: some View {
         Button {
             onPressed()
         } label: {
-            Image(systemName: systemImage)
+            YabaIconView(bundleKey: bundleKey)
+                .scaledToFit()
+                .frame(width: 28, height: 28)
                 .padding(8)
                 .background {
                     if isHovered {

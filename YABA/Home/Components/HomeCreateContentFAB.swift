@@ -74,10 +74,12 @@ struct HomeCreateContentFAB: View {
                     width: isMini ? 48 : 72,
                     height: isMini ? 48 : 72
                 )
-            Image(systemName: type.getIcon())
+            YabaIconView(bundleKey: type.getIcon())
                 .foregroundStyle(.white)
-                .fontWeight(.bold)
-                .font(.system(size: isMini ? 18 : 24))
+                .frame(
+                    width: isMini ? 18 : 24,
+                    height: isMini ? 18 : 24
+                )
         }
         .shadow(radius: 4)
         .rotationEffect(Angle(degrees: isMini ? 0 : isActive ? 45 : 0))

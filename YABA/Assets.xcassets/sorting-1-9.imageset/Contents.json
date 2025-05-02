@@ -1,0 +1,15 @@
+{
+  "images" : [
+    {
+      "filename" : "sorting-1-9.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  },
+  "properties" : {
+    "preserves-vector-representation" : true
+  }
+}

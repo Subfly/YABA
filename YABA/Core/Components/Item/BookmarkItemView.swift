@@ -98,8 +98,7 @@ struct BookmarkItemView: View {
             }
             if UIDevice.current.userInterfaceIdiom == .phone {
                 Spacer()
-                Image(systemName: "chevron.right")
-                    .resizable()
+                YabaIconView(bundleKey: "arrow-right-01")
                     .scaledToFit()
                     .frame(width: 12, height: 12)
                     .foregroundStyle(.tertiary)
@@ -136,7 +135,7 @@ struct BookmarkItemView: View {
             shouldShowDeleteDialog = true
         } label: {
             VStack {
-                Image(systemName: "trash")
+                YabaIconView(bundleKey: "delete-02")
                 Text("Delete")
             }
         }.tint(.red)
@@ -144,7 +143,7 @@ struct BookmarkItemView: View {
             selectedBookmarkToEdit = bookmark
         } label: {
             VStack {
-                Image(systemName: "pencil")
+                YabaIconView(bundleKey: "edit-02")
                 Text("Edit")
             }
         }.tint(.orange)
@@ -156,7 +155,7 @@ struct BookmarkItemView: View {
             selectedBookmarkToEdit = bookmark
         } label: {
             VStack {
-                Image(systemName: "pencil")
+                YabaIconView(bundleKey: "edit-02")
                 Text("Edit")
             }
         }.tint(.orange)
@@ -165,7 +164,7 @@ struct BookmarkItemView: View {
             shouldShowDeleteDialog = true
         } label: {
             VStack {
-                Image(systemName: "trash")
+                YabaIconView(bundleKey: "delete-02")
                 Text("Delete")
             }
         }.tint(.red)

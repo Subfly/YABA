@@ -99,17 +99,27 @@ struct BookmarkDetail: View {
                     .scaledToFill()
                     .frame(idealHeight: 250, alignment: .center)
             } else {
-                ContentUnavailableView(
-                    "Bookmark Detail Image Error Title",
-                    systemImage: "photo.badge.exclamationmark",
-                    description: Text("Bookmark Detail Image Error Description")
-                )
+                ContentUnavailableView {
+                    Label {
+                        Text("Bookmark Detail Image Error Title")
+                    } icon: {
+                        YabaIconView(bundleKey: "image-not-found-01")
+                            .scaledToFit()
+                            .frame(width: 52, height: 52)
+                    }
+                } description: {
+                    Text("Bookmark Detail Image Error Description")
+                }
             }
         } header: {
-            Label(
-                "Bookmark Detail Image Header Title",
-                systemImage: "photo"
-            ).padding(.leading)
+            Label {
+                Text("Bookmark Detail Image Header Title")
+            } icon: {
+                YabaIconView(bundleKey: "image-03")
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
+            }.padding(.leading)
+
         } footer: {
             HStack {
                 if let iconData = self.bookmark?.iconData,
@@ -119,7 +129,9 @@ struct BookmarkDetail: View {
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 18, height: 18)
                 } else {
-                    Image(systemName: "link.circle.fill")
+                    YabaIconView(bundleKey: "link-02")
+                        .scaledToFit()
+                        .frame(width: 18, height: 18)
                 }
                 Text(
                     self.bookmark?.domain.isEmpty == true
@@ -256,13 +268,13 @@ struct BookmarkDetail: View {
         #if targetEnvironment(macCatalyst)
         HStack {
             MacOSHoverableToolbarIcon(
-                systemImage: "pencil",
+                bundleKey: "pencil",
                 onPressed: {
                     state.shouldShowEditBookmarkSheet = true
                 }
             )
             MacOSHoverableToolbarIcon(
-                systemImage: "trash",
+                bundleKey: "trash",
                 onPressed: {
                     state.shouldShowDeleteDialog = true
                 }

@@ -28,11 +28,9 @@ struct IconPickerView: View {
         NavigationView {
             ScrollView {
                 LazyVGrid(columns: columns, spacing: 32) {
-                    ForEach(data.iconKeys, id: \.self) { iconKey in
-                        let subIcons = data.getIconValues(for: iconKey)
+                    ForEach(data.icons, id: \.self) { icon in
                         PickableIcon(
-                            key: iconKey,
-                            subIcons: subIcons,
+                            key: icon.name,
                             onSelectIcon: onSelectIcon
                         )
                     }
@@ -58,58 +56,18 @@ struct IconPickerView: View {
 }
 
 private struct PickableIcon: View {
+    @Environment(\.colorScheme)
+    private var colorScheme
+    
     let key: String
-    let subIcons: [String]
     let onSelectIcon: (String) -> Void
     
-    @State
-    private var showVariantSelectionSheet: Bool = false
-    
-    private let columns = [
-        GridItem(),
-        GridItem(),
-        GridItem(),
-        GridItem()
-    ]
-    
     var body: some View {
-        Image(systemName: subIcons.first ?? key)
-            .resizable()
+        YabaIconView(bundleKey: key)
             .aspectRatio(contentMode: .fit)
             .frame(width: 44, height: 44)
             .onTapGesture {
-                if subIcons.count == 1 {
-                    onSelectIcon(key)
-                } else {
-                    showVariantSelectionSheet = true
-                }
-            }
-            .sheet(isPresented: $showVariantSelectionSheet) {
-                NavigationView {
-                    ScrollView {
-                        LazyVGrid(columns: columns, spacing: 32) {
-                            ForEach(subIcons, id: \.self) { iconKey in
-                                Image(systemName: iconKey)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 44, height: 44)
-                                    .onTapGesture {
-                                        onSelectIcon(iconKey)
-                                    }
-                            }
-                        }
-                        .safeAreaPadding(.top)
-                    }
-                    .navigationTitle("Pick Icon Variant")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .cancellationAction) {
-                            Button("Cancel", role: .cancel) {
-                                showVariantSelectionSheet = false
-                            }
-                        }
-                    }
-                }.presentationDetents([.fraction(subIcons.count > 4 ? 0.5 : 0.25)])
+                onSelectIcon(key)
             }
     }
 }

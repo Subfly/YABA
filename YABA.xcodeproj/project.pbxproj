@@ -59,6 +59,7 @@
 			membershipExceptions = (
 				Core/Components/ColorPicker/YabaColorPicker.swift,
 				Core/Components/Gradient/AnimatedMeshGradient.swift,
+				Core/Components/Icon/YabaIconView.swift,
 				Core/Components/IconPicker/IconPickerData.swift,
 				Core/Components/IconPicker/IconPickerView.swift,
 				Core/Components/Item/BookmarkItemView.swift,
@@ -74,6 +75,7 @@
 				Core/Model/CollectionType.swift,
 				Core/Model/YabaCollection.swift,
 				Core/Model/YabaColor.swift,
+				Core/Model/YabaIcon.swift,
 				Core/Model/YabaLinkPreview.swift,
 				Core/Util/Constants.swift,
 				Core/Util/CreationType.swift,

@@ -15,12 +15,12 @@ enum BookmarkType: Int, Codable, CaseIterable {
     
     func getIconName() -> String {
         return switch self {
-        case .none: "bookmark"
+        case .none: "bookmark-02"
         case .webLink: "safari"
-        case .video: "video"
-        case .image: "photo"
+        case .video: "video-01"
+        case .image: "image-03"
         case .audio: "headphones"
-        case .music: "music.note"
+        case .music: "music-note-01"
         }
     }
     

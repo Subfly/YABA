@@ -30,7 +30,7 @@ struct YabaColorPicker: View {
                     Label {
                         Text("Select Color Title")
                     } icon: {
-                        Image(systemName: "swatchpalette")
+                        YabaIconView(bundleKey: "paint-board")
                     }
                 }
             )

@@ -1,0 +1,15 @@
+{
+  "images" : [
+    {
+      "filename" : "wireless-cloud-access.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  },
+  "properties" : {
+    "preserves-vector-representation" : true
+  }
+}

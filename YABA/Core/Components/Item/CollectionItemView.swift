@@ -127,8 +127,10 @@ struct CollectionItemView: View {
     private var mainLabel: some View {
         HStack {
             HStack {
-                Image(systemName: collection.icon)
+                YabaIconView(bundleKey: collection.icon)
+                    .scaledToFit()
                     .foregroundStyle(collection.color.getUIColor())
+                    .frame(width: 24, height: 24)
                 Text(collection.label)
             }
             Spacer()
@@ -137,7 +139,9 @@ struct CollectionItemView: View {
                     Menu {
                         menuActionItems
                     } label: {
-                        Image(systemName: "ellipsis.circle")
+                        YabaIconView(bundleKey: "more-horizontal-circle-02")
+                            .scaledToFit()
+                            .frame(width: 20, height: 20)
                     }
                 }
                 Text("\(collection.bookmarks.count)")
@@ -145,10 +149,9 @@ struct CollectionItemView: View {
                     .fontWeight(.medium)
             }.foregroundStyle(.secondary)
             if UIDevice.current.userInterfaceIdiom == .phone && !isInSelectionMode {
-                Image(systemName: "chevron.right")
-                    .resizable()
+                YabaIconView(bundleKey: "arrow-right-01")
                     .scaledToFit()
-                    .frame(width: 12, height: 12)
+                    .frame(width: 24, height: 24)
                     .foregroundStyle(.tertiary)
             }
         }
@@ -162,7 +165,7 @@ struct CollectionItemView: View {
             shouldShowCreateBookmarkSheet = true
         } label: {
             VStack {
-                Image(systemName: "bookmark")
+                YabaIconView(bundleKey: "bookmark-add-02")
                 Text("New")
             }
         }.tint(.mint)
@@ -171,7 +174,7 @@ struct CollectionItemView: View {
             shouldShowEditSheet = true
         } label: {
             VStack {
-                Image(systemName: "pencil")
+                YabaIconView(bundleKey: "edit-02")
                 Text("Edit")
             }
         }.tint(.orange)
@@ -180,7 +183,7 @@ struct CollectionItemView: View {
             shouldShowDeleteDialog = true
         } label: {
             VStack {
-                Image(systemName: "trash")
+                YabaIconView(bundleKey: "delete-02")
                 Text("Delete")
             }
         }.tint(.red)
@@ -193,7 +196,7 @@ struct CollectionItemView: View {
             shouldShowDeleteDialog = true
         } label: {
             VStack {
-                Image(systemName: "trash")
+                YabaIconView(bundleKey: "delete-02")
                 Text("Delete")
             }
         }.tint(.red)
@@ -202,7 +205,7 @@ struct CollectionItemView: View {
             shouldShowEditSheet = true
         } label: {
             VStack {
-                Image(systemName: "pencil")
+                YabaIconView(bundleKey: "edit-02")
                 Text("Edit")
             }
         }.tint(.orange)
@@ -211,7 +214,7 @@ struct CollectionItemView: View {
             shouldShowCreateBookmarkSheet = true
         } label: {
             VStack {
-                Image(systemName: "bookmark")
+                YabaIconView(bundleKey: "bookmark-add-02")
                 Text("New")
             }
         }.tint(.mint)

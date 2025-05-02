@@ -14,13 +14,13 @@ enum ToastIconType {
     func getIcon() -> String {
         switch self {
         case .warning:
-            "exclamationmark.triangle"
+            "alert-02"
         case .success:
-            "party.popper"
+            "checkmark-badge-02"
         case .error:
-            "x.circle"
+            "cancel-cricle"
         default:
-            "questionmark.circle"
+            "help-circle"
         }
     }
 }

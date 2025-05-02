@@ -27,11 +27,17 @@ struct CollectionDetail: View {
             )
             if let collection {
                 if collection.bookmarks.isEmpty {
-                    ContentUnavailableView(
-                        "No Bookmarks Title",
-                        systemImage: "bookmark",
-                        description: Text("No Bookmarks Message")
-                    )
+                    ContentUnavailableView {
+                        Label {
+                            Text("No Bookmarks Title")
+                        } icon: {
+                            YabaIconView(bundleKey: "bookmark-02")
+                                .scaledToFit()
+                                .frame(width: 52, height: 52)
+                        }
+                    } description: {
+                        Text("No Bookmarks Message")
+                    }
                 } else {
                     let filtered = collection.bookmarks.filter {
                         if state.searchQuery.isEmpty {
@@ -43,11 +49,17 @@ struct CollectionDetail: View {
                     }
                     Group {
                         if filtered.isEmpty {
-                            ContentUnavailableView(
-                                "Search No Bookmarks Found Title",
-                                systemImage: "bookmark.slash",
-                                description: Text("Search No Bookmarks Found Description \(state.searchQuery)")
-                            )
+                            ContentUnavailableView {
+                                Label {
+                                    Text("Search No Bookmarks Found Title")
+                                } icon: {
+                                    YabaIconView(bundleKey: "bookmark-off-02")
+                                        .scaledToFit()
+                                        .frame(width: 52, height: 52)
+                                }
+                            } description: {
+                                Text("Search No Bookmarks Found Description \(state.searchQuery)")
+                            }
                         } else {
                             List(selection: $selectedBookmark) {
                                 ForEach(filtered) { bookmark in
@@ -69,11 +81,17 @@ struct CollectionDetail: View {
                     )
                 }
             } else {
-                ContentUnavailableView(
-                    "No Selected Collection Title",
-                    systemImage: "square.stack",
-                    description: Text("No Selected Collection Message")
-                )
+                ContentUnavailableView {
+                    Label {
+                        Text("No Selected Collection Title")
+                    } icon: {
+                        YabaIconView(bundleKey: "dashboard-square-02")
+                            .scaledToFit()
+                            .frame(width: 52, height: 52)
+                    }
+                } description: {
+                    Text("No Selected Collection Message")
+                }
             }
         }
         .navigationTitle(collection?.label ?? "")
@@ -82,7 +100,7 @@ struct CollectionDetail: View {
                 ToolbarItem(placement: .primaryAction) {
                     #if targetEnvironment(macCatalyst)
                     MacOSHoverableToolbarIcon(
-                        systemImage: "plus.circle",
+                        bundleKey: "plus-sign-circle",
                         onPressed: {
                             state.shouldShowCreateBookmarkSheet = true
                         }
@@ -91,7 +109,7 @@ struct CollectionDetail: View {
                     Button {
                         state.shouldShowCreateBookmarkSheet = true
                     } label: {
-                        Image(systemName: "plus.circle")
+                        YabaIconView(bundleKey: "plus-sign-circle")
                     }
                     #endif
                 }

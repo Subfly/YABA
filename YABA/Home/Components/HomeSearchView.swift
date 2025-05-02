@@ -48,16 +48,28 @@ struct HomeSearchView: View {
         if bookmarks.isEmpty {
             if searchQuery.isEmpty {
                 ContentUnavailableView {
-                    Label("No Bookmarks Title", systemImage: "bookmark")
+                    Label {
+                        Text("No Bookmarks Title")
+                    } icon: {
+                        YabaIconView(bundleKey: "bookmark-02")
+                            .scaledToFit()
+                            .frame(width: 52, height: 52)
+                    }
                 } description: {
                     Text("No Bookmarks Message")
                 }
             } else {
-                ContentUnavailableView(
-                    "Search No Bookmarks Found Title",
-                    systemImage: "bookmark.slash",
-                    description: Text("Search No Bookmarks Found Description \(searchQuery)")
-                )
+                ContentUnavailableView {
+                    Label {
+                        Text("Search No Bookmarks Found Title")
+                    } icon: {
+                        YabaIconView(bundleKey: "bookmark-off-02")
+                            .scaledToFit()
+                            .frame(width: 52, height: 52)
+                    }
+                } description: {
+                    Text("Search No Bookmarks Found Description \(searchQuery)")
+                }
             }
         } else {
             ForEach(bookmarks) { bookmark in

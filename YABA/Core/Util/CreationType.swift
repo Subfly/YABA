@@ -11,13 +11,13 @@ enum CreationType {
     func getIcon() -> String {
         switch self {
         case .bookmark:
-            "bookmark"
+            "bookmark-02"
         case .folder:
-            "folder"
+            "folder-01"
         case .tag:
-            "tag"
+            "tag-01"
         default:
-            "plus"
+            "plus-sign"
         }
     }
 }

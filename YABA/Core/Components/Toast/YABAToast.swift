@@ -23,8 +23,7 @@ struct YABAToast: View {
                     maxWidth: state.iconType != .none ? .infinity : 12
                 )
                 if self.state.iconType != .none {
-                    Image(systemName: state.iconType.getIcon())
-                        .renderingMode(.template)
+                    YabaIconView(bundleKey: state.iconType.getIcon())
                         .tint(state.contentColor ?? .primary)
                 }
             }
