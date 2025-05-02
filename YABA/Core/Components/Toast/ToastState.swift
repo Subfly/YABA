@@ -11,7 +11,7 @@ struct ToastState {
     var message: LocalizedStringKey = ""
     var contentColor: Color? = nil
     var accentColor: Color? = nil
-    var acceptText: String? = nil
+    var acceptText: LocalizedStringKey? = nil
     var iconType: ToastIconType = .none
     var duration: ToastDuration = .short
     var position: ToastPosition = .bottom

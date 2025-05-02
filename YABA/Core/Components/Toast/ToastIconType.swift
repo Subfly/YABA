@@ -18,7 +18,7 @@ enum ToastIconType {
         case .success:
             "checkmark-badge-02"
         case .error:
-            "cancel-cricle"
+            "cancel-circle"
         default:
             "help-circle"
         }

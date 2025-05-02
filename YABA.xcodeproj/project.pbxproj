@@ -57,6 +57,7 @@
 		96A8E0C02DB5CDA300A47601 /* Exceptions for "YABA" folder in "YABAShare" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Assets.xcassets,
 				Core/Components/ColorPicker/YabaColorPicker.swift,
 				Core/Components/Gradient/AnimatedMeshGradient.swift,
 				Core/Components/Icon/YabaIconView.swift,

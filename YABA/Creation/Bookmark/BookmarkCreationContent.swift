@@ -15,7 +15,7 @@ struct BookmarkCreationContent: View {
     private var modelContext
     
     @State
-    private var state: BookmarkCreationState = .init()
+    private var state: BookmarkCreationState
     
     @Binding
     var bookmarkToEdit: Bookmark?
@@ -37,6 +37,8 @@ struct BookmarkCreationContent: View {
     ) {
         _bookmarkToEdit = bookmarkToEdit
         _initialCollection = initialCollection
+        
+        self.state = .init(isInEditMode: bookmarkToEdit.wrappedValue != nil)
         self.link = link
         self.onExitRequested = onExitRequested
         

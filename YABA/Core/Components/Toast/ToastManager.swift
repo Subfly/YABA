@@ -18,7 +18,7 @@ class ToastManager {
         message: LocalizedStringKey,
         contentColor: Color? = nil,
         accentColor: Color? = nil,
-        acceptText: String? = nil,
+        acceptText: LocalizedStringKey? = nil,
         iconType: ToastIconType = .none,
         duration: ToastDuration = .short,
         position: ToastPosition = .bottom,

@@ -15,11 +15,12 @@ import Combine
 class BookmarkCreationState {
     @ObservationIgnored
     private let unfurler: Unfurler = .init()
-    
     @ObservationIgnored
     private var debouncedUrl = CurrentValueSubject<String, Never>("")
     @ObservationIgnored
     private var cancels = Set<AnyCancellable>()
+    @ObservationIgnored
+    var lastFetchedUrl: String = ""
     
     var url: String = "" {
         didSet {
@@ -42,8 +43,15 @@ class BookmarkCreationState {
     
     let toastManager: ToastManager = .init()
     
+    @ObservationIgnored
+    let isInEditMode: Bool
+    
+    init(isInEditMode: Bool) {
+        self.isInEditMode = isInEditMode
+    }
+    
     func fetchData(with urlString: String) async {
-        if urlString.isEmpty {
+        if urlString.isEmpty || urlString == lastFetchedUrl {
             return
         }
         
@@ -61,30 +69,39 @@ class BookmarkCreationState {
                 self.imageData = fetched.imageData
             }
             hasError = false
+            lastFetchedUrl = urlString
             toastManager.show(
                 message: LocalizedStringKey("Generic Unfurl Success Text"),
                 accentColor: .green,
+                acceptText: LocalizedStringKey("Ok"),
                 iconType: .success,
+                onAcceptPressed: { self.toastManager.hide() }
             )
         } catch UnfurlError.cannotCreateURL(let message) {
             toastManager.show(
                 message: message,
                 accentColor: .red,
+                acceptText: LocalizedStringKey("Ok"),
                 iconType: .error,
+                onAcceptPressed: { self.toastManager.hide() }
             )
             hasError = true
         } catch UnfurlError.unableToUnfurl(let message) {
             toastManager.show(
                 message: message,
                 accentColor: .red,
+                acceptText: LocalizedStringKey("Ok"),
                 iconType: .error,
+                onAcceptPressed: { self.toastManager.hide() }
             )
             hasError = true
         } catch {
             toastManager.show(
                 message: LocalizedStringKey("Generic Unfurl Error Text"),
                 accentColor: .red,
+                acceptText: LocalizedStringKey("Ok"),
                 iconType: .error,
+                onAcceptPressed: { self.toastManager.hide() }
             )
             hasError = true
         }
@@ -92,6 +109,7 @@ class BookmarkCreationState {
     
     func listenUrlChanges(_ perform: @escaping (String) -> Void) {
         debouncedUrl.debounce(for: 0.75, scheduler: RunLoop.main)
+            .dropFirst(isInEditMode ? 1 : 0)
             .sink { perform($0) }
             .store(in: &cancels)
     }

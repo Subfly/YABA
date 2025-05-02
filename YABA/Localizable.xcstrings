@@ -710,6 +710,18 @@
         }
       }
     },
+    "Ok" : {
+      "comment" : "Text to show in toast as a done action",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        }
+      }
+    },
     "Pick Icon" : {
       "comment" : "Title to show when user open the icon picker",
       "extractionState" : "manual",
