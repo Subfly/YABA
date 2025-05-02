@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct YABAToast: View {
+struct YabaToast: View {
     @State
     private var offset = CGFloat.zero
     
@@ -24,11 +24,13 @@ struct YABAToast: View {
                 )
                 if self.state.iconType != .none {
                     YabaIconView(bundleKey: state.iconType.getIcon())
+                        .scaledToFit()
+                        .frame(width: 32, height: 32)
                         .tint(state.contentColor ?? .primary)
                 }
             }
             .frame(
-                maxWidth: state.iconType != .none ? 40 : 12,
+                maxWidth: state.iconType != .none ? 60 : 20,
                 maxHeight: 60
             )
             ZStack {
@@ -99,7 +101,7 @@ struct YABAToast: View {
 }
 
 #Preview {
-    YABAToast(
+    YabaToast(
         state: ToastState(
             accentColor: .green,
             iconType: .success

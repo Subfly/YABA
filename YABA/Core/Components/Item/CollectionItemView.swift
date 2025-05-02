@@ -160,15 +160,17 @@ struct CollectionItemView: View {
     
     @ViewBuilder
     private var menuActionItems: some View {
-        Button {
-            selectedCollectionToPerformActions = collection
-            shouldShowCreateBookmarkSheet = true
-        } label: {
-            VStack {
-                YabaIconView(bundleKey: "bookmark-add-02")
-                Text("New")
-            }
-        }.tint(.mint)
+        if !isInSelectionMode {
+            Button {
+                selectedCollectionToPerformActions = collection
+                shouldShowCreateBookmarkSheet = true
+            } label: {
+                VStack {
+                    YabaIconView(bundleKey: "bookmark-add-02")
+                    Text("New")
+                }
+            }.tint(.mint)
+        }
         Button {
             selectedCollectionToPerformActions = collection
             shouldShowEditSheet = true
@@ -209,15 +211,17 @@ struct CollectionItemView: View {
                 Text("Edit")
             }
         }.tint(.orange)
-        Button {
-            selectedCollectionToPerformActions = collection
-            shouldShowCreateBookmarkSheet = true
-        } label: {
-            VStack {
-                YabaIconView(bundleKey: "bookmark-add-02")
-                Text("New")
-            }
-        }.tint(.mint)
+        if !isInSelectionMode {
+            Button {
+                selectedCollectionToPerformActions = collection
+                shouldShowCreateBookmarkSheet = true
+            } label: {
+                VStack {
+                    YabaIconView(bundleKey: "bookmark-add-02")
+                    Text("New")
+                }
+            }.tint(.mint)
+        }
     }
     
     @ViewBuilder

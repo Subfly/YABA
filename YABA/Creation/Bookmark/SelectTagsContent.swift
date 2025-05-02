@@ -94,13 +94,19 @@ private struct SelectTagsSearchableContent: View {
         List {
             Section {
                 if selectedTags.isEmpty {
-                    ContentUnavailableView(
-                        "Select Tags No Tags Selected Title",
-                        systemImage: "tag.slash",
-                        description: Text(
+                    ContentUnavailableView {
+                        Label {
+                            Text("Select Tags No Tags Selected Title")
+                        } icon: {
+                            YabaIconView(bundleKey: "tags")
+                                .scaledToFit()
+                                .frame(width: 52, height: 52)
+                        }
+                    } description: {
+                        Text(
                             LocalizedStringKey("Select Tags No Tags Selected Message")
                         )
-                    )
+                    }
                 } else {
                     ForEach(selectedTags) { tag in
                         CollectionItemView(
@@ -135,7 +141,13 @@ private struct SelectTagsSearchableContent: View {
                     }
                 }
             } header: {
-                Label("Selected Tags Label Title", systemImage: "checkmark.circle")
+                Label {
+                    Text("Selected Tags Label Title")
+                } icon: {
+                    YabaIconView(bundleKey: "checkmark-badge-02")
+                        .scaledToFit()
+                        .frame(width: 18, height: 18)
+                }
             }
             Section {
                 // Thanks swiftdata for this...
@@ -143,36 +155,54 @@ private struct SelectTagsSearchableContent: View {
                 if tags.isEmpty {
                     if searchQuery.isEmpty {
                         if selectedTags.isEmpty {
-                            ContentUnavailableView(
-                                "Select Tags No Tags Available Title",
-                                systemImage: "tag",
-                                description: Text(
+                            ContentUnavailableView {
+                                Label {
+                                    Text("Select Tags No Tags Available Title")
+                                } icon: {
+                                    YabaIconView(bundleKey: "tag-01")
+                                        .scaledToFit()
+                                        .frame(width: 52, height: 52)
+                                }
+                            } description: {
+                                Text(
                                     LocalizedStringKey(
                                         "Select Tags No Tags Available Description"
                                     )
                                 )
-                            )
+                            }
                         } else {
-                            ContentUnavailableView(
-                                "Select Tags No More Tags Left Title",
-                                systemImage: "x.circle",
-                                description: Text(
+                            ContentUnavailableView {
+                                Label {
+                                    Text("Select Tags No More Tags Left Title")
+                                } icon: {
+                                    YabaIconView(bundleKey: "tags")
+                                        .scaledToFit()
+                                        .frame(width: 52, height: 52)
+                                }
+                            } description: {
+                                Text(
                                     LocalizedStringKey(
                                         "Select Tags No More Tags Left Description"
                                     )
                                 )
-                            )
+                            }
                         }
                     } else {
-                        ContentUnavailableView(
-                            "Select Tags No Tags Found In Search Title",
-                            systemImage: "magnifyingglass",
-                            description: Text(
+                        ContentUnavailableView {
+                            Label {
+                                Text("Select Tags No Tags Found In Search Title")
+                            } icon: {
+                                YabaIconView(bundleKey: "search-01")
+                                    .scaledToFit()
+                                    .frame(width: 52, height: 52)
+                            }
+                        } description: {
+                            Text(
                                 LocalizedStringKey(
                                     "Select Tags No Tags Found In Search Description \(searchQuery)"
                                 )
                             )
-                        )
+                        }
                     }
                 } else {
                     ForEach(tags) { tag in
@@ -194,7 +224,13 @@ private struct SelectTagsSearchableContent: View {
                     }
                 }
             } header: {
-                Label("Selectable Tags Label Title", systemImage: "tag")
+                Label {
+                    Text("Selectable Tags Label Title")
+                } icon: {
+                    YabaIconView(bundleKey: "tag-01")
+                        .scaledToFit()
+                        .frame(width: 18, height: 18)
+                }
             }
         }
     }

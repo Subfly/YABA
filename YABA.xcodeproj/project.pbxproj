@@ -69,7 +69,7 @@
 				Core/Components/Toast/ToastManager.swift,
 				Core/Components/Toast/ToastPosition.swift,
 				Core/Components/Toast/ToastState.swift,
-				Core/Components/Toast/YABAToast.swift,
+				Core/Components/Toast/YabaToast.swift,
 				Core/Model/Bookmark.swift,
 				Core/Model/BookmarkType.swift,
 				Core/Model/CollectionType.swift,

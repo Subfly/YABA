@@ -36,7 +36,8 @@ struct SelectFolderContent: View {
                 Button {
                     showFolderCreationSheet = true
                 } label: {
-                    Image(systemName: "folder.badge.plus")
+                    YabaIconView(bundleKey: "folder-add")
+                        .scaledToFit()
                 }
             }
         }
@@ -87,25 +88,37 @@ private struct SelectFolderSearchableContent: View {
         List {
             if allFolders.isEmpty {
                 if searchQuery.isEmpty {
-                    ContentUnavailableView(
-                        "Select Folder No Folders Available Title",
-                        systemImage: "folder",
-                        description: Text(
+                    ContentUnavailableView {
+                        Label {
+                            Text("Select Folder No Folders Available Title")
+                        } icon: {
+                            YabaIconView(bundleKey: "folder-01")
+                                .scaledToFit()
+                                .frame(width: 52, height: 52)
+                        }
+                    } description: {
+                        Text(
                             LocalizedStringKey(
                                 "Select Folder No Folders Available Description"
                             )
                         )
-                    )
+                    }
                 } else {
-                    ContentUnavailableView(
-                        "Select Folder No Folder Found In Search Title",
-                        systemImage: "magnifyingglass",
-                        description: Text(
+                    ContentUnavailableView {
+                        Label {
+                            Text("Select Folder No Folder Found In Search Title")
+                        } icon: {
+                            YabaIconView(bundleKey: "search-01")
+                                .scaledToFit()
+                                .frame(width: 52, height: 52)
+                        }
+                    } description: {
+                        Text(
                             LocalizedStringKey(
                                 "Select Folder No Folder Found In Search Description \(searchQuery)"
                             )
                         )
-                    )
+                    }
                 }
             } else {
                 ForEach(allFolders) { folder in

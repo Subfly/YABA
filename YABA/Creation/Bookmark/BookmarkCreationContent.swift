@@ -58,28 +58,37 @@ struct BookmarkCreationContent: View {
                         bookmarkPreviewItem
                             .redacted(reason: state.isLoading ? .placeholder : [])
                     } header: {
-                        Label(
-                            "Preview",
-                            systemImage: "rectangle.and.text.magnifyingglass"
-                        )
+                        Label {
+                            Text("Preview")
+                        } icon: {
+                            YabaIconView(bundleKey: "image-03")
+                                .scaledToFit()
+                                .frame(width: 18, height: 18)
+                        }
                     }
                     
                     Section {
                         bookmarkInfoSectionItems
                     } header: {
-                        Label(
-                            "Info",
-                            systemImage: "info.circle"
-                        )
+                        Label {
+                            Text("Info")
+                        } icon: {
+                            YabaIconView(bundleKey: "information-circle")
+                                .scaledToFit()
+                                .frame(width: 18, height: 18)
+                        }
                     }
                     
                     Section {
                         bookmarkFolderSelectionView
                     } header: {
-                        Label(
-                            "Folder",
-                            systemImage: "folder"
-                        )
+                        Label {
+                            Text("Folder")
+                        } icon: {
+                            YabaIconView(bundleKey: "folder-01")
+                                .scaledToFit()
+                                .frame(width: 18, height: 18)
+                        }
                     }
                     
                     Section {
@@ -133,22 +142,22 @@ struct BookmarkCreationContent: View {
             : .bottom
         ) {
             if state.toastManager.toastState.position == .top {
-                YABAToast(
+                YabaToast(
                     state: state.toastManager.toastState,
                     onDismissRequest: {
                         state.toastManager.hide()
                     }
                 )
-                .offset(y: state.toastManager.isShowing ? 75 : -1000)
+                .offset(y: state.toastManager.isShowing ? 25 : -1000)
                 .transition(.move(edge: .top))
             } else {
-                YABAToast(
+                YabaToast(
                     state: state.toastManager.toastState,
                     onDismissRequest: {
                         state.toastManager.hide()
                     }
                 )
-                .offset(y: state.toastManager.isShowing ? -75 : 1000)
+                .offset(y: state.toastManager.isShowing ? -25 : 1000)
                 .transition(.move(edge: .bottom))
             }
         }
@@ -189,9 +198,8 @@ struct BookmarkCreationContent: View {
                 .fill(.tint.opacity(0.3))
                 .frame(width: 64, height: 64)
                 .overlay {
-                    Image(systemName: state.selectedType.getIconName())
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
+                    YabaIconView(bundleKey: state.selectedType.getIconName())
+                        .scaledToFit()
                         .foregroundStyle(.tint)
                         .frame(width: 32, height: 32)
                 }
@@ -218,9 +226,8 @@ struct BookmarkCreationContent: View {
             prompt: Text("Create Bookmark URL Placeholder")
         )
         .safeAreaInset(edge: .leading) {
-            Image(systemName: "link.circle")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
+            YabaIconView(bundleKey: "link-02")
+                .scaledToFit()
                 .frame(width: 20, height: 20)
                 .foregroundStyle(.tint)
         }
@@ -231,17 +238,15 @@ struct BookmarkCreationContent: View {
             prompt: Text("Create Bookmark Title Placeholder")
         )
         .safeAreaInset(edge: .leading) {
-            Image(systemName: "t.square")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
+            YabaIconView(bundleKey: "text")
+                .scaledToFit()
                 .frame(width: 20, height: 20)
                 .foregroundStyle(.tint)
         }
         
         HStack(alignment: .top) {
-            Image(systemName: "text.page")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
+            YabaIconView(bundleKey: "paragraph")
+                .scaledToFit()
                 .frame(width: 20, height: 20)
                 .foregroundStyle(.tint)
             TextField(
@@ -263,18 +268,16 @@ struct BookmarkCreationContent: View {
         } label: {
             if let folder = state.selectedFolder {
                 HStack {
-                    Image(systemName: folder.icon)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
+                    YabaIconView(bundleKey: folder.icon)
+                        .scaledToFit()
                         .frame(width: 20, height: 20)
                         .foregroundStyle(.tint)
                     Text(folder.label)
                 }
             } else {
                 HStack {
-                    Image(systemName: "folder")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
+                    YabaIconView(bundleKey: "folder-01")
+                        .scaledToFit()
                         .frame(width: 20, height: 20)
                         .foregroundStyle(.tint)
                     Text("Create Bookmark Folder Placeholder")
@@ -286,15 +289,22 @@ struct BookmarkCreationContent: View {
     @ViewBuilder
     private var bookmarkAddTagsView: some View {
         if state.selectedTags.isEmpty {
-            ContentUnavailableView(
-                "Create Bookmark No Tags Selected Title",
-                systemImage: "tag",
-                description: Text("Create Bookmark No Tags Selected Description")
-            )
+            ContentUnavailableView {
+                Label {
+                    Text("Create Bookmark No Tags Selected Title")
+                } icon: {
+                    YabaIconView(bundleKey: "tag-01")
+                        .scaledToFit()
+                        .frame(width: 52, height: 52)
+                }
+            } description: {
+                Text("Create Bookmark No Tags Selected Description")
+            }
         } else {
             ForEach(state.selectedTags) { tag in
                 HStack {
-                    Image(systemName: tag.icon)
+                    YabaIconView(bundleKey: tag.icon)
+                        .frame(width: 24, height: 24)
                         .foregroundStyle(tag.color.getUIColor())
                     Text(tag.label)
                 }
@@ -305,22 +315,34 @@ struct BookmarkCreationContent: View {
     @ViewBuilder
     private var bookmarkAddOrEditTagsButton: some View {
         HStack {
-            Label(
-                "Tags Title",
-                systemImage: "tag"
-            )
+            Label {
+                Text("Tags Title")
+            } icon: {
+                YabaIconView(bundleKey: "tag-01")
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
+            }
             Spacer()
             NavigationLink {
                 SelectTagsContent(selectedTags: $state.selectedTags)
             } label: {
-                Label(
-                    state.selectedTags.isEmpty
-                    ? "Create Bookmark Add Tags"
-                    : "Create Bookmark Edit Tags",
-                    systemImage: state.selectedTags.isEmpty
-                    ? "plus"
-                    : "pencil"
-                ).textCase(.none)
+                Label {
+                    Text(
+                        LocalizedStringKey(
+                            state.selectedTags.isEmpty
+                            ? "Create Bookmark Add Tags"
+                            : "Create Bookmark Edit Tags"
+                        )
+                    ).textCase(.none)
+                } icon: {
+                    YabaIconView(
+                        bundleKey: state.selectedTags.isEmpty
+                        ? "plus-sign"
+                        : "edit-02"
+                    )
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
+                }
             }
         }
     }
@@ -329,13 +351,18 @@ struct BookmarkCreationContent: View {
     private var bookmarkTypePicker: some View {
         Picker(selection: $state.selectedType) {
             ForEach(BookmarkType.allCases, id: \.self) { type in
-                Label(type.getUITitle(), systemImage: type.getIconName())
+                Label {
+                    // TODO: ADD TO LOCALIZATION
+                    Text(type.getUITitle())
+                } icon: {
+                    YabaIconView(bundleKey: type.getIconName())
+                        .scaledToFit()
+                }
             }
         } label: {
             HStack {
-                Image(systemName: state.selectedType.getIconName())
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
+                YabaIconView(bundleKey: state.selectedType.getIconName())
+                    .scaledToFit()
                     .frame(width: 20, height: 20)
                     .foregroundStyle(.tint)
                 Text("Create Bookmark Type Placeholder")

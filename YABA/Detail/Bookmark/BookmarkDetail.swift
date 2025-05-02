@@ -150,9 +150,8 @@ struct BookmarkDetail: View {
     private var infoSection: some View {
         Section {
             HStack(alignment: .top) {
-                Image(systemName: "t.square")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
+                YabaIconView(bundleKey: "text")
+                    .scaledToFit()
                     .frame(width: 20, height: 20)
                     .foregroundStyle(.tint)
                 if let label = bookmark?.label {
@@ -166,9 +165,8 @@ struct BookmarkDetail: View {
             }
             
             HStack(alignment: .top) {
-                Image(systemName: "text.page")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
+                YabaIconView(bundleKey: "paragraph")
+                    .scaledToFit()
                     .frame(width: 20, height: 20)
                     .foregroundStyle(.tint)
                 if let description = bookmark?.bookmarkDescription {
@@ -189,9 +187,8 @@ struct BookmarkDetail: View {
             
             HStack {
                 HStack {
-                    Image(systemName: bookmark?.bookmarkType.getIconName() ?? BookmarkType.none.getIconName())
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
+                    YabaIconView(bundleKey: bookmark?.bookmarkType.getIconName() ?? BookmarkType.none.getIconName())
+                        .scaledToFit()
                         .frame(width: 20, height: 20)
                         .foregroundStyle(.tint)
                     Text("Create Bookmark Type Placeholder")
@@ -200,10 +197,13 @@ struct BookmarkDetail: View {
                 Text(bookmark?.bookmarkType.getUITitle() ?? BookmarkType.none.getUITitle())
             }
         } header: {
-            Label(
-                "Info",
-                systemImage: "info.circle"
-            )
+            Label {
+                Text("Info")
+            } icon: {
+                YabaIconView(bundleKey: "information-circle")
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
+            }
         }
     }
     
@@ -222,10 +222,13 @@ struct BookmarkDetail: View {
                     onNavigationCallback: onCollectionNavigationCallback
                 )
             } header: {
-                Label(
-                    "Folder",
-                    systemImage: "folder"
-                )
+                Label {
+                    Text("Folder")
+                } icon: {
+                    YabaIconView(bundleKey: "folder-01")
+                        .scaledToFit()
+                        .frame(width: 18, height: 18)
+                }
             }
         }
     }
@@ -236,11 +239,17 @@ struct BookmarkDetail: View {
             Section {
                 let tags = collections.filter({ $0.collectionType == .tag })
                 if tags.isEmpty {
-                    ContentUnavailableView(
-                        "Bookmark Detail No Tags Added Title",
-                        systemImage: "tag.slash",
-                        description: Text("Bookmark Detail No Tags Added Description")
-                    )
+                    ContentUnavailableView {
+                        Label {
+                            Text("Bookmark Detail No Tags Added Title")
+                        } icon: {
+                            YabaIconView(bundleKey: "tags")
+                                .scaledToFit()
+                                .frame(width: 52, height: 52)
+                        }
+                    } description: {
+                        Text("Bookmark Detail No Tags Added Description")
+                    }
                 } else {
                     ForEach(tags) { tag in
                         CollectionItemView(
@@ -255,10 +264,13 @@ struct BookmarkDetail: View {
                     }
                 }
             } header: {
-                Label(
-                    "Tags Title",
-                    systemImage: "tag"
-                )
+                Label {
+                    Text("Tags Title")
+                } icon: {
+                    YabaIconView(bundleKey: "tag-01")
+                        .scaledToFit()
+                        .frame(width: 18, height: 18)
+                }
             }
         }
     }
@@ -268,13 +280,13 @@ struct BookmarkDetail: View {
         #if targetEnvironment(macCatalyst)
         HStack {
             MacOSHoverableToolbarIcon(
-                bundleKey: "pencil",
+                bundleKey: "edit-02",
                 onPressed: {
                     state.shouldShowEditBookmarkSheet = true
                 }
             )
             MacOSHoverableToolbarIcon(
-                bundleKey: "trash",
+                bundleKey: "delete-02",
                 onPressed: {
                     state.shouldShowDeleteDialog = true
                 }
@@ -286,15 +298,26 @@ struct BookmarkDetail: View {
             Button {
                 state.shouldShowEditBookmarkSheet = true
             } label: {
-                Label("Edit", systemImage: "pencil")
+                Label {
+                    Text("Edit")
+                } icon: {
+                    YabaIconView(bundleKey: "edit-02")
+                        .scaledToFit()
+                }
             }.tint(.orange)
             Button(role: .destructive) {
                 state.shouldShowDeleteDialog = true
             } label: {
-                Label("Delete", systemImage: "trash")
+                Label {
+                    Text("Delete")
+                } icon: {
+                    YabaIconView(bundleKey: "delete-02")
+                        .scaledToFit()
+                }
             }.tint(.red)
         } label: {
-            Image(systemName: "ellipsis.circle")
+            YabaIconView(bundleKey: "more-horizontal-circle-02")
+                .scaledToFit()
         }
         #endif
     }
