@@ -12,7 +12,7 @@ struct YabaNavigationView: View {
     private var hasPassedOnboarding: Bool = false
     
     @State
-    private var path: NavigationPath = .init()
+    private var path: [NavigationDestination] = []
     
     @State
     private var appTint: Color = .accentColor
@@ -28,6 +28,9 @@ struct YabaNavigationView: View {
     
     @State
     private var prefferedColumn: NavigationSplitViewColumn = .sidebar
+    
+    @State
+    private var shouldShowSettingsSheet: Bool = false
     
     var body: some View {
         #if os(visionOS)
@@ -53,6 +56,9 @@ struct YabaNavigationView: View {
                 selectedAppTint: $appTint,
                 onNavigationCallbackForCollection: { _  in },
                 onNavigationCallbackForBookmark: { _  in },
+                onNavigationCallbackForSettings: {
+                    shouldShowSettingsSheet = true
+                }
             )
         } content: {
             CollectionDetail(
@@ -65,7 +71,7 @@ struct YabaNavigationView: View {
                 selectedCollection: $selectedCollection,
                 bookmark: $selectedBookmark,
                 onCollectionNavigationCallback: { _ in },
-                onDeleteBookmarkCallback: {
+                onDeleteBookmarkCallback: { _ in
                     selectedBookmark = nil
                 }
             )
@@ -79,6 +85,9 @@ struct YabaNavigationView: View {
                 }
             }
         }
+        .sheet(isPresented: $shouldShowSettingsSheet) {
+            SettingsView()
+        }
     }
     
     @ViewBuilder
@@ -89,38 +98,52 @@ struct YabaNavigationView: View {
                 selectedBookmark: $selectedBookmark,
                 selectedAppTint: $appTint,
                 onNavigationCallbackForCollection: { collection in
-                    path.append(collection)
+                    path.append(.collectionDetail(collection: collection))
                 },
                 onNavigationCallbackForBookmark: { bookmark in
-                    path.append(bookmark)
+                    path.append(.bookmarkDetail(bookmark: bookmark))
+                },
+                onNavigationCallbackForSettings: {
+                    path.append(.settings)
                 }
             )
-            .navigationDestination(for: YabaCollection.self) { collection in
-                CollectionDetail(
-                    collection: .init(
-                        get: { collection },
-                        set: { _ in }
-                    ),
-                    selectedBookmark: $selectedBookmark,
-                    onNavigationCallback: { bookmark in
-                        path.append(bookmark)
-                    }
-                )
-            }
-            .navigationDestination(for: Bookmark.self) { bookmark in
-                BookmarkDetail(
-                    selectedCollection: $selectedCollection,
-                    bookmark: .init(
-                        get: { bookmark },
-                        set: { _ in }
-                    ),
-                    onCollectionNavigationCallback: { collection in
-                        path.append(collection)
-                    },
-                    onDeleteBookmarkCallback: {
-                        path.removeLast(path.count)
-                    }
-                )
+            .navigationDestination(for: NavigationDestination.self) { destination in
+                switch destination {
+                case .collectionDetail(let collection):
+                    CollectionDetail(
+                        collection: .init(
+                            get: { collection },
+                            set: { _ in }
+                        ),
+                        selectedBookmark: $selectedBookmark,
+                        onNavigationCallback: { bookmark in
+                            path.append(.bookmarkDetail(bookmark: bookmark))
+                        }
+                    )
+                case .bookmarkDetail(let bookmark):
+                    BookmarkDetail(
+                        selectedCollection: $selectedCollection,
+                        bookmark: .init(
+                            get: { bookmark },
+                            set: { _ in }
+                        ),
+                        onCollectionNavigationCallback: { collection in
+                            path.append(.collectionDetail(collection: collection))
+                        },
+                        onDeleteBookmarkCallback: { bookmark in
+                            if let firstOccurance = path.firstIndex(
+                                of: .bookmarkDetail(bookmark: bookmark)
+                            ) {
+                                path.removeLast(path.count - firstOccurance)
+                            } else {
+                                path.removeLast(path.count)
+                            }
+                        }
+                    )
+                case .settings:
+                    SettingsView()
+                }
+                
             }
         }
         .tint(appTint)

@@ -12,6 +12,9 @@ struct CollectionItemView: View {
     @Environment(\.modelContext)
     private var modelContext
     
+    @AppStorage(Constants.preferredContentAppearanceKey)
+    private var contentAppearance: ViewType = .list
+    
     @State
     private var isHovered: Bool = false
     
@@ -44,18 +47,17 @@ struct CollectionItemView: View {
     let onNavigationCallback: (YabaCollection) -> Void
     
     var body: some View {
-        mainButton
-        #if targetEnvironment(macCatalyst)
-            .listRowBackground(
-                collection.id == selectedCollection?.id
-                ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
-                : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
-            )
-        #endif
+        buttonView
+            #if targetEnvironment(macCatalyst)
+                .listRowBackground(
+                    collection.id == selectedCollection?.id
+                    ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
+                    : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
+                )
+            #endif
             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                 swipeActionItems
             }
-            .padding(.leading, isInSelectionMode ? 0 : 8)
             .onHover { hovered in
                 isHovered = hovered
             }
@@ -97,6 +99,14 @@ struct CollectionItemView: View {
     }
     
     @ViewBuilder
+    private var buttonView: some View {
+        switch contentAppearance {
+        case .list: mainButton
+        case .grid: mainButton.padding(.leading, isInSelectionMode ? 0 : 8)
+        }
+    }
+    
+    @ViewBuilder
     private var mainButton: some View {
         if isInSelectionMode {
             mainLabel
@@ -125,6 +135,75 @@ struct CollectionItemView: View {
     
     @ViewBuilder
     private var mainLabel: some View {
+        if isInBookmarkDetail || isInSelectionMode {
+            listMainLabel
+        } else {
+            switch contentAppearance {
+            case .list: listMainLabel
+            case .grid:
+                VStack(spacing: 8) {
+                    HStack {
+                        YabaIconView(bundleKey: collection.icon)
+                            .scaledToFit()
+                            .foregroundStyle(collection.color.getUIColor())
+                            .frame(width: 48, height: 48)
+                        Spacer()
+                        VStack {
+                            #if targetEnvironment(macCatalyst)
+                            if isHovered && !isInSelectionMode {
+                                Menu {
+                                    menuActionItems
+                                } label: {
+                                    YabaIconView(bundleKey: "more-horizontal-circle-02")
+                                        .scaledToFit()
+                                        .frame(width: 22, height: 22)
+                                        .foregroundStyle(.secondary)
+                                }.tint(.secondary)
+                            }
+                            #else
+                            Menu {
+                                menuActionItems
+                            } label: {
+                                YabaIconView(bundleKey: "more-horizontal-circle-02")
+                                    .scaledToFit()
+                                    .frame(width: 22, height: 22)
+                                    .foregroundStyle(.secondary)
+                            }.tint(.secondary)
+                            #endif
+                            Spacer()
+                        }
+                    }
+                    HStack {
+                        Text(collection.label)
+                            .font(.title3)
+                            .fontWeight(.medium)
+                            .lineLimit(1)
+                        Spacer()
+                    }
+                }
+                .padding()
+                .background {
+                    #if targetEnvironment(macCatalyst)
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(
+                            .gray.opacity(
+                                collection.id == selectedCollection?.id
+                                ? 0.3
+                                : isHovered ? 0.2 : 0.1
+                            )
+                        )
+                    #else
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(.thickMaterial)
+                    #endif
+                }
+                .contentShape(Rectangle())
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var listMainLabel: some View {
         HStack {
             HStack {
                 YabaIconView(bundleKey: collection.icon)

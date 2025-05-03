@@ -9,6 +9,9 @@ import SwiftUI
 import SwiftData
 
 struct CollectionDetail: View {
+    @AppStorage(Constants.preferredContentAppearanceKey)
+    private var contentAppearance: ViewType = .list
+    
     @State
     private var state: CollectionDetailState = .init()
     
@@ -61,18 +64,40 @@ struct CollectionDetail: View {
                                 Text("Search No Bookmarks Found Description \(state.searchQuery)")
                             }
                         } else {
-                            List(selection: $selectedBookmark) {
-                                ForEach(filtered) { bookmark in
-                                    BookmarkItemView(
-                                        selectedBookmark: $selectedBookmark,
-                                        bookmark: bookmark,
-                                        isSearching: false,
-                                        onNavigationCallback: onNavigationCallback
-                                    )
+                            switch contentAppearance {
+                            case .list:
+                                List(selection: $selectedBookmark) {
+                                    ForEach(filtered) { bookmark in
+                                        BookmarkItemView(
+                                            selectedBookmark: $selectedBookmark,
+                                            bookmark: bookmark,
+                                            isSearching: false,
+                                            onNavigationCallback: onNavigationCallback
+                                        )
+                                    }
                                 }
+                                .listStyle(.sidebar)
+                                .scrollContentBackground(.hidden)
+                            case .grid:
+                                ScrollView {
+                                    LazyVGrid(
+                                        columns: [
+                                            .init(.flexible()),
+                                            .init(.flexible())
+                                        ]
+                                    ) {
+                                        ForEach(filtered) { bookmark in
+                                            BookmarkItemView(
+                                                selectedBookmark: $selectedBookmark,
+                                                bookmark: bookmark,
+                                                isSearching: false,
+                                                onNavigationCallback: onNavigationCallback
+                                            )
+                                        }
+                                    }.padding()
+                                }
+                                .scrollContentBackground(.hidden)
                             }
-                            .listStyle(.sidebar)
-                            .scrollContentBackground(.hidden)
                         }
                     }
                     .searchable(

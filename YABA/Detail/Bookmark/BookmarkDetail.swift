@@ -22,7 +22,7 @@ struct BookmarkDetail: View {
     
     let onCollectionNavigationCallback: (YabaCollection) -> Void
     
-    let onDeleteBookmarkCallback: () -> Void
+    let onDeleteBookmarkCallback: (Bookmark) -> Void
     
     var body: some View {
         ZStack {
@@ -335,7 +335,7 @@ struct BookmarkDetail: View {
                     modelContext.delete(bookmark)
                     try? modelContext.save()
                     state.shouldShowDeleteDialog = false
-                    onDeleteBookmarkCallback()
+                    onDeleteBookmarkCallback(bookmark)
                 }
             }
         } label: {
@@ -349,6 +349,6 @@ struct BookmarkDetail: View {
         selectedCollection: .constant(nil),
         bookmark: .constant(nil),
         onCollectionNavigationCallback: { _ in },
-        onDeleteBookmarkCallback: {}
+        onDeleteBookmarkCallback: { _ in }
     )
 }

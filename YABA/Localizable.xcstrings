@@ -1033,6 +1033,174 @@
         }
       }
     },
+    "Settings Appearance Title" : {
+      "comment" : "Section title of appearance in settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appearance"
+          }
+        }
+      }
+    },
+    "Settings Content Appearance Title" : {
+      "comment" : "Title of content appearance option in settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Content Appearance"
+          }
+        }
+      }
+    },
+    "Settings Data Title" : {
+      "comment" : "Section title of data in settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Data"
+          }
+        }
+      }
+    },
+    "Settings Delete All Title" : {
+      "comment" : "Title of delete all in settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete All"
+          }
+        }
+      }
+    },
+    "Settings Export Title" : {
+      "comment" : "Title of export in settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export Collections"
+          }
+        }
+      }
+    },
+    "Settings Import Title" : {
+      "comment" : "Title of import in settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import Collections"
+          }
+        }
+      }
+    },
+    "Settings Language Title" : {
+      "comment" : "Title of language option in settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Language"
+          }
+        }
+      }
+    },
+    "Settings Sorting Title" : {
+      "comment" : "Title of sorting option in settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sort Content"
+          }
+        }
+      }
+    },
+    "Settings Theme And Language Title" : {
+      "comment" : "Section title of theme and language in settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Theme & Language"
+          }
+        }
+      }
+    },
+    "Settings Theme Title" : {
+      "comment" : "Title of theme option in settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Theme"
+          }
+        }
+      }
+    },
+    "Settings Title" : {
+      "comment" : "Navigation title of  settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings"
+          }
+        }
+      }
+    },
+    "Sort Created At" : {
+      "comment" : "Name of created at sorting type",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Created At"
+          }
+        }
+      }
+    },
+    "Sort Edited At" : {
+      "comment" : "Name of edited at sorting type",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edited At"
+          }
+        }
+      }
+    },
+    "Sort Label" : {
+      "comment" : "Name of label sorting type",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Title"
+          }
+        }
+      }
+    },
     "Tags Search Prompt" : {
       "comment" : "Prompt to show while searching in tags selection",
       "extractionState" : "manual",
@@ -1057,6 +1225,42 @@
         }
       }
     },
+    "Theme Dark" : {
+      "comment" : "Name of dark theme",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dark"
+          }
+        }
+      }
+    },
+    "Theme Light" : {
+      "comment" : "Name of light theme",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Light"
+          }
+        }
+      }
+    },
+    "Theme System" : {
+      "comment" : "Name of system theme",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "System"
+          }
+        }
+      }
+    },
     "Unfurl Error Text" : {
       "comment" : "Error to show when a url can not be unfurled",
       "extractionState" : "manual",
@@ -1077,6 +1281,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Can not create the URL from the link"
+          }
+        }
+      }
+    },
+    "View Grid" : {
+      "comment" : "Name of grid view",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grid"
+          }
+        }
+      }
+    },
+    "View List" : {
+      "comment" : "Name of list view",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "List"
           }
         }
       }

@@ -10,6 +10,9 @@ import SwiftData
 
 @main
 struct YABAApp: App {
+    @AppStorage(Constants.preferredThemeKey)
+    private var preferredTheme: ThemeType = .system
+    
     @State
     var toastManager: ToastManager = .init()
     
@@ -26,6 +29,7 @@ struct YABAApp: App {
                 .onAppear {
                     setupForMacCatalyst()
                 }
+                .preferredColorScheme(preferredTheme.getScheme())
         }
     }
     

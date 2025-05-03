@@ -10,6 +10,9 @@ import SwiftData
 
 @MainActor
 struct HomeCollectionView: View {
+    @AppStorage(Constants.preferredContentAppearanceKey)
+    private var contentAppearance: ViewType = .list
+    
     @Query
     private var collections: [YabaCollection]
     
@@ -56,9 +59,83 @@ struct HomeCollectionView: View {
     }
     
     var body: some View {
-        Section(isExpanded: $isExpanded) {
+        viewSwitcher
+    }
+    
+    @ViewBuilder
+    private var viewSwitcher: some View {
+        switch contentAppearance {
+        case .list:
+            Section(isExpanded: $isExpanded) {
+                if collections.isEmpty {
+                    noCollectionsView
+                } else {
+                    ForEach(collections) { collection in
+                        CollectionItemView(
+                            collection: collection,
+                            selectedCollection: $selectedCollection,
+                            isInSelectionMode: false,
+                            isInBookmarkDetail: false,
+                            onDeleteCallback: { _ in },
+                            onEditCallback: { _ in },
+                            onNavigationCallback: onNavigationCallback
+                        )
+                    }
+                }
+            } header: {
+                Label {
+                    Text(LocalizedStringKey(labelTitle))
+                    #if targetEnvironment(macCatalyst)
+                        .font(.headline)
+                    #endif
+                } icon: {
+                    YabaIconView(bundleKey: collectionIcon)
+                        .scaledToFit()
+                        .frame(width: 18, height: 18)
+                }
+            }
+        case .grid:
+            // Worst hack for full span items, thanks SwiftUI
+            Section {} header: {
+                HStack {
+                    HStack {
+                        YabaIconView(bundleKey: collectionIcon)
+                            .scaledToFit()
+                            .frame(width: 18, height: 18)
+                            .foregroundStyle(.secondary)
+                        Text(LocalizedStringKey(labelTitle))
+                            .textCase(.uppercase)
+                            .font(.headline)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    #if targetEnvironment(macCatalyst)
+                    YabaIconView(bundleKey: "arrow-right-01")
+                        .scaledToFit()
+                        .frame(width: 18, height: 18)
+                        .foregroundStyle(.tint)
+                        .rotationEffect(isExpanded ? .degrees(90) : .degrees(0))
+                        .animation(.smooth, value: isExpanded)
+                    #endif
+                }
+                .padding(.leading)
+                .contentShape(Rectangle())
+                #if targetEnvironment(macCatalyst)
+                .onTapGesture { isExpanded.toggle() }
+                #endif
+            }
+            gridInnerContent
+                .animation(.smooth, value: isExpanded)
+                .transition(.blurReplace)
+        }
+    }
+    
+    @ViewBuilder
+    private var gridInnerContent: some View {
+        #if targetEnvironment(macCatalyst)
+        if isExpanded {
             if collections.isEmpty {
-                noCollectionsView
+                Section {} header: { noCollectionsView }
             } else {
                 ForEach(collections) { collection in
                     CollectionItemView(
@@ -72,18 +149,24 @@ struct HomeCollectionView: View {
                     )
                 }
             }
-        } header: {
-            Label {
-                Text(LocalizedStringKey(labelTitle))
-                #if targetEnvironment(macCatalyst)
-                    .font(.headline)
-                #endif
-            } icon: {
-                YabaIconView(bundleKey: collectionIcon)
-                    .scaledToFit()
-                    .frame(width: 18, height: 18)
+        }
+        #else
+        if collections.isEmpty {
+            Section {} header: { noCollectionsView }
+        } else {
+            ForEach(collections) { collection in
+                CollectionItemView(
+                    collection: collection,
+                    selectedCollection: $selectedCollection,
+                    isInSelectionMode: false,
+                    isInBookmarkDetail: false,
+                    onDeleteCallback: { _ in },
+                    onEditCallback: { _ in },
+                    onNavigationCallback: onNavigationCallback
+                )
             }
         }
+        #endif
     }
     
     @ViewBuilder
