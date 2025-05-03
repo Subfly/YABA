@@ -41,6 +41,8 @@ class BookmarkCreationState {
     var isLoading: Bool = false
     var hasError: Bool = false
     
+    var contentAppearance: ViewType = .list
+    
     let toastManager: ToastManager = .init()
     
     @ObservationIgnored

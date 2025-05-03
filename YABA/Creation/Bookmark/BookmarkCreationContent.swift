@@ -14,6 +14,9 @@ struct BookmarkCreationContent: View {
     @Environment(\.modelContext)
     private var modelContext
     
+    @AppStorage(Constants.preferredContentAppearanceKey)
+    private var storedContentAppearance: ViewType = .list
+    
     @State
     private var state: BookmarkCreationState
     
@@ -60,12 +63,33 @@ struct BookmarkCreationContent: View {
                         bookmarkPreviewItem
                             .redacted(reason: state.isLoading ? .placeholder : [])
                     } header: {
-                        Label {
-                            Text("Preview")
-                        } icon: {
-                            YabaIconView(bundleKey: "image-03")
-                                .scaledToFit()
-                                .frame(width: 18, height: 18)
+                        HStack {
+                            Label {
+                                Text("Preview")
+                            } icon: {
+                                YabaIconView(bundleKey: "image-03")
+                                    .scaledToFit()
+                                    .frame(width: 18, height: 18)
+                            }
+                            Spacer()
+                            Button {
+                                withAnimation {
+                                    if state.contentAppearance == .list {
+                                        state.contentAppearance = .grid
+                                    } else {
+                                        state.contentAppearance = .list
+                                    }
+                                }
+                            } label: {
+                                Label {
+                                    Text(state.contentAppearance.getUITitle())
+                                        .textCase(.none)
+                                } icon: {
+                                    YabaIconView(bundleKey: state.contentAppearance.getUIIconName())
+                                        .scaledToFit()
+                                        .frame(width: 18, height: 18)
+                                }
+                            }
                         }
                     }
                     
@@ -168,21 +192,53 @@ struct BookmarkCreationContent: View {
     
     @ViewBuilder
     private var bookmarkPreviewItem: some View {
-        HStack(alignment: .center) {
-            bookmarkPreviewItemImage
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-            VStack(alignment: .leading) {
-                generateBookmarkItemText(
-                    for: state.label,
-                    localizedKey: "Bookmark Title Placeholder"
-                )
-                .font(.title3)
-                .fontWeight(.medium)
-                .lineLimit(1)
-                generateBookmarkItemText(
-                    for: state.description,
-                    localizedKey: "Bookmark Description Placeholder"
-                ).lineLimit(2)
+        switch state.contentAppearance {
+        case .list:
+            HStack(alignment: .center) {
+                bookmarkPreviewItemImage
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                VStack(alignment: .leading) {
+                    generateBookmarkItemText(
+                        for: state.label,
+                        localizedKey: "Bookmark Title Placeholder"
+                    )
+                    .font(.title3)
+                    .fontWeight(.medium)
+                    .lineLimit(1)
+                    generateBookmarkItemText(
+                        for: state.description,
+                        localizedKey: "Bookmark Description Placeholder"
+                    ).lineLimit(2)
+                }
+            }
+        case .grid:
+            HStack {
+                Spacer()
+                VStack(spacing: 0) {
+                    bookmarkPreviewItemImage
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                    HStack {
+                        generateBookmarkItemText(
+                            for: state.label,
+                            localizedKey: "Bookmark Title Placeholder"
+                        )
+                        .font(.title3)
+                        .fontWeight(.medium)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                        Spacer()
+                    }.padding()
+                }
+                .background {
+                    RoundedRectangle(cornerRadius: 12)
+                    #if targetEnvironment(macCatalyst)
+                        .fill(.gray.opacity(0.1))
+                    #else
+                        .fill(.thinMaterial)
+                    #endif
+                }
+                .frame(width: 200)
+                Spacer()
             }
         }
     }
@@ -191,20 +247,41 @@ struct BookmarkCreationContent: View {
     private var bookmarkPreviewItemImage: some View {
         if let imageData = state.imageData,
            let image = UIImage(data: imageData) {
-            Image(uiImage: image)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: 50, height: 50)
+            switch state.contentAppearance {
+            case .list:
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 50, height: 50)
+            case .grid:
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 200, height: 200)
+            }
         } else {
-            RoundedRectangle(cornerRadius: 8)
-                .fill(.tint.opacity(0.3))
-                .frame(width: 64, height: 64)
-                .overlay {
-                    YabaIconView(bundleKey: state.selectedType.getIconName())
-                        .scaledToFit()
-                        .foregroundStyle(.tint)
-                        .frame(width: 32, height: 32)
-                }
+            switch state.contentAppearance {
+            case .list:
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(.tint.opacity(0.3))
+                    .frame(width: 50, height: 50)
+                    .overlay {
+                        YabaIconView(bundleKey: state.selectedType.getIconName())
+                            .scaledToFit()
+                            .foregroundStyle(.tint)
+                            .frame(width: 32, height: 32)
+                    }
+            case .grid:
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(.tint.opacity(0.3))
+                    .frame(width: 200, height: 200)
+                    .overlay {
+                        YabaIconView(bundleKey: state.selectedType.getIconName())
+                            .scaledToFit()
+                            .foregroundStyle(.tint)
+                            .frame(width: 92, height: 92)
+                    }
+            }
         }
     }
     
@@ -433,6 +510,8 @@ struct BookmarkCreationContent: View {
     }
     
     private func onAppear() {
+        state.contentAppearance = storedContentAppearance
+        
         state.listenUrlChanges { url in
             Task { await state.fetchData(with: url) }
         }
