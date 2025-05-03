@@ -60,8 +60,14 @@ struct BookmarkCreationContent: View {
                 }
                 Form {
                     Section {
-                        bookmarkPreviewItem
-                            .redacted(reason: state.isLoading ? .placeholder : [])
+                        if state.contentAppearance == .list {
+                            bookmarkPreviewItem
+                                .redacted(reason: state.isLoading ? .placeholder : [])
+                        } else {
+                            bookmarkPreviewItem
+                                .redacted(reason: state.isLoading ? .placeholder : [])
+                                .listRowBackground(Color.clear)
+                        }
                     } header: {
                         HStack {
                             Label {
