@@ -19,6 +19,30 @@
         }
       }
     },
+    "Bookmark Detail Created At Title" : {
+      "comment" : "Title to show in the info section of bookmark detail for creation time",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Created at"
+          }
+        }
+      }
+    },
+    "Bookmark Detail Edited At Title" : {
+      "comment" : "Title to show in the info section of bookmark detail for last edited time",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Last edited"
+          }
+        }
+      }
+    },
     "Bookmark Detail Image Error Description" : {
       "comment" : "Detail to show when bookmark image can not be accessed in detail",
       "localizations" : {

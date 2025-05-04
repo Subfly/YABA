@@ -494,13 +494,14 @@ struct BookmarkCreationContent: View {
                 var collections = state.selectedTags
                 collections.append(selectedFolder)
                 
+                let creationTime: Date = .now
                 let newBookmark = Bookmark(
                     link: state.url,
                     label: state.label,
                     bookmarkDescription: state.description,
                     domain: state.host,
-                    createdAt: .now,
-                    editedAt: .now,
+                    createdAt: creationTime,
+                    editedAt: creationTime,
                     imageData: state.imageData,
                     iconData: state.iconData,
                     videoUrl: state.videoUrl,

@@ -196,6 +196,32 @@ struct BookmarkDetail: View {
                 Spacer()
                 Text(bookmark?.bookmarkType.getUITitle() ?? BookmarkType.none.getUITitle())
             }
+            
+            HStack {
+                HStack {
+                    YabaIconView(bundleKey: "clock-01")
+                        .scaledToFit()
+                        .frame(width: 20, height: 20)
+                        .foregroundStyle(.tint)
+                    Text("Bookmark Detail Created At Title")
+                }
+                Spacer()
+                Text(bookmark?.createdAt.formatted(date: .abbreviated, time: .shortened) ?? "")
+            }
+            
+            if bookmark?.createdAt != bookmark?.editedAt {
+                HStack {
+                    HStack {
+                        YabaIconView(bundleKey: "edit-02")
+                            .scaledToFit()
+                            .frame(width: 20, height: 20)
+                            .foregroundStyle(.tint)
+                        Text("Bookmark Detail Edited At Title")
+                    }
+                    Spacer()
+                    Text(bookmark?.editedAt.formatted(date: .abbreviated, time: .shortened) ?? "")
+                }
+            }
         } header: {
             Label {
                 Text("Info")

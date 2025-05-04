@@ -65,7 +65,17 @@ class BookmarkCreationState {
         do {
             if let fetched = try await unfurler.unfurl(urlString: urlString) {
                 self.host = fetched.host
-                self.label = fetched.title
+                /**
+                 * THIS IS A DESIGN CHOICE AS MOST OF THE TIME I WAS
+                 * ENDING UP WITH PRETTY CRAPPY TITLES THAT MOSTLY
+                 * FITS DESCRIPTON BETTER.
+                 *
+                 * I HOPE ONE DAY APPLE PROVIDES "DESCRIPTION" FOR
+                 * LP LINK METADATA.
+                 */
+                if description.isEmpty {
+                    self.description = fetched.title
+                }
                 self.videoUrl = fetched.videoURL
                 self.iconData = fetched.iconData
                 self.imageData = fetched.imageData
