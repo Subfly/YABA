@@ -33,14 +33,28 @@ struct HomeCollectionView: View {
         collectionType: CollectionType,
         isExpanded: Binding<Bool>,
         selectedCollection: Binding<YabaCollection?>,
+        selectedSorting: SortType,
+        selectedSortOrder: SortOrderType,
         onNavigationCallback: @escaping (YabaCollection) -> Void
     ) {
         _isExpanded = isExpanded
         _selectedCollection = selectedCollection
+        
+        let sortDescriptor: SortDescriptor<YabaCollection> = switch selectedSorting {
+        case .createdAt:
+                .init(\.createdAt, order: selectedSortOrder == .ascending ? .forward : .reverse)
+        case .editedAt:
+                .init(\.editedAt, order: selectedSortOrder == .ascending ? .forward : .reverse)
+        case .label:
+                .init(\.label, order: selectedSortOrder == .ascending ? .forward : .reverse)
+        }
+        
         _collections = Query(
             filter: #Predicate<YabaCollection> {
                 $0.type == collectionType.rawValue
-            }
+            },
+            sort: [sortDescriptor],
+            animation: .smooth
         )
         self.onNavigationCallback = onNavigationCallback
         
@@ -190,6 +204,8 @@ struct HomeCollectionView: View {
         collectionType: .folder,
         isExpanded: .constant(true),
         selectedCollection: .constant(.empty()),
+        selectedSorting: .createdAt,
+        selectedSortOrder: .ascending,
         onNavigationCallback: { _ in }
     )
 }
@@ -199,6 +215,8 @@ struct HomeCollectionView: View {
         collectionType: .tag,
         isExpanded: .constant(true),
         selectedCollection: .constant(.empty()),
+        selectedSorting: .createdAt,
+        selectedSortOrder: .ascending,
         onNavigationCallback: { _ in }
     )
 }

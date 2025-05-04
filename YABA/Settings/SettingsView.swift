@@ -11,15 +11,6 @@ struct SettingsView: View {
     @Environment(\.dismiss)
     private var dismiss
     
-    @AppStorage(Constants.preferredThemeKey)
-    private var preferredTheme: ThemeType = .system
-    
-    @AppStorage(Constants.preferredContentAppearanceKey)
-    private var preferredContentAppearance: ViewType = .list
-    
-    @AppStorage(Constants.preferredSortingKey)
-    private var preferredSorting: SortType = .createdAt
-    
     var body: some View {
         ZStack {
             AnimatedMeshGradient(collectionColor: .accentColor)
@@ -58,47 +49,8 @@ struct SettingsView: View {
     @ViewBuilder
     private var themeAndLangaugeSection: some View {
         Section {
-            Picker(selection: $preferredTheme) {
-                ForEach(ThemeType.allCases, id: \.self) { type in
-                    Label {
-                        Text(type.getUITitle())
-                    } icon: {
-                        YabaIconView(bundleKey: type.getUIIconName())
-                    }
-                }
-            } label: {
-                Label {
-                    Text("Settings Theme Title")
-                } icon: {
-                    YabaIconView(bundleKey: "paint-brush-02")
-                        .scaledToFit()
-                        .frame(width: 24, height: 24)
-                }
-            }.pickerStyle(.menu)
-            HStack {
-                Label {
-                    Text("Settings Language Title")
-                } icon: {
-                    YabaIconView(bundleKey: "earth")
-                        .scaledToFit()
-                        .frame(width: 24, height: 24)
-                }
-                Spacer()
-                Label {
-                    Text(Bundle.main.preferredLocalizations[0].localizedUppercase)
-                } icon: {
-                    YabaIconView(bundleKey: "arrow-right-01")
-                        .scaledToFit()
-                        .frame(width: 24, height: 24)
-                        .foregroundStyle(.tertiary)
-                }.labelStyle(InverseLabelStyle())
-            }
-            .contentShape(Rectangle())
-            .onTapGesture {
-                if let url: URL = .init(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(url) {
-                    UIApplication.shared.open(url)
-                }
-            }
+            ThemePicker()
+            LanguagePicker()
         } header: {
             Label {
                 Text("Settings Theme And Language Title")
@@ -113,40 +65,8 @@ struct SettingsView: View {
     @ViewBuilder
     private var appearanceSection: some View {
         Section {
-            Picker(selection: $preferredContentAppearance) {
-                ForEach(ViewType.allCases, id: \.self) { type in
-                    Label {
-                        Text(type.getUITitle())
-                    } icon: {
-                        YabaIconView(bundleKey: type.getUIIconName())
-                    }
-                }
-            } label: {
-                Label {
-                    Text("Settings Content Appearance Title")
-                } icon: {
-                    YabaIconView(bundleKey: "change-screen-mode")
-                        .scaledToFit()
-                        .frame(width: 24, height: 24)
-                }
-            }.pickerStyle(.menu)
-            Picker(selection: $preferredSorting) {
-                ForEach(SortType.allCases, id: \.self) { type in
-                    Label {
-                        Text(type.getUITitle())
-                    } icon: {
-                        YabaIconView(bundleKey: type.getUIIconName())
-                    }
-                }
-            } label: {
-                Label {
-                    Text("Settings Sorting Title")
-                } icon: {
-                    YabaIconView(bundleKey: "sorting-04")
-                        .scaledToFit()
-                        .frame(width: 24, height: 24)
-                }
-            }.pickerStyle(.menu)
+            ContentAppearancePicker()
+            SortingPicker()
         } header: {
             Label {
                 Text("Settings Appearance Title")

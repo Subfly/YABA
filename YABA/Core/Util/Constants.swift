@@ -13,6 +13,7 @@ struct Constants {
     static let preferredThemeKey = "preferredTheme"
     static let preferredContentAppearanceKey = "preferredContentAppearance"
     static let preferredSortingKey = "preferredSorting"
+    static let preferredSortOrderKey = "preferredSortOrder"
     
     /// MARK: APP-WISE
     static let toastAnimationDuration: UInt64 = 3_000_000

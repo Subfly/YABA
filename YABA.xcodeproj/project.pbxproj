@@ -81,6 +81,7 @@
 				Core/Util/Constants.swift,
 				Core/Util/CreationType.swift,
 				Core/Util/InverseLabelStyle.swift,
+				Core/Util/SortOrderType.swift,
 				Core/Util/SortType.swift,
 				Core/Util/ThemeType.swift,
 				Core/Util/Unfurler.swift,

@@ -12,6 +12,12 @@ struct HomeView: View {
     @AppStorage(Constants.preferredContentAppearanceKey)
     private var contentAppearance: ViewType = .list
     
+    @AppStorage(Constants.preferredSortingKey)
+    private var preferredSorting: SortType = .createdAt
+    
+    @AppStorage(Constants.preferredSortOrderKey)
+    private var preferredSortOrder: SortOrderType = .ascending
+    
     @State
     private var homeState: HomeState = .init()
     
@@ -101,6 +107,8 @@ struct HomeView: View {
         .navigationTitle("YABA")
         .toolbar {
             Menu {
+                ContentAppearancePicker()
+                SortingPicker()
                 Button {
                     onNavigationCallbackForSettings()
                 } label: {
@@ -134,12 +142,16 @@ struct HomeView: View {
                         collectionType: .tag,
                         isExpanded: $homeState.isTagsExpanded,
                         selectedCollection: $selectedCollection,
+                        selectedSorting: preferredSorting,
+                        selectedSortOrder: preferredSortOrder,
                         onNavigationCallback: onNavigationCallbackForCollection
                     )
                     HomeCollectionView(
                         collectionType: .folder,
                         isExpanded: $homeState.isFoldersExpanded,
                         selectedCollection: $selectedCollection,
+                        selectedSorting: preferredSorting,
+                        selectedSortOrder: preferredSortOrder,
                         onNavigationCallback: onNavigationCallbackForCollection
                     )
                 }
@@ -164,6 +176,8 @@ struct HomeView: View {
                             collectionType: .tag,
                             isExpanded: $homeState.isTagsExpanded,
                             selectedCollection: $selectedCollection,
+                            selectedSorting: preferredSorting,
+                            selectedSortOrder: preferredSortOrder,
                             onNavigationCallback: onNavigationCallbackForCollection
                         )
                         Section {} header: { Spacer().frame(height: 12) }
@@ -171,6 +185,8 @@ struct HomeView: View {
                             collectionType: .folder,
                             isExpanded: $homeState.isFoldersExpanded,
                             selectedCollection: $selectedCollection,
+                            selectedSorting: preferredSorting,
+                            selectedSortOrder: preferredSortOrder,
                             onNavigationCallback: onNavigationCallbackForCollection
                         )
                     }

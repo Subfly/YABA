@@ -1201,6 +1201,30 @@
         }
       }
     },
+    "Sort Order Ascending" : {
+      "comment" : "Name of  ascending sort order",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ascending"
+          }
+        }
+      }
+    },
+    "Sort Order Descending" : {
+      "comment" : "Name of  descending sort order",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Descending"
+          }
+        }
+      }
+    },
     "Tags Search Prompt" : {
       "comment" : "Prompt to show while searching in tags selection",
       "extractionState" : "manual",
