@@ -55,9 +55,7 @@ struct YabaNavigationView: View {
                 selectedBookmark: $selectedBookmark,
                 selectedAppTint: $appTint,
                 onNavigationCallbackForCollection: { _  in },
-                onNavigationCallbackForBookmark: { bookmark in
-                    selectedBookmark = bookmark
-                },
+                onNavigationCallbackForBookmark: { _ in },
                 onNavigationCallbackForSettings: {
                     shouldShowSettingsSheet = true
                 }
@@ -66,11 +64,7 @@ struct YabaNavigationView: View {
             CollectionDetail(
                 collection: $selectedCollection,
                 selectedBookmark: $selectedBookmark,
-                onNavigationCallback: { bookmark in
-                    if selectedBookmark?.id == bookmark.id {
-                        selectedBookmark = nil
-                    }
-                }
+                onNavigationCallback: { _ in }
             )
         } detail: {
             BookmarkDetail(
