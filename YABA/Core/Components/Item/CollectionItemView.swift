@@ -47,13 +47,16 @@ struct CollectionItemView: View {
     let onNavigationCallback: (YabaCollection) -> Void
     
     var body: some View {
-        buttonView
+        mainButton
+            .padding(.leading, isInSelectionMode ? 0 : 8)
             #if targetEnvironment(macCatalyst)
-                .listRowBackground(
-                    collection.id == selectedCollection?.id
-                    ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
-                    : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
-                )
+            .listRowBackground(
+                collection.id == selectedCollection?.id
+                ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
+                : isHovered
+                ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
+                : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
+            )
             #endif
             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                 swipeActionItems
@@ -99,17 +102,9 @@ struct CollectionItemView: View {
     }
     
     @ViewBuilder
-    private var buttonView: some View {
-        switch contentAppearance {
-        case .list: mainButton
-        case .grid: mainButton.padding(.leading, isInSelectionMode ? 0 : 8)
-        }
-    }
-    
-    @ViewBuilder
     private var mainButton: some View {
         if isInSelectionMode {
-            mainLabel
+           listMainLabel
         } else {
             if isInBookmarkDetail {
                 Button {
@@ -118,10 +113,10 @@ struct CollectionItemView: View {
                         onNavigationCallback(collection)
                     }
                 } label: {
-                    mainLabel
+                    listMainLabel
                 }.buttonStyle(.plain)
             } else {
-                mainLabel
+                listMainLabel
                     .contentShape(Rectangle())
                     .onTapGesture {
                         withAnimation {
@@ -135,71 +130,19 @@ struct CollectionItemView: View {
     
     @ViewBuilder
     private var mainLabel: some View {
-        if isInBookmarkDetail || isInSelectionMode {
-            listMainLabel
-        } else {
-            switch contentAppearance {
-            case .list: listMainLabel
-            case .grid:
-                VStack(spacing: 8) {
-                    HStack {
-                        YabaIconView(bundleKey: collection.icon)
-                            .scaledToFit()
-                            .foregroundStyle(collection.color.getUIColor())
-                            .frame(width: 48, height: 48)
-                        Spacer()
-                        VStack {
-                            #if targetEnvironment(macCatalyst)
-                            if isHovered && !isInSelectionMode {
-                                Menu {
-                                    menuActionItems
-                                } label: {
-                                    YabaIconView(bundleKey: "more-horizontal-circle-02")
-                                        .scaledToFit()
-                                        .frame(width: 22, height: 22)
-                                        .foregroundStyle(.secondary)
-                                }.tint(.secondary)
-                            }
-                            #else
-                            Menu {
-                                menuActionItems
-                            } label: {
-                                YabaIconView(bundleKey: "more-horizontal-circle-02")
-                                    .scaledToFit()
-                                    .frame(width: 22, height: 22)
-                                    .foregroundStyle(.secondary)
-                            }.tint(.secondary)
-                            #endif
-                            Spacer()
-                        }
-                    }
-                    HStack {
-                        Text(collection.label)
-                            .font(.title3)
-                            .fontWeight(.medium)
-                            .lineLimit(1)
-                        Spacer()
-                    }
+        /**
+         * TODO: CHANGE THIS WHEN GRIDS ARE RECYCLED
+            if isInBookmarkDetail || isInSelectionMode {
+                listMainLabel
+            } else {
+                switch contentAppearance {
+                case .list: listMainLabel
+                case .grid: gridMainLabel
                 }
-                .padding()
-                .background {
-                    #if targetEnvironment(macCatalyst)
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(
-                            .gray.opacity(
-                                collection.id == selectedCollection?.id
-                                ? 0.3
-                                : isHovered ? 0.2 : 0.1
-                            )
-                        )
-                    #else
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(.thickMaterial)
-                    #endif
-                }
-                .contentShape(Rectangle())
             }
-        }
+         * Currently, it is only planned to have grid and list for collections as
+         * information is so less to have an "expanded" state.
+         */
     }
     
     @ViewBuilder
@@ -230,9 +173,70 @@ struct CollectionItemView: View {
             if UIDevice.current.userInterfaceIdiom == .phone && !isInSelectionMode {
                 YabaIconView(bundleKey: "arrow-right-01")
                     .scaledToFit()
-                    .frame(width: 24, height: 24)
+                    .frame(width: 20, height: 20)
                     .foregroundStyle(.tertiary)
             }
+        }
+        .contentShape(Rectangle())
+    }
+    
+    @ViewBuilder
+    private var gridMainLabel: some View {
+        VStack(spacing: 8) {
+            HStack {
+                YabaIconView(bundleKey: collection.icon)
+                    .scaledToFit()
+                    .foregroundStyle(collection.color.getUIColor())
+                    .frame(width: 48, height: 48)
+                Spacer()
+                VStack {
+                    #if targetEnvironment(macCatalyst)
+                    if isHovered && !isInSelectionMode {
+                        Menu {
+                            menuActionItems
+                        } label: {
+                            YabaIconView(bundleKey: "more-horizontal-circle-02")
+                                .scaledToFit()
+                                .frame(width: 22, height: 22)
+                                .foregroundStyle(.secondary)
+                        }.tint(.secondary)
+                    }
+                    #else
+                    Menu {
+                        menuActionItems
+                    } label: {
+                        YabaIconView(bundleKey: "more-horizontal-circle-02")
+                            .scaledToFit()
+                            .frame(width: 22, height: 22)
+                            .foregroundStyle(.secondary)
+                    }.tint(.secondary)
+                    #endif
+                    Spacer()
+                }
+            }
+            HStack {
+                Text(collection.label)
+                    .font(.title3)
+                    .fontWeight(.medium)
+                    .lineLimit(1)
+                Spacer()
+            }
+        }
+        .padding()
+        .background {
+            #if targetEnvironment(macCatalyst)
+            RoundedRectangle(cornerRadius: 12)
+                .fill(
+                    .gray.opacity(
+                        collection.id == selectedCollection?.id
+                        ? 0.3
+                        : isHovered ? 0.2 : 0.1
+                    )
+                )
+            #else
+            RoundedRectangle(cornerRadius: 12)
+                .fill(.thickMaterial)
+            #endif
         }
         .contentShape(Rectangle())
     }

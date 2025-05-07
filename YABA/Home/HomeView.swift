@@ -44,7 +44,8 @@ struct HomeView: View {
             #if !targetEnvironment(macCatalyst)
             AnimatedMeshGradient(collectionColor: selectedAppTint)
             #endif
-            viewSwitcher
+            // TODO: CHANGE THIS WHEN LAZYVGRID IS RECYCABLE
+            sequentailView
                 .scrollContentBackground(.hidden)
                 .searchable(
                     text: $homeState.searchQuery,
@@ -59,6 +60,7 @@ struct HomeView: View {
                     }
                 }
                 #if targetEnvironment(macCatalyst)
+                .listRowSpacing(2)
                 .listStyle(.sidebar)
                 #endif
             
@@ -125,12 +127,48 @@ struct HomeView: View {
     }
     
     @ViewBuilder
-    private var viewSwitcher: some View {
+    private var sequentailView: some View {
         let searching = isSearchActive || !homeState.searchQuery.isEmpty
         
-        switch contentAppearance {
-        case .list:
-            List(selection: $selectedCollection) {
+        List(selection: $selectedCollection) {
+            if searching {
+                HomeSearchView(
+                    searchQuery: $homeState.searchQuery,
+                    selectedBookmark: $selectedBookmark,
+                    onNavigationCallback: onNavigationCallbackForBookmark
+                )
+            } else {
+                HomeCollectionView(
+                    collectionType: .tag,
+                    isExpanded: $homeState.isTagsExpanded,
+                    selectedCollection: $selectedCollection,
+                    selectedSorting: preferredSorting,
+                    selectedSortOrder: preferredSortOrder,
+                    onNavigationCallback: onNavigationCallbackForCollection
+                )
+                HomeCollectionView(
+                    collectionType: .folder,
+                    isExpanded: $homeState.isFoldersExpanded,
+                    selectedCollection: $selectedCollection,
+                    selectedSorting: preferredSorting,
+                    selectedSortOrder: preferredSortOrder,
+                    onNavigationCallback: onNavigationCallbackForCollection
+                )
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var gridView: some View {
+        let searching = isSearchActive || !homeState.searchQuery.isEmpty
+        
+        ScrollView {
+            LazyVGrid(
+                columns: [
+                    .init(.flexible()),
+                    .init(.flexible())
+                ]
+            ) {
                 if searching {
                     HomeSearchView(
                         searchQuery: $homeState.searchQuery,
@@ -138,6 +176,7 @@ struct HomeView: View {
                         onNavigationCallback: onNavigationCallbackForBookmark
                     )
                 } else {
+                    Section {} header: { Spacer().frame(height: 12) }
                     HomeCollectionView(
                         collectionType: .tag,
                         isExpanded: $homeState.isTagsExpanded,
@@ -146,6 +185,7 @@ struct HomeView: View {
                         selectedSortOrder: preferredSortOrder,
                         onNavigationCallback: onNavigationCallbackForCollection
                     )
+                    Section {} header: { Spacer().frame(height: 12) }
                     HomeCollectionView(
                         collectionType: .folder,
                         isExpanded: $homeState.isFoldersExpanded,
@@ -155,43 +195,7 @@ struct HomeView: View {
                         onNavigationCallback: onNavigationCallbackForCollection
                     )
                 }
-            }
-        case .grid:
-            ScrollView {
-                LazyVGrid(
-                    columns: [
-                        .init(.flexible()),
-                        .init(.flexible())
-                    ]
-                ) {
-                    if searching {
-                        HomeSearchView(
-                            searchQuery: $homeState.searchQuery,
-                            selectedBookmark: $selectedBookmark,
-                            onNavigationCallback: onNavigationCallbackForBookmark
-                        )
-                    } else {
-                        Section {} header: { Spacer().frame(height: 12) }
-                        HomeCollectionView(
-                            collectionType: .tag,
-                            isExpanded: $homeState.isTagsExpanded,
-                            selectedCollection: $selectedCollection,
-                            selectedSorting: preferredSorting,
-                            selectedSortOrder: preferredSortOrder,
-                            onNavigationCallback: onNavigationCallbackForCollection
-                        )
-                        Section {} header: { Spacer().frame(height: 12) }
-                        HomeCollectionView(
-                            collectionType: .folder,
-                            isExpanded: $homeState.isFoldersExpanded,
-                            selectedCollection: $selectedCollection,
-                            selectedSorting: preferredSorting,
-                            selectedSortOrder: preferredSortOrder,
-                            onNavigationCallback: onNavigationCallbackForCollection
-                        )
-                    }
-                }.padding(.horizontal)
-            }
+            }.padding(.horizontal)
         }
     }
 }

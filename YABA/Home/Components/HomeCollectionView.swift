@@ -73,75 +73,75 @@ struct HomeCollectionView: View {
     }
     
     var body: some View {
-        viewSwitcher
+        listSection
     }
     
     @ViewBuilder
-    private var viewSwitcher: some View {
-        switch contentAppearance {
-        case .list:
-            Section(isExpanded: $isExpanded) {
-                if collections.isEmpty {
-                    noCollectionsView
-                } else {
-                    ForEach(collections) { collection in
-                        CollectionItemView(
-                            collection: collection,
-                            selectedCollection: $selectedCollection,
-                            isInSelectionMode: false,
-                            isInBookmarkDetail: false,
-                            onDeleteCallback: { _ in },
-                            onEditCallback: { _ in },
-                            onNavigationCallback: onNavigationCallback
-                        )
-                    }
+    private var listSection: some View {
+        Section(isExpanded: $isExpanded) {
+            if collections.isEmpty {
+                noCollectionsView
+            } else {
+                ForEach(collections) { collection in
+                    CollectionItemView(
+                        collection: collection,
+                        selectedCollection: $selectedCollection,
+                        isInSelectionMode: false,
+                        isInBookmarkDetail: false,
+                        onDeleteCallback: { _ in },
+                        onEditCallback: { _ in },
+                        onNavigationCallback: onNavigationCallback
+                    )
                 }
-            } header: {
-                Label {
-                    Text(LocalizedStringKey(labelTitle))
-                    #if targetEnvironment(macCatalyst)
-                        .font(.headline)
-                    #endif
-                } icon: {
+            }
+        } header: {
+            Label {
+                Text(LocalizedStringKey(labelTitle))
+                #if targetEnvironment(macCatalyst)
+                    .font(.headline)
+                #endif
+            } icon: {
+                YabaIconView(bundleKey: collectionIcon)
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var gridSection: some View {
+        // Worst hack for full span items, thanks SwiftUI
+        Section {} header: {
+            HStack {
+                HStack {
                     YabaIconView(bundleKey: collectionIcon)
                         .scaledToFit()
                         .frame(width: 18, height: 18)
+                        .foregroundStyle(.secondary)
+                    Text(LocalizedStringKey(labelTitle))
+                        .textCase(.uppercase)
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
                 }
-            }
-        case .grid:
-            // Worst hack for full span items, thanks SwiftUI
-            Section {} header: {
-                HStack {
-                    HStack {
-                        YabaIconView(bundleKey: collectionIcon)
-                            .scaledToFit()
-                            .frame(width: 18, height: 18)
-                            .foregroundStyle(.secondary)
-                        Text(LocalizedStringKey(labelTitle))
-                            .textCase(.uppercase)
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                    }
-                    Spacer()
-                    #if targetEnvironment(macCatalyst)
-                    YabaIconView(bundleKey: "arrow-right-01")
-                        .scaledToFit()
-                        .frame(width: 18, height: 18)
-                        .foregroundStyle(.tint)
-                        .rotationEffect(isExpanded ? .degrees(90) : .degrees(0))
-                        .animation(.smooth, value: isExpanded)
-                    #endif
-                }
-                .padding(.leading)
-                .contentShape(Rectangle())
+                Spacer()
                 #if targetEnvironment(macCatalyst)
-                .onTapGesture { isExpanded.toggle() }
+                YabaIconView(bundleKey: "arrow-right-01")
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
+                    .foregroundStyle(.tint)
+                    .rotationEffect(isExpanded ? .degrees(90) : .degrees(0))
+                    .animation(.smooth, value: isExpanded)
                 #endif
             }
-            gridInnerContent
-                .animation(.smooth, value: isExpanded)
-                .transition(.blurReplace)
+            .padding(.leading)
+            .contentShape(Rectangle())
+            #if targetEnvironment(macCatalyst)
+            .onTapGesture { isExpanded.toggle() }
+            #endif
         }
+        gridInnerContent
+            .animation(.smooth, value: isExpanded)
+            .transition(.blurReplace)
     }
     
     @ViewBuilder

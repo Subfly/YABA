@@ -152,7 +152,7 @@ private struct SelectFolderSearchableContent: View {
                     }
                 }
             }
-        }
+        }.listRowSpacing(0)
     }
 }
 

@@ -7,6 +7,9 @@
     "%lld" : {
       "shouldTranslate" : false
     },
+    "+%lld" : {
+
+    },
     "Bookmark Description Placeholder" : {
       "comment" : "Placeholder to show when bookmark description is empty",
       "extractionState" : "manual",
@@ -133,6 +136,18 @@
         }
       }
     },
+    "Bookmark No Tags Added Title" : {
+      "comment" : "Text to show in card view when there are no tags added for that particular bookmark",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No tags added yet…"
+          }
+        }
+      }
+    },
     "Bookmark Title Placeholder" : {
       "comment" : "Placeholder to show when bookmark title is empty",
       "extractionState" : "manual",
@@ -153,6 +168,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cancel"
+          }
+        }
+      }
+    },
+    "Card Image Sizing Big" : {
+      "comment" : "Name of Big Image Sizing",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Big Image"
+          }
+        }
+      }
+    },
+    "Card Image Sizing Small" : {
+      "comment" : "Name of Small Image Sizing",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Small Image"
           }
         }
       }
@@ -1329,6 +1368,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Can not create the URL from the link"
+          }
+        }
+      }
+    },
+    "View Card" : {
+      "comment" : "Name of card view",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Card"
           }
         }
       }

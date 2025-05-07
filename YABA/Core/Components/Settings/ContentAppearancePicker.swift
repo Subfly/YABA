@@ -11,24 +11,57 @@ struct ContentAppearancePicker: View {
     @AppStorage(Constants.preferredContentAppearanceKey)
     private var preferredContentAppearance: ViewType = .list
     
+    @AppStorage(Constants.preferredCardImageSizingKey)
+    private var preferredCardViewImageSizing: CardViewTypeImageSizing = .small
+    
     var body: some View {
         Menu {
-            ForEach(ViewType.allCases, id: \.self) { type in
-                Button {
-                    withAnimation {
-                        preferredContentAppearance = type
-                    }
-                } label: {
-                    Label {
-                        HStack {
-                            if type == preferredContentAppearance {
-                                YabaIconView(bundleKey: "tick-01")
-                            }
-                            Text(type.getUITitle())
+            Button {
+                withAnimation {
+                    preferredContentAppearance = .list
+                }
+            } label: {
+                Label {
+                    HStack {
+                        if preferredContentAppearance == .list {
+                            YabaIconView(bundleKey: "tick-01")
                         }
-                    } icon: {
-                        YabaIconView(bundleKey: type.getUIIconName())
+                        Text(ViewType.list.getUITitle())
                     }
+                } icon: {
+                    YabaIconView(bundleKey: ViewType.list.getUIIconName())
+                }
+            }
+            Menu {
+                ForEach(CardViewTypeImageSizing.allCases, id: \.self) { sizing in
+                    Button {
+                        withAnimation {
+                            preferredCardViewImageSizing = sizing
+                            preferredContentAppearance = .card
+                        }
+                    } label: {
+                        Label {
+                            HStack {
+                                if preferredContentAppearance == .card && preferredCardViewImageSizing == sizing {
+                                    YabaIconView(bundleKey: "tick-01")
+                                }
+                                Text(sizing.getUITitle())
+                            }
+                        } icon: {
+                            YabaIconView(bundleKey: sizing.getUIIconName())
+                        }
+                    }
+                }
+            } label: {
+                Label {
+                    HStack {
+                        if preferredContentAppearance == .card {
+                            YabaIconView(bundleKey: "tick-01")
+                        }
+                        Text(ViewType.card.getUITitle())
+                    }
+                } icon: {
+                    YabaIconView(bundleKey: ViewType.card.getUIIconName())
                 }
             }
         } label: {

@@ -12,6 +12,9 @@ struct CollectionDetail: View {
     @AppStorage(Constants.preferredContentAppearanceKey)
     private var contentAppearance: ViewType = .list
     
+    @AppStorage(Constants.preferredCardImageSizingKey)
+    private var cardImageSizing: CardViewTypeImageSizing = .small
+    
     @AppStorage(Constants.preferredSortingKey)
     private var preferredSorting: SortType = .createdAt
     
@@ -82,63 +85,59 @@ struct CollectionDetail: View {
     
     @ViewBuilder
     private var searchableContent: some View {
-        // Thanks SwiftData...
-        var filtered: [Bookmark] {
-            let queried: [Bookmark] = collection?.bookmarks.filter { bookmark in
-                if state.searchQuery.isEmpty {
-                    true
-                } else {
-                    bookmark.label.localizedStandardContains(state.searchQuery)
-                    || bookmark.bookmarkDescription.localizedStandardContains(state.searchQuery)
+        if let collection {
+            if collection.bookmarks.isEmpty {
+                ContentUnavailableView {
+                    Label {
+                        Text("Search No Bookmarks Found Title")
+                    } icon: {
+                        YabaIconView(bundleKey: "bookmark-off-02")
+                            .scaledToFit()
+                            .frame(width: 52, height: 52)
+                    }
+                } description: {
+                    Text("Search No Bookmarks Found Description \(state.searchQuery)")
                 }
-            } ?? []
-            
-            let sorted = queried.sorted {
-                switch preferredSorting {
-                case .createdAt:
-                    switch preferredSortOrder {
-                    case .ascending:
-                        $0.createdAt < $1.createdAt
-                    case .descending:
-                        $0.createdAt > $1.createdAt
-                    }
-                case .editedAt:
-                    switch preferredSortOrder {
-                    case .ascending:
-                        $0.editedAt < $1.editedAt
-                    case .descending:
-                        $0.editedAt > $1.editedAt
-                    }
-                case .label:
-                    switch preferredSortOrder {
-                    case .ascending:
-                        $0.label < $1.label
-                    case .descending:
-                        $0.label > $1.label
-                    }
-                }
+            } else {
+                squentialView
             }
-            
-            return sorted
         }
-        
-        if filtered.isEmpty {
-            ContentUnavailableView {
-                Label {
-                    Text("Search No Bookmarks Found Title")
-                } icon: {
-                    YabaIconView(bundleKey: "bookmark-off-02")
-                        .scaledToFit()
-                        .frame(width: 52, height: 52)
+    }
+    
+    @ViewBuilder
+    private var squentialView: some View {
+        if let collection {
+            List(selection: $selectedBookmark) {
+                ForEach(collection.bookmarks) { bookmark in
+                    BookmarkItemView(
+                        selectedBookmark: $selectedBookmark,
+                        bookmark: bookmark,
+                        isSearching: false,
+                        onNavigationCallback: onNavigationCallback
+                    )
                 }
-            } description: {
-                Text("Search No Bookmarks Found Description \(state.searchQuery)")
             }
-        } else {
-            switch contentAppearance {
-            case .list:
-                List(selection: $selectedBookmark) {
-                    ForEach(filtered) { bookmark in
+            .scrollContentBackground(.hidden)
+            .listStyle(.sidebar)
+            #if targetEnvironment(macCatalyst)
+            .listRowSpacing(2)
+            #else
+            .listRowSpacing(contentAppearance == .list ? 0 : 8)
+            #endif
+        }
+    }
+    
+    @ViewBuilder
+    private var gridView: some View {
+        if let collection {
+            ScrollView {
+                LazyVGrid(
+                    columns: [
+                        .init(.flexible()),
+                        .init(.flexible())
+                    ]
+                ) {
+                    ForEach(collection.bookmarks) { bookmark in
                         BookmarkItemView(
                             selectedBookmark: $selectedBookmark,
                             bookmark: bookmark,
@@ -146,29 +145,9 @@ struct CollectionDetail: View {
                             onNavigationCallback: onNavigationCallback
                         )
                     }
-                }
-                .listStyle(.sidebar)
-                .scrollContentBackground(.hidden)
-            case .grid:
-                ScrollView {
-                    LazyVGrid(
-                        columns: [
-                            .init(.flexible()),
-                            .init(.flexible())
-                        ]
-                    ) {
-                        ForEach(filtered) { bookmark in
-                            BookmarkItemView(
-                                selectedBookmark: $selectedBookmark,
-                                bookmark: bookmark,
-                                isSearching: false,
-                                onNavigationCallback: onNavigationCallback
-                            )
-                        }
-                    }.padding()
-                }
-                .scrollContentBackground(.hidden)
+                }.padding()
             }
+            .scrollContentBackground(.hidden)
         }
     }
     

@@ -7801,6 +7801,11 @@
             "category": "image-camera"
         },
         {
+            "name": "image-not-found-01",
+            "tags": "image-not-found-01",
+            "category": "image-camera",
+        },
+        {
             "name": "imo",
             "tags": "imo",
             "category": "logos"
@@ -11516,7 +11521,7 @@
             "category": "programming"
         },
         {
-            "name": "re:",
+            "name": "re-colon",
             "tags": "re:",
             "category": "programming"
         },

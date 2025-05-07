@@ -12,7 +12,7 @@ import Combine
 
 @MainActor
 @Observable
-class BookmarkCreationState {
+internal class BookmarkCreationState {
     @ObservationIgnored
     private let unfurler: Unfurler = .init()
     @ObservationIgnored
@@ -41,7 +41,7 @@ class BookmarkCreationState {
     var isLoading: Bool = false
     var hasError: Bool = false
     
-    var contentAppearance: ViewType = .list
+    var contentAppearance: PreviewContentAppearance = .list
     
     let toastManager: ToastManager = .init()
     

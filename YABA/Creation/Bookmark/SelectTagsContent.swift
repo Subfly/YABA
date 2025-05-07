@@ -232,7 +232,7 @@ private struct SelectTagsSearchableContent: View {
                         .frame(width: 18, height: 18)
                 }
             }
-        }
+        }.listRowSpacing(0)
     }
 }
 

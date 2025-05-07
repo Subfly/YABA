@@ -17,6 +17,9 @@ struct BookmarkCreationContent: View {
     @AppStorage(Constants.preferredContentAppearanceKey)
     private var storedContentAppearance: ViewType = .list
     
+    @AppStorage(Constants.preferredCardImageSizingKey)
+    private var storedCardImageSizing: CardViewTypeImageSizing = .small
+    
     @State
     private var state: BookmarkCreationState
     
@@ -58,45 +61,11 @@ struct BookmarkCreationContent: View {
                 if let folderColor = state.selectedFolder?.color.getUIColor() {
                     AnimatedMeshGradient(collectionColor: folderColor)
                 }
-                Form {
+                List {
                     Section {
-                        if state.contentAppearance == .list {
-                            bookmarkPreviewItem
-                                .redacted(reason: state.isLoading ? .placeholder : [])
-                        } else {
-                            bookmarkPreviewItem
-                                .redacted(reason: state.isLoading ? .placeholder : [])
-                                .listRowBackground(Color.clear)
-                        }
+                        bookmarkPreviewItem
                     } header: {
-                        HStack {
-                            Label {
-                                Text("Preview")
-                            } icon: {
-                                YabaIconView(bundleKey: "image-03")
-                                    .scaledToFit()
-                                    .frame(width: 18, height: 18)
-                            }
-                            Spacer()
-                            Button {
-                                withAnimation {
-                                    if state.contentAppearance == .list {
-                                        state.contentAppearance = .grid
-                                    } else {
-                                        state.contentAppearance = .list
-                                    }
-                                }
-                            } label: {
-                                Label {
-                                    Text(state.contentAppearance.getUITitle())
-                                        .textCase(.none)
-                                } icon: {
-                                    YabaIconView(bundleKey: state.contentAppearance.getUIIconName())
-                                        .scaledToFit()
-                                        .frame(width: 18, height: 18)
-                                }
-                            }
-                        }
+                        bookmarkPreviewHeader
                     }
                     
                     Section {
@@ -137,6 +106,7 @@ struct BookmarkCreationContent: View {
                     ? .visible
                     : .hidden
                 )
+                .listRowSpacing(0)
             }
             .navigationTitle(LocalizedStringKey(navigationTitle))
             .toolbar {
@@ -199,53 +169,182 @@ struct BookmarkCreationContent: View {
     @ViewBuilder
     private var bookmarkPreviewItem: some View {
         switch state.contentAppearance {
-        case .list:
+        case .list: listPreview
+        case .cardSmallImage: cardSmallImagePreview
+        case .cardBigImage: cardBigImagePreview
+        }
+    }
+    
+    @ViewBuilder
+    private var bookmarkPreviewHeader: some View {
+        HStack {
+            Label {
+                Text("Preview")
+            } icon: {
+                YabaIconView(bundleKey: "image-03")
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
+            }
+            Spacer()
+            Button {
+                withAnimation {
+                    switch state.contentAppearance {
+                    case .list:
+                        state.contentAppearance = .cardSmallImage
+                    case .cardSmallImage:
+                        state.contentAppearance = .cardBigImage
+                    case .cardBigImage:
+                        state.contentAppearance = .list
+                    }
+                }
+            } label: {
+                if state.contentAppearance != .list {
+                    Label {
+                        Text(ViewType.card.getUITitle())
+                            .textCase(.none)
+                    } icon: {
+                        YabaIconView(bundleKey: ViewType.card.getUIIconName())
+                            .scaledToFit()
+                            .frame(width: 18, height: 18)
+                    }
+                }
+                Label {
+                    Text(state.contentAppearance.getUITitle())
+                        .textCase(.none)
+                } icon: {
+                    YabaIconView(bundleKey: state.contentAppearance.getUIIconName())
+                        .scaledToFit()
+                        .frame(width: 18, height: 18)
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var listPreview: some View {
+        HStack(alignment: .center) {
+            bookmarkPreviewItemImage
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+            VStack(alignment: .leading) {
+                generateBookmarkItemText(
+                    for: state.label,
+                    localizedKey: "Bookmark Title Placeholder"
+                )
+                .font(.title3)
+                .fontWeight(.medium)
+                .lineLimit(1)
+                generateBookmarkItemText(
+                    for: state.description,
+                    localizedKey: "Bookmark Description Placeholder"
+                ).lineLimit(2)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var cardSmallImagePreview: some View {
+        VStack(alignment: .leading) {
             HStack(alignment: .center) {
                 bookmarkPreviewItemImage
                     .clipShape(RoundedRectangle(cornerRadius: 8))
-                VStack(alignment: .leading) {
+                generateBookmarkItemText(
+                    for: state.label,
+                    localizedKey: "Bookmark Title Placeholder"
+                )
+                .font(.title2)
+                .fontWeight(.medium)
+                .lineLimit(2)
+                Spacer()
+            }.padding(.vertical, 4)
+            
+            generateBookmarkItemText(
+                for: state.description,
+                localizedKey: "Bookmark Description Placeholder"
+            )
+            .lineLimit(4)
+            .multilineTextAlignment(.leading)
+            .padding(.bottom, 8)
+            
+            HStack {
+                generateTagIcons()
+                Spacer()
+                if let miniIconData = state.iconData,
+                   let miniIconImage = UIImage(data: miniIconData) {
+                    Image(uiImage: miniIconImage)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 20, height: 20)
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var cardBigImagePreview: some View {
+        VStack(alignment: .leading) {
+            bookmarkPreviewItemImage
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+            HStack {
+                if let miniIconData = state.iconData,
+                   let miniIconImage = UIImage(data: miniIconData) {
+                    Image(uiImage: miniIconImage)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 20, height: 20)
+                }
+                generateBookmarkItemText(
+                    for: state.label,
+                    localizedKey: "Bookmark Title Placeholder"
+                )
+                .font(.title2)
+                .fontWeight(.medium)
+                .lineLimit(2)
+            }.padding(.vertical, 4)
+            
+            generateBookmarkItemText(
+                for: state.description,
+                localizedKey: "Bookmark Description Placeholder"
+            )
+            .lineLimit(4)
+            .multilineTextAlignment(.leading)
+            .padding(.bottom, 8)
+            
+            HStack {
+                generateTagIcons()
+                Spacer()
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var gridPreview: some View {
+        HStack {
+            Spacer()
+            VStack(spacing: 0) {
+                bookmarkPreviewItemImage
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                HStack {
                     generateBookmarkItemText(
                         for: state.label,
                         localizedKey: "Bookmark Title Placeholder"
                     )
                     .font(.title3)
                     .fontWeight(.medium)
-                    .lineLimit(1)
-                    generateBookmarkItemText(
-                        for: state.description,
-                        localizedKey: "Bookmark Description Placeholder"
-                    ).lineLimit(2)
-                }
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+                    Spacer()
+                }.padding()
             }
-        case .grid:
-            HStack {
-                Spacer()
-                VStack(spacing: 0) {
-                    bookmarkPreviewItemImage
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                    HStack {
-                        generateBookmarkItemText(
-                            for: state.label,
-                            localizedKey: "Bookmark Title Placeholder"
-                        )
-                        .font(.title3)
-                        .fontWeight(.medium)
-                        .lineLimit(2)
-                        .multilineTextAlignment(.leading)
-                        Spacer()
-                    }.padding()
-                }
-                .background {
-                    RoundedRectangle(cornerRadius: 12)
-                    #if targetEnvironment(macCatalyst)
-                        .fill(.gray.opacity(0.1))
-                    #else
-                        .fill(.thinMaterial)
-                    #endif
-                }
-                .frame(width: 200)
-                Spacer()
+            .background {
+                RoundedRectangle(cornerRadius: 12)
+                #if targetEnvironment(macCatalyst)
+                    .fill(.gray.opacity(0.1))
+                #else
+                    .fill(.thinMaterial)
+                #endif
             }
+            .frame(width: 200)
+            Spacer()
         }
     }
     
@@ -259,15 +358,32 @@ struct BookmarkCreationContent: View {
                     .resizable()
                     .scaledToFill()
                     .frame(width: 50, height: 50)
-            case .grid:
+            case .cardSmallImage:
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFill()
-                    .frame(width: 200, height: 200)
+                    .frame(width: 50, height: 50)
+            case .cardBigImage:
+                RoundedRectangle(cornerRadius: 8)
+                    .frame(height: 150)
+                    .overlay {
+                        Image(uiImage: image)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .clipped()
+                    }
+                /**
+                 * TODO: OPEN WHEN LAZYVGRID IS RECYCABLE
+                    case .grid:
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 200, height: 200)
+                 */
             }
         } else {
             switch state.contentAppearance {
-            case .list:
+            case .list, .cardSmallImage:
                 RoundedRectangle(cornerRadius: 8)
                     .fill(.tint.opacity(0.3))
                     .frame(width: 50, height: 50)
@@ -277,16 +393,86 @@ struct BookmarkCreationContent: View {
                             .foregroundStyle(.tint)
                             .frame(width: 32, height: 32)
                     }
-            case .grid:
+            case .cardBigImage:
                 RoundedRectangle(cornerRadius: 8)
                     .fill(.tint.opacity(0.3))
-                    .frame(width: 200, height: 200)
+                    .frame(height: 150)
                     .overlay {
                         YabaIconView(bundleKey: state.selectedType.getIconName())
                             .scaledToFit()
                             .foregroundStyle(.tint)
-                            .frame(width: 92, height: 92)
+                            .frame(width: 96, height: 96)
                     }
+                /**
+                 * TODO: OPEN WHEN LAZYVGRID IS RECYCABLE
+                    case .grid:
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(.tint.opacity(0.3))
+                            .frame(width: 200, height: 200)
+                            .overlay {
+                                YabaIconView(bundleKey: state.selectedType.getIconName())
+                                    .scaledToFit()
+                                    .foregroundStyle(.tint)
+                                    .frame(width: 92, height: 92)
+                            }
+                 */
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func generateTagIcons() -> some View {
+        if !state.selectedTags.isEmpty {
+            if state.selectedTags.count < 6 {
+                HStack {
+                    HStack(spacing: 0) {
+                        ForEach(state.selectedTags) { tag in
+                            Rectangle()
+                                .fill(tag.color.getUIColor().opacity(0.3))
+                                .frame(width: 34, height: 34)
+                                .overlay {
+                                    YabaIconView(bundleKey: tag.icon)
+                                        .foregroundStyle(tag.color.getUIColor())
+                                        .frame(width: 24, height: 24)
+                                }
+                        }
+                    }.clipShape(RoundedRectangle(cornerRadius: 8))
+                    Spacer()
+                }
+            } else {
+                HStack {
+                    HStack(spacing: 0) {
+                        ForEach(0..<5) { index in
+                            let tag = state.selectedTags[index]
+                            Rectangle()
+                                .fill(tag.color.getUIColor().opacity(0.3))
+                                .frame(width: 34, height: 34)
+                                .overlay {
+                                    YabaIconView(bundleKey: tag.icon)
+                                        .foregroundStyle(tag.color.getUIColor())
+                                        .frame(width: 24, height: 24)
+                                }
+                        }
+                    }.clipShape(RoundedRectangle(cornerRadius: 8))
+                    Text("+\(state.selectedTags.count - 5)")
+                        .font(.caption)
+                        .italic()
+                    Spacer()
+                }
+            }
+        } else {
+            HStack {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(.tint.opacity(0.3))
+                    .frame(width: 34, height: 34)
+                    .overlay {
+                        YabaIconView(bundleKey: "tags")
+                            .foregroundStyle(.tint)
+                            .frame(width: 24, height: 24)
+                    }
+                Text("Bookmark No Tags Added Title")
+                    .font(.caption)
+                    .italic()
             }
         }
     }
@@ -517,7 +703,17 @@ struct BookmarkCreationContent: View {
     }
     
     private func onAppear() {
-        state.contentAppearance = storedContentAppearance
+        switch storedContentAppearance {
+        case .list:
+            state.contentAppearance = .list
+        case .card:
+            switch storedCardImageSizing {
+            case .big:
+                state.contentAppearance = .cardBigImage
+            case .small:
+                state.contentAppearance = .cardSmallImage
+            }
+        }
         
         state.listenUrlChanges { url in
             Task { await state.fetchData(with: url) }
