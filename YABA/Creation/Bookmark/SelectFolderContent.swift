@@ -44,7 +44,7 @@ struct SelectFolderContent: View {
         .sheet(isPresented: $showFolderCreationSheet) {
             CollectionCreationContent(
                 collectionType: .folder,
-                collectionToEdit: .constant(nil),
+                collectionToEdit: nil,
                 onEditCallback: { _ in }
             )
         }
@@ -124,7 +124,6 @@ private struct SelectFolderSearchableContent: View {
                 ForEach(allFolders) { folder in
                     CollectionItemView(
                         collection: folder,
-                        selectedCollection: .constant(nil),
                         isInSelectionMode: true,
                         isInBookmarkDetail: false,
                         onDeleteCallback: { collection in

@@ -9,22 +9,8 @@ import SwiftUI
 
 struct HomeCreateContentFAB: View {
     @Binding
-    private var isActive: Bool
-    
-    @Binding
-    var selectedAppTint: Color
-    
+    var isActive: Bool
     let onClickAction: (_ type: CreationType) -> Void
-    
-    init(
-        isActive: Binding<Bool>,
-        selectedAppTint: Binding<Color>,
-        onClickAction: @escaping (_: CreationType) -> Void
-    ) {
-        _isActive = isActive
-        _selectedAppTint = selectedAppTint
-        self.onClickAction = onClickAction
-    }
 
     var body: some View {
         ZStack {
@@ -68,7 +54,7 @@ struct HomeCreateContentFAB: View {
         ZStack(alignment: .center) {
             Circle()
             #if os(visionOS)
-                .fill(selectedAppTint)
+                .fill(.tint)
             #endif
                 .frame(
                     width: isMini ? 48 : 72,
@@ -117,7 +103,6 @@ struct HomeCreateContentFAB: View {
 #Preview {
     HomeCreateContentFAB(
         isActive: .constant(true),
-        selectedAppTint: .constant(.accentColor),
         onClickAction: { _ in
             // Do Nothing
         }

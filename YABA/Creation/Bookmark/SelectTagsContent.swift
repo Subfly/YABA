@@ -50,7 +50,7 @@ struct SelectTagsContent: View {
         .sheet(isPresented: $showTagCreationSheet) {
             CollectionCreationContent(
                 collectionType: .tag,
-                collectionToEdit: .constant(nil),
+                collectionToEdit: nil,
                 onEditCallback: { _ in }
             )
         }
@@ -111,7 +111,6 @@ private struct SelectTagsSearchableContent: View {
                     ForEach(selectedTags) { tag in
                         CollectionItemView(
                             collection: tag,
-                            selectedCollection: .constant(nil),
                             isInSelectionMode: true,
                             isInBookmarkDetail: false,
                             onDeleteCallback: { collection in
@@ -208,7 +207,6 @@ private struct SelectTagsSearchableContent: View {
                     ForEach(tags) { tag in
                         CollectionItemView(
                             collection: tag,
-                            selectedCollection: .constant(nil),
                             isInSelectionMode: true,
                             isInBookmarkDetail: false,
                             onDeleteCallback: { _ in },

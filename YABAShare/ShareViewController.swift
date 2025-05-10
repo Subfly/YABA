@@ -60,8 +60,8 @@ class ShareViewController: UIViewController {
     private func createContentView(link: String) {
         let contentView = UIHostingController(
             rootView: BookmarkCreationContent(
-                bookmarkToEdit: .constant(nil),
-                initialCollection: .constant(nil),
+                bookmarkToEdit: nil,
+                collectionToFill: nil,
                 link: link,
                 onExitRequested: close
             ).modelContainer(for: [Bookmark.self, YabaCollection.self])

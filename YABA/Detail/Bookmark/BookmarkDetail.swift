@@ -12,23 +12,26 @@ struct BookmarkDetail: View {
     private var modelContext
     
     @State
-    private var state: BookmarkDetailState = .init()
+    private var state: BookmarkDetailState
     
-    @Binding
-    var selectedCollection: YabaCollection?
-    
-    @Binding
-    var bookmark: Bookmark?
-    
+    let bookmark: Bookmark?
     let onCollectionNavigationCallback: (YabaCollection) -> Void
-    
     let onDeleteBookmarkCallback: (Bookmark) -> Void
+    
+    init(
+        bookmark: Bookmark?,
+        onCollectionNavigationCallback: @escaping (YabaCollection) -> Void,
+        onDeleteBookmarkCallback: @escaping (Bookmark) -> Void
+    ) {
+        self.bookmark = bookmark
+        self.state = .init(with: bookmark)
+        self.onCollectionNavigationCallback = onCollectionNavigationCallback
+        self.onDeleteBookmarkCallback = onDeleteBookmarkCallback
+    }
     
     var body: some View {
         ZStack {
-            AnimatedMeshGradient(
-                collectionColor: selectedCollection?.color.getUIColor() ?? .accentColor
-            )
+            AnimatedMeshGradient(collectionColor: state.meshColor)
             
             if bookmark != nil {
                 #if targetEnvironment(macCatalyst)
@@ -81,8 +84,8 @@ struct BookmarkDetail: View {
         }
         .sheet(isPresented: $state.shouldShowEditBookmarkSheet) {
             BookmarkCreationContent(
-                bookmarkToEdit: $bookmark,
-                initialCollection: .constant(nil),
+                bookmarkToEdit: bookmark,
+                collectionToFill: nil,
                 link: nil,
                 onExitRequested: {}
             )
@@ -187,10 +190,13 @@ struct BookmarkDetail: View {
             
             HStack {
                 HStack {
-                    YabaIconView(bundleKey: bookmark?.bookmarkType.getIconName() ?? BookmarkType.none.getIconName())
-                        .scaledToFit()
-                        .frame(width: 20, height: 20)
-                        .foregroundStyle(.tint)
+                    YabaIconView(
+                        bundleKey: bookmark?.bookmarkType.getIconName()
+                        ?? BookmarkType.none.getIconName()
+                    )
+                    .scaledToFit()
+                    .frame(width: 20, height: 20)
+                    .foregroundStyle(.tint)
                     Text("Create Bookmark Type Placeholder")
                 }
                 Spacer()
@@ -235,12 +241,10 @@ struct BookmarkDetail: View {
     
     @ViewBuilder
     private var folderSection: some View {
-        if let collections = bookmark?.collections,
-           let folder = collections.first(where: { $0.collectionType == .folder }) {
+        if let folder = state.folder {
             Section {
                 CollectionItemView(
                     collection: folder,
-                    selectedCollection: $selectedCollection,
                     isInSelectionMode: false,
                     isInBookmarkDetail: true,
                     onDeleteCallback: { _ in },
@@ -261,42 +265,38 @@ struct BookmarkDetail: View {
     
     @ViewBuilder
     private var tagsSection: some View {
-        if let collections = bookmark?.collections {
-            Section {
-                let tags = collections.filter({ $0.collectionType == .tag })
-                if tags.isEmpty {
-                    ContentUnavailableView {
-                        Label {
-                            Text("Bookmark Detail No Tags Added Title")
-                        } icon: {
-                            YabaIconView(bundleKey: "tags")
-                                .scaledToFit()
-                                .frame(width: 52, height: 52)
-                        }
-                    } description: {
-                        Text("Bookmark Detail No Tags Added Description")
+        Section {
+            if state.tags.isEmpty {
+                ContentUnavailableView {
+                    Label {
+                        Text("Bookmark Detail No Tags Added Title")
+                    } icon: {
+                        YabaIconView(bundleKey: "tags")
+                            .scaledToFit()
+                            .frame(width: 52, height: 52)
                     }
-                } else {
-                    ForEach(tags) { tag in
-                        CollectionItemView(
-                            collection: tag,
-                            selectedCollection: $selectedCollection,
-                            isInSelectionMode: false,
-                            isInBookmarkDetail: true,
-                            onDeleteCallback: { _ in },
-                            onEditCallback: { _ in },
-                            onNavigationCallback: onCollectionNavigationCallback
-                        )
-                    }
+                } description: {
+                    Text("Bookmark Detail No Tags Added Description")
                 }
-            } header: {
-                Label {
-                    Text("Tags Title")
-                } icon: {
-                    YabaIconView(bundleKey: "tag-01")
-                        .scaledToFit()
-                        .frame(width: 18, height: 18)
+            } else {
+                ForEach(state.tags) { tag in
+                    CollectionItemView(
+                        collection: tag,
+                        isInSelectionMode: false,
+                        isInBookmarkDetail: true,
+                        onDeleteCallback: { _ in },
+                        onEditCallback: { _ in },
+                        onNavigationCallback: onCollectionNavigationCallback
+                    )
                 }
+            }
+        } header: {
+            Label {
+                Text("Tags Title")
+            } icon: {
+                YabaIconView(bundleKey: "tag-01")
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
             }
         }
     }
@@ -372,8 +372,7 @@ struct BookmarkDetail: View {
 
 #Preview {
     BookmarkDetail(
-        selectedCollection: .constant(nil),
-        bookmark: .constant(nil),
+        bookmark: .empty(),
         onCollectionNavigationCallback: { _ in },
         onDeleteBookmarkCallback: { _ in }
     )

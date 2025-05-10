@@ -22,33 +22,28 @@ struct BookmarkCreationContent: View {
     
     @State
     private var state: BookmarkCreationState
+    private let navigationTitle: String
     
-    @Binding
-    var bookmarkToEdit: Bookmark?
-    
-    @Binding
-    var initialCollection: YabaCollection?
+    let bookmarkToEdit: Bookmark?
+    let collectionToFill: YabaCollection?
     
     /// MARK: SHARE EXTENSION RELATED
     let link: String?
     let onExitRequested: () -> Void
     
-    private let navigationTitle: String
-    
     init(
-        bookmarkToEdit: Binding<Bookmark?>,
-        initialCollection: Binding<YabaCollection?>,
+        bookmarkToEdit: Bookmark?,
+        collectionToFill: YabaCollection?, // Used when creating a new bookmark to a collection
         link: String?,
         onExitRequested: @escaping () -> Void
     ) {
-        _bookmarkToEdit = bookmarkToEdit
-        _initialCollection = initialCollection
-        
-        self.state = .init(isInEditMode: bookmarkToEdit.wrappedValue != nil)
+        self.state = .init(isInEditMode: bookmarkToEdit != nil)
+        self.bookmarkToEdit = bookmarkToEdit
+        self.collectionToFill = collectionToFill
         self.link = link
         self.onExitRequested = onExitRequested
         
-        if let _ = bookmarkToEdit.wrappedValue {
+        if bookmarkToEdit != nil {
             navigationTitle = "Edit Bookmark Title"
         } else {
             navigationTitle = "Create Bookmark Title"
@@ -738,12 +733,12 @@ struct BookmarkCreationContent: View {
             state.url = link
         }
         
-        if let initialCollection {
-            switch initialCollection.collectionType {
+        if let collectionToFill {
+            switch collectionToFill.collectionType {
             case .folder:
-                state.selectedFolder = initialCollection
+                state.selectedFolder = collectionToFill
             case .tag:
-                state.selectedTags.append(initialCollection)
+                state.selectedTags.append(collectionToFill)
             }
         }
     }
@@ -751,8 +746,8 @@ struct BookmarkCreationContent: View {
 
 #Preview {
     BookmarkCreationContent(
-        bookmarkToEdit: .constant(nil),
-        initialCollection: .constant(nil),
+        bookmarkToEdit: nil,
+        collectionToFill: nil,
         link: nil,
         onExitRequested: {}
     )
@@ -760,8 +755,8 @@ struct BookmarkCreationContent: View {
 
 #Preview {
     BookmarkCreationContent(
-        bookmarkToEdit: .constant(.empty()),
-        initialCollection: .constant(nil),
+        bookmarkToEdit: nil,
+        collectionToFill: nil,
         link: nil,
         onExitRequested: {}
     )

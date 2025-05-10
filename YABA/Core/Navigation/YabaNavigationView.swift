@@ -11,17 +11,27 @@ struct YabaNavigationView: View {
     @AppStorage(Constants.hasPassedOnboardingKey)
     private var hasPassedOnboarding: Bool = false
     
-    @State
-    private var path: [NavigationDestination] = []
+    var body: some View {
+        return navigationSwitcher.tint(.accentColor)
+    }
     
-    @State
-    private var appTint: Color = .accentColor
-    
-    @State
-    private var selectedCollection: YabaCollection?
-    
-    @State
-    private var selectedBookmark: Bookmark?
+    @ViewBuilder
+    private var navigationSwitcher: some View {
+        #if os(visionOS)
+        GenericNavigationView()
+        #else
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            GenericNavigationView()
+        } else {
+            MobileNavigationView()
+        }
+        #endif
+    }
+}
+
+private struct GenericNavigationView: View {
+    @Environment(\.appState)
+    private var appState
     
     @State
     private var columnVisibility: NavigationSplitViewVisibility = .all
@@ -33,72 +43,56 @@ struct YabaNavigationView: View {
     private var shouldShowSettingsSheet: Bool = false
     
     var body: some View {
-        #if os(visionOS)
-        genericNavigationView
-        #else
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            genericNavigationView
-        } else {
-            mobileNavigationView
-        }
-        #endif
-    }
-    
-    @ViewBuilder
-    private var genericNavigationView: some View {
+        let _ = Self._printChanges()
         NavigationSplitView(
             columnVisibility: $columnVisibility,
             preferredCompactColumn: $prefferedColumn,
         ) {
             HomeView(
-                selectedCollection: $selectedCollection,
-                selectedBookmark: $selectedBookmark,
-                selectedAppTint: $appTint,
-                onNavigationCallbackForCollection: { _  in },
-                onNavigationCallbackForBookmark: { _ in },
+                onNavigationCallbackForCollection: { collection in
+                    appState.selectedCollection = collection
+                },
+                onNavigationCallbackForBookmark: { bookmark in
+                    appState.selectedBookmark = bookmark
+                },
                 onNavigationCallbackForSettings: {
                     shouldShowSettingsSheet = true
                 }
             )
         } content: {
             CollectionDetail(
-                collection: $selectedCollection,
-                selectedBookmark: $selectedBookmark,
-                onNavigationCallback: { _ in }
+                collection: appState.selectedCollection,
+                onNavigationCallback: { bookmark in
+                    appState.selectedBookmark = bookmark
+                }
             )
         } detail: {
             BookmarkDetail(
-                selectedCollection: $selectedCollection,
-                bookmark: $selectedBookmark,
-                onCollectionNavigationCallback: { _ in },
+                bookmark: appState.selectedBookmark,
+                onCollectionNavigationCallback: { collection in
+                    appState.selectedCollection = collection
+                },
                 onDeleteBookmarkCallback: { bookmark in
-                    if selectedBookmark?.id == bookmark.id {
-                        selectedBookmark = nil
+                    if appState.selectedBookmark?.id == bookmark.id {
+                        appState.selectedBookmark = nil
                     }
                 }
             )
         }
         .navigationSplitViewStyle(.balanced)
-        .tint(appTint)
-        .onChange(of: selectedCollection) { _, newValue in
-            if let color = newValue?.color.getUIColor() {
-                withAnimation {
-                    appTint = color
-                }
-            }
-        }
         .sheet(isPresented: $shouldShowSettingsSheet) {
             SettingsView()
         }
     }
+}
+
+private struct MobileNavigationView: View {
+    @State
+    private var path: [NavigationDestination] = []
     
-    @ViewBuilder
-    private var mobileNavigationView: some View {
+    var body: some View {
         NavigationStack(path: $path) {
             HomeView(
-                selectedCollection: $selectedCollection,
-                selectedBookmark: $selectedBookmark,
-                selectedAppTint: $appTint,
                 onNavigationCallbackForCollection: { collection in
                     path.append(.collectionDetail(collection: collection))
                 },
@@ -113,22 +107,14 @@ struct YabaNavigationView: View {
                 switch destination {
                 case .collectionDetail(let collection):
                     CollectionDetail(
-                        collection: .init(
-                            get: { collection },
-                            set: { _ in }
-                        ),
-                        selectedBookmark: $selectedBookmark,
+                        collection: collection,
                         onNavigationCallback: { bookmark in
                             path.append(.bookmarkDetail(bookmark: bookmark))
                         }
                     )
                 case .bookmarkDetail(let bookmark):
                     BookmarkDetail(
-                        selectedCollection: $selectedCollection,
-                        bookmark: .init(
-                            get: { bookmark },
-                            set: { _ in }
-                        ),
+                        bookmark: bookmark,
                         onCollectionNavigationCallback: { collection in
                             path.append(.collectionDetail(collection: collection))
                         },
@@ -144,15 +130,6 @@ struct YabaNavigationView: View {
                     )
                 case .settings:
                     SettingsView()
-                }
-                
-            }
-        }
-        .tint(appTint)
-        .onChange(of: selectedCollection) { _, newValue in
-            if let color = newValue?.color.getUIColor() {
-                withAnimation {
-                    appTint = color
                 }
             }
         }

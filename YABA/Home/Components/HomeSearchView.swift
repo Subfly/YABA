@@ -8,25 +8,20 @@
 import SwiftUI
 import SwiftData
 
+// TODO: MOVE IT TO DETAIL, NOT LET BE A PART OF HOME
 struct HomeSearchView: View {
     @Query
     private var bookmarks: [Bookmark]
     
     @Binding
-    var selectedBookmark: Bookmark?
-    
-    @Binding
     var searchQuery: String
-    
     let onNavigationCallback: (Bookmark) -> Void
     
     init(
         searchQuery: Binding<String>,
-        selectedBookmark: Binding<Bookmark?>,
         onNavigationCallback: @escaping (Bookmark) -> Void
     ) {
         _searchQuery = searchQuery
-        _selectedBookmark = selectedBookmark
         self.onNavigationCallback = onNavigationCallback
         
         let query = searchQuery.wrappedValue
@@ -74,9 +69,7 @@ struct HomeSearchView: View {
         } else {
             ForEach(bookmarks) { bookmark in
                 BookmarkItemView(
-                    selectedBookmark: $selectedBookmark,
                     bookmark: bookmark,
-                    isSearching: true,
                     onNavigationCallback: onNavigationCallback
                 )
             }
@@ -87,7 +80,6 @@ struct HomeSearchView: View {
 #Preview {
     HomeSearchView(
         searchQuery: .constant(""),
-        selectedBookmark: .constant(nil),
         onNavigationCallback: { _ in }
     )
 }

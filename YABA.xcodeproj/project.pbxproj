@@ -58,6 +58,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Assets.xcassets,
+				Core/App/AppState.swift,
 				Core/Components/ColorPicker/YabaColorPicker.swift,
 				Core/Components/Gradient/AnimatedMeshGradient.swift,
 				Core/Components/Icon/YabaIconView.swift,

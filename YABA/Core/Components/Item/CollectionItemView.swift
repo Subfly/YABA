@@ -8,40 +8,32 @@
 import Foundation
 import SwiftUI
 
+@MainActor
+@Observable
+private class ItemState {
+    var isHovered: Bool = false
+    var shouldShowDeleteDialog: Bool = false
+    var shouldShowEditSheet: Bool = false
+    var shouldShowMenuItems: Bool = false
+    var shouldShowCreateBookmarkSheet: Bool = false
+}
+
 struct CollectionItemView: View {
     @Environment(\.modelContext)
     private var modelContext
+    
+    @Environment(\.appState)
+    private var appState
     
     @AppStorage(Constants.preferredContentAppearanceKey)
     private var contentAppearance: ViewType = .list
     
     @State
-    private var isHovered: Bool = false
-    
-    @State
-    private var shouldShowDeleteDialog: Bool = false
-    
-    @State
-    private var shouldShowEditSheet: Bool = false
-    
-    @State
-    private var shouldShowMenuItems: Bool = false
-    
-    @State
-    private var shouldShowCreateBookmarkSheet: Bool = false
-    
-    @State
-    private var selectedCollectionToPerformActions: YabaCollection?
+    private var itemState: ItemState = .init()
     
     let collection: YabaCollection
-    
-    @Binding
-    var selectedCollection: YabaCollection?
-    
     let isInSelectionMode: Bool
-    /// MARK: IPAD ONLY
     let isInBookmarkDetail: Bool
-    
     let onDeleteCallback: (YabaCollection) -> Void
     let onEditCallback: (YabaCollection) -> Void
     let onNavigationCallback: (YabaCollection) -> Void
@@ -51,9 +43,9 @@ struct CollectionItemView: View {
             .padding(.leading, isInSelectionMode ? 0 : 8)
             #if targetEnvironment(macCatalyst)
             .listRowBackground(
-                collection.id == selectedCollection?.id
+                appState.selectedCollection?.id == collection.id
                 ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
-                : isHovered
+                : itemState.isHovered
                 ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
                 : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
             )
@@ -62,7 +54,7 @@ struct CollectionItemView: View {
                 swipeActionItems
             }
             .onHover { hovered in
-                isHovered = hovered
+                itemState.isHovered = hovered
             }
             .contextMenu {
                 menuActionItems
@@ -73,32 +65,28 @@ struct CollectionItemView: View {
                     ? "Delete Folder Title"
                     : "Delete Tag Title"
                 ),
-                isPresented: $shouldShowDeleteDialog,
+                isPresented: $itemState.shouldShowDeleteDialog,
             ) {
                 alertActionItems
             } message: {
-                if let selectedCollectionToPerformActions {
-                    Text("Delete Content Message \(selectedCollectionToPerformActions.label)")
-                }
+                Text("Delete Content Message \(collection.label)")
             }
-            .sheet(isPresented: $shouldShowEditSheet) {
-                if let selectedCollectionToPerformActions {
-                    CollectionCreationContent(
-                        collectionType: selectedCollectionToPerformActions.collectionType,
-                        collectionToEdit: $selectedCollectionToPerformActions,
-                        onEditCallback: onEditCallback
-                    )
-                }
+            .sheet(isPresented: $itemState.shouldShowEditSheet) {
+                CollectionCreationContent(
+                    collectionType: collection.collectionType,
+                    collectionToEdit: collection,
+                    onEditCallback: onEditCallback
+                )
             }
-            .sheet(isPresented: $shouldShowCreateBookmarkSheet) {
+            .sheet(isPresented: $itemState.shouldShowCreateBookmarkSheet) {
                 BookmarkCreationContent(
-                    bookmarkToEdit: .constant(nil),
-                    initialCollection: $selectedCollectionToPerformActions,
+                    bookmarkToEdit: nil,
+                    collectionToFill: collection,
                     link: nil,
                     onExitRequested: {}
                 )
             }
-
+            .id(collection.id)
     }
     
     @ViewBuilder
@@ -109,7 +97,6 @@ struct CollectionItemView: View {
             if isInBookmarkDetail {
                 Button {
                     withAnimation {
-                        selectedCollection = collection
                         onNavigationCallback(collection)
                     }
                 } label: {
@@ -120,7 +107,6 @@ struct CollectionItemView: View {
                     .contentShape(Rectangle())
                     .onTapGesture {
                         withAnimation {
-                            selectedCollection = collection
                             onNavigationCallback(collection)
                         }
                     }
@@ -157,7 +143,7 @@ struct CollectionItemView: View {
             }
             Spacer()
             HStack {
-                if isHovered && !isInSelectionMode {
+                if itemState.isHovered && !isInSelectionMode {
                     Menu {
                         menuActionItems
                     } label: {
@@ -191,7 +177,7 @@ struct CollectionItemView: View {
                 Spacer()
                 VStack {
                     #if targetEnvironment(macCatalyst)
-                    if isHovered && !isInSelectionMode {
+                    if itemState.isHovered && !isInSelectionMode {
                         Menu {
                             menuActionItems
                         } label: {
@@ -228,9 +214,9 @@ struct CollectionItemView: View {
             RoundedRectangle(cornerRadius: 12)
                 .fill(
                     .gray.opacity(
-                        collection.id == selectedCollection?.id
+                        appState.selectedCollection?.id == collection.id
                         ? 0.3
-                        : isHovered ? 0.2 : 0.1
+                        : itemState.isHovered ? 0.2 : 0.1
                     )
                 )
             #else
@@ -245,8 +231,7 @@ struct CollectionItemView: View {
     private var menuActionItems: some View {
         if !isInSelectionMode {
             Button {
-                selectedCollectionToPerformActions = collection
-                shouldShowCreateBookmarkSheet = true
+                itemState.shouldShowCreateBookmarkSheet = true
             } label: {
                 VStack {
                     YabaIconView(bundleKey: "bookmark-add-02")
@@ -255,8 +240,7 @@ struct CollectionItemView: View {
             }.tint(.mint)
         }
         Button {
-            selectedCollectionToPerformActions = collection
-            shouldShowEditSheet = true
+            itemState.shouldShowEditSheet = true
         } label: {
             VStack {
                 YabaIconView(bundleKey: "edit-02")
@@ -264,8 +248,7 @@ struct CollectionItemView: View {
             }
         }.tint(.orange)
         Button(role: .destructive) {
-            selectedCollectionToPerformActions = collection
-            shouldShowDeleteDialog = true
+            itemState.shouldShowDeleteDialog = true
         } label: {
             VStack {
                 YabaIconView(bundleKey: "delete-02")
@@ -277,8 +260,7 @@ struct CollectionItemView: View {
     @ViewBuilder
     private var swipeActionItems: some View {
         Button {
-            selectedCollectionToPerformActions = collection
-            shouldShowDeleteDialog = true
+            itemState.shouldShowDeleteDialog = true
         } label: {
             VStack {
                 YabaIconView(bundleKey: "delete-02")
@@ -286,8 +268,7 @@ struct CollectionItemView: View {
             }
         }.tint(.red)
         Button {
-            selectedCollectionToPerformActions = collection
-            shouldShowEditSheet = true
+            itemState.shouldShowEditSheet = true
         } label: {
             VStack {
                 YabaIconView(bundleKey: "edit-02")
@@ -296,8 +277,7 @@ struct CollectionItemView: View {
         }.tint(.orange)
         if !isInSelectionMode {
             Button {
-                selectedCollectionToPerformActions = collection
-                shouldShowCreateBookmarkSheet = true
+                itemState.shouldShowCreateBookmarkSheet = true
             } label: {
                 VStack {
                     YabaIconView(bundleKey: "bookmark-add-02")
@@ -310,25 +290,21 @@ struct CollectionItemView: View {
     @ViewBuilder
     private var alertActionItems: some View {
         Button(role: .cancel) {
-            selectedCollectionToPerformActions = nil
-            shouldShowDeleteDialog = false
+            itemState.shouldShowDeleteDialog = false
         } label: {
             Text("Cancel")
         }
         Button(role: .destructive) {
             withAnimation {
-                if let collection = selectedCollectionToPerformActions {
-                    if collection.collectionType == .folder {
-                        collection.bookmarks.forEach { bookmark in
-                            modelContext.delete(bookmark)
-                        }
+                if collection.collectionType == .folder {
+                    collection.bookmarks.forEach { bookmark in
+                        modelContext.delete(bookmark)
                     }
-                    modelContext.delete(collection)
-                    try? modelContext.save()
-                    onDeleteCallback(collection)
-                    selectedCollectionToPerformActions = nil
-                    shouldShowDeleteDialog = false
                 }
+                modelContext.delete(collection)
+                try? modelContext.save()
+                onDeleteCallback(collection)
+                itemState.shouldShowDeleteDialog = false
             }
         } label: {
             Text("Delete")

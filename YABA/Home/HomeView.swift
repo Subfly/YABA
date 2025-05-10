@@ -21,52 +21,29 @@ struct HomeView: View {
     @State
     private var homeState: HomeState = .init()
     
-    @FocusState
-    private var isSearchActive: Bool
-    
-    @Binding
-    var selectedCollection: YabaCollection?
-    
-    @Binding
-    var selectedBookmark: Bookmark?
-    
-    @Binding
-    var selectedAppTint: Color
-    
     let onNavigationCallbackForCollection: (YabaCollection) -> Void
     let onNavigationCallbackForBookmark: (Bookmark) -> Void
     let onNavigationCallbackForSettings: () -> Void
     
     var body: some View {
-        let searching = isSearchActive || !homeState.searchQuery.isEmpty
-        
+        let _ = Self._printChanges()
         ZStack {
             #if !targetEnvironment(macCatalyst)
-            AnimatedMeshGradient(collectionColor: selectedAppTint)
+            AnimatedMeshGradient(collectionColor: .accentColor)
             #endif
             // TODO: CHANGE THIS WHEN LAZYVGRID IS RECYCABLE
-            sequentailView
-                .scrollContentBackground(.hidden)
-                .searchable(
-                    text: $homeState.searchQuery,
-                    prompt: "Home Search Prompt"
-                )
-                .searchFocused($isSearchActive)
-                .onChange(of: searching) { _, isSearching in
-                    if isSearching {
-                        withAnimation {
-                            homeState.isFABActive = false
-                        }
-                    }
-                }
-                #if targetEnvironment(macCatalyst)
-                .listRowSpacing(2)
-                .listStyle(.sidebar)
-                #endif
+            SequentialView(
+                onNavigationCallbackForCollection: onNavigationCallbackForCollection,
+                onNavigationCallbackForBookmark: onNavigationCallbackForBookmark
+            )
+            .scrollContentBackground(.hidden)
+            #if targetEnvironment(macCatalyst)
+            .listRowSpacing(2)
+            .listStyle(.sidebar)
+            #endif
             
             HomeCreateContentFAB(
                 isActive: $homeState.isFABActive,
-                selectedAppTint: $selectedAppTint,
                 onClickAction: { creationType in
                     withAnimation {
                         homeState.isFABActive.toggle()
@@ -85,7 +62,6 @@ struct HomeView: View {
                     }
                 }
             )
-            .opacity(!searching ? 1 : 0)
             .transition(.blurReplace)
             .ignoresSafeArea()
         }
@@ -93,15 +69,15 @@ struct HomeView: View {
             if let creationType = homeState.selectedContentCreationType {
                 CollectionCreationContent(
                     collectionType: creationType,
-                    collectionToEdit: .constant(nil),
+                    collectionToEdit: nil,
                     onEditCallback: { _ in }
                 )
             }
         }
         .sheet(isPresented: $homeState.shouldShowCreateBookmarkSheet) {
             BookmarkCreationContent(
-                bookmarkToEdit: .constant(nil),
-                initialCollection: $selectedCollection,
+                bookmarkToEdit: nil,
+                collectionToFill: nil,
                 link: nil,
                 onExitRequested: {}
             )
@@ -125,43 +101,96 @@ struct HomeView: View {
             }
         }
     }
+}
+
+private struct SequentialView: View {
+    @AppStorage(Constants.preferredSortingKey)
+    private var preferredSorting: SortType = .createdAt
     
-    @ViewBuilder
-    private var sequentailView: some View {
-        let searching = isSearchActive || !homeState.searchQuery.isEmpty
+    @AppStorage(Constants.preferredSortOrderKey)
+    private var preferredSortOrder: SortOrderType = .ascending
+    
+    @Query
+    private var collections: [YabaCollection]
+    
+    let onNavigationCallbackForCollection: (YabaCollection) -> Void
+    let onNavigationCallbackForBookmark: (Bookmark) -> Void
+    
+    init(
+        onNavigationCallbackForCollection: @escaping (YabaCollection) -> Void,
+        onNavigationCallbackForBookmark: @escaping (Bookmark) -> Void
+    ) {
+        self.onNavigationCallbackForCollection = onNavigationCallbackForCollection
+        self.onNavigationCallbackForBookmark = onNavigationCallbackForBookmark
         
-        List(selection: $selectedCollection) {
-            if searching {
-                HomeSearchView(
-                    searchQuery: $homeState.searchQuery,
-                    selectedBookmark: $selectedBookmark,
-                    onNavigationCallback: onNavigationCallbackForBookmark
-                )
-            } else {
-                HomeCollectionView(
-                    collectionType: .tag,
-                    isExpanded: $homeState.isTagsExpanded,
-                    selectedCollection: $selectedCollection,
-                    selectedSorting: preferredSorting,
-                    selectedSortOrder: preferredSortOrder,
-                    onNavigationCallback: onNavigationCallbackForCollection
-                )
-                HomeCollectionView(
-                    collectionType: .folder,
-                    isExpanded: $homeState.isFoldersExpanded,
-                    selectedCollection: $selectedCollection,
-                    selectedSorting: preferredSorting,
-                    selectedSortOrder: preferredSortOrder,
-                    onNavigationCallback: onNavigationCallbackForCollection
-                )
-            }
+        let sortDescriptor: SortDescriptor<YabaCollection> = switch preferredSorting {
+        case .createdAt:
+                .init(\.createdAt, order: preferredSortOrder == .ascending ? .forward : .reverse)
+        case .editedAt:
+                .init(\.editedAt, order: preferredSortOrder == .ascending ? .forward : .reverse)
+        case .label:
+                .init(\.label, order: preferredSortOrder == .ascending ? .forward : .reverse)
+        }
+        
+        _collections = Query(
+            sort: [sortDescriptor],
+            animation: .smooth
+        )
+    }
+        
+    var body: some View {
+        let _ = Self._printChanges()
+        List {
+            HomeCollectionView(
+                collectionType: .tag,
+                collections: collections.filter { $0.collectionType == .tag },
+                onNavigationCallback: onNavigationCallbackForCollection
+            )
+            HomeCollectionView(
+                collectionType: .folder,
+                collections: collections.filter { $0.collectionType == .folder },
+                onNavigationCallback: onNavigationCallbackForCollection
+            )
         }
     }
+}
+
+private struct GridView: View {
+    @AppStorage(Constants.preferredSortingKey)
+    private var preferredSorting: SortType = .createdAt
     
-    @ViewBuilder
-    private var gridView: some View {
-        let searching = isSearchActive || !homeState.searchQuery.isEmpty
+    @AppStorage(Constants.preferredSortOrderKey)
+    private var preferredSortOrder: SortOrderType = .ascending
+    
+    @Query
+    private var collections: [YabaCollection]
+    
+    let onNavigationCallbackForCollection: (YabaCollection) -> Void
+    let onNavigationCallbackForBookmark: (Bookmark) -> Void
+    
+    init(
+        onNavigationCallbackForCollection: @escaping (YabaCollection) -> Void,
+        onNavigationCallbackForBookmark: @escaping (Bookmark) -> Void
+    ) {
+        self.onNavigationCallbackForCollection = onNavigationCallbackForCollection
+        self.onNavigationCallbackForBookmark = onNavigationCallbackForBookmark
         
+        let sortDescriptor: SortDescriptor<YabaCollection> = switch preferredSorting {
+        case .createdAt:
+                .init(\.createdAt, order: preferredSortOrder == .ascending ? .forward : .reverse)
+        case .editedAt:
+                .init(\.editedAt, order: preferredSortOrder == .ascending ? .forward : .reverse)
+        case .label:
+                .init(\.label, order: preferredSortOrder == .ascending ? .forward : .reverse)
+        }
+        
+        _collections = Query(
+            sort: [sortDescriptor],
+            animation: .smooth
+        )
+    }
+    
+    var body: some View {
         ScrollView {
             LazyVGrid(
                 columns: [
@@ -169,32 +198,20 @@ struct HomeView: View {
                     .init(.flexible())
                 ]
             ) {
-                if searching {
-                    HomeSearchView(
-                        searchQuery: $homeState.searchQuery,
-                        selectedBookmark: $selectedBookmark,
-                        onNavigationCallback: onNavigationCallbackForBookmark
-                    )
-                } else {
-                    Section {} header: { Spacer().frame(height: 12) }
-                    HomeCollectionView(
-                        collectionType: .tag,
-                        isExpanded: $homeState.isTagsExpanded,
-                        selectedCollection: $selectedCollection,
-                        selectedSorting: preferredSorting,
-                        selectedSortOrder: preferredSortOrder,
-                        onNavigationCallback: onNavigationCallbackForCollection
-                    )
-                    Section {} header: { Spacer().frame(height: 12) }
-                    HomeCollectionView(
-                        collectionType: .folder,
-                        isExpanded: $homeState.isFoldersExpanded,
-                        selectedCollection: $selectedCollection,
-                        selectedSorting: preferredSorting,
-                        selectedSortOrder: preferredSortOrder,
-                        onNavigationCallback: onNavigationCallbackForCollection
-                    )
-                }
+                Section {} header: { Spacer().frame(height: 12) }
+                HomeCollectionView(
+                    collectionType: .tag,
+                    collections: collections,
+                    onNavigationCallback: { collection in
+                        onNavigationCallbackForCollection(collection)
+                    }
+                )
+                Section {} header: { Spacer().frame(height: 12) }
+                HomeCollectionView(
+                    collectionType: .folder,
+                    collections: collections,
+                    onNavigationCallback: onNavigationCallbackForCollection
+                )
             }.padding(.horizontal)
         }
     }
@@ -202,9 +219,6 @@ struct HomeView: View {
 
 #Preview {
     HomeView(
-        selectedCollection: .constant(.empty()),
-        selectedBookmark: .constant(.empty()),
-        selectedAppTint: .constant(.accentColor),
         onNavigationCallbackForCollection: { _ in },
         onNavigationCallbackForBookmark: { _ in },
         onNavigationCallbackForSettings: {}

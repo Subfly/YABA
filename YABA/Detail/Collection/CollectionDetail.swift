@@ -24,15 +24,11 @@ struct CollectionDetail: View {
     @State
     private var state: CollectionDetailState = .init()
     
-    @Binding
-    var collection: YabaCollection?
-    
-    @Binding
-    var selectedBookmark: Bookmark?
-    
+    let collection: YabaCollection?
     let onNavigationCallback: (Bookmark) -> Void
     
     var body: some View {
+        let _ = Self._printChanges()
         ZStack {
             AnimatedMeshGradient(
                 collectionColor: collection?.color.getUIColor() ?? .accentColor
@@ -75,8 +71,8 @@ struct CollectionDetail: View {
         .toolbar { toolbarItem }
         .sheet(isPresented: $state.shouldShowCreateBookmarkSheet) {
             BookmarkCreationContent(
-                bookmarkToEdit: .constant(nil),
-                initialCollection: $collection,
+                bookmarkToEdit: nil,
+                collectionToFill: collection,
                 link: nil,
                 onExitRequested: {}
             )
@@ -107,12 +103,10 @@ struct CollectionDetail: View {
     @ViewBuilder
     private var squentialView: some View {
         if let collection {
-            List(selection: $selectedBookmark) {
+            List {
                 ForEach(collection.bookmarks) { bookmark in
                     BookmarkItemView(
-                        selectedBookmark: $selectedBookmark,
                         bookmark: bookmark,
-                        isSearching: false,
                         onNavigationCallback: onNavigationCallback
                     )
                 }
@@ -139,9 +133,7 @@ struct CollectionDetail: View {
                 ) {
                     ForEach(collection.bookmarks) { bookmark in
                         BookmarkItemView(
-                            selectedBookmark: $selectedBookmark,
                             bookmark: bookmark,
-                            isSearching: false,
                             onNavigationCallback: onNavigationCallback
                         )
                     }
@@ -192,8 +184,7 @@ struct CollectionDetail: View {
 
 #Preview {
     CollectionDetail(
-        collection: .constant(.empty()),
-        selectedBookmark: .constant(.empty()),
+        collection: .empty(),
         onNavigationCallback: { _ in }
     )
 }

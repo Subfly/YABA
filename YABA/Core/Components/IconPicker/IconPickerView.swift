@@ -66,6 +66,7 @@ private struct PickableIcon: View {
         YabaIconView(bundleKey: key)
             .aspectRatio(contentMode: .fit)
             .frame(width: 44, height: 44)
+            .contentShape(Rectangle())
             .onTapGesture {
                 onSelectIcon(key)
             }

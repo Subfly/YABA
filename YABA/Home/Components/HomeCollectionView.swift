@@ -13,15 +13,7 @@ struct HomeCollectionView: View {
     @AppStorage(Constants.preferredContentAppearanceKey)
     private var contentAppearance: ViewType = .list
     
-    @Query
-    private var collections: [YabaCollection]
-    
-    @Binding
-    var isExpanded: Bool
-    
-    @Binding
-    var selectedCollection: YabaCollection?
-    
+    let collections: [YabaCollection]
     let onNavigationCallback: (YabaCollection) -> Void
     
     private let labelTitle: String
@@ -31,31 +23,10 @@ struct HomeCollectionView: View {
     
     init(
         collectionType: CollectionType,
-        isExpanded: Binding<Bool>,
-        selectedCollection: Binding<YabaCollection?>,
-        selectedSorting: SortType,
-        selectedSortOrder: SortOrderType,
+        collections: [YabaCollection],
         onNavigationCallback: @escaping (YabaCollection) -> Void
     ) {
-        _isExpanded = isExpanded
-        _selectedCollection = selectedCollection
-        
-        let sortDescriptor: SortDescriptor<YabaCollection> = switch selectedSorting {
-        case .createdAt:
-                .init(\.createdAt, order: selectedSortOrder == .ascending ? .forward : .reverse)
-        case .editedAt:
-                .init(\.editedAt, order: selectedSortOrder == .ascending ? .forward : .reverse)
-        case .label:
-                .init(\.label, order: selectedSortOrder == .ascending ? .forward : .reverse)
-        }
-        
-        _collections = Query(
-            filter: #Predicate<YabaCollection> {
-                $0.type == collectionType.rawValue
-            },
-            sort: [sortDescriptor],
-            animation: .smooth
-        )
+        self.collections = collections
         self.onNavigationCallback = onNavigationCallback
         
         switch collectionType {
@@ -73,19 +44,48 @@ struct HomeCollectionView: View {
     }
     
     var body: some View {
-        listSection
+        let _ = Self._printChanges()
+        ListSection(
+            collections: collections,
+            labelTitle: labelTitle,
+            collectionIcon: collectionIcon,
+            onNavigationCallback: onNavigationCallback
+        )
     }
     
     @ViewBuilder
-    private var listSection: some View {
+    private var noCollectionsView: some View {
+        ContentUnavailableView {
+            Label {
+                Text(LocalizedStringKey(noCollectionsTitle))
+            } icon: {
+                YabaIconView(bundleKey: collectionIcon)
+                    .scaledToFit()
+                    .frame(width: 52, height: 52)
+            }
+        } description: {
+            Text(LocalizedStringKey(noCollectionsMessage))
+        }
+    }
+}
+
+private struct ListSection: View {
+    @State
+    private var isExpanded: Bool = true
+    
+    let collections: [YabaCollection]
+    let labelTitle: String
+    let collectionIcon: String
+    let onNavigationCallback: (YabaCollection) -> Void
+    
+    var body: some View {
+        let _ = Self._printChanges()
         Section(isExpanded: $isExpanded) {
             if collections.isEmpty {
-                noCollectionsView
             } else {
                 ForEach(collections) { collection in
                     CollectionItemView(
                         collection: collection,
-                        selectedCollection: $selectedCollection,
                         isInSelectionMode: false,
                         isInBookmarkDetail: false,
                         onDeleteCallback: { _ in },
@@ -107,9 +107,18 @@ struct HomeCollectionView: View {
             }
         }
     }
+}
+
+private struct GridSection: View {
+    @State
+    private var isExpanded: Bool = true
     
-    @ViewBuilder
-    private var gridSection: some View {
+    let collections: [YabaCollection]
+    let labelTitle: String
+    let collectionIcon: String
+    let onNavigationCallback: (YabaCollection) -> Void
+    
+    var body: some View {
         // Worst hack for full span items, thanks SwiftUI
         Section {} header: {
             HStack {
@@ -149,12 +158,11 @@ struct HomeCollectionView: View {
         #if targetEnvironment(macCatalyst)
         if isExpanded {
             if collections.isEmpty {
-                Section {} header: { noCollectionsView }
+                
             } else {
                 ForEach(collections) { collection in
                     CollectionItemView(
                         collection: collection,
-                        selectedCollection: $selectedCollection,
                         isInSelectionMode: false,
                         isInBookmarkDetail: false,
                         onDeleteCallback: { _ in },
@@ -171,7 +179,6 @@ struct HomeCollectionView: View {
             ForEach(collections) { collection in
                 CollectionItemView(
                     collection: collection,
-                    selectedCollection: $selectedCollection,
                     isInSelectionMode: false,
                     isInBookmarkDetail: false,
                     onDeleteCallback: { _ in },
@@ -182,30 +189,12 @@ struct HomeCollectionView: View {
         }
         #endif
     }
-    
-    @ViewBuilder
-    private var noCollectionsView: some View {
-        ContentUnavailableView {
-            Label {
-                Text(LocalizedStringKey(noCollectionsTitle))
-            } icon: {
-                YabaIconView(bundleKey: collectionIcon)
-                    .scaledToFit()
-                    .frame(width: 52, height: 52)
-            }
-        } description: {
-            Text(LocalizedStringKey(noCollectionsMessage))
-        }
-    }
 }
 
 #Preview {
     HomeCollectionView(
         collectionType: .folder,
-        isExpanded: .constant(true),
-        selectedCollection: .constant(.empty()),
-        selectedSorting: .createdAt,
-        selectedSortOrder: .ascending,
+        collections: [],
         onNavigationCallback: { _ in }
     )
 }
@@ -213,10 +202,7 @@ struct HomeCollectionView: View {
 #Preview {
     HomeCollectionView(
         collectionType: .tag,
-        isExpanded: .constant(true),
-        selectedCollection: .constant(.empty()),
-        selectedSorting: .createdAt,
-        selectedSortOrder: .ascending,
+        collections: [],
         onNavigationCallback: { _ in }
     )
 }

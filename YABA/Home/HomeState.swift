@@ -10,9 +10,6 @@ import SwiftUI
 @Observable
 @MainActor
 internal class HomeState {
-    var isTagsExpanded: Bool = true
-    var isFoldersExpanded: Bool = true
-    var searchQuery: String = ""
     var isFABActive: Bool = false
     var shouldShowCreateContentSheet: Bool = false
     var shouldShowCreateBookmarkSheet: Bool = false

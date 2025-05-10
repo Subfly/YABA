@@ -7,9 +7,20 @@
 
 import SwiftUI
 
+@MainActor
+@Observable
+private class ItemState {
+    var shouldShowEditDialog: Bool = false
+    var shouldShowDeleteDialog: Bool = false
+    var isHovered: Bool = false
+}
+
 struct BookmarkItemView: View {
     @Environment(\.modelContext)
     private var modelContext
+    
+    @Environment(\.appState)
+    private var appState
     
     @AppStorage(Constants.preferredContentAppearanceKey)
     private var contentAppearance: ViewType = .list
@@ -18,24 +29,9 @@ struct BookmarkItemView: View {
     private var cardSizing: CardViewTypeImageSizing = .small
     
     @State
-    private var selectedBookmarkToDelete: Bookmark?
+    private var itemState: ItemState = .init()
     
-    @State
-    private var selectedBookmarkToEdit: Bookmark?
-    
-    @State
-    private var shouldShowDeleteDialog: Bool = false
-    
-    @State
-    private var isHovered: Bool = false
-    
-    @Binding
-    var selectedBookmark: Bookmark?
-    
-    var bookmark: Bookmark
-    
-    let isSearching: Bool
-    
+    let bookmark: Bookmark
     let onNavigationCallback: (Bookmark) -> Void
     
     var body: some View {
@@ -44,25 +40,20 @@ struct BookmarkItemView: View {
                 menuActionItems
             }
             .onHover { hovered in
-                self.isHovered = hovered
+                itemState.isHovered = hovered
             }
             .alert(
                 LocalizedStringKey("Delete Bookmark Title"),
-                isPresented: $shouldShowDeleteDialog,
+                isPresented: $itemState.shouldShowDeleteDialog,
             ) {
                 alertActionItems
             } message: {
                 Text("Delete Content Message \(bookmark.label)")
             }
-            .sheet(item: $selectedBookmarkToEdit) { bookmark in
+            .sheet(isPresented: $itemState.shouldShowEditDialog) {
                 BookmarkCreationContent(
-                    bookmarkToEdit: Binding(
-                        get: { bookmark },
-                        set: { newValue in
-                            self.selectedBookmarkToEdit = newValue
-                        }
-                    ),
-                    initialCollection: .constant(nil),
+                    bookmarkToEdit: bookmark,
+                    collectionToFill: nil,
                     link: nil,
                     onExitRequested: {}
                 )
@@ -75,7 +66,6 @@ struct BookmarkItemView: View {
             .contentShape(Rectangle())
             .onTapGesture {
                 withAnimation {
-                    selectedBookmark = bookmark
                     onNavigationCallback(bookmark)
                 }
             }
@@ -115,9 +105,9 @@ struct BookmarkItemView: View {
         }
         #if targetEnvironment(macCatalyst)
         .listRowBackground(
-            bookmark.id == selectedBookmark?.id
+            appState.selectedBookmark?.id == bookmark.id
             ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
-            : isHovered
+            : itemState.isHovered
             ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
             : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
         )
@@ -137,9 +127,9 @@ struct BookmarkItemView: View {
         }
         #if targetEnvironment(macCatalyst)
         .listRowBackground(
-            bookmark.id == selectedBookmark?.id
+            appState.selectedBookmark?.id == bookmark.id
             ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
-            : isHovered
+            : itemState.isHovered
             ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
             : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
         )
@@ -231,9 +221,9 @@ struct BookmarkItemView: View {
             RoundedRectangle(cornerRadius: 12)
                 .fill(
                     .gray.opacity(
-                        bookmark.id == selectedBookmark?.id
+                        appState.selectedBookmark?.id == bookmark.id
                         ? 0.3
-                        : isHovered ? 0.2 : 0.1
+                        : itemState.isHovered ? 0.2 : 0.1
                     )
                 )
             #else
@@ -395,7 +385,7 @@ struct BookmarkItemView: View {
     @ViewBuilder
     private var optionsClickableIcon: some View {
         #if targetEnvironment(macCatalyst)
-        if isHovered {
+        if itemState.isHovered {
             Menu {
                 menuActionItems
             } label: {
@@ -430,8 +420,7 @@ struct BookmarkItemView: View {
     @ViewBuilder
     private var swipeActionItems: some View {
         Button {
-            selectedBookmarkToDelete = bookmark
-            shouldShowDeleteDialog = true
+            itemState.shouldShowDeleteDialog = true
         } label: {
             VStack {
                 YabaIconView(bundleKey: "delete-02")
@@ -439,7 +428,7 @@ struct BookmarkItemView: View {
             }
         }.tint(.red)
         Button {
-            selectedBookmarkToEdit = bookmark
+            itemState.shouldShowEditDialog = true
         } label: {
             VStack {
                 YabaIconView(bundleKey: "edit-02")
@@ -451,7 +440,7 @@ struct BookmarkItemView: View {
     @ViewBuilder
     private var menuActionItems: some View {
         Button {
-            selectedBookmarkToEdit = bookmark
+            itemState.shouldShowEditDialog = true
         } label: {
             VStack {
                 YabaIconView(bundleKey: "edit-02")
@@ -459,8 +448,7 @@ struct BookmarkItemView: View {
             }
         }.tint(.orange)
         Button(role: .destructive) {
-            selectedBookmarkToDelete = bookmark
-            shouldShowDeleteDialog = true
+            itemState.shouldShowDeleteDialog = true
         } label: {
             VStack {
                 YabaIconView(bundleKey: "delete-02")
@@ -472,19 +460,15 @@ struct BookmarkItemView: View {
     @ViewBuilder
     private var alertActionItems: some View {
         Button(role: .cancel) {
-            selectedBookmarkToDelete = nil
-            shouldShowDeleteDialog = false
+            itemState.shouldShowDeleteDialog = false
         } label: {
             Text("Cancel")
         }
         Button(role: .destructive) {
             withAnimation {
-                if let bookmark = selectedBookmarkToDelete {
-                    modelContext.delete(bookmark)
-                    try? modelContext.save()
-                    selectedBookmarkToDelete = nil
-                    shouldShowDeleteDialog = false
-                }
+                modelContext.delete(bookmark)
+                try? modelContext.save()
+                itemState.shouldShowDeleteDialog = false
             }
         } label: {
             Text("Delete")
@@ -494,9 +478,14 @@ struct BookmarkItemView: View {
 
 #Preview {
     BookmarkItemView(
-        selectedBookmark: .constant(.empty()),
         bookmark: .empty(),
-        isSearching: false,
         onNavigationCallback: { _ in }
     ).tint(.indigo)
+}
+
+#Preview {
+    BookmarkItemView(
+        bookmark: .empty(),
+        onNavigationCallback: { _ in }
+    ).tint(.orange)
 }

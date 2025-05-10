@@ -20,21 +20,20 @@ struct CollectionCreationContent: View {
     private let navigationTitle: String
     private let textFieldPlaceholder: String
     
-    @Binding
-    var collectionToEdit: YabaCollection?
+    let collectionToEdit: YabaCollection?
     let collectionType: CollectionType
     let onEditCallback: (YabaCollection) -> Void
     
     init(
-        collectionType: CollectionType,
-        collectionToEdit: Binding<YabaCollection?>,
+        collectionType: CollectionType, // Used when creating a collection
+        collectionToEdit: YabaCollection?, // Used when editing a collection
         onEditCallback: @escaping (YabaCollection) -> Void
     ) {
-        _collectionToEdit = collectionToEdit
+        self.collectionToEdit = collectionToEdit
         self.collectionType = collectionType
         self.onEditCallback = onEditCallback
         
-        if let content = collectionToEdit.wrappedValue {
+        if let content = collectionToEdit {
             self.navigationTitle = switch content.collectionType {
                 case .folder: "Edit Folder Title"
                 case .tag: "Edit Tag Title"
@@ -225,7 +224,7 @@ struct CollectionCreationContent: View {
 #Preview {
     CollectionCreationContent(
         collectionType: .folder,
-        collectionToEdit: .constant(.empty()),
+        collectionToEdit: .empty(),
         onEditCallback: { _ in }
     )
 }

@@ -14,7 +14,10 @@ struct YABAApp: App {
     private var preferredTheme: ThemeType = .system
     
     @State
-    var toastManager: ToastManager = .init()
+    private var toastManager: ToastManager = .init()
+    
+    @State
+    private var appState: AppState = .init()
     
     var body: some Scene {
         WindowGroup {
@@ -26,10 +29,11 @@ struct YABAApp: App {
                     isUndoEnabled: false
                 )
                 .environment(toastManager)
+                .environment(\.appState, appState)
+                .preferredColorScheme(preferredTheme.getScheme())
                 .onAppear {
                     setupForMacCatalyst()
                 }
-                .preferredColorScheme(preferredTheme.getScheme())
         }
     }
     
