@@ -31,7 +31,15 @@ struct SelectTagsContent: View {
         #endif
         .searchable(text: $searchQuery, prompt: "Tags Search Prompt")
         .navigationTitle("Select Tags Title")
+        .navigationBarBackButtonHidden()
         .toolbar {
+            ToolbarItem(placement: .navigation) {
+                Button {
+                    dismiss()
+                } label: {
+                    YabaIconView(bundleKey: "arrow-left-01")
+                }.buttonRepeatBehavior(.enabled)
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     showTagCreationSheet = true

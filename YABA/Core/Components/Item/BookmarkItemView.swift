@@ -40,7 +40,10 @@ struct BookmarkItemView: View {
             )
             #endif
             .contextMenu {
-                ClickableOptionsIcon(state: $itemState)
+                MenuActionItems(
+                    shouldShowEditDialog: $itemState.shouldShowEditDialog,
+                    shouldShowDeleteDialog: $itemState.shouldShowDeleteDialog
+                )
             }
             .alert(
                 LocalizedStringKey("Delete Bookmark Title"),
@@ -240,6 +243,7 @@ private struct SmallCardView: View {
                 }
             }
         }
+        .listRowBackground(Color.clear)
     }
 }
 

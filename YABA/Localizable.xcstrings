@@ -90,18 +90,6 @@
         }
       }
     },
-    "Bookmark Detail No Label Provided" : {
-      "comment" : "Never be visible",
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No label provided"
-          }
-        }
-      }
-    },
     "Bookmark Detail No Tags Added Description" : {
       "comment" : "Description to show when no tags added in bookmark detail view",
       "extractionState" : "manual",
@@ -594,18 +582,6 @@
         }
       }
     },
-    "Home Search Prompt" : {
-      "comment" : "Text prompt to let user to search in bookmarks",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Search in bookmarks…"
-          }
-        }
-      }
-    },
     "Info" : {
       "comment" : "Section header to show for info related items",
       "extractionState" : "manual",
@@ -878,6 +854,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No Bookmarks Found"
+          }
+        }
+      }
+    },
+    "Search Prompt" : {
+      "comment" : "Text prompt to let user to search in bookmarks",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search in bookmarks…"
+          }
+        }
+      }
+    },
+    "Search Title" : {
+      "comment" : "Navigation title to show in search screen",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search"
           }
         }
       }

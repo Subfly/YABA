@@ -28,7 +28,33 @@ struct SettingsView: View {
                     }
             }
             #else
-            content
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                NavigationView {
+                    content
+                        .toolbar {
+                            ToolbarItem(placement: .confirmationAction) {
+                                Button {
+                                    dismiss()
+                                } label: {
+                                    Text("Done")
+                                }
+                            }
+                        }
+                }
+            } else {
+                content
+                    .toolbar {
+                        if UIDevice.current.userInterfaceIdiom == .phone {
+                            ToolbarItem(placement: .navigation) {
+                                Button {
+                                    dismiss()
+                                } label: {
+                                    YabaIconView(bundleKey: "arrow-left-01")
+                                }.buttonRepeatBehavior(.enabled)
+                            }
+                        }
+                    }
+            }
             #endif
         }
     }

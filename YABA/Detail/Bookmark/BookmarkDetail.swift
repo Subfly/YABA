@@ -15,6 +15,7 @@ struct GeneralBookmarkDetail: View {
     let onDeleteBookmarkCallback: (Bookmark) -> Void
     
     var body: some View {
+        let _ = Self._printChanges()
         BookmarkDetail(
             bookmark: appState.selectedBookmark,
             onCollectionNavigationCallback: onCollectionNavigationCallback,
@@ -44,12 +45,26 @@ private struct BookmarkDetail: View {
     @Environment(\.modelContext)
     private var modelContext
     
+    @Environment(\.dismiss)
+    private var dismiss
+    
     @State
-    private var state: BookmarkDetailState = .init()
+    private var state: BookmarkDetailState
     
     let bookmark: Bookmark?
     let onCollectionNavigationCallback: (YabaCollection) -> Void
     let onDeleteBookmarkCallback: (Bookmark) -> Void
+    
+    init(
+        bookmark: Bookmark?,
+        onCollectionNavigationCallback: @escaping (YabaCollection) -> Void,
+        onDeleteBookmarkCallback: @escaping (Bookmark) -> Void
+    ) {
+        self.state = .init(with: bookmark)
+        self.bookmark = bookmark
+        self.onCollectionNavigationCallback = onCollectionNavigationCallback
+        self.onDeleteBookmarkCallback = onDeleteBookmarkCallback
+    }
     
     var body: some View {
         let _ = Self._printChanges()
@@ -89,7 +104,6 @@ private struct BookmarkDetail: View {
                 )
             }
         }
-        .tint(state.meshColor)
         .navigationTitle(
             bookmark != nil
             ? LocalizedStringKey("Bookmark Detail Title")
@@ -97,10 +111,21 @@ private struct BookmarkDetail: View {
         )
         .toolbar {
             if bookmark != nil {
-                OptionItems(
-                    shouldShowEditBookmarkSheet: $state.shouldShowEditBookmarkSheet,
-                    shouldShowDeleteDialog: $state.shouldShowDeleteDialog
-                )
+                ToolbarItem(placement: .primaryAction) {
+                    OptionItems(
+                        shouldShowEditBookmarkSheet: $state.shouldShowEditBookmarkSheet,
+                        shouldShowDeleteDialog: $state.shouldShowDeleteDialog
+                    )
+                }
+            }
+            if UIDevice.current.userInterfaceIdiom == .phone {
+                ToolbarItem(placement: .navigation) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        YabaIconView(bundleKey: "arrow-left-01")
+                    }.buttonRepeatBehavior(.enabled)
+                }
             }
         }
         .alert(
@@ -121,8 +146,9 @@ private struct BookmarkDetail: View {
                 onExitRequested: {}
             )
         }
-        .onAppear {
-            state.initialize(with: bookmark)
+        .tint(state.meshColor)
+        .onChange(of: bookmark) { _, newValue in
+            state.refresh(with: bookmark)
         }
     }
     

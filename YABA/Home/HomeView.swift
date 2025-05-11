@@ -23,6 +23,7 @@ struct HomeView: View {
     
     let onNavigationCallbackForCollection: (YabaCollection) -> Void
     let onNavigationCallbackForBookmark: (Bookmark) -> Void
+    let onNavigationCallbackForSearch: () -> Void
     let onNavigationCallbackForSettings: () -> Void
     
     var body: some View {
@@ -85,21 +86,10 @@ struct HomeView: View {
         }
         .navigationTitle("YABA")
         .toolbar {
-            Menu {
-                ContentAppearancePicker()
-                SortingPicker()
-                Button {
-                    onNavigationCallbackForSettings()
-                } label: {
-                    Label {
-                        Text("Settings Title")
-                    } icon: {
-                        YabaIconView(bundleKey: "settings-02")
-                    }
-                }
-            } label: {
-                YabaIconView(bundleKey: "more-horizontal-circle-02")
-            }
+            ToolbarIcons(
+                onNavigationCallbackForSearch: onNavigationCallbackForSearch,
+                onNavigationCallbackForSettings: onNavigationCallbackForSettings
+            )
         }
     }
 }
@@ -213,10 +203,68 @@ private struct GridView: View {
     }
 }
 
+private struct ToolbarIcons: View {
+    let onNavigationCallbackForSearch: () -> Void
+    let onNavigationCallbackForSettings: () -> Void
+    
+    var body: some View {
+        #if targetEnvironment(macCatalyst)
+        HStack(spacing: 0) {
+            MacOSHoverableToolbarIcon(
+                bundleKey: "search-01",
+                onPressed: onNavigationCallbackForSearch
+            )
+            Menu {
+                ContentAppearancePicker()
+                SortingPicker()
+                Button {
+                    onNavigationCallbackForSettings()
+                } label: {
+                    Label {
+                        Text("Settings Title")
+                    } icon: {
+                        YabaIconView(bundleKey: "settings-02")
+                    }
+                }
+            } label: {
+                MacOSHoverableToolbarIcon(
+                    bundleKey:  "more-horizontal-circle-02",
+                    onPressed: {}
+                )
+            }
+        }
+        #else
+        HStack {
+            Button {
+                onNavigationCallbackForSearch()
+            } label: {
+                YabaIconView(bundleKey: "search-01")
+            }
+            Menu {
+                ContentAppearancePicker()
+                SortingPicker()
+                Button {
+                    onNavigationCallbackForSettings()
+                } label: {
+                    Label {
+                        Text("Settings Title")
+                    } icon: {
+                        YabaIconView(bundleKey: "settings-02")
+                    }
+                }
+            } label: {
+                YabaIconView(bundleKey: "more-horizontal-circle-02")
+            }
+        }
+        #endif
+    }
+}
+
 #Preview {
     HomeView(
         onNavigationCallbackForCollection: { _ in },
         onNavigationCallbackForBookmark: { _ in },
+        onNavigationCallbackForSearch: {},
         onNavigationCallbackForSettings: {}
     )
     .modelContainer(

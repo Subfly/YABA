@@ -31,7 +31,15 @@ struct SelectFolderContent: View {
         #endif
         .searchable(text: $searchQuery, prompt: "Folder Search Prompt")
         .navigationTitle("Select Folder Title")
+        .navigationBarBackButtonHidden()
         .toolbar {
+            ToolbarItem(placement: .navigation) {
+                Button {
+                    dismiss()
+                } label: {
+                    YabaIconView(bundleKey: "arrow-left-01")
+                }.buttonRepeatBehavior(.enabled)
+            }
             ToolbarItem(placement: .primaryAction) {
                 Button {
                     showFolderCreationSheet = true

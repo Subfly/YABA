@@ -11,21 +11,29 @@ import SwiftUI
 @MainActor
 @Observable
 internal class BookmarkDetailState {
-    var meshColor: Color = .accentColor
     var shouldShowEditBookmarkSheet = false
     var shouldShowDeleteDialog = false
     
-    var folder: YabaCollection? = nil
-    var tags: [YabaCollection] = []
+    var meshColor: Color
+    var folder: YabaCollection?
+    var tags: [YabaCollection]
     
-    func initialize(with bookmark: Bookmark?) {
-        let newfolder = bookmark?.collections.first(where: { $0.collectionType == .folder })
-        let newTags = bookmark?.collections.filter { $0.collectionType == .tag } ?? []
-        let newColor = folder?.color.getUIColor() ?? .accentColor
+    init(with bookmark: Bookmark?) {
+        let newFolder = bookmark?.collections.first(where: { $0.collectionType == .folder })
+        folder = newFolder
+        tags = bookmark?.collections.filter { $0.collectionType == .tag } ?? []
+        meshColor = newFolder?.color.getUIColor() ?? .accentColor
+    }
+    
+    // Only for !iOS devices
+    func refresh(with newBookmarkData: Bookmark?) {
+        let newFolder = newBookmarkData?.collections.first(where: { $0.collectionType == .folder })
+        let newTags = newBookmarkData?.collections.filter { $0.collectionType == .tag } ?? []
+        let newColor = newFolder?.color.getUIColor() ?? .accentColor
         
         withAnimation {
-            if newfolder?.id != folder?.id {
-                folder = newfolder
+            if newFolder?.id != folder?.id {
+                folder = newFolder
             }
             
             if !tags.elementsEqual(newTags) {

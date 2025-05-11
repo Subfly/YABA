@@ -35,6 +35,9 @@ struct GeneralCollectionDetail: View {
 }
 
 private struct CollectionDetail: View {
+    @Environment(\.dismiss)
+    private var dismiss
+    
     @AppStorage(Constants.preferredContentAppearanceKey)
     private var contentAppearance: ViewType = .list
     
@@ -78,6 +81,7 @@ private struct CollectionDetail: View {
                     )
                     .searchable(
                         text: $state.searchQuery,
+                        placement: .navigationBarDrawer(displayMode: .always),
                         prompt: Text("Search Collection \(collection.label)")
                     )
                 }
@@ -97,8 +101,20 @@ private struct CollectionDetail: View {
         }
         .navigationTitle(collection?.label ?? "")
         .toolbar {
-            ToolbarItems(collection: collection, state: $state)
-                .tint(collection?.color.getUIColor() ?? .accentColor)
+            ToolbarItem(placement: .primaryAction) {
+                ToolbarItems(collection: collection, state: $state)
+                    .tint(collection?.color.getUIColor() ?? .accentColor)
+            }
+            
+            if UIDevice.current.userInterfaceIdiom == .phone {
+                ToolbarItem(placement: .navigation) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        YabaIconView(bundleKey: "arrow-left-01")
+                    }.buttonRepeatBehavior(.enabled)
+                }
+            }
         }
         .sheet(isPresented: $state.shouldShowCreateBookmarkSheet) {
             BookmarkCreationContent(
@@ -108,10 +124,14 @@ private struct CollectionDetail: View {
                 onExitRequested: {}
             )
         }
+        .tint(collection?.color.getUIColor() ?? .accentColor)
     }
 }
 
 private struct SearchableContent: View {
+    @AppStorage(Constants.preferredContentAppearanceKey)
+    private var contentAppearance: ViewType = .list
+    
     private let bookmarks: [Bookmark]
     let searchQuery: String
     let onNavigationCallback: (Bookmark) -> Void
@@ -167,6 +187,8 @@ private struct SearchableContent: View {
                     )
                 }
             }
+            .listRowSeparator(.hidden)
+            .listRowSpacing(contentAppearance == .list ? 0 : 8)
             .scrollContentBackground(.hidden)
             .listStyle(.sidebar)
         }

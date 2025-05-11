@@ -39,6 +39,9 @@ private struct GenericNavigationView: View {
     private var prefferedColumn: NavigationSplitViewColumn = .sidebar
     
     @State
+    private var shouldShowSearch: Bool = false
+    
+    @State
     private var shouldShowSettingsSheet: Bool = false
     
     var body: some View {
@@ -49,14 +52,30 @@ private struct GenericNavigationView: View {
             HomeView(
                 onNavigationCallbackForCollection: { _ in },
                 onNavigationCallbackForBookmark: { _ in },
+                onNavigationCallbackForSearch: {
+                    withAnimation {
+                        shouldShowSearch.toggle()
+                    }
+                },
                 onNavigationCallbackForSettings: {
                     shouldShowSettingsSheet = true
                 }
             )
         } content: {
-            GeneralCollectionDetail(
-                onNavigationCallback: { _ in }
-            )
+            if shouldShowSearch {
+                SearchView(
+                    onCloseRequested: {
+                        withAnimation {
+                            shouldShowSearch = false
+                        }
+                    },
+                    onSelectBookmark: { _ in }
+                )
+            } else {
+                GeneralCollectionDetail(
+                    onNavigationCallback: { _ in }
+                )
+            }
         } detail: {
             GeneralBookmarkDetail(
                 onCollectionNavigationCallback: { _ in },
@@ -83,6 +102,9 @@ private struct MobileNavigationView: View {
                 onNavigationCallbackForBookmark: { bookmark in
                     path.append(.bookmarkDetail(bookmark: bookmark))
                 },
+                onNavigationCallbackForSearch: {
+                    path.append(.search)
+                },
                 onNavigationCallbackForSettings: {
                     path.append(.settings)
                 }
@@ -96,6 +118,7 @@ private struct MobileNavigationView: View {
                             path.append(.bookmarkDetail(bookmark: bookmark))
                         }
                     )
+                    .navigationBarBackButtonHidden()
                 case .bookmarkDetail(let bookmark):
                     MobileBookmarkDetail(
                         bookmark: bookmark,
@@ -112,8 +135,18 @@ private struct MobileNavigationView: View {
                             }
                         }
                     )
+                    .navigationBarBackButtonHidden()
                 case .settings:
                     SettingsView()
+                        .navigationBarBackButtonHidden()
+                case .search:
+                    SearchView(
+                        onCloseRequested: {},
+                        onSelectBookmark: { bookmark in
+                            path.append(.bookmarkDetail(bookmark: bookmark))
+                        }
+                    )
+                    .navigationBarBackButtonHidden()
                 }
             }
         }
