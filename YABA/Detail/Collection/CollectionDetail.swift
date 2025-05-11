@@ -38,9 +38,6 @@ private struct CollectionDetail: View {
     @AppStorage(Constants.preferredContentAppearanceKey)
     private var contentAppearance: ViewType = .list
     
-    @AppStorage(Constants.preferredCardImageSizingKey)
-    private var cardImageSizing: CardViewTypeImageSizing = .small
-    
     @AppStorage(Constants.preferredSortingKey)
     private var preferredSorting: SortType = .createdAt
     
@@ -75,6 +72,8 @@ private struct CollectionDetail: View {
                     SearchableContent(
                         collection: collection,
                         searchQuery: state.searchQuery,
+                        preferredSorting: preferredSorting,
+                        preferredOrder: preferredSortOrder,
                         onNavigationCallback: onNavigationCallback
                     )
                     .searchable(
@@ -113,12 +112,41 @@ private struct CollectionDetail: View {
 }
 
 private struct SearchableContent: View {
-    let collection: YabaCollection
+    private let bookmarks: [Bookmark]
     let searchQuery: String
     let onNavigationCallback: (Bookmark) -> Void
     
+    init(
+        collection: YabaCollection,
+        searchQuery: String,
+        preferredSorting: SortType,
+        preferredOrder: SortOrderType,
+        onNavigationCallback: @escaping (Bookmark) -> Void
+    ) {
+        self.searchQuery = searchQuery
+        self.onNavigationCallback = onNavigationCallback
+        
+        let sortDescriptor: SortDescriptor<Bookmark> = switch preferredSorting {
+        case .createdAt:
+                .init(\.createdAt, order: preferredOrder == .ascending ? .forward : .reverse)
+        case .editedAt:
+                .init(\.editedAt, order: preferredOrder == .ascending ? .forward : .reverse)
+        case .label:
+                .init(\.label, order: preferredOrder == .ascending ? .forward : .reverse)
+        }
+        
+        bookmarks = collection.bookmarks.filter { bookmark in
+            if searchQuery.isEmpty {
+                true
+            } else {
+                bookmark.label.localizedStandardContains(searchQuery)
+                || bookmark.bookmarkDescription.localizedStandardContains(searchQuery)
+            }
+        }.sorted(using: sortDescriptor)
+    }
+    
     var body: some View {
-        if collection.bookmarks.isEmpty {
+        if bookmarks.isEmpty {
             ContentUnavailableView {
                 Label {
                     Text("Search No Bookmarks Found Title")
@@ -132,7 +160,7 @@ private struct SearchableContent: View {
             }
         } else {
             List {
-                ForEach(collection.bookmarks) { bookmark in
+                ForEach(bookmarks) { bookmark in
                     BookmarkItemView(
                         bookmark: bookmark,
                         onNavigationCallback: onNavigationCallback

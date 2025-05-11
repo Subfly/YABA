@@ -32,6 +32,8 @@ struct HomeView: View {
             #endif
             // TODO: CHANGE THIS WHEN LAZYVGRID IS RECYCABLE
             SequentialView(
+                preferredSorting: preferredSorting,
+                preferredOrder: preferredSortOrder,
                 onNavigationCallbackForCollection: onNavigationCallbackForCollection,
                 onNavigationCallbackForBookmark: onNavigationCallbackForBookmark
             )
@@ -103,12 +105,6 @@ struct HomeView: View {
 }
 
 private struct SequentialView: View {
-    @AppStorage(Constants.preferredSortingKey)
-    private var preferredSorting: SortType = .createdAt
-    
-    @AppStorage(Constants.preferredSortOrderKey)
-    private var preferredSortOrder: SortOrderType = .ascending
-    
     @Query
     private var collections: [YabaCollection]
     
@@ -116,6 +112,8 @@ private struct SequentialView: View {
     let onNavigationCallbackForBookmark: (Bookmark) -> Void
     
     init(
+        preferredSorting: SortType,
+        preferredOrder: SortOrderType,
         onNavigationCallbackForCollection: @escaping (YabaCollection) -> Void,
         onNavigationCallbackForBookmark: @escaping (Bookmark) -> Void
     ) {
@@ -124,11 +122,11 @@ private struct SequentialView: View {
         
         let sortDescriptor: SortDescriptor<YabaCollection> = switch preferredSorting {
         case .createdAt:
-                .init(\.createdAt, order: preferredSortOrder == .ascending ? .forward : .reverse)
+                .init(\.createdAt, order: preferredOrder == .ascending ? .forward : .reverse)
         case .editedAt:
-                .init(\.editedAt, order: preferredSortOrder == .ascending ? .forward : .reverse)
+                .init(\.editedAt, order: preferredOrder == .ascending ? .forward : .reverse)
         case .label:
-                .init(\.label, order: preferredSortOrder == .ascending ? .forward : .reverse)
+                .init(\.label, order: preferredOrder == .ascending ? .forward : .reverse)
         }
         
         _collections = Query(
