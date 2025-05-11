@@ -141,11 +141,6 @@ private struct SearchableContent: View {
             }
             .scrollContentBackground(.hidden)
             .listStyle(.sidebar)
-            #if targetEnvironment(macCatalyst)
-            .listRowSpacing(2)
-            #else
-            .listRowSpacing(contentAppearance == .list ? 0 : 8)
-            #endif
         }
     }
     
@@ -179,7 +174,7 @@ private struct ToolbarItems: View {
     var state: CollectionDetailState
     
     var body: some View {
-        if let collection {
+        if collection != nil {
             #if !targetEnvironment(macCatalyst)
             if UIDevice.current.userInterfaceIdiom == .phone {
                 Menu {

@@ -73,8 +73,10 @@ private struct BookmarkDetail: View {
                 #else
                 MainContent(
                     bookmark: bookmark,
+                    folder: state.folder,
+                    tags: state.tags,
                     onClickOpenLink: {
-                        state.onClickOpenLink(using: appState.selectedBookmark)
+                        state.onClickOpenLink(using: bookmark)
                     },
                     onCollectionNavigationCallback: onCollectionNavigationCallback
                 )

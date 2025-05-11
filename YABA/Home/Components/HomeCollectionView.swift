@@ -172,7 +172,7 @@ private struct GridSection: View {
         }
         #else
         if collections.isEmpty {
-            Section {} header: { noCollectionsView }
+            Section {} header: { }
         } else {
             ForEach(collections) { collection in
                 CollectionItemView(

@@ -270,7 +270,10 @@ private struct GridView: View {
                     }
                     #else
                     Menu {
-                        menuActionItems
+                        MenuActionItems(
+                            state: $state,
+                            isInSelectionMode: isInSelectionMode
+                        )
                     } label: {
                         YabaIconView(bundleKey: "more-horizontal-circle-02")
                             .scaledToFit()
