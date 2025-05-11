@@ -7,52 +7,77 @@
 
 import SwiftUI
 
-struct BookmarkDetail: View {
+struct GeneralBookmarkDetail: View {
+    @Environment(\.appState)
+    private var appState
+    
+    let onCollectionNavigationCallback: (YabaCollection) -> Void
+    let onDeleteBookmarkCallback: (Bookmark) -> Void
+    
+    var body: some View {
+        BookmarkDetail(
+            bookmark: appState.selectedBookmark,
+            onCollectionNavigationCallback: onCollectionNavigationCallback,
+            onDeleteBookmarkCallback: { bookmark in
+                appState.selectedBookmark = nil
+                onDeleteBookmarkCallback(bookmark)
+            }
+        )
+    }
+}
+
+struct MobileBookmarkDetail: View {
+    let bookmark: Bookmark?
+    let onCollectionNavigationCallback: (YabaCollection) -> Void
+    let onDeleteBookmarkCallback: (Bookmark) -> Void
+    
+    var body: some View {
+        BookmarkDetail(
+            bookmark: bookmark,
+            onCollectionNavigationCallback: onCollectionNavigationCallback,
+            onDeleteBookmarkCallback: onDeleteBookmarkCallback
+        )
+    }
+}
+
+private struct BookmarkDetail: View {
     @Environment(\.modelContext)
     private var modelContext
     
     @State
-    private var state: BookmarkDetailState
+    private var state: BookmarkDetailState = .init()
     
     let bookmark: Bookmark?
     let onCollectionNavigationCallback: (YabaCollection) -> Void
     let onDeleteBookmarkCallback: (Bookmark) -> Void
     
-    init(
-        bookmark: Bookmark?,
-        onCollectionNavigationCallback: @escaping (YabaCollection) -> Void,
-        onDeleteBookmarkCallback: @escaping (Bookmark) -> Void
-    ) {
-        self.bookmark = bookmark
-        self.state = .init(with: bookmark)
-        self.onCollectionNavigationCallback = onCollectionNavigationCallback
-        self.onDeleteBookmarkCallback = onDeleteBookmarkCallback
-    }
-    
     var body: some View {
+        let _ = Self._printChanges()
         ZStack {
             AnimatedMeshGradient(collectionColor: state.meshColor)
             
-            if bookmark != nil {
+            if let bookmark {
                 #if targetEnvironment(macCatalyst)
                 GeometryReader { proxy in
-                    List {
-                        imageSection
-                        infoSection
-                        folderSection
-                        tagsSection
-                    }
-                    .scrollContentBackground(.hidden)
+                    MainContent(
+                        bookmark: bookmark,
+                        folder: state.folder,
+                        tags: state.tags,
+                        onClickOpenLink: {
+                            state.onClickOpenLink(using: bookmark)
+                        },
+                        onCollectionNavigationCallback: onCollectionNavigationCallback
+                    )
                     .padding(.horizontal, proxy.size.width * 0.1)
                 }
                 #else
-                List {
-                    imageSection
-                    infoSection
-                    folderSection
-                    tagsSection
-                }
-                .scrollContentBackground(.hidden)
+                MainContent(
+                    bookmark: bookmark,
+                    onClickOpenLink: {
+                        state.onClickOpenLink(using: appState.selectedBookmark)
+                    },
+                    onCollectionNavigationCallback: onCollectionNavigationCallback
+                )
                 #endif
             } else {
                 ContentUnavailableView(
@@ -62,6 +87,7 @@ struct BookmarkDetail: View {
                 )
             }
         }
+        .tint(state.meshColor)
         .navigationTitle(
             bookmark != nil
             ? LocalizedStringKey("Bookmark Detail Title")
@@ -69,7 +95,10 @@ struct BookmarkDetail: View {
         )
         .toolbar {
             if bookmark != nil {
-                optionsSection
+                OptionItems(
+                    shouldShowEditBookmarkSheet: $state.shouldShowEditBookmarkSheet,
+                    shouldShowDeleteDialog: $state.shouldShowDeleteDialog
+                )
             }
         }
         .alert(
@@ -90,12 +119,69 @@ struct BookmarkDetail: View {
                 onExitRequested: {}
             )
         }
+        .onAppear {
+            state.initialize(with: bookmark)
+        }
     }
     
     @ViewBuilder
-    private var imageSection: some View {
+    private var alertActionItems: some View {
+        Button(role: .cancel) {
+            state.shouldShowDeleteDialog = false
+        } label: {
+            Text("Cancel")
+        }
+        Button(role: .destructive) {
+            withAnimation {
+                if let bookmark {
+                    modelContext.delete(bookmark)
+                    try? modelContext.save()
+                    state.shouldShowDeleteDialog = false
+                    onDeleteBookmarkCallback(bookmark)
+                }
+            }
+        } label: {
+            Text("Delete")
+        }
+    }
+}
+
+private struct MainContent: View {
+    let bookmark: Bookmark
+    let folder: YabaCollection?
+    let tags: [YabaCollection]
+    let onClickOpenLink: () -> Void
+    let onCollectionNavigationCallback: (YabaCollection) -> Void
+    
+    var body: some View {
+        List {
+            ImageSection(
+                bookmark: bookmark,
+                onClickOpenLink: onClickOpenLink
+            )
+            InfoSection(bookmark: bookmark)
+            if let folder {
+                FolderSection(
+                    folder: folder,
+                    onCollectionNavigationCallback: onCollectionNavigationCallback
+                )
+            }
+            TagsSection(
+                tags: tags,
+                onCollectionNavigationCallback: onCollectionNavigationCallback
+            )
+        }
+        .scrollContentBackground(.hidden)
+    }
+}
+
+private struct ImageSection: View {
+    let bookmark: Bookmark
+    let onClickOpenLink: () -> Void
+    
+    var body: some View {
         Section {
-            if let imageData = self.bookmark?.imageData,
+            if let imageData = bookmark.imageData,
                let image = UIImage(data: imageData) {
                 Image(uiImage: image)
                     .resizable()
@@ -125,7 +211,7 @@ struct BookmarkDetail: View {
 
         } footer: {
             HStack {
-                if let iconData = self.bookmark?.iconData,
+                if let iconData = bookmark.iconData,
                    let image = UIImage(data: iconData) {
                     Image(uiImage: image)
                         .resizable()
@@ -137,34 +223,31 @@ struct BookmarkDetail: View {
                         .frame(width: 18, height: 18)
                 }
                 Text(
-                    self.bookmark?.domain.isEmpty == true
-                    ? self.bookmark?.link ?? ""
-                    : self.bookmark?.domain ?? ""
+                    bookmark.domain.isEmpty
+                    ? bookmark.link
+                    : bookmark.domain
                 ).lineLimit(2)
             }.padding(.leading)
         }
         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
         .onTapGesture {
-            state.onClickOpenLink(using: bookmark)
+            onClickOpenLink()
         }
     }
+}
+
+private struct InfoSection: View {
+    let bookmark: Bookmark
     
-    @ViewBuilder
-    private var infoSection: some View {
+    var body: some View {
         Section {
             HStack(alignment: .top) {
                 YabaIconView(bundleKey: "text")
                     .scaledToFit()
                     .frame(width: 20, height: 20)
                     .foregroundStyle(.tint)
-                if let label = bookmark?.label {
-                    Text(label)
-                        .multilineTextAlignment(.leading)
-                } else {
-                    Text("Bookmark Detail No Label Provided")
-                        .foregroundStyle(.secondary)
-                        .italic()
-                }
+                Text(bookmark.label)
+                    .multilineTextAlignment(.leading)
             }
             
             HStack(alignment: .top) {
@@ -172,35 +255,26 @@ struct BookmarkDetail: View {
                     .scaledToFit()
                     .frame(width: 20, height: 20)
                     .foregroundStyle(.tint)
-                if let description = bookmark?.bookmarkDescription {
-                    if description.isEmpty {
-                        Text("Bookmark Detail No Description Provided")
-                            .foregroundStyle(.secondary)
-                            .italic()
-                    } else {
-                        Text(description)
-                            .multilineTextAlignment(.leading)
-                    }
-                } else {
+                if bookmark.bookmarkDescription.isEmpty {
                     Text("Bookmark Detail No Description Provided")
                         .foregroundStyle(.secondary)
                         .italic()
+                } else {
+                    Text(bookmark.bookmarkDescription)
+                        .multilineTextAlignment(.leading)
                 }
             }
             
             HStack {
                 HStack {
-                    YabaIconView(
-                        bundleKey: bookmark?.bookmarkType.getIconName()
-                        ?? BookmarkType.none.getIconName()
-                    )
-                    .scaledToFit()
-                    .frame(width: 20, height: 20)
-                    .foregroundStyle(.tint)
+                    YabaIconView(bundleKey: bookmark.bookmarkType.getIconName())
+                        .scaledToFit()
+                        .frame(width: 20, height: 20)
+                        .foregroundStyle(.tint)
                     Text("Create Bookmark Type Placeholder")
                 }
                 Spacer()
-                Text(bookmark?.bookmarkType.getUITitle() ?? BookmarkType.none.getUITitle())
+                Text(bookmark.bookmarkType.getUITitle())
             }
             
             HStack {
@@ -212,10 +286,10 @@ struct BookmarkDetail: View {
                     Text("Bookmark Detail Created At Title")
                 }
                 Spacer()
-                Text(bookmark?.createdAt.formatted(date: .abbreviated, time: .shortened) ?? "")
+                Text(bookmark.createdAt.formatted(date: .abbreviated, time: .shortened))
             }
             
-            if bookmark?.createdAt != bookmark?.editedAt {
+            if bookmark.createdAt != bookmark.editedAt {
                 HStack {
                     HStack {
                         YabaIconView(bundleKey: "edit-02")
@@ -225,7 +299,7 @@ struct BookmarkDetail: View {
                         Text("Bookmark Detail Edited At Title")
                     }
                     Spacer()
-                    Text(bookmark?.editedAt.formatted(date: .abbreviated, time: .shortened) ?? "")
+                    Text(bookmark.editedAt.formatted(date: .abbreviated, time: .shortened))
                 }
             }
         } header: {
@@ -238,35 +312,41 @@ struct BookmarkDetail: View {
             }
         }
     }
-    
-    @ViewBuilder
-    private var folderSection: some View {
-        if let folder = state.folder {
-            Section {
-                CollectionItemView(
-                    collection: folder,
-                    isInSelectionMode: false,
-                    isInBookmarkDetail: true,
-                    onDeleteCallback: { _ in },
-                    onEditCallback: { _ in },
-                    onNavigationCallback: onCollectionNavigationCallback
-                )
-            } header: {
-                Label {
-                    Text("Folder")
-                } icon: {
-                    YabaIconView(bundleKey: "folder-01")
-                        .scaledToFit()
-                        .frame(width: 18, height: 18)
-                }
+}
+
+private struct FolderSection: View {
+    let folder: YabaCollection
+    let onCollectionNavigationCallback: (YabaCollection) -> Void
+
+    var body: some View {
+        Section {
+            CollectionItemView(
+                collection: folder,
+                isInSelectionMode: false,
+                isInBookmarkDetail: true,
+                onDeleteCallback: { _ in },
+                onEditCallback: { _ in },
+                onNavigationCallback: onCollectionNavigationCallback
+            )
+        } header: {
+            Label {
+                Text("Folder")
+            } icon: {
+                YabaIconView(bundleKey: "folder-01")
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
             }
         }
     }
+}
+
+private struct TagsSection: View {
+    let tags: [YabaCollection]
+    let onCollectionNavigationCallback: (YabaCollection) -> Void
     
-    @ViewBuilder
-    private var tagsSection: some View {
+    var body: some View {
         Section {
-            if state.tags.isEmpty {
+            if tags.isEmpty {
                 ContentUnavailableView {
                     Label {
                         Text("Bookmark Detail No Tags Added Title")
@@ -279,7 +359,7 @@ struct BookmarkDetail: View {
                     Text("Bookmark Detail No Tags Added Description")
                 }
             } else {
-                ForEach(state.tags) { tag in
+                ForEach(tags) { tag in
                     CollectionItemView(
                         collection: tag,
                         isInSelectionMode: false,
@@ -300,21 +380,29 @@ struct BookmarkDetail: View {
             }
         }
     }
+}
+
+private struct OptionItems: View {
+    @Binding
+    var shouldShowEditBookmarkSheet: Bool
     
-    @ViewBuilder
-    private var optionsSection: some View {
+    @Binding
+    var shouldShowDeleteDialog: Bool
+    
+    var body: some View {
         #if targetEnvironment(macCatalyst)
-        HStack {
+        HStack(spacing: 0) {
             MacOSHoverableToolbarIcon(
                 bundleKey: "edit-02",
                 onPressed: {
-                    state.shouldShowEditBookmarkSheet = true
+                    shouldShowEditBookmarkSheet = true
                 }
             )
+            .tint(.orange)
             MacOSHoverableToolbarIcon(
                 bundleKey: "delete-02",
                 onPressed: {
-                    state.shouldShowDeleteDialog = true
+                    shouldShowDeleteDialog = true
                 }
             )
             .tint(.red)
@@ -322,7 +410,7 @@ struct BookmarkDetail: View {
         #else
         Menu {
             Button {
-                state.shouldShowEditBookmarkSheet = true
+                shouldShowEditBookmarkSheet = true
             } label: {
                 Label {
                     Text("Edit")
@@ -332,7 +420,7 @@ struct BookmarkDetail: View {
                 }
             }.tint(.orange)
             Button(role: .destructive) {
-                state.shouldShowDeleteDialog = true
+                shouldShowDeleteDialog = true
             } label: {
                 Label {
                     Text("Delete")
@@ -346,27 +434,6 @@ struct BookmarkDetail: View {
                 .scaledToFit()
         }
         #endif
-    }
-    
-    @ViewBuilder
-    private var alertActionItems: some View {
-        Button(role: .cancel) {
-            state.shouldShowDeleteDialog = false
-        } label: {
-            Text("Cancel")
-        }
-        Button(role: .destructive) {
-            withAnimation {
-                if let bookmark {
-                    modelContext.delete(bookmark)
-                    try? modelContext.save()
-                    state.shouldShowDeleteDialog = false
-                    onDeleteBookmarkCallback(bookmark)
-                }
-            }
-        } label: {
-            Text("Delete")
-        }
     }
 }
 

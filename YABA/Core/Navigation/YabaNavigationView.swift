@@ -12,12 +12,14 @@ struct YabaNavigationView: View {
     private var hasPassedOnboarding: Bool = false
     
     var body: some View {
-        return navigationSwitcher.tint(.accentColor)
+        return navigationSwitcher
     }
     
     @ViewBuilder
     private var navigationSwitcher: some View {
         #if os(visionOS)
+        GenericNavigationView()
+        #elseif targetEnvironment(macCatalyst)
         GenericNavigationView()
         #else
         if UIDevice.current.userInterfaceIdiom == .pad {
@@ -30,9 +32,6 @@ struct YabaNavigationView: View {
 }
 
 private struct GenericNavigationView: View {
-    @Environment(\.appState)
-    private var appState
-    
     @State
     private var columnVisibility: NavigationSplitViewVisibility = .all
     
@@ -43,40 +42,25 @@ private struct GenericNavigationView: View {
     private var shouldShowSettingsSheet: Bool = false
     
     var body: some View {
-        let _ = Self._printChanges()
         NavigationSplitView(
             columnVisibility: $columnVisibility,
             preferredCompactColumn: $prefferedColumn,
         ) {
             HomeView(
-                onNavigationCallbackForCollection: { collection in
-                    appState.selectedCollection = collection
-                },
-                onNavigationCallbackForBookmark: { bookmark in
-                    appState.selectedBookmark = bookmark
-                },
+                onNavigationCallbackForCollection: { _ in },
+                onNavigationCallbackForBookmark: { _ in },
                 onNavigationCallbackForSettings: {
                     shouldShowSettingsSheet = true
                 }
             )
         } content: {
-            CollectionDetail(
-                collection: appState.selectedCollection,
-                onNavigationCallback: { bookmark in
-                    appState.selectedBookmark = bookmark
-                }
+            GeneralCollectionDetail(
+                onNavigationCallback: { _ in }
             )
         } detail: {
-            BookmarkDetail(
-                bookmark: appState.selectedBookmark,
-                onCollectionNavigationCallback: { collection in
-                    appState.selectedCollection = collection
-                },
-                onDeleteBookmarkCallback: { bookmark in
-                    if appState.selectedBookmark?.id == bookmark.id {
-                        appState.selectedBookmark = nil
-                    }
-                }
+            GeneralBookmarkDetail(
+                onCollectionNavigationCallback: { _ in },
+                onDeleteBookmarkCallback: { _ in }
             )
         }
         .navigationSplitViewStyle(.balanced)
@@ -106,14 +90,14 @@ private struct MobileNavigationView: View {
             .navigationDestination(for: NavigationDestination.self) { destination in
                 switch destination {
                 case .collectionDetail(let collection):
-                    CollectionDetail(
+                    MobileCollectionDetail(
                         collection: collection,
                         onNavigationCallback: { bookmark in
                             path.append(.bookmarkDetail(bookmark: bookmark))
                         }
                     )
                 case .bookmarkDetail(let bookmark):
-                    BookmarkDetail(
+                    MobileBookmarkDetail(
                         bookmark: bookmark,
                         onCollectionNavigationCallback: { collection in
                             path.append(.collectionDetail(collection: collection))

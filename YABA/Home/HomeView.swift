@@ -26,7 +26,6 @@ struct HomeView: View {
     let onNavigationCallbackForSettings: () -> Void
     
     var body: some View {
-        let _ = Self._printChanges()
         ZStack {
             #if !targetEnvironment(macCatalyst)
             AnimatedMeshGradient(collectionColor: .accentColor)
@@ -139,7 +138,6 @@ private struct SequentialView: View {
     }
         
     var body: some View {
-        let _ = Self._printChanges()
         List {
             HomeCollectionView(
                 collectionType: .tag,

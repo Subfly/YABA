@@ -8,7 +8,33 @@
 import SwiftUI
 import SwiftData
 
-struct CollectionDetail: View {
+struct MobileCollectionDetail: View {
+    let collection: YabaCollection?
+    let onNavigationCallback: (Bookmark) -> Void
+    
+    var body: some View {
+        CollectionDetail(
+            collection: collection,
+            onNavigationCallback: onNavigationCallback
+        )
+    }
+}
+
+struct GeneralCollectionDetail: View {
+    @Environment(\.appState)
+    private var appState
+    
+    let onNavigationCallback: (Bookmark) -> Void
+    
+    var body: some View {
+        CollectionDetail(
+            collection: appState.selectedCollection,
+            onNavigationCallback: onNavigationCallback
+        )
+    }
+}
+
+private struct CollectionDetail: View {
     @AppStorage(Constants.preferredContentAppearanceKey)
     private var contentAppearance: ViewType = .list
     
@@ -28,7 +54,6 @@ struct CollectionDetail: View {
     let onNavigationCallback: (Bookmark) -> Void
     
     var body: some View {
-        let _ = Self._printChanges()
         ZStack {
             AnimatedMeshGradient(
                 collectionColor: collection?.color.getUIColor() ?? .accentColor
@@ -47,11 +72,15 @@ struct CollectionDetail: View {
                         Text("No Bookmarks Message")
                     }
                 } else {
-                    searchableContent
-                        .searchable(
-                            text: $state.searchQuery,
-                            prompt: Text("Search Collection \(collection.label)")
-                        )
+                    SearchableContent(
+                        collection: collection,
+                        searchQuery: state.searchQuery,
+                        onNavigationCallback: onNavigationCallback
+                    )
+                    .searchable(
+                        text: $state.searchQuery,
+                        prompt: Text("Search Collection \(collection.label)")
+                    )
                 }
             } else {
                 ContentUnavailableView {
@@ -68,7 +97,10 @@ struct CollectionDetail: View {
             }
         }
         .navigationTitle(collection?.label ?? "")
-        .toolbar { toolbarItem }
+        .toolbar {
+            ToolbarItems(collection: collection, state: $state)
+                .tint(collection?.color.getUIColor() ?? .accentColor)
+        }
         .sheet(isPresented: $state.shouldShowCreateBookmarkSheet) {
             BookmarkCreationContent(
                 bookmarkToEdit: nil,
@@ -78,31 +110,27 @@ struct CollectionDetail: View {
             )
         }
     }
+}
+
+private struct SearchableContent: View {
+    let collection: YabaCollection
+    let searchQuery: String
+    let onNavigationCallback: (Bookmark) -> Void
     
-    @ViewBuilder
-    private var searchableContent: some View {
-        if let collection {
-            if collection.bookmarks.isEmpty {
-                ContentUnavailableView {
-                    Label {
-                        Text("Search No Bookmarks Found Title")
-                    } icon: {
-                        YabaIconView(bundleKey: "bookmark-off-02")
-                            .scaledToFit()
-                            .frame(width: 52, height: 52)
-                    }
-                } description: {
-                    Text("Search No Bookmarks Found Description \(state.searchQuery)")
+    var body: some View {
+        if collection.bookmarks.isEmpty {
+            ContentUnavailableView {
+                Label {
+                    Text("Search No Bookmarks Found Title")
+                } icon: {
+                    YabaIconView(bundleKey: "bookmark-off-02")
+                        .scaledToFit()
+                        .frame(width: 52, height: 52)
                 }
-            } else {
-                squentialView
+            } description: {
+                Text("Search No Bookmarks Found Description \(searchQuery)")
             }
-        }
-    }
-    
-    @ViewBuilder
-    private var squentialView: some View {
-        if let collection {
+        } else {
             List {
                 ForEach(collection.bookmarks) { bookmark in
                     BookmarkItemView(
@@ -121,31 +149,37 @@ struct CollectionDetail: View {
         }
     }
     
+    /** TODO: OPEN WHEN LAZYVSTACK RECYCLES
     @ViewBuilder
     private var gridView: some View {
-        if let collection {
-            ScrollView {
-                LazyVGrid(
-                    columns: [
-                        .init(.flexible()),
-                        .init(.flexible())
-                    ]
-                ) {
-                    ForEach(collection.bookmarks) { bookmark in
-                        BookmarkItemView(
-                            bookmark: bookmark,
-                            onNavigationCallback: onNavigationCallback
-                        )
-                    }
-                }.padding()
-            }
-            .scrollContentBackground(.hidden)
+        ScrollView {
+            LazyVGrid(
+                columns: [
+                    .init(.flexible()),
+                    .init(.flexible())
+                ]
+            ) {
+                ForEach(collection.bookmarks) { bookmark in
+                    BookmarkItemView(
+                        bookmark: bookmark,
+                        onNavigationCallback: onNavigationCallback
+                    )
+                }
+            }.padding()
         }
+        .scrollContentBackground(.hidden)
     }
+    */
+}
+
+private struct ToolbarItems: View {
+    let collection: YabaCollection?
     
-    @ViewBuilder
-    private var toolbarItem: some View {
-        if collection != nil {
+    @Binding
+    var state: CollectionDetailState
+    
+    var body: some View {
+        if let collection {
             #if !targetEnvironment(macCatalyst)
             if UIDevice.current.userInterfaceIdiom == .phone {
                 Menu {

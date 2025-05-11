@@ -15,13 +15,27 @@ internal class BookmarkDetailState {
     var shouldShowEditBookmarkSheet = false
     var shouldShowDeleteDialog = false
     
-    var folder: YabaCollection?
-    var tags: [YabaCollection]
+    var folder: YabaCollection? = nil
+    var tags: [YabaCollection] = []
     
-    init(with bookmark: Bookmark?) {
-        folder = bookmark?.collections.first(where: { $0.collectionType == .folder })
-        tags = bookmark?.collections.filter { $0.collectionType == .tag } ?? []
-        meshColor = folder?.color.getUIColor() ?? .accentColor
+    func initialize(with bookmark: Bookmark?) {
+        let newfolder = bookmark?.collections.first(where: { $0.collectionType == .folder })
+        let newTags = bookmark?.collections.filter { $0.collectionType == .tag } ?? []
+        let newColor = folder?.color.getUIColor() ?? .accentColor
+        
+        withAnimation {
+            if newfolder?.id != folder?.id {
+                folder = newfolder
+            }
+            
+            if !tags.elementsEqual(newTags) {
+                tags = newTags
+            }
+            
+            if meshColor != newColor {
+                meshColor = newColor
+            }
+        }
     }
     
     func onClickOpenLink(using bookmark: Bookmark?) {

@@ -44,7 +44,6 @@ struct HomeCollectionView: View {
     }
     
     var body: some View {
-        let _ = Self._printChanges()
         ListSection(
             collections: collections,
             labelTitle: labelTitle,
@@ -79,7 +78,6 @@ private struct ListSection: View {
     let onNavigationCallback: (YabaCollection) -> Void
     
     var body: some View {
-        let _ = Self._printChanges()
         Section(isExpanded: $isExpanded) {
             if collections.isEmpty {
             } else {

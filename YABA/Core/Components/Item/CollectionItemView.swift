@@ -39,100 +39,134 @@ struct CollectionItemView: View {
     let onNavigationCallback: (YabaCollection) -> Void
     
     var body: some View {
-        mainButton
-            .padding(.leading, isInSelectionMode ? 0 : 8)
-            #if targetEnvironment(macCatalyst)
-            .listRowBackground(
-                appState.selectedCollection?.id == collection.id
-                ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
-                : itemState.isHovered
-                ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
-                : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
+        MainLabel(
+            collection: collection,
+            state: $itemState,
+            isInSelectionMode: isInSelectionMode,
+            isInBookmarkDetail: isInBookmarkDetail,
+            onNavigationCallback: {
+                withAnimation {
+                    appState.selectedCollection = collection
+                    onNavigationCallback(collection)
+                }
+            }
+        )
+        .padding(.leading, isInSelectionMode ? 0 : 8)
+        #if targetEnvironment(macCatalyst)
+        .listRowBackground(
+            appState.selectedCollection?.id == collection.id
+            ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
+            : itemState.isHovered
+            ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
+            : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
+        )
+        #endif
+        .onHover { hovered in
+            itemState.isHovered = hovered
+        }
+        .contextMenu {
+            MenuActionItems(
+                state: $itemState,
+                isInSelectionMode: isInSelectionMode
             )
-            #endif
-            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                swipeActionItems
-            }
-            .onHover { hovered in
-                itemState.isHovered = hovered
-            }
-            .contextMenu {
-                menuActionItems
-            }
-            .alert(
-                LocalizedStringKey(
-                    collection.collectionType == .folder
-                    ? "Delete Folder Title"
-                    : "Delete Tag Title"
-                ),
-                isPresented: $itemState.shouldShowDeleteDialog,
-            ) {
-                alertActionItems
-            } message: {
-                Text("Delete Content Message \(collection.label)")
-            }
-            .sheet(isPresented: $itemState.shouldShowEditSheet) {
-                CollectionCreationContent(
-                    collectionType: collection.collectionType,
-                    collectionToEdit: collection,
-                    onEditCallback: onEditCallback
-                )
-            }
-            .sheet(isPresented: $itemState.shouldShowCreateBookmarkSheet) {
-                BookmarkCreationContent(
-                    bookmarkToEdit: nil,
-                    collectionToFill: collection,
-                    link: nil,
-                    onExitRequested: {}
-                )
-            }
-            .id(collection.id)
+        }
+        .alert(
+            LocalizedStringKey(
+                collection.collectionType == .folder
+                ? "Delete Folder Title"
+                : "Delete Tag Title"
+            ),
+            isPresented: $itemState.shouldShowDeleteDialog,
+        ) {
+            AlertActionItems(
+                state: $itemState,
+                onDeleteCallback: {
+                    if collection.collectionType == .folder {
+                        collection.bookmarks.forEach { bookmark in
+                            modelContext.delete(bookmark)
+                        }
+                    }
+                    modelContext.delete(collection)
+                    try? modelContext.save()
+                    if appState.selectedCollection?.id == collection.id {
+                        appState.selectedCollection = nil
+                    }
+                    onDeleteCallback(collection)
+                }
+            )
+        } message: {
+            Text("Delete Content Message \(collection.label)")
+        }
+        .sheet(isPresented: $itemState.shouldShowEditSheet) {
+            CollectionCreationContent(
+                collectionType: collection.collectionType,
+                collectionToEdit: collection,
+                onEditCallback: onEditCallback
+            )
+        }
+        .sheet(isPresented: $itemState.shouldShowCreateBookmarkSheet) {
+            BookmarkCreationContent(
+                bookmarkToEdit: nil,
+                collectionToFill: collection,
+                link: nil,
+                onExitRequested: {}
+            )
+        }
+        .id(collection.id)
     }
+}
+
+private struct MainLabel: View {
+    let collection: YabaCollection
     
-    @ViewBuilder
-    private var mainButton: some View {
+    @Binding
+    var state: ItemState
+    
+    let isInSelectionMode: Bool
+    let isInBookmarkDetail: Bool
+    let onNavigationCallback: () -> Void
+    
+    var body: some View {
         if isInSelectionMode {
-           listMainLabel
+            ListView(
+                collection: collection,
+                state: $state,
+                isInSelectionMode: isInSelectionMode
+            )
         } else {
             if isInBookmarkDetail {
                 Button {
-                    withAnimation {
-                        onNavigationCallback(collection)
-                    }
+                    onNavigationCallback()
                 } label: {
-                    listMainLabel
+                    ListView(
+                        collection: collection,
+                        state: $state,
+                        isInSelectionMode: isInSelectionMode
+                    )
                 }.buttonStyle(.plain)
             } else {
-                listMainLabel
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        withAnimation {
-                            onNavigationCallback(collection)
-                        }
-                    }
+                ListView(
+                    collection: collection,
+                    state: $state,
+                    isInSelectionMode: isInSelectionMode
+                )
+                .onTapGesture {
+                    onNavigationCallback()
+                }
             }
         }
     }
+}
+
+private struct ListView: View {
+    let collection: YabaCollection
     
-    @ViewBuilder
-    private var mainLabel: some View {
-        /**
-         * TODO: CHANGE THIS WHEN GRIDS ARE RECYCLED
-            if isInBookmarkDetail || isInSelectionMode {
-                listMainLabel
-            } else {
-                switch contentAppearance {
-                case .list: listMainLabel
-                case .grid: gridMainLabel
-                }
-            }
-         * Currently, it is only planned to have grid and list for collections as
-         * information is so less to have an "expanded" state.
-         */
-    }
+    @Binding
+    var state: ItemState
     
-    @ViewBuilder
-    private var listMainLabel: some View {
+    let isInSelectionMode: Bool
+    
+    var body: some View {
         HStack {
             HStack {
                 YabaIconView(bundleKey: collection.icon)
@@ -143,9 +177,12 @@ struct CollectionItemView: View {
             }
             Spacer()
             HStack {
-                if itemState.isHovered && !isInSelectionMode {
+                if state.isHovered && !isInSelectionMode {
                     Menu {
-                        menuActionItems
+                        MenuActionItems(
+                            state: $state,
+                            isInSelectionMode: isInSelectionMode
+                        )
                     } label: {
                         YabaIconView(bundleKey: "more-horizontal-circle-02")
                             .scaledToFit()
@@ -164,10 +201,51 @@ struct CollectionItemView: View {
             }
         }
         .contentShape(Rectangle())
+        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+            swipeActionItems
+        }
     }
     
     @ViewBuilder
-    private var gridMainLabel: some View {
+    private var swipeActionItems: some View {
+        Button {
+            state.shouldShowDeleteDialog = true
+        } label: {
+            VStack {
+                YabaIconView(bundleKey: "delete-02")
+                Text("Delete")
+            }
+        }.tint(.red)
+        Button {
+            state.shouldShowEditSheet = true
+        } label: {
+            VStack {
+                YabaIconView(bundleKey: "edit-02")
+                Text("Edit")
+            }
+        }.tint(.orange)
+        if !isInSelectionMode {
+            Button {
+                state.shouldShowCreateBookmarkSheet = true
+            } label: {
+                VStack {
+                    YabaIconView(bundleKey: "bookmark-add-02")
+                    Text("New")
+                }
+            }.tint(.mint)
+        }
+    }
+}
+
+private struct GridView: View {
+    let collection: YabaCollection
+    
+    @Binding
+    var state: ItemState
+    
+    let isInSelectionMode: Bool
+    
+    var body: some View {
         VStack(spacing: 8) {
             HStack {
                 YabaIconView(bundleKey: collection.icon)
@@ -177,9 +255,12 @@ struct CollectionItemView: View {
                 Spacer()
                 VStack {
                     #if targetEnvironment(macCatalyst)
-                    if itemState.isHovered && !isInSelectionMode {
+                    if state.isHovered && !isInSelectionMode {
                         Menu {
-                            menuActionItems
+                            MenuActionItems(
+                                state: $state,
+                                isInSelectionMode: isInSelectionMode
+                            )
                         } label: {
                             YabaIconView(bundleKey: "more-horizontal-circle-02")
                                 .scaledToFit()
@@ -208,6 +289,7 @@ struct CollectionItemView: View {
                 Spacer()
             }
         }
+        /**
         .padding()
         .background {
             #if targetEnvironment(macCatalyst)
@@ -224,14 +306,21 @@ struct CollectionItemView: View {
                 .fill(.thickMaterial)
             #endif
         }
-        .contentShape(Rectangle())
+         .contentShape(Rectangle())
+         */
     }
+}
+
+private struct MenuActionItems: View {
+    @Binding
+    var state: ItemState
     
-    @ViewBuilder
-    private var menuActionItems: some View {
+    let isInSelectionMode: Bool
+    
+    var body: some View {
         if !isInSelectionMode {
             Button {
-                itemState.shouldShowCreateBookmarkSheet = true
+                state.shouldShowCreateBookmarkSheet = true
             } label: {
                 VStack {
                     YabaIconView(bundleKey: "bookmark-add-02")
@@ -240,7 +329,7 @@ struct CollectionItemView: View {
             }.tint(.mint)
         }
         Button {
-            itemState.shouldShowEditSheet = true
+            state.shouldShowEditSheet = true
         } label: {
             VStack {
                 YabaIconView(bundleKey: "edit-02")
@@ -248,7 +337,7 @@ struct CollectionItemView: View {
             }
         }.tint(.orange)
         Button(role: .destructive) {
-            itemState.shouldShowDeleteDialog = true
+            state.shouldShowDeleteDialog = true
         } label: {
             VStack {
                 YabaIconView(bundleKey: "delete-02")
@@ -256,55 +345,24 @@ struct CollectionItemView: View {
             }
         }.tint(.red)
     }
+}
+
+private struct AlertActionItems: View {
+    @Binding
+    var state: ItemState
     
-    @ViewBuilder
-    private var swipeActionItems: some View {
-        Button {
-            itemState.shouldShowDeleteDialog = true
-        } label: {
-            VStack {
-                YabaIconView(bundleKey: "delete-02")
-                Text("Delete")
-            }
-        }.tint(.red)
-        Button {
-            itemState.shouldShowEditSheet = true
-        } label: {
-            VStack {
-                YabaIconView(bundleKey: "edit-02")
-                Text("Edit")
-            }
-        }.tint(.orange)
-        if !isInSelectionMode {
-            Button {
-                itemState.shouldShowCreateBookmarkSheet = true
-            } label: {
-                VStack {
-                    YabaIconView(bundleKey: "bookmark-add-02")
-                    Text("New")
-                }
-            }.tint(.mint)
-        }
-    }
+    let onDeleteCallback: () -> Void
     
-    @ViewBuilder
-    private var alertActionItems: some View {
+    var body: some View {
         Button(role: .cancel) {
-            itemState.shouldShowDeleteDialog = false
+            state.shouldShowDeleteDialog = false
         } label: {
             Text("Cancel")
         }
         Button(role: .destructive) {
             withAnimation {
-                if collection.collectionType == .folder {
-                    collection.bookmarks.forEach { bookmark in
-                        modelContext.delete(bookmark)
-                    }
-                }
-                modelContext.delete(collection)
-                try? modelContext.save()
-                onDeleteCallback(collection)
-                itemState.shouldShowDeleteDialog = false
+                onDeleteCallback()
+                state.shouldShowDeleteDialog = false
             }
         } label: {
             Text("Delete")

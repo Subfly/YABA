@@ -92,6 +92,7 @@
     },
     "Bookmark Detail No Label Provided" : {
       "comment" : "Never be visible",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
