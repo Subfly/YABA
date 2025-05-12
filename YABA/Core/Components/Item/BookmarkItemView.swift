@@ -243,7 +243,6 @@ private struct SmallCardView: View {
                 }
             }
         }
-        .listRowBackground(Color.clear)
     }
 }
 

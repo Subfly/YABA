@@ -67,7 +67,7 @@ private struct BookmarkDetail: View {
     
     var body: some View {
         ZStack {
-            AnimatedMeshGradient(collectionColor: state.meshColor)
+            AnimatedGradient(collectionColor: state.meshColor)
             
             if let bookmark {
                 #if targetEnvironment(macCatalyst)
@@ -82,6 +82,7 @@ private struct BookmarkDetail: View {
                         onCollectionNavigationCallback: onCollectionNavigationCallback
                     )
                     .padding(.horizontal, proxy.size.width * 0.1)
+                    .scrollIndicators(.hidden)
                 }
                 #else
                 MainContent(

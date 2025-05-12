@@ -54,7 +54,7 @@ struct BookmarkCreationContent: View {
         NavigationStack {
             ZStack {
                 if let folderColor = state.selectedFolder?.color.getUIColor() {
-                    AnimatedMeshGradient(collectionColor: folderColor)
+                    AnimatedGradient(collectionColor: folderColor)
                 }
                 List {
                     Section {

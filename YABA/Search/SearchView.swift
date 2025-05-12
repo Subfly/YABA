@@ -28,7 +28,7 @@ struct SearchView: View {
     
     var body: some View {
         ZStack {
-            AnimatedMeshGradient(collectionColor: .accentColor)
+            AnimatedGradient(collectionColor: .accentColor)
             SearchableContent(
                 searchQuery: $searchQuery,
                 preferredSorting: preferredSorting,

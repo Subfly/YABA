@@ -29,7 +29,7 @@ struct HomeView: View {
     var body: some View {
         ZStack {
             #if !targetEnvironment(macCatalyst)
-            AnimatedMeshGradient(collectionColor: .accentColor)
+            AnimatedGradient(collectionColor: .accentColor)
             #endif
             // TODO: CHANGE THIS WHEN LAZYVGRID IS RECYCABLE
             SequentialView(

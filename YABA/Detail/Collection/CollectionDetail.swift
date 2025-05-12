@@ -55,7 +55,7 @@ private struct CollectionDetail: View {
     
     var body: some View {
         ZStack {
-            AnimatedMeshGradient(
+            AnimatedGradient(
                 collectionColor: collection?.color.getUIColor() ?? .accentColor
             )
             if let collection {

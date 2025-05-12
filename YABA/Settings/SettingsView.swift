@@ -13,7 +13,7 @@ struct SettingsView: View {
     
     var body: some View {
         ZStack {
-            AnimatedMeshGradient(collectionColor: .accentColor)
+            AnimatedGradient(collectionColor: .accentColor)
             #if targetEnvironment(macCatalyst)
             NavigationView {
                 content
