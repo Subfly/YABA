@@ -15,7 +15,6 @@ struct GeneralBookmarkDetail: View {
     let onDeleteBookmarkCallback: (Bookmark) -> Void
     
     var body: some View {
-        let _ = Self._printChanges()
         BookmarkDetail(
             bookmark: appState.selectedBookmark,
             onCollectionNavigationCallback: onCollectionNavigationCallback,
@@ -67,7 +66,6 @@ private struct BookmarkDetail: View {
     }
     
     var body: some View {
-        let _ = Self._printChanges()
         ZStack {
             AnimatedMeshGradient(collectionColor: state.meshColor)
             
