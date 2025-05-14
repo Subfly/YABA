@@ -4,26 +4,26 @@
 <dict>
 	<key>NSExtension</key>
 	<dict>
-		<key>NSExtensionPrincipalClass</key>
-		<string>YABAShare.ShareViewController</string>
 		<key>NSExtensionAttributes</key>
 		<dict>
 			<key>NSExtensionActivationRule</key>
 			<dict>
-				<key>NSExtensionActivationSupportsWebURLWithMaxCount</key>
-				<string>1</string>
-				<key>NSExtensionActivationSupportsWebPageWithMaxCount</key>
-				<string>1</string>
 				<key>NSExtensionActivationSupportsAttachmentsWithMaxCount</key>
-				<string>1</string>
+				<string>10</string>
 				<key>NSExtensionActivationSupportsImageWithMaxCount</key>
-				<string>1</string>
+				<string>10</string>
 				<key>NSExtensionActivationSupportsText</key>
 				<true/>
+				<key>NSExtensionActivationSupportsWebPageWithMaxCount</key>
+				<string>10</string>
+				<key>NSExtensionActivationSupportsWebURLWithMaxCount</key>
+				<string>10</string>
 			</dict>
 		</dict>
 		<key>NSExtensionPointIdentifier</key>
 		<string>com.apple.share-services</string>
+		<key>NSExtensionPrincipalClass</key>
+		<string>YABAShare.ShareViewController</string>
 	</dict>
 </dict>
 </plist>
