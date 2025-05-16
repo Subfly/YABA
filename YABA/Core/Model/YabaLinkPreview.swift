@@ -8,10 +8,13 @@
 import Foundation
 
 struct YabaLinkPreview {
-    let title: String
     let url: String
-    let host: String
+    let title: String?
+    let description: String?
+    let host: String?
+    let iconURL: String?
+    let imageURL: String?
+    let videoURL: String?
     let iconData: Data?
     let imageData: Data?
-    let videoURL: String?
 }

@@ -59,6 +59,7 @@ struct BookmarkCreationContent: View {
                 List {
                     Section {
                         bookmarkPreviewItem
+                            .redacted(reason: state.isLoading ? .placeholder : [])
                     } header: {
                         bookmarkPreviewHeader
                     }
@@ -651,6 +652,8 @@ struct BookmarkCreationContent: View {
                 bookmarkToEdit.link = state.url
                 bookmarkToEdit.domain = state.host
                 bookmarkToEdit.bookmarkDescription = state.description
+                bookmarkToEdit.imageUrl = state.imageURL
+                bookmarkToEdit.iconUrl = state.iconURL
                 bookmarkToEdit.videoUrl = state.videoUrl
                 bookmarkToEdit.type = state.selectedType.rawValue
                 bookmarkToEdit.iconData = state.iconData
@@ -677,6 +680,7 @@ struct BookmarkCreationContent: View {
                 
                 let creationTime: Date = .now
                 let newBookmark = Bookmark(
+                    bookmarkId: UUID().uuidString,
                     link: state.url,
                     label: state.label,
                     bookmarkDescription: state.description,
@@ -685,6 +689,8 @@ struct BookmarkCreationContent: View {
                     editedAt: creationTime,
                     imageData: state.imageData,
                     iconData: state.iconData,
+                    imageUrl: state.imageURL,
+                    iconUrl: state.iconURL,
                     videoUrl: state.videoUrl,
                     type: state.selectedType,
                     collections: collections

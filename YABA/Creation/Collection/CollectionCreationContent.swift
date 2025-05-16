@@ -206,6 +206,7 @@ struct CollectionCreationContent: View {
                 onEditCallback(collectionToEdit)
             } else {
                 let collection = YabaCollection(
+                    collectionId: UUID().uuidString,
                     label: state.collectionName,
                     icon: state.selectedIconName,
                     createdAt: .now,

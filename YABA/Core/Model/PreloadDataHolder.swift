@@ -22,6 +22,7 @@ struct PreloadCollection: Codable {
 
     func toCollectionModel() -> YabaCollection {
         return YabaCollection(
+            collectionId: UUID().uuidString,
             label: self.label,
             icon: self.icon,
             createdAt: .now,

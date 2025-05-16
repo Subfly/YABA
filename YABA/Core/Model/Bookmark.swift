@@ -23,10 +23,13 @@ final class Bookmark {
     @Attribute(.spotlight)
     var bookmarkDescription: String
     
+    var bookmarkId: String
     var link: String
     var domain: String
     var createdAt: Date
     var editedAt: Date
+    var imageUrl: String?
+    var iconUrl: String?
     var videoUrl: String?
     var type: Int
     var collections: [YabaCollection]
@@ -36,6 +39,7 @@ final class Bookmark {
     }
 
     init(
+        bookmarkId: String,
         link: String,
         label: String,
         bookmarkDescription: String,
@@ -44,10 +48,13 @@ final class Bookmark {
         editedAt: Date,
         imageData: Data?,
         iconData: Data?,
+        imageUrl: String?,
+        iconUrl: String?,
         videoUrl: String?,
         type: BookmarkType,
         collections: [YabaCollection] = []
     ) {
+        self.bookmarkId = bookmarkId
         self.link = link
         self.label = label
         self.bookmarkDescription = bookmarkDescription
@@ -56,6 +63,8 @@ final class Bookmark {
         self.editedAt = editedAt
         self.imageData = imageData
         self.iconData = iconData
+        self.imageUrl = imageUrl
+        self.iconUrl = iconUrl
         self.videoUrl = videoUrl
         self.type = type.rawValue
         self.collections = collections
@@ -63,6 +72,7 @@ final class Bookmark {
     
     static func empty() -> Bookmark {
         Bookmark(
+            bookmarkId: UUID().uuidString,
             link: "https://www.google.com/",
             label: "Google",
             bookmarkDescription: "Google Web Site",
@@ -71,6 +81,8 @@ final class Bookmark {
             editedAt: .now,
             imageData: nil,
             iconData: nil,
+            imageUrl: nil,
+            iconUrl: nil,
             videoUrl: nil,
             type: .none,
             collections: []
@@ -79,6 +91,7 @@ final class Bookmark {
     
     static func empty(withLink link: String) -> Bookmark {
         Bookmark(
+            bookmarkId: UUID().uuidString,
             link: link,
             label: "",
             bookmarkDescription: "",
@@ -87,6 +100,8 @@ final class Bookmark {
             editedAt: .now,
             imageData: nil,
             iconData: nil,
+            imageUrl: nil,
+            iconUrl: nil,
             videoUrl: nil,
             type: .none,
             collections: []

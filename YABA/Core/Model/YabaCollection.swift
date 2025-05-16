@@ -13,6 +13,7 @@ final class YabaCollection {
     @Relationship(inverse: \Bookmark.collections)
     var bookmarks: [Bookmark] = []
 
+    var collectionId: String
     var label: String
     var icon: String
     var createdAt: Date
@@ -25,6 +26,7 @@ final class YabaCollection {
     }
 
     init(
+        collectionId: String,
         label: String,
         icon: String,
         createdAt: Date,
@@ -33,6 +35,7 @@ final class YabaCollection {
         color: YabaColor,
         type: CollectionType
     ) {
+        self.collectionId = collectionId
         self.label = label
         self.createdAt = createdAt
         self.editedAt = editedAt
@@ -44,6 +47,7 @@ final class YabaCollection {
     
     static func empty() -> YabaCollection {
         return YabaCollection(
+            collectionId: UUID().uuidString,
             label: "",
             icon: "",
             createdAt: .now,
@@ -56,9 +60,10 @@ final class YabaCollection {
     
     func hasChanges(with other: YabaCollection) -> Bool {
         let idHasChanges = self.id != other.id
+        let collectionIdHasChanges = self.collectionId != other.collectionId
         let labelHasChanges = self.label.localizedStandardCompare(other.label) != .orderedSame
         let iconHasChanges = self.icon.localizedStandardCompare(other.icon) != .orderedSame
         let colorHasChanges = self.color != other.color
-        return idHasChanges || labelHasChanges || iconHasChanges || colorHasChanges
+        return idHasChanges || collectionIdHasChanges || labelHasChanges || iconHasChanges || colorHasChanges
     }
 }

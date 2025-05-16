@@ -30,6 +30,8 @@ internal class BookmarkCreationState {
     var host: String = ""
     var label: String = ""
     var description: String = ""
+    var iconURL: String? = nil
+    var imageURL: String? = nil
     var videoUrl: String? = nil
     var imageData: Data? = nil
     var iconData: Data? = nil
@@ -64,18 +66,15 @@ internal class BookmarkCreationState {
         
         do {
             if let fetched = try await unfurler.unfurl(urlString: urlString) {
-                self.host = fetched.host
-                /**
-                 * THIS IS A DESIGN CHOICE AS MOST OF THE TIME I WAS
-                 * ENDING UP WITH PRETTY CRAPPY TITLES THAT MOSTLY
-                 * FITS DESCRIPTON BETTER.
-                 *
-                 * I HOPE ONE DAY APPLE PROVIDES "DESCRIPTION" FOR
-                 * LP LINK METADATA.
-                 */
-                if description.isEmpty {
-                    self.description = fetched.title
+                self.host = fetched.host ?? ""
+                if label.isEmpty {
+                    self.label = fetched.title ?? ""
                 }
+                if description.isEmpty {
+                    self.description = fetched.description ?? ""
+                }
+                self.iconURL = fetched.iconURL
+                self.imageURL = fetched.imageURL
                 self.videoUrl = fetched.videoURL
                 self.iconData = fetched.iconData
                 self.imageData = fetched.imageData

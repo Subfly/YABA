@@ -49,26 +49,23 @@ struct HomeCollectionView: View {
             labelTitle: labelTitle,
             collectionIcon: collectionIcon,
             onNavigationCallback: onNavigationCallback
-        )
-    }
-    
-    @ViewBuilder
-    private var noCollectionsView: some View {
-        ContentUnavailableView {
-            Label {
-                Text(LocalizedStringKey(noCollectionsTitle))
-            } icon: {
-                YabaIconView(bundleKey: collectionIcon)
-                    .scaledToFit()
-                    .frame(width: 52, height: 52)
+        ) {
+            ContentUnavailableView {
+                Label {
+                    Text(LocalizedStringKey(noCollectionsTitle))
+                } icon: {
+                    YabaIconView(bundleKey: collectionIcon)
+                        .scaledToFit()
+                        .frame(width: 52, height: 52)
+                }
+            } description: {
+                Text(LocalizedStringKey(noCollectionsMessage))
             }
-        } description: {
-            Text(LocalizedStringKey(noCollectionsMessage))
         }
     }
 }
 
-private struct ListSection: View {
+private struct ListSection<NoCollectionView: View>: View {
     @State
     private var isExpanded: Bool = true
     
@@ -76,10 +73,12 @@ private struct ListSection: View {
     let labelTitle: String
     let collectionIcon: String
     let onNavigationCallback: (YabaCollection) -> Void
+    @ViewBuilder let noCollectionView: NoCollectionView
     
     var body: some View {
         Section(isExpanded: $isExpanded) {
             if collections.isEmpty {
+                noCollectionView
             } else {
                 ForEach(collections) { collection in
                     CollectionItemView(

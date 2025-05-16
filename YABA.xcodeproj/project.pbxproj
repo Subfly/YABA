@@ -513,7 +513,7 @@
 				DEVELOPMENT_TEAM = N4D5RP839C;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = YABAShare/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = YABAShare;
+				INFOPLIST_KEY_CFBundleDisplayName = YABA;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "YABA Share";
 				INSTALL_PATH = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
@@ -548,7 +548,7 @@
 				DEVELOPMENT_TEAM = N4D5RP839C;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = YABAShare/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = YABAShare;
+				INFOPLIST_KEY_CFBundleDisplayName = YABA;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "YABA Share";
 				INSTALL_PATH = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
