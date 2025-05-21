@@ -25,29 +25,20 @@ class ShareViewController: UIViewController {
             return
         }
         
-        if itemProvider.hasItemConformingToTypeIdentifier("public.url") {
-            itemProvider.loadItem(
-                forTypeIdentifier: "public.url",
-                options: nil
-            ) { providedUrl, error in
+        if itemProvider.canLoadObject(ofClass: URL.self) {
+            _ = itemProvider.loadObject(ofClass: URL.self) { providedUrl, error in
                 if error != nil {
                     self.logger.log(level: .error, "[YABA_SHARE] Unable to get URL")
                     self.close()
                     return
                 }
                 
-                if let url = providedUrl as? NSURL {
-                    if let link = url.absoluteString {
-                        DispatchQueue.main.async {
-                            self.createContentView(link: link)
-                        }
-                    } else {
-                        self.logger.log(level: .error, "[YABA_SHARE] Unable to convert URL to Link")
-                        self.close()
-                        return
+                if let link = providedUrl?.absoluteString {
+                    DispatchQueue.main.async {
+                        self.createContentView(link: link)
                     }
                 } else {
-                    self.logger.log(level: .error, "[YABA_SHARE] Unable to parse URL")
+                    self.logger.log(level: .error, "[YABA_SHARE] Unable to convert URL to Link")
                     self.close()
                     return
                 }

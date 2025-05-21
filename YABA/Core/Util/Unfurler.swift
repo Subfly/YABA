@@ -92,7 +92,8 @@ class Unfurler {
                     let href = String(tag[urlRange])
 
                     // Convert to absolute URL if baseURL is given
-                    if let baseURL = baseURL, let resolvedURL = URL(string: href, relativeTo: baseURL)?.absoluteURL {
+                    if let baseURL = baseURL,
+                       let resolvedURL = URL(string: href, relativeTo: baseURL)?.absoluteURL {
                         return resolvedURL.absoluteString
                     } else {
                         return href

@@ -99,7 +99,11 @@ private struct CollectionDetail: View {
                 }
             }
         }
-        .navigationTitle(collection?.label ?? "")
+        .navigationTitle(
+            collection?.collectionId == Constants.uncategorizedCollectionId
+            ? Text(LocalizedStringKey(Constants.uncategorizedCollectionLabelKey))
+            : Text(collection?.label ?? "")
+        )
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 ToolbarItems(collection: collection, state: $state)

@@ -18,6 +18,9 @@ struct HomeView: View {
     @AppStorage(Constants.preferredSortOrderKey)
     private var preferredSortOrder: SortOrderType = .ascending
     
+    @Environment(\.deepLinkManager)
+    private var deepLinkManager
+    
     @State
     private var homeState: HomeState = .init()
     
@@ -84,12 +87,28 @@ struct HomeView: View {
                 onExitRequested: {}
             )
         }
+        .sheet(item: $homeState.saveBookmarkRequest) { request in
+            BookmarkCreationContent(
+                bookmarkToEdit: nil,
+                collectionToFill: nil,
+                link: request.link,
+                onExitRequested: {}
+            )
+        }
         .navigationTitle("YABA")
         .toolbar {
             ToolbarIcons(
                 onNavigationCallbackForSearch: onNavigationCallbackForSearch,
                 onNavigationCallbackForSettings: onNavigationCallbackForSettings
             )
+        }
+        .onChange(of: deepLinkManager.request) { oldValue, newValue in
+            if oldValue == nil {
+                if let newRequest = newValue {
+                    homeState.saveBookmarkRequest = newRequest
+                    deepLinkManager.onHandleDeeplink()
+                }
+            }
         }
     }
 }

@@ -7,10 +7,27 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		96A8E0B82DB5CAFF00A47601 /* YABAShare.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 96A8E0AE2DB5CAFF00A47601 /* YABAShare.appex */; platformFilters = (ios, maccatalyst, ); settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		967B9A5B2DD8D68D00181AA1 /* YABAStatusMenuItem.app in Resources */ = {isa = PBXBuildFile; fileRef = 967B9A4B2DD8D3EF00181AA1 /* YABAStatusMenuItem.app */; platformFilter = maccatalyst; };
+		967B9A5F2DD8D6E400181AA1 /* YABAStatusMenuItem.app in Copy Menu Item */ = {isa = PBXBuildFile; fileRef = 967B9A4B2DD8D3EF00181AA1 /* YABAStatusMenuItem.app */; platformFilter = maccatalyst; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		96A8E0B82DB5CAFF00A47601 /* YABAShare.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 96A8E0AE2DB5CAFF00A47601 /* YABAShare.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		96EB67222DD945A6009EB9EC /* YABAShareMac.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 96EB67132DD94580009EB9EC /* YABAShareMac.appex */; platformFilter = maccatalyst; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		96275B412DDBF342002D3541 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 96A8DFBA2DB2F5A500A47601 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 96EB67122DD94580009EB9EC;
+			remoteInfo = YABAShareMac;
+		};
+		967B9A5C2DD8D68D00181AA1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 96A8DFBA2DB2F5A500A47601 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 967B9A4A2DD8D3EF00181AA1;
+			remoteInfo = YABAStatusMenuItem;
+		};
 		96A8E0B62DB5CAFF00A47601 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 96A8DFBA2DB2F5A500A47601 /* Project object */;
@@ -18,9 +35,27 @@
 			remoteGlobalIDString = 96A8E0AD2DB5CAFF00A47601;
 			remoteInfo = YABAShare;
 		};
+		96EB67232DD945A6009EB9EC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 96A8DFBA2DB2F5A500A47601 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 96EB67122DD94580009EB9EC;
+			remoteInfo = YABAShareMac;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		967B9A5E2DD8D6D000181AA1 /* Copy Menu Item */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Contents/Library/LoginItems;
+			dstSubfolderSpec = 1;
+			files = (
+				967B9A5F2DD8D6E400181AA1 /* YABAStatusMenuItem.app in Copy Menu Item */,
+			);
+			name = "Copy Menu Item";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		96A8E0BD2DB5CAFF00A47601 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 12;
@@ -28,6 +63,7 @@
 			dstSubfolderSpec = 13;
 			files = (
 				96A8E0B82DB5CAFF00A47601 /* YABAShare.appex in Embed Foundation Extensions */,
+				96EB67222DD945A6009EB9EC /* YABAShareMac.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -35,18 +71,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		967B9A4B2DD8D3EF00181AA1 /* YABAStatusMenuItem.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YABAStatusMenuItem.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		96A8DFC22DB2F5A500A47601 /* YABA.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YABA.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		96A8E0AE2DB5CAFF00A47601 /* YABAShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = YABAShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		96EB67132DD94580009EB9EC /* YABAShareMac.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = YABAShareMac.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		96A8DFD42DB2F60600A47601 /* Exceptions for "YABA" folder in "YABA" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = 96A8DFC12DB2F5A500A47601 /* YABA */;
-		};
 		96A8E0BC2DB5CAFF00A47601 /* Exceptions for "YABAShare" folder in "YABAShare" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -101,14 +132,104 @@
 			);
 			target = 96A8E0AD2DB5CAFF00A47601 /* YABAShare */;
 		};
+		96EB670A2DD91588009EB9EC /* Exceptions for "YABA" folder in "YABA" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Creation/Bookmark/SimpleBookmarkCreationView.swift,
+				Info.plist,
+			);
+			target = 96A8DFC12DB2F5A500A47601 /* YABA */;
+		};
+		96EB670E2DD9447E009EB9EC /* Exceptions for "YABA" folder in "YABAStatusMenuItem" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Assets.xcassets,
+				Core/Components/Toast/ToastDuration.swift,
+				Core/Components/Toast/ToastIconType.swift,
+				Core/Components/Toast/ToastManager.swift,
+				Core/Components/Toast/ToastPosition.swift,
+				Core/Components/Toast/ToastState.swift,
+				Core/Model/Bookmark.swift,
+				Core/Model/BookmarkType.swift,
+				Core/Model/CollectionType.swift,
+				Core/Model/YabaCollection.swift,
+				Core/Model/YabaColor.swift,
+				Core/Model/YabaIcon.swift,
+				Core/Model/YabaLinkPreview.swift,
+				Core/Util/CardViewTypeImageSizing.swift,
+				Core/Util/Constants.swift,
+				Core/Util/CreationType.swift,
+				Core/Util/PreviewContentAppearance.swift,
+				Core/Util/SortOrderType.swift,
+				Core/Util/SortType.swift,
+				Core/Util/Unfurler.swift,
+				Core/Util/ViewType.swift,
+				Creation/Bookmark/BookmarkCreationState.swift,
+				Creation/Bookmark/SimpleBookmarkCreationView.swift,
+				Localizable.xcstrings,
+			);
+			target = 967B9A4A2DD8D3EF00181AA1 /* YABAStatusMenuItem */;
+		};
+		96EB671E2DD94580009EB9EC /* Exceptions for "YABAShareMac" folder in "YABAShareMac" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 96EB67122DD94580009EB9EC /* YABAShareMac */;
+		};
+		96EB67252DD94616009EB9EC /* Exceptions for "YABAShareMac" folder in "YABA" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				icon.icns,
+			);
+			target = 96A8DFC12DB2F5A500A47601 /* YABA */;
+		};
+		96EB67272DD94A1D009EB9EC /* Exceptions for "YABA" folder in "YABAShareMac" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Assets.xcassets,
+				Core/Components/Toast/ToastDuration.swift,
+				Core/Components/Toast/ToastIconType.swift,
+				Core/Components/Toast/ToastManager.swift,
+				Core/Components/Toast/ToastPosition.swift,
+				Core/Components/Toast/ToastState.swift,
+				Core/Data/yaba_icons.json,
+				Core/Model/Bookmark.swift,
+				Core/Model/BookmarkType.swift,
+				Core/Model/CollectionType.swift,
+				Core/Model/YabaCollection.swift,
+				Core/Model/YabaColor.swift,
+				Core/Model/YabaIcon.swift,
+				Core/Model/YabaLinkPreview.swift,
+				Core/Util/CardViewTypeImageSizing.swift,
+				Core/Util/Constants.swift,
+				Core/Util/CreationType.swift,
+				Core/Util/PreviewContentAppearance.swift,
+				Core/Util/SortOrderType.swift,
+				Core/Util/SortType.swift,
+				Core/Util/Unfurler.swift,
+				Core/Util/ViewType.swift,
+				Creation/Bookmark/BookmarkCreationState.swift,
+				Creation/Bookmark/SimpleBookmarkCreationView.swift,
+				Localizable.xcstrings,
+			);
+			target = 96EB67122DD94580009EB9EC /* YABAShareMac */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		967B9A4C2DD8D3EF00181AA1 /* YABAStatusMenuItem */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = YABAStatusMenuItem;
+			sourceTree = "<group>";
+		};
 		96A8DFC42DB2F5A500A47601 /* YABA */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				96A8DFD42DB2F60600A47601 /* Exceptions for "YABA" folder in "YABA" target */,
+				96EB670A2DD91588009EB9EC /* Exceptions for "YABA" folder in "YABA" target */,
 				96A8E0C02DB5CDA300A47601 /* Exceptions for "YABA" folder in "YABAShare" target */,
+				96EB67272DD94A1D009EB9EC /* Exceptions for "YABA" folder in "YABAShareMac" target */,
+				96EB670E2DD9447E009EB9EC /* Exceptions for "YABA" folder in "YABAStatusMenuItem" target */,
 			);
 			path = YABA;
 			sourceTree = "<group>";
@@ -121,9 +242,25 @@
 			path = YABAShare;
 			sourceTree = "<group>";
 		};
+		96EB67142DD94580009EB9EC /* YABAShareMac */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				96EB67252DD94616009EB9EC /* Exceptions for "YABAShareMac" folder in "YABA" target */,
+				96EB671E2DD94580009EB9EC /* Exceptions for "YABAShareMac" folder in "YABAShareMac" target */,
+			);
+			path = YABAShareMac;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		967B9A482DD8D3EF00181AA1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		96A8DFBF2DB2F5A500A47601 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -138,14 +275,31 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		96EB67102DD94580009EB9EC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		967B9A0D2DD80CFA00181AA1 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		96A8DFB92DB2F5A500A47601 = {
 			isa = PBXGroup;
 			children = (
 				96A8DFC42DB2F5A500A47601 /* YABA */,
 				96A8E0AF2DB5CAFF00A47601 /* YABAShare */,
+				967B9A4C2DD8D3EF00181AA1 /* YABAStatusMenuItem */,
+				96EB67142DD94580009EB9EC /* YABAShareMac */,
+				967B9A0D2DD80CFA00181AA1 /* Frameworks */,
 				96A8DFC32DB2F5A500A47601 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -155,6 +309,8 @@
 			children = (
 				96A8DFC22DB2F5A500A47601 /* YABA.app */,
 				96A8E0AE2DB5CAFF00A47601 /* YABAShare.appex */,
+				967B9A4B2DD8D3EF00181AA1 /* YABAStatusMenuItem.app */,
+				96EB67132DD94580009EB9EC /* YABAShareMac.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -162,6 +318,29 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		967B9A4A2DD8D3EF00181AA1 /* YABAStatusMenuItem */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 967B9A562DD8D3F000181AA1 /* Build configuration list for PBXNativeTarget "YABAStatusMenuItem" */;
+			buildPhases = (
+				967B9A472DD8D3EF00181AA1 /* Sources */,
+				967B9A482DD8D3EF00181AA1 /* Frameworks */,
+				967B9A492DD8D3EF00181AA1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				96275B422DDBF342002D3541 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				967B9A4C2DD8D3EF00181AA1 /* YABAStatusMenuItem */,
+			);
+			name = YABAStatusMenuItem;
+			packageProductDependencies = (
+			);
+			productName = YABAStatusMenuItem;
+			productReference = 967B9A4B2DD8D3EF00181AA1 /* YABAStatusMenuItem.app */;
+			productType = "com.apple.product-type.application";
+		};
 		96A8DFC12DB2F5A500A47601 /* YABA */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 96A8DFD02DB2F5A600A47601 /* Build configuration list for PBXNativeTarget "YABA" */;
@@ -170,11 +349,14 @@
 				96A8DFBF2DB2F5A500A47601 /* Frameworks */,
 				96A8DFC02DB2F5A500A47601 /* Resources */,
 				96A8E0BD2DB5CAFF00A47601 /* Embed Foundation Extensions */,
+				967B9A5E2DD8D6D000181AA1 /* Copy Menu Item */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				96A8E0B72DB5CAFF00A47601 /* PBXTargetDependency */,
+				967B9A5D2DD8D68D00181AA1 /* PBXTargetDependency */,
+				96EB67242DD945A6009EB9EC /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				96A8DFC42DB2F5A500A47601 /* YABA */,
@@ -208,6 +390,28 @@
 			productReference = 96A8E0AE2DB5CAFF00A47601 /* YABAShare.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		96EB67122DD94580009EB9EC /* YABAShareMac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 96EB671F2DD94580009EB9EC /* Build configuration list for PBXNativeTarget "YABAShareMac" */;
+			buildPhases = (
+				96EB670F2DD94580009EB9EC /* Sources */,
+				96EB67102DD94580009EB9EC /* Frameworks */,
+				96EB67112DD94580009EB9EC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				96EB67142DD94580009EB9EC /* YABAShareMac */,
+			);
+			name = YABAShareMac;
+			packageProductDependencies = (
+			);
+			productName = YABAShareMac;
+			productReference = 96EB67132DD94580009EB9EC /* YABAShareMac.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -218,10 +422,16 @@
 				LastSwiftUpdateCheck = 1630;
 				LastUpgradeCheck = 1630;
 				TargetAttributes = {
+					967B9A4A2DD8D3EF00181AA1 = {
+						CreatedOnToolsVersion = 16.3;
+					};
 					96A8DFC12DB2F5A500A47601 = {
 						CreatedOnToolsVersion = 16.3;
 					};
 					96A8E0AD2DB5CAFF00A47601 = {
+						CreatedOnToolsVersion = 16.3;
+					};
+					96EB67122DD94580009EB9EC = {
 						CreatedOnToolsVersion = 16.3;
 					};
 				};
@@ -244,15 +454,25 @@
 			targets = (
 				96A8DFC12DB2F5A500A47601 /* YABA */,
 				96A8E0AD2DB5CAFF00A47601 /* YABAShare */,
+				96EB67122DD94580009EB9EC /* YABAShareMac */,
+				967B9A4A2DD8D3EF00181AA1 /* YABAStatusMenuItem */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		967B9A492DD8D3EF00181AA1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		96A8DFC02DB2F5A500A47601 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				967B9A5B2DD8D68D00181AA1 /* YABAStatusMenuItem.app in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -263,9 +483,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		96EB67112DD94580009EB9EC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		967B9A472DD8D3EF00181AA1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		96A8DFBE2DB2F5A500A47601 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -280,21 +514,104 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		96EB670F2DD94580009EB9EC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		96275B422DDBF342002D3541 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 96EB67122DD94580009EB9EC /* YABAShareMac */;
+			targetProxy = 96275B412DDBF342002D3541 /* PBXContainerItemProxy */;
+		};
+		967B9A5D2DD8D68D00181AA1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			platformFilter = maccatalyst;
+			target = 967B9A4A2DD8D3EF00181AA1 /* YABAStatusMenuItem */;
+			targetProxy = 967B9A5C2DD8D68D00181AA1 /* PBXContainerItemProxy */;
+		};
 		96A8E0B72DB5CAFF00A47601 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			platformFilters = (
-				ios,
-				maccatalyst,
-			);
+			platformFilter = ios;
 			target = 96A8E0AD2DB5CAFF00A47601 /* YABAShare */;
 			targetProxy = 96A8E0B62DB5CAFF00A47601 /* PBXContainerItemProxy */;
+		};
+		96EB67242DD945A6009EB9EC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			platformFilter = maccatalyst;
+			target = 96EB67122DD94580009EB9EC /* YABAShareMac */;
+			targetProxy = 96EB67232DD945A6009EB9EC /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		967B9A572DD8D3F000181AA1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = YABAStatusMenuItem/YABAStatusMenuItem.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = N4D5RP839C;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.subfly.YABAStatusMenuItem;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		967B9A582DD8D3F000181AA1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = YABAStatusMenuItem/YABAStatusMenuItem.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = N4D5RP839C;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.subfly.YABAStatusMenuItem;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 		96A8DFCE2DB2F5A600A47601 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -435,6 +752,7 @@
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -452,6 +770,8 @@
 				SUPPORTS_MACCATALYST = YES;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_MODULES_AUTOLINK = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
 				XROS_DEPLOYMENT_TARGET = 2.0;
@@ -480,6 +800,7 @@
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -497,6 +818,8 @@
 				SUPPORTS_MACCATALYST = YES;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_MODULES_AUTOLINK = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
 				XROS_DEPLOYMENT_TARGET = 2.0;
@@ -573,9 +896,78 @@
 			};
 			name = Release;
 		};
+		96EB67202DD94580009EB9EC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = YABAShareMac/YABAShareMac.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = N4D5RP839C;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = YABAShareMac/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = YABAShareMac;
+				INFOPLIST_KEY_NSHumanReadableCopyright = YABA;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.subfly.YABA.YABAShareMac;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		96EB67212DD94580009EB9EC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = YABAShareMac/YABAShareMac.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = N4D5RP839C;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = YABAShareMac/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = YABAShareMac;
+				INFOPLIST_KEY_NSHumanReadableCopyright = YABA;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.subfly.YABA.YABAShareMac;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		967B9A562DD8D3F000181AA1 /* Build configuration list for PBXNativeTarget "YABAStatusMenuItem" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				967B9A572DD8D3F000181AA1 /* Debug */,
+				967B9A582DD8D3F000181AA1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		96A8DFBD2DB2F5A500A47601 /* Build configuration list for PBXProject "YABA" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -599,6 +991,15 @@
 			buildConfigurations = (
 				96A8E0BA2DB5CAFF00A47601 /* Debug */,
 				96A8E0BB2DB5CAFF00A47601 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		96EB671F2DD94580009EB9EC /* Build configuration list for PBXNativeTarget "YABAShareMac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				96EB67202DD94580009EB9EC /* Debug */,
+				96EB67212DD94580009EB9EC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

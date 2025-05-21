@@ -17,6 +17,9 @@ struct YABAApp: App {
     private var toastManager: ToastManager = .init()
     
     @State
+    private var deepLinkManager: DeepLinkManager = .init()
+    
+    @State
     private var appState: AppState = .init()
     
     var body: some Scene {
@@ -30,10 +33,16 @@ struct YABAApp: App {
                 )
                 .environment(toastManager)
                 .environment(\.appState, appState)
+                .environment(\.deepLinkManager, deepLinkManager)
                 .preferredColorScheme(preferredTheme.getScheme())
                 .onAppear {
                     setupForMacCatalyst()
                 }
+            #if targetEnvironment(macCatalyst)
+                .onOpenURL { url in
+                    deepLinkManager.handleDeepLink(url)
+                }
+            #endif
         }
     }
     
@@ -43,6 +52,8 @@ struct YABAApp: App {
         UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.forEach { windowScene in
             windowScene.sizeRestrictions?.minimumSize = CGSize(width: 1600, height: 960)
         }
+        
+        StatusMenuHelper.setStatusMenuEnabled()
         #endif
     }
 }

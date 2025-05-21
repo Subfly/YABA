@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct BookmarkCreationContent: View {
     @Environment(\.dismiss)
@@ -114,13 +115,15 @@ struct BookmarkCreationContent: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") {
-                        onDone()
-                    }.disabled(
-                        state.url.isEmpty
-                        || state.label.isEmpty
-                        || state.selectedFolder == nil
-                        || state.hasError
-                    )
+                        state.onDone(
+                            bookmarkToEdit: bookmarkToEdit,
+                            using: modelContext,
+                            onFinishCallback: {
+                                onExitRequested()
+                                dismiss()
+                            }
+                        )
+                    }.disabled(state.url.isEmpty || state.label.isEmpty || state.isLoading)
                 }
             }
         }
@@ -133,7 +136,20 @@ struct BookmarkCreationContent: View {
             ? .accentColor
             : state.selectedFolder?.color.getUIColor() ?? .accentColor
         )
-        .onAppear(perform: onAppear)
+        .onAppear {
+            /// MARK: BOOKMARK URL CHANGE LISTENER INITIALIZER
+            state.listenUrlChanges { url in
+                Task { await state.fetchData(with: url) }
+            }
+            state.onAppear(
+                link: link,
+                bookmarkToEdit: bookmarkToEdit,
+                collectionToFill: collectionToFill,
+                storedContentAppearance: storedContentAppearance,
+                storedCardImageSizing: storedCardImageSizing,
+                using: modelContext
+            )
+        }
         .overlay(
             alignment: state.toastManager.toastState.position == .top
             ? .top
@@ -504,6 +520,7 @@ struct BookmarkCreationContent: View {
             text: $state.label,
             prompt: Text("Create Bookmark Title Placeholder")
         )
+        .disabled(state.isLoading)
         .safeAreaInset(edge: .leading) {
             YabaIconView(bundleKey: "text")
                 .scaledToFit()
@@ -523,6 +540,7 @@ struct BookmarkCreationContent: View {
                 axis: .vertical,
             )
             .lineLimit(5, reservesSpace: true)
+            .disabled(state.isLoading)
         }
         
         bookmarkTypePicker
@@ -539,7 +557,11 @@ struct BookmarkCreationContent: View {
                         .scaledToFit()
                         .frame(width: 20, height: 20)
                         .foregroundStyle(.tint)
-                    Text(folder.label)
+                    if folder.collectionId == Constants.uncategorizedCollectionId {
+                        Text(LocalizedStringKey(Constants.uncategorizedCollectionLabelKey))
+                    } else {
+                        Text(folder.label)
+                    }
                 }
             } else {
                 HStack {
@@ -637,116 +659,6 @@ struct BookmarkCreationContent: View {
         }
         .foregroundStyle(.tint)
         .id(state.selectedFolder)
-    }
-    
-    private func onDone() {
-        withAnimation {
-            guard let selectedFolder = state.selectedFolder else {
-                onExitRequested()
-                dismiss()
-                return
-            }
-            
-            if let bookmarkToEdit {
-                bookmarkToEdit.label = state.label
-                bookmarkToEdit.link = state.url
-                bookmarkToEdit.domain = state.host
-                bookmarkToEdit.bookmarkDescription = state.description
-                bookmarkToEdit.imageUrl = state.imageURL
-                bookmarkToEdit.iconUrl = state.iconURL
-                bookmarkToEdit.videoUrl = state.videoUrl
-                bookmarkToEdit.type = state.selectedType.rawValue
-                bookmarkToEdit.iconData = state.iconData
-                bookmarkToEdit.imageData = state.imageData
-                bookmarkToEdit.editedAt = .now
-                
-                // Folder changing
-                if let lastSelectedFolderIndex = bookmarkToEdit.collections.firstIndex(
-                    where: { $0.collectionType == .folder }
-                ) {
-                    let lastSelectedFolder = bookmarkToEdit.collections[lastSelectedFolderIndex]
-                    if lastSelectedFolder.hasChanges(with: selectedFolder) {
-                        bookmarkToEdit.collections.remove(at: lastSelectedFolderIndex)
-                        bookmarkToEdit.collections.append(selectedFolder)
-                    }
-                }
-                
-                // Tags changing
-                bookmarkToEdit.collections.removeAll { $0.collectionType == .tag }
-                bookmarkToEdit.collections.append(contentsOf: state.selectedTags)
-            } else {
-                var collections = state.selectedTags
-                collections.append(selectedFolder)
-                
-                let creationTime: Date = .now
-                let newBookmark = Bookmark(
-                    bookmarkId: UUID().uuidString,
-                    link: state.url,
-                    label: state.label,
-                    bookmarkDescription: state.description,
-                    domain: state.host,
-                    createdAt: creationTime,
-                    editedAt: creationTime,
-                    imageData: state.imageData,
-                    iconData: state.iconData,
-                    imageUrl: state.imageURL,
-                    iconUrl: state.iconURL,
-                    videoUrl: state.videoUrl,
-                    type: state.selectedType,
-                    collections: collections
-                )
-                modelContext.insert(newBookmark)
-            }
-            try? modelContext.save()
-            onExitRequested()
-            dismiss()
-        }
-    }
-    
-    private func onAppear() {
-        switch storedContentAppearance {
-        case .list:
-            state.contentAppearance = .list
-        case .card:
-            switch storedCardImageSizing {
-            case .big:
-                state.contentAppearance = .cardBigImage
-            case .small:
-                state.contentAppearance = .cardSmallImage
-            }
-        }
-        
-        state.listenUrlChanges { url in
-            Task { await state.fetchData(with: url) }
-        }
-        
-        if let bookmarkToEdit {
-            state.url = bookmarkToEdit.link
-            state.label = bookmarkToEdit.label
-            state.description = bookmarkToEdit.bookmarkDescription
-            state.host = bookmarkToEdit.domain
-            state.imageData = bookmarkToEdit.imageData
-            state.iconData = bookmarkToEdit.iconData
-            state.videoUrl = bookmarkToEdit.videoUrl
-            state.selectedType = bookmarkToEdit.bookmarkType
-            state.selectedFolder = bookmarkToEdit.collections.first(where: {
-                $0.collectionType == .folder
-            })
-            state.selectedTags = bookmarkToEdit.collections.filter { $0.collectionType == .tag }
-        }
-        
-        if let link {
-            state.url = link
-        }
-        
-        if let collectionToFill {
-            switch collectionToFill.collectionType {
-            case .folder:
-                state.selectedFolder = collectionToFill
-            case .tag:
-                state.selectedTags.append(collectionToFill)
-            }
-        }
     }
 }
 

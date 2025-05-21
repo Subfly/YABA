@@ -9,6 +9,7 @@
 import Foundation
 import SwiftUI
 import Combine
+import SwiftData
 
 @MainActor
 @Observable
@@ -44,6 +45,8 @@ internal class BookmarkCreationState {
     var hasError: Bool = false
     
     var contentAppearance: PreviewContentAppearance = .list
+    
+    var uncatagroizedFolderCreationRequired: Bool = false
     
     let toastManager: ToastManager = .init()
     
@@ -123,5 +126,190 @@ internal class BookmarkCreationState {
             .dropFirst(isInEditMode ? 1 : 0)
             .sink { perform($0) }
             .store(in: &cancels)
+    }
+    
+    func onDone(
+        bookmarkToEdit: Bookmark?,
+        using modelContext: ModelContext,
+        onFinishCallback: @escaping () -> Void
+    ) {
+        guard let selectedFolder else { return }
+        
+        withAnimation {
+            if let bookmarkToEdit {
+                bookmarkToEdit.label = label
+                bookmarkToEdit.link = url
+                bookmarkToEdit.domain = host
+                bookmarkToEdit.bookmarkDescription = description
+                bookmarkToEdit.imageUrl = imageURL
+                bookmarkToEdit.iconUrl = iconURL
+                bookmarkToEdit.videoUrl = videoUrl
+                bookmarkToEdit.type = selectedType.rawValue
+                bookmarkToEdit.iconData = iconData
+                bookmarkToEdit.imageData = imageData
+                bookmarkToEdit.editedAt = .now
+                
+                // Folder changing
+                if let lastSelectedFolderIndex = bookmarkToEdit.collections.firstIndex(
+                    where: { $0.collectionType == .folder }
+                ) {
+                    let lastSelectedFolder = bookmarkToEdit.collections[lastSelectedFolderIndex]
+                    if lastSelectedFolder.hasChanges(with: selectedFolder) {
+                        bookmarkToEdit.collections.remove(at: lastSelectedFolderIndex)
+                        bookmarkToEdit.collections.append(selectedFolder)
+                    }
+                }
+                
+                // Tags changing
+                bookmarkToEdit.collections.removeAll { $0.collectionType == .tag }
+                bookmarkToEdit.collections.append(contentsOf: selectedTags)
+            } else {
+                var collections = selectedTags
+                collections.append(selectedFolder)
+                
+                let creationTime: Date = .now
+                let newBookmark = Bookmark(
+                    bookmarkId: UUID().uuidString,
+                    link: url,
+                    label: label,
+                    bookmarkDescription: description,
+                    domain: host,
+                    createdAt: creationTime,
+                    editedAt: creationTime,
+                    imageData: imageData,
+                    iconData: iconData,
+                    imageUrl: imageURL,
+                    iconUrl: iconURL,
+                    videoUrl: videoUrl,
+                    type: selectedType,
+                    collections: collections
+                )
+                modelContext.insert(newBookmark)
+            }
+            try? modelContext.save()
+            onFinishCallback()
+        }
+    }
+    
+    func onAppear(
+        link: String?,
+        bookmarkToEdit: Bookmark?,
+        collectionToFill: YabaCollection?,
+        storedContentAppearance: ViewType,
+        storedCardImageSizing: CardViewTypeImageSizing,
+        using modelContext: ModelContext
+    ) {
+        /// MARK: PREVIEW TYPE SELECTION
+        switch storedContentAppearance {
+        case .list:
+            contentAppearance = .list
+        case .card:
+            switch storedCardImageSizing {
+            case .big:
+                contentAppearance = .cardBigImage
+            case .small:
+                contentAppearance = .cardSmallImage
+            }
+        }
+        
+        /// MARK: BOOKMARK FOLDER FILLING
+        var folderToFill = bookmarkToEdit?.collections.first(where: { $0.collectionType == .folder })
+        if folderToFill == nil {
+            let id = Constants.uncategorizedCollectionId // Thanks #Predicate for that...
+            let descriptor = FetchDescriptor<YabaCollection>(
+                predicate: #Predicate<YabaCollection> { collection in
+                    collection.collectionId == id
+                }
+            )
+            if let existingUncatagorizedFolder = try? modelContext.fetch(descriptor).first {
+                folderToFill = existingUncatagorizedFolder
+            } else {
+                folderToFill = YabaCollection(
+                    collectionId: Constants.uncategorizedCollectionId,
+                    label: Constants.uncategorizedCollectionLabelKey,
+                    icon: "folder-01",
+                    createdAt: .now,
+                    editedAt: .now,
+                    color: .none,
+                    type: .folder
+                )
+                uncatagroizedFolderCreationRequired = true
+            }
+        }
+        
+        /// MARK: BOOKMARK DATA FILLER FOR VM
+        if let bookmarkToEdit {
+            url = bookmarkToEdit.link
+            label = bookmarkToEdit.label
+            description = bookmarkToEdit.bookmarkDescription
+            host = bookmarkToEdit.domain
+            imageData = bookmarkToEdit.imageData
+            iconData = bookmarkToEdit.iconData
+            videoUrl = bookmarkToEdit.videoUrl
+            selectedType = bookmarkToEdit.bookmarkType
+            selectedFolder = bookmarkToEdit.collections.first(where: { $0.collectionType == .folder })
+            selectedTags = bookmarkToEdit.collections.filter { $0.collectionType == .tag }
+        } else {
+            selectedFolder = folderToFill
+        }
+        
+        /// MARK: BOOKMARK URL FILLER FOR SHARE EXTENSIONS
+        if let link {
+            url = link
+        }
+        
+        /// MARK: COLLECTION FILLING
+        if let collectionToFill {
+            switch collectionToFill.collectionType {
+            case .folder:
+                selectedFolder = collectionToFill
+            case .tag:
+                selectedTags.append(collectionToFill)
+            }
+        }
+    }
+    
+    func simpleOnAppear(
+        link: String?,
+        bookmarkToEdit: Bookmark?,
+        collectionToFill: YabaCollection?,
+        using modelContext: ModelContext
+    ) {
+        /// MARK: BOOKMARK FOLDER FILLING
+        let id = Constants.uncategorizedCollectionId // Thanks #Predicate for that...
+        let descriptor = FetchDescriptor<YabaCollection>(
+            predicate: #Predicate<YabaCollection> { collection in
+                collection.collectionId == id
+            }
+        )
+        if let existingUncatagorizedFolder = try? modelContext.fetch(descriptor).first {
+            selectedFolder = existingUncatagorizedFolder
+        } else {
+            selectedFolder = YabaCollection(
+                collectionId: Constants.uncategorizedCollectionId,
+                label: Constants.uncategorizedCollectionLabelKey,
+                icon: "folder-01",
+                createdAt: .now,
+                editedAt: .now,
+                color: .none,
+                type: .folder
+            )
+            uncatagroizedFolderCreationRequired = true
+        }
+        
+        /// MARK: BOOKMARK URL FILLER FOR SHARE EXTENSIONS
+        if let link {
+            url = link
+        }
+        
+        /// MARK: COLLECTION FILLING
+        if let collectionToFill {
+            switch collectionToFill.collectionType {
+            case .folder:
+                selectedFolder = collectionToFill
+            case .tag:
+                selectedTags.append(collectionToFill)
+            }
+        }
     }
 }

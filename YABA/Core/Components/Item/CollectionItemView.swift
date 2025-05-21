@@ -173,7 +173,11 @@ private struct ListView: View {
                     .scaledToFit()
                     .foregroundStyle(collection.color.getUIColor())
                     .frame(width: 24, height: 24)
-                Text(collection.label)
+                if collection.collectionId == Constants.uncategorizedCollectionId {
+                    Text(LocalizedStringKey(Constants.uncategorizedCollectionLabelKey))
+                } else {
+                    Text(collection.label)
+                }
             }
             Spacer()
             HStack {

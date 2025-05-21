@@ -18,4 +18,6 @@ struct Constants {
     
     /// MARK: APP-WISE
     static let toastAnimationDuration: UInt64 = 3_000_000
+    static let uncategorizedCollectionId: String = "-1"
+    static let uncategorizedCollectionLabelKey: String = "Uncategorized Label"
 }

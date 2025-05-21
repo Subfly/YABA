@@ -15,4 +15,5 @@ internal class HomeState {
     var shouldShowCreateBookmarkSheet: Bool = false
     var selectedContentCreationType: CollectionType? = nil
     var shouldShowBackground: Bool = false
+    var saveBookmarkRequest: DeepLinkSaveBookmarkRequest? = nil
 }

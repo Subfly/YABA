@@ -630,6 +630,18 @@
         }
       }
     },
+    "New Bookmark" : {
+      "comment" : "Mac only label to show in status bar menu item, for creating a new bookmark",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New Bookmark"
+          }
+        }
+      }
+    },
     "No Bookmarks Message" : {
       "comment" : "Message to show when no bookmarks added yet in home search",
       "extractionState" : "manual",
@@ -762,6 +774,18 @@
         }
       }
     },
+    "Open App Label" : {
+      "comment" : "Label of button in global share sheet shown in order to make user proceed to app.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open in YABA for more options"
+          }
+        }
+      }
+    },
     "Pick Icon" : {
       "comment" : "Title to show when user open the icon picker",
       "extractionState" : "manual",
@@ -798,6 +822,18 @@
         }
       }
     },
+    "Quit" : {
+      "comment" : "Mac only label to show in status bar menu item, for quitting the menu item",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quit"
+          }
+        }
+      }
+    },
     "Refresh" : {
       "comment" : "Label to show for refresh related functions",
       "extractionState" : "manual",
@@ -806,6 +842,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Refresh"
+          }
+        }
+      }
+    },
+    "Save" : {
+      "comment" : "Button label to show in global creation sheet for mac",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save"
           }
         }
       }
@@ -1345,6 +1393,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "System"
+          }
+        }
+      }
+    },
+    "Uncategorized Label" : {
+      "comment" : "Label of uncategorized bookmarks collection",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uncategorized"
           }
         }
       }
