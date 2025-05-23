@@ -141,14 +141,16 @@ struct BookmarkCreationContent: View {
             state.listenUrlChanges { url in
                 Task { await state.fetchData(with: url) }
             }
-            state.onAppear(
-                link: link,
-                bookmarkToEdit: bookmarkToEdit,
-                collectionToFill: collectionToFill,
-                storedContentAppearance: storedContentAppearance,
-                storedCardImageSizing: storedCardImageSizing,
-                using: modelContext
-            )
+            Task {
+                await state.onAppear(
+                    link: link,
+                    bookmarkToEdit: bookmarkToEdit,
+                    collectionToFill: collectionToFill,
+                    storedContentAppearance: storedContentAppearance,
+                    storedCardImageSizing: storedCardImageSizing,
+                    using: modelContext
+                )
+            }
         }
         .overlay(
             alignment: state.toastManager.toastState.position == .top

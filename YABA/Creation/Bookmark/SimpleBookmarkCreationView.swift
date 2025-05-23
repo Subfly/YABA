@@ -45,12 +45,14 @@ struct SimpleBookmarkCreationView: View {
             creationState.listenUrlChanges { url in
                 Task { await creationState.fetchData(with: url) }
             }
-            creationState.simpleOnAppear(
-                link: link,
-                bookmarkToEdit: nil,
-                collectionToFill: nil,
-                using: modelContext
-            )
+            Task {
+                await creationState.simpleOnAppear(
+                    link: link,
+                    bookmarkToEdit: nil,
+                    collectionToFill: nil,
+                    using: modelContext
+                )
+            }
         }
     }
     

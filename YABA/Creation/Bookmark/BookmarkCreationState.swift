@@ -198,7 +198,7 @@ internal class BookmarkCreationState {
         storedContentAppearance: ViewType,
         storedCardImageSizing: CardViewTypeImageSizing,
         using modelContext: ModelContext
-    ) {
+    ) async {
         /// MARK: PREVIEW TYPE SELECTION
         switch storedContentAppearance {
         case .list:
@@ -274,7 +274,7 @@ internal class BookmarkCreationState {
         bookmarkToEdit: Bookmark?,
         collectionToFill: YabaCollection?,
         using modelContext: ModelContext
-    ) {
+    ) async {
         /// MARK: BOOKMARK FOLDER FILLING
         let id = Constants.uncategorizedCollectionId // Thanks #Predicate for that...
         let descriptor = FetchDescriptor<YabaCollection>(
