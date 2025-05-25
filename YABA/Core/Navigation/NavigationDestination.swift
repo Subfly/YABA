@@ -10,6 +10,5 @@ import Foundation
 enum NavigationDestination: Hashable {
     case collectionDetail(collection: YabaCollection?)
     case bookmarkDetail(bookmark: Bookmark?)
-    case settings
     case search
 }

@@ -93,6 +93,9 @@ private struct MobileNavigationView: View {
     @State
     private var path: [NavigationDestination] = []
     
+    @State
+    private var shouldShowSettings: Bool = false
+    
     var body: some View {
         NavigationStack(path: $path) {
             HomeView(
@@ -106,7 +109,7 @@ private struct MobileNavigationView: View {
                     path.append(.search)
                 },
                 onNavigationCallbackForSettings: {
-                    path.append(.settings)
+                    shouldShowSettings = true
                 }
             )
             .navigationDestination(for: NavigationDestination.self) { destination in
@@ -136,9 +139,6 @@ private struct MobileNavigationView: View {
                         }
                     )
                     .navigationBarBackButtonHidden()
-                case .settings:
-                    SettingsView()
-                        .navigationBarBackButtonHidden()
                 case .search:
                     SearchView(
                         onCloseRequested: {},
@@ -149,6 +149,11 @@ private struct MobileNavigationView: View {
                     .navigationBarBackButtonHidden()
                 }
             }
+        }
+        .fullScreenCover(isPresented: $shouldShowSettings) {
+            SettingsView()
+                .navigationBarBackButtonHidden()
+                .interactiveDismissDisabled()
         }
     }
 }

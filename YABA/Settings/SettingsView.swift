@@ -6,16 +6,26 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct SettingsView: View {
     @Environment(\.dismiss)
     private var dismiss
     
+    @Environment(\.modelContext)
+    private var modelContext
+    
+    @Environment(\.appState)
+    private var appState
+    
+    @State
+    private var settingsState = SettingsState()
+    
     var body: some View {
-        ZStack {
-            AnimatedGradient(collectionColor: .accentColor)
-            #if targetEnvironment(macCatalyst)
-            NavigationView {
+        NavigationStack(path: $settingsState.settingsNavPath) {
+            ZStack {
+                AnimatedGradient(collectionColor: .accentColor)
+                #if targetEnvironment(macCatalyst)
                 content
                     .toolbar {
                         ToolbarItem(placement: .confirmationAction) {
@@ -26,12 +36,10 @@ struct SettingsView: View {
                             }
                         }
                     }
-            }
-            #else
-            if UIDevice.current.userInterfaceIdiom == .pad {
-                NavigationView {
-                    content
-                        .toolbar {
+                #else
+                content
+                    .toolbar {
+                        if UIDevice.current.userInterfaceIdiom == .pad {
                             ToolbarItem(placement: .confirmationAction) {
                                 Button {
                                     dismiss()
@@ -39,24 +47,51 @@ struct SettingsView: View {
                                     Text("Done")
                                 }
                             }
-                        }
-                }
-            } else {
-                content
-                    .toolbar {
-                        if UIDevice.current.userInterfaceIdiom == .phone {
+                        } else {
                             ToolbarItem(placement: .navigation) {
                                 Button {
                                     dismiss()
                                 } label: {
                                     YabaIconView(bundleKey: "arrow-left-01")
-                                }.buttonRepeatBehavior(.enabled)
+                                }
                             }
                         }
                     }
+                #endif
             }
-            #endif
+            .navigationDestination(for: SettingsNavigationDestination.self) { destination in
+                switch destination {
+                    case .mapper: MapperView(settingsState: $settingsState)
+                        .navigationBarBackButtonHidden()
+                }
+            }
         }
+        .overlay(
+            alignment: settingsState.toastManager.toastState.position == .top
+            ? .top
+            : .bottom
+        ) {
+            if settingsState.toastManager.toastState.position == .top {
+                YabaToast(
+                    state: settingsState.toastManager.toastState,
+                    onDismissRequest: {
+                        settingsState.toastManager.hide()
+                    }
+                )
+                .offset(y: settingsState.toastManager.isShowing ? 25 : -1000)
+                .transition(.move(edge: .top))
+            } else {
+                YabaToast(
+                    state: settingsState.toastManager.toastState,
+                    onDismissRequest: {
+                        settingsState.toastManager.hide()
+                    }
+                )
+                .offset(y: settingsState.toastManager.isShowing ? -25 : 1000)
+                .transition(.move(edge: .bottom))
+            }
+        }
+        .animation(.easeInOut(duration: 0.3), value: settingsState.toastManager.isShowing)
     }
     
     @ViewBuilder
@@ -107,50 +142,9 @@ struct SettingsView: View {
     @ViewBuilder
     private var dataSection: some View {
         Section {
-            HStack {
-                Label {
-                    Text("Settings Import Title")
-                } icon: {
-                    YabaIconView(bundleKey: "file-import")
-                        .scaledToFit()
-                        .frame(width: 24, height: 24)
-                }
-                Spacer()
-                YabaIconView(bundleKey: "arrow-right-01")
-                    .scaledToFit()
-                    .frame(width: 24, height: 24)
-                    .foregroundStyle(.tertiary)
-            }
-            HStack {
-                Label {
-                    Text("Settings Export Title")
-                } icon: {
-                    YabaIconView(bundleKey: "file-export")
-                        .scaledToFit()
-                        .frame(width: 24, height: 24)
-                }
-                Spacer()
-                YabaIconView(bundleKey: "arrow-right-01")
-                    .scaledToFit()
-                    .frame(width: 24, height: 24)
-                    .foregroundStyle(.tertiary)
-            }
-            HStack {
-                Label {
-                    Text("Settings Delete All Title")
-                        .foregroundStyle(.red)
-                } icon: {
-                    YabaIconView(bundleKey: "delete-02")
-                        .scaledToFit()
-                        .frame(width: 24, height: 24)
-                        .tint(.red)
-                }
-                Spacer()
-                YabaIconView(bundleKey: "arrow-right-01")
-                    .scaledToFit()
-                    .frame(width: 24, height: 24)
-                    .foregroundStyle(.tertiary)
-            }
+            importButton
+            exportButton
+            deleteAllButton
         } header: {
             Label {
                 Text("Settings Data Title")
@@ -160,6 +154,216 @@ struct SettingsView: View {
                     .frame(width: 18, height: 18)
             }
         }
+    }
+    
+    @ViewBuilder
+    private var importButton: some View {
+        HStack {
+            Label {
+                Text("Settings Import Title")
+            } icon: {
+                YabaIconView(bundleKey: "file-import")
+                    .scaledToFit()
+                    .frame(width: 24, height: 24)
+            }
+            Spacer()
+            YabaIconView(bundleKey: "arrow-right-01")
+                .scaledToFit()
+                .frame(width: 24, height: 24)
+                .foregroundStyle(.tertiary)
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            settingsState.shouldShowImportSheet = true
+        }
+        .fileImporter(
+            isPresented: $settingsState.shouldShowImportSheet,
+            allowedContentTypes: [.json, .commaSeparatedText]
+        ) { result in
+            switch result {
+            case .success(let file):
+                settingsState.tryToImport(
+                    with: file,
+                    using: modelContext
+                )
+            case .failure:
+                settingsState.toastManager.show(
+                    message: LocalizedStringKey("Unable to Access File Message"),
+                    accentColor: .red,
+                    acceptText: LocalizedStringKey("Ok"),
+                    iconType: .error,
+                    onAcceptPressed: { settingsState.toastManager.hide() }
+                )
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var exportButton: some View {
+        HStack {
+            Label {
+                HStack {
+                    Text("Settings Export Title")
+                    if settingsState.isExporting {
+                        ProgressView().controlSize(.regular)
+                    }
+                }
+            } icon: {
+                YabaIconView(bundleKey: "file-export")
+                    .scaledToFit()
+                    .frame(width: 24, height: 24)
+            }
+            Spacer()
+            YabaIconView(bundleKey: "arrow-right-01")
+                .scaledToFit()
+                .frame(width: 24, height: 24)
+                .foregroundStyle(.tertiary)
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            settingsState.shouldShowExportTypeSelection = true
+        }
+        .confirmationDialog(
+            "Export Type Selection Label",
+            isPresented: $settingsState.shouldShowExportTypeSelection,
+            actions: {
+                Button {
+                    settingsState.shouldShowExportTypeSelection = false
+                    settingsState.showExportSheet(
+                        using: modelContext,
+                        withType: .json
+                    )
+                } label: {
+                    Label {
+                        Text("JSON")
+                    } icon: {
+                        YabaIconView(bundleKey: "file-script")
+                    }
+                }
+                Button {
+                    settingsState.shouldShowExportTypeSelection = false
+                    settingsState.showExportSheet(
+                        using: modelContext,
+                        withType: .commaSeparatedText
+                    )
+                } label: {
+                    Label {
+                        Text("CSV")
+                    } icon: {
+                        YabaIconView(bundleKey: "csv-02")
+                    }
+                }
+            }
+        )
+        .fileExporter(
+            isPresented: $settingsState.shouldShowCsvExportSheet,
+            document: settingsState.exportableCsvDocument,
+            contentType: .commaSeparatedText,
+            defaultFilename: "yaba_export",
+            onCompletion: { result in
+                switch result {
+                case .success:
+                    settingsState.toastManager.show(
+                        message: LocalizedStringKey("Export Successful Message"),
+                        accentColor: .green,
+                        acceptText: LocalizedStringKey("Ok"),
+                        iconType: .success,
+                        onAcceptPressed: { settingsState.toastManager.hide() }
+                    )
+                case .failure:
+                    settingsState.toastManager.show(
+                        message: LocalizedStringKey("Export Error Message"),
+                        accentColor: .red,
+                        acceptText: LocalizedStringKey("Ok"),
+                        iconType: .error,
+                        onAcceptPressed: { settingsState.toastManager.hide() }
+                    )
+                }
+            }
+        )
+    }
+    
+    @ViewBuilder
+    private var deleteAllButton: some View {
+        HStack {
+            Label {
+                HStack {
+                    Text("Settings Delete All Title")
+                        .foregroundStyle(.red)
+                    if settingsState.isDeleting {
+                        ProgressView().controlSize(.regular)
+                    }
+                }
+            } icon: {
+                YabaIconView(bundleKey: "delete-02")
+                    .scaledToFit()
+                    .frame(width: 24, height: 24)
+                    .tint(.red)
+            }
+            Spacer()
+            YabaIconView(bundleKey: "arrow-right-01")
+                .scaledToFit()
+                .frame(width: 24, height: 24)
+                .foregroundStyle(.tertiary)
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            settingsState.showDeleteAllDialog = true
+        }
+        .alert(
+            "Delete All Dialog Label",
+            isPresented: $settingsState.showDeleteAllDialog,
+            actions: {
+                Button(role: .cancel) {
+                    settingsState.showDeleteAllDialog = false
+                } label: {
+                    Text("Cancel")
+                }
+                Button(role: .destructive) {
+                    settingsState.deleteAllData(
+                        using: modelContext,
+                        onFinishCallback: {
+                            withAnimation {
+                                appState.selectedBookmark = nil
+                                appState.selectedCollection = nil
+                            }
+                        }
+                    )
+                } label: {
+                    Text("Delete")
+                }
+            },
+            message: {
+                Text("Delete All Dialog Message")
+            }
+        )
+        // Best hack I have ever did in this project. Thanks Apple for non-stackable File Exporters...
+        .fileExporter(
+            isPresented: $settingsState.shouldShowJsonExportSheet,
+            document: settingsState.exportableJsonDocument,
+            contentType: .json,
+            defaultFilename: "yaba_export",
+            onCompletion: { result in
+                switch result {
+                case .success:
+                    settingsState.toastManager.show(
+                        message: LocalizedStringKey("Export Successful Message"),
+                        accentColor: .green,
+                        acceptText: LocalizedStringKey("Ok"),
+                        iconType: .success,
+                        onAcceptPressed: { settingsState.toastManager.hide() }
+                    )
+                case .failure:
+                    settingsState.toastManager.show(
+                        message: LocalizedStringKey("Export Error Message"),
+                        accentColor: .red,
+                        acceptText: LocalizedStringKey("Ok"),
+                        iconType: .error,
+                        onAcceptPressed: { settingsState.toastManager.hide() }
+                    )
+                }
+            }
+        )
     }
 }
 

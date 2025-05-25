@@ -149,6 +149,162 @@
         }
       }
     },
+    "Bookmark Type Audio" : {
+      "comment" : "Audio Bookmark type",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Audio"
+          }
+        }
+      }
+    },
+    "Bookmark Type Audio Description" : {
+      "comment" : "Description for bookmark type -  auido",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A podcast or other audio file."
+          }
+        }
+      }
+    },
+    "Bookmark Type Image" : {
+      "comment" : "Image Bookmark type",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Image"
+          }
+        }
+      }
+    },
+    "Bookmark Type Image Description" : {
+      "comment" : "Description for bookmark type -  image",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A direct link to an image file."
+          }
+        }
+      }
+    },
+    "Bookmark Type Link" : {
+      "comment" : "Web Link Bookmark type",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Web Link"
+          }
+        }
+      }
+    },
+    "Bookmark Type Link Description" : {
+      "comment" : "Description for bookmark type -  link",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A regular webpage or article."
+          }
+        }
+      }
+    },
+    "Bookmark Type Music" : {
+      "comment" : "Music Bookmark type",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Music"
+          }
+        }
+      }
+    },
+    "Bookmark Type Music Description" : {
+      "comment" : "Description for bookmark type -  music",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A music track or album, like from Spotify or Apple Music. "
+          }
+        }
+      }
+    },
+    "Bookmark Type None" : {
+      "comment" : "None Bookmark type",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Other"
+          }
+        }
+      }
+    },
+    "Bookmark Type None Description" : {
+      "comment" : "Description for bookmark type -  none",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No specific type assigned."
+          }
+        }
+      }
+    },
+    "Bookmark Type Video" : {
+      "comment" : "Video Bookmark type",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Video"
+          }
+        }
+      }
+    },
+    "Bookmark Type Video Description" : {
+      "comment" : "Description for bookmark type -  video",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A link to a video, like on YouTube or Vimeo."
+          }
+        }
+      }
+    },
+    "Bookmark URL Placeholder" : {
+      "comment" : "Placeholder to show when bookmark url is empty",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL"
+          }
+        }
+      }
+    },
     "Cancel" : {
       "comment" : "Cancel",
       "extractionState" : "manual",
@@ -193,6 +349,42 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Collection"
+          }
+        }
+      }
+    },
+    "Collection Type Folder Description" : {
+      "comment" : "Description for collection type -  folder",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Used to group related bookmarks together in a structured way."
+          }
+        }
+      }
+    },
+    "Collection Type Tag Description" : {
+      "comment" : "Description for collection type -  tag",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A collection type to help categorize and find bookmarks more flexibly."
+          }
+        }
+      }
+    },
+    "Copy To Clipboard Success Message" : {
+      "comment" : "Message to show in toast when user copied something",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copied to clipboard"
           }
         }
       }
@@ -404,6 +596,186 @@
         }
       }
     },
+    "CSV" : {
+      "comment" : "Name of CSV file type",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export CSV"
+          }
+        }
+      }
+    },
+    "CSV Notes Bookmark ID" : {
+      "comment" : "Note for Bookmark ID in mapper info section of CSV",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Optional – If missing, a unique ID will be auto-generated"
+          }
+        }
+      }
+    },
+    "CSV Notes Created At" : {
+      "comment" : "Note for Created At in mapper info section of CSV",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Optional – If missing, current date will be used (ISO 8601 recommended)"
+          }
+        }
+      }
+    },
+    "CSV Notes Edited At" : {
+      "comment" : "Note for Edited At in mapper info section of CSV",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Optional – Will fall back to createdAt or current date"
+          }
+        }
+      }
+    },
+    "CSV Notes Label" : {
+      "comment" : "Note for Label in mapper info section of CSV",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Optional – Defaults to the link if not provided"
+          }
+        }
+      }
+    },
+    "CSV Notes Link" : {
+      "comment" : "Note for Link in mapper info section of CSV",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Required – Must be a valid URL"
+          }
+        }
+      }
+    },
+    "CSV Notes Optional" : {
+      "comment" : "Note for any optional in mapper info section of CSV",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Optional"
+          }
+        }
+      }
+    },
+    "CSV Notes Type" : {
+      "comment" : "Note for Bookmark Type in mapper info section of CSV",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Optional – Follows BookmarkType enum: 1 (Other), 2 (Web Link), etc."
+          }
+        }
+      }
+    },
+    "Data Manager Bookmark URL Column Not Selected Message" : {
+      "comment" : "Message to show in toast when column containing bookmark URL not selected.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Column containing Bookmark URL not selected. Please select and try again."
+          }
+        }
+      }
+    },
+    "Data Manager Empty CSV Message" : {
+      "comment" : "Message to show in toast when CSV is empty during Data Manager operations.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selected CSV does not contain any bookmarks."
+          }
+        }
+      }
+    },
+    "Data Manager Empty JSON Message" : {
+      "comment" : "Message to show in toast when JSON is empty during Data Manager operations.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selected JSON does not contain any bookmarks."
+          }
+        }
+      }
+    },
+    "Data Manager Error During Generating Exportable Message" : {
+      "comment" : "Message to show in toast when the data could not be able to generate the file to export.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An error happened during generating the exportable file. Please contact for support."
+          }
+        }
+      }
+    },
+    "Data Manager Invalid Bookmark URL Message %@" : {
+      "comment" : "Message to show in toast when bookmark url is invalid during Data Manager operations.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CSV contains invalid URL for %@. Please check and try again."
+          }
+        }
+      }
+    },
+    "Data Manager Invalid CSV Encoding Message" : {
+      "comment" : "Message to show in toast when CSV is invalid during Data Manager operations.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CSV is invalid. Please Check the file and make sure everything is correct."
+          }
+        }
+      }
+    },
+    "Data Manager Unknown Error Message" : {
+      "comment" : "Message to show in toast when the error is unknown.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An unknown error happened. Please contact for support."
+          }
+        }
+      }
+    },
     "Delete" : {
       "comment" : "Label to show on delete related actions",
       "extractionState" : "manual",
@@ -412,6 +784,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Delete"
+          }
+        }
+      }
+    },
+    "Delete All Dialog Label" : {
+      "comment" : "Label to show in delete all content dialog",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete All Content"
+          }
+        }
+      }
+    },
+    "Delete All Dialog Message" : {
+      "comment" : "Message to show in delete all content dialog",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Are you sure you want to delete everything? This operation can not be undone!"
           }
         }
       }
@@ -522,6 +918,42 @@
         }
       }
     },
+    "Export Error Message" : {
+      "comment" : "Message to show when error occurred during exporting.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to export bookmarks."
+          }
+        }
+      }
+    },
+    "Export Successful Message" : {
+      "comment" : "Message to show when bookmarks are exported successfully.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bookmarks exported successfully!"
+          }
+        }
+      }
+    },
+    "Export Type Selection Label" : {
+      "comment" : "Label to show in confirmation dialog when export is triggered",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select a Type to Export"
+          }
+        }
+      }
+    },
     "Folder" : {
       "comment" : "Placeholder for naming \"Folder\"",
       "extractionState" : "manual",
@@ -582,6 +1014,30 @@
         }
       }
     },
+    "Import" : {
+      "comment" : "Label of import action in mapping sheet",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import"
+          }
+        }
+      }
+    },
+    "Import Successful Message" : {
+      "comment" : "Message to show after importing is successful.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bookmarks imported successfully!"
+          }
+        }
+      }
+    },
     "Info" : {
       "comment" : "Section header to show for info related items",
       "extractionState" : "manual",
@@ -590,6 +1046,125 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Info"
+          }
+        }
+      }
+    },
+    "JSON" : {
+      "comment" : "Name of JSON file type",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export JSON"
+          }
+        }
+      }
+    },
+    "Map CSV Column Header Label %lld %@" : {
+      "comment" : "Header name of \"Column\" in CSV mapping table.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "• Column %1$lld: `%2$@`"
+          }
+        }
+      }
+    },
+    "Map CSV Info Section Text" : {
+      "comment" : "The text to show in info section if given CSV could not parsed directly",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Read before proceeding 🚀\n\nWe couldn’t automatically parse your CSV file — but that’s totally okay! You’re just a few steps away from bringing your bookmarks in.\n\nThis mapper screen lets you tell us which columns mean what — and once you match your data correctly, we’ll handle the rest! We’ll only import the bookmarks and safely place them in a new folder named with the current date and time.\n\nThe only required field is the link. If a title is missing, we’ll default them to the link. If no creation date is provided, we’ll use today’s date. Other fields like description, type or media URLs can be empty or skipped altogether.\n\nYou can relax knowing that your data is safe and the import is flexible — no perfect formatting required."
+          }
+        }
+      }
+    },
+    "Map CSV Label" : {
+      "comment" : "Navigation title to show when the CSV File could not be parsed directly and resulted in opening the mapping sheet",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Map CSV"
+          }
+        }
+      }
+    },
+    "Map CSV Name Header Label" : {
+      "comment" : "Header name of \"Name\" in CSV mapping table.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name"
+          }
+        }
+      }
+    },
+    "Map CSV Notes Header Label" : {
+      "comment" : "Header name of \"Notes\" in CSV mapping table.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notes"
+          }
+        }
+      }
+    },
+    "Map JSON Info Section Text" : {
+      "comment" : "The text to show in info section if given JSON could not parsed directly",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Read before proceeding ✨\n\nWe couldn’t parse your JSON file automatically — but don’t worry, you’re very close! While we couldn’t match the structure upfront, you can still ensure it’s importable by following the expected format below.\n\nYour bookmarks (and even collections!) will be imported and organized smartly. If no collections are present, we’ll neatly place all bookmarks inside a folder named with the current date and time.\n\nThe only required field is the link. If label is missing, we’ll default it to using the link. For missing timestamps, we’ll use the current time.\n\nYou don’t need to include every field — we’ll gracefully handle missing optional ones. If your JSON follows the structure below, you're good to go!"
+          }
+        }
+      }
+    },
+    "Map JSON Label" : {
+      "comment" : "Navigation title to show when the JSON File could not be parsed directly and resulted in opening the mapping sheet",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import Failed"
+          }
+        }
+      }
+    },
+    "Mapper Info Section CTA Text" : {
+      "comment" : "The CTA for copying the structure",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The expected structure is:"
+          }
+        }
+      }
+    },
+    "Mapping Label" : {
+      "comment" : "Label of mappable content in the mapping sheet",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mapping"
           }
         }
       }
@@ -758,6 +1333,18 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "None Mapper Label" : {
+      "comment" : "Label of None in mapper selection if user don't want to select any existing option",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "None"
           }
         }
       }
@@ -1009,6 +1596,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Select a Folder"
+          }
+        }
+      }
+    },
+    "Select Mapper Label" : {
+      "comment" : "Label to show when no mapper is selected yet in mapper sheet",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select"
           }
         }
       }
@@ -1337,6 +1936,18 @@
         }
       }
     },
+    "Tag" : {
+      "comment" : "Standalone tag label",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tag"
+          }
+        }
+      }
+    },
     "Tags Search Prompt" : {
       "comment" : "Prompt to show while searching in tags selection",
       "extractionState" : "manual",
@@ -1397,6 +2008,42 @@
         }
       }
     },
+    "Type Guide Bookmark Label" : {
+      "comment" : "Label to show when giving info about bookmark types",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bookmark Type Guide"
+          }
+        }
+      }
+    },
+    "Type Guide Collection Label" : {
+      "comment" : "Label to show when giving info about collection types",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Collection Type Guide"
+          }
+        }
+      }
+    },
+    "Unable to Access File Message" : {
+      "comment" : "Message to show when selected file could not be accessed somehow.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An unknown error happened while accessing the file."
+          }
+        }
+      }
+    },
     "Uncategorized Label" : {
       "comment" : "Label of uncategorized bookmarks collection",
       "extractionState" : "manual",
@@ -1417,6 +2064,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Can not load preview for given URL"
+          }
+        }
+      }
+    },
+    "Unsupported File Type Message" : {
+      "comment" : "Message to show when an unsupported file type is selected in file import.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selected file type is unsupported. Please try again with a CSV or JSON."
           }
         }
       }

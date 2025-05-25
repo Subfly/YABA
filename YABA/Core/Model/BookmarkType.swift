@@ -5,6 +5,8 @@
 //  Created by Ali Taha on 21.04.2025.
 //
 
+import SwiftUI
+
 enum BookmarkType: Int, Codable, CaseIterable {
     case none = 1
     case webLink = 2
@@ -24,14 +26,14 @@ enum BookmarkType: Int, Codable, CaseIterable {
         }
     }
     
-    func getUITitle() -> String {
+    func getUITitle() -> LocalizedStringKey {
         return switch self {
-        case .none: "Other"
-        case .webLink: "Web Link"
-        case .video: "Video"
-        case .image: "Image"
-        case .audio: "Audio"
-        case .music: "Music"
+        case .none: LocalizedStringKey("Bookmark Type None")
+        case .webLink: LocalizedStringKey("Bookmark Type Link")
+        case .video: LocalizedStringKey("Bookmark Type Video")
+        case .image: LocalizedStringKey("Bookmark Type Image")
+        case .audio: LocalizedStringKey("Bookmark Type Audio")
+        case .music: LocalizedStringKey("Bookmark Type Music")
         }
     }
 }

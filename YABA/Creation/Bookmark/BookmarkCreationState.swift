@@ -224,12 +224,13 @@ internal class BookmarkCreationState {
             if let existingUncatagorizedFolder = try? modelContext.fetch(descriptor).first {
                 folderToFill = existingUncatagorizedFolder
             } else {
+                let creationTime = Date.now
                 folderToFill = YabaCollection(
                     collectionId: Constants.uncategorizedCollectionId,
                     label: Constants.uncategorizedCollectionLabelKey,
                     icon: "folder-01",
-                    createdAt: .now,
-                    editedAt: .now,
+                    createdAt: creationTime,
+                    editedAt: creationTime,
                     color: .none,
                     type: .folder
                 )
@@ -285,12 +286,13 @@ internal class BookmarkCreationState {
         if let existingUncatagorizedFolder = try? modelContext.fetch(descriptor).first {
             selectedFolder = existingUncatagorizedFolder
         } else {
+            let creationTime = Date.now
             selectedFolder = YabaCollection(
                 collectionId: Constants.uncategorizedCollectionId,
                 label: Constants.uncategorizedCollectionLabelKey,
                 icon: "folder-01",
-                createdAt: .now,
-                editedAt: .now,
+                createdAt: creationTime,
+                editedAt: creationTime,
                 color: .none,
                 type: .folder
             )
