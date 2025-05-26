@@ -8,6 +8,7 @@
 import UIKit
 import SwiftUI
 import SwiftData
+import UniformTypeIdentifiers
 import OSLog
 
 @objc(ShareViewController)
@@ -16,36 +17,70 @@ class ShareViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        guard
-            let extensionItem = extensionContext?.inputItems.first as? NSExtensionItem,
-            let itemProvider = extensionItem.attachments?.first else {
-            self.logger.log(level: .error, "[YABA_SHARE] Unable to parse attechments")
-            self.close()
+        Task {
+            await handleSharedItems()
+        }
+    }
+    
+    private func handleSharedItems() async {
+        guard let extensionItems = extensionContext?.inputItems as? [NSExtensionItem] else {
+            logger.log(level: .error, "[YABA_SHARE] No extension items found")
+            close()
             return
         }
         
-        if itemProvider.canLoadObject(ofClass: URL.self) {
-            _ = itemProvider.loadObject(ofClass: URL.self) { providedUrl, error in
-                if error != nil {
-                    self.logger.log(level: .error, "[YABA_SHARE] Unable to get URL")
-                    self.close()
-                    return
-                }
-                
-                if let link = providedUrl?.absoluteString {
-                    DispatchQueue.main.async {
-                        self.createContentView(link: link)
-                    }
-                } else {
-                    self.logger.log(level: .error, "[YABA_SHARE] Unable to convert URL to Link")
-                    self.close()
-                    return
+        var foundURLs: [URL] = []
+        
+        for item in extensionItems {
+            guard let attachments = item.attachments else { continue }
+            
+            for provider in attachments {
+                if let url = await extractURL(from: provider) {
+                    logger.log("[YABA_SHARE] Found URL: \(url.absoluteString)")
+                    foundURLs.append(url)
                 }
             }
-        } else {
-            self.close()
         }
+        
+        guard let firstURL = foundURLs.first else {
+            logger.log(level: .error, "[YABA_SHARE] No valid URL found in any item")
+            close()
+            return
+        }
+        
+        DispatchQueue.main.async {
+            self.createContentView(link: firstURL.absoluteString)
+        }
+    }
+    
+    private func extractURL(from provider: NSItemProvider) async -> URL? {
+        if provider.canLoadObject(ofClass: URL.self) {
+            return try? await withCheckedThrowingContinuation { continuation in
+                _ = provider.loadObject(ofClass: URL.self) { url, error in
+                    if let url {
+                        continuation.resume(returning: url)
+                    } else {
+                        continuation.resume(returning: nil)
+                    }
+                }
+            }
+        }
+        
+        if provider.hasItemConformingToTypeIdentifier("public.url") {
+            if let item = try? await provider.loadItem(forTypeIdentifier: "public.url") as? URL {
+                return item
+            }
+        }
+        
+        if provider.hasItemConformingToTypeIdentifier("public.plain-text") {
+            if let text = try? await provider.loadItem(forTypeIdentifier: "public.plain-text") as? String,
+               let url = URL(string: text),
+               ["http", "https"].contains(url.scheme?.lowercased()) {
+                return url
+            }
+        }
+        
+        return nil
     }
     
     private func createContentView(link: String) {
@@ -57,28 +92,20 @@ class ShareViewController: UIViewController {
                 onExitRequested: close
             ).modelContainer(for: [Bookmark.self, YabaCollection.self])
         )
+        
         self.addChild(contentView)
         self.view.addSubview(contentView.view)
-        
         contentView.view.translatesAutoresizingMaskIntoConstraints = false
-        contentView.view.topAnchor.constraint(
-            equalTo: self.view.topAnchor
-        ).isActive = true
-        contentView.view.bottomAnchor.constraint(
-            equalTo: self.view.bottomAnchor
-        ).isActive = true
-        contentView.view.leftAnchor.constraint(
-            equalTo: self.view.leftAnchor
-        ).isActive = true
-        contentView.view.rightAnchor.constraint(
-            equalTo: self.view.rightAnchor
-        ).isActive = true
+        
+        NSLayoutConstraint.activate([
+            contentView.view.topAnchor.constraint(equalTo: view.topAnchor),
+            contentView.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            contentView.view.leftAnchor.constraint(equalTo: view.leftAnchor),
+            contentView.view.rightAnchor.constraint(equalTo: view.rightAnchor)
+        ])
     }
     
     private func close() {
-        self.extensionContext?.completeRequest(
-            returningItems: [],
-            completionHandler: nil
-        )
+        self.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
     }
 }

@@ -193,11 +193,12 @@ internal class SettingsState {
         if let dataError = error as? DataError {
             switch dataError {
             case .invalidCSVEncoding(let message),
-                 .emptyCSV(let message),
-                 .exportableGenerationError(let message),
-                 .caseURLColumnNotSelected(let message),
-                 .invalidBookmarkUrl(let message),
-                 .unkownError(let message):
+                    .emptyCSV(let message),
+                    .emptyJSON(let message),
+                    .exportableGenerationError(let message),
+                    .caseURLColumnNotSelected(let message),
+                    .invalidBookmarkUrl(let message),
+                    .unkownError(let message):
                 toastManager.show(
                     message: message,
                     accentColor: .red,
