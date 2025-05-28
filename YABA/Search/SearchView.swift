@@ -24,7 +24,7 @@ struct SearchView: View {
     
     // !iOS only
     let onCloseRequested: () -> Void
-    let onSelectBookmark: (Bookmark) -> Void
+    let onSelectBookmark: (YabaBookmark) -> Void
     
     var body: some View {
         ZStack {
@@ -88,22 +88,22 @@ private struct SearchableContent: View {
     private var contentAppearance: ViewType = .list
     
     @Query
-    private var bookmarks: [Bookmark]
+    private var bookmarks: [YabaBookmark]
     
     @Binding
     var searchQuery: String
-    let onNavigationCallback: (Bookmark) -> Void
+    let onNavigationCallback: (YabaBookmark) -> Void
     
     init(
         searchQuery: Binding<String>,
         preferredSorting: SortType,
         preferredOrder: SortOrderType,
-        onNavigationCallback: @escaping (Bookmark) -> Void
+        onNavigationCallback: @escaping (YabaBookmark) -> Void
     ) {
         _searchQuery = searchQuery
         self.onNavigationCallback = onNavigationCallback
         
-        let sortDescriptor: SortDescriptor<Bookmark> = switch preferredSorting {
+        let sortDescriptor: SortDescriptor<YabaBookmark> = switch preferredSorting {
         case .createdAt:
                 .init(\.createdAt, order: preferredOrder == .ascending ? .forward : .reverse)
         case .editedAt:

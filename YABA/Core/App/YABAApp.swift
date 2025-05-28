@@ -26,7 +26,7 @@ struct YABAApp: App {
         WindowGroup {
             YabaNavigationView()
                 .modelContainer(
-                    for: [Bookmark.self, YabaCollection.self],
+                    for: [YabaBookmark.self, YabaCollection.self],
                     inMemory: false,
                     isAutosaveEnabled: false,
                     isUndoEnabled: false

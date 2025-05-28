@@ -20,6 +20,7 @@ struct Constants {
     static let toastAnimationDuration: UInt64 = 3_000_000
     static let uncategorizedCollectionId: String = "-1"
     static let uncategorizedCollectionLabelKey: String = "Uncategorized Label"
+    static let port: Int = 8888
     
     /// MARK: MAPPER
     static let jsonExample: String = """

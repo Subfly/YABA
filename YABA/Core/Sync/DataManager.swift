@@ -277,7 +277,7 @@ class DataManager {
         onFinishCallback: @escaping () -> Void
     ) {
         Task { @MainActor in
-            try? modelContext.delete(model: Bookmark.self)
+            try? modelContext.delete(model: YabaBookmark.self)
             try? await Task.sleep(for: .seconds(1))
             
             // Thanks to nullify collection on tags...

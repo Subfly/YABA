@@ -11,7 +11,7 @@ import SwiftUI
 @Observable
 class AppState {
     var selectedCollection: YabaCollection?
-    var selectedBookmark: Bookmark?
+    var selectedBookmark: YabaBookmark?
 }
 
 extension EnvironmentValues {

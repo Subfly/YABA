@@ -129,7 +129,7 @@ internal class BookmarkCreationState {
     }
     
     func onDone(
-        bookmarkToEdit: Bookmark?,
+        bookmarkToEdit: YabaBookmark?,
         using modelContext: ModelContext,
         onFinishCallback: @escaping () -> Void
     ) {
@@ -145,8 +145,8 @@ internal class BookmarkCreationState {
                 bookmarkToEdit.iconUrl = iconURL
                 bookmarkToEdit.videoUrl = videoUrl
                 bookmarkToEdit.type = selectedType.rawValue
-                bookmarkToEdit.iconData = iconData
-                bookmarkToEdit.imageData = imageData
+                bookmarkToEdit.iconDataHolder = .init(data: iconData)
+                bookmarkToEdit.imageDataHolder = .init(data: imageData)
                 bookmarkToEdit.editedAt = .now
                 
                 // Folder changing
@@ -168,7 +168,7 @@ internal class BookmarkCreationState {
                 collections.append(selectedFolder)
                 
                 let creationTime: Date = .now
-                let newBookmark = Bookmark(
+                let newBookmark = YabaBookmark(
                     bookmarkId: UUID().uuidString,
                     link: url,
                     label: label,
@@ -176,8 +176,8 @@ internal class BookmarkCreationState {
                     domain: host,
                     createdAt: creationTime,
                     editedAt: creationTime,
-                    imageData: imageData,
-                    iconData: iconData,
+                    imageDataHolder: .init(data: imageData),
+                    iconDataHolder: .init(data: iconData),
                     imageUrl: imageURL,
                     iconUrl: iconURL,
                     videoUrl: videoUrl,
@@ -193,7 +193,7 @@ internal class BookmarkCreationState {
     
     func onAppear(
         link: String?,
-        bookmarkToEdit: Bookmark?,
+        bookmarkToEdit: YabaBookmark?,
         collectionToFill: YabaCollection?,
         storedContentAppearance: ViewType,
         storedCardImageSizing: CardViewTypeImageSizing,
@@ -244,8 +244,8 @@ internal class BookmarkCreationState {
             label = bookmarkToEdit.label
             description = bookmarkToEdit.bookmarkDescription
             host = bookmarkToEdit.domain
-            imageData = bookmarkToEdit.imageData
-            iconData = bookmarkToEdit.iconData
+            imageData = bookmarkToEdit.imageDataHolder?.data
+            iconData = bookmarkToEdit.iconDataHolder?.data
             videoUrl = bookmarkToEdit.videoUrl
             selectedType = bookmarkToEdit.bookmarkType
             selectedFolder = bookmarkToEdit.collections.first(where: { $0.collectionType == .folder })
@@ -272,7 +272,7 @@ internal class BookmarkCreationState {
     
     func simpleOnAppear(
         link: String?,
-        bookmarkToEdit: Bookmark?,
+        bookmarkToEdit: YabaBookmark?,
         collectionToFill: YabaCollection?,
         using modelContext: ModelContext
     ) async {

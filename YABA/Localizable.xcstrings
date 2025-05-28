@@ -1936,6 +1936,42 @@
         }
       }
     },
+    "Sync Show Camera" : {
+      "comment" : "Label to show the Camera in manual sync view",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scan with Camera"
+          }
+        }
+      }
+    },
+    "Sync Show QR" : {
+      "comment" : "Label to show the QR Code in manual sync view",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show QR Code"
+          }
+        }
+      }
+    },
+    "Synchronize Label" : {
+      "comment" : "Label of Sync functionality",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synchronize"
+          }
+        }
+      }
+    },
     "Tag" : {
       "comment" : "Standalone tag label",
       "extractionState" : "manual",

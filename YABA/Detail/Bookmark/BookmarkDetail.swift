@@ -12,7 +12,7 @@ struct GeneralBookmarkDetail: View {
     private var appState
     
     let onCollectionNavigationCallback: (YabaCollection) -> Void
-    let onDeleteBookmarkCallback: (Bookmark) -> Void
+    let onDeleteBookmarkCallback: (YabaBookmark) -> Void
     
     var body: some View {
         BookmarkDetail(
@@ -27,9 +27,9 @@ struct GeneralBookmarkDetail: View {
 }
 
 struct MobileBookmarkDetail: View {
-    let bookmark: Bookmark?
+    let bookmark: YabaBookmark?
     let onCollectionNavigationCallback: (YabaCollection) -> Void
-    let onDeleteBookmarkCallback: (Bookmark) -> Void
+    let onDeleteBookmarkCallback: (YabaBookmark) -> Void
     
     var body: some View {
         BookmarkDetail(
@@ -50,14 +50,14 @@ private struct BookmarkDetail: View {
     @State
     private var state: BookmarkDetailState
     
-    let bookmark: Bookmark?
+    let bookmark: YabaBookmark?
     let onCollectionNavigationCallback: (YabaCollection) -> Void
-    let onDeleteBookmarkCallback: (Bookmark) -> Void
+    let onDeleteBookmarkCallback: (YabaBookmark) -> Void
     
     init(
-        bookmark: Bookmark?,
+        bookmark: YabaBookmark?,
         onCollectionNavigationCallback: @escaping (YabaCollection) -> Void,
-        onDeleteBookmarkCallback: @escaping (Bookmark) -> Void
+        onDeleteBookmarkCallback: @escaping (YabaBookmark) -> Void
     ) {
         self.state = .init(with: bookmark)
         self.bookmark = bookmark
@@ -174,7 +174,7 @@ private struct BookmarkDetail: View {
 }
 
 private struct MainContent: View {
-    let bookmark: Bookmark
+    let bookmark: YabaBookmark
     let folder: YabaCollection?
     let tags: [YabaCollection]
     let onClickOpenLink: () -> Void
@@ -203,12 +203,12 @@ private struct MainContent: View {
 }
 
 private struct ImageSection: View {
-    let bookmark: Bookmark
+    let bookmark: YabaBookmark
     let onClickOpenLink: () -> Void
     
     var body: some View {
         Section {
-            if let imageData = bookmark.imageData,
+            if let imageData = bookmark.imageDataHolder?.data,
                let image = UIImage(data: imageData) {
                 Image(uiImage: image)
                     .resizable()
@@ -238,7 +238,7 @@ private struct ImageSection: View {
 
         } footer: {
             HStack {
-                if let iconData = bookmark.iconData,
+                if let iconData = bookmark.iconDataHolder?.data,
                    let image = UIImage(data: iconData) {
                     Image(uiImage: image)
                         .resizable()
@@ -264,7 +264,7 @@ private struct ImageSection: View {
 }
 
 private struct InfoSection: View {
-    let bookmark: Bookmark
+    let bookmark: YabaBookmark
     
     var body: some View {
         Section {

@@ -25,7 +25,7 @@ struct BookmarkCreationContent: View {
     private var state: BookmarkCreationState
     private let navigationTitle: String
     
-    let bookmarkToEdit: Bookmark?
+    let bookmarkToEdit: YabaBookmark?
     let collectionToFill: YabaCollection?
     
     /// MARK: SHARE EXTENSION RELATED
@@ -33,7 +33,7 @@ struct BookmarkCreationContent: View {
     let onExitRequested: () -> Void
     
     init(
-        bookmarkToEdit: Bookmark?,
+        bookmarkToEdit: YabaBookmark?,
         collectionToFill: YabaCollection?, // Used when creating a new bookmark to a collection
         link: String?,
         onExitRequested: @escaping () -> Void

@@ -25,8 +25,8 @@ struct BookmarkItemView: View {
     @State
     private var itemState: ItemState = .init()
     
-    let bookmark: Bookmark
-    let onNavigationCallback: (Bookmark) -> Void
+    let bookmark: YabaBookmark
+    let onNavigationCallback: (YabaBookmark) -> Void
     
     var body: some View {
         MainLabel(bookmark: bookmark, state: $itemState)
@@ -89,7 +89,7 @@ private struct MainLabel: View {
     @AppStorage(Constants.preferredCardImageSizingKey)
     private var cardSizing: CardViewTypeImageSizing = .small
     
-    let bookmark: Bookmark
+    let bookmark: YabaBookmark
     
     @Binding
     var state: ItemState
@@ -113,7 +113,7 @@ private struct MainLabel: View {
 }
 
 private struct ListView: View {
-    let bookmark: Bookmark
+    let bookmark: YabaBookmark
     
     @Binding
     var state: ItemState
@@ -168,7 +168,7 @@ private struct ListView: View {
 }
 
 private struct BigCardView: View {
-    let bookmark: Bookmark
+    let bookmark: YabaBookmark
     
     @Binding
     var state: ItemState
@@ -178,7 +178,7 @@ private struct BigCardView: View {
             BookmarkImage(bookmark: bookmark)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             HStack {
-                if let miniIconData = bookmark.iconData,
+                if let miniIconData = bookmark.iconDataHolder?.data,
                    let miniIconImage = UIImage(data: miniIconData) {
                     Image(uiImage: miniIconImage)
                         .resizable()
@@ -206,7 +206,7 @@ private struct BigCardView: View {
 }
 
 private struct SmallCardView: View {
-    let bookmark: Bookmark
+    let bookmark: YabaBookmark
     
     @Binding
     var state: ItemState
@@ -232,7 +232,7 @@ private struct SmallCardView: View {
                 TagsAreaView(bookmark: bookmark)
                 Spacer()
                 HStack {
-                    if let miniIconData = bookmark.iconData,
+                    if let miniIconData = bookmark.iconDataHolder?.data,
                        let miniIconImage = UIImage(data: miniIconData) {
                         Image(uiImage: miniIconImage)
                             .resizable()
@@ -250,7 +250,7 @@ private struct GridView: View {
     @Environment(\.appState)
     private var appState
     
-    let bookmark: Bookmark
+    let bookmark: YabaBookmark
     
     @Binding
     var state: ItemState
@@ -296,10 +296,10 @@ private struct BookmarkImage: View {
     @AppStorage(Constants.preferredCardImageSizingKey)
     private var cardSizing: CardViewTypeImageSizing = .small
     
-    let bookmark: Bookmark
+    let bookmark: YabaBookmark
     
     var body: some View {
-        if let imageData = bookmark.imageData,
+        if let imageData = bookmark.imageDataHolder?.data,
            let image = UIImage(data: imageData) {
             switch contentAppearance {
             case .list:
@@ -388,7 +388,7 @@ private struct BookmarkImage: View {
 }
 
 private struct TagsAreaView: View {
-    let bookmark: Bookmark
+    let bookmark: YabaBookmark
     
     var body: some View {
         let tags = bookmark.collections.filter({ $0.collectionType == .tag })

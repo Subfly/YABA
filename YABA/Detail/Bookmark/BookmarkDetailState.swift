@@ -18,7 +18,7 @@ internal class BookmarkDetailState {
     var folder: YabaCollection?
     var tags: [YabaCollection]
     
-    init(with bookmark: Bookmark?) {
+    init(with bookmark: YabaBookmark?) {
         let newFolder = bookmark?.collections.first(where: { $0.collectionType == .folder })
         folder = newFolder
         tags = bookmark?.collections.filter { $0.collectionType == .tag } ?? []
@@ -26,7 +26,7 @@ internal class BookmarkDetailState {
     }
     
     // Only for !iOS devices
-    func refresh(with newBookmarkData: Bookmark?) {
+    func refresh(with newBookmarkData: YabaBookmark?) {
         let newFolder = newBookmarkData?.collections.first(where: { $0.collectionType == .folder })
         let newTags = newBookmarkData?.collections.filter { $0.collectionType == .tag } ?? []
         let newColor = newFolder?.color.getUIColor() ?? .accentColor
@@ -46,7 +46,7 @@ internal class BookmarkDetailState {
         }
     }
     
-    func onClickOpenLink(using bookmark: Bookmark?) {
+    func onClickOpenLink(using bookmark: YabaBookmark?) {
         if let link = bookmark?.link,
            let url = URL(string: link) {
             if UIApplication.shared.canOpenURL(url) {

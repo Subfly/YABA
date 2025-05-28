@@ -42,7 +42,7 @@ extension YabaCodableCollection {
     }
 }
 
-extension Bookmark {
+extension YabaBookmark {
     func mapToCodable() -> YabaCodableBookmark {
         return .init(
             bookmarkId: self.bookmarkId,
@@ -61,7 +61,7 @@ extension Bookmark {
 }
 
 extension YabaCodableBookmark {
-    func mapToModel() -> Bookmark {
+    func mapToModel() -> YabaBookmark {
         let type = BookmarkType(rawValue: self.type ?? 1) ?? .none
         let currentDate = Date.now.ISO8601Format()
         
@@ -73,8 +73,8 @@ extension YabaCodableBookmark {
             domain: self.domain ?? "",
             createdAt: ISO8601DateFormatter().date(from: self.createdAt ?? currentDate) ?? .now,
             editedAt: ISO8601DateFormatter().date(from: self.editedAt ?? currentDate) ?? .now,
-            imageData: nil,
-            iconData: nil,
+            imageDataHolder: nil,
+            iconDataHolder: nil,
             imageUrl: self.imageUrl,
             iconUrl: self.iconUrl,
             videoUrl: self.videoUrl,

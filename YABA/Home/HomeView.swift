@@ -25,7 +25,7 @@ struct HomeView: View {
     private var homeState: HomeState = .init()
     
     let onNavigationCallbackForCollection: (YabaCollection) -> Void
-    let onNavigationCallbackForBookmark: (Bookmark) -> Void
+    let onNavigationCallbackForBookmark: (YabaBookmark) -> Void
     let onNavigationCallbackForSearch: () -> Void
     let onNavigationCallbackForSettings: () -> Void
     
@@ -95,10 +95,20 @@ struct HomeView: View {
                 onExitRequested: {}
             )
         }
+        #if !targetEnvironment(macCatalyst)
+        .fullScreenCover(isPresented: $homeState.shouldShowSyncSheet) {
+            SyncView().interactiveDismissDisabled()
+        }
+        #else
+        .sheet(isPresented: $homeState.shouldShowSyncSheet) {
+            SyncView().interactiveDismissDisabled()
+        }
+        #endif
         .navigationTitle("YABA")
         .toolbar {
             ToolbarIcons(
                 onNavigationCallbackForSearch: onNavigationCallbackForSearch,
+                onNavigationCallbackForSync: { homeState.shouldShowSyncSheet = true },
                 onNavigationCallbackForSettings: onNavigationCallbackForSettings
             )
         }
@@ -118,13 +128,13 @@ private struct SequentialView: View {
     private var collections: [YabaCollection]
     
     let onNavigationCallbackForCollection: (YabaCollection) -> Void
-    let onNavigationCallbackForBookmark: (Bookmark) -> Void
+    let onNavigationCallbackForBookmark: (YabaBookmark) -> Void
     
     init(
         preferredSorting: SortType,
         preferredOrder: SortOrderType,
         onNavigationCallbackForCollection: @escaping (YabaCollection) -> Void,
-        onNavigationCallbackForBookmark: @escaping (Bookmark) -> Void
+        onNavigationCallbackForBookmark: @escaping (YabaBookmark) -> Void
     ) {
         self.onNavigationCallbackForCollection = onNavigationCallbackForCollection
         self.onNavigationCallbackForBookmark = onNavigationCallbackForBookmark
@@ -171,11 +181,11 @@ private struct GridView: View {
     private var collections: [YabaCollection]
     
     let onNavigationCallbackForCollection: (YabaCollection) -> Void
-    let onNavigationCallbackForBookmark: (Bookmark) -> Void
+    let onNavigationCallbackForBookmark: (YabaBookmark) -> Void
     
     init(
         onNavigationCallbackForCollection: @escaping (YabaCollection) -> Void,
-        onNavigationCallbackForBookmark: @escaping (Bookmark) -> Void
+        onNavigationCallbackForBookmark: @escaping (YabaBookmark) -> Void
     ) {
         self.onNavigationCallbackForCollection = onNavigationCallbackForCollection
         self.onNavigationCallbackForBookmark = onNavigationCallbackForBookmark
@@ -224,6 +234,7 @@ private struct GridView: View {
 
 private struct ToolbarIcons: View {
     let onNavigationCallbackForSearch: () -> Void
+    let onNavigationCallbackForSync: () -> Void
     let onNavigationCallbackForSettings: () -> Void
     
     var body: some View {
@@ -232,6 +243,10 @@ private struct ToolbarIcons: View {
             MacOSHoverableToolbarIcon(
                 bundleKey: "search-01",
                 onPressed: onNavigationCallbackForSearch
+            )
+            MacOSHoverableToolbarIcon(
+                bundleKey: "laptop-phone-sync",
+                onPressed: onNavigationCallbackForSync
             )
             Menu {
                 ContentAppearancePicker()
@@ -262,6 +277,17 @@ private struct ToolbarIcons: View {
             Menu {
                 ContentAppearancePicker()
                 SortingPicker()
+                Divider()
+                Button {
+                    onNavigationCallbackForSync()
+                } label: {
+                    Label {
+                        Text("Synchronize Label")
+                    } icon: {
+                        YabaIconView(bundleKey: "laptop-phone-sync")
+                    }
+                }
+                Divider()
                 Button {
                     onNavigationCallbackForSettings()
                 } label: {
@@ -287,7 +313,7 @@ private struct ToolbarIcons: View {
         onNavigationCallbackForSettings: {}
     )
     .modelContainer(
-        for: [YabaCollection.self, Bookmark.self],
+        for: [YabaCollection.self, YabaBookmark.self],
         inMemory: true,
     )
 }

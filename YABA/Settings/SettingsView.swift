@@ -39,20 +39,14 @@ struct SettingsView: View {
                 #else
                 content
                     .toolbar {
-                        if UIDevice.current.userInterfaceIdiom == .pad {
-                            ToolbarItem(placement: .confirmationAction) {
-                                Button {
-                                    dismiss()
-                                } label: {
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button {
+                                dismiss()
+                            } label: {
+                                if UIDevice.current.userInterfaceIdiom == .pad {
                                     Text("Done")
-                                }
-                            }
-                        } else {
-                            ToolbarItem(placement: .navigation) {
-                                Button {
-                                    dismiss()
-                                } label: {
-                                    YabaIconView(bundleKey: "arrow-left-01")
+                                } else {
+                                    YabaIconView(bundleKey: "cancel-01")
                                 }
                             }
                         }

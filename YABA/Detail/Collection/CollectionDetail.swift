@@ -10,7 +10,7 @@ import SwiftData
 
 struct MobileCollectionDetail: View {
     let collection: YabaCollection?
-    let onNavigationCallback: (Bookmark) -> Void
+    let onNavigationCallback: (YabaBookmark) -> Void
     
     var body: some View {
         CollectionDetail(
@@ -24,7 +24,7 @@ struct GeneralCollectionDetail: View {
     @Environment(\.appState)
     private var appState
     
-    let onNavigationCallback: (Bookmark) -> Void
+    let onNavigationCallback: (YabaBookmark) -> Void
     
     var body: some View {
         CollectionDetail(
@@ -51,7 +51,7 @@ private struct CollectionDetail: View {
     private var state: CollectionDetailState = .init()
     
     let collection: YabaCollection?
-    let onNavigationCallback: (Bookmark) -> Void
+    let onNavigationCallback: (YabaBookmark) -> Void
     
     var body: some View {
         ZStack {
@@ -136,21 +136,21 @@ private struct SearchableContent: View {
     @AppStorage(Constants.preferredContentAppearanceKey)
     private var contentAppearance: ViewType = .list
     
-    private let bookmarks: [Bookmark]
+    private let bookmarks: [YabaBookmark]
     let searchQuery: String
-    let onNavigationCallback: (Bookmark) -> Void
+    let onNavigationCallback: (YabaBookmark) -> Void
     
     init(
         collection: YabaCollection,
         searchQuery: String,
         preferredSorting: SortType,
         preferredOrder: SortOrderType,
-        onNavigationCallback: @escaping (Bookmark) -> Void
+        onNavigationCallback: @escaping (YabaBookmark) -> Void
     ) {
         self.searchQuery = searchQuery
         self.onNavigationCallback = onNavigationCallback
         
-        let sortDescriptor: SortDescriptor<Bookmark> = switch preferredSorting {
+        let sortDescriptor: SortDescriptor<YabaBookmark> = switch preferredSorting {
         case .createdAt:
                 .init(\.createdAt, order: preferredOrder == .ascending ? .forward : .reverse)
         case .editedAt:
