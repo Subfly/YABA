@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		960631C02DEB2759004FB7A7 /* Vapor in Frameworks */ = {isa = PBXBuildFile; productRef = 960631BF2DEB2759004FB7A7 /* Vapor */; };
 		967B9A5B2DD8D68D00181AA1 /* YABAStatusMenuItem.app in Resources */ = {isa = PBXBuildFile; fileRef = 967B9A4B2DD8D3EF00181AA1 /* YABAStatusMenuItem.app */; platformFilter = maccatalyst; };
 		967B9A5F2DD8D6E400181AA1 /* YABAStatusMenuItem.app in Copy Menu Item */ = {isa = PBXBuildFile; fileRef = 967B9A4B2DD8D3EF00181AA1 /* YABAStatusMenuItem.app */; platformFilter = maccatalyst; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		96A8E0B82DB5CAFF00A47601 /* YABAShare.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 96A8E0AE2DB5CAFF00A47601 /* YABAShare.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -115,9 +116,10 @@
 				"Core/Model/YabaDataLog+Helpers.swift",
 				Core/Model/YabaExportableDocument.swift,
 				Core/Model/YabaIcon.swift,
-				Core/Model/YabaLinkPreview.swift,
 				Core/Model/YabaSchema.swift,
+				Core/Sync/Model/SyncQRCodePayload.swift,
 				Core/Unfurl/Unfurler.swift,
+				Core/Unfurl/YabaLinkPreview.swift,
 				Core/Util/CardViewTypeImageSizing.swift,
 				Core/Util/Constants.swift,
 				Core/Util/CreationType.swift,
@@ -166,9 +168,10 @@
 				"Core/Model/YabaDataLog+Helpers.swift",
 				Core/Model/YabaExportableDocument.swift,
 				Core/Model/YabaIcon.swift,
-				Core/Model/YabaLinkPreview.swift,
 				Core/Model/YabaSchema.swift,
+				Core/Sync/Model/SyncQRCodePayload.swift,
 				Core/Unfurl/Unfurler.swift,
+				Core/Unfurl/YabaLinkPreview.swift,
 				Core/Util/CardViewTypeImageSizing.swift,
 				Core/Util/Constants.swift,
 				Core/Util/CreationType.swift,
@@ -217,9 +220,10 @@
 				"Core/Model/YabaDataLog+Helpers.swift",
 				Core/Model/YabaExportableDocument.swift,
 				Core/Model/YabaIcon.swift,
-				Core/Model/YabaLinkPreview.swift,
 				Core/Model/YabaSchema.swift,
+				Core/Sync/Model/SyncQRCodePayload.swift,
 				Core/Unfurl/Unfurler.swift,
+				Core/Unfurl/YabaLinkPreview.swift,
 				Core/Util/CardViewTypeImageSizing.swift,
 				Core/Util/Constants.swift,
 				Core/Util/CreationType.swift,
@@ -283,6 +287,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				960631C02DEB2759004FB7A7 /* Vapor in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -381,6 +386,7 @@
 			);
 			name = YABA;
 			packageProductDependencies = (
+				960631BF2DEB2759004FB7A7 /* Vapor */,
 			);
 			productName = YABA;
 			productReference = 96A8DFC22DB2F5A500A47601 /* YABA.app */;
@@ -464,6 +470,7 @@
 			mainGroup = 96A8DFB92DB2F5A500A47601;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				960631BE2DEB2749004FB7A7 /* XCRemoteSwiftPackageReference "vapor" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 96A8DFC32DB2F5A500A47601 /* Products */;
@@ -1025,6 +1032,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		960631BE2DEB2749004FB7A7 /* XCRemoteSwiftPackageReference "vapor" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/vapor/vapor";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.115.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		960631BF2DEB2759004FB7A7 /* Vapor */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 960631BE2DEB2749004FB7A7 /* XCRemoteSwiftPackageReference "vapor" */;
+			productName = Vapor;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 96A8DFBA2DB2F5A500A47601 /* Project object */;
 }

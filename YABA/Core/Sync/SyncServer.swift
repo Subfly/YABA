@@ -2,60 +2,66 @@
 //  SyncServer.swift
 //  YABA
 //
-//  Created by Ali Taha on 26.05.2025.
+//  Created by Ali Taha on 31.05.2025.
 //
 
 import Foundation
-import UIKit
+import Vapor
 
-final class SyncServer: NSObject, NetServiceDelegate {
-    private var service: NetService?
+enum ServerError: Error {
+    case failedToStart
+    case failedToStop
+}
 
-    func startAdvertising() {
-        let serviceName = UIDevice.current.name.replacingOccurrences(of: " ", with: "-")
-        service = NetService(
-            domain: "local.",
-            type: "_yaba-sync._tcp.",
-            name: serviceName,
-            port: Int32(Constants.port)
-        )
-        service?.delegate = self
-        service?.publish()
-    }
-
-    func stopAdvertising() {
-        service?.stop()
-        service = nil
+final class SyncServer {
+    private var app: Application?
+    private var ip: String? = nil
+    
+    func setIp(_ ip: String) {
+        self.ip = ip
     }
     
-    func getLocalIPAddress() -> String? {
-        var address: String?
-
-        var ifaddr: UnsafeMutablePointer<ifaddrs>?
-        guard getifaddrs(&ifaddr) == 0 else { return nil }
-
-        defer { freeifaddrs(ifaddr) }
-
-        var ptr = ifaddr
-        while ptr != nil {
-            let interface = ptr!.pointee
-
-            let addrFamily = interface.ifa_addr.pointee.sa_family
-            if addrFamily == UInt8(AF_INET) { // IPv4
-                let name = String(cString: interface.ifa_name)
-                if name == "en0" || name == "en1" || name.contains("en") { // Wi-Fi or Ethernet
-                    var hostname = [CChar](repeating: 0, count: Int(NI_MAXHOST))
-                    getnameinfo(interface.ifa_addr, socklen_t(interface.ifa_addr.pointee.sa_len),
-                                &hostname, socklen_t(hostname.count),
-                                nil, socklen_t(0), NI_NUMERICHOST)
-                    address = String(cString: hostname)
-                    break
+    func startServer() async throws {
+        do {
+            app = try await .make(.production)
+            guard let app else { throw ServerError.failedToStart }
+            #if DEBUG
+            app.logger.logLevel = .debug
+            #endif
+            
+            app.http.server.configuration.address = .hostname(ip, port: Constants.port)
+            try await app.startup()
+            startListening()
+        } catch {
+            throw ServerError.failedToStart
+        }
+    }
+    
+    func stopServer() async throws {
+        do {
+            if app?.didShutdown == false {
+                try await app?.asyncShutdown()
+            }
+        } catch {
+            throw ServerError.failedToStop
+        }
+    }
+    
+    private func startListening() {
+        Task {
+            guard let app else { return }
+            app.webSocket("sync") { req, ws in
+                print("WebSocket connected")
+                
+                ws.onText { ws, text in
+                    print("Received text: \(text)")
+                    ws.send("Echo: \(text)")
+                }
+                
+                ws.onClose.whenComplete { result in
+                    print("WebSocket disconnected: \(result)")
                 }
             }
-
-            ptr = interface.ifa_next
         }
-
-        return address
     }
 }

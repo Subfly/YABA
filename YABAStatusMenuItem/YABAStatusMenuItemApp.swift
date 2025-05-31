@@ -96,7 +96,7 @@ struct YABAStatusMenuItemApp: App {
                         .fill(.ultraThinMaterial)
                 }
                 .modelContainer(
-                    for: [YabaBookmark.self, YabaCollection.self],
+                    for: [YabaBookmark.self, YabaCollection.self, YabaDataLog.self],
                     inMemory: false,
                     isAutosaveEnabled: false,
                     isUndoEnabled: false

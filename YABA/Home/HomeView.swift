@@ -95,6 +95,17 @@ struct HomeView: View {
                 onExitRequested: {}
             )
         }
+        /*
+        #if !targetEnvironment(macCatalyst)
+        .fullScreenCover(isPresented: $homeState.shouldShowSyncSheet) {
+            SyncView().interactiveDismissDisabled()
+        }
+        #else
+        .sheet(isPresented: $homeState.shouldShowSyncSheet) {
+            SyncView().interactiveDismissDisabled()
+        }
+        #endif
+         */
         .navigationTitle("YABA")
         .toolbar {
             ToolbarIcons(
@@ -235,10 +246,12 @@ private struct ToolbarIcons: View {
                 bundleKey: "search-01",
                 onPressed: onNavigationCallbackForSearch
             )
+            /*
             MacOSHoverableToolbarIcon(
                 bundleKey: "laptop-phone-sync",
                 onPressed: onNavigationCallbackForSync
             )
+             */
             Menu {
                 ContentAppearancePicker()
                 SortingPicker()
@@ -268,6 +281,7 @@ private struct ToolbarIcons: View {
             Menu {
                 ContentAppearancePicker()
                 SortingPicker()
+                /*
                 Divider()
                 Button {
                     onNavigationCallbackForSync()
@@ -278,6 +292,7 @@ private struct ToolbarIcons: View {
                         YabaIconView(bundleKey: "laptop-phone-sync")
                     }
                 }
+                 */
                 Divider()
                 Button {
                     onNavigationCallbackForSettings()

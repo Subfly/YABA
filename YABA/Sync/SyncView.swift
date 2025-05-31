@@ -11,13 +11,16 @@ struct SyncView: View {
     @Environment(\.dismiss)
     private var dismiss
     
+    @Environment(\.modelContext)
+    private var modelContext
+    
     @State
-    private var state: SyncState = .init()
+    private var state: SyncState?
     
     var body: some View {
         NavigationView {
             viewSwitcher
-                .animation(.smooth, value: state.isSyncing)
+                .animation(.smooth, value: state?.isSyncing == true)
                 .transition(.blurReplace)
                 .navigationTitle("Synchronize Label")
                 .toolbar {
@@ -31,71 +34,80 @@ struct SyncView: View {
                 }
         }
         .onDisappear {
-            state.disconnect()
+            state?.stopServer()
+        }
+        .onAppear {
+            state = .init(modelContext: modelContext)
         }
     }
     
     @ViewBuilder
     private var viewSwitcher: some View {
-        if state.isSyncing {
-            syncingContent
-        } else {
-            scanningContent
+        if let state {
+            if state.isSyncing {
+                syncingContent
+            } else {
+                scanningContent
+            }
         }
     }
     
     @ViewBuilder
     private var scanningContent: some View {
-        VStack {
-            // TODO: ADD TEXT TO INFORM SCAN
-            if state.isScanning {
-                QRScannerView { scannedText in
-                    state.isScanning = false
-                    state.handleScannedPayload(scannedText)
-                }
-                .frame(width: 300, height: 300)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-            } else if let qrCode = state.qrImage {
-                Image(uiImage: qrCode)
-                    .resizable()
-                    .interpolation(.none)
-                    .scaledToFit()
+        if let state {
+            VStack {
+                // TODO: ADD TEXT TO INFORM SCAN
+                switch state.mode {
+                case .client:
+                    QRScannerView { scannedText in
+                        state.handleScannedPayload(scannedText)
+                    }
                     .frame(width: 300, height: 300)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
-            } else {
-                ProgressView()
-                    .controlSize(.large)
-                    .frame(width: 300, height: 300)
-            }
-            
-            #if !targetEnvironment(macCatalyst)
-            Button {
-                state.checkCameraPermission { isGranted in
-                    if isGranted {
-                        withAnimation {
-                            state.isScanning.toggle()
-                        }
+                case .server:
+                    if let qrCode = state.qrImage {
+                        Image(uiImage: qrCode)
+                            .resizable()
+                            .interpolation(.none)
+                            .scaledToFit()
+                            .frame(width: 300, height: 300)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
                     } else {
-                        // TODO: Show Toast to open settings
+                        ProgressView()
+                            .controlSize(.large)
+                            .frame(width: 300, height: 300)
                     }
                 }
-            } label: {
-                Label {
-                    Text(
-                        state.isScanning
-                        ? LocalizedStringKey("Sync Show QR")
-                        : LocalizedStringKey("Sync Show Camera")
-                    )
-                } icon: {
-                    YabaIconView(
-                        bundleKey: state.isScanning
-                        ? "qr-code"
-                        : "camera-01"
-                    ).frame(width: 22, height: 22)
+                
+            #if !targetEnvironment(macCatalyst)
+                Button {
+                    state.checkCameraPermission { isGranted in
+                        if isGranted {
+                            withAnimation {
+                                state.changeMode()
+                            }
+                        } else {
+                            // TODO: Show Toast to open settings
+                        }
+                    }
+                } label: {
+                    Label {
+                        Text(
+                            state.mode == .client
+                            ? LocalizedStringKey("Sync Show QR")
+                            : LocalizedStringKey("Sync Show Camera")
+                        )
+                    } icon: {
+                        YabaIconView(
+                            bundleKey: state.mode == .client
+                            ? "qr-code"
+                            : "camera-01"
+                        ).frame(width: 22, height: 22)
+                    }
                 }
-            }
-            .padding(.top, 16)
+                .padding(.top, 16)
             #endif
+            }
         }
     }
     

@@ -2,51 +2,62 @@
 //  SyncClient.swift
 //  YABA
 //
-//  Created by Ali Taha on 26.05.2025.
+//  Created by Ali Taha on 31.05.2025.
 //
 
 import Foundation
 
-enum SyncError: Error {
-    case couldNotConnect
-}
-
-final class SyncClient {
-    private var webSocket: URLSessionWebSocketTask?
-
-    func connect(to payload: SyncQRCodePayload) throws {
-        guard let url = URL(string: "ws://\(payload.ipAddress):\(payload.port)/sync") else {
-            throw SyncError.couldNotConnect
-        }
-        let session = URLSession(configuration: .default)
-        webSocket = session.webSocketTask(with: url)
-        webSocket?.resume()
-
-        listen()
+final class SyncClient: NSObject {
+    private var webSocketTask: URLSessionWebSocketTask?
+    private var url: URL?
+    private var session: URLSession?
+    
+    func setUp(with ip: String) {
+        self.url = URL(string: "ws://\(ip):\(Constants.port)/sync")!
+        self.session = URLSession(configuration: .default)
     }
-
-    private func listen() {
-        webSocket?.receive { [weak self] result in
-            switch result {
-            case .failure(let error):
-                print("WebSocket failed: \(error)")
-            case .success(let message):
-                // Handle sync message
-                print("Received: \(message)")
-                self?.listen()
-            }
-        }
+    
+    func connect() {
+        guard let url, let session else { return }
+        webSocketTask = session.webSocketTask(with: url)
+        webSocketTask?.resume()
+        
+        print("Connecting to \(url)...")
+        receiveMessages()
     }
-
-    func send(data: Data) {
-        webSocket?.send(.data(data)) { error in
+    
+    func send(_ message: String) {
+        let message = URLSessionWebSocketTask.Message.string(message)
+        webSocketTask?.send(message) { error in
             if let error = error {
-                print("Send error: \(error)")
+                print("WebSocket send error: \(error)")
+            } else {
+                print("Message sent: \(message)")
             }
         }
     }
-
+    
+    private func receiveMessages() {
+        webSocketTask?.receive { [weak self] result in
+            switch result {
+            case .success(let message):
+                switch message {
+                case .string(let text):
+                    print("Received text: \(text)")
+                case .data(let data):
+                    print("Received binary data: \(data)")
+                @unknown default:
+                    print("Received unknown message")
+                }
+                self?.receiveMessages()
+            case .failure(let error):
+                print("WebSocket receive error: \(error)")
+            }
+        }
+    }
+    
     func disconnect() {
-        webSocket?.cancel(with: .goingAway, reason: nil)
+        webSocketTask?.cancel(with: .goingAway, reason: nil)
+        print("Disconnected")
     }
 }

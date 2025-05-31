@@ -33,7 +33,18 @@ class YabaDataLogUtil {
         new: [Field: Any?]
     ) -> [FieldChange] {
         var changes: [FieldChange] = []
+        
+        // New
+        if old.isEmpty {
+            for key in new.keys {
+                let newVal = new[key] ?? nil
+                let stringValue = stringify(newVal)
+                changes.append(FieldChange(key: key, newValue: stringValue))
+            }
+            return changes
+        }
 
+        // Edit
         for key in Set(old.keys).union(new.keys) {
             let oldVal = old[key] ?? nil
             let newVal = new[key] ?? nil

@@ -42,5 +42,8 @@ internal struct EventsLogView: View {
                 }
             }
         }
+        .onAppear {
+            print(logs)
+        }
     }
 }
