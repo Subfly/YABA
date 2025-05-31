@@ -10,7 +10,7 @@ import SwiftUI
 import SwiftData
 
 internal enum SettingsNavigationDestination: Hashable {
-    case mapper
+    case mapper, logs
 }
 
 @MainActor
@@ -188,6 +188,12 @@ internal class SettingsState {
             onFinishCallback: onFinishCallback
         )
     }
+    
+    #if DEBUG
+    func onNavigateToLogs() {
+        settingsNavPath.append(.logs)
+    }
+    #endif
     
     private func handleError(error: Error) {
         if let dataError = error as? DataError {

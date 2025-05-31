@@ -52,6 +52,14 @@ struct BookmarkItemView: View {
                 AlertActionItems(
                     state: $itemState,
                     onDeleteCallback: {
+                        let entry = YabaDataLog(
+                            entityId: bookmark.bookmarkId,
+                            entityType: .bookmark,
+                            actionType: .deleted,
+                            fieldChanges: nil,
+                        )
+                        modelContext.insert(entry)
+                        
                         modelContext.delete(bookmark)
                         try? modelContext.save()
                         if appState.selectedBookmark?.id == bookmark.id {
@@ -545,18 +553,4 @@ private struct AlertActionItems: View {
             Text("Delete")
         }
     }
-}
-
-#Preview {
-    BookmarkItemView(
-        bookmark: .empty(),
-        onNavigationCallback: { _ in }
-    ).tint(.indigo)
-}
-
-#Preview {
-    BookmarkItemView(
-        bookmark: .empty(),
-        onNavigationCallback: { _ in }
-    ).tint(.orange)
 }

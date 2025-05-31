@@ -199,14 +199,59 @@ struct CollectionCreationContent: View {
     func onDone() {
         withAnimation {
             if let collectionToEdit {
+                let changes = YabaDataLogUtil.generateFieldChanges(
+                    old: [
+                        .label: collectionToEdit.label,
+                        .icon: collectionToEdit.icon,
+                        .color: collectionToEdit.color.rawValue
+                    ],
+                    new: [
+                        .label: state.collectionName,
+                        .icon: state.selectedIconName,
+                        .color: state.selectedColor.rawValue
+                    ]
+                )
+                
+                if !changes.isEmpty {
+                    let entry = YabaDataLog(
+                        entityId: collectionToEdit.collectionId,
+                        entityType: .collection,
+                        actionType: .updated,
+                        fieldChanges: changes,
+                    )
+                    modelContext.insert(entry)
+                }
+                
                 collectionToEdit.label = state.collectionName
                 collectionToEdit.icon = state.selectedIconName
                 collectionToEdit.color = state.selectedColor
                 collectionToEdit.editedAt = .now
+                
                 onEditCallback(collectionToEdit)
             } else {
+                let newCollectionId = UUID().uuidString
+                let changes = YabaDataLogUtil.generateFieldChanges(
+                    old: [:],
+                    new: [
+                        .label: state.collectionName,
+                        .icon: state.selectedIconName,
+                        .color: state.selectedColor.rawValue,
+                        .type: collectionType.rawValue
+                    ]
+                )
+                
+                if !changes.isEmpty {
+                    let entry = YabaDataLog(
+                        entityId: newCollectionId,
+                        entityType: .collection,
+                        actionType: .created,
+                        fieldChanges: changes,
+                    )
+                    modelContext.insert(entry)
+                }
+                
                 let collection = YabaCollection(
-                    collectionId: UUID().uuidString,
+                    collectionId: newCollectionId,
                     label: state.collectionName,
                     icon: state.selectedIconName,
                     createdAt: .now,

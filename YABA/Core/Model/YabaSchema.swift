@@ -10,6 +10,7 @@ import SwiftData
 
 typealias YabaBookmark = YabaSchemaV1.Bookmark
 typealias YabaCollection = YabaSchemaV1.Collection
+typealias YabaDataLog = YabaSchemaV1.DataLog
 
 enum YabaSchemaV1: VersionedSchema {
     static var versionIdentifier: Schema.Version = .init(1, 0, 0)
@@ -109,6 +110,42 @@ enum YabaSchemaV1: VersionedSchema {
             self.icon = icon
             self.color = color
             self.type = type.rawValue
+        }
+    }
+    
+    @Model
+    final class DataLog {
+        var logId: String
+        var entityId: String
+        var entityType: EntityType
+        var actionType: ActionType
+        var timestamp: Date
+
+        var fieldChangesJSON: String?
+        var fieldChanges: [FieldChange]? {
+            guard let fieldChangesJSON,
+                  let data = fieldChangesJSON.data(using: .utf8)
+            else { return nil }
+
+            return try? JSONDecoder().decode([FieldChange].self, from: data)
+        }
+
+        init(
+            logId: String = UUID().uuidString,
+            entityId: String,
+            entityType: EntityType,
+            actionType: ActionType,
+            timestamp: Date = .now,
+            fieldChanges: [FieldChange]? = nil
+        ) {
+            self.logId = logId
+            self.entityId = entityId
+            self.entityType = entityType
+            self.actionType = actionType
+            self.timestamp = timestamp
+            self.fieldChangesJSON = fieldChanges.flatMap {
+                try? String(data: JSONEncoder().encode($0), encoding: .utf8)
+            }
         }
     }
     

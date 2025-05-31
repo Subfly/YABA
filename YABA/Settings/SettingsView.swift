@@ -57,6 +57,8 @@ struct SettingsView: View {
                 switch destination {
                     case .mapper: MapperView(settingsState: $settingsState)
                         .navigationBarBackButtonHidden()
+                    case .logs: EventsLogView()
+                        .navigationBarBackButtonHidden()
                 }
             }
         }
@@ -139,6 +141,26 @@ struct SettingsView: View {
             importButton
             exportButton
             deleteAllButton
+            #if DEBUG
+            HStack {
+                Label {
+                    Text("Settings Event Logs Label")
+                } icon: {
+                    YabaIconView(bundleKey: "calendar-03")
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                }
+                Spacer()
+                YabaIconView(bundleKey: "arrow-right-01")
+                    .scaledToFit()
+                    .frame(width: 24, height: 24)
+                    .foregroundStyle(.tertiary)
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
+                settingsState.onNavigateToLogs()
+            }
+            #endif
         } header: {
             Label {
                 Text("Settings Data Title")

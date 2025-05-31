@@ -33,7 +33,7 @@ internal class BookmarkCreationState {
     var description: String = ""
     var iconURL: String? = nil
     var imageURL: String? = nil
-    var videoUrl: String? = nil
+    var videoURL: String? = nil
     var imageData: Data? = nil
     var iconData: Data? = nil
     
@@ -78,7 +78,7 @@ internal class BookmarkCreationState {
                 }
                 self.iconURL = fetched.iconURL
                 self.imageURL = fetched.imageURL
-                self.videoUrl = fetched.videoURL
+                self.videoURL = fetched.videoURL
                 self.iconData = fetched.iconData
                 self.imageData = fetched.imageData
             }
@@ -137,13 +137,38 @@ internal class BookmarkCreationState {
         
         withAnimation {
             if let bookmarkToEdit {
+                // Logging
+                var changes = YabaDataLogUtil.generateFieldChanges(
+                    old: [
+                        .label: bookmarkToEdit.label,
+                        .link: bookmarkToEdit.link,
+                        .domain: bookmarkToEdit.domain,
+                        .description: bookmarkToEdit.bookmarkDescription,
+                        .image: bookmarkToEdit.imageUrl,
+                        .icon: bookmarkToEdit.iconUrl,
+                        .video: bookmarkToEdit.videoUrl,
+                        .type: bookmarkToEdit.type
+                    ],
+                    new: [
+                        .label: label,
+                        .link: url,
+                        .domain: host,
+                        .description: description,
+                        .image: imageURL,
+                        .icon: iconURL,
+                        .video: videoURL,
+                        .type: selectedType.rawValue
+                    ]
+                )
+                
+                // Real changes
                 bookmarkToEdit.label = label
                 bookmarkToEdit.link = url
                 bookmarkToEdit.domain = host
                 bookmarkToEdit.bookmarkDescription = description
                 bookmarkToEdit.imageUrl = imageURL
                 bookmarkToEdit.iconUrl = iconURL
-                bookmarkToEdit.videoUrl = videoUrl
+                bookmarkToEdit.videoUrl = videoURL
                 bookmarkToEdit.type = selectedType.rawValue
                 bookmarkToEdit.iconDataHolder = .init(data: iconData)
                 bookmarkToEdit.imageDataHolder = .init(data: imageData)
@@ -163,13 +188,61 @@ internal class BookmarkCreationState {
                 // Tags changing
                 bookmarkToEdit.collections.removeAll { $0.collectionType == .tag }
                 bookmarkToEdit.collections.append(contentsOf: selectedTags)
+                
+                let collectionIds = bookmarkToEdit.collections.map { $0.collectionId }
+                if let data = try? JSONEncoder().encode(collectionIds),
+                   let json = String(data: data, encoding: .utf8){
+                    changes.append(.init(key: .collections, newValue: json))
+                }
+                
+                // Save the log
+                if !changes.isEmpty {
+                    let entry = YabaDataLog(
+                        entityId: bookmarkToEdit.bookmarkId,
+                        entityType: .bookmark,
+                        actionType: .updated,
+                        fieldChanges: changes,
+                    )
+                    modelContext.insert(entry)
+                }
             } else {
+                let newBookmarkId = UUID().uuidString
+                var changes = YabaDataLogUtil.generateFieldChanges(
+                    old: [:],
+                    new: [
+                        .label: label,
+                        .link: url,
+                        .domain: host,
+                        .description: description,
+                        .image: imageURL,
+                        .icon: iconURL,
+                        .video: videoURL,
+                        .type: selectedType.rawValue
+                    ]
+                )
+                
                 var collections = selectedTags
                 collections.append(selectedFolder)
                 
+                let collectionIds = collections.map { $0.collectionId }
+                if let data = try? JSONEncoder().encode(collectionIds),
+                   let json = String(data: data, encoding: .utf8){
+                    changes.append(.init(key: .collections, newValue: json))
+                }
+
+                if !changes.isEmpty {
+                    let entry = YabaDataLog(
+                        entityId: newBookmarkId,
+                        entityType: .bookmark,
+                        actionType: .created,
+                        fieldChanges: changes,
+                    )
+                    modelContext.insert(entry)
+                }
+                
                 let creationTime: Date = .now
                 let newBookmark = YabaBookmark(
-                    bookmarkId: UUID().uuidString,
+                    bookmarkId: newBookmarkId,
                     link: url,
                     label: label,
                     bookmarkDescription: description,
@@ -180,7 +253,7 @@ internal class BookmarkCreationState {
                     iconDataHolder: .init(data: iconData),
                     imageUrl: imageURL,
                     iconUrl: iconURL,
-                    videoUrl: videoUrl,
+                    videoUrl: videoURL,
                     type: selectedType,
                     collections: collections
                 )
@@ -246,7 +319,7 @@ internal class BookmarkCreationState {
             host = bookmarkToEdit.domain
             imageData = bookmarkToEdit.imageDataHolder?.data
             iconData = bookmarkToEdit.iconDataHolder?.data
-            videoUrl = bookmarkToEdit.videoUrl
+            videoURL = bookmarkToEdit.videoUrl
             selectedType = bookmarkToEdit.bookmarkType
             selectedFolder = bookmarkToEdit.collections.first(where: { $0.collectionType == .folder })
             selectedTags = bookmarkToEdit.collections.filter { $0.collectionType == .tag }

@@ -1792,6 +1792,18 @@
         }
       }
     },
+    "Settings Event Logs Label" : {
+      "comment" : "Title of event logs",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Event Logs"
+          }
+        }
+      }
+    },
     "Settings Export Title" : {
       "comment" : "Title of export in settings",
       "extractionState" : "manual",

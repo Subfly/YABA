@@ -95,15 +95,6 @@ struct HomeView: View {
                 onExitRequested: {}
             )
         }
-        #if !targetEnvironment(macCatalyst)
-        .fullScreenCover(isPresented: $homeState.shouldShowSyncSheet) {
-            SyncView().interactiveDismissDisabled()
-        }
-        #else
-        .sheet(isPresented: $homeState.shouldShowSyncSheet) {
-            SyncView().interactiveDismissDisabled()
-        }
-        #endif
         .navigationTitle("YABA")
         .toolbar {
             ToolbarIcons(

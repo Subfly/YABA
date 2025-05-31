@@ -277,6 +277,13 @@ class DataManager {
         onFinishCallback: @escaping () -> Void
     ) {
         Task { @MainActor in
+            let event = YabaDataLog(
+                entityId: UUID().uuidString,
+                entityType: .bookmark,
+                actionType: .deletedAll
+            )
+            modelContext.insert(event)
+            
             try? modelContext.delete(model: YabaBookmark.self)
             try? await Task.sleep(for: .seconds(1))
             
