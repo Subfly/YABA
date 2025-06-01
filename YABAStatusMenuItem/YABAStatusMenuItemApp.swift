@@ -70,7 +70,7 @@ struct YABAStatusMenuItemApp: App {
     }
     
     private func getLabelIcon() -> NSImage {
-        let image: NSImage = NSImage(resource: .bookmarkAdd02)
+        let image: NSImage = NSImage(resource: .bookmark02)
         
         let ratio = image.size.height / image.size.width
         image.size.height = 18

@@ -194,13 +194,6 @@
 			);
 			target = 96EB67122DD94580009EB9EC /* YABAShareMac */;
 		};
-		96EB67252DD94616009EB9EC /* Exceptions for "YABAShareMac" folder in "YABA" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				icon.icns,
-			);
-			target = 96A8DFC12DB2F5A500A47601 /* YABA */;
-		};
 		96EB67272DD94A1D009EB9EC /* Exceptions for "YABA" folder in "YABAShareMac" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -270,7 +263,6 @@
 		96EB67142DD94580009EB9EC /* YABAShareMac */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				96EB67252DD94616009EB9EC /* Exceptions for "YABAShareMac" folder in "YABA" target */,
 				96EB671E2DD94580009EB9EC /* Exceptions for "YABAShareMac" folder in "YABAShareMac" target */,
 			);
 			path = YABAShareMac;
@@ -937,7 +929,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = YABAShareMac/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = YABAShareMac;
+				INFOPLIST_KEY_CFBundleDisplayName = YABA;
 				INFOPLIST_KEY_NSHumanReadableCopyright = YABA;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -967,7 +959,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = YABAShareMac/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = YABAShareMac;
+				INFOPLIST_KEY_CFBundleDisplayName = YABA;
 				INFOPLIST_KEY_NSHumanReadableCopyright = YABA;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

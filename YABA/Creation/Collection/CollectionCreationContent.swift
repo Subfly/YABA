@@ -151,7 +151,7 @@ struct CollectionCreationContent: View {
             text: $state.collectionName,
             prompt: Text(LocalizedStringKey(textFieldPlaceholder))
         ) {
-            Text("Create Collection")
+            Text("")
         }
         .padding(.horizontal)
     }

@@ -12,16 +12,17 @@
             "value" : "%1$@ (%2$@)"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "%lld" : {
       "shouldTranslate" : false
     },
     "• %@:" : {
-
+      "shouldTranslate" : false
     },
     "+%lld" : {
-
+      "shouldTranslate" : false
     },
     "Bookmark Description Placeholder" : {
       "comment" : "Placeholder to show when bookmark description is empty",
@@ -355,7 +356,7 @@
       }
     },
     "Changes:" : {
-
+      "shouldTranslate" : false
     },
     "Collection" : {
       "comment" : "Collection",
@@ -536,9 +537,6 @@
           }
         }
       }
-    },
-    "Create Collection" : {
-
     },
     "Create Folder" : {
       "comment" : "Label to show for creating folders in plus menu",
@@ -1029,6 +1027,9 @@
           }
         }
       }
+    },
+    "Hello, World!" : {
+
     },
     "Import" : {
       "comment" : "Label of import action in mapping sheet",
@@ -2202,7 +2203,8 @@
             "value" : "YABA"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "YABA Description" : {
       "comment" : "Description of the app name",
@@ -2214,7 +2216,8 @@
             "value" : "Yet Another Bookmarks App"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     }
   },
   "version" : "1.0"
