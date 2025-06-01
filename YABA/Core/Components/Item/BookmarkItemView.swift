@@ -52,16 +52,14 @@ struct BookmarkItemView: View {
                 AlertActionItems(
                     state: $itemState,
                     onDeleteCallback: {
-                        let entry = YabaDataLog(
-                            entityId: bookmark.bookmarkId,
-                            entityType: .bookmark,
-                            actionType: .deleted,
-                            fieldChanges: nil,
+                        try? YabaDataLogger.shared.logBookmarkDelete(
+                            id: bookmark.bookmarkId,
+                            shouldSave: false
                         )
-                        modelContext.insert(entry)
                         
                         modelContext.delete(bookmark)
                         try? modelContext.save()
+                        
                         if appState.selectedBookmark?.id == bookmark.id {
                             appState.selectedBookmark = nil
                         }

@@ -199,59 +199,25 @@ struct CollectionCreationContent: View {
     func onDone() {
         withAnimation {
             if let collectionToEdit {
-                let changes = YabaDataLogUtil.generateFieldChanges(
-                    old: [
-                        .label: collectionToEdit.label,
-                        .icon: collectionToEdit.icon,
-                        .color: collectionToEdit.color.rawValue
-                    ],
-                    new: [
-                        .label: state.collectionName,
-                        .icon: state.selectedIconName,
-                        .color: state.selectedColor.rawValue
-                    ]
-                )
-                
-                if !changes.isEmpty {
-                    let entry = YabaDataLog(
-                        entityId: collectionToEdit.collectionId,
-                        entityType: .collection,
-                        actionType: .updated,
-                        fieldChanges: changes,
-                    )
-                    modelContext.insert(entry)
-                }
+                let oldCollection = collectionToEdit
                 
                 collectionToEdit.label = state.collectionName
                 collectionToEdit.icon = state.selectedIconName
                 collectionToEdit.color = state.selectedColor
                 collectionToEdit.editedAt = .now
                 
-                onEditCallback(collectionToEdit)
-            } else {
-                let newCollectionId = UUID().uuidString
-                let changes = YabaDataLogUtil.generateFieldChanges(
-                    old: [:],
-                    new: [
-                        .label: state.collectionName,
-                        .icon: state.selectedIconName,
-                        .color: state.selectedColor.rawValue,
-                        .type: collectionType.rawValue
-                    ]
+                let newCollection = collectionToEdit
+                
+                try? YabaDataLogger.shared.logCollectionChange(
+                    old: oldCollection,
+                    new: newCollection,
+                    shouldSave: false
                 )
                 
-                if !changes.isEmpty {
-                    let entry = YabaDataLog(
-                        entityId: newCollectionId,
-                        entityType: .collection,
-                        actionType: .created,
-                        fieldChanges: changes,
-                    )
-                    modelContext.insert(entry)
-                }
-                
+                onEditCallback(collectionToEdit)
+            } else {
                 let collection = YabaCollection(
-                    collectionId: newCollectionId,
+                    collectionId: UUID().uuidString,
                     label: state.collectionName,
                     icon: state.selectedIconName,
                     createdAt: .now,
@@ -259,6 +225,13 @@ struct CollectionCreationContent: View {
                     color: state.selectedColor,
                     type: collectionType
                 )
+                
+                try? YabaDataLogger.shared.logCollectionChange(
+                    old: nil,
+                    new: collection,
+                    shouldSave: false
+                )
+                
                 modelContext.insert(collection)
             }
             try? modelContext.save()

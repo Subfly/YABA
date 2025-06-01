@@ -29,7 +29,7 @@ struct YABAApp: App {
                     for: [YabaBookmark.self, YabaCollection.self, YabaDataLog.self],
                     inMemory: false,
                     isAutosaveEnabled: false,
-                    isUndoEnabled: false
+                    isUndoEnabled: false,
                 )
                 .environment(toastManager)
                 .environment(\.appState, appState)

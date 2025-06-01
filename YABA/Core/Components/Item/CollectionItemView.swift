@@ -81,13 +81,10 @@ struct CollectionItemView: View {
             AlertActionItems(
                 state: $itemState,
                 onDeleteCallback: {
-                    let entry = YabaDataLog(
-                        entityId: collection.collectionId,
-                        entityType: .collection,
-                        actionType: .deleted,
-                        fieldChanges: nil,
+                    try? YabaDataLogger.shared.logCollectionDelete(
+                        id: collection.collectionId,
+                        shouldSave: false
                     )
-                    modelContext.insert(entry)
                     
                     if collection.collectionType == .folder {
                         collection.bookmarks.forEach { bookmark in

@@ -168,6 +168,7 @@ private struct SequentialView: View {
                 collections: collections.filter { $0.collectionType == .folder },
                 onNavigationCallback: onNavigationCallbackForCollection
             )
+            Spacer().frame(height: 0).listRowBackground(Color.clear)
         }
     }
 }

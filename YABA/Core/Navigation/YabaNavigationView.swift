@@ -11,8 +11,14 @@ struct YabaNavigationView: View {
     @AppStorage(Constants.hasPassedOnboardingKey)
     private var hasPassedOnboarding: Bool = false
     
+    @Environment(\.modelContext)
+    private var modelContext
+    
     var body: some View {
-        return navigationSwitcher
+        navigationSwitcher
+            .onAppear {
+                YabaDataLogger.shared.setContext(modelContext)
+            }
     }
     
     @ViewBuilder

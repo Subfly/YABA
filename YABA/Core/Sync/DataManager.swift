@@ -48,8 +48,19 @@ class DataManager {
         if let collections = content.collections {
             collections.forEach { collection in
                 let collectionModel = collection.mapToModel()
+                try? YabaDataLogger.shared.logCollectionChange(
+                    old: nil,
+                    new: collectionModel,
+                    shouldSave: false
+                )
+                
                 collection.bookmarks.forEach { bookmarkId in
                     if let bookmarkModel = mappedBookmarks[bookmarkId] {
+                        try? YabaDataLogger.shared.logBookmarkChange(
+                            old: nil,
+                            new: bookmarkModel,
+                            shouldSave: false
+                        )
                         collectionModel.bookmarks.append(bookmarkModel)
                     }
                 }
@@ -68,7 +79,18 @@ class DataManager {
                 type: .folder
             )
             
+            try? YabaDataLogger.shared.logCollectionChange(
+                old: nil,
+                new: dummyFolder,
+                shouldSave: false
+            )
+            
             mappedBookmarks.values.forEach { bookmark in
+                try? YabaDataLogger.shared.logBookmarkChange(
+                    old: nil,
+                    new: bookmark,
+                    shouldSave: false
+                )
                 dummyFolder.bookmarks.append(bookmark)
             }
             
@@ -107,6 +129,12 @@ class DataManager {
             type: .folder
         )
         
+        try? YabaDataLogger.shared.logCollectionChange(
+            old: nil,
+            new: dummyFolder,
+            shouldSave: false
+        )
+        
         let bookmarkRows = rows.dropFirst()
         for row in bookmarkRows {
             let columns = parseCSVRow(row)
@@ -124,9 +152,15 @@ class DataManager {
                 iconUrl: columns[8],
                 videoUrl: columns[9],
                 type: Int(columns[10]) ?? 1
+            ).mapToModel()
+            
+            try? YabaDataLogger.shared.logBookmarkChange(
+                old: nil,
+                new: bookmark,
+                shouldSave: false
             )
             
-            dummyFolder.bookmarks.append(bookmark.mapToModel())
+            dummyFolder.bookmarks.append(bookmark)
         }
         
         modelContext.insert(dummyFolder)
@@ -166,6 +200,12 @@ class DataManager {
             editedAt: now,
             color: .none,
             type: .folder
+        )
+        
+        try? YabaDataLogger.shared.logCollectionChange(
+            old: nil,
+            new: dummyFolder,
+            shouldSave: false
         )
 
         for row in bookmarkRows {
@@ -215,9 +255,15 @@ class DataManager {
                 iconUrl: nil,
                 videoUrl: nil,
                 type: 1
+            ).mapToModel()
+            
+            try? YabaDataLogger.shared.logBookmarkChange(
+                old: nil,
+                new: bookmark,
+                shouldSave: false
             )
 
-            dummyFolder.bookmarks.append(bookmark.mapToModel())
+            dummyFolder.bookmarks.append(bookmark)
         }
 
         modelContext.insert(dummyFolder)
@@ -277,12 +323,7 @@ class DataManager {
         onFinishCallback: @escaping () -> Void
     ) {
         Task { @MainActor in
-            let event = YabaDataLog(
-                entityId: UUID().uuidString,
-                entityType: .bookmark,
-                actionType: .deletedAll
-            )
-            modelContext.insert(event)
+            try? YabaDataLogger.shared.logBulkDelete(shouldSave: false)
             
             try? modelContext.delete(model: YabaBookmark.self)
             try? await Task.sleep(for: .seconds(1))

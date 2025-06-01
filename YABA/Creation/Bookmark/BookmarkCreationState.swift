@@ -137,31 +137,8 @@ internal class BookmarkCreationState {
         
         withAnimation {
             if let bookmarkToEdit {
-                // Logging
-                var changes = YabaDataLogUtil.generateFieldChanges(
-                    old: [
-                        .label: bookmarkToEdit.label,
-                        .link: bookmarkToEdit.link,
-                        .domain: bookmarkToEdit.domain,
-                        .description: bookmarkToEdit.bookmarkDescription,
-                        .image: bookmarkToEdit.imageUrl,
-                        .icon: bookmarkToEdit.iconUrl,
-                        .video: bookmarkToEdit.videoUrl,
-                        .type: bookmarkToEdit.type
-                    ],
-                    new: [
-                        .label: label,
-                        .link: url,
-                        .domain: host,
-                        .description: description,
-                        .image: imageURL,
-                        .icon: iconURL,
-                        .video: videoURL,
-                        .type: selectedType.rawValue
-                    ]
-                )
+                let bookmarkBeforeChange = bookmarkToEdit
                 
-                // Real changes
                 bookmarkToEdit.label = label
                 bookmarkToEdit.link = url
                 bookmarkToEdit.domain = host
@@ -189,60 +166,28 @@ internal class BookmarkCreationState {
                 bookmarkToEdit.collections.removeAll { $0.collectionType == .tag }
                 bookmarkToEdit.collections.append(contentsOf: selectedTags)
                 
-                let collectionIds = bookmarkToEdit.collections.map { $0.collectionId }
-                if let data = try? JSONEncoder().encode(collectionIds),
-                   let json = String(data: data, encoding: .utf8){
-                    changes.append(.init(key: .collections, newValue: json))
-                }
+                let bookmarkAfterChange = bookmarkToEdit
                 
-                // Save the log
-                if !changes.isEmpty {
-                    let entry = YabaDataLog(
-                        entityId: bookmarkToEdit.bookmarkId,
-                        entityType: .bookmark,
-                        actionType: .updated,
-                        fieldChanges: changes,
-                    )
-                    modelContext.insert(entry)
-                }
-            } else {
-                let newBookmarkId = UUID().uuidString
-                var changes = YabaDataLogUtil.generateFieldChanges(
-                    old: [:],
-                    new: [
-                        .label: label,
-                        .link: url,
-                        .domain: host,
-                        .description: description,
-                        .image: imageURL,
-                        .icon: iconURL,
-                        .video: videoURL,
-                        .type: selectedType.rawValue
-                    ]
+                try? YabaDataLogger.shared.logBookmarkChange(
+                    old: bookmarkBeforeChange,
+                    new: bookmarkAfterChange,
+                    shouldSave: false
                 )
-                
+            } else {
                 var collections = selectedTags
                 collections.append(selectedFolder)
                 
-                let collectionIds = collections.map { $0.collectionId }
-                if let data = try? JSONEncoder().encode(collectionIds),
-                   let json = String(data: data, encoding: .utf8){
-                    changes.append(.init(key: .collections, newValue: json))
-                }
-
-                if !changes.isEmpty {
-                    let entry = YabaDataLog(
-                        entityId: newBookmarkId,
-                        entityType: .bookmark,
-                        actionType: .created,
-                        fieldChanges: changes,
+                if uncatagroizedFolderCreationRequired {
+                    try? YabaDataLogger.shared.logCollectionChange(
+                        old: nil,
+                        new: selectedFolder,
+                        shouldSave: false
                     )
-                    modelContext.insert(entry)
                 }
                 
                 let creationTime: Date = .now
                 let newBookmark = YabaBookmark(
-                    bookmarkId: newBookmarkId,
+                    bookmarkId: UUID().uuidString,
                     link: url,
                     label: label,
                     bookmarkDescription: description,
@@ -257,6 +202,13 @@ internal class BookmarkCreationState {
                     type: selectedType,
                     collections: collections
                 )
+                
+                try? YabaDataLogger.shared.logBookmarkChange(
+                    old: nil,
+                    new: newBookmark,
+                    shouldSave: false
+                )
+                
                 modelContext.insert(newBookmark)
             }
             try? modelContext.save()
