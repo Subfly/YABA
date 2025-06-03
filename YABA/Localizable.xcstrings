@@ -1028,9 +1028,6 @@
         }
       }
     },
-    "Hello, World!" : {
-
-    },
     "Import" : {
       "comment" : "Label of import action in mapping sheet",
       "extractionState" : "manual",
@@ -1374,6 +1371,618 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "OK"
+          }
+        }
+      }
+    },
+    "Onboarding Done Button Label" : {
+      "comment" : "Label of button for done step in onboarding",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start using YABA 🔗"
+          }
+        }
+      }
+    },
+    "Onboarding Done Message" : {
+      "comment" : "Message of done page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your digital world is now easier to save, search, and organize.\n\nStart exploring — collect bookmarks you love, tag them smartly, and let YABA bring clarity to your content.\n\nAll is yours. Go make it personal 😉."
+          }
+        }
+      }
+    },
+    "Onboarding Done Title" : {
+      "comment" : "Title of done page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You’re all set! 🚀"
+          }
+        }
+      }
+    },
+    "Onboarding Generation Page Description" : {
+      "comment" : "Message of generation page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Would you like YABA to create some example folders and tags to help you get started faster?"
+          }
+        }
+      }
+    },
+    "Onboarding Generation Page Title" : {
+      "comment" : "Title of generation page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🗂️ One last thing..."
+          }
+        }
+      }
+    },
+    "Onboarding Generation Page Toggle Label" : {
+      "comment" : "Toggle label of the generation page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Set me up"
+          }
+        }
+      }
+    },
+    "Onboarding Generation Page Warning" : {
+      "comment" : "Warning to show in generation page in case the process has already been done",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If you already did this step on another device, enabling it again may create duplicates. Skip it if you're unsure."
+          }
+        }
+      }
+    },
+    "Onboarding How To Button Label" : {
+      "comment" : "Label of button for how to step in onboarding",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Understood 🫡"
+          }
+        }
+      }
+    },
+    "Onboarding HowTo Page Final Step Detail" : {
+      "comment" : "Detail of this step in how to page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YABA autofills the title if possible. Otherwise, you’ll need to enter one before saving."
+          }
+        }
+      }
+    },
+    "Onboarding HowTo Page Final Step Mac Detail" : {
+      "comment" : "Detail of this step in how to page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YABA saves it under 'Uncategorized' — easy to find, easier to organize."
+          }
+        }
+      }
+    },
+    "Onboarding HowTo Page Final Step Mac Title" : {
+      "comment" : "Title of this step in how to page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✅ That’s it!"
+          }
+        }
+      }
+    },
+    "Onboarding HowTo Page Final Step Title" : {
+      "comment" : "Title of this step in how to page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "📝 Give it a title & save"
+          }
+        }
+      }
+    },
+    "Onboarding HowTo Page General Step 1 Detail" : {
+      "comment" : "Detail of this step in how to page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start by sharing the post, article, or link from the app you’re in."
+          }
+        }
+      }
+    },
+    "Onboarding HowTo Page General Step 1 Title" : {
+      "comment" : "Title of this step in how to page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "📤 Tap the share button"
+          }
+        }
+      }
+    },
+    "Onboarding HowTo Page General Step 2 Detail" : {
+      "comment" : "Detail of this step in how to page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Look for the three-dot menu to access the native share sheet."
+          }
+        }
+      }
+    },
+    "Onboarding HowTo Page General Step 2 Title" : {
+      "comment" : "Title of this step in how to page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⋯ Some apps hide it!"
+          }
+        }
+      }
+    },
+    "Onboarding HowTo Page General Step 3 Detail" : {
+      "comment" : "Detail of this step in how to page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "From the native sheet, select YABA to preview and save the link."
+          }
+        }
+      }
+    },
+    "Onboarding HowTo Page General Step 3 Title" : {
+      "comment" : "Title of this step in how to page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✨ Choose YABA"
+          }
+        }
+      }
+    },
+    "Onboarding HowTo Page Mac Step 1 Detail" : {
+      "comment" : "Detail of this step in how to page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copy the link from your browser or any app to save it with YABA."
+          }
+        }
+      }
+    },
+    "Onboarding HowTo Page Mac Step 1 Title" : {
+      "comment" : "Title of this step in how to page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "📋 Copy the link"
+          }
+        }
+      }
+    },
+    "Onboarding HowTo Page Mac Step 2 Detail" : {
+      "comment" : "Detail of this step in how to page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Click Share and pick YABA from the menu. The save sheet will open."
+          }
+        }
+      }
+    },
+    "Onboarding HowTo Page Mac Step 2 Title" : {
+      "comment" : "Title of this step in how to page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "📤 Use the Share button"
+          }
+        }
+      }
+    },
+    "Onboarding HowTo Page Mac Step 3 Detail" : {
+      "comment" : "Detail of this step in how to page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Press CMD + SHIFT + Y anytime to bring up the global save sheet."
+          }
+        }
+      }
+    },
+    "Onboarding HowTo Page Mac Step 3 Title" : {
+      "comment" : "Title of this step in how to page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⌨️ Use the keyboard shortcut"
+          }
+        }
+      }
+    },
+    "Onboarding Next Label" : {
+      "comment" : "Label of button for next steps in onboarding",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next"
+          }
+        }
+      }
+    },
+    "Onboarding One Last Thing Button Generate Label" : {
+      "comment" : "Label of button for one last thing step in onboarding and user wants to generate content",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Generate for me ✨"
+          }
+        }
+      }
+    },
+    "Onboarding One Last Thing Button Skip Label" : {
+      "comment" : "Label of button for one last thing step in onboarding and user does not want to generate content",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skip 🙄"
+          }
+        }
+      }
+    },
+    "Onboarding Promises Button Label" : {
+      "comment" : "Label of button for promises step in onboarding",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "That’s awesome 🤩"
+          }
+        }
+      }
+    },
+    "Onboarding Promises Page Step 1 Detail" : {
+      "comment" : "Detail of this step in promises page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No ads, no subscriptions, no lifetime unlocks. Ever."
+          }
+        }
+      }
+    },
+    "Onboarding Promises Page Step 1 Title" : {
+      "comment" : "Title of this step in promises page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "📱 YABA is free forever"
+          }
+        }
+      }
+    },
+    "Onboarding Promises Page Step 2 Detail" : {
+      "comment" : "Detail of this step in promises page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "We don’t collect anything. Your bookmarks are stored in iCloud via CloudKit, only accessible to you."
+          }
+        }
+      }
+    },
+    "Onboarding Promises Page Step 2 Title" : {
+      "comment" : "Title of this step in promises page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🔒 Your data is yours"
+          }
+        }
+      }
+    },
+    "Onboarding Promises Page Step 3 Detail" : {
+      "comment" : "Detail of this step in promises page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YABA is fully open-source. You can explore, audit, or contribute anytime."
+          }
+        }
+      }
+    },
+    "Onboarding Promises Page Step 3 Title" : {
+      "comment" : "Title of this step in promises page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🔎 Open and transparent"
+          }
+        }
+      }
+    },
+    "Onboarding Promises Page Step 4 Detail" : {
+      "comment" : "Detail of this step in promises page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bookmarking should be fast and delightful. YABA is designed to stay minimal and intuitive."
+          }
+        }
+      }
+    },
+    "Onboarding Promises Page Step 4 Title" : {
+      "comment" : "Title of this step in promises page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🪄 Simplicity is sacred"
+          }
+        }
+      }
+    },
+    "Onboarding Promises Page Step 5 Detail" : {
+      "comment" : "Detail of this step in promises page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This app is crafted with love—not profit—in mind. You’re not a user, you’re part of the journey."
+          }
+        }
+      }
+    },
+    "Onboarding Promises Page Step 5 Title" : {
+      "comment" : "Title of this step in promises page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🫂 Built with care"
+          }
+        }
+      }
+    },
+    "Onboarding Promises Page Step 6 Detail" : {
+      "comment" : "Detail of this step in promises page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No dark patterns, no popups, no upsells. Just clean, focused bookmarking."
+          }
+        }
+      }
+    },
+    "Onboarding Promises Page Step 6 Title" : {
+      "comment" : "Title of this step in promises page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✨ No hidden tricks"
+          }
+        }
+      }
+    },
+    "Onboarding Purpose Button Label" : {
+      "comment" : "Label of button for purpose step in onboarding",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Happened to me before 👍"
+          }
+        }
+      }
+    },
+    "Onboarding Purpose Page First Item Main Text" : {
+      "comment" : "Purpose page first text main content",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🤔 Was it in Safari? Instagram? Reddit? You saved it… somewhere."
+          }
+        }
+      }
+    },
+    "Onboarding Purpose Page First Item Sub Text" : {
+      "comment" : "Purpose page first text sub content",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "That moment of scrolling through app after app just to find one link you vaguely remember."
+          }
+        }
+      }
+    },
+    "Onboarding Purpose Page Main Text" : {
+      "comment" : "Purpose page main punchline text",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YABA is here to fix that 🥳"
+          }
+        }
+      }
+    },
+    "Onboarding Purpose Page Second Item Main Text" : {
+      "comment" : "Purpose page second text main content",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🗓️ Your memes, recipes, and deep reads — lost in the clutter of 'Saved' lists"
+          }
+        }
+      }
+    },
+    "Onboarding Purpose Page Second Item Sub Text" : {
+      "comment" : "Purpose page second text sub content",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You know it’s there… but it's buried under randomness and noise."
+          }
+        }
+      }
+    },
+    "Onboarding Purpose Page Third Item Main Text" : {
+      "comment" : "Purpose page third text main content",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🏷️ Folders? Tags? Most apps act like organization is optional."
+          }
+        }
+      }
+    },
+    "Onboarding Purpose Page Third Item Sub Text" : {
+      "comment" : "Purpose page third text sub content",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You deserve better than a single, endless list of ‘stuff.’"
+          }
+        }
+      }
+    },
+    "Onboarding Start Button Label" : {
+      "comment" : "Label of button for welcome step in onboarding",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start 🚀"
+          }
+        }
+      }
+    },
+    "Onboarding Welcome Page Message" : {
+      "comment" : "Message of welcome screen in onboarding",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yet Another Bookmark Application"
+          }
+        }
+      }
+    },
+    "Onboarding Welcome Page Title" : {
+      "comment" : "Title of welcome screen in onboarding",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Welcome to YABA 🎉"
           }
         }
       }

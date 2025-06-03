@@ -8,34 +8,32 @@
 import Foundation
 
 struct PreloadDataHolder: Codable {
-    let collections: [PreloadCollection]
+    let folders: [PreloadCollection]
+    let tags: [PreloadCollection]
 
-    func getFolderModels() -> [YabaCollection] {
-        return self.collections.map { $0.toCollectionModel() }
+    func allCollections() -> [YabaCollection] {
+        let folderModels = folders.map { $0.toCollectionModel(type: .folder) }
+        let tagModels = tags.map { $0.toCollectionModel(type: .tag) }
+        return folderModels + tagModels
     }
 }
 
 struct PreloadCollection: Codable {
     let label: String
     let icon: String
-    let color: YabaColor
+    let color: Int
 
-    func toCollectionModel() -> YabaCollection {
+    func toCollectionModel(type: CollectionType) -> YabaCollection {
+        let now = Date()
         return YabaCollection(
             collectionId: UUID().uuidString,
-            label: self.label,
-            icon: self.icon,
-            createdAt: .now,
-            editedAt: .now,
+            label: label,
+            icon: icon,
+            createdAt: now,
+            editedAt: now,
             bookmarks: [],
-            color: self.color,
-            type: .folder
+            color: YabaColor(rawValue: color) ?? .none,
+            type: type
         )
-    }
-
-    private enum CodingKeys: String, CodingKey {
-        case label = "label"
-        case icon = "icon"
-        case color = "color"
     }
 }

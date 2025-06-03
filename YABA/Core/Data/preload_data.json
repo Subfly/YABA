@@ -1,0 +1,171 @@
+{
+    "folders": [
+        {
+            "label": "Instagram",
+            "icon": "instagram",
+            "color": 6
+        },
+        {
+            "label": "X (Twitter)",
+            "icon": "new-twitter-rectangle",
+            "color": 1
+        },
+        {
+            "label": "YouTube",
+            "icon": "youtube",
+            "color": 11
+        },
+        {
+            "label": "Facebook",
+            "icon": "facebook-01",
+            "color": 1
+        },
+        {
+            "label": "Reddit",
+            "icon": "reddit",
+            "color": 8
+        },
+        {
+            "label": "LinkedIn",
+            "icon": "linkedin-01",
+            "color": 3
+        },
+        {
+            "label": "Medium",
+            "icon": "medium-square",
+            "color": 2
+        },
+        {
+            "label": "TikTok",
+            "icon": "tiktok",
+            "color": 9
+        },
+        {
+            "label": "Pinterest",
+            "icon": "pinterest",
+            "color": 10
+        },
+        {
+            "label": "Amazon",
+            "icon": "amazon",
+            "color": 12
+        },
+        {
+            "label": "AliExpress",
+            "icon": "shopping-bag-01",
+            "color": 13
+        },
+        {
+            "label": "Locations",
+            "icon": "location-03",
+            "color": 5
+        },
+        {
+            "label": "Web",
+            "icon": "internet",
+            "color": 3
+        }
+    ],
+    "tags": [
+        {
+            "label": "Read Later",
+            "icon": "bookmark-01",
+            "color": 4
+        },
+        {
+            "label": "Favorites",
+            "icon": "favourite",
+            "color": 13
+        },
+        {
+            "label": "Tech",
+            "icon": "computer-phone-sync",
+            "color": 3
+        },
+        {
+            "label": "Design",
+            "icon": "brush",
+            "color": 6
+        },
+        {
+            "label": "Ideas",
+            "icon": "bulb",
+            "color": 7
+        },
+        {
+            "label": "Inspo",
+            "icon": "falling-star",
+            "color": 8
+        },
+        {
+            "label": "News",
+            "icon": "news",
+            "color": 1
+        },
+        {
+            "label": "Opinions",
+            "icon": "bubble-chat",
+            "color": 3
+        },
+        {
+            "label": "Shopping",
+            "icon": "shopping-cart-01",
+            "color": 12
+        },
+        {
+            "label": "Work",
+            "icon": "work",
+            "color": 5
+        },
+        {
+            "label": "Career",
+            "icon": "student-card",
+            "color": 1
+        },
+        {
+            "label": "Travel",
+            "icon": "airplane-01",
+            "color": 5
+        },
+        {
+            "label": "Food",
+            "icon": "serving-food",
+            "color": 8
+        },
+        {
+            "label": "Videos",
+            "icon": "video-01",
+            "color": 11
+        },
+        {
+            "label": "Podcasts",
+            "icon": "podcast",
+            "color": 6
+        },
+        {
+            "label": "Learning",
+            "icon": "books-02",
+            "color": 10
+        },
+        {
+            "label": "DIY",
+            "icon": "paint-brush-02",
+            "color": 9
+        },
+        {
+            "label": "Memes",
+            "icon": "laughing",
+            "color": 13
+        },
+        {
+            "label": "Threads",
+            "icon": "thread",
+            "color": 3
+        },
+        {
+            "label": "Projects",
+            "icon": "package",
+            "color": 2
+        }
+    ]
+}

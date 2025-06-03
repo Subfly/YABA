@@ -20,12 +20,19 @@ struct YabaNavigationView: View {
     var body: some View {
         navigationSwitcher
             .fullScreenCover(isPresented: $shouldShowOnboardingView) {
-                OnboardingView()
+                OnboardingView {
+                    hasPassedOnboarding = true
+                }
             }
             .onAppear {
                 YabaDataLogger.shared.setContext(modelContext)
                 if !hasPassedOnboarding {
                     shouldShowOnboardingView = true
+                }
+            }
+            .onChange(of: hasPassedOnboarding) { _, passed in
+                if passed {
+                    shouldShowOnboardingView = false
                 }
             }
     }
