@@ -66,7 +66,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The image of the bookmark can not be fetched currently, maybe it is removed or blocked?"
+            "value" : "The image of the bookmark can not be fetched currently, maybe it is removed or blocked? \n\nOr maybe you have tried to save something that is private or requires some login process.\n\nAnyway, you can still open it by clicking here"
           }
         }
       }
@@ -124,6 +124,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No Tags Added"
+          }
+        }
+      }
+    },
+    "Bookmark Detail Open Link Tip Message" : {
+      "comment" : "Message of the tip to show when user opened the bookmark detail for the first time",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Click on the image to open the saved link"
+          }
+        }
+      }
+    },
+    "Bookmark Detail Open Link Tip Title" : {
+      "comment" : "Title of the tip to show when user opened the bookmark detail for the first time",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Bookmark"
           }
         }
       }

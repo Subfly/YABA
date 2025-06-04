@@ -40,9 +40,11 @@ struct BookmarkItemView: View {
             )
             #else
             .listRowBackground(
-                UIDevice.current.userInterfaceIdiom == .pad && appState.selectedBookmark?.id == bookmark.id
+                UIDevice.current.userInterfaceIdiom == .phone
+                ? nil
+                : appState.selectedBookmark?.id == bookmark.id
                 ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
-                : UIDevice.current.userInterfaceIdiom == .pad && itemState.isHovered
+                : itemState.isHovered
                 ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
                 : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
             )

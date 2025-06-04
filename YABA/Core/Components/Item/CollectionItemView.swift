@@ -62,9 +62,11 @@ struct CollectionItemView: View {
         )
         #else
         .listRowBackground(
-            UIDevice.current.userInterfaceIdiom == .pad && appState.selectedCollection?.id == collection.id
+            UIDevice.current.userInterfaceIdiom == .phone
+            ? nil
+            : appState.selectedCollection?.id == collection.id
             ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
-            : UIDevice.current.userInterfaceIdiom == .pad && itemState.isHovered
+            : itemState.isHovered
             ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
             : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
         )

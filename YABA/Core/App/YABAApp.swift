@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import TipKit
 
 @main
 struct YABAApp: App {
@@ -37,6 +38,7 @@ struct YABAApp: App {
                 .preferredColorScheme(preferredTheme.getScheme())
                 .onAppear {
                     setupForMacCatalyst()
+                    try? Tips.configure()
                 }
             #if targetEnvironment(macCatalyst)
                 .onOpenURL { url in

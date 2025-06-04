@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import TipKit
 
 struct GeneralBookmarkDetail: View {
     @Environment(\.appState)
@@ -66,7 +67,6 @@ private struct BookmarkDetail: View {
     }
     
     var body: some View {
-        let _ = Self._printChanges()
         ZStack {
             AnimatedGradient(collectionColor: state.meshColor)
             
@@ -210,30 +210,15 @@ private struct MainContent: View {
 }
 
 private struct ImageSection: View {
+    private let openBookmarkTip = BookmarkDetailTip()
+    
     let bookmark: YabaBookmark
     let onClickOpenLink: () -> Void
     
     var body: some View {
         Section {
-            if let imageData = bookmark.imageDataHolder?.data,
-               let image = UIImage(data: imageData) {
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(idealHeight: 250, alignment: .center)
-            } else {
-                ContentUnavailableView {
-                    Label {
-                        Text("Bookmark Detail Image Error Title")
-                    } icon: {
-                        YabaIconView(bundleKey: "image-not-found-01")
-                            .scaledToFit()
-                            .frame(width: 52, height: 52)
-                    }
-                } description: {
-                    Text("Bookmark Detail Image Error Description")
-                }
-            }
+            imageContent
+            TipView(openBookmarkTip)
         } header: {
             Label {
                 Text("Bookmark Detail Image Header Title")
@@ -264,8 +249,36 @@ private struct ImageSection: View {
             }.padding(.leading)
         }
         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+        .onAppear {
+            BookmarkDetailTip.isPresented = true
+        }
         .onTapGesture {
             onClickOpenLink()
+        }
+    }
+    
+    @ViewBuilder
+    private var imageContent: some View {
+        if let imageData = bookmark.imageDataHolder?.data,
+           let image = UIImage(data: imageData) {
+            Image(uiImage: image)
+                .resizable()
+                .scaledToFill()
+                .frame(idealHeight: 250, alignment: .center)
+        } else {
+            ContentUnavailableView {
+                Label {
+                    Text("Bookmark Detail Image Error Title")
+                        .padding(.bottom)
+                } icon: {
+                    YabaIconView(bundleKey: "image-not-found-01")
+                        .scaledToFit()
+                        .frame(width: 52, height: 52)
+                        .padding(.top)
+                }
+            } description: {
+                Text("Bookmark Detail Image Error Description")
+            }
         }
     }
 }
