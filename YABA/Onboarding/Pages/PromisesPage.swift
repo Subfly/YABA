@@ -63,19 +63,28 @@ internal struct PromisesPage: View {
         .padding(.bottom)
         .padding(.bottom)
         .onAppear {
-            Task {
-                if !hasShown {
-                    onRequestButtonVisibility(false)
-                    try? await Task.sleep(for: .seconds(0.5))
-                    for index in promises.indices {
-                        withAnimation {
-                            shouldShowList[index] = true
+            print("Promises appeared!")
+            if UIDevice.current.userInterfaceIdiom != .pad {
+                Task {
+                    if !hasShown {
+                        onRequestButtonVisibility(false)
+                        try? await Task.sleep(for: .seconds(0.5))
+                        for index in promises.indices {
+                            withAnimation {
+                                shouldShowList[index] = true
+                            }
+                            try? await Task.sleep(for: .seconds(1))
                         }
-                        try? await Task.sleep(for: .seconds(1))
+                        onRequestButtonVisibility(true)
+                        hasShown = true
                     }
-                    onRequestButtonVisibility(true)
-                    hasShown = true
                 }
+            } else {
+                for index in promises.indices {
+                    shouldShowList[index] = true
+                }
+                onRequestButtonVisibility(true)
+                hasShown = true
             }
         }
     }

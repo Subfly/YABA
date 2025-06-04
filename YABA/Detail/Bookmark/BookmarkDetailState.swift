@@ -31,18 +31,16 @@ internal class BookmarkDetailState {
         let newTags = newBookmarkData?.collections.filter { $0.collectionType == .tag } ?? []
         let newColor = newFolder?.color.getUIColor() ?? .accentColor
         
-        withAnimation {
-            if newFolder?.id != folder?.id {
-                folder = newFolder
-            }
-            
-            if !tags.elementsEqual(newTags) {
-                tags = newTags
-            }
-            
-            if meshColor != newColor {
-                meshColor = newColor
-            }
+        if newFolder?.id != folder?.id {
+            folder = newFolder
+        }
+        
+        if !tags.elementsEqual(newTags) {
+            tags = newTags
+        }
+        
+        if meshColor != newColor {
+            meshColor = newColor
         }
     }
     

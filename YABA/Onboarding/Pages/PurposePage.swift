@@ -92,25 +92,39 @@ internal struct PurposePage: View {
             }
         }
         .multilineTextAlignment(.leading)
+        .frame(
+            width: UIDevice.current.userInterfaceIdiom == .vision
+            ? 600
+            : nil
+        )
         .padding(.horizontal)
         .padding(.bottom)
         .padding(.bottom)
         .onAppear {
-            Task {
-                if !hasShown {
-                    onRequestButtonVisibility(false)
-                    try? await Task.sleep(for: .seconds(0.5))
-                    showFirstItem = true
-                    try? await Task.sleep(for: .seconds(1))
-                    showSecondItem = true
-                    try? await Task.sleep(for: .seconds(1))
-                    showThirdItem = true
-                    try? await Task.sleep(for: .seconds(1))
-                    showMainItem = true
-                    try? await Task.sleep(for: .seconds(1))
-                    onRequestButtonVisibility(true)
-                    hasShown = true
+            if UIDevice.current.userInterfaceIdiom != .pad {
+                Task {
+                    if !hasShown {
+                        onRequestButtonVisibility(false)
+                        try? await Task.sleep(for: .seconds(0.5))
+                        showFirstItem = true
+                        try? await Task.sleep(for: .seconds(1))
+                        showSecondItem = true
+                        try? await Task.sleep(for: .seconds(1))
+                        showThirdItem = true
+                        try? await Task.sleep(for: .seconds(1))
+                        showMainItem = true
+                        try? await Task.sleep(for: .seconds(1))
+                        onRequestButtonVisibility(true)
+                        hasShown = true
+                    }
                 }
+            } else {
+                showFirstItem = true
+                showSecondItem = true
+                showThirdItem = true
+                showMainItem = true
+                onRequestButtonVisibility(true)
+                hasShown = true
             }
         }
     }

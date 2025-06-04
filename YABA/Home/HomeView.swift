@@ -159,16 +159,20 @@ private struct SequentialView: View {
     var body: some View {
         List {
             HomeCollectionView(
-                collectionType: .tag,
-                collections: collections.filter { $0.collectionType == .tag },
-                onNavigationCallback: onNavigationCallbackForCollection
-            )
-            HomeCollectionView(
                 collectionType: .folder,
                 collections: collections.filter { $0.collectionType == .folder },
                 onNavigationCallback: onNavigationCallbackForCollection
             )
-            Spacer().frame(height: 0).listRowBackground(Color.clear)
+            HomeCollectionView(
+                collectionType: .tag,
+                collections: collections.filter { $0.collectionType == .tag },
+                onNavigationCallback: onNavigationCallbackForCollection
+            )
+            Spacer().frame(
+                height: UIDevice.current.userInterfaceIdiom == .pad
+                ? 100
+                : 0
+            ).listRowBackground(Color.clear)
         }
     }
 }
@@ -218,17 +222,17 @@ private struct GridView: View {
             ) {
                 Section {} header: { Spacer().frame(height: 12) }
                 HomeCollectionView(
+                    collectionType: .folder,
+                    collections: collections,
+                    onNavigationCallback: onNavigationCallbackForCollection
+                )
+                Section {} header: { Spacer().frame(height: 12) }
+                HomeCollectionView(
                     collectionType: .tag,
                     collections: collections,
                     onNavigationCallback: { collection in
                         onNavigationCallbackForCollection(collection)
                     }
-                )
-                Section {} header: { Spacer().frame(height: 12) }
-                HomeCollectionView(
-                    collectionType: .folder,
-                    collections: collections,
-                    onNavigationCallback: onNavigationCallbackForCollection
                 )
             }.padding(.horizontal)
         }
@@ -279,6 +283,9 @@ private struct ToolbarIcons: View {
             } label: {
                 YabaIconView(bundleKey: "search-01")
             }
+            #if os(visionOS)
+            .buttonStyle(.plain)
+            #endif
             Menu {
                 ContentAppearancePicker()
                 SortingPicker()
@@ -307,6 +314,9 @@ private struct ToolbarIcons: View {
             } label: {
                 YabaIconView(bundleKey: "more-horizontal-circle-02")
             }
+            #if os(visionOS)
+            .buttonStyle(.plain)
+            #endif
         }
         #endif
     }

@@ -60,6 +60,14 @@ struct CollectionItemView: View {
             ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
             : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
         )
+        #else
+        .listRowBackground(
+            UIDevice.current.userInterfaceIdiom == .pad && appState.selectedCollection?.id == collection.id
+            ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
+            : UIDevice.current.userInterfaceIdiom == .pad && itemState.isHovered
+            ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
+            : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
+        )
         #endif
         .onHover { hovered in
             itemState.isHovered = hovered

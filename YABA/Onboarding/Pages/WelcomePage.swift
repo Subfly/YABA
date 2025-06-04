@@ -58,19 +58,27 @@ internal struct WelcomePage: View {
             Spacer().frame(height: 100)
         }
         .onAppear {
-            Task {
-                if !hasShown {
-                    onRequestButtonVisibility(false)
-                    try? await Task.sleep(for: .seconds(0.5))
-                    shouldShowImage = true
-                    try? await Task.sleep(for: .seconds(1))
-                    shouldShowTitle = true
-                    try? await Task.sleep(for: .seconds(1))
-                    shouldShowMessage = true
-                    try? await Task.sleep(for: .seconds(1))
-                    onRequestButtonVisibility(true)
-                    hasShown = true
+            if UIDevice.current.userInterfaceIdiom != .pad {
+                Task {
+                    if !hasShown {
+                        onRequestButtonVisibility(false)
+                        try? await Task.sleep(for: .seconds(0.5))
+                        shouldShowImage = true
+                        try? await Task.sleep(for: .seconds(1))
+                        shouldShowTitle = true
+                        try? await Task.sleep(for: .seconds(1))
+                        shouldShowMessage = true
+                        try? await Task.sleep(for: .seconds(1))
+                        onRequestButtonVisibility(true)
+                        hasShown = true
+                    }
                 }
+            } else {
+                shouldShowImage = true
+                shouldShowTitle = true
+                shouldShowMessage = true
+                onRequestButtonVisibility(true)
+                hasShown = true
             }
         }
     }

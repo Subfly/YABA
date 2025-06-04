@@ -37,7 +37,11 @@ struct IconPickerView: View {
                 }
                 .safeAreaPadding(.top)
             }
-            .searchable(text: $searchQuery, prompt: "Search Icons")
+            .searchable(
+                text: $searchQuery,
+                placement: .navigationBarDrawer(displayMode: .always),
+                prompt: "Search Icons"
+            )
             .onChange(of: searchQuery) { _, newQuery in
                 withAnimation {
                     data.onQueryChange(newQuery)

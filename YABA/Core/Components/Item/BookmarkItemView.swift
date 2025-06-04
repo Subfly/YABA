@@ -38,6 +38,14 @@ struct BookmarkItemView: View {
                 ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
                 : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
             )
+            #else
+            .listRowBackground(
+                UIDevice.current.userInterfaceIdiom == .pad && appState.selectedBookmark?.id == bookmark.id
+                ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
+                : UIDevice.current.userInterfaceIdiom == .pad && itemState.isHovered
+                ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
+                : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
+            )
             #endif
             .contextMenu {
                 MenuActionItems(
@@ -80,10 +88,8 @@ struct BookmarkItemView: View {
                 itemState.isHovered = hovered
             }
             .onTapGesture {
-                withAnimation {
-                    appState.selectedBookmark = bookmark
-                    onNavigationCallback(bookmark)
-                }
+                appState.selectedBookmark = bookmark
+                onNavigationCallback(bookmark)
             }
     }
 }

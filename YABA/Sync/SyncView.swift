@@ -59,11 +59,15 @@ struct SyncView: View {
                 // TODO: ADD TEXT TO INFORM SCAN
                 switch state.mode {
                 case .client:
+                    #if !os(visionOS)
                     QRScannerView { scannedText in
                         state.handleScannedPayload(scannedText)
                     }
                     .frame(width: 300, height: 300)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
+                    #else
+                    EmptyView()
+                    #endif
                 case .server:
                     if let qrCode = state.qrImage {
                         Image(uiImage: qrCode)

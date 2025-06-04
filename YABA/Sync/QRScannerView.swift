@@ -9,6 +9,7 @@
 import SwiftUI
 import AVFoundation
 
+#if !os(visionOS)
 struct QRScannerView: UIViewRepresentable {
     let onQRCodeFound: (String) -> Void
     
@@ -85,3 +86,4 @@ final class CameraPreviewView: UIView {
         return AVCaptureVideoPreviewLayer.self
     }
 }
+#endif

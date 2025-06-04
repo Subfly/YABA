@@ -66,6 +66,7 @@ private struct BookmarkDetail: View {
     }
     
     var body: some View {
+        let _ = Self._printChanges()
         ZStack {
             AnimatedGradient(collectionColor: state.meshColor)
             
@@ -96,11 +97,17 @@ private struct BookmarkDetail: View {
                 )
                 #endif
             } else {
-                ContentUnavailableView(
-                    "YABA",
-                    image: "UIAppIcon",
-                    description: Text("YABA Description")
-                )
+                ContentUnavailableView {
+                    Label {
+                        Text("YABA")
+                    } icon: {
+                        YabaIconView(bundleKey: "bookmark-02")
+                            .scaledToFit()
+                            .frame(width: 52, height: 52)
+                    }
+                } description: {
+                    Text("YABA Description")
+                }
             }
         }
         .navigationTitle(

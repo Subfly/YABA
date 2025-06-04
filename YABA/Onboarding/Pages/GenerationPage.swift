@@ -57,20 +57,35 @@ internal struct GenerationPage: View {
         .padding(.bottom)
         .padding(.trailing, 56)
         .multilineTextAlignment(.leading)
+        .frame(
+            width: UIDevice.current.userInterfaceIdiom == .pad
+            ? 500
+            : UIDevice.current.userInterfaceIdiom == .vision
+            ? 600
+            : nil
+        )
         .onAppear {
-            Task {
-                if !hasShown {
-                    onRequestButtonVisibility(false)
-                    try? await Task.sleep(for: .seconds(0.5))
-                    shouldShowTitle = true
-                    try? await Task.sleep(for: .seconds(1))
-                    shouldShowDescription = true
-                    try? await Task.sleep(for: .seconds(1))
-                    shouldShowRest = true
-                    try? await Task.sleep(for: .seconds(1))
-                    onRequestButtonVisibility(true)
-                    hasShown = true
+            if UIDevice.current.userInterfaceIdiom != .pad {
+                Task {
+                    if !hasShown {
+                        onRequestButtonVisibility(false)
+                        try? await Task.sleep(for: .seconds(0.5))
+                        shouldShowTitle = true
+                        try? await Task.sleep(for: .seconds(1))
+                        shouldShowDescription = true
+                        try? await Task.sleep(for: .seconds(1))
+                        shouldShowRest = true
+                        try? await Task.sleep(for: .seconds(1))
+                        onRequestButtonVisibility(true)
+                        hasShown = true
+                    }
                 }
+            } else {
+                shouldShowTitle = true
+                shouldShowDescription = true
+                shouldShowRest = true
+                onRequestButtonVisibility(true)
+                hasShown = true
             }
         }
     }
