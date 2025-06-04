@@ -152,32 +152,13 @@ struct BookmarkCreationContent: View {
                 )
             }
         }
-        .overlay(
-            alignment: state.toastManager.toastState.position == .top
-            ? .top
-            : .bottom
-        ) {
-            if state.toastManager.toastState.position == .top {
-                YabaToast(
-                    state: state.toastManager.toastState,
-                    onDismissRequest: {
-                        state.toastManager.hide()
-                    }
-                )
-                .offset(y: state.toastManager.isShowing ? 25 : -1000)
-                .transition(.move(edge: .top))
-            } else {
-                YabaToast(
-                    state: state.toastManager.toastState,
-                    onDismissRequest: {
-                        state.toastManager.hide()
-                    }
-                )
-                .offset(y: state.toastManager.isShowing ? -25 : 1000)
-                .transition(.move(edge: .bottom))
+        .toast(
+            state: state.toastManager.toastState,
+            isShowing: state.toastManager.isShowing,
+            onDismiss: {
+                state.toastManager.hide()
             }
-        }
-        .animation(.easeInOut(duration: 0.3), value: state.toastManager.isShowing)
+        )
     }
     
     @ViewBuilder

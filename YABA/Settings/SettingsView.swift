@@ -18,6 +18,9 @@ struct SettingsView: View {
     @Environment(\.appState)
     private var appState
     
+    @AppStorage(Constants.preferredThemeKey)
+    private var preferredTheme: ThemeType = .system
+    
     @State
     private var settingsState = SettingsState()
     
@@ -62,32 +65,14 @@ struct SettingsView: View {
                 }
             }
         }
-        .overlay(
-            alignment: settingsState.toastManager.toastState.position == .top
-            ? .top
-            : .bottom
-        ) {
-            if settingsState.toastManager.toastState.position == .top {
-                YabaToast(
-                    state: settingsState.toastManager.toastState,
-                    onDismissRequest: {
-                        settingsState.toastManager.hide()
-                    }
-                )
-                .offset(y: settingsState.toastManager.isShowing ? 25 : -1000)
-                .transition(.move(edge: .top))
-            } else {
-                YabaToast(
-                    state: settingsState.toastManager.toastState,
-                    onDismissRequest: {
-                        settingsState.toastManager.hide()
-                    }
-                )
-                .offset(y: settingsState.toastManager.isShowing ? -25 : 1000)
-                .transition(.move(edge: .bottom))
+        .preferredColorScheme(preferredTheme.getScheme())
+        .toast(
+            state: settingsState.toastManager.toastState,
+            isShowing: settingsState.toastManager.isShowing,
+            onDismiss: {
+                settingsState.toastManager.hide()
             }
-        }
-        .animation(.easeInOut(duration: 0.3), value: settingsState.toastManager.isShowing)
+        )
     }
     
     @ViewBuilder

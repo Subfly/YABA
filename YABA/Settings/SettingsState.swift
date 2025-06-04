@@ -185,7 +185,16 @@ internal class SettingsState {
         
         dataManager.deleteAllData(
             using: modelContext,
-            onFinishCallback: onFinishCallback
+            onFinishCallback: {
+                self.toastManager.show(
+                    message: LocalizedStringKey("Delete All Successful Message"),
+                    accentColor: .green,
+                    acceptText: LocalizedStringKey("Ok"),
+                    iconType: .success,
+                    onAcceptPressed: { self.toastManager.hide() }
+                )
+                onFinishCallback()
+            }
         )
     }
     

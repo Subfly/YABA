@@ -26,7 +26,7 @@ struct YabaToast: View {
                     YabaIconView(bundleKey: state.iconType.getIcon())
                         .scaledToFit()
                         .frame(width: 32, height: 32)
-                        .tint(state.contentColor ?? .primary)
+                        .tint(state.contentColor ?? .white)
                 }
             }
             .frame(
@@ -46,7 +46,6 @@ struct YabaToast: View {
                 HStack {
                     Text(state.message)
                         .fixedSize(horizontal: false, vertical: true)
-                        .foregroundStyle(.white)
                         .padding()
                     
                     if let accepText = state.acceptText {

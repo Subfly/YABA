@@ -11,6 +11,7 @@ import SwiftUI
 @Observable
 private class ItemState {
     var shouldShowEditDialog: Bool = false
+    var shouldShowShareDialog: Bool = false
     var shouldShowDeleteDialog: Bool = false
     var isHovered: Bool = false
 }
@@ -52,6 +53,7 @@ struct BookmarkItemView: View {
             .contextMenu {
                 MenuActionItems(
                     shouldShowEditDialog: $itemState.shouldShowEditDialog,
+                    shouldShowShareDialog: $itemState.shouldShowShareDialog,
                     shouldShowDeleteDialog: $itemState.shouldShowDeleteDialog
                 )
             }
@@ -85,6 +87,13 @@ struct BookmarkItemView: View {
                     link: nil,
                     onExitRequested: {}
                 )
+            }
+            .sheet(isPresented: $itemState.shouldShowShareDialog) {
+                if let link = URL(string: bookmark.link) {
+                    ShareSheet(bookmarkLink: link)
+                        .presentationDetents([.medium])
+                        .presentationDragIndicator(.visible)
+                }
             }
             .onHover { hovered in
                 itemState.isHovered = hovered
@@ -170,6 +179,16 @@ private struct ListView: View {
                 Text("Delete")
             }
         }.tint(.red)
+        Button {
+            state.shouldShowShareDialog = true
+        } label: {
+            Label {
+                Text("Share")
+            } icon: {
+                YabaIconView(bundleKey: "share-03")
+                    .scaledToFit()
+            }
+        }.tint(.indigo)
         Button {
             state.shouldShowEditDialog = true
         } label: {
@@ -476,6 +495,7 @@ private struct ClickableOptionsIcon: View {
             Menu {
                 MenuActionItems(
                     shouldShowEditDialog: $state.shouldShowEditDialog,
+                    shouldShowShareDialog: $state.shouldShowShareDialog,
                     shouldShowDeleteDialog: $state.shouldShowDeleteDialog
                 )
             } label: {
@@ -494,6 +514,7 @@ private struct ClickableOptionsIcon: View {
         Menu {
             MenuActionItems(
                 shouldShowEditDialog: $state.shouldShowEditDialog,
+                shouldShowShareDialog: $state.shouldShowShareDialog,
                 shouldShowDeleteDialog: $state.shouldShowDeleteDialog
             )
         } label: {
@@ -516,6 +537,9 @@ private struct MenuActionItems: View {
     var shouldShowEditDialog: Bool
     
     @Binding
+    var shouldShowShareDialog: Bool
+    
+    @Binding
     var shouldShowDeleteDialog: Bool
     
     var body: some View {
@@ -527,6 +551,16 @@ private struct MenuActionItems: View {
                 Text("Edit")
             }
         }.tint(.orange)
+        Button {
+            shouldShowShareDialog = true
+        } label: {
+            Label {
+                Text("Share")
+            } icon: {
+                YabaIconView(bundleKey: "share-03")
+                    .scaledToFit()
+            }
+        }.tint(.indigo)
         Button(role: .destructive) {
             shouldShowDeleteDialog = true
         } label: {

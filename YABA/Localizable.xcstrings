@@ -850,6 +850,18 @@
         }
       }
     },
+    "Delete All Successful Message" : {
+      "comment" : "Message to show in toast when all content is successfully deleted",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All content deleted successfully!"
+          }
+        }
+      }
+    },
     "Delete Bookmark Title" : {
       "comment" : "Title to show in dialog when a bookmark is deleting",
       "extractionState" : "manual",
@@ -1047,7 +1059,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Successfully fetched the URL details"
+            "value" : "Successfully fetched the bookmark details"
           }
         }
       }
@@ -2534,6 +2546,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Settings"
+          }
+        }
+      }
+    },
+    "Share" : {
+      "comment" : "Label of share related functions",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share"
           }
         }
       }

@@ -77,6 +77,7 @@ private struct BookmarkDetail: View {
                         bookmark: bookmark,
                         folder: state.folder,
                         tags: state.tags,
+                        isLoading: state.isLoading,
                         onClickOpenLink: {
                             state.onClickOpenLink(using: bookmark)
                         },
@@ -90,6 +91,7 @@ private struct BookmarkDetail: View {
                     bookmark: bookmark,
                     folder: state.folder,
                     tags: state.tags,
+                    isLoading: state.isLoading,
                     onClickOpenLink: {
                         state.onClickOpenLink(using: bookmark)
                     },
@@ -115,12 +117,27 @@ private struct BookmarkDetail: View {
             ? LocalizedStringKey("Bookmark Detail Title")
             : ""
         )
+        .refreshable {
+            if let bookmark {
+                Task {
+                    await state.refetchData(with: bookmark, using: modelContext)
+                }
+            }
+        }
         .toolbar {
             if bookmark != nil {
                 ToolbarItem(placement: .primaryAction) {
                     OptionItems(
                         shouldShowEditBookmarkSheet: $state.shouldShowEditBookmarkSheet,
-                        shouldShowDeleteDialog: $state.shouldShowDeleteDialog
+                        shouldShowShareDialog: $state.shouldShowShareDialog,
+                        shouldShowDeleteDialog: $state.shouldShowDeleteDialog,
+                        onRefresh: {
+                            if let bookmark {
+                                Task {
+                                    await state.refetchData(with: bookmark, using: modelContext)
+                                }
+                            }
+                        }
                     )
                 }
             }
@@ -152,9 +169,24 @@ private struct BookmarkDetail: View {
                 onExitRequested: {}
             )
         }
+        .sheet(isPresented: $state.shouldShowShareDialog) {
+            if let bookmark,
+               let link = URL(string: bookmark.link) {
+                ShareSheet(bookmarkLink: link)
+                    .presentationDetents([.medium])
+                    .presentationDragIndicator(.visible)
+            }
+        }
+        .toast(
+            state: state.toastManager.toastState,
+            isShowing: state.toastManager.isShowing,
+            onDismiss: {
+                state.toastManager.hide()
+            }
+        )
         .tint(state.meshColor)
         .onChange(of: bookmark) { _, newValue in
-            state.refresh(with: bookmark)
+            state.retriggerUIRefresh(with: bookmark)
         }
     }
     
@@ -184,6 +216,7 @@ private struct MainContent: View {
     let bookmark: YabaBookmark
     let folder: YabaCollection?
     let tags: [YabaCollection]
+    let isLoading: Bool
     let onClickOpenLink: () -> Void
     let onCollectionNavigationCallback: (YabaCollection) -> Void
     
@@ -192,8 +225,8 @@ private struct MainContent: View {
             ImageSection(
                 bookmark: bookmark,
                 onClickOpenLink: onClickOpenLink
-            )
-            InfoSection(bookmark: bookmark)
+            ).redacted(reason: isLoading ? .placeholder : [])
+            InfoSection(bookmark: bookmark).redacted(reason: isLoading ? .placeholder : [])
             if let folder {
                 FolderSection(
                     folder: folder,
@@ -227,7 +260,6 @@ private struct ImageSection: View {
                     .scaledToFit()
                     .frame(width: 18, height: 18)
             }.padding(.leading)
-
         } footer: {
             HStack {
                 if let iconData = bookmark.iconDataHolder?.data,
@@ -434,7 +466,12 @@ private struct OptionItems: View {
     var shouldShowEditBookmarkSheet: Bool
     
     @Binding
+    var shouldShowShareDialog: Bool
+    
+    @Binding
     var shouldShowDeleteDialog: Bool
+    
+    let onRefresh: () -> Void
     
     var body: some View {
         #if targetEnvironment(macCatalyst)
@@ -446,6 +483,18 @@ private struct OptionItems: View {
                 }
             )
             .tint(.orange)
+            MacOSHoverableToolbarIcon(
+                bundleKey: "refresh",
+                onPressed: onRefresh
+            )
+            .tint(.blue)
+            MacOSHoverableToolbarIcon(
+                bundleKey: "share-03",
+                onPressed: {
+                    shouldShowShareDialog = true
+                }
+            )
+            .tint(.indigo)
             MacOSHoverableToolbarIcon(
                 bundleKey: "delete-02",
                 onPressed: {
@@ -466,6 +515,27 @@ private struct OptionItems: View {
                         .scaledToFit()
                 }
             }.tint(.orange)
+            Button {
+                onRefresh()
+            } label: {
+                Label {
+                    Text("Refresh")
+                } icon: {
+                    YabaIconView(bundleKey: "refresh")
+                        .scaledToFit()
+                }
+            }.tint(.blue)
+            Button {
+                shouldShowShareDialog = true
+            } label: {
+                Label {
+                    Text("Share")
+                } icon: {
+                    YabaIconView(bundleKey: "share-03")
+                        .scaledToFit()
+                }
+            }.tint(.indigo)
+            Divider()
             Button(role: .destructive) {
                 shouldShowDeleteDialog = true
             } label: {
