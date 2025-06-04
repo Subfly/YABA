@@ -79,6 +79,7 @@ internal class BookmarkDetailState {
                 bookmark.videoUrl = fetched.videoURL
                 bookmark.iconDataHolder = .init(data: fetched.iconData)
                 bookmark.imageDataHolder = .init(data: fetched.imageData)
+                bookmark.editedAt = .now
             }
             
             try modelContext.save()

@@ -67,7 +67,10 @@ struct HomeCollectionView: View {
 
 private struct ListSection<NoCollectionView: View>: View {
     @State
-    private var isExpanded: Bool = true
+    private var isExpandedGeneral: Bool = true
+    
+    @State
+    private var isExpandedMobile: Bool = false
     
     let collections: [YabaCollection]
     let labelTitle: String
@@ -76,32 +79,106 @@ private struct ListSection<NoCollectionView: View>: View {
     @ViewBuilder let noCollectionView: NoCollectionView
     
     var body: some View {
-        Section(isExpanded: $isExpanded) {
-            if collections.isEmpty {
-                noCollectionView
-            } else {
-                ForEach(collections) { collection in
-                    CollectionItemView(
-                        collection: collection,
-                        isInSelectionMode: false,
-                        isInBookmarkDetail: false,
-                        onDeleteCallback: { _ in },
-                        onEditCallback: { _ in },
-                        onNavigationCallback: onNavigationCallback
-                    )
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            Section {
+                if collections.isEmpty {
+                    noCollectionView
+                } else {
+                    if collections.count <= 10 {
+                        generateItems(for: collections)
+                    } else {
+                        ForEach(collections.prefix(10)) { collection in
+                            CollectionItemView(
+                                collection: collection,
+                                isInSelectionMode: false,
+                                isInBookmarkDetail: false,
+                                onDeleteCallback: { _ in },
+                                onEditCallback: { _ in },
+                                onNavigationCallback: onNavigationCallback
+                            )
+                        }
+                        if isExpandedMobile {
+                            ForEach(collections.suffix(from: 11)) { collection in
+                                CollectionItemView(
+                                    collection: collection,
+                                    isInSelectionMode: false,
+                                    isInBookmarkDetail: false,
+                                    onDeleteCallback: { _ in },
+                                    onEditCallback: { _ in },
+                                    onNavigationCallback: onNavigationCallback
+                                )
+                            }
+                        }
+                    }
+                }
+            } header: {
+                Label {
+                    Text(LocalizedStringKey(labelTitle))
+                    #if targetEnvironment(macCatalyst)
+                        .font(.headline)
+                    #endif
+                } icon: {
+                    YabaIconView(bundleKey: collectionIcon)
+                        .scaledToFit()
+                        .frame(width: 18, height: 18)
+                }
+            } footer: {
+                HStack {
+                    Spacer()
+                    Label {
+                        Text(
+                            isExpandedMobile
+                            ? LocalizedStringKey("Show Less Label")
+                            : LocalizedStringKey("Show More Label")
+                        )
+                    } icon: {
+                        YabaIconView(bundleKey: isExpandedMobile ? "arrow-up-01" : "arrow-down-01")
+                            .scaledToFit()
+                            .frame(width: 18, height: 18)
+                    }
+                    .labelStyle(InverseLabelStyle())
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        withAnimation {
+                            isExpandedMobile.toggle()
+                        }
+                    }
+                    Spacer()
                 }
             }
-        } header: {
-            Label {
-                Text(LocalizedStringKey(labelTitle))
-                #if targetEnvironment(macCatalyst)
-                    .font(.headline)
-                #endif
-            } icon: {
-                YabaIconView(bundleKey: collectionIcon)
-                    .scaledToFit()
-                    .frame(width: 18, height: 18)
+        } else {
+            Section(isExpanded: $isExpandedGeneral) {
+                if collections.isEmpty {
+                    noCollectionView
+                } else {
+                    generateItems(for: collections)
+                }
+            } header: {
+                Label {
+                    Text(LocalizedStringKey(labelTitle))
+                    #if targetEnvironment(macCatalyst)
+                        .font(.headline)
+                    #endif
+                } icon: {
+                    YabaIconView(bundleKey: collectionIcon)
+                        .scaledToFit()
+                        .frame(width: 18, height: 18)
+                }
             }
+        }
+    }
+    
+    @ViewBuilder
+    private func generateItems(for given: [YabaCollection]) -> some View {
+        ForEach(given) { collection in
+            CollectionItemView(
+                collection: collection,
+                isInSelectionMode: false,
+                isInBookmarkDetail: false,
+                onDeleteCallback: { _ in },
+                onEditCallback: { _ in },
+                onNavigationCallback: onNavigationCallback
+            )
         }
     }
 }

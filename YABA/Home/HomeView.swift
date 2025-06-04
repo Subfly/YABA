@@ -158,6 +158,11 @@ private struct SequentialView: View {
         
     var body: some View {
         List {
+            if UIDevice.current.userInterfaceIdiom == .phone {
+                HomeRecentsView(
+                    onNavigationCallback: onNavigationCallbackForBookmark
+                )
+            }
             HomeCollectionView(
                 collectionType: .folder,
                 collections: collections.filter { $0.collectionType == .folder },

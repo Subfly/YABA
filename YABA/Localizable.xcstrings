@@ -1064,6 +1064,18 @@
         }
       }
     },
+    "Home Recents Label" : {
+      "comment" : "Label of recent bookmarks in home for mobile devices",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recents"
+          }
+        }
+      }
+    },
     "Import" : {
       "comment" : "Label of import action in mapping sheet",
       "extractionState" : "manual",
@@ -2558,6 +2570,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Share"
+          }
+        }
+      }
+    },
+    "Show Less Label" : {
+      "comment" : "Label of show less for collections in mobile",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show Less"
+          }
+        }
+      }
+    },
+    "Show More Label" : {
+      "comment" : "Label of show more for collections in mobile",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show More"
           }
         }
       }
