@@ -78,7 +78,8 @@ class Unfurler {
                     imageURL: metadata[MetaKeys.imageUrl],
                     videoURL: metadata[MetaKeys.videoUrl],
                     iconData: try? await downloadImageData(from: favIconURL),
-                    imageData: try? await downloadImageData(from: metadata[MetaKeys.imageUrl])
+                    imageData: try? await downloadImageData(from: metadata[MetaKeys.imageUrl]),
+                    readableHTML: nil // TODO: ENABLE WHEN HTML RENDERING IS WELL DESIGNED
                 )
             }
             return nil

@@ -36,6 +36,7 @@ internal class BookmarkCreationState {
     var videoURL: String? = nil
     var imageData: Data? = nil
     var iconData: Data? = nil
+    var readableHTML: String? = nil
     
     var selectedType: BookmarkType = .none
     var selectedFolder: YabaCollection? = nil
@@ -79,6 +80,7 @@ internal class BookmarkCreationState {
                 self.iconURL = fetched.iconURL
                 self.imageURL = fetched.imageURL
                 self.videoURL = fetched.videoURL
+                self.readableHTML = fetched.readableHTML
                 self.iconData = fetched.iconData
                 self.imageData = fetched.imageData
             }
@@ -146,6 +148,7 @@ internal class BookmarkCreationState {
                 bookmarkToEdit.imageUrl = imageURL
                 bookmarkToEdit.iconUrl = iconURL
                 bookmarkToEdit.videoUrl = videoURL
+                bookmarkToEdit.readableHTML = readableHTML
                 bookmarkToEdit.type = selectedType.rawValue
                 bookmarkToEdit.iconDataHolder = .init(data: iconData)
                 bookmarkToEdit.imageDataHolder = .init(data: imageData)
@@ -199,6 +202,7 @@ internal class BookmarkCreationState {
                     imageUrl: imageURL,
                     iconUrl: iconURL,
                     videoUrl: videoURL,
+                    readableHTML: readableHTML,
                     type: selectedType,
                     collections: collections
                 )
@@ -272,6 +276,7 @@ internal class BookmarkCreationState {
             imageData = bookmarkToEdit.imageDataHolder?.data
             iconData = bookmarkToEdit.iconDataHolder?.data
             videoURL = bookmarkToEdit.videoUrl
+            readableHTML = bookmarkToEdit.readableHTML
             selectedType = bookmarkToEdit.bookmarkType
             selectedFolder = bookmarkToEdit.collections.first(where: { $0.collectionType == .folder })
             selectedTags = bookmarkToEdit.collections.filter { $0.collectionType == .tag }
@@ -308,6 +313,7 @@ internal class BookmarkCreationState {
                 collection.collectionId == id
             }
         )
+        
         if let existingUncatagorizedFolder = try? modelContext.fetch(descriptor).first {
             selectedFolder = existingUncatagorizedFolder
         } else {

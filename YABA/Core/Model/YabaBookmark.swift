@@ -23,6 +23,7 @@ extension YabaBookmark {
             imageUrl: nil,
             iconUrl: nil,
             videoUrl: nil,
+            readableHTML: nil,
             type: .none,
             collections: []
         )
@@ -42,6 +43,7 @@ extension YabaBookmark {
             imageUrl: nil,
             iconUrl: nil,
             videoUrl: nil,
+            readableHTML: nil,
             type: .none,
             collections: []
         )

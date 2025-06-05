@@ -77,6 +77,7 @@ private struct BookmarkDetail: View {
                         bookmark: bookmark,
                         folder: state.folder,
                         tags: state.tags,
+                        mode: state.currentMode,
                         isLoading: state.isLoading,
                         onClickOpenLink: {
                             state.onClickOpenLink(using: bookmark)
@@ -91,6 +92,7 @@ private struct BookmarkDetail: View {
                     bookmark: bookmark,
                     folder: state.folder,
                     tags: state.tags,
+                    mode: state.currentMode,
                     isLoading: state.isLoading,
                     onClickOpenLink: {
                         state.onClickOpenLink(using: bookmark)
@@ -125,12 +127,32 @@ private struct BookmarkDetail: View {
             }
         }
         .toolbar {
+            if UIDevice.current.userInterfaceIdiom == .phone {
+                ToolbarItem(placement: .navigation) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        YabaIconView(bundleKey: "arrow-left-01")
+                    }
+                }
+                /** TODO: ENABLE WHEN READER MODE IS READY
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        state.changeMode()
+                    } label: {
+                        YabaIconView(bundleKey: "text-font")
+                    }
+                }*/
+            }
             if bookmark != nil {
                 ToolbarItem(placement: .primaryAction) {
                     OptionItems(
                         shouldShowEditBookmarkSheet: $state.shouldShowEditBookmarkSheet,
                         shouldShowShareDialog: $state.shouldShowShareDialog,
                         shouldShowDeleteDialog: $state.shouldShowDeleteDialog,
+                        onModeChangeRequested: {
+                            state.changeMode()
+                        },
                         onRefresh: {
                             if let bookmark {
                                 Task {
@@ -139,15 +161,6 @@ private struct BookmarkDetail: View {
                             }
                         }
                     )
-                }
-            }
-            if UIDevice.current.userInterfaceIdiom == .phone {
-                ToolbarItem(placement: .navigation) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        YabaIconView(bundleKey: "arrow-left-01")
-                    }.buttonRepeatBehavior(.enabled)
                 }
             }
         }
@@ -216,29 +229,39 @@ private struct MainContent: View {
     let bookmark: YabaBookmark
     let folder: YabaCollection?
     let tags: [YabaCollection]
+    let mode: DetailMode
     let isLoading: Bool
     let onClickOpenLink: () -> Void
     let onCollectionNavigationCallback: (YabaCollection) -> Void
     
     var body: some View {
-        List {
-            ImageSection(
-                bookmark: bookmark,
-                onClickOpenLink: onClickOpenLink
-            ).redacted(reason: isLoading ? .placeholder : [])
-            InfoSection(bookmark: bookmark).redacted(reason: isLoading ? .placeholder : [])
-            if let folder {
-                FolderSection(
-                    folder: folder,
+        switch mode {
+        case .detail:
+            List {
+                ImageSection(
+                    bookmark: bookmark,
+                    onClickOpenLink: onClickOpenLink
+                ).redacted(reason: isLoading ? .placeholder : [])
+                InfoSection(bookmark: bookmark).redacted(reason: isLoading ? .placeholder : [])
+                if let folder {
+                    FolderSection(
+                        folder: folder,
+                        onCollectionNavigationCallback: onCollectionNavigationCallback
+                    )
+                }
+                TagsSection(
+                    tags: tags,
                     onCollectionNavigationCallback: onCollectionNavigationCallback
                 )
             }
-            TagsSection(
-                tags: tags,
-                onCollectionNavigationCallback: onCollectionNavigationCallback
-            )
+            .scrollContentBackground(.hidden)
+        case .reader:
+            if let html = bookmark.readableHTML {
+                ReaderView(html: html)
+            } else {
+                // TODO: ADD Content Unavailable View
+            }
         }
-        .scrollContentBackground(.hidden)
     }
 }
 
@@ -471,11 +494,18 @@ private struct OptionItems: View {
     @Binding
     var shouldShowDeleteDialog: Bool
     
+    let onModeChangeRequested: () -> Void
     let onRefresh: () -> Void
     
     var body: some View {
         #if targetEnvironment(macCatalyst)
         HStack(spacing: 0) {
+            /** TODO: ENABLE WHEN READER MODE IS READY
+            MacOSHoverableToolbarIcon(
+                bundleKey: "text-font",
+                onPressed: onModeChangeRequested
+            )
+            .tint(.green)*/
             MacOSHoverableToolbarIcon(
                 bundleKey: "edit-02",
                 onPressed: {

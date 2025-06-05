@@ -9,6 +9,10 @@ import Foundation
 import SwiftUI
 import SwiftData
 
+internal enum DetailMode {
+    case detail, reader
+}
+
 @MainActor
 @Observable
 internal class BookmarkDetailState {
@@ -21,6 +25,7 @@ internal class BookmarkDetailState {
     var shouldShowDeleteDialog: Bool = false
     var shouldShowShareDialog: Bool = false
     var isLoading: Bool = false
+    var currentMode: DetailMode = .detail
     
     var meshColor: Color
     var folder: YabaCollection?
@@ -52,6 +57,15 @@ internal class BookmarkDetailState {
         }
     }
     
+    func changeMode() {
+        withAnimation {
+            currentMode = switch currentMode {
+            case .detail: .reader
+            case .reader: .detail
+            }
+        }
+    }
+    
     func onClickOpenLink(using bookmark: YabaBookmark?) {
         if let link = bookmark?.link,
            let url = URL(string: link) {
@@ -77,6 +91,7 @@ internal class BookmarkDetailState {
                 bookmark.iconUrl = fetched.iconURL
                 bookmark.imageUrl = fetched.imageURL
                 bookmark.videoUrl = fetched.videoURL
+                bookmark.readableHTML = fetched.readableHTML
                 bookmark.iconDataHolder = .init(data: fetched.iconData)
                 bookmark.imageDataHolder = .init(data: fetched.imageData)
                 bookmark.editedAt = .now

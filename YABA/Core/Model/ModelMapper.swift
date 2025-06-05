@@ -55,6 +55,7 @@ extension YabaBookmark {
             imageUrl: self.imageUrl,
             iconUrl: self.iconUrl,
             videoUrl: self.videoUrl,
+            readableHTML: self.readableHTML,
             type: self.type
         )
     }
@@ -78,6 +79,7 @@ extension YabaCodableBookmark {
             imageUrl: self.imageUrl,
             iconUrl: self.iconUrl,
             videoUrl: self.videoUrl,
+            readableHTML: self.readableHTML,
             type: type,
             collections: [] // This will be handled by another iteration
         )

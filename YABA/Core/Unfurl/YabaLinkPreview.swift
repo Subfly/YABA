@@ -17,4 +17,5 @@ struct YabaLinkPreview {
     let videoURL: String?
     let iconData: Data?
     let imageData: Data?
+    let readableHTML: String?
 }

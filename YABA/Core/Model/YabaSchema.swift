@@ -35,6 +35,7 @@ enum YabaSchemaV1: VersionedSchema {
         var iconUrl: String?
         var iconDataHolder: DataHolder?
         var videoUrl: String?
+        var readableHTML: String?
         var type: Int
         var collections: [YabaCollection]
         
@@ -55,6 +56,7 @@ enum YabaSchemaV1: VersionedSchema {
             imageUrl: String?,
             iconUrl: String?,
             videoUrl: String?,
+            readableHTML: String?,
             type: BookmarkType,
             collections: [YabaCollection] = []
         ) {
@@ -70,6 +72,7 @@ enum YabaSchemaV1: VersionedSchema {
             self.imageUrl = imageUrl
             self.iconUrl = iconUrl
             self.videoUrl = videoUrl
+            self.readableHTML = readableHTML
             self.type = type.rawValue
             self.collections = collections
         }

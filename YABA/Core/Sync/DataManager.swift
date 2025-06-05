@@ -114,7 +114,7 @@ class DataManager {
         }
         
         let header = rows[0].components(separatedBy: ",")
-        guard header.count == 11 else {
+        guard header.count == 12 else {
             throw DataError.invalidCSVEncoding("Data Manager Invalid CSV Encoding Message")
         }
         
@@ -151,7 +151,8 @@ class DataManager {
                 imageUrl: columns[7],
                 iconUrl: columns[8],
                 videoUrl: columns[9],
-                type: Int(columns[10]) ?? 1
+                readableHTML: columns[10],
+                type: Int(columns[11]) ?? 1
             ).mapToModel()
             
             try? YabaDataLogger.shared.logBookmarkChange(
@@ -254,6 +255,7 @@ class DataManager {
                 imageUrl: nil,
                 iconUrl: nil,
                 videoUrl: nil,
+                readableHTML: nil,
                 type: 1
             ).mapToModel()
             
@@ -362,7 +364,7 @@ class DataManager {
     private func makeCSV(from bookmarks: [YabaCodableBookmark]) -> Data? {
         let header = [
             "bookmarkId", "label", "bookmarkDescription", "link", "domain",
-            "createdAt", "editedAt", "imageUrl", "iconUrl", "videoUrl", "type"
+            "createdAt", "editedAt", "imageUrl", "iconUrl", "videoUrl", "readableHTML", "type"
         ]
         
         let rows: [String] = bookmarks.map(toCSVRow(_:))
@@ -382,7 +384,7 @@ class DataManager {
     
     private func toCSVRow(_ bookmark: YabaCodableBookmark) -> String {
         let currentDate = Date.now.ISO8601Format()
-        let list = [
+        var list = [
             bookmark.bookmarkId ?? UUID().uuidString,
             bookmark.label ?? bookmark.link,
             bookmark.bookmarkDescription ?? "",
@@ -393,8 +395,9 @@ class DataManager {
             bookmark.imageUrl ?? "",
             bookmark.iconUrl ?? "",
             bookmark.videoUrl ?? "",
-            String(bookmark.type ?? 1)
+            bookmark.readableHTML ?? ""
         ]
+        list.append(String(bookmark.type ?? 1)) // Thanks Swift for not allowing me to put more than 10 items in the list above...
         return list.map { escapeForCSV($0) }.joined(separator: ",")
     }
 
