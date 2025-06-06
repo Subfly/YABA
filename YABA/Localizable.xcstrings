@@ -1411,6 +1411,18 @@
         }
       }
     },
+    "Notifications Disabled Message" : {
+      "comment" : "Message to show when user disabled the notifications",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notifications are disabled. Enable them from settings."
+          }
+        }
+      }
+    },
     "Ok" : {
       "comment" : "Text to show in toast as a done action",
       "extractionState" : "manual",
@@ -2103,6 +2115,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Refresh"
+          }
+        }
+      }
+    },
+    "Remind Me" : {
+      "comment" : "Label to show in menus where user can set a reminder",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remind Me"
           }
         }
       }

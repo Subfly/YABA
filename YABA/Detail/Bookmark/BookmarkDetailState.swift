@@ -22,6 +22,7 @@ internal class BookmarkDetailState {
     let toastManager: ToastManager = .init()
     
     var shouldShowEditBookmarkSheet: Bool = false
+    var shouldShowTimePicker: Bool = false
     var shouldShowDeleteDialog: Bool = false
     var shouldShowShareDialog: Bool = false
     var isLoading: Bool = false
@@ -55,6 +56,42 @@ internal class BookmarkDetailState {
         if meshColor != newColor {
             meshColor = newColor
         }
+    }
+    
+    func onNotificationPermissionRequested(
+        onSuccessCalback: @escaping () -> Void
+    ) {
+        UNUserNotificationCenter
+            .current()
+            .requestAuthorization(options: [.alert, .badge, .sound]) { [weak self] success, error in
+                if success {
+                    onSuccessCalback()
+                } else if let error {
+                    self?.toastManager.show(
+                        message: LocalizedStringKey("Notifications Disabled Message"),
+                        accentColor: .red,
+                        acceptText: LocalizedStringKey("Ok"),
+                        iconType: .error,
+                        onAcceptPressed: { self?.toastManager.hide() }
+                    )
+                }
+        }
+    }
+    
+    func addRemindMe(to bookmark: YabaBookmark) {
+        let content = UNMutableNotificationContent()
+        content.title = "Feed the cat"
+        content.subtitle = "It looks hungry"
+        content.sound = UNNotificationSound.default
+
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+        let request = UNNotificationRequest(
+            identifier: bookmark.bookmarkId,
+            content: content,
+            trigger: trigger
+        )
+
+        UNUserNotificationCenter.current().add(request)
     }
     
     func changeMode() {

@@ -148,6 +148,7 @@ private struct BookmarkDetail: View {
                 ToolbarItem(placement: .primaryAction) {
                     OptionItems(
                         shouldShowEditBookmarkSheet: $state.shouldShowEditBookmarkSheet,
+                        shouldShowTimePicker: $state.shouldShowTimePicker,
                         shouldShowShareDialog: $state.shouldShowShareDialog,
                         shouldShowDeleteDialog: $state.shouldShowDeleteDialog,
                         onModeChangeRequested: {
@@ -489,6 +490,9 @@ private struct OptionItems: View {
     var shouldShowEditBookmarkSheet: Bool
     
     @Binding
+    var shouldShowTimePicker: Bool
+    
+    @Binding
     var shouldShowShareDialog: Bool
     
     @Binding
@@ -545,6 +549,17 @@ private struct OptionItems: View {
                         .scaledToFit()
                 }
             }.tint(.orange)
+            /**TODO: ENABLE WHEN REMINDERS ARE READY
+            Button {
+                shouldShowTimePicker = true
+            } label: {
+                Label {
+                    Text("Remind Me")
+                } icon: {
+                    YabaIconView(bundleKey: "notification-01")
+                        .scaledToFit()
+                }
+            }.tint(.yellow)*/
             Button {
                 onRefresh()
             } label: {
