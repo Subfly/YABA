@@ -98,7 +98,7 @@ private struct ListSection<NoCollectionView: View>: View {
                             )
                         }
                         if isExpandedMobile {
-                            ForEach(collections.suffix(from: 11)) { collection in
+                            ForEach(collections.suffix(from: 10)) { collection in
                                 CollectionItemView(
                                     collection: collection,
                                     isInSelectionMode: false,

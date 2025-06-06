@@ -114,7 +114,7 @@ struct HomeView: View {
                 onNavigationCallbackForSettings: onNavigationCallbackForSettings
             )
         }
-        .onChange(of: deepLinkManager.request) { oldValue, newValue in
+        .onChange(of: deepLinkManager.saveRequest) { oldValue, newValue in
             if oldValue == nil {
                 if let newRequest = newValue {
                     homeState.saveBookmarkRequest = newRequest

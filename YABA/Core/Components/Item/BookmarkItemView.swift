@@ -64,6 +64,10 @@ struct BookmarkItemView: View {
                 AlertActionItems(
                     state: $itemState,
                     onDeleteCallback: {
+                        UNUserNotificationCenter.current().removePendingNotificationRequests(
+                            withIdentifiers: [bookmark.bookmarkId]
+                        )
+                        
                         try? YabaDataLogger.shared.logBookmarkDelete(
                             id: bookmark.bookmarkId,
                             shouldSave: false

@@ -11,6 +11,9 @@ import TipKit
 
 @main
 struct YABAApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self)
+    private var appDelegate
+    
     @AppStorage(Constants.preferredThemeKey)
     private var preferredTheme: ThemeType = .system
     
@@ -45,6 +48,11 @@ struct YABAApp: App {
                     deepLinkManager.handleDeepLink(url)
                 }
             #endif
+                .onReceive(NotificationCenter.default.publisher(for: .didReceiveDeepLink)) { notif in
+                    if let url = notif.object as? URL {
+                        deepLinkManager.handleDeepLink(url)
+                    }
+                }
         }
     }
     

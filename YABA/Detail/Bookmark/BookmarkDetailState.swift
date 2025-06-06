@@ -26,9 +26,12 @@ internal class BookmarkDetailState {
     var shouldShowDeleteDialog: Bool = false
     var shouldShowShareDialog: Bool = false
     var isLoading: Bool = false
+    
     var currentMode: DetailMode = .detail
+    var selectedReminderDate: Date?
     
     var meshColor: Color
+    var reminderDate: Date?
     var folder: YabaCollection?
     var tags: [YabaCollection]
     
@@ -37,6 +40,16 @@ internal class BookmarkDetailState {
         folder = newFolder
         tags = bookmark?.collections.filter { $0.collectionType == .tag } ?? []
         meshColor = newFolder?.color.getUIColor() ?? .accentColor
+        
+        UNUserNotificationCenter.current().getPendingNotificationRequests { [weak self] requests in
+            if let request = requests.first(where: { $0.identifier == bookmark?.bookmarkId }),
+               let calendarTrigger = request.trigger as? UNCalendarNotificationTrigger {
+                let triggerDateComponents = calendarTrigger.dateComponents
+                if let fireDate = Calendar.current.date(from: triggerDateComponents) {
+                    self?.reminderDate = fireDate
+                }
+            }
+        }
     }
     
     // Only for !iOS devices
@@ -56,10 +69,23 @@ internal class BookmarkDetailState {
         if meshColor != newColor {
             meshColor = newColor
         }
+        
+        UNUserNotificationCenter.current().getPendingNotificationRequests { [weak self] requests in
+            if let request = requests.first(where: { $0.identifier == newBookmarkData?.bookmarkId }),
+               let calendarTrigger = request.trigger as? UNCalendarNotificationTrigger {
+                let triggerDateComponents = calendarTrigger.dateComponents
+                if let fireDate = Calendar.current.date(from: triggerDateComponents) {
+                    self?.reminderDate = fireDate
+                }
+            }
+        }
+        
+        selectedReminderDate = nil
     }
     
     func onNotificationPermissionRequested(
-        onSuccessCalback: @escaping () -> Void
+        onSuccessCalback: @escaping () -> Void,
+        onDeclineCallback: @escaping () -> Void
     ) {
         UNUserNotificationCenter
             .current()
@@ -67,6 +93,7 @@ internal class BookmarkDetailState {
                 if success {
                     onSuccessCalback()
                 } else if error != nil {
+                    onDeclineCallback()
                     self?.toastManager.show(
                         message: LocalizedStringKey("Notifications Disabled Message"),
                         accentColor: .red,
@@ -79,19 +106,70 @@ internal class BookmarkDetailState {
     }
     
     func addRemindMe(to bookmark: YabaBookmark) {
+        guard let selectedReminderDate else { return }
+        
+        onRemoveReminder(from: bookmark)
+        
+        let notificationTitle = [
+            "Notification Title 1",
+            "Notification Title 2",
+            "Notification Title 3",
+            "Notification Title 4",
+            "Notification Title 5"
+        ].randomElement() ?? "Notification Title 1"
+        
+        let subtitleKey = [
+            "Notification Message 1 %@",
+            "Notification Message 2 %@",
+            "Notification Message 3 %@",
+            "Notification Message 4 %@",
+            "Notification Message 5 %@"
+        ].randomElement() ?? "Notification Message 1 %@"
+        let notificationSubtitle = String.localizedStringWithFormat(
+            String(localized: .init(subtitleKey)),
+            bookmark.label
+        )
+        
         let content = UNMutableNotificationContent()
-        content.title = "Feed the cat"
-        content.subtitle = "It looks hungry"
+        content.title = String(localized: .init(notificationTitle))
+        content.subtitle = String(localized: .init(notificationSubtitle))
         content.sound = UNNotificationSound.default
-
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+        content.interruptionLevel = .timeSensitive
+        content.userInfo = [
+            "id": bookmark.bookmarkId
+        ]
+        
+        let triggerDate = Calendar.current.dateComponents(
+            [.year, .month, .day, .hour, .minute, .second],
+            from: selectedReminderDate
+        )
+        let trigger = UNCalendarNotificationTrigger(dateMatching: triggerDate, repeats: false)
+        
         let request = UNNotificationRequest(
             identifier: bookmark.bookmarkId,
             content: content,
             trigger: trigger
         )
-
         UNUserNotificationCenter.current().add(request)
+        
+        withAnimation {
+            reminderDate = selectedReminderDate
+        }
+        let formattedDate = selectedReminderDate.formatted(date: .abbreviated, time: .shortened)
+        toastManager.show(
+            message: LocalizedStringKey("Setup Reminder Success Message \(formattedDate)"),
+            accentColor: .green,
+            acceptText: LocalizedStringKey("Ok"),
+            iconType: .success,
+            onAcceptPressed: { self.toastManager.hide() }
+        )
+    }
+    
+    func onRemoveReminder(from bookmark: YabaBookmark) {
+        UNUserNotificationCenter.current().removePendingNotificationRequests(
+            withIdentifiers: [bookmark.bookmarkId]
+        )
+        reminderDate = nil
     }
     
     func changeMode() {

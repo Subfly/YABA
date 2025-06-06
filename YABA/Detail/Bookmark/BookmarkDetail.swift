@@ -9,8 +9,14 @@ import SwiftUI
 import TipKit
 
 struct GeneralBookmarkDetail: View {
+    @Environment(\.deepLinkManager)
+    private var deepLinkManager
+    
     @Environment(\.appState)
     private var appState
+    
+    @Environment(\.modelContext)
+    private var modelContext
     
     let onCollectionNavigationCallback: (YabaCollection) -> Void
     let onDeleteBookmarkCallback: (YabaBookmark) -> Void
@@ -24,6 +30,19 @@ struct GeneralBookmarkDetail: View {
                 onDeleteBookmarkCallback(bookmark)
             }
         )
+        .onChange(of: deepLinkManager.openRequest) { oldValue, newValue in
+            if oldValue == nil {
+                if let newRequest = newValue {
+                    let id = newRequest.bookmarkId
+                    if let bookmarks = try? modelContext.fetch(
+                        .init(predicate: #Predicate<YabaBookmark> { $0.bookmarkId ==  id })
+                    ), let bookmark = bookmarks.first {
+                        appState.selectedBookmark = bookmark
+                    }
+                    deepLinkManager.onHandleDeeplink()
+                }
+            }
+        }
     }
 }
 
@@ -75,12 +94,16 @@ private struct BookmarkDetail: View {
                 GeometryReader { proxy in
                     MainContent(
                         bookmark: bookmark,
+                        reminderDate: state.reminderDate,
                         folder: state.folder,
                         tags: state.tags,
                         mode: state.currentMode,
                         isLoading: state.isLoading,
                         onClickOpenLink: {
                             state.onClickOpenLink(using: bookmark)
+                        },
+                        onDeleteNotification: {
+                            state.onRemoveReminder(from: bookmark)
                         },
                         onCollectionNavigationCallback: onCollectionNavigationCallback
                     )
@@ -90,12 +113,16 @@ private struct BookmarkDetail: View {
                 #else
                 MainContent(
                     bookmark: bookmark,
+                    reminderDate: state.reminderDate,
                     folder: state.folder,
                     tags: state.tags,
                     mode: state.currentMode,
                     isLoading: state.isLoading,
                     onClickOpenLink: {
                         state.onClickOpenLink(using: bookmark)
+                    },
+                    onDeleteNotification: {
+                        state.onRemoveReminder(from: bookmark)
                     },
                     onCollectionNavigationCallback: onCollectionNavigationCallback
                 )
@@ -190,6 +217,9 @@ private struct BookmarkDetail: View {
                     .presentationDragIndicator(.visible)
             }
         }
+        .sheet(isPresented: $state.shouldShowTimePicker) {
+            setupReminderContent
+        }
         .toast(
             state: state.toastManager.toastState,
             isShowing: state.toastManager.isShowing,
@@ -213,6 +243,15 @@ private struct BookmarkDetail: View {
         Button(role: .destructive) {
             withAnimation {
                 if let bookmark {
+                    UNUserNotificationCenter.current().removePendingNotificationRequests(
+                        withIdentifiers: [bookmark.bookmarkId]
+                    )
+                    
+                    try? YabaDataLogger.shared.logBookmarkDelete(
+                        id: bookmark.bookmarkId,
+                        shouldSave: false
+                    )
+                    
                     modelContext.delete(bookmark)
                     try? modelContext.save()
                     state.shouldShowDeleteDialog = false
@@ -223,15 +262,60 @@ private struct BookmarkDetail: View {
             Text("Delete")
         }
     }
+    
+    @ViewBuilder
+    private var setupReminderContent: some View {
+        NavigationView {
+            DatePicker(
+                "Setup Reminder Picker Title",
+                selection: .init(
+                    get: { state.selectedReminderDate ?? Date.now },
+                    set: { state.selectedReminderDate = $0 }
+                ),
+                in: Date.now...,
+                displayedComponents: [.date, .hourAndMinute]
+            )
+            .datePickerStyle(GraphicalDatePickerStyle())
+            .padding(.horizontal)
+            .navigationTitle("Setup Reminder Title")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel", role: .cancel) {
+                        state.shouldShowTimePicker = false
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") {
+                        state.onNotificationPermissionRequested(
+                            onSuccessCalback: {
+                                if let bookmark {
+                                    state.addRemindMe(to: bookmark)
+                                }
+                                state.shouldShowTimePicker = false
+                            },
+                            onDeclineCallback: {
+                                state.shouldShowTimePicker = false
+                            }
+                        )
+                    }.disabled(state.selectedReminderDate == nil)
+                }
+            }
+            .onDisappear {
+                state.selectedReminderDate = nil
+            }
+        }
+    }
 }
 
 private struct MainContent: View {
     let bookmark: YabaBookmark
+    let reminderDate: Date?
     let folder: YabaCollection?
     let tags: [YabaCollection]
     let mode: DetailMode
     let isLoading: Bool
     let onClickOpenLink: () -> Void
+    let onDeleteNotification: () -> Void
     let onCollectionNavigationCallback: (YabaCollection) -> Void
     
     var body: some View {
@@ -242,7 +326,11 @@ private struct MainContent: View {
                     bookmark: bookmark,
                     onClickOpenLink: onClickOpenLink
                 ).redacted(reason: isLoading ? .placeholder : [])
-                InfoSection(bookmark: bookmark).redacted(reason: isLoading ? .placeholder : [])
+                InfoSection(
+                    bookmark: bookmark,
+                    reminderDate: reminderDate,
+                    onDeleteNotification: onDeleteNotification
+                ).redacted(reason: isLoading ? .placeholder : [])
                 if let folder {
                     FolderSection(
                         folder: folder,
@@ -340,6 +428,8 @@ private struct ImageSection: View {
 
 private struct InfoSection: View {
     let bookmark: YabaBookmark
+    let reminderDate: Date?
+    let onDeleteNotification: () -> Void
     
     var body: some View {
         Section {
@@ -402,6 +492,29 @@ private struct InfoSection: View {
                     }
                     Spacer()
                     Text(bookmark.editedAt.formatted(date: .abbreviated, time: .shortened))
+                }
+            }
+            
+            if let reminderDate {
+                HStack {
+                    HStack {
+                        YabaIconView(bundleKey: "notification-01")
+                            .scaledToFit()
+                            .frame(width: 20, height: 20)
+                            .foregroundStyle(.tint)
+                        Text("Bookmark Detail Remind Me Title")
+                    }
+                    Spacer()
+                    Text(reminderDate.formatted(date: .abbreviated, time: .shortened))
+                }.swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                    Button(role: .destructive) {
+                        onDeleteNotification()
+                    } label: {
+                        VStack {
+                            YabaIconView(bundleKey: "delete-02")
+                            Text("Delete")
+                        }
+                    }.tint(.red)
                 }
             }
         } header: {
@@ -516,6 +629,13 @@ private struct OptionItems: View {
             )
             .tint(.orange)
             MacOSHoverableToolbarIcon(
+                bundleKey: "notification-01",
+                onPressed: {
+                    shouldShowTimePicker = true
+                }
+            )
+            .tint(.yellow)
+            MacOSHoverableToolbarIcon(
                 bundleKey: "refresh",
                 onPressed: onRefresh
             )
@@ -547,7 +667,6 @@ private struct OptionItems: View {
                         .scaledToFit()
                 }
             }.tint(.orange)
-            /**TODO: ENABLE WHEN REMINDERS ARE READY
             Button {
                 shouldShowTimePicker = true
             } label: {
@@ -557,7 +676,7 @@ private struct OptionItems: View {
                     YabaIconView(bundleKey: "notification-01")
                         .scaledToFit()
                 }
-            }.tint(.yellow)*/
+            }.tint(.yellow)
             Button {
                 onRefresh()
             } label: {

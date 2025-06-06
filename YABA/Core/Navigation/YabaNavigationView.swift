@@ -112,6 +112,12 @@ private struct GenericNavigationView: View {
 }
 
 private struct MobileNavigationView: View {
+    @Environment(\.deepLinkManager)
+    private var deepLinkManager
+    
+    @Environment(\.modelContext)
+    private var modelContext
+    
     @State
     private var path: [NavigationDestination] = []
     
@@ -176,6 +182,19 @@ private struct MobileNavigationView: View {
             SettingsView()
                 .navigationBarBackButtonHidden()
                 .interactiveDismissDisabled()
+        }
+        .onChange(of: deepLinkManager.openRequest) { oldValue, newValue in
+            if oldValue == nil {
+                if let newRequest = newValue {
+                    let id = newRequest.bookmarkId
+                    if let bookmarks = try? modelContext.fetch(
+                        .init(predicate: #Predicate<YabaBookmark> { $0.bookmarkId ==  id })
+                    ), let bookmark = bookmarks.first {
+                        path.append(.bookmarkDetail(bookmark: bookmark))
+                    }
+                    deepLinkManager.onHandleDeeplink()
+                }
+            }
         }
     }
 }

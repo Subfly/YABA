@@ -152,6 +152,18 @@
         }
       }
     },
+    "Bookmark Detail Remind Me Title" : {
+      "comment" : "Title to show in bookmark detail view for reminder that set up",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reminder set at"
+          }
+        }
+      }
+    },
     "Bookmark Detail Title" : {
       "comment" : "Title to show in bookmark detail view",
       "localizations" : {
@@ -1411,6 +1423,126 @@
         }
       }
     },
+    "Notification Message 1 %@" : {
+      "comment" : "Random message for notification",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@” — past you had taste"
+          }
+        }
+      }
+    },
+    "Notification Message 2 %@" : {
+      "comment" : "Random message for notification",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@” is collecting digital dust"
+          }
+        }
+      }
+    },
+    "Notification Message 3 %@" : {
+      "comment" : "Random message for notification",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@” deserves your attention"
+          }
+        }
+      }
+    },
+    "Notification Message 4 %@" : {
+      "comment" : "Random message for notification",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "But “%@” isn’t gonna read itself"
+          }
+        }
+      }
+    },
+    "Notification Message 5 %@" : {
+      "comment" : "Random message for notification",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@” is starting to wonder"
+          }
+        }
+      }
+    },
+    "Notification Title 1" : {
+      "comment" : "Random title for notification",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your brain saved this for a reason"
+          }
+        }
+      }
+    },
+    "Notification Title 2" : {
+      "comment" : "Random title for notification",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Still haven’t read this?"
+          }
+        }
+      }
+    },
+    "Notification Title 3" : {
+      "comment" : "Random title for notification",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚠️ URGENT: Bookmark neglected"
+          }
+        }
+      }
+    },
+    "Notification Title 4" : {
+      "comment" : "Random title for notification",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hey, no rush…"
+          }
+        }
+      }
+    },
+    "Notification Title 5" : {
+      "comment" : "Random title for notification",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Are you ghosting this bookmark?"
+          }
+        }
+      }
+    },
     "Notifications Disabled Message" : {
       "comment" : "Message to show when user disabled the notifications",
       "extractionState" : "manual",
@@ -2606,6 +2738,42 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Settings"
+          }
+        }
+      }
+    },
+    "Setup Reminder Picker Title" : {
+      "comment" : "Title to show as a picker title in the create a reminder sheet",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remind me at:"
+          }
+        }
+      }
+    },
+    "Setup Reminder Success Message %@" : {
+      "comment" : "Message to show at toast when reminder set successfully",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Setup reminder at %@"
+          }
+        }
+      }
+    },
+    "Setup Reminder Title" : {
+      "comment" : "Title to show as a navigation title in the create a reminder sheet",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Setup Reminder"
           }
         }
       }

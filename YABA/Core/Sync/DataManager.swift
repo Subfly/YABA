@@ -325,6 +325,9 @@ class DataManager {
         onFinishCallback: @escaping () -> Void
     ) {
         Task { @MainActor in
+            UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+            UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+            
             try? YabaDataLogger.shared.logBulkDelete(shouldSave: false)
             
             try? modelContext.delete(model: YabaBookmark.self)

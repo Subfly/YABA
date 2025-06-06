@@ -92,6 +92,11 @@ struct CollectionItemView: View {
             AlertActionItems(
                 state: $itemState,
                 onDeleteCallback: {
+                    let bookmarkIds = collection.bookmarks.map { $0.bookmarkId }
+                    UNUserNotificationCenter.current().removePendingNotificationRequests(
+                        withIdentifiers: bookmarkIds
+                    )
+                    
                     try? YabaDataLogger.shared.logCollectionDelete(
                         id: collection.collectionId,
                         shouldSave: false
