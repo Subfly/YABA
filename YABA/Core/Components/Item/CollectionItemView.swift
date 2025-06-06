@@ -77,7 +77,8 @@ struct CollectionItemView: View {
         .contextMenu {
             MenuActionItems(
                 state: $itemState,
-                isInSelectionMode: isInSelectionMode
+                isInSelectionMode: isInSelectionMode,
+                isInBookmarkDetail: isInBookmarkDetail
             )
         }
         .alert(
@@ -147,7 +148,8 @@ private struct MainLabel: View {
             ListView(
                 collection: collection,
                 state: $state,
-                isInSelectionMode: isInSelectionMode
+                isInSelectionMode: isInSelectionMode,
+                isInBookmarkDetail: isInBookmarkDetail
             )
         } else {
             if isInBookmarkDetail {
@@ -157,14 +159,16 @@ private struct MainLabel: View {
                     ListView(
                         collection: collection,
                         state: $state,
-                        isInSelectionMode: isInSelectionMode
+                        isInSelectionMode: isInSelectionMode,
+                        isInBookmarkDetail: isInBookmarkDetail
                     )
                 }.buttonStyle(.plain)
             } else {
                 ListView(
                     collection: collection,
                     state: $state,
-                    isInSelectionMode: isInSelectionMode
+                    isInSelectionMode: isInSelectionMode,
+                    isInBookmarkDetail: isInBookmarkDetail
                 )
                 .onTapGesture {
                     onNavigationCallback()
@@ -181,6 +185,7 @@ private struct ListView: View {
     var state: ItemState
     
     let isInSelectionMode: Bool
+    let isInBookmarkDetail: Bool
     
     var body: some View {
         HStack {
@@ -201,7 +206,8 @@ private struct ListView: View {
                     Menu {
                         MenuActionItems(
                             state: $state,
-                            isInSelectionMode: isInSelectionMode
+                            isInSelectionMode: isInSelectionMode,
+                            isInBookmarkDetail: isInBookmarkDetail
                         )
                     } label: {
                         YabaIconView(bundleKey: "more-horizontal-circle-02")
@@ -228,14 +234,16 @@ private struct ListView: View {
     
     @ViewBuilder
     private var swipeActionItems: some View {
-        Button {
-            state.shouldShowDeleteDialog = true
-        } label: {
-            VStack {
-                YabaIconView(bundleKey: "delete-02")
-                Text("Delete")
-            }
-        }.tint(.red)
+        if !isInBookmarkDetail {
+            Button {
+                state.shouldShowDeleteDialog = true
+            } label: {
+                VStack {
+                    YabaIconView(bundleKey: "delete-02")
+                    Text("Delete")
+                }
+            }.tint(.red)
+        }
         Button {
             state.shouldShowEditSheet = true
         } label: {
@@ -264,6 +272,7 @@ private struct GridView: View {
     var state: ItemState
     
     let isInSelectionMode: Bool
+    let isInBookmarkDetail: Bool
     
     var body: some View {
         VStack(spacing: 8) {
@@ -279,7 +288,8 @@ private struct GridView: View {
                         Menu {
                             MenuActionItems(
                                 state: $state,
-                                isInSelectionMode: isInSelectionMode
+                                isInSelectionMode: isInSelectionMode,
+                                isInBookmarkDetail: isInBookmarkDetail
                             )
                         } label: {
                             YabaIconView(bundleKey: "more-horizontal-circle-02")
@@ -292,7 +302,8 @@ private struct GridView: View {
                     Menu {
                         MenuActionItems(
                             state: $state,
-                            isInSelectionMode: isInSelectionMode
+                            isInSelectionMode: isInSelectionMode,
+                            isInBookmarkDetail: isInBookmarkDetail
                         )
                     } label: {
                         YabaIconView(bundleKey: "more-horizontal-circle-02")
@@ -339,6 +350,7 @@ private struct MenuActionItems: View {
     var state: ItemState
     
     let isInSelectionMode: Bool
+    let isInBookmarkDetail: Bool
     
     var body: some View {
         if !isInSelectionMode {
@@ -359,14 +371,16 @@ private struct MenuActionItems: View {
                 Text("Edit")
             }
         }.tint(.orange)
-        Button(role: .destructive) {
-            state.shouldShowDeleteDialog = true
-        } label: {
-            VStack {
-                YabaIconView(bundleKey: "delete-02")
-                Text("Delete")
-            }
-        }.tint(.red)
+        if !isInBookmarkDetail {
+            Button(role: .destructive) {
+                state.shouldShowDeleteDialog = true
+            } label: {
+                VStack {
+                    YabaIconView(bundleKey: "delete-02")
+                    Text("Delete")
+                }
+            }.tint(.red)
+        }
     }
 }
 
