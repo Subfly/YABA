@@ -2107,6 +2107,30 @@
         }
       }
     },
+    "Reader Not Available Description" : {
+      "comment" : "Description to show in content unavailable view when reader is not available",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reader Mode is unavailable for this page. The content may be hidden behind a paywall, require a login, be dynamically loaded with JavaScript, or lack a clear article structure. Some websites also restrict access to their content to protect copyrights or user privacy."
+          }
+        }
+      }
+    },
+    "Reader Not Available Title" : {
+      "comment" : "Title to show in content unavailable view when reader is not available",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reader Not Available"
+          }
+        }
+      }
+    },
     "Refresh" : {
       "comment" : "Label to show for refresh related functions",
       "extractionState" : "manual",

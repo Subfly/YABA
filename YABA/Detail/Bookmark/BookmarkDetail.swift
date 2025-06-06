@@ -135,14 +135,13 @@ private struct BookmarkDetail: View {
                         YabaIconView(bundleKey: "arrow-left-01")
                     }
                 }
-                /** TODO: ENABLE WHEN READER MODE IS READY
                 ToolbarItem(placement: .primaryAction) {
                     Button {
                         state.changeMode()
                     } label: {
                         YabaIconView(bundleKey: "text-font")
                     }
-                }*/
+                }
             }
             if bookmark != nil {
                 ToolbarItem(placement: .primaryAction) {
@@ -260,7 +259,7 @@ private struct MainContent: View {
             if let html = bookmark.readableHTML {
                 ReaderView(html: html)
             } else {
-                // TODO: ADD Content Unavailable View
+                ReaderNotAvaialbleView()
             }
         }
     }
@@ -504,12 +503,11 @@ private struct OptionItems: View {
     var body: some View {
         #if targetEnvironment(macCatalyst)
         HStack(spacing: 0) {
-            /** TODO: ENABLE WHEN READER MODE IS READY
             MacOSHoverableToolbarIcon(
                 bundleKey: "text-font",
                 onPressed: onModeChangeRequested
             )
-            .tint(.green)*/
+            .tint(.green)
             MacOSHoverableToolbarIcon(
                 bundleKey: "edit-02",
                 onPressed: {

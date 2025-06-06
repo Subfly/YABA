@@ -66,7 +66,7 @@ internal class BookmarkDetailState {
             .requestAuthorization(options: [.alert, .badge, .sound]) { [weak self] success, error in
                 if success {
                     onSuccessCalback()
-                } else if let error {
+                } else if error != nil {
                     self?.toastManager.show(
                         message: LocalizedStringKey("Notifications Disabled Message"),
                         accentColor: .red,
