@@ -81,6 +81,9 @@ struct SettingsView: View {
             themeAndLangaugeSection
             appearanceSection
             dataSection
+            #if DEBUG
+            developerSection
+            #endif
         }
         .listStyle(.sidebar)
         .scrollContentBackground(.hidden)
@@ -126,7 +129,20 @@ struct SettingsView: View {
             importButton
             exportButton
             deleteAllButton
-            #if DEBUG
+        } header: {
+            Label {
+                Text("Settings Data Title")
+            } icon: {
+                YabaIconView(bundleKey: "database")
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var developerSection: some View {
+        Section {
             HStack {
                 Label {
                     Text("Settings Event Logs Label")
@@ -145,12 +161,29 @@ struct SettingsView: View {
             .onTapGesture {
                 settingsState.onNavigateToLogs()
             }
-            #endif
+            HStack {
+                Label {
+                    Text("Settings Reset App Storage Label")
+                } icon: {
+                    YabaIconView(bundleKey: "folder-file-storage")
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                }
+                Spacer()
+                YabaIconView(bundleKey: "arrow-right-01")
+                    .scaledToFit()
+                    .frame(width: 24, height: 24)
+                    .foregroundStyle(.tertiary)
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
+                settingsState.onResetAppStorage()
+            }
         } header: {
             Label {
-                Text("Settings Data Title")
+                Text("Settings Developer Title")
             } icon: {
-                YabaIconView(bundleKey: "database")
+                YabaIconView(bundleKey: "code")
                     .scaledToFit()
                     .frame(width: 18, height: 18)
             }

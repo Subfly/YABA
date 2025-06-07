@@ -25,6 +25,7 @@ extension YabaBookmark {
             videoUrl: nil,
             readableHTML: nil,
             type: .none,
+            version: 0,
             collections: []
         )
     }
@@ -45,6 +46,7 @@ extension YabaBookmark {
             videoUrl: nil,
             readableHTML: nil,
             type: .none,
+            version: 0,
             collections: []
         )
     }

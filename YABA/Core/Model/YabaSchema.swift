@@ -37,6 +37,7 @@ enum YabaSchemaV1: VersionedSchema {
         var videoUrl: String?
         var readableHTML: String?
         var type: Int
+        var version: Int
         var collections: [YabaCollection]
         
         var bookmarkType: BookmarkType {
@@ -58,6 +59,7 @@ enum YabaSchemaV1: VersionedSchema {
             videoUrl: String?,
             readableHTML: String?,
             type: BookmarkType,
+            version: Int,
             collections: [YabaCollection] = []
         ) {
             self.bookmarkId = bookmarkId
@@ -74,6 +76,7 @@ enum YabaSchemaV1: VersionedSchema {
             self.videoUrl = videoUrl
             self.readableHTML = readableHTML
             self.type = type.rawValue
+            self.version = version
             self.collections = collections
         }
     }
@@ -90,6 +93,7 @@ enum YabaSchemaV1: VersionedSchema {
         var editedAt: Date
         var color: YabaColor
         var type: Int
+        var version: Int
         
         var collectionType: CollectionType {
             CollectionType(rawValue: type) ?? .folder
@@ -103,7 +107,8 @@ enum YabaSchemaV1: VersionedSchema {
             editedAt: Date,
             bookmarks: [Bookmark] = [],
             color: YabaColor,
-            type: CollectionType
+            type: CollectionType,
+            version: Int,
         ) {
             self.collectionId = collectionId
             self.label = label
@@ -113,9 +118,14 @@ enum YabaSchemaV1: VersionedSchema {
             self.icon = icon
             self.color = color
             self.type = type.rawValue
+            self.version = version
         }
     }
     
+    /**
+     - Initially designed to hold the all data.
+     - Now, it is just a tombstone of all delete operations.
+     */
     @Model
     final class DataLog {
         var logId: String

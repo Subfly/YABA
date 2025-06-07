@@ -199,20 +199,11 @@ struct CollectionCreationContent: View {
     func onDone() {
         withAnimation {
             if let collectionToEdit {
-                let oldCollection = collectionToEdit
-                
                 collectionToEdit.label = state.collectionName
                 collectionToEdit.icon = state.selectedIconName
                 collectionToEdit.color = state.selectedColor
                 collectionToEdit.editedAt = .now
-                
-                let newCollection = collectionToEdit
-                
-                try? YabaDataLogger.shared.logCollectionChange(
-                    old: oldCollection,
-                    new: newCollection,
-                    shouldSave: false
-                )
+                collectionToEdit.version += 1
                 
                 onEditCallback(collectionToEdit)
             } else {
@@ -223,13 +214,8 @@ struct CollectionCreationContent: View {
                     createdAt: .now,
                     editedAt: .now,
                     color: state.selectedColor,
-                    type: collectionType
-                )
-                
-                try? YabaDataLogger.shared.logCollectionChange(
-                    old: nil,
-                    new: collection,
-                    shouldSave: false
+                    type: collectionType,
+                    version: 0,
                 )
                 
                 modelContext.insert(collection)

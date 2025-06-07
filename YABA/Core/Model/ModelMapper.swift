@@ -19,7 +19,8 @@ extension YabaCollection {
             type: self.type,
             bookmarks: self.bookmarks.map { bookmark in
                 bookmark.bookmarkId
-            }
+            },
+            version: self.version
         )
     }
 }
@@ -37,7 +38,8 @@ extension YabaCodableCollection {
             editedAt: ISO8601DateFormatter().date(from: self.editedAt) ?? .now,
             bookmarks: [], // Set as empty as it will be filled in another iteration.
             color: color,
-            type: type
+            type: type,
+            version: self.version
         )
     }
 }
@@ -56,7 +58,8 @@ extension YabaBookmark {
             iconUrl: self.iconUrl,
             videoUrl: self.videoUrl,
             readableHTML: self.readableHTML,
-            type: self.type
+            type: self.type,
+            version: self.version
         )
     }
 }
@@ -81,6 +84,7 @@ extension YabaCodableBookmark {
             videoUrl: self.videoUrl,
             readableHTML: self.readableHTML,
             type: type,
+            version: self.version ?? 0,
             collections: [] // This will be handled by another iteration
         )
     }

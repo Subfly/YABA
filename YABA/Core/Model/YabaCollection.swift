@@ -19,7 +19,8 @@ extension YabaCollection {
             editedAt: .now,
             bookmarks: [],
             color: .none,
-            type: .folder
+            type: .folder,
+            version: 0,
         )
     }
     

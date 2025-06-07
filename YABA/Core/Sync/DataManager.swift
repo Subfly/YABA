@@ -48,19 +48,8 @@ class DataManager {
         if let collections = content.collections {
             collections.forEach { collection in
                 let collectionModel = collection.mapToModel()
-                try? YabaDataLogger.shared.logCollectionChange(
-                    old: nil,
-                    new: collectionModel,
-                    shouldSave: false
-                )
-                
                 collection.bookmarks.forEach { bookmarkId in
                     if let bookmarkModel = mappedBookmarks[bookmarkId] {
-                        try? YabaDataLogger.shared.logBookmarkChange(
-                            old: nil,
-                            new: bookmarkModel,
-                            shouldSave: false
-                        )
                         collectionModel.bookmarks.append(bookmarkModel)
                     }
                 }
@@ -76,21 +65,11 @@ class DataManager {
                 createdAt: creationTime,
                 editedAt: creationTime,
                 color: .none,
-                type: .folder
-            )
-            
-            try? YabaDataLogger.shared.logCollectionChange(
-                old: nil,
-                new: dummyFolder,
-                shouldSave: false
+                type: .folder,
+                version: 0
             )
             
             mappedBookmarks.values.forEach { bookmark in
-                try? YabaDataLogger.shared.logBookmarkChange(
-                    old: nil,
-                    new: bookmark,
-                    shouldSave: false
-                )
                 dummyFolder.bookmarks.append(bookmark)
             }
             
@@ -114,7 +93,7 @@ class DataManager {
         }
         
         let header = rows[0].components(separatedBy: ",")
-        guard header.count == 12 else {
+        guard header.count == 13 else {
             throw DataError.invalidCSVEncoding("Data Manager Invalid CSV Encoding Message")
         }
         
@@ -126,13 +105,8 @@ class DataManager {
             createdAt: creationTime,
             editedAt: creationTime,
             color: .none,
-            type: .folder
-        )
-        
-        try? YabaDataLogger.shared.logCollectionChange(
-            old: nil,
-            new: dummyFolder,
-            shouldSave: false
+            type: .folder,
+            version: 0
         )
         
         let bookmarkRows = rows.dropFirst()
@@ -152,14 +126,9 @@ class DataManager {
                 iconUrl: columns[8],
                 videoUrl: columns[9],
                 readableHTML: columns[10],
-                type: Int(columns[11]) ?? 1
+                type: Int(columns[11]) ?? 1,
+                version: Int(columns[12]) ?? 0,
             ).mapToModel()
-            
-            try? YabaDataLogger.shared.logBookmarkChange(
-                old: nil,
-                new: bookmark,
-                shouldSave: false
-            )
             
             dummyFolder.bookmarks.append(bookmark)
         }
@@ -200,13 +169,8 @@ class DataManager {
             createdAt: now,
             editedAt: now,
             color: .none,
-            type: .folder
-        )
-        
-        try? YabaDataLogger.shared.logCollectionChange(
-            old: nil,
-            new: dummyFolder,
-            shouldSave: false
+            type: .folder,
+            version: 0
         )
 
         for row in bookmarkRows {
@@ -256,14 +220,9 @@ class DataManager {
                 iconUrl: nil,
                 videoUrl: nil,
                 readableHTML: nil,
-                type: 1
+                type: 1,
+                version: 0,
             ).mapToModel()
-            
-            try? YabaDataLogger.shared.logBookmarkChange(
-                old: nil,
-                new: bookmark,
-                shouldSave: false
-            )
 
             dummyFolder.bookmarks.append(bookmark)
         }
@@ -367,7 +326,8 @@ class DataManager {
     private func makeCSV(from bookmarks: [YabaCodableBookmark]) -> Data? {
         let header = [
             "bookmarkId", "label", "bookmarkDescription", "link", "domain",
-            "createdAt", "editedAt", "imageUrl", "iconUrl", "videoUrl", "readableHTML", "type"
+            "createdAt", "editedAt", "imageUrl", "iconUrl", "videoUrl", 
+            "readableHTML", "type", "version"
         ]
         
         let rows: [String] = bookmarks.map(toCSVRow(_:))

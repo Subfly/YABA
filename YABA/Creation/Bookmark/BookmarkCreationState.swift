@@ -139,8 +139,6 @@ internal class BookmarkCreationState {
         
         withAnimation {
             if let bookmarkToEdit {
-                let bookmarkBeforeChange = bookmarkToEdit
-                
                 bookmarkToEdit.label = label
                 bookmarkToEdit.link = url
                 bookmarkToEdit.domain = host
@@ -153,6 +151,7 @@ internal class BookmarkCreationState {
                 bookmarkToEdit.iconDataHolder = .init(data: iconData)
                 bookmarkToEdit.imageDataHolder = .init(data: imageData)
                 bookmarkToEdit.editedAt = .now
+                bookmarkToEdit.version += 1
                 
                 // Folder changing
                 if let lastSelectedFolderIndex = bookmarkToEdit.collections.firstIndex(
@@ -168,25 +167,9 @@ internal class BookmarkCreationState {
                 // Tags changing
                 bookmarkToEdit.collections.removeAll { $0.collectionType == .tag }
                 bookmarkToEdit.collections.append(contentsOf: selectedTags)
-                
-                let bookmarkAfterChange = bookmarkToEdit
-                
-                try? YabaDataLogger.shared.logBookmarkChange(
-                    old: bookmarkBeforeChange,
-                    new: bookmarkAfterChange,
-                    shouldSave: false
-                )
             } else {
                 var collections = selectedTags
                 collections.append(selectedFolder)
-                
-                if uncatagroizedFolderCreationRequired {
-                    try? YabaDataLogger.shared.logCollectionChange(
-                        old: nil,
-                        new: selectedFolder,
-                        shouldSave: false
-                    )
-                }
                 
                 let creationTime: Date = .now
                 let newBookmark = YabaBookmark(
@@ -204,13 +187,8 @@ internal class BookmarkCreationState {
                     videoUrl: videoURL,
                     readableHTML: readableHTML,
                     type: selectedType,
+                    version: 0,
                     collections: collections
-                )
-                
-                try? YabaDataLogger.shared.logBookmarkChange(
-                    old: nil,
-                    new: newBookmark,
-                    shouldSave: false
                 )
                 
                 modelContext.insert(newBookmark)
@@ -261,7 +239,8 @@ internal class BookmarkCreationState {
                     createdAt: creationTime,
                     editedAt: creationTime,
                     color: .none,
-                    type: .folder
+                    type: .folder,
+                    version: 0,
                 )
                 uncatagroizedFolderCreationRequired = true
             }
@@ -325,7 +304,8 @@ internal class BookmarkCreationState {
                 createdAt: creationTime,
                 editedAt: creationTime,
                 color: .none,
-                type: .folder
+                type: .folder,
+                version: 0
             )
             uncatagroizedFolderCreationRequired = true
         }

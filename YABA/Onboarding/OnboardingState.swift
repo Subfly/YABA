@@ -116,11 +116,6 @@ internal class OnboardingState {
         
         if !collections.isEmpty {
             collections.forEach { collection in
-                try? YabaDataLogger.shared.logCollectionChange(
-                    old: nil,
-                    new: collection,
-                    shouldSave: false
-                )
                 modelContext.insert(collection)
             }
             try? modelContext.save()

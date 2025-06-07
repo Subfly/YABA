@@ -20,4 +20,5 @@ struct YabaCodableBookmark: Codable, Hashable {
     let videoUrl: String?
     let readableHTML: String?
     let type: Int?
+    let version: Int?
 }

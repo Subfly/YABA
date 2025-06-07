@@ -2646,6 +2646,18 @@
         }
       }
     },
+    "Settings Developer Title" : {
+      "comment" : "Title of developer options",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Options"
+          }
+        }
+      }
+    },
     "Settings Event Logs Label" : {
       "comment" : "Title of event logs",
       "extractionState" : "manual",
@@ -2690,6 +2702,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Language"
+          }
+        }
+      }
+    },
+    "Settings Reset App Storage Label" : {
+      "comment" : "Title of reset app stroage",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reset App Storage"
           }
         }
       }

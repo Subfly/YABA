@@ -33,7 +33,8 @@ struct PreloadCollection: Codable {
             editedAt: now,
             bookmarks: [],
             color: YabaColor(rawValue: color) ?? .none,
-            type: type
+            type: type,
+            version: 0
         )
     }
 }

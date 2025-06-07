@@ -16,4 +16,5 @@ struct YabaCodableCollection: Codable, Hashable {
     let color: Int
     let type: Int
     let bookmarks: [String] // String id's of stored bookmarks
+    let version: Int
 }

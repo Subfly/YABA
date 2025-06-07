@@ -198,11 +198,36 @@ internal class SettingsState {
         )
     }
     
-    #if DEBUG
     func onNavigateToLogs() {
         settingsNavPath.append(.logs)
     }
-    #endif
+    
+    func onResetAppStorage() {
+        @AppStorage(Constants.hasPassedOnboardingKey)
+        var hasPassedOnboarding = false
+        
+        @AppStorage(Constants.preferredThemeKey)
+        var theme: ThemeType = .system
+        
+        @AppStorage(Constants.preferredContentAppearanceKey)
+        var contentAppearance: ViewType = .list
+        
+        @AppStorage(Constants.preferredCardImageSizingKey)
+        var imageSizing: CardViewTypeImageSizing = .small
+        
+        @AppStorage(Constants.preferredSortingKey)
+        var sortType: SortType = .createdAt
+        
+        @AppStorage(Constants.preferredSortOrderKey)
+        var sortOrderType: SortOrderType = .ascending
+        
+        hasPassedOnboarding = false
+        theme = .system
+        contentAppearance = .list
+        imageSizing = .small
+        sortType = .createdAt
+        sortOrderType = .ascending
+    }
     
     private func handleError(error: Error) {
         if let dataError = error as? DataError {

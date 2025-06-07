@@ -43,6 +43,9 @@ class YabaDataLogger {
         self.modelContext = modelContext
     }
     
+    /**
+     - Not used anymore. Against YAGNI, but what if...
+     */
     func logCollectionChange(
         old: YabaCollection?,
         new: YabaCollection,
@@ -99,6 +102,9 @@ class YabaDataLogger {
         }
     }
     
+    /**
+     - Not used anymore. Against YAGNI, but what if...
+     */
     func logBookmarkChange(
         old: YabaBookmark?,
         new: YabaBookmark,
