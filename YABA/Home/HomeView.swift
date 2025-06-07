@@ -326,16 +326,3 @@ private struct ToolbarIcons: View {
         #endif
     }
 }
-
-#Preview {
-    HomeView(
-        onNavigationCallbackForCollection: { _ in },
-        onNavigationCallbackForBookmark: { _ in },
-        onNavigationCallbackForSearch: {},
-        onNavigationCallbackForSettings: {}
-    )
-    .modelContainer(
-        for: [YabaCollection.self, YabaBookmark.self],
-        inMemory: true,
-    )
-}

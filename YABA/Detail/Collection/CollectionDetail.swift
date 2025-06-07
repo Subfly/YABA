@@ -59,7 +59,7 @@ private struct CollectionDetail: View {
                 collectionColor: collection?.color.getUIColor() ?? .accentColor
             )
             if let collection {
-                if collection.bookmarks.isEmpty {
+                if collection.bookmarks?.isEmpty == true {
                     ContentUnavailableView {
                         Label {
                             Text("No Bookmarks Title")
@@ -159,14 +159,14 @@ private struct SearchableContent: View {
                 .init(\.label, order: preferredOrder == .ascending ? .forward : .reverse)
         }
         
-        bookmarks = collection.bookmarks.filter { bookmark in
+        bookmarks = collection.bookmarks?.filter { bookmark in
             if searchQuery.isEmpty {
                 true
             } else {
                 bookmark.label.localizedStandardContains(searchQuery)
                 || bookmark.bookmarkDescription.localizedStandardContains(searchQuery)
             }
-        }.sorted(using: sortDescriptor)
+        }.sorted(using: sortDescriptor) ?? []
     }
     
     var body: some View {

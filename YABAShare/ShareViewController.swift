@@ -90,7 +90,7 @@ class ShareViewController: UIViewController {
                 collectionToFill: nil,
                 link: link,
                 onExitRequested: close
-            ).modelContainer(for: [YabaBookmark.self, YabaCollection.self, YabaDataLog.self])
+            ).modelContext(YabaModelContainer.getContext())
         )
         
         self.addChild(contentView)

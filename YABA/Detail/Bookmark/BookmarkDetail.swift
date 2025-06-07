@@ -86,6 +86,7 @@ private struct BookmarkDetail: View {
     }
     
     var body: some View {
+        let _ = Self._printChanges()
         ZStack {
             AnimatedGradient(collectionColor: state.meshColor)
             
@@ -229,6 +230,9 @@ private struct BookmarkDetail: View {
         )
         .tint(state.meshColor)
         .onChange(of: bookmark) { _, newValue in
+            state.retriggerUIRefresh(with: bookmark)
+        }
+        .onChange(of: bookmark?.collections) { _, _ in
             state.retriggerUIRefresh(with: bookmark)
         }
     }

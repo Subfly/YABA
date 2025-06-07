@@ -17,9 +17,9 @@ extension YabaCollection {
             editedAt: self.editedAt.ISO8601Format(),
             color: self.color.rawValue,
             type: self.type,
-            bookmarks: self.bookmarks.map { bookmark in
+            bookmarks: self.bookmarks?.map { bookmark in
                 bookmark.bookmarkId
-            },
+            } ?? [],
             version: self.version
         )
     }

@@ -29,12 +29,7 @@ struct YABAApp: App {
     var body: some Scene {
         WindowGroup {
             YabaNavigationView()
-                .modelContainer(
-                    for: [YabaBookmark.self, YabaCollection.self, YabaDataLog.self],
-                    inMemory: false,
-                    isAutosaveEnabled: false,
-                    isUndoEnabled: false,
-                )
+                .modelContext(YabaModelContainer.getContext())
                 .environment(toastManager)
                 .environment(\.appState, appState)
                 .environment(\.deepLinkManager, deepLinkManager)

@@ -50,7 +50,7 @@ class DataManager {
                 let collectionModel = collection.mapToModel()
                 collection.bookmarks.forEach { bookmarkId in
                     if let bookmarkModel = mappedBookmarks[bookmarkId] {
-                        collectionModel.bookmarks.append(bookmarkModel)
+                        collectionModel.bookmarks?.append(bookmarkModel)
                     }
                 }
                 
@@ -70,7 +70,7 @@ class DataManager {
             )
             
             mappedBookmarks.values.forEach { bookmark in
-                dummyFolder.bookmarks.append(bookmark)
+                dummyFolder.bookmarks?.append(bookmark)
             }
             
             modelContext.insert(dummyFolder)
@@ -130,7 +130,7 @@ class DataManager {
                 version: Int(columns[12]) ?? 0,
             ).mapToModel()
             
-            dummyFolder.bookmarks.append(bookmark)
+            dummyFolder.bookmarks?.append(bookmark)
         }
         
         modelContext.insert(dummyFolder)
@@ -224,7 +224,7 @@ class DataManager {
                 version: 0,
             ).mapToModel()
 
-            dummyFolder.bookmarks.append(bookmark)
+            dummyFolder.bookmarks?.append(bookmark)
         }
 
         modelContext.insert(dummyFolder)
@@ -245,7 +245,7 @@ class DataManager {
             let exportableCollections = collections.map { $0.mapToCodable() }
             var exportableBookmarks: Set<YabaCodableBookmark> = []
             collections.forEach { collection in
-                collection.bookmarks.forEach { bookmark in
+                collection.bookmarks?.forEach { bookmark in
                     exportableBookmarks.insert(bookmark.mapToCodable())
                 }
             }

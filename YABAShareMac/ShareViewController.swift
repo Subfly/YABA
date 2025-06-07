@@ -71,7 +71,7 @@ class ShareViewController: NSViewController {
             link: link,
             needsTopPadding: true,
             onClickClose: close
-        ).modelContainer(for: [YabaBookmark.self, YabaCollection.self, YabaDataLog.self])
+        ).modelContext(YabaModelContainer.getContext())
         
         let hostingController = NSHostingController(rootView: contentView)
         addChild(hostingController)

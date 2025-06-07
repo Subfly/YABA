@@ -136,7 +136,7 @@ class YabaDataLogger {
                 ]
             )
             
-            let collectionIds = new.collections.map { $0.collectionId }
+            let collectionIds = new.collections?.map { $0.collectionId }
             if let data = try? JSONEncoder().encode(collectionIds),
                let json = String(data: data, encoding: .utf8){
                 changes.append(.init(key: .collections, newValue: json))
@@ -166,7 +166,7 @@ class YabaDataLogger {
                 ]
             )
             
-            let collectionIds = new.collections.map { $0.collectionId }
+            let collectionIds = new.collections?.map { $0.collectionId }
             if let data = try? JSONEncoder().encode(collectionIds),
                let json = String(data: data, encoding: .utf8){
                 changes.append(.init(key: .collections, newValue: json))

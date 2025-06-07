@@ -36,9 +36,9 @@ internal class BookmarkDetailState {
     var tags: [YabaCollection]
     
     init(with bookmark: YabaBookmark?) {
-        let newFolder = bookmark?.collections.first(where: { $0.collectionType == .folder })
+        let newFolder = bookmark?.collections?.first(where: { $0.collectionType == .folder })
         folder = newFolder
-        tags = bookmark?.collections.filter { $0.collectionType == .tag } ?? []
+        tags = bookmark?.collections?.filter { $0.collectionType == .tag } ?? []
         meshColor = newFolder?.color.getUIColor() ?? .accentColor
         
         UNUserNotificationCenter.current().getPendingNotificationRequests { [weak self] requests in
@@ -54,8 +54,8 @@ internal class BookmarkDetailState {
     
     // Only for !iOS devices
     func retriggerUIRefresh(with newBookmarkData: YabaBookmark?) {
-        let newFolder = newBookmarkData?.collections.first(where: { $0.collectionType == .folder })
-        let newTags = newBookmarkData?.collections.filter { $0.collectionType == .tag } ?? []
+        let newFolder = newBookmarkData?.collections?.first(where: { $0.collectionType == .folder })
+        let newTags = newBookmarkData?.collections?.filter { $0.collectionType == .tag } ?? []
         let newColor = newFolder?.color.getUIColor() ?? .accentColor
         
         if newFolder?.id != folder?.id {

@@ -95,12 +95,7 @@ struct YABAStatusMenuItemApp: App {
                     RoundedRectangle(cornerRadius: 12)
                         .fill(.ultraThinMaterial)
                 }
-                .modelContainer(
-                    for: [YabaBookmark.self, YabaCollection.self, YabaDataLog.self],
-                    inMemory: false,
-                    isAutosaveEnabled: false,
-                    isUndoEnabled: false
-                )
+                .modelContext(YabaModelContainer.getContext())
             )
             
             panel = FloatingPanel(contentViewController: hostingController)

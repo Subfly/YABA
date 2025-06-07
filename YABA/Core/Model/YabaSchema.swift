@@ -24,43 +24,43 @@ enum YabaSchemaV1: VersionedSchema {
         @Attribute(.spotlight)
         var label: String
         
-        var bookmarkId: String
-        var bookmarkDescription: String
-        var link: String
-        var domain: String
-        var createdAt: Date
-        var editedAt: Date
+        var bookmarkId: String = UUID().uuidString
+        var bookmarkDescription: String = ""
+        var link: String = ""
+        var domain: String = ""
+        var createdAt: Date = Date.now
+        var editedAt: Date = Date.now
         var imageUrl: String?
         var imageDataHolder: DataHolder?
         var iconUrl: String?
         var iconDataHolder: DataHolder?
         var videoUrl: String?
         var readableHTML: String?
-        var type: Int
-        var version: Int
-        var collections: [YabaCollection]
+        var type: Int = 1
+        var version: Int = 1
+        var collections: [YabaCollection]? = []
         
         var bookmarkType: BookmarkType {
             BookmarkType(rawValue: type) ?? .none
         }
 
         init(
-            bookmarkId: String,
-            link: String,
-            label: String,
-            bookmarkDescription: String,
-            domain: String,
-            createdAt: Date,
-            editedAt: Date,
+            bookmarkId: String = UUID().uuidString,
+            link: String = "",
+            label: String = "",
+            bookmarkDescription: String = "",
+            domain: String = "",
+            createdAt: Date = .now,
+            editedAt: Date = .now,
             imageDataHolder: DataHolder?,
             iconDataHolder: DataHolder?,
             imageUrl: String?,
             iconUrl: String?,
             videoUrl: String?,
             readableHTML: String?,
-            type: BookmarkType,
-            version: Int,
-            collections: [YabaCollection] = []
+            type: BookmarkType = .none,
+            version: Int = 1,
+            collections: [YabaCollection]? = []
         ) {
             self.bookmarkId = bookmarkId
             self.link = link
@@ -84,31 +84,31 @@ enum YabaSchemaV1: VersionedSchema {
     @Model
     final class Collection {
         @Relationship(inverse: \Bookmark.collections)
-        var bookmarks: [Bookmark] = []
+        var bookmarks: [Bookmark]? = []
 
-        var collectionId: String
-        var label: String
-        var icon: String
-        var createdAt: Date
-        var editedAt: Date
-        var color: YabaColor
-        var type: Int
-        var version: Int
+        var collectionId: String = UUID().uuidString
+        var label: String = ""
+        var icon: String = "folder-01"
+        var createdAt: Date = Date.now
+        var editedAt: Date = Date.now
+        var color: YabaColor = YabaColor.none
+        var type: Int = 1
+        var version: Int = 1
         
         var collectionType: CollectionType {
             CollectionType(rawValue: type) ?? .folder
         }
 
         init(
-            collectionId: String,
-            label: String,
-            icon: String,
-            createdAt: Date,
-            editedAt: Date,
-            bookmarks: [Bookmark] = [],
-            color: YabaColor,
-            type: CollectionType,
-            version: Int,
+            collectionId: String = UUID().uuidString,
+            label: String = "",
+            icon: String = "folder-01",
+            createdAt: Date = .now,
+            editedAt: Date = .now,
+            bookmarks: [Bookmark]? = [],
+            color: YabaColor = .none,
+            type: CollectionType = .folder,
+            version: Int = 1,
         ) {
             self.collectionId = collectionId
             self.label = label
@@ -128,11 +128,11 @@ enum YabaSchemaV1: VersionedSchema {
      */
     @Model
     final class DataLog {
-        var logId: String
-        var entityId: String
-        var entityType: EntityType
-        var actionType: ActionType
-        var timestamp: Date
+        var logId: String = UUID().uuidString
+        var entityId: String = ""
+        var entityType: EntityType = EntityType.bookmark
+        var actionType: ActionType = ActionType.deleted
+        var timestamp: Date = Date.now
 
         var fieldChangesJSON: String?
         var fieldChanges: [FieldChange]? {
@@ -145,9 +145,9 @@ enum YabaSchemaV1: VersionedSchema {
 
         init(
             logId: String = UUID().uuidString,
-            entityId: String,
-            entityType: EntityType,
-            actionType: ActionType,
+            entityId: String = "",
+            entityType: EntityType = .bookmark,
+            actionType: ActionType = .deleted,
             timestamp: Date = .now,
             fieldChanges: [FieldChange]? = nil
         ) {

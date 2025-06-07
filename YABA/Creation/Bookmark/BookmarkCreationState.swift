@@ -154,19 +154,21 @@ internal class BookmarkCreationState {
                 bookmarkToEdit.version += 1
                 
                 // Folder changing
-                if let lastSelectedFolderIndex = bookmarkToEdit.collections.firstIndex(
-                    where: { $0.collectionType == .folder }
-                ) {
-                    let lastSelectedFolder = bookmarkToEdit.collections[lastSelectedFolderIndex]
-                    if lastSelectedFolder.hasChanges(with: selectedFolder) {
-                        bookmarkToEdit.collections.remove(at: lastSelectedFolderIndex)
-                        bookmarkToEdit.collections.append(selectedFolder)
+                if let collections = bookmarkToEdit.collections {
+                    if let lastSelectedFolderIndex = collections.firstIndex(
+                        where: { $0.collectionType == .folder }
+                    ) {
+                        let lastSelectedFolder = collections[lastSelectedFolderIndex]
+                        if lastSelectedFolder.hasChanges(with: selectedFolder) {
+                            bookmarkToEdit.collections?.remove(at: lastSelectedFolderIndex)
+                            bookmarkToEdit.collections?.append(selectedFolder)
+                        }
                     }
                 }
                 
                 // Tags changing
-                bookmarkToEdit.collections.removeAll { $0.collectionType == .tag }
-                bookmarkToEdit.collections.append(contentsOf: selectedTags)
+                bookmarkToEdit.collections?.removeAll { $0.collectionType == .tag }
+                bookmarkToEdit.collections?.append(contentsOf: selectedTags)
             } else {
                 var collections = selectedTags
                 collections.append(selectedFolder)
@@ -220,7 +222,7 @@ internal class BookmarkCreationState {
         }
         
         /// MARK: BOOKMARK FOLDER FILLING
-        var folderToFill = bookmarkToEdit?.collections.first(where: { $0.collectionType == .folder })
+        var folderToFill = bookmarkToEdit?.collections?.first(where: { $0.collectionType == .folder })
         if folderToFill == nil {
             let id = Constants.uncategorizedCollectionId // Thanks #Predicate for that...
             let descriptor = FetchDescriptor<YabaCollection>(
@@ -257,8 +259,8 @@ internal class BookmarkCreationState {
             videoURL = bookmarkToEdit.videoUrl
             readableHTML = bookmarkToEdit.readableHTML
             selectedType = bookmarkToEdit.bookmarkType
-            selectedFolder = bookmarkToEdit.collections.first(where: { $0.collectionType == .folder })
-            selectedTags = bookmarkToEdit.collections.filter { $0.collectionType == .tag }
+            selectedFolder = bookmarkToEdit.collections?.first(where: { $0.collectionType == .folder })
+            selectedTags = bookmarkToEdit.collections?.filter { $0.collectionType == .tag } ?? []
         } else {
             selectedFolder = folderToFill
         }

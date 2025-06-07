@@ -92,7 +92,7 @@ struct CollectionItemView: View {
             AlertActionItems(
                 state: $itemState,
                 onDeleteCallback: {
-                    let bookmarkIds = collection.bookmarks.map { $0.bookmarkId }
+                    let bookmarkIds = collection.bookmarks?.map { $0.bookmarkId } ?? []
                     UNUserNotificationCenter.current().removePendingNotificationRequests(
                         withIdentifiers: bookmarkIds
                     )
@@ -103,7 +103,7 @@ struct CollectionItemView: View {
                     )
                     
                     if collection.collectionType == .folder {
-                        collection.bookmarks.forEach { bookmark in
+                        collection.bookmarks?.forEach { bookmark in
                             modelContext.delete(bookmark)
                         }
                     }
@@ -220,7 +220,7 @@ private struct ListView: View {
                             .frame(width: 20, height: 20)
                     }
                 }
-                Text("\(collection.bookmarks.count)")
+                Text("\(collection.bookmarks?.count ?? 0)")
                     .foregroundStyle(.secondary)
                     .fontWeight(.medium)
             }.foregroundStyle(.secondary)

@@ -428,7 +428,7 @@ private struct TagsAreaView: View {
     let bookmark: YabaBookmark
     
     var body: some View {
-        let tags = bookmark.collections.filter({ $0.collectionType == .tag })
+        let tags = bookmark.collections?.filter({ $0.collectionType == .tag }) ?? []
                 
         if !tags.isEmpty {
             if tags.count < 6 {
