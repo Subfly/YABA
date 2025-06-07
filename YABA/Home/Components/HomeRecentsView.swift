@@ -15,20 +15,22 @@ struct HomeRecentsView: View {
     let onNavigationCallback: (YabaBookmark) -> Void
     
     var body: some View {
-        Section {
-            ForEach(bookmarks.prefix(5)) { bookmark in
-                BookmarkItemView(
-                    bookmark: bookmark,
-                    onNavigationCallback: onNavigationCallback
-                )
-            }
-        } header: {
-            Label {
-                Text("Home Recents Label")
-            } icon: {
-                YabaIconView(bundleKey: "clock-01")
-                    .scaledToFit()
-                    .frame(width: 18, height: 18)
+        if !bookmarks.isEmpty {
+            Section {
+                ForEach(bookmarks.prefix(5)) { bookmark in
+                    BookmarkItemView(
+                        bookmark: bookmark,
+                        onNavigationCallback: onNavigationCallback
+                    )
+                }
+            } header: {
+                Label {
+                    Text("Home Recents Label")
+                } icon: {
+                    YabaIconView(bundleKey: "clock-01")
+                        .scaledToFit()
+                        .frame(width: 18, height: 18)
+                }
             }
         }
     }
