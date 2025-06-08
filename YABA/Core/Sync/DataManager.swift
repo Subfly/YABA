@@ -26,6 +26,8 @@ enum DataError: Error {
     case caseURLColumnNotSelected(LocalizedStringKey)
     case invalidBookmarkUrl(LocalizedStringKey)
     case unkownError(LocalizedStringKey)
+    case invalidHTML(LocalizedStringKey)
+    case emptyHTML(LocalizedStringKey)
 }
 
 @MainActor
@@ -232,6 +234,94 @@ class DataManager {
         onFinish()
     }
     
+    func importHTML(
+        from data: Data,
+        using modelContext: ModelContext
+    ) throws {
+        guard let htmlString = String(data: data, encoding: .utf8) else {
+            throw DataError.invalidHTML("Data Manager Invalid HTML Encoding Message")
+        }
+        
+        // Parse HTML and extract folders with bookmarks
+        let parser = HTMLParser()
+        let folders = try parser.parse(htmlString)
+        
+        if folders.isEmpty {
+            throw DataError.emptyHTML("Data Manager Empty HTML Message")
+        }
+        
+        let creationTime = Date.now
+        
+        // Create folder models and their bookmarks
+        for folder in folders {
+            var folderModel: YabaCollection? = nil
+
+            if folder.label == "-1" {
+                let id = Constants.uncategorizedCollectionId // Thanks #Predicate for that...
+                let descriptor = FetchDescriptor<YabaCollection>(
+                    predicate: #Predicate<YabaCollection> { collection in
+                        collection.collectionId == id
+                    }
+                )
+
+                if let existingUncatagorizedFolder = try? modelContext.fetch(descriptor).first {
+                    folderModel = existingUncatagorizedFolder
+                } else {
+                    let creationTime = Date.now
+                    folderModel = YabaCollection(
+                        collectionId: Constants.uncategorizedCollectionId,
+                        label: Constants.uncategorizedCollectionLabelKey,
+                        icon: "folder-01",
+                        createdAt: creationTime,
+                        editedAt: creationTime,
+                        color: .none,
+                        type: .folder,
+                        version: 0,
+                    )
+                }
+            } else {
+                folderModel = YabaCollection(
+                    collectionId: UUID().uuidString,
+                    label: folder.label,
+                    icon: "folder-01",
+                    createdAt: creationTime,
+                    editedAt: creationTime,
+                    color: .none,
+                    type: .folder,
+                    version: 0
+                )
+            }
+            
+            // Create bookmark models and add them to the folder
+            for bookmark in folder.bookmarks {
+                let bookmarkModel = YabaBookmark(
+                    bookmarkId: UUID().uuidString,
+                    link: bookmark.url,
+                    label: bookmark.title,
+                    bookmarkDescription: "",
+                    domain: URL(string: bookmark.url)?.host ?? "",
+                    createdAt: creationTime,
+                    editedAt: creationTime,
+                    imageDataHolder: nil,
+                    iconDataHolder: nil,
+                    imageUrl: nil,
+                    iconUrl: nil,
+                    videoUrl: nil,
+                    readableHTML: nil,
+                    type: .none,
+                    version: 0
+                )
+                folderModel?.bookmarks?.append(bookmarkModel)
+            }
+            
+            if let folderModel {
+                modelContext.insert(folderModel)
+            }
+        }
+        
+        try modelContext.save()
+    }
+    
     func prepareExportableData(
         using modelContext: ModelContext,
         withType type: UTType,
@@ -381,5 +471,85 @@ class DataManager {
         }
         result.append(field)
         return result.map { $0.replacingOccurrences(of: "\"\"", with: "\"") }
+    }
+}
+
+// HTML Parser class to handle HTML parsing
+private class HTMLParser {
+    struct ParsedBookmark {
+        let title: String
+        let url: String
+    }
+    
+    struct ParsedFolder {
+        let label: String
+        var bookmarks: [ParsedBookmark]
+    }
+    
+    func parse(_ htmlString: String) throws -> [ParsedFolder] {
+        var folders: [ParsedFolder] = []
+        var currentFolder: ParsedFolder?
+        
+        // Split the HTML into lines for easier processing
+        let lines = htmlString.components(separatedBy: .newlines)
+        
+        for line in lines {
+            let trimmedLine = line.trimmingCharacters(in: .whitespaces)
+            // Check for folder (H3 tag)
+            if trimmedLine.hasPrefix("<DT><H3>") && trimmedLine.hasSuffix("</H3>") {
+                // If we have a current folder, add it to the list
+                if let folder = currentFolder {
+                    folders.append(folder)
+                }
+                
+                // Extract folder name
+                let folderName = trimmedLine
+                    .replacingOccurrences(of: "<DT><H3>", with: "")
+                    .replacingOccurrences(of: "</H3>", with: "")
+                    .trimmingCharacters(in: .whitespaces)
+                
+                // Create new folder
+                currentFolder = ParsedFolder(label: folderName, bookmarks: [])
+            }
+            
+            // Check for bookmark (A tag)
+            if trimmedLine.hasPrefix("<DT><A") {
+                if let bookmark = parseBookmark(from: trimmedLine) {
+                    currentFolder?.bookmarks.append(bookmark)
+                }
+            }
+        }
+        
+        // Add the last folder if exists
+        if let folder = currentFolder {
+            folders.append(folder)
+        }
+        
+        // If no folders were found but we have bookmarks, create an uncategorized folder
+        if folders.isEmpty && currentFolder?.bookmarks.isEmpty == false {
+            folders.append(ParsedFolder(label: "-1", bookmarks: currentFolder?.bookmarks ?? []))
+        }
+        
+        return folders
+    }
+    
+    private func parseBookmark(from line: String) -> ParsedBookmark? {
+        // Extract URL and title using more precise pattern
+        let pattern = #"<DT><A HREF="([^"]+)">([^<]+)</A>"#
+        guard let regex = try? NSRegularExpression(pattern: pattern),
+              let match = regex.firstMatch(in: line, range: NSRange(line.startIndex..., in: line)),
+              let urlRange = Range(match.range(at: 1), in: line),
+              let titleRange = Range(match.range(at: 2), in: line) else {
+            return nil
+        }
+        
+        let urlString = String(line[urlRange])
+        let title = String(line[titleRange])
+            .trimmingCharacters(in: .whitespaces)
+        
+        return ParsedBookmark(
+            title: title,
+            url: urlString
+        )
     }
 }

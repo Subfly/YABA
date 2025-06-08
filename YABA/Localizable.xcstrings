@@ -1195,6 +1195,17 @@
         }
       }
     },
+    "Map HTML Info Section Text" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Read before proceeding ✨\n\nWe couldn’t automatically read your HTML file — but don’t worry, you’re almost there! Most browsers like Chrome, Safari, and Firefox export bookmarks in a standard format that YABA supports.\n\nJust make sure you exported the file directly from your browser (usually via “Export Bookmarks” or “Export as HTML”). YABA expects links in this format:\n\n    <DT><A HREF=\"https://example.com\">Bookmark Title</A>\n\nFolders help organize your bookmarks — but keep in mind: YABA doesn’t support folders inside folders. Subfolder bookmarks will be placed under their top-level parent automatically.\n\n📄 Example of a supported HTML format:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Bookmarks</TITLE>\n    <H1>Bookmarks</H1>\n    <DT><H3>My Folder</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Example Site</A>\n        <DT><A HREF=\"https://another.com\">Another Site</A>\n    </DL><p>\n\nIf your file looks similar to this and you're still seeing issues, try re-exporting and uploading again."
+          }
+        }
+      }
+    },
     "Map JSON Info Section Text" : {
       "comment" : "The text to show in info section if given JSON could not parsed directly",
       "extractionState" : "manual",

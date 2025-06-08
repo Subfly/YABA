@@ -44,6 +44,7 @@ struct ReaderView: View {
                     .background {
                         Capsule().fill(Color.accentColor)
                     }
+                    .offset(x: -24)
                 } else {
                     HStack {
                         customizationButtons

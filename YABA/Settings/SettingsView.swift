@@ -212,7 +212,7 @@ struct SettingsView: View {
         }
         .fileImporter(
             isPresented: $settingsState.shouldShowImportSheet,
-            allowedContentTypes: [.json, .commaSeparatedText]
+            allowedContentTypes: [.json, .commaSeparatedText, .html]
         ) { result in
             switch result {
             case .success(let file):

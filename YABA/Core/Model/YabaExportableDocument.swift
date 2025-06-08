@@ -46,3 +46,22 @@ struct YabaExportableCsvDocument: FileDocument {
         FileWrapper(regularFileWithContents: self.data)
     }
 }
+
+struct YabaExportableHtmlDocument: FileDocument {
+    static var readableContentTypes: [UTType] = [.html]
+    
+    var data: Data
+    
+    init(configuration: ReadConfiguration) throws {
+        guard let data = configuration.file.regularFileContents else { throw NSError() }
+        self.data = data
+    }
+    
+    init(data: Data) {
+        self.data = data
+    }
+    
+    func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
+        FileWrapper(regularFileWithContents: self.data)
+    }
+}

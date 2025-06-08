@@ -28,6 +28,7 @@ internal class SettingsState {
     var shouldShowExportTypeSelection: Bool = false
     var shouldShowJsonExportSheet: Bool = false
     var shouldShowCsvExportSheet: Bool = false
+    var shouldShowHtmlExportSheet: Bool = false
     
     var isImporting: Bool = false
     var isExporting: Bool = false
@@ -45,6 +46,7 @@ internal class SettingsState {
     
     var exportableJsonDocument: YabaExportableJsonDocument? = nil
     var exportableCsvDocument: YabaExportableCsvDocument? = nil
+    var exportableHtmlDocument: YabaExportableHtmlDocument? = nil
     
     func reset() {
         mappedHeaders = [
@@ -75,7 +77,7 @@ internal class SettingsState {
             }
             
             let fileType = fileUrl.pathExtension.lowercased()
-            if !(["json", "csv"].contains(fileType)) {
+            if !(["json", "csv", "html"].contains(fileType)) {
                 toastManager.show(
                     message: LocalizedStringKey("Unsupported File Type Message"),
                     accentColor: .red,
@@ -115,6 +117,21 @@ internal class SettingsState {
                     importedFileData = fileData
                     importedFileType = .commaSeparatedText
                     importedHeaders = dataManager.extractCSVHeaders(from: fileData)
+                    settingsNavPath.append(.mapper)
+                }
+            } else if fileType == "html" {
+                do {
+                    try dataManager.importHTML(from: fileData, using: modelContext)
+                    self.toastManager.show(
+                        message: LocalizedStringKey("Import Successful Message"),
+                        accentColor: .green,
+                        acceptText: LocalizedStringKey("Ok"),
+                        iconType: .success,
+                        onAcceptPressed: { self.toastManager.hide() }
+                    )
+                } catch {
+                    importedFileData = fileData
+                    importedFileType = .html
                     settingsNavPath.append(.mapper)
                 }
             }
@@ -235,9 +252,11 @@ internal class SettingsState {
             case .invalidCSVEncoding(let message),
                     .emptyCSV(let message),
                     .emptyJSON(let message),
+                    .emptyHTML(let message),
                     .exportableGenerationError(let message),
                     .caseURLColumnNotSelected(let message),
                     .invalidBookmarkUrl(let message),
+                    .invalidHTML(let message),
                     .unkownError(let message):
                 toastManager.show(
                     message: message,

@@ -26,6 +26,8 @@ struct MapperView: View {
         .navigationTitle(
             settingsState.importedFileType == .json
             ? "Map JSON Label"
+            : settingsState.importedFileType == .html
+            ? "Map HTML Label"
             : "Map CSV Label"
         )
         .toolbar {
@@ -33,14 +35,14 @@ struct MapperView: View {
                 Button(role: .cancel) {
                     dismiss()
                 } label: {
-                    if settingsState.importedFileType == .json {
+                    if settingsState.importedFileType == .json || settingsState.importedFileType == .html {
                         YabaIconView(bundleKey: "arrow-left-01")
                     } else if settingsState.importedFileType == .commaSeparatedText {
                         Text("Cancel")
                     }
                 }.disabled(settingsState.isImporting)
             }
-            if settingsState.importedFileType != .json {
+            if settingsState.importedFileType == .commaSeparatedText {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
                         settingsState.importFixedCSV(using: modelContext)
@@ -125,6 +127,8 @@ struct MapperView: View {
                         JSONCodeBlockView()
                         TypeInfoView(forCollections: true)
                         TypeInfoView(forCollections: false)
+                    } else if settingsState.importedFileType == .html {
+                        HTMLInfoListView()
                     }
                 }
             } header: {
@@ -280,6 +284,15 @@ private struct CSVInfoListView: View {
             }
         }
         .padding()
+    }
+}
+
+/// MARK: HTML
+private struct HTMLInfoListView: View {
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text("Map HTML Info Section Text")
+        }
     }
 }
 
