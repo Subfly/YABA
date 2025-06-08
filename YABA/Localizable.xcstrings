@@ -1291,8 +1291,20 @@
         }
       }
     },
+    "No Bookmarks Menu Item Message" : {
+      "comment" : "Mac only message to show when no bookmarks added yet",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seems like no bookmarks have added yet! Use the button below to add your first bookmark."
+          }
+        }
+      }
+    },
     "No Bookmarks Message" : {
-      "comment" : "Message to show when no bookmarks added yet in home search",
+      "comment" : "Message to show when no bookmarks added yet",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {

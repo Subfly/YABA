@@ -48,25 +48,19 @@ struct YABAStatusMenuItemApp: App {
     
     var body: some Scene {
         MenuBarExtra {
-            Button {
-                NSApplication.shared.activate(ignoringOtherApps: true)
-                showPanel()
-            } label: {
-                Text("New Bookmark")
-            }
-            .keyboardShortcut("y", modifiers: [.shift, .command])
-            Divider()
-            Button {
-                exit(0)
-            } label: {
-                Text("Quit")
-            }.keyboardShortcut("q")
+            MenuItemMainContent(
+                onCreateNewBookmarkRequested: {
+                    showPanel()
+                }
+            )
+            .modelContext(YabaModelContainer.getContext())
         } label: {
             Image(nsImage: getLabelIcon())
                 .onReceive(NotificationCenter.default.publisher(for: .showBookmarkPanel)) { _ in
                     showPanel()
                 }
         }
+        .menuBarExtraStyle(.window)
     }
     
     private func getLabelIcon() -> NSImage {
