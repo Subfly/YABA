@@ -163,14 +163,16 @@ private struct BookmarkDetail: View {
                         YabaIconView(bundleKey: "arrow-left-01")
                     }
                 }
-                ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        state.changeMode()
-                    } label: {
-                        YabaIconView(bundleKey: "text-font")
-                    }
+            }
+            #if !targetEnvironment(macCatalyst)
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    state.changeMode()
+                } label: {
+                    YabaIconView(bundleKey: "text-font")
                 }
             }
+            #endif
             if bookmark != nil {
                 ToolbarItem(placement: .primaryAction) {
                     OptionItems(

@@ -14,13 +14,11 @@ struct ShareSheet: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIActivityViewController {
         let activityItems: [Any] = [self.bookmarkLink]
         let activityViewController = UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
-        #if targetEnvironment(macCatalyst)
-        activityViewController.modalPresentationStyle = .popover
-        #else
         activityViewController.modalPresentationStyle = .formSheet
-        #endif
+        #if !os(visionOS)
         let detents: [UISheetPresentationController.Detent] = [.medium()]
         activityViewController.sheetPresentationController?.detents = detents
+        #endif
         return activityViewController
     }
     

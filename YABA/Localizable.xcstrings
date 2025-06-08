@@ -766,6 +766,17 @@
         }
       }
     },
+    "Data Manager Empty HTML Message" : {
+      "comment" : "Message to show in toast when HTML is empty during Data Manager operations.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selected HTML does not contain any bookmarks."
+          }
+        }
+      }
+    },
     "Data Manager Empty JSON Message" : {
       "comment" : "Message to show in toast when JSON is empty during Data Manager operations.",
       "extractionState" : "manual",
@@ -809,7 +820,18 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "CSV is invalid. Please Check the file and make sure everything is correct."
+            "value" : "CSV is invalid. Please check the file and make sure everything is correct."
+          }
+        }
+      }
+    },
+    "Data Manager Invalid HTML Encoding Message" : {
+      "comment" : "Message to show in toast when HTML is invalid during Data Manager operations.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HTML is invalid. Please check the file and make sure everything is correct."
           }
         }
       }
@@ -1205,6 +1227,9 @@
           }
         }
       }
+    },
+    "Map HTML Label" : {
+
     },
     "Map JSON Info Section Text" : {
       "comment" : "The text to show in info section if given JSON could not parsed directly",
