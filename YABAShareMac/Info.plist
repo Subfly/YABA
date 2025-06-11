@@ -9,7 +9,19 @@
 		<key>NSExtensionAttributes</key>
 		<dict>
 			<key>NSExtensionActivationRule</key>
-			<string>TRUEPREDICATE</string>
+			<dict/>
+			<key>NSExtensionActivationSupportsWebURLWithMaxCount</key>
+			<integer>10</integer>
+			<key>NSExtensionActivationSupportsWebPageWithMaxCount</key>
+			<integer>10</integer>
+			<key>NSExtensionActivationSupportsText</key>
+			<true/>
+			<key>NSExtensionActivationSupportsImageWithMaxCount</key>
+			<integer>10</integer>
+			<key>NSExtensionActivationSupportsAttachmentsWithMaxCount</key>
+			<integer>10</integer>
+			<key>NSExtensionActivationDictionaryVersion</key>
+			<integer>2</integer>
 		</dict>
 		<key>NSExtensionPointIdentifier</key>
 		<string>com.apple.share-services</string>

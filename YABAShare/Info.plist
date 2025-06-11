@@ -11,15 +11,15 @@
 				<key>NSExtensionActivationDictionaryVersion</key>
 				<integer>2</integer>
 				<key>NSExtensionActivationSupportsAttachmentsWithMaxCount</key>
-				<string>10</string>
+				<integer>10</integer>
 				<key>NSExtensionActivationSupportsImageWithMaxCount</key>
-				<string>10</string>
+				<integer>10</integer>
 				<key>NSExtensionActivationSupportsText</key>
 				<true/>
 				<key>NSExtensionActivationSupportsWebPageWithMaxCount</key>
-				<string>10</string>
+				<integer>10</integer>
 				<key>NSExtensionActivationSupportsWebURLWithMaxCount</key>
-				<string>10</string>
+				<integer>10</integer>
 			</dict>
 		</dict>
 		<key>NSExtensionPointIdentifier</key>

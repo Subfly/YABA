@@ -22,7 +22,7 @@ struct ReaderView: View {
                     ProgressView()
                 }
             } else if !state.readerAvailable {
-                ReaderNotAvaialbleView()
+                ReaderNotAvailableView()
             } else if let html = state.extractedHTML {
                 DisplayWebViewRepresentable(html: state.styledHTML(with: html))
             }
@@ -113,7 +113,7 @@ struct ReaderView: View {
     }
 }
 
-internal struct ReaderNotAvaialbleView: View {
+internal struct ReaderNotAvailableView: View {
     var body: some View {
         ContentUnavailableView {
             Label {
