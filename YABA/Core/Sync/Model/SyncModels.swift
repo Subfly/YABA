@@ -5,10 +5,7 @@
 //  Created by Ali Taha on 31.05.2025.
 //
 
-
-import Vapor
-
-struct SyncRequest: Content {
+struct SyncRequest: Codable {
     let deviceId: String
     let deviceName: String
     let timestamp: String
@@ -17,7 +14,7 @@ struct SyncRequest: Content {
     let collections: [YabaCodableCollection]
 }
 
-struct SyncResponse: Content {
+struct SyncResponse: Codable {
     let deviceId: String
     let deviceName: String
     let timestamp: String

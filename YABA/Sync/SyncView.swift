@@ -34,7 +34,7 @@ struct SyncView: View {
                 }
         }
         .onDisappear {
-            state?.stopServer()
+            // Stop servers
         }
         .onAppear {
             state = .init(modelContext: modelContext)

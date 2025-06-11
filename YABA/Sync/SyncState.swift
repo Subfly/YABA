@@ -21,12 +21,6 @@ internal class SyncState {
     @ObservationIgnored
     @AppStorage(Constants.deviceIdKey)
     private var deviceId: String = UUID().uuidString
-    
-    @ObservationIgnored
-    private var syncServer: SyncServer = .init()
-    
-    @ObservationIgnored
-    private var syncClient: SyncClient = .init()
 
     let modelContext: ModelContext
     
@@ -38,10 +32,6 @@ internal class SyncState {
         self.modelContext = modelContext
         if let ip = getLocalIPAddress() {
             generateQRCode(ip: ip)
-            syncServer.setIp(ip)
-            Task {
-                try await syncServer.startServer()
-            }
         }
     }
 
@@ -51,14 +41,6 @@ internal class SyncState {
         mode = switch mode {
         case .client: .server
         case .server: .client
-        }
-        
-        Task {
-            if mode == .server {
-                try await syncServer.startServer()
-            } else {
-                try await syncServer.stopServer()
-            }
         }
     }
 
@@ -75,26 +57,6 @@ internal class SyncState {
         }
 
         print("📶 Scanned IP: \(payload.ipAddress), Port: \(payload.port)")
-        Task {
-            syncClient.setUp(with: payload.ipAddress)
-            syncClient.connect()
-            await startSyncing(with: payload)
-        }
-    }
-    
-    func stopServer() {
-        if mode == .server {
-            Task {
-                try await syncServer.stopServer()
-            }
-        } else {
-            syncClient.disconnect()
-        }
-    }
-
-    private func startSyncing(with payload: SyncQRCodePayload) async {
-        isSyncing = true
-        defer { isSyncing = false }
     }
     
     // MARK: QR RELATED ---
