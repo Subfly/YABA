@@ -112,7 +112,7 @@ private struct BookmarkItemView: View {
     
     @ViewBuilder
     private func generateBookmarkImage(for bookmark: YabaBookmark) -> some View {
-        if let imageData = bookmark.imageDataHolder?.data,
+        if let imageData = bookmark.imageDataHolder,
            let image = NSImage(data: imageData) {
             Image(nsImage: image)
                 .resizable()

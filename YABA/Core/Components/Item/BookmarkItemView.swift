@@ -215,7 +215,7 @@ private struct BigCardView: View {
             BookmarkImage(bookmark: bookmark)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             HStack {
-                if let miniIconData = bookmark.iconDataHolder?.data,
+                if let miniIconData = bookmark.iconDataHolder,
                    let miniIconImage = UIImage(data: miniIconData) {
                     Image(uiImage: miniIconImage)
                         .resizable()
@@ -269,7 +269,7 @@ private struct SmallCardView: View {
                 TagsAreaView(bookmark: bookmark)
                 Spacer()
                 HStack {
-                    if let miniIconData = bookmark.iconDataHolder?.data,
+                    if let miniIconData = bookmark.iconDataHolder,
                        let miniIconImage = UIImage(data: miniIconData) {
                         Image(uiImage: miniIconImage)
                             .resizable()
@@ -336,7 +336,7 @@ private struct BookmarkImage: View {
     let bookmark: YabaBookmark
     
     var body: some View {
-        if let imageData = bookmark.imageDataHolder?.data,
+        if let imageData = bookmark.imageDataHolder,
            let image = UIImage(data: imageData) {
             switch contentAppearance {
             case .list:

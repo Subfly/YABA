@@ -353,7 +353,7 @@ private struct MainContent: View {
             if let html = bookmark.readableHTML {
                 ReaderView(html: html)
             } else {
-                ReaderNotAvaialbleView()
+                ReaderNotAvailableView()
             }
         }
     }
@@ -379,7 +379,7 @@ private struct ImageSection: View {
             }.padding(.leading)
         } footer: {
             HStack {
-                if let iconData = bookmark.iconDataHolder?.data,
+                if let iconData = bookmark.iconDataHolder,
                    let image = UIImage(data: iconData) {
                     Image(uiImage: image)
                         .resizable()
@@ -408,7 +408,7 @@ private struct ImageSection: View {
     
     @ViewBuilder
     private var imageContent: some View {
-        if let imageData = bookmark.imageDataHolder?.data,
+        if let imageData = bookmark.imageDataHolder,
            let image = UIImage(data: imageData) {
             Image(uiImage: image)
                 .resizable()

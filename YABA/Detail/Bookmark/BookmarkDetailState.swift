@@ -207,8 +207,8 @@ internal class BookmarkDetailState {
                 bookmark.imageUrl = fetched.imageURL
                 bookmark.videoUrl = fetched.videoURL
                 bookmark.readableHTML = fetched.readableHTML
-                bookmark.iconDataHolder = .init(data: fetched.iconData)
-                bookmark.imageDataHolder = .init(data: fetched.imageData)
+                bookmark.iconDataHolder = fetched.iconData
+                bookmark.imageDataHolder = fetched.imageData
                 bookmark.editedAt = .now
             }
             

@@ -148,8 +148,8 @@ internal class BookmarkCreationState {
                 bookmarkToEdit.videoUrl = videoURL
                 bookmarkToEdit.readableHTML = readableHTML
                 bookmarkToEdit.type = selectedType.rawValue
-                bookmarkToEdit.iconDataHolder = .init(data: iconData)
-                bookmarkToEdit.imageDataHolder = .init(data: imageData)
+                bookmarkToEdit.iconDataHolder = iconData
+                bookmarkToEdit.imageDataHolder = imageData
                 bookmarkToEdit.editedAt = .now
                 bookmarkToEdit.version += 1
                 
@@ -182,8 +182,8 @@ internal class BookmarkCreationState {
                     domain: host,
                     createdAt: creationTime,
                     editedAt: creationTime,
-                    imageDataHolder: .init(data: imageData),
-                    iconDataHolder: .init(data: iconData),
+                    imageDataHolder: imageData,
+                    iconDataHolder: iconData,
                     imageUrl: imageURL,
                     iconUrl: iconURL,
                     videoUrl: videoURL,
@@ -254,8 +254,8 @@ internal class BookmarkCreationState {
             label = bookmarkToEdit.label
             description = bookmarkToEdit.bookmarkDescription
             host = bookmarkToEdit.domain
-            imageData = bookmarkToEdit.imageDataHolder?.data
-            iconData = bookmarkToEdit.iconDataHolder?.data
+            imageData = bookmarkToEdit.imageDataHolder
+            iconData = bookmarkToEdit.iconDataHolder
             videoURL = bookmarkToEdit.videoUrl
             readableHTML = bookmarkToEdit.readableHTML
             selectedType = bookmarkToEdit.bookmarkType

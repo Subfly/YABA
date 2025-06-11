@@ -22,7 +22,13 @@ enum YabaSchemaV1: VersionedSchema {
     @Model
     final class Bookmark {
         @Attribute(.spotlight)
-        var label: String
+        var label: String = "" // The only must have field, but thanks to CloudKit, I can't leave it non-optional...
+        
+        @Attribute(.externalStorage, .allowsCloudEncryption)
+        var imageDataHolder: Data? = nil
+        
+        @Attribute(.externalStorage, .allowsCloudEncryption)
+        var iconDataHolder: Data? = nil
         
         var bookmarkId: String = UUID().uuidString
         var bookmarkDescription: String = ""
@@ -30,12 +36,10 @@ enum YabaSchemaV1: VersionedSchema {
         var domain: String = ""
         var createdAt: Date = Date.now
         var editedAt: Date = Date.now
-        var imageUrl: String?
-        var imageDataHolder: DataHolder?
-        var iconUrl: String?
-        var iconDataHolder: DataHolder?
-        var videoUrl: String?
-        var readableHTML: String?
+        var imageUrl: String? = nil
+        var iconUrl: String? = nil
+        var videoUrl: String? = nil
+        var readableHTML: String? = nil
         var type: Int = 1
         var version: Int = 1
         var collections: [YabaCollection]? = []
@@ -52,8 +56,8 @@ enum YabaSchemaV1: VersionedSchema {
             domain: String = "",
             createdAt: Date = .now,
             editedAt: Date = .now,
-            imageDataHolder: DataHolder?,
-            iconDataHolder: DataHolder?,
+            imageDataHolder: Data?,
+            iconDataHolder: Data?,
             imageUrl: String?,
             iconUrl: String?,
             videoUrl: String?,
@@ -159,16 +163,6 @@ enum YabaSchemaV1: VersionedSchema {
             self.fieldChangesJSON = fieldChanges.flatMap {
                 try? String(data: JSONEncoder().encode($0), encoding: .utf8)
             }
-        }
-    }
-    
-    @Model
-    final class DataHolder {
-        @Attribute(.externalStorage, .allowsCloudEncryption)
-        var data: Data?
-        
-        init(data: Data?) {
-            self.data = data
         }
     }
 }
