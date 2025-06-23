@@ -31,15 +31,31 @@ enum YabaSchemaV1: VersionedSchema {
         var iconDataHolder: Data? = nil
         
         var bookmarkId: String = UUID().uuidString
+        
+        @Attribute(.allowsCloudEncryption)
         var bookmarkDescription: String = ""
+        
+        @Attribute(.allowsCloudEncryption)
         var link: String = ""
+        
+        @Attribute(.allowsCloudEncryption)
         var domain: String = ""
+        
         var createdAt: Date = Date.now
         var editedAt: Date = Date.now
+        
+        @Attribute(.allowsCloudEncryption)
         var imageUrl: String? = nil
+        
+        @Attribute(.allowsCloudEncryption)
         var iconUrl: String? = nil
+        
+        @Attribute(.allowsCloudEncryption)
         var videoUrl: String? = nil
+        
+        @Attribute(.allowsCloudEncryption)
         var readableHTML: String? = nil
+        
         var type: Int = 1
         var version: Int = 1
         var collections: [YabaCollection]? = []
