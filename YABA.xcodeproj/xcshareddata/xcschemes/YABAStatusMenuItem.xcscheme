@@ -15,9 +15,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "96A8DFC12DB2F5A500A47601"
-               BuildableName = "YABA.app"
-               BlueprintName = "YABA"
+               BlueprintIdentifier = "967B9A4A2DD8D3EF00181AA1"
+               BuildableName = "YABAStatusMenuItem.app"
+               BlueprintName = "YABAStatusMenuItem"
                ReferencedContainer = "container:YABA.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -44,9 +44,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "96A8DFC12DB2F5A500A47601"
-            BuildableName = "YABA.app"
-            BlueprintName = "YABA"
+            BlueprintIdentifier = "967B9A4A2DD8D3EF00181AA1"
+            BuildableName = "YABAStatusMenuItem.app"
+            BlueprintName = "YABAStatusMenuItem"
             ReferencedContainer = "container:YABA.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -61,9 +61,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "96A8DFC12DB2F5A500A47601"
-            BuildableName = "YABA.app"
-            BlueprintName = "YABA"
+            BlueprintIdentifier = "967B9A4A2DD8D3EF00181AA1"
+            BuildableName = "YABAStatusMenuItem.app"
+            BlueprintName = "YABAStatusMenuItem"
             ReferencedContainer = "container:YABA.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

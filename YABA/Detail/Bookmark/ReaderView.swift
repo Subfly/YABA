@@ -13,6 +13,12 @@ struct ReaderView: View {
     @State
     private var state: ReaderState = .init()
     
+    #if targetEnvironment(macCatalyst)
+    private let alignment: Alignment = .leading
+    #else
+    private let alignment: Alignment = .bottom
+    #endif
+    
     let html: String
 
     var body: some View {
@@ -29,32 +35,28 @@ struct ReaderView: View {
         }
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .padding()
-        .overlay(
-            alignment: UIDevice.current.userInterfaceIdiom == .pad
-            ? .leading
-            : .bottom
-        ) {
+        .overlay(alignment: alignment) {
             if state.readerAvailable {
-                if UIDevice.current.userInterfaceIdiom == .pad {
-                    VStack {
-                        customizationButtons
-                    }
-                    .frame(width: 28)
-                    .padding()
-                    .background {
-                        Capsule().fill(Color.accentColor)
-                    }
-                    .offset(x: -24)
-                } else {
-                    HStack {
-                        customizationButtons
-                    }
-                    .frame(height: 28)
-                    .padding()
-                    .background {
-                        Capsule().fill(Color.accentColor)
-                    }
+                #if targetEnvironment(macCatalyst)
+                VStack {
+                    customizationButtons
                 }
+                .frame(width: 28)
+                .padding()
+                .background {
+                    Capsule().fill(Color.accentColor)
+                }
+                .offset(x: -24)
+                #else
+                HStack {
+                    customizationButtons
+                }
+                .frame(height: 28)
+                .padding()
+                .background {
+                    Capsule().fill(Color.accentColor)
+                }
+                #endif
             }
         }
         .onAppear {

@@ -86,7 +86,6 @@ private struct BookmarkDetail: View {
     }
     
     var body: some View {
-        let _ = Self._printChanges()
         ZStack {
             AnimatedGradient(collectionColor: state.meshColor)
             
@@ -165,11 +164,13 @@ private struct BookmarkDetail: View {
                 }
             }
             #if !targetEnvironment(macCatalyst)
-            ToolbarItem(placement: .primaryAction) {
-                Button {
-                    state.changeMode()
-                } label: {
-                    YabaIconView(bundleKey: "text-font")
+            if bookmark != nil {
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        state.changeMode()
+                    } label: {
+                        YabaIconView(bundleKey: "text-font")
+                    }
                 }
             }
             #endif
