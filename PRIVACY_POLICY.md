@@ -1,0 +1,209 @@
+# Privacy Policy
+
+**Last Updated:** January 2025
+
+## 1. Introduction
+
+This Privacy Policy describes how YABA ("the Application") handles information. YABA is committed to protecting your privacy and operates on a privacy-first, offline-first principle.
+
+## 2. No Data Collection
+
+### 2.1 What We Don't Collect
+YABA does not collect, store, or transmit any of the following:
+- Personal information
+- Usage data
+- Analytics data
+- Device information
+- Location data
+- Browsing history
+- Bookmark content
+- User preferences
+- Any other user data
+
+### 2.2 No Tracking
+- No cookies are used
+- No tracking pixels are implemented
+- No analytics services are integrated
+- No user behavior is monitored
+- No data is sent to external servers
+
+## 3. Data Storage
+
+### 3.1 Local Storage Only
+All data is stored locally on your device:
+- Bookmarks and collections
+- User preferences
+- Application settings
+- Import/export data
+- Cache and temporary files
+
+### 3.2 No Cloud Storage
+- No data is uploaded to cloud services
+- No data is synchronized with external servers
+- No data is backed up to our servers
+- All data remains under your control
+
+## 4. Data Ownership
+
+### 4.1 Your Data
+- You retain full ownership of all your data
+- You have complete control over your data
+- You can export your data at any time
+- You can delete your data at any time
+- We have no access to your data
+
+### 4.2 No Access
+- We cannot access your data
+- We cannot view your bookmarks
+- We cannot see your preferences
+- We cannot recover your data if lost
+
+## 5. Third-Party Services
+
+### 5.1 No Third-Party Data Sharing
+- We do not share data with third parties
+- We do not sell data to third parties
+- We do not allow third-party access to your data
+- We do not integrate with data collection services
+
+### 5.2 Optional Integrations
+If you choose to use optional features that integrate with third-party services:
+- You are responsible for those services' privacy policies
+- We are not responsible for third-party data handling
+- You use third-party services at your own risk
+- We recommend reviewing third-party privacy policies
+
+## 6. Data Security
+
+### 6.1 Your Responsibility
+Since all data is stored locally:
+- You are responsible for securing your device
+- You are responsible for backing up your data
+- You are responsible for protecting your data
+- You are responsible for data recovery if needed
+
+### 6.2 No Security Guarantees
+- We do not guarantee data security
+- We do not provide data recovery services
+- We are not responsible for data breaches
+- We are not responsible for device security
+
+## 7. Data Retention
+
+### 7.1 Local Retention
+- Data is retained as long as you keep it
+- Data is deleted when you delete it
+- Data persists until you remove the application
+- We have no control over data retention
+
+### 7.2 No Remote Retention
+- We do not retain any data remotely
+- We do not have access to your data
+- We cannot recover deleted data
+- We do not maintain data backups
+
+## 8. Children's Privacy
+
+### 8.1 No Age Restrictions
+Since we do not collect any data:
+- No age verification is required
+- No parental consent is needed
+- No special protections are implemented
+- Standard device parental controls apply
+
+### 8.2 Parental Responsibility
+- Parents are responsible for monitoring children's use
+- Parents are responsible for device security
+- Parents are responsible for data management
+- We are not responsible for children's data
+
+## 9. International Users
+
+### 9.1 No Data Transfers
+Since no data is collected or stored:
+- No international data transfers occur
+- No GDPR compliance is required
+- No CCPA compliance is required
+- No other privacy regulations apply
+
+### 9.2 Local Compliance
+- You are responsible for local privacy compliance
+- You are responsible for data protection laws
+- You are responsible for regulatory requirements
+- We are not responsible for compliance issues
+
+## 10. Changes to Privacy Policy
+
+### 10.1 Notification
+If we make changes to this Privacy Policy:
+- Changes will be posted on GitHub
+- Changes will be reflected in the application
+- Continued use constitutes acceptance
+- You can stop using the application if you disagree
+
+### 10.2 No Retroactive Changes
+- Changes do not affect previously stored data
+- Your local data remains unchanged
+- You maintain control over your data
+- You can export your data at any time
+
+## 11. Contact Information
+
+### 11.1 Questions
+For questions about this Privacy Policy:
+- Email: alitaha@subfly.dev
+- GitHub Issues: https://github.com/Subfly/YABA/issues
+
+### 11.2 No Personal Support
+- We do not provide personal support
+- We do not handle individual privacy requests
+- We do not process data access requests
+- We do not maintain user accounts
+
+## 12. Legal Basis
+
+### 12.1 No Processing
+Since we do not process personal data:
+- No legal basis for processing is required
+- No consent is needed
+- No legitimate interest exists
+- No contractual necessity applies
+
+### 12.2 Your Rights
+Since we do not hold your data:
+- No right to access applies
+- No right to rectification applies
+- No right to erasure applies
+- No right to portability applies
+
+## 13. Disclaimer
+
+### 13.1 No Guarantees
+- We do not guarantee privacy protection
+- We do not guarantee data security
+- We do not guarantee compliance with laws
+- We do not guarantee error-free operation
+
+### 13.2 Your Responsibility
+- You are responsible for your privacy
+- You are responsible for your data security
+- You are responsible for legal compliance
+- You are responsible for data management
+
+## 14. Open Source
+
+### 14.1 Source Code
+- The application is open source
+- You can review the source code
+- You can verify privacy claims
+- You can modify the application
+
+### 14.2 Community
+- Privacy is maintained through transparency
+- Community can audit the code
+- Community can report issues
+- Community can suggest improvements
+
+---
+
+**This Privacy Policy reflects our commitment to privacy-first development. By using YABA, you acknowledge that you have read and understood this Privacy Policy.** 
