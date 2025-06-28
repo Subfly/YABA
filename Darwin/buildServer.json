@@ -12,7 +12,7 @@
 	"argv": [
 		"/opt/homebrew/bin/xcode-build-server"
 	],
-	"workspace": "/Users/subfly/Documents/SubflyDev/YABA/YABA.xcodeproj/project.xcworkspace",
+	"workspace": "/Users/subfly/Documents/SubflyDev/YABA/Darwin/YABA.xcodeproj/project.xcworkspace",
 	"build_root": "/Users/subfly/Library/Developer/Xcode/DerivedData/YABA-fpbwilsfdarfeqctzmepvnlnwqbn",
 	"scheme": "YABA",
 	"kind": "xcode"
