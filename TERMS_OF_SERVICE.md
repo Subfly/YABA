@@ -12,6 +12,7 @@ YABA is an open-source bookmark management application that allows users to:
 - Create, organize, and manage bookmarks
 - Import and export bookmark data
 - Use the application offline
+- Synchronize data using Apple CloudKit (enabled by default)
 - Access the source code under MIT License
 
 ## 3. Open Source Nature
@@ -39,6 +40,7 @@ You are solely responsible for:
 - Ensuring your data and content comply with applicable laws
 - Backing up your data
 - Securing your data and devices
+- Managing your CloudKit data and synchronization
 
 ### 4.2 Usage
 You agree to:
@@ -47,6 +49,7 @@ You agree to:
 - Not use the Service to violate any third-party rights
 - Not attempt to reverse engineer or hack the Service
 - Not use the Service to harm others or their devices
+- Comply with Apple's iCloud Terms of Service when using CloudKit features
 
 ### 4.3 Compliance
 You must comply with:
@@ -54,6 +57,15 @@ You must comply with:
 - All applicable privacy and data protection regulations
 - All applicable copyright and intellectual property laws
 - Any third-party terms of service for integrated services
+- Apple's iCloud Terms of Service for CloudKit usage
+
+### 4.4 CloudKit Usage
+By using YABA, you agree to CloudKit synchronization and are responsible for:
+- Your iCloud account security and management
+- CloudKit data backup and recovery
+- CloudKit synchronization settings
+- Compliance with Apple's CloudKit terms
+- Managing CloudKit data after app deletion
 
 ## 5. No Warranty
 
@@ -62,11 +74,15 @@ You must comply with:
 - The developer does not guarantee continuous availability
 - The developer does not guarantee data preservation
 - The developer does not guarantee error-free operation
+- The developer does not guarantee CloudKit functionality
 
 ### 5.2 Data Loss
 - The developer is not responsible for any data loss
+- The developer is not responsible for CloudKit data loss
 - The developer does not provide data recovery services
+- The developer does not provide CloudKit data recovery services
 - You are responsible for implementing backup strategies
+- You are responsible for CloudKit data backup strategies
 - The developer is not liable for consequences of data loss
 
 ### 5.3 Functionality
@@ -74,16 +90,30 @@ You must comply with:
 - The developer does not guarantee compatibility with all devices
 - The developer does not guarantee integration with third-party services
 - The developer does not guarantee future updates or features
+- The developer does not guarantee CloudKit synchronization
+- The developer does not guarantee CloudKit data availability
+
+### 5.4 CloudKit Disclaimer
+- CloudKit is provided by Apple Inc. and not by the developer
+- The developer is not responsible for CloudKit service availability
+- The developer is not responsible for CloudKit data security
+- The developer is not responsible for CloudKit privacy compliance
+- The developer does not guarantee CloudKit synchronization
+- The developer does not guarantee CloudKit data preservation
+- The developer is not responsible for CloudKit service interruptions
 
 ## 6. Limitation of Liability
 
 ### 6.1 No Liability
 THE DEVELOPER SHALL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING BUT NOT LIMITED TO:
 - Loss of data or content
+- Loss of CloudKit data or content
 - Loss of profits or business opportunities
 - Device damage or malfunction
 - Security breaches or data theft
 - Third-party service failures
+- Apple CloudKit service failures
+- iCloud account issues
 
 ### 6.2 Maximum Liability
 In jurisdictions where limitations of liability are not permitted, the developer's total liability shall not exceed $0.00 (zero dollars).
@@ -96,6 +126,9 @@ You agree to indemnify and hold harmless the developer from and against any clai
 - Your violation of any applicable laws
 - Your content or data
 - Your actions or omissions
+- Your use of CloudKit features
+- Your iCloud account management
+- Your CloudKit data handling
 
 ## 8. Privacy and Data
 
@@ -103,19 +136,22 @@ You agree to indemnify and hold harmless the developer from and against any clai
 - The Service does not collect personal information
 - The Service does not track user behavior
 - The Service does not use analytics
-- All data remains on your device
+- All data remains on your device or in your iCloud account
 
 ### 8.2 Your Data
 - You retain full ownership of your data
 - You are responsible for your data security
 - You are responsible for data backup
+- You are responsible for CloudKit data management
 - The developer has no access to your data
+- The developer has no access to your CloudKit data
 
 ### 8.3 Third-Party Services
 - The Service may integrate with third-party services
 - You are responsible for third-party service terms
 - The developer is not responsible for third-party actions
 - You use third-party services at your own risk
+- CloudKit is provided by Apple and subject to Apple's terms
 
 ## 9. Termination
 
@@ -129,8 +165,11 @@ The developer may terminate or modify the Service at any time without notice.
 Upon termination:
 - Your right to use the Service ceases
 - You remain responsible for your data
+- You remain responsible for your CloudKit data
+- Your CloudKit data may persist in your iCloud account
 - The MIT License continues to apply to source code
 - You may continue using any copies you have made
+- The developer is not responsible for CloudKit data after termination
 
 ## 10. Modifications
 
@@ -150,6 +189,7 @@ These Terms shall be governed by and construed in accordance with the laws of Ge
 - You are responsible for compliance with local laws in your jurisdiction
 - The developer makes no representation that the Service is appropriate for use in all locations
 - You use the Service at your own risk and in compliance with applicable local laws
+- You are responsible for CloudKit compliance in your jurisdiction
 
 ### 11.3 Dispute Resolution
 - Any disputes shall be resolved in the courts of Germany
@@ -176,6 +216,21 @@ These Terms, together with the MIT License and Privacy Policy, constitute the en
 For questions about these Terms, please contact:
 - Email: alitaha@subfly.dev
 - GitHub Issues: https://github.com/Subfly/YABA/issues
+
+## 16. CloudKit Terms
+
+### 16.1 Apple's Responsibility
+- CloudKit is provided by Apple Inc.
+- Apple is responsible for CloudKit service availability
+- Apple is responsible for CloudKit data security
+- Apple is responsible for CloudKit privacy compliance
+- The developer is not responsible for CloudKit functionality
+
+### 16.2 No CloudKit Liability
+- The developer is not liable for CloudKit service issues
+- The developer is not liable for CloudKit data loss
+- The developer is not liable for Apple's CloudKit decisions
+- The developer is not liable for iCloud account issues
 
 ---
 
