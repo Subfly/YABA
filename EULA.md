@@ -83,6 +83,18 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 - The Licensor does not guarantee CloudKit data preservation
 - The Licensor is not responsible for CloudKit service interruptions
 
+### 5.5 Use at Own Risk
+- You use the Software entirely at your own risk
+- The Software is not intended for critical or life-safety applications
+- The Software is not professional advice or a substitute for professional judgment
+- You should not rely on the Software for critical decisions without independent verification
+- The Licensor is not responsible for any decisions made based on Software output
+
+### 5.6 Force Majeure
+- The Licensor is not liable for any failure to perform due to circumstances beyond reasonable control
+- This includes but is not limited to: natural disasters, war, government actions, internet outages, Apple service disruptions
+- The Licensor is not responsible for delays or failures caused by third-party services
+
 ## 6. Limitation of Liability
 
 ### 6.1 No Liability
@@ -113,6 +125,8 @@ You agree to indemnify, defend, and hold harmless the Licensor from and against 
 - Your use of CloudKit features
 - Your iCloud account management
 - Your CloudKit data handling
+- Any intellectual property claims related to your content or data
+- Any decisions or actions taken based on Software output
 
 ## 8. Termination
 

@@ -102,6 +102,18 @@ By using YABA, you agree to CloudKit synchronization and are responsible for:
 - The developer does not guarantee CloudKit data preservation
 - The developer is not responsible for CloudKit service interruptions
 
+### 5.5 Use at Own Risk
+- You use the Service entirely at your own risk
+- The Service is not intended for critical or life-safety applications
+- The Service is not professional advice or a substitute for professional judgment
+- You should not rely on the Service for critical decisions without independent verification
+- The developer is not responsible for any decisions made based on Service output
+
+### 5.6 Force Majeure
+- The developer is not liable for any failure to perform due to circumstances beyond reasonable control
+- This includes but is not limited to: natural disasters, war, government actions, internet outages, Apple service disruptions
+- The developer is not responsible for delays or failures caused by third-party services
+
 ## 6. Limitation of Liability
 
 ### 6.1 No Liability
@@ -129,6 +141,8 @@ You agree to indemnify and hold harmless the developer from and against any clai
 - Your use of CloudKit features
 - Your iCloud account management
 - Your CloudKit data handling
+- Any intellectual property claims related to your content or data
+- Any decisions or actions taken based on Service output
 
 ## 8. Privacy and Data
 
