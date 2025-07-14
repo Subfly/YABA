@@ -1,6 +1,12 @@
 # YABA - Yet Another Bookmark App
 
-A modern, cross-platform bookmark manager designed to provide a seamless bookmarking experience across Apple and Android ecosystems with complete privacy and offline-first approach.
+A modern, cross-platform bookmark manager designed to provide a seamless bookmarking experience across ecosystems with complete privacy and offline-first approach.
+
+## 💡 Planning
+For the latest planning and roadmap, please visit the [Public Trello board](https://trello.com/b/hCgH33AC/yaba-board).
+
+> **Disclaimer:**  
+> I am currently a master's student and will be having exams until August 6th. Active development on YABA will resume right after my exams. Thank you for your patience and understanding!
 
 ## 🏗️ Project Structure
 
@@ -28,27 +34,6 @@ YABA aims to be the ultimate cross-platform bookmark manager with:
 - **Offline First**: Works completely offline, syncs when connected
 - **Always Free**: No premium features, no subscriptions, completely free
 
-## 🚀 Current Status
-
-### ✅ Completed
-- **Darwin Platform**: Fully functional iOS, macOS, and visionOS app
-  - SwiftUI-based modern UI
-  - SwiftData for local persistence
-  - Share extensions for easy bookmarking
-  - Status menu integration for macOS
-  - Deep linking capabilities
-  - Complete offline functionality
-
-### 🔄 In Development
-- **Compose Platform**: Android implementation using Compose Multiplatform
-- **Common Libraries**: Shared business logic and data models
-
-### 📋 Planned
-- Cross-platform data synchronization
-- Web extension support
-- Advanced search and filtering
-- Collaborative bookmarking features
-
 ## 🛠️ Technology Stack
 
 ### Darwin Platform
@@ -61,8 +46,9 @@ YABA aims to be the ultimate cross-platform bookmark manager with:
 ### Compose Platform (Planned)
 - **UI Framework**: Compose Multiplatform
 - **Language**: Kotlin
-- **Data Persistence**: SQLDelight
+- **Data Persistence**: Room
 - **Reactive Programming**: Kotlin Flow
+- **Networking**: Ktor Client
 - **Build System**: Gradle
 
 ### Common Libraries (Planned)
@@ -75,20 +61,7 @@ YABA aims to be the ultimate cross-platform bookmark manager with:
 
 ### Design Patterns
 - **MV Architecture**: Model-View pattern with SwiftUI/Compose
-- **Repository Pattern**: Data access abstraction
 - **Observer Pattern**: Reactive state management
-- **Factory Pattern**: Component creation
-- **Strategy Pattern**: Platform-specific implementations
-
-### State Management
-- **Darwin**: SwiftUI's `@State`, `@Observable`, and `@Environment`
-- **Compose**: State hoisting and Compose state management
-- **Cross-Platform**: Shared state management through Common libraries
-
-### Data Flow
-```
-User Action → View → State Management → Business Logic → Data Layer → Local Storage
-```
 
 ## 📱 Features
 
@@ -118,63 +91,12 @@ User Action → View → State Management → Business Logic → Data Layer → 
 ### Prerequisites
 - **Darwin Development**:
   - Xcode 15.0+
-  - iOS 17.0+, macOS 14.0+, visionOS 1.0+
-  - Apple Developer Account (for distribution)
+  - iOS 18.0+, macOS 15.0+, visionOS 2.0+
+  - Apple Developer Account (for CloudKit features, soon to be removed...)
 - **Compose Development** (Future):
   - Android Studio Hedgehog+
   - JDK 17+
   - Android SDK 34+
-
-### Development Setup
-
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/Subfly/YABA.git
-   cd YABA
-   ```
-
-2. **Darwin Platform Setup**:
-   ```bash
-   cd Darwin
-   open YABA.xcodeproj
-   ```
-   - Select your target device/simulator
-   - Build and run the project
-
-3. **Compose Platform Setup** (Future):
-   ```bash
-   cd Compose
-   ./gradlew build
-   ```
-
-4. **Common Libraries Setup** (Future):
-   ```bash
-   cd Common
-   ./gradlew build
-   ```
-
-## 📦 Building & Distribution
-
-### Darwin Platform
-- **Development**: Xcode development build
-- **Ad Hoc**: Xcode archive with ad hoc provisioning
-- **App Store**: Xcode archive with App Store provisioning
-- **TestFlight**: Automated deployment via CI/CD
-
-### Compose Platform (Future)
-- **Development**: Gradle debug build
-- **Release**: Gradle release build
-- **Play Store**: Automated deployment via CI/CD
-
-## 🔧 Configuration
-
-### Environment Variables
-- `DEEP_LINK_SCHEME`: Custom URL scheme for deep linking
-
-### Build Configuration
-- **Debug**: Development features, verbose logging
-- **Release**: Production optimizations, minimal logging
-- **TestFlight**: Beta testing configuration
 
 ## 🤝 Contributing
 
@@ -188,7 +110,7 @@ We welcome contributions! Please see our contributing guidelines:
 5. **Open** a Pull Request
 
 ### Code Style
-- **Darwin**: Follow Apple's Swift API Design Guidelines
+- **Darwin**: Follow Apple's Swift API and SwiftUI Guidelines
 - **Compose**: Follow Kotlin coding conventions
 - **Common**: Follow Kotlin Multiplatform best practices
 
