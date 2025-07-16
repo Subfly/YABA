@@ -2862,6 +2862,18 @@
         }
       }
     },
+    "Settings Recents Title" : {
+      "comment" : "Title of show recents in home in setting",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show Recents in Home"
+          }
+        }
+      }
+    },
     "Settings Repo Link Title" : {
       "comment" : "Title of repository link in settings",
       "extractionState" : "manual",

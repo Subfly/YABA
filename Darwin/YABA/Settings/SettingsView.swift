@@ -21,6 +21,9 @@ struct SettingsView: View {
     @AppStorage(Constants.preferredThemeKey)
     private var preferredTheme: ThemeType = .system
     
+    @AppStorage(Constants.showRecentsKey)
+    private var showRecents: Bool = true
+    
     @State
     private var settingsState = SettingsState()
     
@@ -114,6 +117,17 @@ struct SettingsView: View {
         Section {
             ContentAppearancePicker()
             SortingPicker()
+            if UIDevice.current.userInterfaceIdiom == .phone {
+                Toggle(isOn: $showRecents) {
+                    Label {
+                        Text("Settings Recents Title")
+                    } icon: {
+                        YabaIconView(bundleKey: "clock-01")
+                            .scaledToFit()
+                            .frame(width: 24, height: 24)
+                    }
+                }
+            }
         } header: {
             Label {
                 Text("Settings Appearance Title")

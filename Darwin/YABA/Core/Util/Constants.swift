@@ -24,7 +24,8 @@ struct Constants {
     static let preferredCardImageSizingKey = "preferredCardImageSizing"
     static let preferredSortingKey = "preferredSorting"
     static let preferredSortOrderKey = "preferredSortOrder"
-    static let deviceIdKey: String = "deviceId"
+    static let deviceIdKey = "deviceId"
+    static let showRecentsKey = "showRecents"
     
     /// MARK: APP-WISE
     static let toastAnimationDuration: UInt64 = 3_000_000

@@ -126,6 +126,9 @@ struct HomeView: View {
 }
 
 private struct SequentialView: View {
+    @AppStorage(Constants.showRecentsKey)
+    private var showRecents: Bool = true
+    
     @Query
     private var collections: [YabaCollection]
     
@@ -158,7 +161,7 @@ private struct SequentialView: View {
         
     var body: some View {
         List {
-            if UIDevice.current.userInterfaceIdiom == .phone {
+            if showRecents && UIDevice.current.userInterfaceIdiom == .phone {
                 HomeRecentsView(
                     onNavigationCallback: onNavigationCallbackForBookmark
                 )
