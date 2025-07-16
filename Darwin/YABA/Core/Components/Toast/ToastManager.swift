@@ -32,10 +32,13 @@ class ToastManager {
             autoHideTask?.cancel()
             
             if self.isShowing {
+                // Reset state immediately to prevent showing old data during transition
+                self.toastState = ToastState()
                 self.isShowing = false
                 try? await Task.sleep(nanoseconds: Constants.toastAnimationDuration)
             }
             
+            // Update state with new toast data
             self.toastState.message = message
             self.toastState.contentColor = contentColor
             self.toastState.accentColor = accentColor

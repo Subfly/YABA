@@ -503,7 +503,7 @@ struct BookmarkCreationContent: View {
             text: $state.label,
             prompt: Text("Create Bookmark Title Placeholder")
         )
-        .disabled(state.isLoading)
+        .redacted(reason: state.isLoading ? .placeholder : [])
         .safeAreaInset(edge: .leading) {
             YabaIconView(bundleKey: "text")
                 .scaledToFit()
@@ -523,7 +523,7 @@ struct BookmarkCreationContent: View {
                 axis: .vertical,
             )
             .lineLimit(5, reservesSpace: true)
-            .disabled(state.isLoading)
+            .redacted(reason: state.isLoading ? .placeholder : [])
         }
         
         bookmarkTypePicker
