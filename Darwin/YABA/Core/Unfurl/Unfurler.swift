@@ -37,13 +37,14 @@ class Unfurler {
     private let logger: Logger = .init()
     
     func unfurl(urlString: String) async throws -> YabaLinkPreview? {
-        guard let url = URL(string: urlString) else {
-            self.logger.log(level: .error, "[UNFURLER] Cannot create url for: \(urlString)")
+        let normalizedURL = normalizeURL(urlString)
+        guard let url = URL(string: normalizedURL) else {
+            self.logger.log(level: .error, "[UNFURLER] Cannot create url for: \(normalizedURL) (original: \(urlString))")
             throw UnfurlError.cannotCreateURL(LocalizedStringKey("URL Error Text"))
         }
         
         do {
-            if let html = try await loadURL(for: urlString, with: url) {
+            if let html = try await loadURL(for: normalizedURL, with: url) {
                 let tags = extractAllMetaTags(from: html)
                 var metadata = extractMetaData(from: tags)
                 
@@ -86,6 +87,54 @@ class Unfurler {
         } catch {
             throw UnfurlError.unableToUnfurl(LocalizedStringKey("Unfurl Error Text"))
         }
+    }
+    
+    /// Normalizes a URL string to handle common user mistakes
+    private func normalizeURL(_ urlString: String) -> String {
+        var normalized = urlString.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        // Remove any leading/trailing quotes that users might accidentally include
+        if (normalized.hasPrefix("\"") && normalized.hasSuffix("\"")) ||
+           (normalized.hasPrefix("'") && normalized.hasSuffix("'")) {
+            normalized = String(normalized.dropFirst().dropLast())
+        }
+        
+        // Handle common protocol mistakes and missing protocols
+        let lowercased = normalized.lowercased()
+        
+        // Fix common typos in protocols
+        if lowercased.hasPrefix("http://") || lowercased.hasPrefix("https://") {
+            // Protocol already exists, just normalize case
+            if lowercased.hasPrefix("http://") {
+                normalized = "http://" + String(normalized.dropFirst(7))
+            } else if lowercased.hasPrefix("https://") {
+                normalized = "https://" + String(normalized.dropFirst(8))
+            }
+        } else if lowercased.hasPrefix("www.") {
+            // Add https:// to www. URLs
+            normalized = "https://" + normalized
+        } else if lowercased.hasPrefix("//") {
+            // Handle protocol-relative URLs by adding https:
+            normalized = "https:" + normalized
+        } else if !lowercased.hasPrefix("ftp://") && 
+                  !lowercased.hasPrefix("file://") && 
+                  !lowercased.hasPrefix("mailto:") {
+            // For regular domain names, add https://
+            // Check if it looks like a domain (contains at least one dot)
+            if normalized.contains(".") && !normalized.contains(" ") {
+                normalized = "https://" + normalized
+            }
+        }
+        
+        // Remove multiple consecutive slashes in the path (but preserve protocol slashes)
+        if let protocolRange = normalized.range(of: "://") {
+            let protocolPart = String(normalized[..<protocolRange.upperBound])
+            let pathPart = String(normalized[protocolRange.upperBound...])
+            let cleanedPath = pathPart.replacingOccurrences(of: "//+", with: "/", options: .regularExpression)
+            normalized = protocolPart + cleanedPath
+        }
+        
+        return normalized
     }
     
     private func loadURL(for urlString: String, with url: URL) async throws -> String? {
