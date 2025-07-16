@@ -8,6 +8,15 @@
 import Foundation
 
 struct Constants {
+    /// MARK: URLS
+    static let yabaRepoLink = "https://github.com/Subfly/YABA"
+    static let eulaLink = "https://github.com/Subfly/YABA/blob/main/EULA.md"
+    static let tosLink = "https://github.com/Subfly/YABA/blob/main/TERMS_OF_SERVICE.md"
+    static let privacyPolicyLink = "https://github.com/Subfly/YABA/blob/main/PRIVACY_POLICY.md"
+    static let developerWebsiteLink = "https://www.subfly.dev/"
+    static let feedbackLink = "mailto:alitaha@subfly.dev"
+    static let storeLink = "https://apps.apple.com/app/yaba-yet-another-bookmark-app/id6747272081"
+    
     /// MARK: SETTINGS
     static let hasPassedOnboardingKey = "hasPassedOnboarding"
     static let preferredThemeKey = "preferredTheme"

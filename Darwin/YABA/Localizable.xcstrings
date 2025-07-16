@@ -2646,6 +2646,18 @@
         }
       }
     },
+    "Settings About Title" : {
+      "comment" : "Title of about section in settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "About YABA"
+          }
+        }
+      }
+    },
     "Settings Appearance Title" : {
       "comment" : "Section title of appearance in settings",
       "extractionState" : "manual",
@@ -2706,6 +2718,30 @@
         }
       }
     },
+    "Settings Developer Website Link Title" : {
+      "comment" : "Title of developer website link in settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Website"
+          }
+        }
+      }
+    },
+    "Settings EULA Link Title" : {
+      "comment" : "Title of EULA link in settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "EULA"
+          }
+        }
+      }
+    },
     "Settings Event Logs Label" : {
       "comment" : "Title of event logs",
       "extractionState" : "manual",
@@ -2726,6 +2762,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Export Collections"
+          }
+        }
+      }
+    },
+    "Settings HugeIcons Description" : {
+      "comment" : "Description of HugeIcons in settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A huge thanks for the incredible free icon set that gives this app its look and feel."
+          }
+        }
+      }
+    },
+    "Settings HugeIcons Title" : {
+      "comment" : "Title of HugeIcons in settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HugeIcons ©"
+          }
+        }
+      }
+    },
+    "Settings IconKitchen Description" : {
+      "comment" : "Description of IconKitchen in settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thanks for making icon creation easy, fast, and frustration-free."
+          }
+        }
+      }
+    },
+    "Settings IconKitchen Title" : {
+      "comment" : "Title of IconKitchen in settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IconKitchen ©"
           }
         }
       }
@@ -2754,6 +2838,42 @@
         }
       }
     },
+    "Settings Mailto Link Title" : {
+      "comment" : "Title of mailto link in settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Write to Us"
+          }
+        }
+      }
+    },
+    "Settings Privacy Policy Link Title" : {
+      "comment" : "Title of Privacy Policy link in settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacy Policy"
+          }
+        }
+      }
+    },
+    "Settings Repo Link Title" : {
+      "comment" : "Title of repository link in settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Source Code"
+          }
+        }
+      }
+    },
     "Settings Reset App Storage Label" : {
       "comment" : "Title of reset app stroage",
       "extractionState" : "manual",
@@ -2774,6 +2894,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sort Content"
+          }
+        }
+      }
+    },
+    "Settings Store Link Title" : {
+      "comment" : "Title of store link in settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spare some Stars"
+          }
+        }
+      }
+    },
+    "Settings Thanks To Section Title" : {
+      "comment" : "Title of thanks to section in settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Special Thanks To"
           }
         }
       }
@@ -2810,6 +2954,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Settings"
+          }
+        }
+      }
+    },
+    "Settings ToS Link Title" : {
+      "comment" : "Title of ToS link in settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terms of Service"
           }
         }
       }

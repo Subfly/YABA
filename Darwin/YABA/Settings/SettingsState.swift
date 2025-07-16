@@ -30,6 +30,9 @@ internal class SettingsState {
     var shouldShowCsvExportSheet: Bool = false
     var shouldShowHtmlExportSheet: Bool = false
     
+    var shouldShowHugeIconsAlert: Bool = false
+    var shouldShowIconKitchenAlert: Bool = false
+    
     var isImporting: Bool = false
     var isExporting: Bool = false
     var isDeleting: Bool = false

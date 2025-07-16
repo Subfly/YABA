@@ -81,6 +81,8 @@ struct SettingsView: View {
             themeAndLangaugeSection
             appearanceSection
             dataSection
+            aboutSection
+            thanksToSection
             #if DEBUG
             developerSection
             #endif
@@ -134,6 +136,132 @@ struct SettingsView: View {
                 Text("Settings Data Title")
             } icon: {
                 YabaIconView(bundleKey: "database")
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var aboutSection: some View {
+        Section {
+            generateLinkableItem(
+                title: LocalizedStringKey("Settings Repo Link Title"),
+                iconKey: "github",
+                urlToOpen: Constants.yabaRepoLink
+            )
+            generateLinkableItem(
+                title: LocalizedStringKey("Settings EULA Link Title"),
+                iconKey: "agreement-03",
+                urlToOpen: Constants.eulaLink
+            )
+            generateLinkableItem(
+                title: LocalizedStringKey("Settings ToS Link Title"),
+                iconKey: "agreement-02",
+                urlToOpen: Constants.tosLink
+            )
+            generateLinkableItem(
+                title: LocalizedStringKey("Settings Privacy Policy Link Title"),
+                iconKey: "justice-scale-02",
+                urlToOpen: Constants.privacyPolicyLink
+            )
+            generateLinkableItem(
+                title: LocalizedStringKey("Settings Developer Website Link Title"),
+                iconKey: "developer",
+                urlToOpen: Constants.developerWebsiteLink
+            )
+            generateLinkableItem(
+                title: LocalizedStringKey("Settings Mailto Link Title"),
+                iconKey: "mail-01",
+                urlToOpen: Constants.feedbackLink
+            )
+            generateLinkableItem(
+                title: LocalizedStringKey("Settings Store Link Title"),
+                iconKey: "app-store",
+                urlToOpen: Constants.storeLink
+            )
+        } header: {
+            Label {
+                Text("Settings About Title")
+            } icon: {
+                YabaIconView(bundleKey: "information-square")
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var thanksToSection: some View {
+        Section {
+            HStack {
+                Label {
+                    Text("Settings HugeIcons Title")
+                } icon: {
+                    YabaIconView(bundleKey: "hugeicons")
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                }
+                Spacer()
+                YabaIconView(bundleKey: "arrow-right-01")
+                    .scaledToFit()
+                    .frame(width: 24, height: 24)
+                    .foregroundStyle(.tertiary)
+            }
+            .contentShape(Rectangle())
+            .alert(
+                "Settings HugeIcons Title",
+                isPresented: $settingsState.shouldShowHugeIconsAlert
+            ) {
+                Button {
+                    settingsState.shouldShowHugeIconsAlert = false
+                } label: {
+                    Text("Done")
+                }
+            } message: {
+                Text("Settings HugeIcons Description")
+            }
+            .dialogIcon(Image("hugeicons"))
+            .onTapGesture {
+                settingsState.shouldShowHugeIconsAlert = true
+            }
+            
+            HStack {
+                Label {
+                    Text("Settings IconKitchen Title")
+                } icon: {
+                    YabaIconView(bundleKey: "knife-02")
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                }
+                Spacer()
+                YabaIconView(bundleKey: "arrow-right-01")
+                    .scaledToFit()
+                    .frame(width: 24, height: 24)
+                    .foregroundStyle(.tertiary)
+            }
+            .contentShape(Rectangle())
+            .alert(
+                "Settings IconKitchen Title",
+                isPresented: $settingsState.shouldShowIconKitchenAlert
+            ) {
+                Button {
+                    settingsState.shouldShowIconKitchenAlert = false
+                } label: {
+                    Text("Done")
+                }
+            } message: {
+                Text("Settings IconKitchen Description")
+            }
+            .dialogIcon(Image("knife-02"))
+            .onTapGesture {
+                settingsState.shouldShowIconKitchenAlert = true
+            }
+        } header: {
+            Label {
+                Text("Settings Thanks To Section Title")
+            } icon: {
+                YabaIconView(bundleKey: "champion")
                     .scaledToFit()
                     .frame(width: 18, height: 18)
             }
@@ -398,6 +526,34 @@ struct SettingsView: View {
                 }
             }
         )
+    }
+    
+    @ViewBuilder
+    private func generateLinkableItem(
+        title: LocalizedStringKey,
+        iconKey: String,
+        urlToOpen: String,
+    ) -> some View {
+        HStack {
+            Label {
+                Text(title)
+            } icon: {
+                YabaIconView(bundleKey: iconKey)
+                    .scaledToFit()
+                    .frame(width: 24, height: 24)
+            }
+            Spacer()
+            YabaIconView(bundleKey: "arrow-right-01")
+                .scaledToFit()
+                .frame(width: 24, height: 24)
+                .foregroundStyle(.tertiary)
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            if let url: URL = .init(string: urlToOpen), UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url)
+            }
+        }
     }
 }
 
