@@ -836,6 +836,18 @@
         }
       }
     },
+    "Data Manager Invalid JSON Format Message" : {
+      "comment" : "Message to show in toast when JSON is invalid during Data Manager operations.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JSON is invalid. Please check the file and make sure everything is correct as specified."
+          }
+        }
+      }
+    },
     "Data Manager Unknown Error Message" : {
       "comment" : "Message to show in toast when the error is unknown.",
       "extractionState" : "manual",

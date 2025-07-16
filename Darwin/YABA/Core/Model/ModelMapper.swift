@@ -57,7 +57,7 @@ extension YabaBookmark {
             imageUrl: self.imageUrl,
             iconUrl: self.iconUrl,
             videoUrl: self.videoUrl,
-            readableHTML: self.readableHTML,
+            readableHTML: nil, // Exclude HTML content to prevent import/export issues
             type: self.type,
             version: self.version
         )
@@ -82,7 +82,7 @@ extension YabaCodableBookmark {
             imageUrl: self.imageUrl,
             iconUrl: self.iconUrl,
             videoUrl: self.videoUrl,
-            readableHTML: self.readableHTML,
+            readableHTML: nil, // Always set to nil to prevent import/export issues
             type: type,
             version: self.version ?? 0,
             collections: [] // This will be handled by another iteration

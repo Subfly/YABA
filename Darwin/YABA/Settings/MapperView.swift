@@ -265,9 +265,8 @@ private struct CSVInfoListView: View {
         .init(column: 8, field: "imageUrl",            notes: "CSV Notes Optional"),
         .init(column: 9, field: "iconUrl",             notes: "CSV Notes Optional"),
         .init(column: 10, field: "videoUrl",           notes: "CSV Notes Optional"),
-        .init(column: 11, field: "readableHTML",       notes: "CSV Notes Optional"),
-        .init(column: 12, field: "type",               notes: "CSV Notes Type"),
-        .init(column: 13, field: "version",            notes: "CSV Notes Optional"),
+        .init(column: 11, field: "type",               notes: "CSV Notes Type"),
+        .init(column: 12, field: "version",            notes: "CSV Notes Optional"),
     ]
     
     var body: some View {

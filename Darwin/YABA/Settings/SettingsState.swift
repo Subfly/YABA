@@ -260,6 +260,7 @@ internal class SettingsState {
                     .caseURLColumnNotSelected(let message),
                     .invalidBookmarkUrl(let message),
                     .invalidHTML(let message),
+                    .invalidJSON(let message),
                     .unkownError(let message):
                 toastManager.show(
                     message: message,

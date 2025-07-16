@@ -22,6 +22,7 @@ enum DataError: Error {
     case invalidCSVEncoding(LocalizedStringKey)
     case emptyCSV(LocalizedStringKey)
     case emptyJSON(LocalizedStringKey)
+    case invalidJSON(LocalizedStringKey)
     case exportableGenerationError(LocalizedStringKey)
     case caseURLColumnNotSelected(LocalizedStringKey)
     case invalidBookmarkUrl(LocalizedStringKey)
@@ -37,15 +38,44 @@ class DataManager {
         using modelContext: ModelContext
     ) throws {
         let decoder = JSONDecoder()
-        let content = try decoder.decode(YabaCodableContent.self, from: data)
+        
+        // Add better error handling for JSON decoding
+        let content: YabaCodableContent
+        do {
+            content = try decoder.decode(YabaCodableContent.self, from: data)
+        } catch {
+            // If decoding fails, throw a more informative error
+            throw DataError.invalidJSON("Data Manager Invalid JSON Format Message")
+        }
         
         if content.bookmarks.isEmpty {
             throw DataError.emptyJSON("Data Manager Empty JSON Message")
         }
         
-        let mappedBookmarks = Dictionary(uniqueKeysWithValues: content.bookmarks.map {
-            ($0.bookmarkId, $0.mapToModel())
-        })
+        // Create a mapping of bookmark IDs to bookmark models
+        // Generate new IDs for bookmarks that don't have them or have duplicates
+        var mappedBookmarks: [String: YabaBookmark] = [:]
+        var usedIds: Set<String> = []
+        
+        for codableBookmark in content.bookmarks {
+            var bookmarkId = codableBookmark.bookmarkId ?? UUID().uuidString
+            
+            // Handle duplicate IDs by generating new ones
+            while usedIds.contains(bookmarkId) {
+                bookmarkId = UUID().uuidString
+            }
+            usedIds.insert(bookmarkId)
+            
+            let bookmarkModel = codableBookmark.mapToModel()
+            // Ensure the bookmark has the correct ID
+            bookmarkModel.bookmarkId = bookmarkId
+            mappedBookmarks[bookmarkId] = bookmarkModel
+        }
+        
+        // First, insert all bookmarks into the model context
+        mappedBookmarks.values.forEach { bookmark in
+            modelContext.insert(bookmark)
+        }
         
         if let collections = content.collections {
             collections.forEach { collection in
@@ -89,13 +119,25 @@ class DataManager {
             throw DataError.invalidCSVEncoding("Data Manager Invalid CSV Encoding Message")
         }
 
-        let rows = content.components(separatedBy: "\n")
+        let rows = content.components(separatedBy: "\n").filter {
+            !$0.trimmingCharacters(in: .whitespaces).isEmpty
+        }
         guard rows.count > 1 else {
             throw DataError.emptyCSV("Data Manager Empty CSV Message")
         }
         
-        let header = rows[0].components(separatedBy: ",")
-        guard header.count == 13 else {
+        let header = parseCSVRow(rows[0])
+        guard header.count == 12 else {
+            throw DataError.invalidCSVEncoding("Data Manager Invalid CSV Encoding Message")
+        }
+        
+        // Validate header content matches YABA's expected format
+        let expectedHeaders = [
+            "bookmarkId", "label", "bookmarkDescription", "link", "domain",
+            "createdAt", "editedAt", "imageUrl", "iconUrl", "videoUrl", 
+            "type", "version"
+        ]
+        guard header == expectedHeaders else {
             throw DataError.invalidCSVEncoding("Data Manager Invalid CSV Encoding Message")
         }
         
@@ -112,27 +154,44 @@ class DataManager {
         )
         
         let bookmarkRows = rows.dropFirst()
+        var processedRows = 0
+        
         for row in bookmarkRows {
             let columns = parseCSVRow(row)
-            guard columns.count == 11 else { continue }
+            
+            // Validate exact column count - no more, no less
+            guard columns.count == 12 else {
+                throw DataError.invalidCSVEncoding("Data Manager Invalid CSV Encoding Message")
+            }
+            
+            // Validate required URL field is not empty
+            guard !columns[3].trimmingCharacters(in: .whitespaces).isEmpty else {
+                throw DataError.invalidCSVEncoding("Data Manager Invalid CSV Encoding Message")
+            }
 
             let bookmark = YabaCodableBookmark(
-                bookmarkId: columns[0],
-                label: columns[1],
-                bookmarkDescription: columns[2],
+                bookmarkId: columns[0].isEmpty ? nil : columns[0],
+                label: columns[1].isEmpty ? nil : columns[1],
+                bookmarkDescription: columns[2].isEmpty ? nil : columns[2],
                 link: columns[3],
-                domain: columns[4],
-                createdAt: columns[5],
-                editedAt: columns[6],
-                imageUrl: columns[7],
-                iconUrl: columns[8],
-                videoUrl: columns[9],
-                readableHTML: columns[10],
-                type: Int(columns[11]) ?? 1,
-                version: Int(columns[12]) ?? 0,
+                domain: columns[4].isEmpty ? nil : columns[4],
+                createdAt: columns[5].isEmpty ? nil : columns[5],
+                editedAt: columns[6].isEmpty ? nil : columns[6],
+                imageUrl: columns[7].isEmpty ? nil : columns[7],
+                iconUrl: columns[8].isEmpty ? nil : columns[8],
+                videoUrl: columns[9].isEmpty ? nil : columns[9],
+                readableHTML: nil, // Set to nil to prevent CSV parsing issues
+                type: Int(columns[10]) ?? 1,
+                version: Int(columns[11]) ?? 0,
             ).mapToModel()
             
             dummyFolder.bookmarks?.append(bookmark)
+            processedRows += 1
+        }
+        
+        // Ensure we actually processed some valid rows
+        guard processedRows > 0 else {
+            throw DataError.invalidCSVEncoding("Data Manager Invalid CSV Encoding Message")
         }
         
         modelContext.insert(dummyFolder)
@@ -417,7 +476,8 @@ class DataManager {
         let header = [
             "bookmarkId", "label", "bookmarkDescription", "link", "domain",
             "createdAt", "editedAt", "imageUrl", "iconUrl", "videoUrl", 
-            "readableHTML", "type", "version"
+            "type", "version"
+            // Removed readableHTML to prevent CSV parsing issues
         ]
         
         let rows: [String] = bookmarks.map(toCSVRow(_:))
@@ -447,10 +507,11 @@ class DataManager {
             bookmark.editedAt ?? currentDate,
             bookmark.imageUrl ?? "",
             bookmark.iconUrl ?? "",
-            bookmark.videoUrl ?? "",
-            bookmark.readableHTML ?? ""
+            bookmark.videoUrl ?? ""
+            // Removed readableHTML to prevent CSV parsing issues
         ]
         list.append(String(bookmark.type ?? 1)) // Thanks Swift for not allowing me to put more than 10 items in the list above...
+        list.append(String(bookmark.version ?? 0)) // Add missing version column
         return list.map { escapeForCSV($0) }.joined(separator: ",")
     }
 
@@ -458,19 +519,35 @@ class DataManager {
         var result: [String] = []
         var field = ""
         var insideQuotes = false
+        var i = row.startIndex
 
-        for char in row {
+        while i < row.endIndex {
+            let char = row[i]
+            
             if char == "\"" {
-                insideQuotes.toggle()
+                // Check for escaped quotes
+                let nextIndex = row.index(after: i)
+                if nextIndex < row.endIndex && row[nextIndex] == "\"" && insideQuotes {
+                    // This is an escaped quote
+                    field.append("\"")
+                    i = row.index(after: nextIndex)
+                } else {
+                    // Toggle quote state
+                    insideQuotes.toggle()
+                    i = nextIndex
+                }
             } else if char == "," && !insideQuotes {
-                result.append(field)
+                result.append(field.trimmingCharacters(in: .whitespaces))
                 field = ""
+                i = row.index(after: i)
             } else {
                 field.append(char)
+                i = row.index(after: i)
             }
         }
-        result.append(field)
-        return result.map { $0.replacingOccurrences(of: "\"\"", with: "\"") }
+        
+        result.append(field.trimmingCharacters(in: .whitespaces))
+        return result
     }
 }
 

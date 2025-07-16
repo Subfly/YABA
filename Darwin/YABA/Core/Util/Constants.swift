@@ -62,7 +62,6 @@ struct Constants {
           "imageUrl": "https://example.com/image.png",
           "iconUrl": "https://example.com/favicon.ico",
           "videoUrl": null,
-          "readableHTML": "<p>Swift is a powerful...</p>",
           "type": 2,
           "version": 1
         }
