@@ -4,6 +4,8 @@
 <dict>
 	<key>CFBundleIconFile</key>
 	<string>MacAppIcons.icns</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>2025 Subfly Developer - Ali Taha Dinçer</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

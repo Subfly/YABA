@@ -139,6 +139,7 @@
 				Creation/Bookmark/SelectTagsContent.swift,
 				Creation/Collection/CollectionCreationContent.swift,
 				Creation/Collection/CollectionCreationState.swift,
+				Credits.rtf,
 				Localizable.xcstrings,
 			);
 			target = 96A8E0AD2DB5CAFF00A47601 /* YABAShare */;
@@ -187,6 +188,7 @@
 				Core/Util/ViewType.swift,
 				Creation/Bookmark/BookmarkCreationState.swift,
 				Creation/Bookmark/SimpleBookmarkCreationView.swift,
+				Credits.rtf,
 				Localizable.xcstrings,
 			);
 			target = 967B9A4A2DD8D3EF00181AA1 /* YABAStatusMenuItem */;
@@ -234,6 +236,7 @@
 				Core/Util/ViewType.swift,
 				Creation/Bookmark/BookmarkCreationState.swift,
 				Creation/Bookmark/SimpleBookmarkCreationView.swift,
+				Credits.rtf,
 				Localizable.xcstrings,
 			);
 			target = 96EB67122DD94580009EB9EC /* YABAShareMac */;
