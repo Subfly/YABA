@@ -72,6 +72,7 @@ struct ReaderView: View {
         if UIDevice.current.userInterfaceIdiom == .pad {
             MacOSHoverableToolbarIcon(
                 bundleKey: "text-square",
+                tooltipKey: "Tooltip Title Font Size",
                 onPressed: {
                     state.changeFontSize()
                 }
@@ -79,6 +80,7 @@ struct ReaderView: View {
             Divider()
             MacOSHoverableToolbarIcon(
                 bundleKey: "cursor-text",
+                tooltipKey: "Tooltip Title Line Height",
                 onPressed: {
                     state.changeLineHeight()
                 }
@@ -86,6 +88,7 @@ struct ReaderView: View {
             Divider()
             MacOSHoverableToolbarIcon(
                 bundleKey: "colors",
+                tooltipKey: "Tooltip Title Change Background Color",
                 onPressed: {
                     state.changeTheme()
                 }

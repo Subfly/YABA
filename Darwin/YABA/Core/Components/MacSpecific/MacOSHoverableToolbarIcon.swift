@@ -12,6 +12,7 @@ struct MacOSHoverableToolbarIcon: View {
     private var isHovered: Bool = false
     
     let bundleKey: String
+    let tooltipKey: String
     let onPressed: () -> Void
     
     var body: some View {
@@ -32,5 +33,6 @@ struct MacOSHoverableToolbarIcon: View {
         .onHover { hovered in
             isHovered = hovered
         }
+        .help(LocalizedStringKey(tooltipKey))
     }
 }

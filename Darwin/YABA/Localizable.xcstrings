@@ -3234,6 +3234,66 @@
         }
       }
     },
+    "Tooltip Title Change Background Color" : {
+      "comment" : "Title of tooltip to show in change background color button",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Background Color"
+          }
+        }
+      }
+    },
+    "Tooltip Title Font Size" : {
+      "comment" : "Title of tooltip to show in font size button",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Font Size"
+          }
+        }
+      }
+    },
+    "Tooltip Title Line Height" : {
+      "comment" : "Title of tooltip to show in change line height button",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Line Height"
+          }
+        }
+      }
+    },
+    "Tooltip Title Notification" : {
+      "comment" : "Title of tooltip to show in remind me button",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remind Me"
+          }
+        }
+      }
+    },
+    "Tooltip Title Reader" : {
+      "comment" : "Title of tooltip to show in reader mode change button",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Switch Reader/Detail"
+          }
+        }
+      }
+    },
     "Type Guide Bookmark Label" : {
       "comment" : "Label to show when giving info about bookmark types",
       "extractionState" : "manual",

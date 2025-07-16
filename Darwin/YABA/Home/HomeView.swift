@@ -257,6 +257,7 @@ private struct ToolbarIcons: View {
         HStack(spacing: 0) {
             MacOSHoverableToolbarIcon(
                 bundleKey: "search-01",
+                tooltipKey: "Search Title",
                 onPressed: onNavigationCallbackForSearch
             )
             /*
@@ -280,6 +281,7 @@ private struct ToolbarIcons: View {
             } label: {
                 MacOSHoverableToolbarIcon(
                     bundleKey:  "more-horizontal-circle-02",
+                    tooltipKey: "Show More Label",
                     onPressed: {}
                 )
             }

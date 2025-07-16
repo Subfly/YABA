@@ -625,11 +625,13 @@ private struct OptionItems: View {
         HStack(spacing: 0) {
             MacOSHoverableToolbarIcon(
                 bundleKey: "text-font",
+                tooltipKey: "Tooltip Title Reader",
                 onPressed: onModeChangeRequested
             )
             .tint(.green)
             MacOSHoverableToolbarIcon(
                 bundleKey: "edit-02",
+                tooltipKey: "Edit",
                 onPressed: {
                     shouldShowEditBookmarkSheet = true
                 }
@@ -637,6 +639,7 @@ private struct OptionItems: View {
             .tint(.orange)
             MacOSHoverableToolbarIcon(
                 bundleKey: "notification-01",
+                tooltipKey: "Tooltip Title Notification",
                 onPressed: {
                     shouldShowTimePicker = true
                 }
@@ -644,11 +647,13 @@ private struct OptionItems: View {
             .tint(.yellow)
             MacOSHoverableToolbarIcon(
                 bundleKey: "refresh",
+                tooltipKey: "Refresh",
                 onPressed: onRefresh
             )
             .tint(.blue)
             MacOSHoverableToolbarIcon(
                 bundleKey: "share-03",
+                tooltipKey: "Share",
                 onPressed: {
                     shouldShowShareDialog = true
                 }
@@ -656,6 +661,7 @@ private struct OptionItems: View {
             .tint(.indigo)
             MacOSHoverableToolbarIcon(
                 bundleKey: "delete-02",
+                tooltipKey: "Delete",
                 onPressed: {
                     shouldShowDeleteDialog = true
                 }

@@ -47,6 +47,7 @@ struct SearchView: View {
             ToolbarItem(placement: .primaryAction) {
                 MacOSHoverableToolbarIcon(
                     bundleKey: "cancel-circle",
+                    tooltipKey: "Cancel",
                     onPressed: onCloseRequested
                 )
             }

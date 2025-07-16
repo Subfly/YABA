@@ -256,6 +256,7 @@ private struct ToolbarItems: View {
             #else
             MacOSHoverableToolbarIcon(
                 bundleKey: "plus-sign-circle",
+                tooltipKey: "Create Bookmark Title",
                 onPressed: {
                     state.shouldShowCreateBookmarkSheet = true
                 }
