@@ -14,6 +14,9 @@ class ToastManager {
     var toastState: ToastState = .init()
     var isShowing = false
     
+    // Private property to track the auto-hide task
+    private var autoHideTask: Task<Void, Never>?
+    
     func show(
         message: LocalizedStringKey,
         contentColor: Color? = nil,
@@ -25,6 +28,9 @@ class ToastManager {
         onAcceptPressed: (() -> Void)? = nil
     ) {
         Task {
+            // Cancel any existing auto-hide task
+            autoHideTask?.cancel()
+            
             if self.isShowing {
                 self.isShowing = false
                 try? await Task.sleep(nanoseconds: Constants.toastAnimationDuration)
@@ -40,17 +46,39 @@ class ToastManager {
             self.toastState.onAcceptPressed = onAcceptPressed
             
             self.isShowing = true
+            
+            // Start auto-hide timer
+            startAutoHideTimer(duration: duration)
         }
     }
     
     func hide() {
         Task {
+            // Cancel any pending auto-hide task
+            autoHideTask?.cancel()
+            autoHideTask = nil
+            
             if isShowing {
                 self.isShowing = false
                 try? await Task.sleep(nanoseconds: Constants.toastAnimationDuration)
             }
             
             self.toastState = ToastState()
+        }
+    }
+    
+    // Private method to handle auto-hide timer
+    private func startAutoHideTimer(duration: ToastDuration) {
+        autoHideTask = Task {
+            do {
+                try await Task.sleep(nanoseconds: duration.getDuration())
+                // Only hide if the task wasn't cancelled and toast is still showing
+                if !Task.isCancelled && isShowing {
+                    hide()
+                }
+            } catch {
+                // Task was cancelled, do nothing
+            }
         }
     }
 }

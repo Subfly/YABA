@@ -12,9 +12,9 @@ enum ToastDuration {
     func getDuration() -> UInt64 {
         switch self {
         case .long:
-            8_000_000
+            8_000_000_000 // 8 seconds in nanoseconds
         case .short:
-            4_000_000
+            4_000_000_000 // 4 seconds in nanoseconds
         }
     }
 }
