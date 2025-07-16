@@ -79,9 +79,9 @@ internal class ReaderState: NSObject {
     func changeTheme() {
         withAnimation {
             theme = switch theme {
-            case .system: .light
-            case .light: .dark
-            case .dark: .sepia
+            case .system: .dark
+            case .dark: .light
+            case .light: .sepia
             case .sepia: .system
             }
             
