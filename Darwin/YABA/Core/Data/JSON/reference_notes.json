@@ -1,0 +1,227 @@
+{
+  "metadata": {
+    "id": "reference_notes",
+    "name": "Reference & Notes",
+    "description": "Documentation and note-taking",
+    "main_category": "education_learning",
+    "icon_count": 43,
+    "version": "1.0"
+  },
+  "icons": [
+    {
+      "name": "all-bookmark",
+      "tags": "bookmark, book,\u00a0later,\u00a0marker,\u00a0reading,\u00a0save,\u00a0tag,",
+      "category": "bookmark"
+    },
+    {
+      "name": "bookmark-01",
+      "tags": "bookmark, book,\u00a0later,\u00a0marker,\u00a0reading,\u00a0save,\u00a0tag,",
+      "category": "bookmark"
+    },
+    {
+      "name": "bookmark-02",
+      "tags": "bookmark, book,\u00a0later,\u00a0marker,\u00a0reading,\u00a0save,\u00a0tag,",
+      "category": "bookmark"
+    },
+    {
+      "name": "bookmark-03",
+      "tags": "save,",
+      "category": "bookmark"
+    },
+    {
+      "name": "bookmark-add-01",
+      "tags": "add bookmark, book, add\u00a0later,\u00a0marker,\u00a0reading,\u00a0save,\u00a0tag,",
+      "category": "bookmark"
+    },
+    {
+      "name": "bookmark-add-02",
+      "tags": "add bookmark, add later, add reading,",
+      "category": "bookmark"
+    },
+    {
+      "name": "bookmark-block-01",
+      "tags": "block bookmark,",
+      "category": "bookmark"
+    },
+    {
+      "name": "bookmark-block-02",
+      "tags": "bookmark-block-02",
+      "category": "bookmark"
+    },
+    {
+      "name": "bookmark-check-01",
+      "tags": "check bookmark,\u00a0check\u00a0marker,",
+      "category": "bookmark"
+    },
+    {
+      "name": "bookmark-check-02",
+      "tags": "bookmark-check-02",
+      "category": "bookmark"
+    },
+    {
+      "name": "bookmark-minus-01",
+      "tags": "bookmark minus, remove bookmark, delete bookmark",
+      "category": "bookmark"
+    },
+    {
+      "name": "bookmark-minus-02",
+      "tags": "bookmark-minus-02",
+      "category": "bookmark"
+    },
+    {
+      "name": "bookmark-off-01",
+      "tags": "bookmark off,",
+      "category": "bookmark"
+    },
+    {
+      "name": "bookmark-off-02",
+      "tags": "bookmark-off-02",
+      "category": "bookmark"
+    },
+    {
+      "name": "bookmark-remove-01",
+      "tags": "cancel bookmark, remove bookmark, delete bookmark",
+      "category": "bookmark"
+    },
+    {
+      "name": "bookmark-remove-02",
+      "tags": "bookmark-remove-02",
+      "category": "bookmark"
+    },
+    {
+      "name": "collections-bookmark",
+      "tags": "save, bulk,",
+      "category": "bookmark"
+    },
+    {
+      "name": "favourite",
+      "tags": "favourite, love, heart",
+      "category": "bookmark"
+    },
+    {
+      "name": "favourite-circle",
+      "tags": "favourite, love, heart, love circle, heart circle",
+      "category": "bookmark"
+    },
+    {
+      "name": "favourite-square",
+      "tags": "favourite, love, heart, love square, heart square",
+      "category": "bookmark"
+    },
+    {
+      "name": "heartbreak",
+      "tags": "heartbreak, broken love, broken heart",
+      "category": "bookmark"
+    },
+    {
+      "name": "label",
+      "tags": "Label, tag",
+      "category": "bookmark"
+    },
+    {
+      "name": "label-important",
+      "tags": "Label important, tag, important",
+      "category": "bookmark"
+    },
+    {
+      "name": "stack-star",
+      "tags": "stack-star",
+      "category": "bookmark"
+    },
+    {
+      "name": "star",
+      "tags": "star, ratting, review, rate, favorite, half-star, half-rate, half-review",
+      "category": "bookmark"
+    },
+    {
+      "name": "star-circle",
+      "tags": "star-circle",
+      "category": "bookmark"
+    },
+    {
+      "name": "star-square",
+      "tags": "star, review, rate, star square, rate sqaure, review square",
+      "category": "bookmark"
+    },
+    {
+      "name": "tag-01",
+      "tags": "tag-01",
+      "category": "bookmark"
+    },
+    {
+      "name": "tag-02",
+      "tags": "tag-02",
+      "category": "bookmark"
+    },
+    {
+      "name": "thumbs-down",
+      "tags": "thumbs-down",
+      "category": "bookmark"
+    },
+    {
+      "name": "thumbs-up",
+      "tags": "thumbs-up",
+      "category": "bookmark"
+    },
+    {
+      "name": "note-01",
+      "tags": "note-01",
+      "category": "notes-tasks"
+    },
+    {
+      "name": "note-02",
+      "tags": "note-02",
+      "category": "notes-tasks"
+    },
+    {
+      "name": "note-03",
+      "tags": "note-03",
+      "category": "notes-tasks"
+    },
+    {
+      "name": "note-04",
+      "tags": "note-04",
+      "category": "notes-tasks"
+    },
+    {
+      "name": "note-05",
+      "tags": "note-05",
+      "category": "notes-tasks"
+    },
+    {
+      "name": "note-add",
+      "tags": "note-add",
+      "category": "notes-tasks"
+    },
+    {
+      "name": "notebook",
+      "tags": "notebook",
+      "category": "notes-tasks"
+    },
+    {
+      "name": "note-done",
+      "tags": "note-done",
+      "category": "notes-tasks"
+    },
+    {
+      "name": "note-edit",
+      "tags": "note-edit",
+      "category": "notes-tasks"
+    },
+    {
+      "name": "note-remove",
+      "tags": "note-remove",
+      "category": "notes-tasks"
+    },
+    {
+      "name": "sticky-note-01",
+      "tags": "sticky-note-01",
+      "category": "notes-tasks"
+    },
+    {
+      "name": "sticky-note-02",
+      "tags": "sticky-note-02",
+      "category": "notes-tasks"
+    }
+  ]
+}

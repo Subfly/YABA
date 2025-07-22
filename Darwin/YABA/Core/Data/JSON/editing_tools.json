@@ -1,0 +1,727 @@
+{
+  "metadata": {
+    "id": "editing_tools",
+    "name": "Editing Tools",
+    "description": "Design and editing applications",
+    "main_category": "design_media",
+    "icon_count": 143,
+    "version": "1.0"
+  },
+  "icons": [
+    {
+      "name": "3d-printer",
+      "tags": "3d-printer",
+      "category": "editing"
+    },
+    {
+      "name": "add-to-list",
+      "tags": "add-to-list",
+      "category": "editing"
+    },
+    {
+      "name": "alphabet-arabic",
+      "tags": "Arabic Letters, Arabic Characters, Arabic Script, Islamic Alphabet, Middle Eastern Alphabet, Arabic Language Symbols, Script of the Arab World, Alphabet in Arabic Style, Alphabet Arabic",
+      "category": "editing"
+    },
+    {
+      "name": "alphabet-bangla",
+      "tags": "Bangla Letters, Bengali Alphabet, Bangla Script, \u09ac\u09be\u0982\u09b2\u09be \u09ac\u09b0\u09cd\u09a3\u09ae\u09be\u09b2\u09be, Bangla Writing, \u09ac\u09be\u0982\u09b2\u09be \u09b2\u09c7\u0996\u09be, Bangla Symbols, \u09ac\u09be\u0982\u09b2\u09be \u0985\u0995\u09cd\u09b7\u09b0, Bangla Characters, Bengali Language, Bangla Text, Alphabet Bangla",
+      "category": "editing"
+    },
+    {
+      "name": "alphabet-chinese",
+      "tags": "Chinese characters, Mandarin symbols, Hanzi letters, Oriental alphabet, Asian script, Pinyin glyphs, Kanji characters, Logographic symbols, Sinograph symbols, East Asian writing, Traditional script, Calligraphic letters, Ideographic characters, Han script, Alphabet chinese",
+      "category": "editing"
+    },
+    {
+      "name": "alphabet-greek",
+      "tags": "Greek Alphabet, Greek Letters, Hellenic Alphabet, AlphaBeta Symbols, Grecian Characters, Greek Script, Hellenic Writing, Greek Symbol Set, Greek Language Icons, AlphaBeta Icons, Alphabet Greek",
+      "category": "editing"
+    },
+    {
+      "name": "alphabet-hebrew",
+      "tags": "Hebrew Letters, Aleph Bet, Jewish Alphabet, Sacred Script, Torah Writing, Biblical Characters, Israeli Characters, Holy Language, Semitic Script, Judaic Symbols. Alphabet Hebrew",
+      "category": "editing"
+    },
+    {
+      "name": "alphabet-hindi",
+      "tags": "Hindi Lettering, Indian Script Characters, Devanagari Alphabets,  Hindi Alphabetical Symbols, Sanskrit Script Icons, Indian Language Characters, Hindi Script Letters, Devanagari Text Symbols, Hindi Writing System, Alphabet Hindi",
+      "category": "editing"
+    },
+    {
+      "name": "alphabet-japanese",
+      "tags": "apanese Alphabet, Hiragana Chart, Kana Characters, Kanji Script, Eastern Characters, Nihongo Letters, Asian Lettering, Oriental Alphabet, Japanese Writing System, Hiragana & Katakana, Kanji Symbols, Asian Script, Alphabet Japanese",
+      "category": "editing"
+    },
+    {
+      "name": "alphabet-korean",
+      "tags": "Korean characters, Hangul script, korean writing system, Korean alphabet, Hangul letters, Korean symbols, Korean text, Korean script, Hangul alphabet, \ud55c\uad6d\uc5b4 characters, Korean glyphs, Alphabet Korean",
+      "category": "editing"
+    },
+    {
+      "name": "alphabet-thai",
+      "tags": "hai Alphabet, Thai Writing, Siamese Alphabet, Thai Lettering, Thai Language, Thai Text, Thai Symbols, Thai Calligraphy, Thai Typography, Alphabet Thai",
+      "category": "editing"
+    },
+    {
+      "name": "anchor-point",
+      "tags": "fixed position, reference spot, tether spot, secure point, pivot marker, stabilization point, central hub, docking point, focal node, mooring spot, attachment marker, core junction, anchor point",
+      "category": "editing"
+    },
+    {
+      "name": "arrange",
+      "tags": "Sort, Organize, Rearrange, Order, Align, Categorize, Position, Arrange & Align, Group, Manage, Structure, Reorder, Set in Order, Arrange Items, Arrange",
+      "category": "editing"
+    },
+    {
+      "name": "arrange-by-letters-a-z",
+      "tags": "Alphabetical order, Sort alphabetically, A to Z sorting, Alphabet sort, Order by letters, AZ arrangement, Letter sequence, ABC categorization, Character organization, Alphabetize, Alphabetic sorting, Sequential letters, Arrange By Letters A Z",
+      "category": "editing"
+    },
+    {
+      "name": "arrange-by-letters-z-a",
+      "tags": "Alphabetical order, Sort alphabetically, A to Z sorting, Alphabet sort, Order by letters, AZ arrangement, Letter sequence, ABC categorization, Character organization, Alphabetize, Alphabetic sorting, Sequential letters, Arrange By Letters Z A",
+      "category": "editing"
+    },
+    {
+      "name": "arrange-by-numbers-1-9",
+      "tags": "Numeric Sorting, Order by Numerals, Sequence Organize, Numerical Arrangement, Sort with Numbers, 1-9 Ordering, Numeric Sequence, Numbered Sorting, Numerical Sort, Arrange By Numbers 1 9",
+      "category": "editing"
+    },
+    {
+      "name": "arrange-by-numbers-9-1",
+      "tags": "Sort by Numerical Order, Order by 9 to 1, Number-Based Sorting, Sequence 9 to 1, Numeric Arrangement, 9-1 Ordering, Ascending Number Sort, Numerical Ranking 9-1, Arrange Sequentially 9-1, Arrange By Numbers 9 1",
+      "category": "editing"
+    },
+    {
+      "name": "artboard",
+      "tags": "creation board,  drawing panel, visual board, drafting area, layout board, artboard, art board",
+      "category": "editing"
+    },
+    {
+      "name": "artboard-tool",
+      "tags": "Canvas Creator, Design Board, Layout Generator, Drawing Space, Template Maker, Page Constructor, Sketch Pad, Blueprint Generator, Visual Planner, Composition Tool, Artboard Tool, Art Board Tool",
+      "category": "editing"
+    },
+    {
+      "name": "aspect-ratio",
+      "tags": "Proportion Selector, Scale Control, Dimension Modifier, Screen Ratio Adjuster, Size Ratio Setter, Image Scaling Tool, Ratio Resizer, Aspect Adjustment, Proportion Modifier, Aspect Ration",
+      "category": "editing"
+    },
+    {
+      "name": "attachment-01",
+      "tags": "paperclip, link, fasten, connect, affix, clip, join, tether, annex, bind, hitch, clasp, secure, hook, tie, attachment,",
+      "category": "editing"
+    },
+    {
+      "name": "attachment-02",
+      "tags": "paperclip, link, fasten, connect, affix, clip, join, tether, annex, bind, hitch, clasp, secure, hook, tie, attachment,",
+      "category": "editing"
+    },
+    {
+      "name": "attachment-circle",
+      "tags": "paperclip, link, fasten, connect, affix, clip, join, tether, annex, bind, hitch, clasp, secure, hook, tie, attachment, attachment circle, circle attachment",
+      "category": "editing"
+    },
+    {
+      "name": "attachment-square",
+      "tags": "paperclip, link, fasten, connect, affix, clip, join, tether, annex, bind, hitch, clasp, secure, hook, tie, attachment, attachment square, square attachment",
+      "category": "editing"
+    },
+    {
+      "name": "background",
+      "tags": "background",
+      "category": "editing"
+    },
+    {
+      "name": "bend-tool",
+      "tags": "bend tool, curve tool, flex tool, reshape tool, twist tool, contour tool, morph tool, manipulate tool, curve adjuster, flexify tool, bend adjuster, tool bend",
+      "category": "editing"
+    },
+    {
+      "name": "blend",
+      "tags": "mix, merge, combine, unify, fuse, integrate, mingle, harmonize, amalgamate, blendify, blend",
+      "category": "editing"
+    },
+    {
+      "name": "blur",
+      "tags": "soft-focus, hazy, obscured, misty, defocused, obscured, unclear, foggy, indistinct, fuzzy, smudged, vague, nebulous, cloudy, muddled, faint, blur",
+      "category": "editing"
+    },
+    {
+      "name": "brush",
+      "tags": "paint tool, stroke tool, drawing implement, art brush, paintbrush, artistic tool, coloring tool, graphical brush, creative wand, design brush, brush",
+      "category": "editing"
+    },
+    {
+      "name": "cap-projecting",
+      "tags": "Cap Protrusion, Hat Extending, Peak Projection, Headwear Outcrop, Brim Extend, Visor Projection, Cap Bulge, Hat Overhang, Peak Extrusion, Cap Projecting, Projecting Cap, Cap, Projecting",
+      "category": "editing"
+    },
+    {
+      "name": "cap-round",
+      "tags": "Circular Hat, Rounded Cap, Round Headwear, Dome Cap, Sphere Hat, Curved Brim, Crown Circle, Ball Cap, Spherical Hat, Curved Topper, Circlet Cap, Round Crown, Dome Top Hat, Circular Bonnet, Sphere Headgear, Curved Peak, Cap Round, Round Cap, Cap",
+      "category": "editing"
+    },
+    {
+      "name": "cap-straight",
+      "tags": "baseball cap, flat brim hat, snapback, peaked cap, fitted cap, brimmed hat, sporty cap, uncurved cap, bill cap, straight-billed hat, rigid brim cap, modern hat, cap straight, straight cap, cap, straight",
+      "category": "editing"
+    },
+    {
+      "name": "change-screen-mode",
+      "tags": "Switch Display, Toggle View, Adjust Screen Layout, Modify Display Setting, Shift Screen Mode, Adapt View Mode, Alter Screen Appearance, Switch Screen Format, Transform Display Mode, Adjust Visual Presentation, Change Screen Mode, Screen Mode, Change Screen",
+      "category": "editing"
+    },
+    {
+      "name": "character-phonetic",
+      "tags": "letter sound, alphabet pronunciation, vocal symbol, speech representation, linguistic character, verbal phonics, spoken symbol, word pronunciation, vocalized letter, speech sound, character phonetic, phonetic character, character, phonetic",
+      "category": "editing"
+    },
+    {
+      "name": "check-list",
+      "tags": "To-Do List, Tasks, Checklist, Task List, Agenda, Action Items, Checkmark List, Task Tracker, Completion List, Inventory, Task Manager, Reminders, Planner, Schedule, Check List, List view, List, Check List",
+      "category": "editing"
+    },
+    {
+      "name": "clean",
+      "tags": "clean",
+      "category": "editing"
+    },
+    {
+      "name": "color-picker",
+      "tags": "hue selector, palette tool, color chooser, shade picker, spectrum selector, tint picker, chroma tool, Color, Colors, Color Picker",
+      "category": "editing"
+    },
+    {
+      "name": "colors",
+      "tags": "Palette, Hues, Shades, Color Wheel, Spectrum, Tints, Pigments, Chroma, Color Options, Rainbow, Color Picker, Paintbox, Vividness, Hue Selection, Color Swatches, Dyes, Color Chart, Tinctures, Gradient, Color Palette, Colors, Color",
+      "category": "editing"
+    },
+    {
+      "name": "column-delete",
+      "tags": "Remove Column, Erase Column, Delete Column, Column Remove, Eliminate Column, Column Erase, Omit Column, Exclude Column, Dismiss Column, Drop Column, Column Delete, Delete Column",
+      "category": "editing"
+    },
+    {
+      "name": "column-insert",
+      "tags": "Add Column, Insert Column, New Column, Column Addition, Column Create, Column+, Column Insert, Insert Column",
+      "category": "editing"
+    },
+    {
+      "name": "command",
+      "tags": "Apple Control, Keyboard Command, macOS Function, System Shortcut, Command Center, Mac Directive, Control Key, Apple Hotkey, System Command, Mac Functionality, Keyboard Directive, Mac Shortcut, Command Key, Mac Control, Command",
+      "category": "editing"
+    },
+    {
+      "name": "copy-01",
+      "tags": "duplicate, replicate, mirror, clone, mimic, reproduce, imitate, transfer, echo, backup, carbon copy, emulate, photocopy, match, twin, reproduce, copy",
+      "category": "editing"
+    },
+    {
+      "name": "copy-02",
+      "tags": "duplicate, replicate, mirror, clone, mimic, reproduce, imitate, transfer, echo, backup, carbon copy, emulate, photocopy, match, twin, reproduce, copy",
+      "category": "editing"
+    },
+    {
+      "name": "crop",
+      "tags": "trim, adjust, resize, cut, frame, tailor, modify, reshape, snip, alter, edit, prune, reconfigure, refine, customize, crop",
+      "category": "editing"
+    },
+    {
+      "name": "dark-mode",
+      "tags": "dark-mode",
+      "category": "editing"
+    },
+    {
+      "name": "dashed-line-01",
+      "tags": "broken line, dotted line, interrupted line, segmented line, discontinuous line, stippled line, fragmented line, speckled line, dashed stroke, dashed stroke icon, intermittent line, dashed line, line dashed",
+      "category": "editing"
+    },
+    {
+      "name": "dashed-line-02",
+      "tags": "broken line, dotted line, interrupted line, segmented line, discontinuous line, stippled line, fragmented line, speckled line, dashed stroke, dashed stroke icon, intermittent line, dashed line, line dashed, dashed line square",
+      "category": "editing"
+    },
+    {
+      "name": "dashed-line-circle",
+      "tags": "dashed-line-circle",
+      "category": "editing"
+    },
+    {
+      "name": "drawing-mode",
+      "tags": "ketching Tool, Doodle Mode, Artistic Mode, Designing Feature, Illustration Mode, Creative Canvas, Painter's Mode, Drafting Tool, Visual Creation Mode, Art Mode, Drawing Mood",
+      "category": "editing"
+    },
+    {
+      "name": "droplet",
+      "tags": "water bead, liquid dot, aqua spot, raindrop, fluid point, dew symbol, moisture mark, dribble emblem, splash shape, drizzle icon, condensation badge, hydration sign, droplet",
+      "category": "editing"
+    },
+    {
+      "name": "edit-01",
+      "tags": "modify, revise, alter, update, adjust, change, amend, tweak, enhance, revamp, edit",
+      "category": "editing"
+    },
+    {
+      "name": "edit-02",
+      "tags": "modify, update, adjust, revise, change, tweak, alter, amend, refine, edit",
+      "category": "editing"
+    },
+    {
+      "name": "edit-03",
+      "tags": "edit-03",
+      "category": "editing"
+    },
+    {
+      "name": "edit-04",
+      "tags": "edit-04",
+      "category": "editing"
+    },
+    {
+      "name": "edit-off",
+      "tags": "disable edit, modify off, edit disable, change off, alter off, edit stop, adjust off, edit inactive, edit lock, edit block, edit off switch, edit off",
+      "category": "editing"
+    },
+    {
+      "name": "edit-off-03",
+      "tags": "edit-off-03",
+      "category": "editing"
+    },
+    {
+      "name": "edit-off-04",
+      "tags": "edit-off-04",
+      "category": "editing"
+    },
+    {
+      "name": "eight-circle",
+      "tags": "8, 8-circle,",
+      "category": "editing"
+    },
+    {
+      "name": "eight-square",
+      "tags": "8, 8-square,",
+      "category": "editing"
+    },
+    {
+      "name": "ellipse-selection",
+      "tags": "ellipse-selection",
+      "category": "editing"
+    },
+    {
+      "name": "eraser",
+      "tags": "eraser",
+      "category": "editing"
+    },
+    {
+      "name": "feather",
+      "tags": "feather",
+      "category": "editing"
+    },
+    {
+      "name": "fit-to-screen",
+      "tags": "fit-to-screen",
+      "category": "editing"
+    },
+    {
+      "name": "five-circle",
+      "tags": "5, 5-circle,",
+      "category": "editing"
+    },
+    {
+      "name": "five-square",
+      "tags": "5, 5-square,",
+      "category": "editing"
+    },
+    {
+      "name": "four-circle",
+      "tags": "4, 4-circle,",
+      "category": "editing"
+    },
+    {
+      "name": "four-square",
+      "tags": "4, 4-square,",
+      "category": "editing"
+    },
+    {
+      "name": "grid",
+      "tags": "matrix, hash, mesh, array, framework, layout, pattern, mosaic, grating, arrangement, network, structure, checkerboard, blueprint, template, grid",
+      "category": "editing"
+    },
+    {
+      "name": "grid-table",
+      "tags": "grid-table",
+      "category": "editing"
+    },
+    {
+      "name": "grid-view",
+      "tags": "Matrix Display, Block Arrangement, Array Mode, Tile View, Mosaic Layout, Panel Grid, Collage Mode, Brick View, Ensemble Display, Patchwork Format, Chessboard Layout, Array Visualization, Quilted View, Grid View, View Grid",
+      "category": "editing"
+    },
+    {
+      "name": "heading",
+      "tags": "itle, headline, header, caption, banner, masthead, label, subject, topic, heading text, headline",
+      "category": "editing"
+    },
+    {
+      "name": "highlighter",
+      "tags": "highlighter",
+      "category": "editing"
+    },
+    {
+      "name": "language-circle",
+      "tags": "Language, Language Circle, Circle Language",
+      "category": "editing"
+    },
+    {
+      "name": "language-square",
+      "tags": "Language, Language Square, Square Language",
+      "category": "editing"
+    },
+    {
+      "name": "lasso-tool-01",
+      "tags": "lasso-tool-01",
+      "category": "editing"
+    },
+    {
+      "name": "lasso-tool-02",
+      "tags": "lasso-tool-02",
+      "category": "editing"
+    },
+    {
+      "name": "list-view",
+      "tags": "list-view",
+      "category": "editing"
+    },
+    {
+      "name": "magic-wand-01",
+      "tags": "magic wand, wand magic, magic, wand, stars, star, AI, ai,",
+      "category": "editing"
+    },
+    {
+      "name": "magic-wand-02",
+      "tags": "magic wand, stars, magic star, wand magic, stars, star, magic, ai,",
+      "category": "editing"
+    },
+    {
+      "name": "magic-wand-03",
+      "tags": "magic wand, star, stars, wand magic, magic, ai,",
+      "category": "editing"
+    },
+    {
+      "name": "material-and-texture",
+      "tags": "material-and-texture",
+      "category": "editing"
+    },
+    {
+      "name": "nine-circle",
+      "tags": "9, 9-circle,",
+      "category": "editing"
+    },
+    {
+      "name": "nine-square",
+      "tags": "9, 9-square,",
+      "category": "editing"
+    },
+    {
+      "name": "one-circle",
+      "tags": "1, 1-circle,",
+      "category": "editing"
+    },
+    {
+      "name": "one-square",
+      "tags": "1, 1-square,",
+      "category": "editing"
+    },
+    {
+      "name": "option",
+      "tags": "option",
+      "category": "editing"
+    },
+    {
+      "name": "orthogonal-edge",
+      "tags": "orthogonal-edge",
+      "category": "editing"
+    },
+    {
+      "name": "paint-brush-01",
+      "tags": "drawing tool, artistic brush, paint tool, creative brush, brush stroke, design brush, art pencil, coloring brush, painter's tool, canvas brush, brush icon, paint brush, brush paint",
+      "category": "editing"
+    },
+    {
+      "name": "paint-brush-02",
+      "tags": "drawing tool, artistic brush, paint tool, creative brush, brush stroke, design brush, art pencil, coloring brush, painter's tool, canvas brush, brush icon, paint brush, brush paint",
+      "category": "editing"
+    },
+    {
+      "name": "paint-brush-03",
+      "tags": "drawing tool, artistic brush, paint tool, creative brush, brush stroke, design brush, art pencil, coloring brush, painter's tool, canvas brush, brush icon, paint brush, brush paint",
+      "category": "editing"
+    },
+    {
+      "name": "paint-brush-04",
+      "tags": "drawing tool, artistic brush, paint tool, creative brush, brush stroke, design brush, art pencil, coloring brush, painter's tool, canvas brush, brush icon, paint brush, brush paint",
+      "category": "editing"
+    },
+    {
+      "name": "paint-bucket",
+      "tags": "ill Tool, Color Fill, Paint Can, Bucket Fill, Ink Fill, Color Bucket, Fill Bucket, Paint Fill, Solid Fill, Colorize, Paint Bucket, Bucket Paint, Paint, Bucket",
+      "category": "editing"
+    },
+    {
+      "name": "paragraph",
+      "tags": "text block, content section, body of text, narrative, passage, textual segment, written excerpt, discourse snippet, composition, script section, block of writing, prose excerpt, paragraph",
+      "category": "editing"
+    },
+    {
+      "name": "pen-01",
+      "tags": "pen-01",
+      "category": "editing"
+    },
+    {
+      "name": "pen-02",
+      "tags": "pen-02",
+      "category": "editing"
+    },
+    {
+      "name": "pencil-edit-01",
+      "tags": "Edit Tool, Write Edit, Modify Pencil, Update Icon, Change Pen, Revise Marker, Amend Writing, Alteration Symbol, Redact Instrument, Adjust Notation, Corrective Graphite, Revamp Quill, Pencil Edit, Edit Pencil, Edit, Pencil",
+      "category": "editing"
+    },
+    {
+      "name": "pencil-edit-02",
+      "tags": "Edit Tool, Write Edit, Modify Pencil, Update Icon, Change Pen, Revise Marker, Amend Writing, Alteration Symbol, Redact Instrument, Adjust Notation, Corrective Graphite, Revamp Quill, Pencil Edit, Edit Pencil, Edit, Pencil",
+      "category": "editing"
+    },
+    {
+      "name": "pen-tool-02",
+      "tags": "writing instrument, marker tool, drawing pen, freehand tool, sketch tool, pencil icon, creative pen, drafting tool, annotation tool, digital pen, artistic tool, line tool, pentool, pen tool, pen, tool, tool pen",
+      "category": "editing"
+    },
+    {
+      "name": "pen-tool-03",
+      "tags": "writing instrument, marker tool, drawing pen, freehand tool, sketch tool, pencil icon, creative pen, drafting tool, annotation tool, digital pen, artistic tool, line tool, pentool, pen tool, pen, tool, tool pen",
+      "category": "editing"
+    },
+    {
+      "name": "perspective",
+      "tags": "perspective",
+      "category": "editing"
+    },
+    {
+      "name": "pivot",
+      "tags": "pivot",
+      "category": "editing"
+    },
+    {
+      "name": "plus-minus",
+      "tags": "plus-minus",
+      "category": "editing"
+    },
+    {
+      "name": "printer-3d",
+      "tags": "3d printer, 3d-printer,",
+      "category": "editing"
+    },
+    {
+      "name": "profile",
+      "tags": "user, account, person, avatar, identity, portrait, my info, personal, my account, user info, character, individual, persona, user profile, my profile, member, account settings, user details, profile, profile information",
+      "category": "editing"
+    },
+    {
+      "name": "quill-write-01",
+      "tags": "Feather,",
+      "category": "editing"
+    },
+    {
+      "name": "quill-write-02",
+      "tags": "feather,",
+      "category": "editing"
+    },
+    {
+      "name": "quote-down",
+      "tags": "quote-down",
+      "category": "editing"
+    },
+    {
+      "name": "quote-down-circle",
+      "tags": "quote-down-circle",
+      "category": "editing"
+    },
+    {
+      "name": "quote-down-square",
+      "tags": "quote-down-square",
+      "category": "editing"
+    },
+    {
+      "name": "quotes",
+      "tags": "quotes",
+      "category": "editing"
+    },
+    {
+      "name": "quote-up",
+      "tags": "quote-up",
+      "category": "editing"
+    },
+    {
+      "name": "quote-up-circle",
+      "tags": "quote-up-circle",
+      "category": "editing"
+    },
+    {
+      "name": "quote-up-square",
+      "tags": "quote-up-square",
+      "category": "editing"
+    },
+    {
+      "name": "radio-button",
+      "tags": "radio-button",
+      "category": "editing"
+    },
+    {
+      "name": "refresh",
+      "tags": "refresh",
+      "category": "editing"
+    },
+    {
+      "name": "reload",
+      "tags": "reload",
+      "category": "editing"
+    },
+    {
+      "name": "ruler",
+      "tags": "ruler",
+      "category": "editing"
+    },
+    {
+      "name": "scissor",
+      "tags": "scissor",
+      "category": "editing"
+    },
+    {
+      "name": "scissor-rectangle",
+      "tags": "scissor-rectangle",
+      "category": "editing"
+    },
+    {
+      "name": "seven-circle",
+      "tags": "7, 7-circle,",
+      "category": "editing"
+    },
+    {
+      "name": "seven-square",
+      "tags": "7, 7-square,",
+      "category": "editing"
+    },
+    {
+      "name": "shape-collection",
+      "tags": "shape-collection",
+      "category": "editing"
+    },
+    {
+      "name": "shut-down",
+      "tags": "shut-down",
+      "category": "editing"
+    },
+    {
+      "name": "signature",
+      "tags": "Autograph, Endorsement, Seal, Mark, Handwriting, Approval, Sign-off, Inscription, Symbol, Certification, Confirmation, Stamp, Manuscript, Authentication, Written Confirmation, Signature",
+      "category": "editing"
+    },
+    {
+      "name": "six-circle",
+      "tags": "6, 6-circle,",
+      "category": "editing"
+    },
+    {
+      "name": "six-square",
+      "tags": "6, 6-square,",
+      "category": "editing"
+    },
+    {
+      "name": "skew",
+      "tags": "skew",
+      "category": "editing"
+    },
+    {
+      "name": "status",
+      "tags": "status",
+      "category": "editing"
+    },
+    {
+      "name": "sticky-note-03",
+      "tags": "sticky-note-03",
+      "category": "editing"
+    },
+    {
+      "name": "swatch",
+      "tags": "swatch",
+      "category": "editing"
+    },
+    {
+      "name": "text",
+      "tags": "message, communication, dialogue, chat, conversation, words, typography, writing, script, speech, language, text",
+      "category": "editing"
+    },
+    {
+      "name": "text-circle",
+      "tags": "text-circle",
+      "category": "editing"
+    },
+    {
+      "name": "text-font",
+      "tags": "Font Style, Typography, Character Style, Typeface, Writing Style, Lettering, Font Format, Text Appearance, Typeface Selection, Text Design, Font Choice, Writing Format, Text Styling, Font Selection, Text Font",
+      "category": "editing"
+    },
+    {
+      "name": "text-square",
+      "tags": "text-square",
+      "category": "editing"
+    },
+    {
+      "name": "three-circle",
+      "tags": "3, 3-circle,",
+      "category": "editing"
+    },
+    {
+      "name": "three-square",
+      "tags": "3, 3-square,",
+      "category": "editing"
+    },
+    {
+      "name": "transparency",
+      "tags": "transparency",
+      "category": "editing"
+    },
+    {
+      "name": "two-circle",
+      "tags": "2, 2-circle,",
+      "category": "editing"
+    },
+    {
+      "name": "two-square",
+      "tags": "2, 2-square,",
+      "category": "editing"
+    },
+    {
+      "name": "view",
+      "tags": "eye, show, show password,",
+      "category": "editing"
+    },
+    {
+      "name": "view-off",
+      "tags": "eye off, hide, hide password,",
+      "category": "editing"
+    },
+    {
+      "name": "zero-circle",
+      "tags": "0, 0-circle,",
+      "category": "editing"
+    },
+    {
+      "name": "zero-square",
+      "tags": "0, 0-square,",
+      "category": "editing"
+    }
+  ]
+}

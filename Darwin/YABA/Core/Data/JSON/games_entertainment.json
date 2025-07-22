@@ -1,0 +1,1067 @@
+{
+  "metadata": {
+    "id": "games_entertainment",
+    "name": "Games & Entertainment",
+    "description": "Gaming and entertainment activities",
+    "main_category": "entertainment_communication",
+    "icon_count": 211,
+    "version": "1.0"
+  },
+  "icons": [
+    {
+      "name": "adventure",
+      "tags": "adventure",
+      "category": "games"
+    },
+    {
+      "name": "aircraft-game",
+      "tags": "aircraft-game",
+      "category": "games"
+    },
+    {
+      "name": "american-football",
+      "tags": "american-football",
+      "category": "games"
+    },
+    {
+      "name": "angry-bird",
+      "tags": "angry-bird",
+      "category": "games"
+    },
+    {
+      "name": "archer",
+      "tags": "archer",
+      "category": "games"
+    },
+    {
+      "name": "armored-boot",
+      "tags": "armored-boot",
+      "category": "games"
+    },
+    {
+      "name": "badminton",
+      "tags": "badminton",
+      "category": "games"
+    },
+    {
+      "name": "badminton-shuttle",
+      "tags": "badminton-shuttle",
+      "category": "games"
+    },
+    {
+      "name": "baseball",
+      "tags": "baseball",
+      "category": "games"
+    },
+    {
+      "name": "baseball-bat",
+      "tags": "baseball-bat",
+      "category": "games"
+    },
+    {
+      "name": "baseball-helmet",
+      "tags": "baseball-helmet",
+      "category": "games"
+    },
+    {
+      "name": "basketball-01",
+      "tags": "basketball-01",
+      "category": "games"
+    },
+    {
+      "name": "basketball-02",
+      "tags": "basketball-02",
+      "category": "games"
+    },
+    {
+      "name": "basketball-hoop",
+      "tags": "basketball-hoop",
+      "category": "games"
+    },
+    {
+      "name": "bicycle",
+      "tags": "bicycle",
+      "category": "games"
+    },
+    {
+      "name": "billiard-01",
+      "tags": "billiard-01",
+      "category": "games"
+    },
+    {
+      "name": "billiard-02",
+      "tags": "billiard-02",
+      "category": "games"
+    },
+    {
+      "name": "block-game",
+      "tags": "block-game",
+      "category": "games"
+    },
+    {
+      "name": "body-armor",
+      "tags": "body-armor",
+      "category": "games"
+    },
+    {
+      "name": "bomb",
+      "tags": "bomb",
+      "category": "games"
+    },
+    {
+      "name": "bowling",
+      "tags": "bowling",
+      "category": "games"
+    },
+    {
+      "name": "bowling-ball",
+      "tags": "bowling-ball",
+      "category": "games"
+    },
+    {
+      "name": "bowling-pins",
+      "tags": "bowling-pins",
+      "category": "games"
+    },
+    {
+      "name": "boxing-glove",
+      "tags": "boxing-glove",
+      "category": "games"
+    },
+    {
+      "name": "bulletproof-vest",
+      "tags": "bulletproof-vest",
+      "category": "games"
+    },
+    {
+      "name": "cards-01",
+      "tags": "cards-01",
+      "category": "games"
+    },
+    {
+      "name": "cards-02",
+      "tags": "cards-02",
+      "category": "games"
+    },
+    {
+      "name": "castle",
+      "tags": "castle",
+      "category": "games"
+    },
+    {
+      "name": "chess-01",
+      "tags": "chess-01",
+      "category": "games"
+    },
+    {
+      "name": "chess-02",
+      "tags": "chess-02",
+      "category": "games"
+    },
+    {
+      "name": "chess-pawn",
+      "tags": "chess-pawn",
+      "category": "games"
+    },
+    {
+      "name": "chip-02",
+      "tags": "chip-02",
+      "category": "games"
+    },
+    {
+      "name": "clubs-01",
+      "tags": "clubs-01",
+      "category": "games"
+    },
+    {
+      "name": "clubs-02",
+      "tags": "clubs-02",
+      "category": "games"
+    },
+    {
+      "name": "cricket-bat",
+      "tags": "cricket-bat",
+      "category": "games"
+    },
+    {
+      "name": "cricket-helmet",
+      "tags": "cricket-helmet",
+      "category": "games"
+    },
+    {
+      "name": "curling",
+      "tags": "curling",
+      "category": "games"
+    },
+    {
+      "name": "dart",
+      "tags": "dart",
+      "category": "games"
+    },
+    {
+      "name": "diamond-01",
+      "tags": "diamond-01",
+      "category": "games"
+    },
+    {
+      "name": "dice",
+      "tags": "dice",
+      "category": "games"
+    },
+    {
+      "name": "dice-faces-01",
+      "tags": "dice-faces-01",
+      "category": "games"
+    },
+    {
+      "name": "dice-faces-02",
+      "tags": "dice-faces-02",
+      "category": "games"
+    },
+    {
+      "name": "dice-faces-03",
+      "tags": "dice-faces-03",
+      "category": "games"
+    },
+    {
+      "name": "dice-faces-04",
+      "tags": "dice-faces-04",
+      "category": "games"
+    },
+    {
+      "name": "dice-faces-05",
+      "tags": "dice-faces-05",
+      "category": "games"
+    },
+    {
+      "name": "dice-faces-06",
+      "tags": "dice-faces-06",
+      "category": "games"
+    },
+    {
+      "name": "domino",
+      "tags": "domino",
+      "category": "games"
+    },
+    {
+      "name": "ds3-tool",
+      "tags": "ds3-tool",
+      "category": "games"
+    },
+    {
+      "name": "fencing",
+      "tags": "fencing",
+      "category": "games"
+    },
+    {
+      "name": "fencing-mask",
+      "tags": "fencing-mask",
+      "category": "games"
+    },
+    {
+      "name": "fins",
+      "tags": "fins",
+      "category": "games"
+    },
+    {
+      "name": "football",
+      "tags": "football",
+      "category": "games"
+    },
+    {
+      "name": "football-pitch",
+      "tags": "football-pitch",
+      "category": "games"
+    },
+    {
+      "name": "frisbee",
+      "tags": "frisbee",
+      "category": "games"
+    },
+    {
+      "name": "game-controller-01",
+      "tags": "game-controller-01",
+      "category": "games"
+    },
+    {
+      "name": "game-controller-02",
+      "tags": "game-controller-02",
+      "category": "games"
+    },
+    {
+      "name": "game-controller-03",
+      "tags": "game-controller-03",
+      "category": "games"
+    },
+    {
+      "name": "gem",
+      "tags": "gem",
+      "category": "games"
+    },
+    {
+      "name": "gnome",
+      "tags": "gnome",
+      "category": "games"
+    },
+    {
+      "name": "golf-ball",
+      "tags": "golf-ball",
+      "category": "games"
+    },
+    {
+      "name": "golf-bat",
+      "tags": "golf-bat",
+      "category": "games"
+    },
+    {
+      "name": "golf-hole",
+      "tags": "golf-hole",
+      "category": "games"
+    },
+    {
+      "name": "greek-helmet",
+      "tags": "greek-helmet",
+      "category": "games"
+    },
+    {
+      "name": "gymnastic",
+      "tags": "gymnastic",
+      "category": "games"
+    },
+    {
+      "name": "hockey",
+      "tags": "hockey",
+      "category": "games"
+    },
+    {
+      "name": "horse",
+      "tags": "horse",
+      "category": "games"
+    },
+    {
+      "name": "horse-head",
+      "tags": "horse-head",
+      "category": "games"
+    },
+    {
+      "name": "horse-saddle",
+      "tags": "horse-saddle",
+      "category": "games"
+    },
+    {
+      "name": "ice-hockey",
+      "tags": "ice-hockey",
+      "category": "games"
+    },
+    {
+      "name": "ice-skating",
+      "tags": "ice-skating",
+      "category": "games"
+    },
+    {
+      "name": "joker",
+      "tags": "joker",
+      "category": "games"
+    },
+    {
+      "name": "joystick-01",
+      "tags": "joystick-01",
+      "category": "games"
+    },
+    {
+      "name": "joystick-02",
+      "tags": "joystick-02",
+      "category": "games"
+    },
+    {
+      "name": "joystick-03",
+      "tags": "joystick-03",
+      "category": "games"
+    },
+    {
+      "name": "joystick-04",
+      "tags": "joystick-04",
+      "category": "games"
+    },
+    {
+      "name": "joystick-05",
+      "tags": "joystick-05",
+      "category": "games"
+    },
+    {
+      "name": "kayak",
+      "tags": "kayak",
+      "category": "games"
+    },
+    {
+      "name": "kite",
+      "tags": "kite",
+      "category": "games"
+    },
+    {
+      "name": "knight-shield",
+      "tags": "knight-shield",
+      "category": "games"
+    },
+    {
+      "name": "mask-theater-01",
+      "tags": "mask-theater-01",
+      "category": "games"
+    },
+    {
+      "name": "mask-theater-02",
+      "tags": "mask-theater-02",
+      "category": "games"
+    },
+    {
+      "name": "maze",
+      "tags": "maze",
+      "category": "games"
+    },
+    {
+      "name": "mushroom-01",
+      "tags": "mushroom-01",
+      "category": "games"
+    },
+    {
+      "name": "nintendo",
+      "tags": "nintendo",
+      "category": "games"
+    },
+    {
+      "name": "nintendo-switch",
+      "tags": "nintendo-switch",
+      "category": "games"
+    },
+    {
+      "name": "olympic-torch",
+      "tags": "olympic-torch",
+      "category": "games"
+    },
+    {
+      "name": "pacman-01",
+      "tags": "pacman-01",
+      "category": "games"
+    },
+    {
+      "name": "pacman-02",
+      "tags": "pacman-02",
+      "category": "games"
+    },
+    {
+      "name": "paragliding",
+      "tags": "paragliding",
+      "category": "games"
+    },
+    {
+      "name": "pokeball",
+      "tags": "pokeball",
+      "category": "games"
+    },
+    {
+      "name": "pokemon",
+      "tags": "pokemon",
+      "category": "games"
+    },
+    {
+      "name": "pool-table",
+      "tags": "pool-table",
+      "category": "games"
+    },
+    {
+      "name": "potion",
+      "tags": "potion",
+      "category": "games"
+    },
+    {
+      "name": "puzzle",
+      "tags": "puzzle",
+      "category": "games"
+    },
+    {
+      "name": "racing-flag",
+      "tags": "racing-flag",
+      "category": "games"
+    },
+    {
+      "name": "rocking-horse",
+      "tags": "rocking-horse",
+      "category": "games"
+    },
+    {
+      "name": "roller-skate",
+      "tags": "roller-skate",
+      "category": "games"
+    },
+    {
+      "name": "rubik's-cube",
+      "tags": "rubik's-cube",
+      "category": "games"
+    },
+    {
+      "name": "rubiks-cube",
+      "tags": "rubiks-cube",
+      "category": "games"
+    },
+    {
+      "name": "seesaw",
+      "tags": "seesaw",
+      "category": "games"
+    },
+    {
+      "name": "ski",
+      "tags": "ski",
+      "category": "games"
+    },
+    {
+      "name": "slide",
+      "tags": "slide",
+      "category": "games"
+    },
+    {
+      "name": "spades",
+      "tags": "spades",
+      "category": "games"
+    },
+    {
+      "name": "spartan-helmet",
+      "tags": "spartan-helmet",
+      "category": "games"
+    },
+    {
+      "name": "steering",
+      "tags": "steering",
+      "category": "games"
+    },
+    {
+      "name": "super-mario",
+      "tags": "super-mario",
+      "category": "games"
+    },
+    {
+      "name": "super-mario-toad",
+      "tags": "super-mario-toad",
+      "category": "games"
+    },
+    {
+      "name": "surfboard",
+      "tags": "surfboard",
+      "category": "games"
+    },
+    {
+      "name": "swimming",
+      "tags": "swimming",
+      "category": "games"
+    },
+    {
+      "name": "swimming-cap",
+      "tags": "swimming-cap",
+      "category": "games"
+    },
+    {
+      "name": "sword-01",
+      "tags": "sword-01",
+      "category": "games"
+    },
+    {
+      "name": "sword-02",
+      "tags": "sword-02",
+      "category": "games"
+    },
+    {
+      "name": "sword-03",
+      "tags": "sword-03",
+      "category": "games"
+    },
+    {
+      "name": "table-tennis-bat",
+      "tags": "table-tennis-bat",
+      "category": "games"
+    },
+    {
+      "name": "tennis-ball",
+      "tags": "tennis-ball",
+      "category": "games"
+    },
+    {
+      "name": "tennis-racket",
+      "tags": "tennis-racket",
+      "category": "games"
+    },
+    {
+      "name": "tetris",
+      "tags": "tetris",
+      "category": "games"
+    },
+    {
+      "name": "tic-tac-toe",
+      "tags": "tic-tac-toe",
+      "category": "games"
+    },
+    {
+      "name": "trampoline",
+      "tags": "trampoline",
+      "category": "games"
+    },
+    {
+      "name": "versus",
+      "tags": "versus",
+      "category": "games"
+    },
+    {
+      "name": "video-console",
+      "tags": "video-console",
+      "category": "games"
+    },
+    {
+      "name": "volleyball",
+      "tags": "volleyball",
+      "category": "games"
+    },
+    {
+      "name": "vr",
+      "tags": "vr",
+      "category": "games"
+    },
+    {
+      "name": "vr-glasses",
+      "tags": "vr-glasses",
+      "category": "games"
+    },
+    {
+      "name": "water-polo",
+      "tags": "water-polo",
+      "category": "games"
+    },
+    {
+      "name": "whistle",
+      "tags": "whistle",
+      "category": "games"
+    },
+    {
+      "name": "wind-surf",
+      "tags": "wind-surf",
+      "category": "games"
+    },
+    {
+      "name": "award-01",
+      "tags": "award, trophy, winner, cup, award,",
+      "category": "award"
+    },
+    {
+      "name": "award-02",
+      "tags": "award, prize, star award, badge,",
+      "category": "award"
+    },
+    {
+      "name": "award-03",
+      "tags": "award, prize, badge,",
+      "category": "award"
+    },
+    {
+      "name": "award-04",
+      "tags": "Reward, award, badge,",
+      "category": "award"
+    },
+    {
+      "name": "award-05",
+      "tags": "Reward, award, badge,",
+      "category": "award"
+    },
+    {
+      "name": "certificate-01",
+      "tags": "certificate-01",
+      "category": "award"
+    },
+    {
+      "name": "champion",
+      "tags": "award, trophy, winner, cup, champion",
+      "category": "award"
+    },
+    {
+      "name": "crown",
+      "tags": "Reward, award, badge,",
+      "category": "award"
+    },
+    {
+      "name": "crown-02",
+      "tags": "crown-02",
+      "category": "award"
+    },
+    {
+      "name": "crown-03",
+      "tags": "crown-03",
+      "category": "award"
+    },
+    {
+      "name": "honor",
+      "tags": "honor, Reward, award, badge,",
+      "category": "award"
+    },
+    {
+      "name": "honour-star",
+      "tags": "Reward, award, badge,",
+      "category": "award"
+    },
+    {
+      "name": "medal-01",
+      "tags": "Reward, award, badge,",
+      "category": "award"
+    },
+    {
+      "name": "medal-02",
+      "tags": "Reward, award, badge,",
+      "category": "award"
+    },
+    {
+      "name": "medal-03",
+      "tags": "Reward, award,",
+      "category": "award"
+    },
+    {
+      "name": "medal-04",
+      "tags": "Reward, award,",
+      "category": "award"
+    },
+    {
+      "name": "medal-05",
+      "tags": "Reward, award,",
+      "category": "award"
+    },
+    {
+      "name": "medal-06",
+      "tags": "Reward, award,",
+      "category": "award"
+    },
+    {
+      "name": "medal-07",
+      "tags": "Reward, award,",
+      "category": "award"
+    },
+    {
+      "name": "medal-first-place",
+      "tags": "Reward, award,",
+      "category": "award"
+    },
+    {
+      "name": "medal-second-place",
+      "tags": "Reward, award,",
+      "category": "award"
+    },
+    {
+      "name": "medal-third-place",
+      "tags": "Reward, award,",
+      "category": "award"
+    },
+    {
+      "name": "new-releases",
+      "tags": "new-releases, verify, approval symbol in badge",
+      "category": "award"
+    },
+    {
+      "name": "ranking",
+      "tags": "ranking",
+      "category": "award"
+    },
+    {
+      "name": "star-award-01",
+      "tags": "star-award-01",
+      "category": "award"
+    },
+    {
+      "name": "star-award-02",
+      "tags": "star-award-02",
+      "category": "award"
+    },
+    {
+      "name": "angel",
+      "tags": "halo symbol, cherub icon, heavenly figure, celestial emoticon, divine messenger, seraphic symbol, winged spirit, blessed emoji, ethereal icon, guardian symbol",
+      "category": "emojis"
+    },
+    {
+      "name": "angry",
+      "tags": "Fuming Face, Rage Symbol, Mad Emoticon, Wrathful Icon, Furious Emoji, Irritated Face, Enraged Symbol, Angry Symbol, Livid Emoticon, Outraged Emoji",
+      "category": "emojis"
+    },
+    {
+      "name": "confused",
+      "tags": "Dazed Face, Bewildered Expression, Perplexed Symbol, Puzzled Visage, Muddled Emoticon, Uncertain Glyph, Lost Emoji, Frazzled Face, Flustered Icon, Disoriented Symbol, Baffled Expression, Confounded Visage",
+      "category": "emojis"
+    },
+    {
+      "name": "crazy",
+      "tags": "Whimsical Face, Zany Emoticon, Madcap Symbol, Eccentric Expression, Wild Emote, Offbeat Icon, Wacky Facial, Quirky Emojiface, Outlandish Smiley, Playful Glyph",
+      "category": "emojis"
+    },
+    {
+      "name": "crying",
+      "tags": "Tearful Face, Weeping Emoji, Sad Tear, Sobbing Emoticon, Tearful Expression, Crying Face, Sorrowful Icon, Teardrop Emoji, Emotional Symbol, Weepy Smiley",
+      "category": "emojis"
+    },
+    {
+      "name": "displeased",
+      "tags": "grumpy face, frowning emoticon, unhappy icon, irritated symbol, discontented smiley, sour expression, moody face, dissatisfied emoti, annoyed icon, discontent emoji",
+      "category": "emojis"
+    },
+    {
+      "name": "drooling",
+      "tags": "Hungry Face Emoji, Salivating Emoji, Yummy Emoji, Appetite Emoji, Mouthwatering Emoji, Craving Emoji, Delicious Emoji, Tasty Emoji, Savoring Emoji, Lip-smacking Emoji",
+      "category": "emojis"
+    },
+    {
+      "name": "evil",
+      "tags": "sinister face, wicked grin, malevolent smile, villainous expression, devilish smirk, menacing icon, dark emoji, malicious symbol, sinister grin",
+      "category": "emojis"
+    },
+    {
+      "name": "flushed",
+      "tags": "blushing face, embarrassed smiley, crimson expression, shy emoticon, bashful symbol, red-faced glyph, embarrassed emoji, bashful smiley, flushed emoticon, rosy-faced icon",
+      "category": "emojis"
+    },
+    {
+      "name": "grimacing",
+      "tags": "grimacing",
+      "category": "emojis"
+    },
+    {
+      "name": "grinning",
+      "tags": "Happy Face, Smiling Emoji, Laughing Symbol, Joyful Emoticon, Cheery Icon, Smiley Face, Grin Symbol, Chuckling Emoticon, Beaming Icon, Jovial Emoji",
+      "category": "emojis"
+    },
+    {
+      "name": "happy",
+      "tags": "Joyful Face, Cheerful Emoticon, Smiling Icon, Delighted Symbol, Blissful Expression, Radiant Emote, Grinning Symbol, Ecstatic Face, Beaming Emoji, Contented Sign",
+      "category": "emojis"
+    },
+    {
+      "name": "in-love",
+      "tags": "Heart Eyes, Smiling Face with Heart-Eyes, Adoration Symbol, Affectionate Smile, Lovestruck Expression, Infatuated Icon, Heartfelt Emoticon, Amorous Symbol, Affection Emoji, Enamored Face, Loving Grin, Fond Expression, Heartwarming Symbol, Adoring Emoticon",
+      "category": "emojis"
+    },
+    {
+      "name": "kid",
+      "tags": "Child Face, Youngster Symbol, Junior Icon, Little One Emoticon, Youthful Avatar, Tiny Tot Emoji, Kidlet Symbol, Miniature Human Face, Offspring Icon, Youngling Emote, Junior Member Symbol, Tot Emoji",
+      "category": "emojis"
+    },
+    {
+      "name": "kissing",
+      "tags": "smooch symbol, love kiss icon, affectionate emoji, romantic gesture symbol, sweet peck icon, heartfelt kiss symbol, lips emoji, affection expression icon, romantic kiss symbol, emotive smooch icon, loving gesture symbol, tender kiss emoji",
+      "category": "emojis"
+    },
+    {
+      "name": "laughing",
+      "tags": "Happy Face, LOL Emoji, Giggling Emoticon, Cheerful Symbol, Smiling Tears Emoji, Jovial Icon, Laugh-Out-Loud Emoticon, Hilarious Face, Mirthful Emoji, Grinning Tears Symbol, Chuckling Emojiface, Amusing Icon, Joyful Emoji, Crying with Laughter Symbol, Guffaw Emoticon, Delighted Face, ROFL Emoji, Euphoric Symbol, Hysterical Icon, Bursting in Laughter Emoji",
+      "category": "emojis"
+    },
+    {
+      "name": "look-bottom",
+      "tags": "gaze-down symbol, peek-beneath icon, view-lower emoticon, observe-bottom glyph, glance-lower emoji, peer-down symbol, inspect-bottom icon, survey-lower emoticon, scrutinize-below glyph, check-beneath emoji",
+      "category": "emojis"
+    },
+    {
+      "name": "look-left",
+      "tags": "side-glance, peek-left, glance-left, peek-a-boo, leftward-gaze, side-peek, left-glimpse, sideways-look, left-peek, side-eye",
+      "category": "emojis"
+    },
+    {
+      "name": "look-right",
+      "tags": "glance-right, peek-right, view-right, observe-right, check-right, eye-right, watch-right, gaze-right, peeking-right, spy-right, scan-right, survey-right, glimpse-right, peer-right, stare-right",
+      "category": "emojis"
+    },
+    {
+      "name": "look-top",
+      "tags": "peek-a-boo face, upward glance emoticon, upward peek smiley, skyward gaze icon, upward glance emoji, peeking smiley, glance-up emoji, topward look emoticon, upward peek emoji, upward glance face, upward peeping icon, topward gaze emoji, upward peeking face, upward glance smiley",
+      "category": "emojis"
+    },
+    {
+      "name": "medical-mask",
+      "tags": "face mask, health mask, surgical mask, protective mask, doctor mask, healthcare mask, hygiene mask, virus mask, safety mask, breathing mask, COVID mask, facial covering, infection prevention mask, respiratory mask, illness mask, public health mask, contagion mask, pandemic mask, safety precaution mask",
+      "category": "emojis"
+    },
+    {
+      "name": "meh",
+      "tags": "indifferent face, so-so symbol, meh expression, neutral icon, ambivalent emoticon, shrug symbol, apathetic face, nonchalant emoji, unimpressed symbol, indifferent emoticon",
+      "category": "emojis"
+    },
+    {
+      "name": "monocle-01",
+      "tags": "One-Eyed Lens, Inspector Lens, Classy Scope, Vintage Eyeglass, Sophisticate Viewer, Dapper Spyglass, Elegant Monocle, Retro Spy Lens, Gentleman's Peep, Classic Eyepiece",
+      "category": "emojis"
+    },
+    {
+      "name": "mute",
+      "tags": "silent symbol, sound off icon, quiet face, muted emoticon, hush symbol, silent expression, mute icon",
+      "category": "emojis"
+    },
+    {
+      "name": "nerd",
+      "tags": "Brainiac Symbol, Geek Face, Intellectual Icon, Smarty Emoticon, Knowledge Avatar, Thinker Symbol, Brainy Expression, Scholarly Emoji, Wise Visage, Genius Face",
+      "category": "emojis"
+    },
+    {
+      "name": "neutral",
+      "tags": "balanced face, even-keeled expression, middle-ground symbol, calm emoticon, serene face, equanimous icon, composed emoji, tranquil symbol, impartial emoticon, relaxed face",
+      "category": "emojis"
+    },
+    {
+      "name": "pensive",
+      "tags": "Reflective Face, Thoughtful Expression, Contemplative Symbol, Meditative Icon, Pondering Emoticon, Melancholic Face, Considerate Emoji, Introspective Symbol, Brooding Icon, Musing Emoticon, Reflecting Face, and Thoughtful Emo",
+      "category": "emojis"
+    },
+    {
+      "name": "relieved-01",
+      "tags": "Happy Relief, Content Face, Stress-Free Smile, Relaxation Expression, Calm Emoji, Sigh of Relief, Tranquil Grin, Eased Emoticon, Serene Symbol, Unburdened Face",
+      "category": "emojis"
+    },
+    {
+      "name": "relieved-02",
+      "tags": "Happy Relief, Content Face, Stress-Free Smile, Relaxation Expression, Calm Emoji, Sigh of Relief, Tranquil Grin, Eased Emoticon, Serene Symbol, Unburdened Face",
+      "category": "emojis"
+    },
+    {
+      "name": "rubber-duck",
+      "tags": "rubber-duck",
+      "category": "emojis"
+    },
+    {
+      "name": "sad-01",
+      "tags": "frowning face, unhappy icon, sorrow symbol, teary-eyed emoticon, gloomy face, downcast smiley, melancholic symbol, upset emoji, despondent icon",
+      "category": "emojis"
+    },
+    {
+      "name": "sad-02",
+      "tags": "frowning face, unhappy icon, sorrow symbol, teary-eyed emoticon, gloomy face, downcast smiley, melancholic symbol, upset emoji, despondent icon",
+      "category": "emojis"
+    },
+    {
+      "name": "sad-dizzy",
+      "tags": "Miserable-Spin, Unhappy-Daze, Gloomy-Whirl, Melancholy-Spin, Sorrowful-Dizzy, Despondent-Whirl, Doleful-Spin, Dejected-Daze, Woeful-Whirl, Blue-Dizzy",
+      "category": "emojis"
+    },
+    {
+      "name": "senseless",
+      "tags": "Confused Face, Baffled Expression, Bewildered Symbol, Perplexed Icon, Unintelligible Emoticon, Disoriented Image, Puzzled Sign, Nonplussed Graphic, Dazed Symbol, Unclear Face",
+      "category": "emojis"
+    },
+    {
+      "name": "shocked",
+      "tags": "surprised face, astonished emoji, gasping emoticon, wide-eyed symbol, startled expression, awe-struck smiley, incredulous face, jaw-dropping icon",
+      "category": "emojis"
+    },
+    {
+      "name": "silence",
+      "tags": "Quiet Face, Hush Symbol, Soundless Emoticon, Serene Expression, Shush Icon, Tranquil Emoji, Mute Face, Peaceful Symbol, Calm Emoticon, Stillness Icon",
+      "category": "emojis"
+    },
+    {
+      "name": "sing-left",
+      "tags": "Left-Singing Note, Melody Pointing Left, Vocal Arrow Left, Music Note Leftward, Crooning Direction, Tune Left Emoji, Leftward Song Note, Singing Arrow Left",
+      "category": "emojis"
+    },
+    {
+      "name": "sing-right",
+      "tags": "Vocal Tune, Melody Marker, Harmony Hint, Croon Cue, Chorus Charm, Pitch Pointer, Serenade Signal, Tune Tip, Song Sync, Vocal Guide",
+      "category": "emojis"
+    },
+    {
+      "name": "sleeping",
+      "tags": "dozing face, snooze icon, slumber symbol, nap emoticon, restful glyph, bedtime emoji, drowsy face, peaceful sleeper",
+      "category": "emojis"
+    },
+    {
+      "name": "smart",
+      "tags": "IntelliMote, CleverGlyph, BrainyEmote, GeniusSymbol, QuickExpression, WiseIcon, SharpEmoticon, BrightGlyph, BrainwaveEmoji, SavvySymbol",
+      "category": "emojis"
+    },
+    {
+      "name": "smile",
+      "tags": "happy face, joyful emoji, smiling symbol, cheerful emoticon, beaming icon, grinning smiley, radiant face, delighted emoji, positive emoji, laughing symbol",
+      "category": "emojis"
+    },
+    {
+      "name": "smile-dizzy",
+      "tags": "dizzy face, happy swirl, giggly whirl, joyful spin, laughter twirl, merry spiral, ecstatic circle, gleeful swirl, cheerful rotation, elated spin",
+      "category": "emojis"
+    },
+    {
+      "name": "star-face",
+      "tags": "Starry Smiley, Celestial Grin, Galaxy Glow, Cosmic Smile, Stellar Expression, Twinkle Face, Astral Grin, Sparkling Visage, Nebula Emoji, Shining Countenance, Constellation Smile",
+      "category": "emojis"
+    },
+    {
+      "name": "sunglasses",
+      "tags": "Shades, Sunnies, Cool Glasses, Dark Glasses, Sun Shades, Tinted Specs, Cool Shades, Eye Shades, Sunny Specs, Stylish Shades, Sunnies Emoji",
+      "category": "emojis"
+    },
+    {
+      "name": "surprise",
+      "tags": "Wow Face, Shocked Expression, Amazement Symbol, Startled Emoticon, Unexpected Reaction, Astonished Icon, Wonderment Emoji, Dazzled Face, Jaw-Drop Emoticon, Speechless Symbol, Impressed Expression, Stunning Face, Gobsmacked Emoji, Astounding Emoticon, Eureka Symbol, Mind-Blown Icon, Stupefied Face, Incredible Emoticon, Bewildered Expression, Fascinated Emoji",
+      "category": "emojis"
+    },
+    {
+      "name": "suspicious",
+      "tags": "side-eye emoji, doubtful emoji, skeptical emoji, wary emoji, distrustful emoji, uncertain emoji, questioning emoji, dubious emoji, cautious emoji, mistrustful emoji",
+      "category": "emojis"
+    },
+    {
+      "name": "tired-01",
+      "tags": "exhausted face, sleepy icon, weary emoticon, fatigued symbol, drained emoji, drowsy face, worn-out symbol, lethargic icon, spent emoticon, sleepyhead emoji, and weary face",
+      "category": "emojis"
+    },
+    {
+      "name": "tired-02",
+      "tags": "exhausted face, sleepy icon, weary emoticon, fatigued symbol, drained emoji, drowsy face, worn-out symbol, lethargic icon, spent emoticon, sleepyhead emoji, and weary face",
+      "category": "emojis"
+    },
+    {
+      "name": "tongue-01",
+      "tags": "Playful Tongue, Cheeky Expression, Waggish Symbol, Lighthearted Tongue, Teasing Icon, Jovial Emoji, Whimsical Tongue, Mischievous Symbol, Frolicsome Expression, Amusing Icon, Mirthful Tongue, Witty Emoji",
+      "category": "emojis"
+    },
+    {
+      "name": "tongue-wink-left",
+      "tags": "Winking Tongue Left, Playful Wink Tongue, Cheeky Left Wink, Jovial Tongue Wink, Mischievous Lick Left, Humorous Tongue Wink, Saucy Left Wink, Playful Licking Wink, Waggish Tongue Left",
+      "category": "emojis"
+    },
+    {
+      "name": "tongue-wink-right",
+      "tags": "Winking Tongue, Cheeky Wink, Playful Tongue, Sassy Wink, Teasing Tongue, Mischievous Wink, Jovial Tongue, Coy Wink, Lively Tongue, Saucy Wink",
+      "category": "emojis"
+    },
+    {
+      "name": "unamused",
+      "tags": "Displeased face, Serious emoji, Frowning symbol, Dismayed emoticon, Unimpressed icon, Pouty face, Grimacing expression, Stern emoji, Dissatisfied symbol, Grumpy emoticon, Irritated face, Dour emoticon, Glowering icon",
+      "category": "emojis"
+    },
+    {
+      "name": "unhappy",
+      "tags": "Frowning Face, Sad Emoticon, Disappointed Symbol, Upset Icon, Gloomy Smiley, Melancholy Face, Unsettled Expression, Sorrowful Emoji, Dismal Character, Dejected Symbol, Morose Icon, Crestfallen Emoticon, Miserable Face, Distressed Symbol",
+      "category": "emojis"
+    },
+    {
+      "name": "vomiting",
+      "tags": "sick face, puke emoji, nauseated symbol, barfing icon, queasy emoticon, throwing up emoji, upset stomach symbol, vomit face, regurgitating icon, nauseous emoji",
+      "category": "emojis"
+    },
+    {
+      "name": "wink",
+      "tags": "playful face, cheeky symbol, sly expression, flirtatious icon, mischievous emoji, knowing smiley, coy symbol, teasing emoticon, cunning face, suggestive wink, conspiratorial emoji, playful wink symbol",
+      "category": "emojis"
+    },
+    {
+      "name": "winking",
+      "tags": "Winky Face, Blinking Emoji, Smiley Wink, Playful Emoji, Flirty Face, Cheeky Wink, Mischievous Smile, Cute Wink, Eye Wink Emoji, Grinning Wink",
+      "category": "emojis"
+    },
+    {
+      "name": "worry",
+      "tags": "Concerned Face, Anxious Expression, Nervous Emoticon, Distressed Symbol, Uneasy Icon, Apprehensive Emoji, Tensed Face, Worried Emoticon, Fretful Symbol, Anxieted Expression, Agitated Icon",
+      "category": "emojis"
+    },
+    {
+      "name": "zzz",
+      "tags": "zzz",
+      "category": "emojis"
+    }
+  ]
+}

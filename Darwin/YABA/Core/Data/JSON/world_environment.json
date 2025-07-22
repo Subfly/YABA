@@ -1,0 +1,1402 @@
+{
+  "metadata": {
+    "id": "world_environment",
+    "name": "World & Environment",
+    "description": "Weather, buildings, and environmental elements",
+    "main_category": "entertainment_communication",
+    "icon_count": 278,
+    "version": "1.0"
+  },
+  "icons": [
+    {
+      "name": "avalanche",
+      "tags": "snow slide, avalanche, landslide, snow",
+      "category": "weather"
+    },
+    {
+      "name": "celsius",
+      "tags": "Celsius, degree, heat, temperature",
+      "category": "weather"
+    },
+    {
+      "name": "cloud",
+      "tags": "cloud, data, sky, server",
+      "category": "weather"
+    },
+    {
+      "name": "cloud-angled-rain",
+      "tags": "cloud, rain, cloud rain, little rain",
+      "category": "weather"
+    },
+    {
+      "name": "cloud-angled-rain-zap",
+      "tags": "cloud, cloud snow, snow, zap",
+      "category": "weather"
+    },
+    {
+      "name": "cloud-angled-zap",
+      "tags": "cloud, cloud snow, snow",
+      "category": "weather"
+    },
+    {
+      "name": "cloud-big-rain",
+      "tags": "cloud, data, sky, server",
+      "category": "weather"
+    },
+    {
+      "name": "cloud-fast-wind",
+      "tags": "cloud, cloud snow, snow, zap, slow cloud, wind, wind cloud",
+      "category": "weather"
+    },
+    {
+      "name": "cloud-hailstone",
+      "tags": "cloud, cloud snow, snow, hailstone",
+      "category": "weather"
+    },
+    {
+      "name": "cloud-little-rain",
+      "tags": "cloud, rain, cloud rain, little rain",
+      "category": "weather"
+    },
+    {
+      "name": "cloud-little-snow",
+      "tags": "cloud, cloud snow, snow",
+      "category": "weather"
+    },
+    {
+      "name": "cloud-mid-rain",
+      "tags": "cloud, rain, cloud rain, little rain",
+      "category": "weather"
+    },
+    {
+      "name": "cloud-mid-snow",
+      "tags": "cloud, cloud snow, snow",
+      "category": "weather"
+    },
+    {
+      "name": "cloud-slow-wind",
+      "tags": "cloud, cloud snow, snow, zap, slow cloud, wind, wind cloud",
+      "category": "weather"
+    },
+    {
+      "name": "cloud-snow",
+      "tags": "cloud, cloud snow, snow",
+      "category": "weather"
+    },
+    {
+      "name": "desert",
+      "tags": "desert, sand, land",
+      "category": "weather"
+    },
+    {
+      "name": "fahrenheit",
+      "tags": "Celsius, degree, heat, temperature, fahrenheit",
+      "category": "weather"
+    },
+    {
+      "name": "fast-wind",
+      "tags": "wind, air, breeze",
+      "category": "weather"
+    },
+    {
+      "name": "gibbous-moon",
+      "tags": "moon, night, lunar, moonlight",
+      "category": "weather"
+    },
+    {
+      "name": "humidity",
+      "tags": "humidity, moisture, air",
+      "category": "weather"
+    },
+    {
+      "name": "moon-02",
+      "tags": "moon, night, lunar, moonlight",
+      "category": "weather"
+    },
+    {
+      "name": "moon-angled-rain-zap",
+      "tags": "moon, night, lunar, moonlight, moon wind, moon rain, cloud, snow, cloud snow, zap",
+      "category": "weather"
+    },
+    {
+      "name": "moon-cloud",
+      "tags": "moon, night, lunar, moonlight, moon wind, moon cloud",
+      "category": "weather"
+    },
+    {
+      "name": "moon-cloud-angled-rain",
+      "tags": "moon, night, lunar, moonlight, moon wind, moon rain, cloud",
+      "category": "weather"
+    },
+    {
+      "name": "moon-cloud-angled-zap",
+      "tags": "moon, night, lunar, moonlight, moon wind, moon rain, cloud, snow, cloud snow",
+      "category": "weather"
+    },
+    {
+      "name": "moon-cloud-big-rain",
+      "tags": "moon, night, lunar, moonlight, moon wind, moon cloud",
+      "category": "weather"
+    },
+    {
+      "name": "moon-cloud-fast-wind",
+      "tags": "moon, night, lunar, moonlight, moon wind, moon rain, cloud, snow, cloud snow",
+      "category": "weather"
+    },
+    {
+      "name": "moon-cloud-hailstone",
+      "tags": "moon, night, lunar, moonlight, moon wind, moon rain, cloud, snow, cloud snow",
+      "category": "weather"
+    },
+    {
+      "name": "moon-cloud-little-rain",
+      "tags": "moon, night, lunar, moonlight, moon wind, moon rain, cloud",
+      "category": "weather"
+    },
+    {
+      "name": "moon-cloud-little-snow",
+      "tags": "moon, night, lunar, moonlight, moon wind, moon rain, cloud, snow, cloud snow",
+      "category": "weather"
+    },
+    {
+      "name": "moon-cloud-mid-rain",
+      "tags": "moon, night, lunar, moonlight, moon wind, moon rain, cloud",
+      "category": "weather"
+    },
+    {
+      "name": "moon-cloud-mid-snow",
+      "tags": "moon, night, lunar, moonlight, moon wind, moon rain, cloud, snow, cloud snow",
+      "category": "weather"
+    },
+    {
+      "name": "moon-cloud-slow-wind",
+      "tags": "moon, night, lunar, moonlight, moon wind, moon rain, cloud, snow, cloud snow",
+      "category": "weather"
+    },
+    {
+      "name": "moon-cloud-snow",
+      "tags": "moon, night, lunar, moonlight, moon wind, moon rain, cloud, snow, cloud snow",
+      "category": "weather"
+    },
+    {
+      "name": "moon-eclipse",
+      "tags": "moon, night, lunar, moonlight",
+      "category": "weather"
+    },
+    {
+      "name": "moon-fast-wind",
+      "tags": "moon, night, lunar, moonlight, moon wind",
+      "category": "weather"
+    },
+    {
+      "name": "moonset",
+      "tags": "moon, night, lunar, moonlight, moonset",
+      "category": "weather"
+    },
+    {
+      "name": "moon-slow-wind",
+      "tags": "moon, night, lunar, moonlight, moon wind",
+      "category": "weather"
+    },
+    {
+      "name": "rain",
+      "tags": "rain",
+      "category": "weather"
+    },
+    {
+      "name": "rainbow",
+      "tags": "rainbow, color",
+      "category": "weather"
+    },
+    {
+      "name": "rain-double-drop",
+      "tags": "rain, rain drop, drop",
+      "category": "weather"
+    },
+    {
+      "name": "rain-drop",
+      "tags": "rain, rain drop, drop",
+      "category": "weather"
+    },
+    {
+      "name": "sailboat-coastal",
+      "tags": "vessel, sail, sailboat, sailer",
+      "category": "weather"
+    },
+    {
+      "name": "sailboat-offshore",
+      "tags": "vessel, sail, sailboat, sailer",
+      "category": "weather"
+    },
+    {
+      "name": "slow-winds",
+      "tags": "wind, air, breeze, slow wind",
+      "category": "weather"
+    },
+    {
+      "name": "snow",
+      "tags": "snow, snowfall, frozen, winter, cold",
+      "category": "weather"
+    },
+    {
+      "name": "soil-moisture-field",
+      "tags": "soil, soil moisture, field, plant, dampness",
+      "category": "weather"
+    },
+    {
+      "name": "soil-moisture-global",
+      "tags": "soil, soil moisture, field, plant, dampness",
+      "category": "weather"
+    },
+    {
+      "name": "soil-temperature-field",
+      "tags": "soil, soil moisture, field, plant, dampness, soil temperature",
+      "category": "weather"
+    },
+    {
+      "name": "soil-temperature-global",
+      "tags": "soil, soil moisture, field, plant, dampness",
+      "category": "weather"
+    },
+    {
+      "name": "sparkles",
+      "tags": "spark, stars",
+      "category": "weather"
+    },
+    {
+      "name": "stars",
+      "tags": "luminous, star",
+      "category": "weather"
+    },
+    {
+      "name": "sun-01",
+      "tags": "sun, solar, daytime, shining",
+      "category": "weather"
+    },
+    {
+      "name": "sun-02",
+      "tags": "sun, solar, daytime, shining",
+      "category": "weather"
+    },
+    {
+      "name": "sun-03",
+      "tags": "sun, solar, daytime, shining",
+      "category": "weather"
+    },
+    {
+      "name": "sun-cloud-01",
+      "tags": "sun, solar, daytime, shining, suncloud",
+      "category": "weather"
+    },
+    {
+      "name": "sun-cloud-02",
+      "tags": "sun, solar, daytime, shining, sun cloud, cloudy",
+      "category": "weather"
+    },
+    {
+      "name": "sun-cloud-angled-rain-01",
+      "tags": "sun, solar, daytime, shining, sun cloud, rain",
+      "category": "weather"
+    },
+    {
+      "name": "sun-cloud-angled-rain-02",
+      "tags": "sun, solar, daytime, shining, sun cloud, cloudy, rain, cloud rain",
+      "category": "weather"
+    },
+    {
+      "name": "sun-cloud-angled-rain-zap-01",
+      "tags": "sun, solar, daytime, shining, sun cloud, rain, lighting",
+      "category": "weather"
+    },
+    {
+      "name": "sun-cloud-angled-rain-zap-02",
+      "tags": "sun, solar, daytime, shining, sun cloud, cloudy, lighting",
+      "category": "weather"
+    },
+    {
+      "name": "sun-cloud-angled-zap-01",
+      "tags": "sun, solar, daytime, shining, sun cloud, rain, lighting",
+      "category": "weather"
+    },
+    {
+      "name": "sun-cloud-angled-zap-02",
+      "tags": "sun, solar, daytime, shining, sun cloud, cloudy, lighting",
+      "category": "weather"
+    },
+    {
+      "name": "sun-cloud-big-rain-01",
+      "tags": "sun, solar, daytime, shining, sun cloud, rain",
+      "category": "weather"
+    },
+    {
+      "name": "sun-cloud-big-rain-02",
+      "tags": "sun, solar, daytime, shining, sun cloud, cloudy, rain",
+      "category": "weather"
+    },
+    {
+      "name": "sun-cloud-fast-wind-01",
+      "tags": "sun, solar, daytime, shining, sun cloud, wind",
+      "category": "weather"
+    },
+    {
+      "name": "sun-cloud-fast-wind-02",
+      "tags": "sun, solar, daytime, shining, sun cloud, cloudy, lighting",
+      "category": "weather"
+    },
+    {
+      "name": "sun-cloud-hailstone-01",
+      "tags": "sun, solar, daytime, shining, sun cloud, rain, snow",
+      "category": "weather"
+    },
+    {
+      "name": "sun-cloud-hailstone-02",
+      "tags": "sun, solar, daytime, shining, sun cloud, cloudy, snow",
+      "category": "weather"
+    },
+    {
+      "name": "sun-cloud-little-rain-01",
+      "tags": "sun, solar, daytime, shining, sun cloud, rain",
+      "category": "weather"
+    },
+    {
+      "name": "sun-cloud-little-rain-02",
+      "tags": "sun, solar, daytime, shining, sun cloud, cloudy, rain, cloud rain",
+      "category": "weather"
+    },
+    {
+      "name": "sun-cloud-little-snow-01",
+      "tags": "sun, solar, daytime, shining, sun cloud, rain, snow",
+      "category": "weather"
+    },
+    {
+      "name": "sun-cloud-little-snow-02",
+      "tags": "sun, solar, daytime, shining, sun cloud, cloudy, snow",
+      "category": "weather"
+    },
+    {
+      "name": "sun-cloud-mid-rain-01",
+      "tags": "sun, solar, daytime, shining, sun cloud, rain",
+      "category": "weather"
+    },
+    {
+      "name": "sun-cloud-mid-rain-02",
+      "tags": "sun, solar, daytime, shining, sun cloud, cloudy",
+      "category": "weather"
+    },
+    {
+      "name": "sun-cloud-mid-snow-01",
+      "tags": "sun, solar, daytime, shining, sun cloud, rain, snow",
+      "category": "weather"
+    },
+    {
+      "name": "sun-cloud-mid-snow-02",
+      "tags": "sun, solar, daytime, shining, sun cloud, cloudy, snow",
+      "category": "weather"
+    },
+    {
+      "name": "sun-cloud-slow-wind-01",
+      "tags": "sun, solar, daytime, shining, sun cloud, rain, snow",
+      "category": "weather"
+    },
+    {
+      "name": "sun-cloud-slow-wind-02",
+      "tags": "sun, solar, daytime, shining, sun cloud, cloudy, lighting",
+      "category": "weather"
+    },
+    {
+      "name": "sun-cloud-snow-01",
+      "tags": "sun, solar, daytime, shining, sun cloud, rain, snow",
+      "category": "weather"
+    },
+    {
+      "name": "sun-cloud-snow-02",
+      "tags": "sun, solar, daytime, shining, sun cloud, cloudy, snow",
+      "category": "weather"
+    },
+    {
+      "name": "sunrise",
+      "tags": "sun, solar, daytime, shining, sunrise",
+      "category": "weather"
+    },
+    {
+      "name": "sunset",
+      "tags": "sun, solar, daytime, shining, sunset",
+      "category": "weather"
+    },
+    {
+      "name": "thermometer-cold",
+      "tags": "degree, cold, temperature, thermometer",
+      "category": "weather"
+    },
+    {
+      "name": "thermometer-warm",
+      "tags": "degree, warm, temperature, thermometer",
+      "category": "weather"
+    },
+    {
+      "name": "tornado-01",
+      "tags": "tornado, cyclone, storm",
+      "category": "weather"
+    },
+    {
+      "name": "tornado-02",
+      "tags": "tornado, cyclone, storm",
+      "category": "weather"
+    },
+    {
+      "name": "tropical-storm",
+      "tags": "tornado, cyclone, storm",
+      "category": "weather"
+    },
+    {
+      "name": "tropical-storm-tracks-01",
+      "tags": "tornado, cyclone, storm",
+      "category": "weather"
+    },
+    {
+      "name": "tropical-storm-tracks-02",
+      "tags": "tornado, cyclone, storm",
+      "category": "weather"
+    },
+    {
+      "name": "tsunami",
+      "tags": "tornado, cyclone, storm, tsunami, sunami",
+      "category": "weather"
+    },
+    {
+      "name": "uv-01",
+      "tags": "sun, solar, daytime, shining, uv",
+      "category": "weather"
+    },
+    {
+      "name": "uv-02",
+      "tags": "sun, solar, daytime, shining, uv",
+      "category": "weather"
+    },
+    {
+      "name": "uv-03",
+      "tags": "sun, solar, daytime, shining, uv",
+      "category": "weather"
+    },
+    {
+      "name": "wind-power",
+      "tags": "wind, fan, wind power",
+      "category": "weather"
+    },
+    {
+      "name": "zap",
+      "tags": "zap, lighting, speed, fast",
+      "category": "weather"
+    },
+    {
+      "name": "barns",
+      "tags": "barns",
+      "category": "buildings"
+    },
+    {
+      "name": "beach",
+      "tags": "beach",
+      "category": "buildings"
+    },
+    {
+      "name": "berlin",
+      "tags": "berlin",
+      "category": "buildings"
+    },
+    {
+      "name": "berlin-tower",
+      "tags": "berlin-tower",
+      "category": "buildings"
+    },
+    {
+      "name": "borobudur",
+      "tags": "borobudur",
+      "category": "buildings"
+    },
+    {
+      "name": "bridge",
+      "tags": "bridge",
+      "category": "buildings"
+    },
+    {
+      "name": "building-01",
+      "tags": "building-01",
+      "category": "buildings"
+    },
+    {
+      "name": "building-02",
+      "tags": "building-02",
+      "category": "buildings"
+    },
+    {
+      "name": "building-03",
+      "tags": "building-03",
+      "category": "buildings"
+    },
+    {
+      "name": "building-04",
+      "tags": "building-04",
+      "category": "buildings"
+    },
+    {
+      "name": "building-05",
+      "tags": "building-05",
+      "category": "buildings"
+    },
+    {
+      "name": "building-06",
+      "tags": "building-06",
+      "category": "buildings"
+    },
+    {
+      "name": "burj-al-arab",
+      "tags": "burj-al-arab",
+      "category": "buildings"
+    },
+    {
+      "name": "castle-01",
+      "tags": "castle-01",
+      "category": "buildings"
+    },
+    {
+      "name": "castle-02",
+      "tags": "castle-02",
+      "category": "buildings"
+    },
+    {
+      "name": "cayan-tower",
+      "tags": "cayan-tower",
+      "category": "buildings"
+    },
+    {
+      "name": "china-temple",
+      "tags": "china-temple",
+      "category": "buildings"
+    },
+    {
+      "name": "chrysler",
+      "tags": "chrysler",
+      "category": "buildings"
+    },
+    {
+      "name": "church",
+      "tags": "church",
+      "category": "buildings"
+    },
+    {
+      "name": "city-01",
+      "tags": "city-01",
+      "category": "buildings"
+    },
+    {
+      "name": "city-02",
+      "tags": "city-02",
+      "category": "buildings"
+    },
+    {
+      "name": "city-03",
+      "tags": "city-03",
+      "category": "buildings"
+    },
+    {
+      "name": "colosseum",
+      "tags": "colosseum",
+      "category": "buildings"
+    },
+    {
+      "name": "cottage",
+      "tags": "cottage",
+      "category": "buildings"
+    },
+    {
+      "name": "dome",
+      "tags": "dome",
+      "category": "buildings"
+    },
+    {
+      "name": "eiffel-tower",
+      "tags": "eiffel-tower",
+      "category": "buildings"
+    },
+    {
+      "name": "entrance-stairs",
+      "tags": "entrance-stairs",
+      "category": "buildings"
+    },
+    {
+      "name": "factory-01",
+      "tags": "factory-01",
+      "category": "buildings"
+    },
+    {
+      "name": "factory-02",
+      "tags": "factory-02",
+      "category": "buildings"
+    },
+    {
+      "name": "ferris-wheel",
+      "tags": "ferris-wheel",
+      "category": "buildings"
+    },
+    {
+      "name": "fire-pit",
+      "tags": "fire-pit",
+      "category": "buildings"
+    },
+    {
+      "name": "fortress",
+      "tags": "fortress",
+      "category": "buildings"
+    },
+    {
+      "name": "guest-house",
+      "tags": "guest-house",
+      "category": "buildings"
+    },
+    {
+      "name": "hotel-01",
+      "tags": "hotel-01",
+      "category": "buildings"
+    },
+    {
+      "name": "hotel-02",
+      "tags": "hotel-02",
+      "category": "buildings"
+    },
+    {
+      "name": "house-01",
+      "tags": "house-01",
+      "category": "buildings"
+    },
+    {
+      "name": "house-02",
+      "tags": "house-02",
+      "category": "buildings"
+    },
+    {
+      "name": "house-03",
+      "tags": "house-03",
+      "category": "buildings"
+    },
+    {
+      "name": "house-04",
+      "tags": "house-04",
+      "category": "buildings"
+    },
+    {
+      "name": "house-05",
+      "tags": "house-05",
+      "category": "buildings"
+    },
+    {
+      "name": "hut",
+      "tags": "hut",
+      "category": "buildings"
+    },
+    {
+      "name": "india-gate",
+      "tags": "india-gate",
+      "category": "buildings"
+    },
+    {
+      "name": "island",
+      "tags": "island",
+      "category": "buildings"
+    },
+    {
+      "name": "lake",
+      "tags": "lake",
+      "category": "buildings"
+    },
+    {
+      "name": "lighthouse",
+      "tags": "lighthouse",
+      "category": "buildings"
+    },
+    {
+      "name": "mayan-pyramid",
+      "tags": "mayan-pyramid",
+      "category": "buildings"
+    },
+    {
+      "name": "monas",
+      "tags": "monas",
+      "category": "buildings"
+    },
+    {
+      "name": "mosque-03",
+      "tags": "mosque-03",
+      "category": "buildings"
+    },
+    {
+      "name": "mosque-04",
+      "tags": "mosque-04",
+      "category": "buildings"
+    },
+    {
+      "name": "mosque-05",
+      "tags": "mosque-05",
+      "category": "buildings"
+    },
+    {
+      "name": "patio",
+      "tags": "patio",
+      "category": "buildings"
+    },
+    {
+      "name": "pavilon",
+      "tags": "pavilon",
+      "category": "buildings"
+    },
+    {
+      "name": "pisa-tower",
+      "tags": "pisa-tower",
+      "category": "buildings"
+    },
+    {
+      "name": "plaza",
+      "tags": "plaza",
+      "category": "buildings"
+    },
+    {
+      "name": "real-estate-01",
+      "tags": "real-estate-01",
+      "category": "buildings"
+    },
+    {
+      "name": "real-estate-02",
+      "tags": "real-estate-02",
+      "category": "buildings"
+    },
+    {
+      "name": "school-01",
+      "tags": "school-01",
+      "category": "buildings"
+    },
+    {
+      "name": "stairs-01",
+      "tags": "stairs-01",
+      "category": "buildings"
+    },
+    {
+      "name": "stairs-02",
+      "tags": "stairs-02",
+      "category": "buildings"
+    },
+    {
+      "name": "stairs-03",
+      "tags": "stairs-03",
+      "category": "buildings"
+    },
+    {
+      "name": "stairs-04",
+      "tags": "stairs-04",
+      "category": "buildings"
+    },
+    {
+      "name": "taj-mahal",
+      "tags": "taj-mahal",
+      "category": "buildings"
+    },
+    {
+      "name": "the-prophets-mosque",
+      "tags": "the-prophets-mosque",
+      "category": "buildings"
+    },
+    {
+      "name": "torri-gate",
+      "tags": "torri-gate",
+      "category": "buildings"
+    },
+    {
+      "name": "trulli",
+      "tags": "trulli",
+      "category": "buildings"
+    },
+    {
+      "name": "twin-tower",
+      "tags": "twin-tower",
+      "category": "buildings"
+    },
+    {
+      "name": "university",
+      "tags": "university",
+      "category": "buildings"
+    },
+    {
+      "name": "washington-monument",
+      "tags": "washington-monument",
+      "category": "buildings"
+    },
+    {
+      "name": "yurt",
+      "tags": "yurt",
+      "category": "buildings"
+    },
+    {
+      "name": "atomic-power",
+      "tags": "atomic",
+      "category": "energy"
+    },
+    {
+      "name": "automotive-battery-01",
+      "tags": "battery, energy, power",
+      "category": "energy"
+    },
+    {
+      "name": "automotive-battery-02",
+      "tags": "battery, energy, power",
+      "category": "energy"
+    },
+    {
+      "name": "batteries-energy",
+      "tags": "battery, energy, power",
+      "category": "energy"
+    },
+    {
+      "name": "beach-02",
+      "tags": "beach-02",
+      "category": "energy"
+    },
+    {
+      "name": "bio-energy",
+      "tags": "energy, bio energy",
+      "category": "energy"
+    },
+    {
+      "name": "biomass-energy",
+      "tags": "biomass, battery, energy, power",
+      "category": "energy"
+    },
+    {
+      "name": "campfire",
+      "tags": "campfire",
+      "category": "energy"
+    },
+    {
+      "name": "chimney",
+      "tags": "chimney",
+      "category": "energy"
+    },
+    {
+      "name": "eco-energy",
+      "tags": "eco, eco energy",
+      "category": "energy"
+    },
+    {
+      "name": "eco-lab",
+      "tags": "eco-lab",
+      "category": "energy"
+    },
+    {
+      "name": "eco-lab-01",
+      "tags": "eco-lab-01",
+      "category": "energy"
+    },
+    {
+      "name": "eco-lab-02",
+      "tags": "eco-lab-02",
+      "category": "energy"
+    },
+    {
+      "name": "eco-power",
+      "tags": "eco, eco power",
+      "category": "energy"
+    },
+    {
+      "name": "electric-home-01",
+      "tags": "electric home, home",
+      "category": "energy"
+    },
+    {
+      "name": "electric-home-02",
+      "tags": "electric home, home",
+      "category": "energy"
+    },
+    {
+      "name": "electric-tower-01",
+      "tags": "electric tower, tower",
+      "category": "energy"
+    },
+    {
+      "name": "electric-tower-02",
+      "tags": "electric tower, tower",
+      "category": "energy"
+    },
+    {
+      "name": "electric-wire",
+      "tags": "wire, electric wire",
+      "category": "energy"
+    },
+    {
+      "name": "energy",
+      "tags": "energy",
+      "category": "energy"
+    },
+    {
+      "name": "energy-ellipse",
+      "tags": "energy round, energy",
+      "category": "energy"
+    },
+    {
+      "name": "energy-rectangle",
+      "tags": "energy rectangle, energy",
+      "category": "energy"
+    },
+    {
+      "name": "ev-charging",
+      "tags": "ev charging, charging",
+      "category": "energy"
+    },
+    {
+      "name": "factory",
+      "tags": "factory",
+      "category": "energy"
+    },
+    {
+      "name": "fire",
+      "tags": "fire",
+      "category": "energy"
+    },
+    {
+      "name": "fire-02",
+      "tags": "fire-02",
+      "category": "energy"
+    },
+    {
+      "name": "fire-03",
+      "tags": "fire-03",
+      "category": "energy"
+    },
+    {
+      "name": "flower",
+      "tags": "flower",
+      "category": "energy"
+    },
+    {
+      "name": "fuel",
+      "tags": "fuel",
+      "category": "energy"
+    },
+    {
+      "name": "fuel-01",
+      "tags": "fuel",
+      "category": "energy"
+    },
+    {
+      "name": "fuel-02",
+      "tags": "fuel",
+      "category": "energy"
+    },
+    {
+      "name": "gas-pipe",
+      "tags": "gas, gas pipe",
+      "category": "energy"
+    },
+    {
+      "name": "green-house",
+      "tags": "green house",
+      "category": "energy"
+    },
+    {
+      "name": "house-solar-panel",
+      "tags": "solar panel, solar",
+      "category": "energy"
+    },
+    {
+      "name": "hydro-power",
+      "tags": "hydro power, power",
+      "category": "energy"
+    },
+    {
+      "name": "leaf-01",
+      "tags": "leaf-01",
+      "category": "energy"
+    },
+    {
+      "name": "leaf-02",
+      "tags": "leaf-02",
+      "category": "energy"
+    },
+    {
+      "name": "leaf-03",
+      "tags": "leaf-03",
+      "category": "energy"
+    },
+    {
+      "name": "leaf-04",
+      "tags": "leaf-04",
+      "category": "energy"
+    },
+    {
+      "name": "magnet-01",
+      "tags": "magnet",
+      "category": "energy"
+    },
+    {
+      "name": "magnet-02",
+      "tags": "magnet",
+      "category": "energy"
+    },
+    {
+      "name": "mountain",
+      "tags": "hill, jabal,",
+      "category": "energy"
+    },
+    {
+      "name": "nuclear-power",
+      "tags": "nuclear power, nuclear",
+      "category": "energy"
+    },
+    {
+      "name": "oil-barrel",
+      "tags": "oil barrel, oil, barrel",
+      "category": "energy"
+    },
+    {
+      "name": "pine-tree",
+      "tags": "pine-tree",
+      "category": "energy"
+    },
+    {
+      "name": "plant-01",
+      "tags": "plant-01",
+      "category": "energy"
+    },
+    {
+      "name": "plant-02",
+      "tags": "plant-02",
+      "category": "energy"
+    },
+    {
+      "name": "plant-03",
+      "tags": "plant-03",
+      "category": "energy"
+    },
+    {
+      "name": "plant-04",
+      "tags": "plant-04",
+      "category": "energy"
+    },
+    {
+      "name": "plug-01",
+      "tags": "plug",
+      "category": "energy"
+    },
+    {
+      "name": "plug-02",
+      "tags": "plug round",
+      "category": "energy"
+    },
+    {
+      "name": "plug-socket",
+      "tags": "socket, plug socket",
+      "category": "energy"
+    },
+    {
+      "name": "poly-tank",
+      "tags": "poly-tank",
+      "category": "energy"
+    },
+    {
+      "name": "power-service",
+      "tags": "power service, service, power",
+      "category": "energy"
+    },
+    {
+      "name": "power-socket-01",
+      "tags": "power socket, socket",
+      "category": "energy"
+    },
+    {
+      "name": "power-socket-02",
+      "tags": "power socket, socket",
+      "category": "energy"
+    },
+    {
+      "name": "recycle-01",
+      "tags": "recycle",
+      "category": "energy"
+    },
+    {
+      "name": "recycle-02",
+      "tags": "recycle",
+      "category": "energy"
+    },
+    {
+      "name": "recycle-03",
+      "tags": "recycle",
+      "category": "energy"
+    },
+    {
+      "name": "renewable-energy",
+      "tags": "energy, renewable energy",
+      "category": "energy"
+    },
+    {
+      "name": "renewable-energy-01",
+      "tags": "save energy, energy",
+      "category": "energy"
+    },
+    {
+      "name": "sakura",
+      "tags": "sakura",
+      "category": "energy"
+    },
+    {
+      "name": "save-energy-01",
+      "tags": "save energy, energy",
+      "category": "energy"
+    },
+    {
+      "name": "save-energy-02",
+      "tags": "save energy, energy",
+      "category": "energy"
+    },
+    {
+      "name": "solar-energy",
+      "tags": "solar energy, energy",
+      "category": "energy"
+    },
+    {
+      "name": "solar-panel-01",
+      "tags": "solar, solar panel, panel",
+      "category": "energy"
+    },
+    {
+      "name": "solar-panel-02",
+      "tags": "solar, solar pannel, pannel",
+      "category": "energy"
+    },
+    {
+      "name": "solar-panel-03",
+      "tags": "solar, solar panel, panel",
+      "category": "energy"
+    },
+    {
+      "name": "solar-panel-04",
+      "tags": "solar, solar panel, panel",
+      "category": "energy"
+    },
+    {
+      "name": "solar-panel-05",
+      "tags": "solar, solar panel, panel",
+      "category": "energy"
+    },
+    {
+      "name": "solar-power",
+      "tags": "solar, solar panel, panel",
+      "category": "energy"
+    },
+    {
+      "name": "sustainable-energy",
+      "tags": "sustainable energy, energy",
+      "category": "energy"
+    },
+    {
+      "name": "temperature",
+      "tags": "temperature, heat",
+      "category": "energy"
+    },
+    {
+      "name": "tree-01",
+      "tags": "tree-01",
+      "category": "energy"
+    },
+    {
+      "name": "tree-02",
+      "tags": "tree-02",
+      "category": "energy"
+    },
+    {
+      "name": "tree-03",
+      "tags": "tree-03",
+      "category": "energy"
+    },
+    {
+      "name": "tree-04",
+      "tags": "tree-04",
+      "category": "energy"
+    },
+    {
+      "name": "tree-05",
+      "tags": "tree-05",
+      "category": "energy"
+    },
+    {
+      "name": "tree-06",
+      "tags": "tree-06",
+      "category": "energy"
+    },
+    {
+      "name": "tree-07",
+      "tags": "tree-07",
+      "category": "energy"
+    },
+    {
+      "name": "tulip",
+      "tags": "tulip",
+      "category": "energy"
+    },
+    {
+      "name": "water-energy",
+      "tags": "water, water energy",
+      "category": "energy"
+    },
+    {
+      "name": "water-pump",
+      "tags": "water, water pump",
+      "category": "energy"
+    },
+    {
+      "name": "wind-power-01",
+      "tags": "wind power, power",
+      "category": "energy"
+    },
+    {
+      "name": "wind-power-02",
+      "tags": "wind power, power, wind",
+      "category": "energy"
+    },
+    {
+      "name": "wind-power-03",
+      "tags": "wind power, power, wind",
+      "category": "energy"
+    },
+    {
+      "name": "alien-01",
+      "tags": "extraterrestrial, visitor, spaceling, ET, Martian, cosmic being, outerworldly, interstellar traveler, space creature, star dweller, otherworldly being, celestial voyager, UFO inhabitant, galactic entity, astral being",
+      "category": "space"
+    },
+    {
+      "name": "alien-02",
+      "tags": "extraterrestrial, visitor, spaceling, ET, Martian, cosmic being, outerworldly, interstellar traveler, space creature, star dweller, otherworldly being, celestial voyager, UFO inhabitant, galactic entity, astral being",
+      "category": "space"
+    },
+    {
+      "name": "asteroid-01",
+      "tags": "space rock, cosmic stone, meteorite, celestial pebble, star shard, galaxy stone, astral fragment, comet core, lunar debris, stellar rock",
+      "category": "space"
+    },
+    {
+      "name": "asteroid-02",
+      "tags": "space rock, cosmic stone, meteorite, celestial pebble, star shard, galaxy stone, astral fragment, comet core, lunar debris, stellar rock",
+      "category": "space"
+    },
+    {
+      "name": "astronaut-01",
+      "tags": "space explorer, cosmonaut, star voyager, celestial traveler, lunar pioneer, galaxy rover, cosmic adventurer",
+      "category": "space"
+    },
+    {
+      "name": "astronaut-02",
+      "tags": "space explorer, cosmonaut, star voyager, celestial traveler, lunar pioneer, galaxy rover, cosmic adventurer",
+      "category": "space"
+    },
+    {
+      "name": "black-hole",
+      "tags": "abyss, void, dark vortex, cosmic whirl, deep void, event horizon, singularity, celestial pit, space well, gravitational sinkhole, stellar abyss",
+      "category": "space"
+    },
+    {
+      "name": "comet-01",
+      "tags": "streak, meteor, shooting star, celestial trail, astral blaze, cosmic dash, sky dart, blazing tail",
+      "category": "space"
+    },
+    {
+      "name": "comet-02",
+      "tags": "streak, meteor, shooting star, celestial trail, astral blaze, cosmic dash, sky dart, blazing tail",
+      "category": "space"
+    },
+    {
+      "name": "constellation",
+      "tags": "star map, celestial pattern, stellar arrangement, galaxy guide, star cluster, astral chart, cosmic array, heavenly layout, space map, celestial mosaic, stellar chart",
+      "category": "space"
+    },
+    {
+      "name": "earth",
+      "tags": "globe, world, planet, orb, sphere, terra, Gaia, blue marble, celestial, terrestrial",
+      "category": "space"
+    },
+    {
+      "name": "falling-star",
+      "tags": "twinkling-night, shooting-glimmer, celestial-fall, meteoric-shine, stardust-plunge, astral-descend",
+      "category": "space"
+    },
+    {
+      "name": "galaxy",
+      "tags": "cosmos, stellar, nebula, celestial, astral, universe, space, stellaris",
+      "category": "space"
+    },
+    {
+      "name": "jupiter",
+      "tags": "Big Red, Gas Giant, King of Planets, Zeus, Mighty Orb, Giant's Eye, Jove, Cosmic Sphere, Thundering Planet, Celestial King",
+      "category": "space"
+    },
+    {
+      "name": "monster",
+      "tags": "critter, beastie, fiend, creature, monstro, ghoul, sprite, daemon, titan, ogre, chimera, behemoth, leviathan, gremlin, phantom",
+      "category": "space"
+    },
+    {
+      "name": "moon",
+      "tags": "Luna, Celestial Orb, Night Sky, Lunar Sphere, Crescent Glow, Midnight Beacon, Astral Globe, Moonlight Emblem, Silver Radiance, Lunar Disk",
+      "category": "space"
+    },
+    {
+      "name": "moon-landing",
+      "tags": "lunar-touchdown, celestial-descent, space-landing, orbit-arrival, astral-landing, cosmic-touchdown, star-landing, galaxy-arrival, celestial-landing, space-exploration",
+      "category": "space"
+    },
+    {
+      "name": "orbit-01",
+      "tags": "circulate, cycle, revolve, spin, whirl, loop, rotate, gyrate, spiral, twirl",
+      "category": "space"
+    },
+    {
+      "name": "orbit-02",
+      "tags": "circulate, cycle, revolve, spin, whirl, loop, rotate, gyrate, spiral, twirl",
+      "category": "space"
+    },
+    {
+      "name": "rocket-01",
+      "tags": "Spacecraft, Jet, Galactic Ship, Speeder, Blast-off, Falcon, Orbiter, Cosmic Cruiser, Rocketeer, Star Voyager, Lunar Lander, Celestial Navigator, Astronavigator, Meteor Mover, Stellar Shuttle, Astro Blaster, Comet Cruiser, Nebula Navigator, Interstellar Transporter, Supernova Soarer",
+      "category": "space"
+    },
+    {
+      "name": "rocket-02",
+      "tags": "Spacecraft, Jet, Galactic Ship, Speeder, Blast-off, Falcon, Orbiter, Cosmic Cruiser, Rocketeer, Star Voyager, Lunar Lander, Celestial Navigator, Astronavigator, Meteor Mover, Stellar Shuttle, Astro Blaster, Comet Cruiser, Nebula Navigator, Interstellar Transporter, Supernova Soarer",
+      "category": "space"
+    },
+    {
+      "name": "satellite-01",
+      "tags": "orbiter, space probe, cosmic beacon, celestial tracker, orbit watcher, starcom, space sentinel, astral guide, galaxy eye, cosmos link",
+      "category": "space"
+    },
+    {
+      "name": "satellite-02",
+      "tags": "orbiter, space probe, cosmic beacon, celestial tracker, orbit watcher, starcom, space sentinel, astral guide, galaxy eye, cosmos link",
+      "category": "space"
+    },
+    {
+      "name": "saturn-01",
+      "tags": "Ringed Planet, Cosmic Circle, Celestial Hoop, Orbiting World, Galactic Loop, Space Ring, Planetary Loop, Stellar Ring, Astral Loop, Heavenly Circle",
+      "category": "space"
+    },
+    {
+      "name": "saturn-02",
+      "tags": "Ringed Planet, Cosmic Circle, Celestial Hoop, Orbiting World, Galactic Loop, Space Ring, Planetary Loop, Stellar Ring, Astral Loop, Heavenly Circle",
+      "category": "space"
+    },
+    {
+      "name": "solar-system",
+      "tags": "sun-and-planets, space-galaxy, cosmic-orbit, celestial-assembly, stellar-arrangement, astral-system, planetary-sun, universe-array",
+      "category": "space"
+    },
+    {
+      "name": "spaceship",
+      "tags": "rocket, space shuttle, cosmic craft, stellar vessel, celestial flyer, astral transporter, galactic rocket, interstellar cruiser, starship, planetary explorer",
+      "category": "space"
+    }
+  ]
+}

@@ -1,0 +1,677 @@
+{
+  "metadata": {
+    "id": "finance_crypto",
+    "name": "Finance & Crypto",
+    "description": "Financial services and cryptocurrency",
+    "main_category": "business_finance",
+    "icon_count": 133,
+    "version": "1.0"
+  },
+  "icons": [
+    {
+      "name": "anonymous",
+      "tags": "Incognito, Hidden, Masked, Ghost, Concealed, Veiled, Unnamed, Stealth, Secret, Unknown, anonymous",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-01",
+      "tags": "digital gold, crypto coin, BTC symbol, blockchain currency, virtual currency, decentralized money, electronic cash, cryptocurrency emblem, BTC logo, bitcoin, bit coin, coin, currency, money",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-02",
+      "tags": "digital gold, crypto coin, BTC symbol, blockchain currency, virtual currency, decentralized money, electronic cash, cryptocurrency emblem, BTC logo, bitcoin, bit coin, coin, currency, money",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-03",
+      "tags": "digital gold, crypto coin, BTC symbol, blockchain currency, virtual currency, decentralized money, electronic cash, cryptocurrency emblem, BTC logo, bitcoin, bit coin, coin, currency, money",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-04",
+      "tags": "digital gold, crypto coin, BTC symbol, blockchain currency, virtual currency, decentralized money, electronic cash, cryptocurrency emblem, BTC logo, bitcoin, bit coin, coin, currency, money",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-bag",
+      "tags": "digital gold, crypto coin, BTC symbol, blockchain currency, virtual currency, decentralized money, electronic cash, cryptocurrency emblem, BTC logo, bitcoin, bit coin, coin, currency, money, bitcoin bag, coin bag, bag,",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-cloud",
+      "tags": "digital gold, crypto coin, BTC symbol, blockchain currency, virtual currency, decentralized money, electronic cash, cryptocurrency emblem, BTC logo, bitcoin, bit coin, coin, currency, money, bitcoin cloud, cloud bitcoin",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-cpu",
+      "tags": "digital gold, crypto coin, BTC symbol, blockchain currency, virtual currency, decentralized money, electronic cash, cryptocurrency emblem, BTC logo, bitcoin, bit coin, coin, currency, money, bitcoin cpu, cpu bitcoin",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-credit-card",
+      "tags": "digital gold, crypto coin, BTC symbol, blockchain currency, virtual currency, decentralized money, electronic cash, cryptocurrency emblem, BTC logo, bitcoin, bit coin, coin, currency, money, bitcoin credit card, credit card bitcoin",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-database",
+      "tags": "digital gold, crypto coin, BTC symbol, blockchain currency, virtual currency, decentralized money, electronic cash, cryptocurrency emblem, BTC logo, bitcoin, bit coin, coin, currency, money, bitcoin database, database bitcoin",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-down-01",
+      "tags": "digital gold, crypto coin, BTC symbol, blockchain currency, virtual currency, decentralized money, electronic cash, cryptocurrency emblem, BTC logo, bitcoin, bit coin, coin, currency, money, bitcoin down, down bitcoin",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-down-02",
+      "tags": "digital gold, crypto coin, BTC symbol, blockchain currency, virtual currency, decentralized money, electronic cash, cryptocurrency emblem, BTC logo, bitcoin, bit coin, coin, currency, money, bitcoin down, down bitcoin",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-ellipse",
+      "tags": "digital gold, crypto coin, BTC symbol, blockchain currency, virtual currency, decentralized money, electronic cash, cryptocurrency emblem, BTC logo, bitcoin, bit coin, coin, currency, money, bitcoin ellipse, ellipse bitcoin",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-eye",
+      "tags": "digital gold, crypto coin, BTC symbol, blockchain currency, virtual currency, decentralized money, electronic cash, cryptocurrency emblem, BTC logo, bitcoin, bit coin, coin, currency, money, bitcoin eye, eye bitcoin, eye, money eye, eye money",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-filter",
+      "tags": "digital gold, crypto coin, BTC symbol, blockchain currency, virtual currency, decentralized money, electronic cash, cryptocurrency emblem, BTC logo, bitcoin, bit coin, coin, currency, money, bitcoin filter, filter bitcoin, filter",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-flashdisk",
+      "tags": "bitcoin-flashdisk",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-graph",
+      "tags": "digital gold, crypto coin, BTC symbol, blockchain currency, virtual currency, decentralized money, electronic cash, cryptocurrency emblem, BTC logo, bitcoin, bit coin, coin, currency, money, bitcoin graph, graph bitcoin, graph, money graph, graph money",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-invoice",
+      "tags": "bitcoin-invoice",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-key",
+      "tags": "bitcoin-key",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-location",
+      "tags": "bitcoin-location",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-lock",
+      "tags": "bitcoin-lock",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-mail",
+      "tags": "bitcoin-mail",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-mind",
+      "tags": "bitcoin-mind",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-money-01",
+      "tags": "bitcoin-money-01",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-money-02",
+      "tags": "bitcoin-money-02",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-pie-chart",
+      "tags": "bitcoin-pie-chart",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-piggy-bank",
+      "tags": "bitcoin-piggy-bank",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-presentation",
+      "tags": "bitcoin-presentation",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-receipt",
+      "tags": "bitcoin-receipt",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-rectangle",
+      "tags": "bitcoin-rectangle",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-safe",
+      "tags": "bitcoin-safe",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-search",
+      "tags": "bitcoin-search",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-setting",
+      "tags": "bitcoin-setting",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-shield",
+      "tags": "bitcoin-shield",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-shopping",
+      "tags": "bitcoin-shopping",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-smartphone-01",
+      "tags": "bitcoin-smartphone-01",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-smartphone-02",
+      "tags": "bitcoin-smartphone-02",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-store",
+      "tags": "bitcoin-store",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-tag",
+      "tags": "bitcoin-tag",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-target",
+      "tags": "bitcoin-target",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-transaction",
+      "tags": "crypto transfer, BTC payment, digital exchange, blockchain transaction, coin transfer, virtual currency movement, cryptocurrency transaction, bitcoin transaction, transaction, transaction bitcoin",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-up-01",
+      "tags": "btc increase, crypto surge, coin boost, rising bitcoi, upward crypto, btc uptrend, crypto climb, coin upswing, bitcoin rise, crypto up, coin surge, up bitcoin, bitcoin up",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-up-02",
+      "tags": "btc increase, crypto surge, coin boost, rising bitcoi, upward crypto, btc uptrend, crypto climb, coin upswing, bitcoin rise, crypto up, coin surge, up bitcoin, bitcoin up",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-wallet",
+      "tags": "Crypto Purse, Digital Coin Wallet, BTC Wallet, Cryptocurrency Vault, Virtual Currency Purse, Blockchain Wallet, Digital Money Holder, Crypto Safe, Coin Stash, Electronic Wallet, Bitcoin Wallet, Wallet",
+      "category": "crypto"
+    },
+    {
+      "name": "bitcoin-withdraw",
+      "tags": "Crypto Cash Out, BTC Withdrawal, Digital Currency Withdraw, Bitcoin Cashout, Withdraw Bitcoin, Cryptocurrency Withdrawal, Bitcoin Exit, BTC Cash Withdrawal, Crypto Withdrawal, Bitcoin Outflow, Bitcoin Transfer Out, Withdraw BTC, Cryptocurrency Cashout, Bitcoin Disbursement, Digital Money Withdrawal, Bitcoin Liquidation, BTC Removal, Cryptocurrency Cashback, Bitcoin withdraw, withdraw",
+      "category": "crypto"
+    },
+    {
+      "name": "blockchain-01",
+      "tags": "ledger, cryptochain, digital ledger, chainlink, crypto record, secure link, blockchain, block chain, crypto blockchain",
+      "category": "crypto"
+    },
+    {
+      "name": "blockchain-02",
+      "tags": "ledger, cryptochain, digital ledger, chainlink, crypto record, secure link, blockchain, block chain, crypto blockchain",
+      "category": "crypto"
+    },
+    {
+      "name": "blockchain-03",
+      "tags": "ledger, cryptochain, digital ledger, chainlink, crypto record, secure link, blockchain, block chain, crypto blockchain",
+      "category": "crypto"
+    },
+    {
+      "name": "blockchain-04",
+      "tags": "ledger, cryptochain, digital ledger, chainlink, crypto record, secure link, blockchain, block chain, crypto blockchain",
+      "category": "crypto"
+    },
+    {
+      "name": "blockchain-05",
+      "tags": "ledger, cryptochain, digital ledger, chainlink, crypto record, secure link, blockchain, block chain, crypto blockchain",
+      "category": "crypto"
+    },
+    {
+      "name": "blockchain-06",
+      "tags": "ledger, cryptochain, digital ledger, chainlink, crypto record, secure link, blockchain, block chain, crypto blockchain",
+      "category": "crypto"
+    },
+    {
+      "name": "blockchain-07",
+      "tags": "ledger, cryptochain, digital ledger, chainlink, crypto record, secure link, blockchain, block chain, crypto blockchain",
+      "category": "crypto"
+    },
+    {
+      "name": "centralized",
+      "tags": "centralized",
+      "category": "crypto"
+    },
+    {
+      "name": "ethereum",
+      "tags": "ethereum",
+      "category": "crypto"
+    },
+    {
+      "name": "ethereum-ellipse",
+      "tags": "ethereum-ellipse",
+      "category": "crypto"
+    },
+    {
+      "name": "ethereum-rectangle",
+      "tags": "ethereum-rectangle",
+      "category": "crypto"
+    },
+    {
+      "name": "exchange-01",
+      "tags": "swap, convert, switch, trade, interchange, transfer, replace, barter, shift, alternate, exchange, change",
+      "category": "crypto"
+    },
+    {
+      "name": "exchange-02",
+      "tags": "swap, convert, switch, trade, interchange, transfer, replace, barter, shift, alternate, exchange, change, crypto exchange, crypto change, bitcoin exchange",
+      "category": "crypto"
+    },
+    {
+      "name": "exchange-03",
+      "tags": "swap, convert, switch, trade, interchange, transfer, replace, barter, shift, alternate, exchange, change, crypto exchange, crypto change, bitcoin exchange",
+      "category": "crypto"
+    },
+    {
+      "name": "ico",
+      "tags": "ico",
+      "category": "crypto"
+    },
+    {
+      "name": "litecoin",
+      "tags": "litecoin",
+      "category": "crypto"
+    },
+    {
+      "name": "market-analysis",
+      "tags": "market-analysis",
+      "category": "crypto"
+    },
+    {
+      "name": "mining-01",
+      "tags": "mining-01",
+      "category": "crypto"
+    },
+    {
+      "name": "mining-02",
+      "tags": "mining-02",
+      "category": "crypto"
+    },
+    {
+      "name": "mining-03",
+      "tags": "mining-03",
+      "category": "crypto"
+    },
+    {
+      "name": "profit",
+      "tags": "earnings, gains, revenue, income, returns, wealth, surplus, benefit, advantage, proceeds, winnings, win, profit",
+      "category": "crypto"
+    },
+    {
+      "name": "purse",
+      "tags": "handbag, clutch, wallet, pouch, satchel, tote, pocketbook, baguette, billfold, carryall, reticule, moneybag, knapsack, duffel, coin purse, bitcoin purse, purse, wallet",
+      "category": "crypto"
+    },
+    {
+      "name": "ripple",
+      "tags": "ripple",
+      "category": "crypto"
+    },
+    {
+      "name": "stake",
+      "tags": "stakeholder, bet, post, marker, peg, pole, wager, bettor, gamble, stick, stake",
+      "category": "crypto"
+    },
+    {
+      "name": "usdt",
+      "tags": "usdt",
+      "category": "crypto"
+    },
+    {
+      "name": "affiliate",
+      "tags": "money, affiliate, dollar, commission",
+      "category": "e-commerce"
+    },
+    {
+      "name": "bar-code-01",
+      "tags": "barcode, scan-code, label-bar, product-scan, id",
+      "category": "e-commerce"
+    },
+    {
+      "name": "bar-code-02",
+      "tags": "barcode, scan-code, label-bar, product-scan, id",
+      "category": "e-commerce"
+    },
+    {
+      "name": "cargo-ship",
+      "tags": "vessel, freighter, cargo, carrier",
+      "category": "e-commerce"
+    },
+    {
+      "name": "container-truck-01",
+      "tags": "truck, transport, shipment, logistics, delivery, shipping",
+      "category": "e-commerce"
+    },
+    {
+      "name": "container-truck-02",
+      "tags": "truck, transport, shipment, logistics, delivery, shipping",
+      "category": "e-commerce"
+    },
+    {
+      "name": "coupon-01",
+      "tags": "discount, voucher, promo, coupon, offer",
+      "category": "e-commerce"
+    },
+    {
+      "name": "coupon-02",
+      "tags": "discount, voucher, promo, coupon, offer",
+      "category": "e-commerce"
+    },
+    {
+      "name": "coupon-03",
+      "tags": "discount, voucher, promo, coupon, offer",
+      "category": "e-commerce"
+    },
+    {
+      "name": "coupon-percent",
+      "tags": "discount, voucher, promo, coupon, offer",
+      "category": "e-commerce"
+    },
+    {
+      "name": "customer-support",
+      "tags": "service, support, customer, user-care, help, call center",
+      "category": "e-commerce"
+    },
+    {
+      "name": "delivered-sent",
+      "tags": "sent, arrived, delivered, dispatched, shipped",
+      "category": "e-commerce"
+    },
+    {
+      "name": "delivery-box-01",
+      "tags": "shipping, package, parcel, box",
+      "category": "e-commerce"
+    },
+    {
+      "name": "delivery-box-02",
+      "tags": "shipping, package, parcel, box",
+      "category": "e-commerce"
+    },
+    {
+      "name": "discount",
+      "tags": "discount, voucher, promo, coupon, offer",
+      "category": "e-commerce"
+    },
+    {
+      "name": "discount-tag-01",
+      "tags": "discount, offer, tag, sale, deal",
+      "category": "e-commerce"
+    },
+    {
+      "name": "discount-tag-02",
+      "tags": "discount, offer, tag, sale, deal",
+      "category": "e-commerce"
+    },
+    {
+      "name": "distribution",
+      "tags": "distribution, flow, allocation, supply-chain",
+      "category": "e-commerce"
+    },
+    {
+      "name": "gift-card",
+      "tags": "gift card, event voucher, festive gift card",
+      "category": "e-commerce"
+    },
+    {
+      "name": "hot-price",
+      "tags": "discount, voucher, promo, coupon, offer, hot price",
+      "category": "e-commerce"
+    },
+    {
+      "name": "invoice-01",
+      "tags": "invoice, payment, billing, purchase, receipt, expense",
+      "category": "e-commerce"
+    },
+    {
+      "name": "invoice-02",
+      "tags": "invoice, payment, billing, purchase, receipt, expense",
+      "category": "e-commerce"
+    },
+    {
+      "name": "invoice-03",
+      "tags": "invoice, payment, billing, purchase, receipt, expense",
+      "category": "e-commerce"
+    },
+    {
+      "name": "invoice-04",
+      "tags": "invoice, payment, billing, purchase, receipt, expense",
+      "category": "e-commerce"
+    },
+    {
+      "name": "limit-order",
+      "tags": "limit-order",
+      "category": "e-commerce"
+    },
+    {
+      "name": "loyalty-card",
+      "tags": "loyalty card, card",
+      "category": "e-commerce"
+    },
+    {
+      "name": "marketing",
+      "tags": "marketing, announce, promotional",
+      "category": "e-commerce"
+    },
+    {
+      "name": "package",
+      "tags": "shipping, package, parcel, box",
+      "category": "e-commerce"
+    },
+    {
+      "name": "package-02",
+      "tags": "package-02",
+      "category": "e-commerce"
+    },
+    {
+      "name": "package-03",
+      "tags": "package-03",
+      "category": "e-commerce"
+    },
+    {
+      "name": "packaging",
+      "tags": "packaging",
+      "category": "e-commerce"
+    },
+    {
+      "name": "product-loading",
+      "tags": "product loading, product",
+      "category": "e-commerce"
+    },
+    {
+      "name": "promotion",
+      "tags": "marketing, announce, promotion",
+      "category": "e-commerce"
+    },
+    {
+      "name": "receipt-dollar",
+      "tags": "receipt-dollar",
+      "category": "e-commerce"
+    },
+    {
+      "name": "safe-delivery-01",
+      "tags": "delivery, delivered",
+      "category": "e-commerce"
+    },
+    {
+      "name": "safe-delivery-02",
+      "tags": "delivery, delivered",
+      "category": "e-commerce"
+    },
+    {
+      "name": "sale-tag-01",
+      "tags": "sale tag, offer, discount, tag",
+      "category": "e-commerce"
+    },
+    {
+      "name": "sale-tag-02",
+      "tags": "sale tag, offer, discount, tag",
+      "category": "e-commerce"
+    },
+    {
+      "name": "shipping-truck-01",
+      "tags": "truck, transport, shipment, logistics, delivery, shipping",
+      "category": "e-commerce"
+    },
+    {
+      "name": "shipping-truck-02",
+      "tags": "truck, transport, shipment, logistics, delivery, shipping",
+      "category": "e-commerce"
+    },
+    {
+      "name": "shopping-bag-01",
+      "tags": "shopping bag, bag, purchase",
+      "category": "e-commerce"
+    },
+    {
+      "name": "shopping-bag-02",
+      "tags": "shopping bag, bag, purchase",
+      "category": "e-commerce"
+    },
+    {
+      "name": "shopping-bag-03",
+      "tags": "shopping bag, bag, purchase",
+      "category": "e-commerce"
+    },
+    {
+      "name": "shopping-basket-01",
+      "tags": "shopping, cart, basket, checkout, add-to-cart",
+      "category": "e-commerce"
+    },
+    {
+      "name": "shopping-basket-02",
+      "tags": "shopping, cart, basket, checkout, add-to-cart",
+      "category": "e-commerce"
+    },
+    {
+      "name": "shopping-basket-03",
+      "tags": "shopping, cart, basket, checkout, add-to-cart",
+      "category": "e-commerce"
+    },
+    {
+      "name": "shopping-cart-01",
+      "tags": "shopping, cart, basket, checkout, add-to-cart",
+      "category": "e-commerce"
+    },
+    {
+      "name": "shopping-cart-02",
+      "tags": "shopping, cart, basket, checkout, add-to-cart",
+      "category": "e-commerce"
+    },
+    {
+      "name": "shop-sign",
+      "tags": "shop sign, sign",
+      "category": "e-commerce"
+    },
+    {
+      "name": "store-01",
+      "tags": "store, market, shop, marketplace",
+      "category": "e-commerce"
+    },
+    {
+      "name": "store-02",
+      "tags": "store, market, shop, marketplace",
+      "category": "e-commerce"
+    },
+    {
+      "name": "store-03",
+      "tags": "store, market, shop, marketplace",
+      "category": "e-commerce"
+    },
+    {
+      "name": "store-04",
+      "tags": "store, market, shop, marketplace",
+      "category": "e-commerce"
+    },
+    {
+      "name": "tags",
+      "tags": "tag",
+      "category": "e-commerce"
+    },
+    {
+      "name": "ticket-01",
+      "tags": "ticket, entry, access, token,",
+      "category": "e-commerce"
+    },
+    {
+      "name": "ticket-02",
+      "tags": "ticket, entry, access, token,",
+      "category": "e-commerce"
+    },
+    {
+      "name": "ticket-03",
+      "tags": "ticket, entry, access, token,",
+      "category": "e-commerce"
+    },
+    {
+      "name": "ticket-star",
+      "tags": "ticket, entry, access, token,",
+      "category": "e-commerce"
+    },
+    {
+      "name": "transaction",
+      "tags": "transaction",
+      "category": "e-commerce"
+    },
+    {
+      "name": "trolley-01",
+      "tags": "trolley",
+      "category": "e-commerce"
+    },
+    {
+      "name": "trolley-02",
+      "tags": "trolley, shopping bag, shopping cart,",
+      "category": "e-commerce"
+    },
+    {
+      "name": "voucher",
+      "tags": "discount, voucher, promo, coupon, offer",
+      "category": "e-commerce"
+    },
+    {
+      "name": "warehouse",
+      "tags": "warehouse",
+      "category": "e-commerce"
+    }
+  ]
+}

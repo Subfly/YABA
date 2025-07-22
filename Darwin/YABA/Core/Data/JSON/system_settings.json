@@ -1,0 +1,527 @@
+{
+  "metadata": {
+    "id": "system_settings",
+    "name": "System & Settings",
+    "description": "System configuration and controls",
+    "main_category": "system_files",
+    "icon_count": 103,
+    "version": "1.0"
+  },
+  "icons": [
+    {
+      "name": "account-setting-01",
+      "tags": "profile-settings, user-options, personal-preferences, account-config, profile-customize, user-configurations, settings-profile, customize-account",
+      "category": "settings"
+    },
+    {
+      "name": "account-setting-02",
+      "tags": "profile-settings, user-options, personal-preferences, account-config, profile-customize, user-configurations, settings-profile, customize-account",
+      "category": "settings"
+    },
+    {
+      "name": "account-setting-03",
+      "tags": "profile-settings, user-options, personal-preferences, account-config, profile-customize, user-configurations, settings-profile, customize-account",
+      "category": "settings"
+    },
+    {
+      "name": "configuration-01",
+      "tags": "settings, preferences, options, setup, customizations, controls, adjustments, configurations, configurations, configurations",
+      "category": "settings"
+    },
+    {
+      "name": "configuration-02",
+      "tags": "settings, preferences, options, setup, customizations, controls, adjustments, configurations, configurations, configurations",
+      "category": "settings"
+    },
+    {
+      "name": "customize",
+      "tags": "Personalize, Modify, Edit, Tailor, Adjust, Tweak, Adapt, Revise, Alter, Fine-tune, Revamp, Refine",
+      "category": "settings"
+    },
+    {
+      "name": "gears",
+      "tags": "gears",
+      "category": "settings"
+    },
+    {
+      "name": "installing-updates-01",
+      "tags": "Update in Progress, System Update, Refresh & Install, Patch Installation, Updating Software, Upgrade in Process, Firmware Update, Installing Improvements, Software Refresh, Update Procedure, App Upgrade, Patch Installing",
+      "category": "settings"
+    },
+    {
+      "name": "installing-updates-02",
+      "tags": "Update in Progress, System Update, Refresh & Install, Patch Installation, Updating Software, Upgrade in Process, Firmware Update, Installing Improvements, Software Refresh, Update Procedure, App Upgrade, Patch Installing",
+      "category": "settings"
+    },
+    {
+      "name": "list-setting",
+      "tags": "settings-list, list-options, list-configuration, list-preferences, list-controls, list-customization, list-management, list-config, list-tools, list-tweaks",
+      "category": "settings"
+    },
+    {
+      "name": "more",
+      "tags": "additional, expand, extra, options, further, menu, details, extras, extended, supplementary, additional actions",
+      "category": "settings"
+    },
+    {
+      "name": "repair",
+      "tags": "repair",
+      "category": "settings"
+    },
+    {
+      "name": "setting-06",
+      "tags": "preferences, options, configurations, tools, gear, adjustments, setup, controls, parameters, customizations, configurations, tweaks, properties, utilities, system",
+      "category": "settings"
+    },
+    {
+      "name": "setting-07",
+      "tags": "preferences, options, configurations, tools, gear, adjustments, setup, controls, parameters, customizations, configurations, tweaks, properties, utilities, system",
+      "category": "settings"
+    },
+    {
+      "name": "settings-01",
+      "tags": "preferences, options, configurations, tools, gear, adjustments, setup, controls, parameters, customizations, configurations, tweaks, properties, utilities, system",
+      "category": "settings"
+    },
+    {
+      "name": "settings-02",
+      "tags": "preferences, options, configurations, tools, gear, adjustments, setup, controls, parameters, customizations, configurations, tweaks, properties, utilities, system",
+      "category": "settings"
+    },
+    {
+      "name": "settings-03",
+      "tags": "preferences, options, configurations, tools, gear, adjustments, setup, controls, parameters, customizations, configurations, tweaks, properties, utilities, system",
+      "category": "settings"
+    },
+    {
+      "name": "settings-04",
+      "tags": "preferences, options, configurations, tools, gear, adjustments, setup, controls, parameters, customizations, configurations, tweaks, properties, utilities, system",
+      "category": "settings"
+    },
+    {
+      "name": "settings-05",
+      "tags": "preferences, options, configurations, tools, gear, adjustments, setup, controls, parameters, customizations, configurations, tweaks, properties, utilities, system",
+      "category": "settings"
+    },
+    {
+      "name": "streering-wheel",
+      "tags": "streering-wheel",
+      "category": "settings"
+    },
+    {
+      "name": "tire",
+      "tags": "tire",
+      "category": "settings"
+    },
+    {
+      "name": "toggle-off",
+      "tags": "switch-off, deactivate, disable, turn-off, unclick, power-down, inactive, shut-down",
+      "category": "settings"
+    },
+    {
+      "name": "toggle-on",
+      "tags": "switch, activate, power, enable, on-off, turn on, activate switch, toggle active, start, engage",
+      "category": "settings"
+    },
+    {
+      "name": "tools",
+      "tags": "tools",
+      "category": "settings"
+    },
+    {
+      "name": "wrench-01",
+      "tags": "tool, spanner, adjuster, fixer, implement, turner, key, hardware, twisty",
+      "category": "settings"
+    },
+    {
+      "name": "wrench-02",
+      "tags": "tool, spanner, adjuster, fixer, implement, turner, key, hardware, twisty",
+      "category": "settings"
+    },
+    {
+      "name": "dashboard-browsing",
+      "tags": "overview, control panel, data center, insights hub, administration, summary, analytics, performance, status board, main menu, command center, information hub, dashboard,",
+      "category": "dashboard"
+    },
+    {
+      "name": "dashboard-circle",
+      "tags": "overview, control panel, home hub, data center, insights hub, administration, summary, analytics, performance, status board, main menu, command center, information hub, dashboard, dashboard circle",
+      "category": "dashboard"
+    },
+    {
+      "name": "dashboard-speed-01",
+      "tags": "overview, control panel, data center, insights hub, administration, summary, analytics, performance, status board, command center, information hub, dashboard, dashboard speed, speed dashboard, speed",
+      "category": "dashboard"
+    },
+    {
+      "name": "dashboard-speed-02",
+      "tags": "overview, control panel, hub, data center, insights hub, administration, summary, analytics, performance, status board, command center, information hub, speed",
+      "category": "dashboard"
+    },
+    {
+      "name": "dashboard-square-01",
+      "tags": "overview, control panel, home hub, data center, insights hub, administration, summary, analytics, performance, status board, main menu, command center, information hub, dashboard, dashboard square",
+      "category": "dashboard"
+    },
+    {
+      "name": "dashboard-square-02",
+      "tags": "overview, control panel, home hub, data center, insights hub, administration, summary, analytics, performance, status board, main menu, command center, information hub, dashboard, dashboard square",
+      "category": "dashboard"
+    },
+    {
+      "name": "dashboard-square-03",
+      "tags": "overview, control panel, home hub, data center, insights hub, administration, summary, analytics, performance, status board, main menu, command center, information hub, dashboard, dashboard square",
+      "category": "dashboard"
+    },
+    {
+      "name": "discover-circle",
+      "tags": "overview, control panel, data center, insights hub, administration, summary, analytics, performance, status board, main menu, command center, information hub, dashboard, circle, circle discover, explore circle, circle explore",
+      "category": "dashboard"
+    },
+    {
+      "name": "discover-square",
+      "tags": "overview, control panel, administration, summary, analytics, performance, status board, main menu, command center, information hub, dashboard, discover square, square discover, explore, square explore",
+      "category": "dashboard"
+    },
+    {
+      "name": "wave",
+      "tags": "wave",
+      "category": "dashboard"
+    },
+    {
+      "name": "wave-square",
+      "tags": "wave-square",
+      "category": "dashboard"
+    },
+    {
+      "name": "wave-triangle",
+      "tags": "wave-triangle",
+      "category": "dashboard"
+    },
+    {
+      "name": "flow",
+      "tags": "flow",
+      "category": "hierarchy"
+    },
+    {
+      "name": "flowchart-01",
+      "tags": "flowchart-01",
+      "category": "hierarchy"
+    },
+    {
+      "name": "flowchart-02",
+      "tags": "flowchart-02",
+      "category": "hierarchy"
+    },
+    {
+      "name": "flow-circle",
+      "tags": "flow-circle",
+      "category": "hierarchy"
+    },
+    {
+      "name": "flow-connection",
+      "tags": "flow-connection",
+      "category": "hierarchy"
+    },
+    {
+      "name": "flow-square",
+      "tags": "flow-square",
+      "category": "hierarchy"
+    },
+    {
+      "name": "hierarchy",
+      "tags": "hierarchy",
+      "category": "hierarchy"
+    },
+    {
+      "name": "pipeline",
+      "tags": "pipeline",
+      "category": "hierarchy"
+    },
+    {
+      "name": "pyramid-maslowo",
+      "tags": "pyramid-maslowo",
+      "category": "hierarchy"
+    },
+    {
+      "name": "pyramid-structure-01",
+      "tags": "pyramid-structure-01",
+      "category": "hierarchy"
+    },
+    {
+      "name": "pyramid-structure-02",
+      "tags": "pyramid-structure-02",
+      "category": "hierarchy"
+    },
+    {
+      "name": "scheme",
+      "tags": "scheme",
+      "category": "hierarchy"
+    },
+    {
+      "name": "access",
+      "tags": "access",
+      "category": "security"
+    },
+    {
+      "name": "authorized",
+      "tags": "authorized",
+      "category": "security"
+    },
+    {
+      "name": "biometric-access",
+      "tags": "biometric-access",
+      "category": "security"
+    },
+    {
+      "name": "biometric-device",
+      "tags": "biometric-device",
+      "category": "security"
+    },
+    {
+      "name": "blocked",
+      "tags": "blocked",
+      "category": "security"
+    },
+    {
+      "name": "cctv-camera",
+      "tags": "cctv-camera",
+      "category": "security"
+    },
+    {
+      "name": "circle-lock-01",
+      "tags": "circle-lock-01",
+      "category": "security"
+    },
+    {
+      "name": "circle-lock-02",
+      "tags": "circle-lock-02",
+      "category": "security"
+    },
+    {
+      "name": "circle-password",
+      "tags": "circle-password",
+      "category": "security"
+    },
+    {
+      "name": "circle-unlock-01",
+      "tags": "circle-unlock-01",
+      "category": "security"
+    },
+    {
+      "name": "circle-unlock-02",
+      "tags": "circle-unlock-02",
+      "category": "security"
+    },
+    {
+      "name": "computer-protection",
+      "tags": "computer-protection",
+      "category": "security"
+    },
+    {
+      "name": "connect",
+      "tags": "connect",
+      "category": "security"
+    },
+    {
+      "name": "contracts",
+      "tags": "contracts",
+      "category": "security"
+    },
+    {
+      "name": "door-lock",
+      "tags": "door-lock",
+      "category": "security"
+    },
+    {
+      "name": "drive",
+      "tags": "drive",
+      "category": "security"
+    },
+    {
+      "name": "encrypt",
+      "tags": "encrypt",
+      "category": "security"
+    },
+    {
+      "name": "face-id",
+      "tags": "face-id",
+      "category": "security"
+    },
+    {
+      "name": "finger-access",
+      "tags": "finger-access",
+      "category": "security"
+    },
+    {
+      "name": "finger-print",
+      "tags": "finger-print",
+      "category": "security"
+    },
+    {
+      "name": "finger-print-scan",
+      "tags": "finger-print-scan",
+      "category": "security"
+    },
+    {
+      "name": "fingerprint-scan",
+      "tags": "fingerprint-scan",
+      "category": "security"
+    },
+    {
+      "name": "fire-security",
+      "tags": "fire-security",
+      "category": "security"
+    },
+    {
+      "name": "firewall",
+      "tags": "firewall",
+      "category": "security"
+    },
+    {
+      "name": "forgot-password",
+      "tags": "forgot-password",
+      "category": "security"
+    },
+    {
+      "name": "id",
+      "tags": "id",
+      "category": "security"
+    },
+    {
+      "name": "identity-card",
+      "tags": "identity-card",
+      "category": "security"
+    },
+    {
+      "name": "iris-scan",
+      "tags": "iris-scan",
+      "category": "security"
+    },
+    {
+      "name": "key-01",
+      "tags": "key-01",
+      "category": "security"
+    },
+    {
+      "name": "key-02",
+      "tags": "key-02",
+      "category": "security"
+    },
+    {
+      "name": "key-generator-fob",
+      "tags": "key-generator-fob",
+      "category": "security"
+    },
+    {
+      "name": "lock",
+      "tags": "lock",
+      "category": "security"
+    },
+    {
+      "name": "lock-computer",
+      "tags": "lock-computer",
+      "category": "security"
+    },
+    {
+      "name": "locked",
+      "tags": "locked",
+      "category": "security"
+    },
+    {
+      "name": "lock-key",
+      "tags": "lock-key",
+      "category": "security"
+    },
+    {
+      "name": "lock-password",
+      "tags": "lock-password",
+      "category": "security"
+    },
+    {
+      "name": "microsoft-admin",
+      "tags": "microsoft-admin",
+      "category": "security"
+    },
+    {
+      "name": "mobile-protection",
+      "tags": "mobile-protection",
+      "category": "security"
+    },
+    {
+      "name": "mobile-security",
+      "tags": "mobile-security",
+      "category": "security"
+    },
+    {
+      "name": "open-source",
+      "tags": "open-source",
+      "category": "security"
+    },
+    {
+      "name": "qr-code",
+      "tags": "qr-code",
+      "category": "security"
+    },
+    {
+      "name": "recovery-mail",
+      "tags": "recovery-mail",
+      "category": "security"
+    },
+    {
+      "name": "reset-password",
+      "tags": "reset-password",
+      "category": "security"
+    },
+    {
+      "name": "security",
+      "tags": "security",
+      "category": "security"
+    },
+    {
+      "name": "security-key-usb",
+      "tags": "security-key-usb",
+      "category": "security"
+    },
+    {
+      "name": "security-lock",
+      "tags": "security-lock",
+      "category": "security"
+    },
+    {
+      "name": "shield-01",
+      "tags": "shield-01",
+      "category": "security"
+    },
+    {
+      "name": "shield-02",
+      "tags": "shield-02",
+      "category": "security"
+    },
+    {
+      "name": "speech-to-text",
+      "tags": "speech-to-text",
+      "category": "security"
+    },
+    {
+      "name": "universal-access",
+      "tags": "universal-access",
+      "category": "security"
+    },
+    {
+      "name": "universal-access-circle",
+      "tags": "universal-access-circle",
+      "category": "security"
+    },
+    {
+      "name": "web-protection",
+      "tags": "web-protection",
+      "category": "security"
+    },
+    {
+      "name": "web-security",
+      "tags": "web-security",
+      "category": "security"
+    }
+  ]
+}

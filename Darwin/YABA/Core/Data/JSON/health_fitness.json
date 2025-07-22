@@ -1,0 +1,642 @@
+{
+  "metadata": {
+    "id": "health_fitness",
+    "name": "Health & Fitness",
+    "description": "Medical care and physical fitness",
+    "main_category": "lifestyle_personal",
+    "icon_count": 126,
+    "version": "1.0"
+  },
+  "icons": [
+    {
+      "name": "aids",
+      "tags": "aids",
+      "category": "medical"
+    },
+    {
+      "name": "ampoule",
+      "tags": "ampoule",
+      "category": "medical"
+    },
+    {
+      "name": "bandage",
+      "tags": "bandage",
+      "category": "medical"
+    },
+    {
+      "name": "blood",
+      "tags": "blood",
+      "category": "medical"
+    },
+    {
+      "name": "blood-bag",
+      "tags": "blood-bag",
+      "category": "medical"
+    },
+    {
+      "name": "blood-bottle",
+      "tags": "blood-bottle",
+      "category": "medical"
+    },
+    {
+      "name": "blood-pressure",
+      "tags": "blood-pressure",
+      "category": "medical"
+    },
+    {
+      "name": "blood-type",
+      "tags": "blood-type",
+      "category": "medical"
+    },
+    {
+      "name": "bone-01",
+      "tags": "bone-01",
+      "category": "medical"
+    },
+    {
+      "name": "bone-02",
+      "tags": "bone-02",
+      "category": "medical"
+    },
+    {
+      "name": "brain-01",
+      "tags": "brain-01",
+      "category": "medical"
+    },
+    {
+      "name": "brain-02",
+      "tags": "brain-02",
+      "category": "medical"
+    },
+    {
+      "name": "broken-bone",
+      "tags": "broken-bone",
+      "category": "medical"
+    },
+    {
+      "name": "caduceus",
+      "tags": "caduceus",
+      "category": "medical"
+    },
+    {
+      "name": "cardiogram-01",
+      "tags": "cardiogram-01",
+      "category": "medical"
+    },
+    {
+      "name": "cardiogram-02",
+      "tags": "cardiogram-02",
+      "category": "medical"
+    },
+    {
+      "name": "clinic",
+      "tags": "clinic",
+      "category": "medical"
+    },
+    {
+      "name": "covid-info",
+      "tags": "covid-info",
+      "category": "medical"
+    },
+    {
+      "name": "dental-braces",
+      "tags": "dental-braces",
+      "category": "medical"
+    },
+    {
+      "name": "dental-broken-tooth",
+      "tags": "dental-broken-tooth",
+      "category": "medical"
+    },
+    {
+      "name": "dental-care",
+      "tags": "dental-care",
+      "category": "medical"
+    },
+    {
+      "name": "dental-tooth",
+      "tags": "dental-tooth",
+      "category": "medical"
+    },
+    {
+      "name": "digestion",
+      "tags": "digestion",
+      "category": "medical"
+    },
+    {
+      "name": "disability-01",
+      "tags": "disability-01",
+      "category": "medical"
+    },
+    {
+      "name": "disability-02",
+      "tags": "disability-02",
+      "category": "medical"
+    },
+    {
+      "name": "dna-01",
+      "tags": "dna-01",
+      "category": "medical"
+    },
+    {
+      "name": "doctor-01",
+      "tags": "career, business career,",
+      "category": "medical"
+    },
+    {
+      "name": "doctor-02",
+      "tags": "career, business career,",
+      "category": "medical"
+    },
+    {
+      "name": "doctor-03",
+      "tags": "career, business career,",
+      "category": "medical"
+    },
+    {
+      "name": "dropper",
+      "tags": "dropper",
+      "category": "medical"
+    },
+    {
+      "name": "ear",
+      "tags": "ear",
+      "category": "medical"
+    },
+    {
+      "name": "eye",
+      "tags": "eye",
+      "category": "medical"
+    },
+    {
+      "name": "first-aid-kit",
+      "tags": "first-aid-kit",
+      "category": "medical"
+    },
+    {
+      "name": "give-blood",
+      "tags": "give-blood",
+      "category": "medical"
+    },
+    {
+      "name": "give-pill",
+      "tags": "give-pill",
+      "category": "medical"
+    },
+    {
+      "name": "hand-sanitizer",
+      "tags": "hand-sanitizer",
+      "category": "medical"
+    },
+    {
+      "name": "healtcare",
+      "tags": "healtcare",
+      "category": "medical"
+    },
+    {
+      "name": "health",
+      "tags": "health",
+      "category": "medical"
+    },
+    {
+      "name": "hospital-01",
+      "tags": "hospital-01",
+      "category": "medical"
+    },
+    {
+      "name": "hospital-02",
+      "tags": "hospital-02",
+      "category": "medical"
+    },
+    {
+      "name": "hospital-bed-01",
+      "tags": "hospital-bed-01",
+      "category": "medical"
+    },
+    {
+      "name": "hospital-bed-02",
+      "tags": "hospital-bed-02",
+      "category": "medical"
+    },
+    {
+      "name": "hospital-location",
+      "tags": "hospital-location",
+      "category": "medical"
+    },
+    {
+      "name": "injection",
+      "tags": "injection",
+      "category": "medical"
+    },
+    {
+      "name": "kidneys",
+      "tags": "kidneys",
+      "category": "medical"
+    },
+    {
+      "name": "labs",
+      "tags": "labs",
+      "category": "medical"
+    },
+    {
+      "name": "liver",
+      "tags": "liver",
+      "category": "medical"
+    },
+    {
+      "name": "lungs",
+      "tags": "lungs",
+      "category": "medical"
+    },
+    {
+      "name": "mask",
+      "tags": "mask",
+      "category": "medical"
+    },
+    {
+      "name": "mask-love",
+      "tags": "mask-love",
+      "category": "medical"
+    },
+    {
+      "name": "medical-file",
+      "tags": "medical-file",
+      "category": "medical"
+    },
+    {
+      "name": "medicine-01",
+      "tags": "medicine-01",
+      "category": "medical"
+    },
+    {
+      "name": "medicine-02",
+      "tags": "medicine-02",
+      "category": "medical"
+    },
+    {
+      "name": "medicine-bottle-01",
+      "tags": "medicine-bottle-01",
+      "category": "medical"
+    },
+    {
+      "name": "medicine-bottle-02",
+      "tags": "medicine-bottle-02",
+      "category": "medical"
+    },
+    {
+      "name": "medicine-syrup",
+      "tags": "medicine-syrup",
+      "category": "medical"
+    },
+    {
+      "name": "mortar",
+      "tags": "mortar",
+      "category": "medical"
+    },
+    {
+      "name": "nose",
+      "tags": "nose",
+      "category": "medical"
+    },
+    {
+      "name": "patient",
+      "tags": "patient",
+      "category": "medical"
+    },
+    {
+      "name": "prescription",
+      "tags": "prescription",
+      "category": "medical"
+    },
+    {
+      "name": "protection-mask",
+      "tags": "protection-mask",
+      "category": "medical"
+    },
+    {
+      "name": "pulse-01",
+      "tags": "pulse-01",
+      "category": "medical"
+    },
+    {
+      "name": "pulse-02",
+      "tags": "pulse-02",
+      "category": "medical"
+    },
+    {
+      "name": "pulse-rectangle-01",
+      "tags": "pulse-rectangle-01",
+      "category": "medical"
+    },
+    {
+      "name": "pulse-rectangle-02",
+      "tags": "pulse-rectangle-02",
+      "category": "medical"
+    },
+    {
+      "name": "safe",
+      "tags": "safe",
+      "category": "medical"
+    },
+    {
+      "name": "skull",
+      "tags": "skull",
+      "category": "medical"
+    },
+    {
+      "name": "sperm",
+      "tags": "sperm",
+      "category": "medical"
+    },
+    {
+      "name": "stethoscope",
+      "tags": "stethoscope",
+      "category": "medical"
+    },
+    {
+      "name": "stethoscope-02",
+      "tags": "stethoscope-02",
+      "category": "medical"
+    },
+    {
+      "name": "thermometer",
+      "tags": "thermometer",
+      "category": "medical"
+    },
+    {
+      "name": "thread",
+      "tags": "thread",
+      "category": "medical"
+    },
+    {
+      "name": "tissue-paper",
+      "tags": "tissue-paper",
+      "category": "medical"
+    },
+    {
+      "name": "tongue",
+      "tags": "tongue",
+      "category": "medical"
+    },
+    {
+      "name": "treatment",
+      "tags": "treatment",
+      "category": "medical"
+    },
+    {
+      "name": "vaccine",
+      "tags": "vaccine",
+      "category": "medical"
+    },
+    {
+      "name": "wheelchair",
+      "tags": "wheelchair",
+      "category": "medical"
+    },
+    {
+      "name": "x-ray",
+      "tags": "x-ray",
+      "category": "medical"
+    },
+    {
+      "name": "back-muscle-body",
+      "tags": "back-muscle-body",
+      "category": "gym"
+    },
+    {
+      "name": "body-part-leg",
+      "tags": "body-part-leg",
+      "category": "gym"
+    },
+    {
+      "name": "body-part-muscle",
+      "tags": "body-part-muscle",
+      "category": "gym"
+    },
+    {
+      "name": "body-part-six-pack",
+      "tags": "body-part-six-pack",
+      "category": "gym"
+    },
+    {
+      "name": "body-weight",
+      "tags": "body-weight",
+      "category": "gym"
+    },
+    {
+      "name": "boxing-bag",
+      "tags": "boxing-bag",
+      "category": "gym"
+    },
+    {
+      "name": "boxing-glove-01",
+      "tags": "boxing-glove-01",
+      "category": "gym"
+    },
+    {
+      "name": "dumbbell-01",
+      "tags": "dumbbell-01",
+      "category": "gym"
+    },
+    {
+      "name": "dumbbell-02",
+      "tags": "dumbbell-02",
+      "category": "gym"
+    },
+    {
+      "name": "dumbbell-03",
+      "tags": "dumbbell-03",
+      "category": "gym"
+    },
+    {
+      "name": "equipment-bench-press",
+      "tags": "equipment-bench-press",
+      "category": "gym"
+    },
+    {
+      "name": "equipment-chest-press",
+      "tags": "equipment-chest-press",
+      "category": "gym"
+    },
+    {
+      "name": "equipment-gym-01",
+      "tags": "equipment-gym-01",
+      "category": "gym"
+    },
+    {
+      "name": "equipment-gym-02",
+      "tags": "equipment-gym-02",
+      "category": "gym"
+    },
+    {
+      "name": "equipment-gym-03",
+      "tags": "equipment-gym-03",
+      "category": "gym"
+    },
+    {
+      "name": "equipment-weightlifting",
+      "tags": "equipment-weightlifting",
+      "category": "gym"
+    },
+    {
+      "name": "expander",
+      "tags": "expander",
+      "category": "gym"
+    },
+    {
+      "name": "flying-human",
+      "tags": "flying-human",
+      "category": "gym"
+    },
+    {
+      "name": "gymnastic-rings",
+      "tags": "gymnastic-rings",
+      "category": "gym"
+    },
+    {
+      "name": "hand-grip",
+      "tags": "hand-grip",
+      "category": "gym"
+    },
+    {
+      "name": "kettlebell",
+      "tags": "kettlebell",
+      "category": "gym"
+    },
+    {
+      "name": "locker-01",
+      "tags": "locker-01",
+      "category": "gym"
+    },
+    {
+      "name": "pool",
+      "tags": "pool",
+      "category": "gym"
+    },
+    {
+      "name": "punching-ball-01",
+      "tags": "punching-ball-01",
+      "category": "gym"
+    },
+    {
+      "name": "punching-ball-02",
+      "tags": "punching-ball-02",
+      "category": "gym"
+    },
+    {
+      "name": "push-up-bar",
+      "tags": "push-up-bar",
+      "category": "gym"
+    },
+    {
+      "name": "running-shoes",
+      "tags": "running-shoes",
+      "category": "gym"
+    },
+    {
+      "name": "shoulder",
+      "tags": "shoulder",
+      "category": "gym"
+    },
+    {
+      "name": "skipping-rope",
+      "tags": "skipping-rope",
+      "category": "gym"
+    },
+    {
+      "name": "tape-measure",
+      "tags": "tape-measure",
+      "category": "gym"
+    },
+    {
+      "name": "towels",
+      "tags": "towels",
+      "category": "gym"
+    },
+    {
+      "name": "treadmill-01",
+      "tags": "treadmill-01",
+      "category": "gym"
+    },
+    {
+      "name": "treadmill-02",
+      "tags": "treadmill-02",
+      "category": "gym"
+    },
+    {
+      "name": "weight-scale",
+      "tags": "weight-scale",
+      "category": "gym"
+    },
+    {
+      "name": "wellness",
+      "tags": "wellness",
+      "category": "gym"
+    },
+    {
+      "name": "workout-battle-ropes",
+      "tags": "workout-battle-ropes",
+      "category": "gym"
+    },
+    {
+      "name": "workout-gymnastics",
+      "tags": "workout-gymnastics",
+      "category": "gym"
+    },
+    {
+      "name": "workout-kicking",
+      "tags": "workout-kicking",
+      "category": "gym"
+    },
+    {
+      "name": "workout-run",
+      "tags": "workout-run",
+      "category": "gym"
+    },
+    {
+      "name": "workout-sport",
+      "tags": "workout-sport",
+      "category": "gym"
+    },
+    {
+      "name": "workout-squats",
+      "tags": "workout-squats",
+      "category": "gym"
+    },
+    {
+      "name": "workout-stretching",
+      "tags": "workout-stretching",
+      "category": "gym"
+    },
+    {
+      "name": "workout-warm-up",
+      "tags": "workout-warm-up",
+      "category": "gym"
+    },
+    {
+      "name": "yoga-01",
+      "tags": "yoga-01",
+      "category": "gym"
+    },
+    {
+      "name": "yoga-02",
+      "tags": "yoga-02",
+      "category": "gym"
+    },
+    {
+      "name": "yoga-03",
+      "tags": "yoga-03",
+      "category": "gym"
+    },
+    {
+      "name": "yoga-ball",
+      "tags": "yoga-ball",
+      "category": "gym"
+    },
+    {
+      "name": "yoga-mat",
+      "tags": "yoga-mat",
+      "category": "gym"
+    }
+  ]
+}

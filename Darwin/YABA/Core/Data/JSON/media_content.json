@@ -1,0 +1,387 @@
+{
+  "metadata": {
+    "id": "media_content",
+    "name": "Media & Content",
+    "description": "Images, videos, and multimedia",
+    "main_category": "design_media",
+    "icon_count": 75,
+    "version": "1.0"
+  },
+  "icons": [
+    {
+      "name": "audio-wave-01",
+      "tags": "audio-wave-01",
+      "category": "media"
+    },
+    {
+      "name": "audio-wave-02",
+      "tags": "audio-wave-02",
+      "category": "media"
+    },
+    {
+      "name": "backward-01",
+      "tags": "Backward",
+      "category": "media"
+    },
+    {
+      "name": "backward-02",
+      "tags": "Backward",
+      "category": "media"
+    },
+    {
+      "name": "burning-cd",
+      "tags": "Media Library, Torch, Burning",
+      "category": "media"
+    },
+    {
+      "name": "forward-01",
+      "tags": "Forward, Move On",
+      "category": "media"
+    },
+    {
+      "name": "forward-02",
+      "tags": "Forward",
+      "category": "media"
+    },
+    {
+      "name": "headphones",
+      "tags": "Earphones, audio, sound, headphone, earpiece, headset, listening, speakers",
+      "category": "media"
+    },
+    {
+      "name": "mic-01",
+      "tags": "microphone, voice recorder, audio symbol, sound capture, record, speaker",
+      "category": "media"
+    },
+    {
+      "name": "mic-02",
+      "tags": "microphone, voice recorder, audio, sound capture, speech symbol, speaker",
+      "category": "media"
+    },
+    {
+      "name": "music-note-01",
+      "tags": "audio, sound, music",
+      "category": "media"
+    },
+    {
+      "name": "music-note-02",
+      "tags": "audio, sound, music, listening",
+      "category": "media"
+    },
+    {
+      "name": "music-note-03",
+      "tags": "audio, sound, music",
+      "category": "media"
+    },
+    {
+      "name": "music-note-04",
+      "tags": "audio, sound, music",
+      "category": "media"
+    },
+    {
+      "name": "music-note-square-01",
+      "tags": "audio, sound, music, square music",
+      "category": "media"
+    },
+    {
+      "name": "music-note-square-02",
+      "tags": "audio, sound, music, square music",
+      "category": "media"
+    },
+    {
+      "name": "next",
+      "tags": "Play Next, playback Hub",
+      "category": "media"
+    },
+    {
+      "name": "pause",
+      "tags": "Pause, Media Library",
+      "category": "media"
+    },
+    {
+      "name": "pause-circle",
+      "tags": "pause-circle",
+      "category": "media"
+    },
+    {
+      "name": "play",
+      "tags": "Play",
+      "category": "media"
+    },
+    {
+      "name": "play-circle-02",
+      "tags": "play-circle-02",
+      "category": "media"
+    },
+    {
+      "name": "playlist-01",
+      "tags": "Playlist, music, Media Library",
+      "category": "media"
+    },
+    {
+      "name": "playlist-02",
+      "tags": "Playlist, music, Media Library",
+      "category": "media"
+    },
+    {
+      "name": "playlist-03",
+      "tags": "Playlist, music, Media Library",
+      "category": "media"
+    },
+    {
+      "name": "previous",
+      "tags": "Play, Previous",
+      "category": "media"
+    },
+    {
+      "name": "radio",
+      "tags": "Radio, Wireless Signal, Radio Waves, Broadcast, Audio Device, Antenna",
+      "category": "media"
+    },
+    {
+      "name": "record",
+      "tags": "Capture, Audio Memo, Start Recording, Voice Note, Red Dot, Sound Recording, Record Button, Capture Audio, Voice Recording",
+      "category": "media"
+    },
+    {
+      "name": "scissor-01",
+      "tags": "scissors, cutting , shears, snippers, clipper, trimmer, sharp blade, blade, tailor's, precision cutter, craft, snipping, shear",
+      "category": "media"
+    },
+    {
+      "name": "shuffle",
+      "tags": "box, swap-tiles, reorder-cells, shuffle, grid-shuffle, random-layout, tile-shuffle, box-rearrange",
+      "category": "media"
+    },
+    {
+      "name": "shuffle-square",
+      "tags": "mix-grid, swap-tiles, reorder-cells, square-shuffle, grid-shuffle, random-layout, tile-shuffle, box-rearrange, square-mix",
+      "category": "media"
+    },
+    {
+      "name": "speaker-01",
+      "tags": "Sound, Volume, Speaker, Audio",
+      "category": "media"
+    },
+    {
+      "name": "stop",
+      "tags": "Halt, Cease, End, Terminate, Stop, Abort, Cancel, Pause",
+      "category": "media"
+    },
+    {
+      "name": "stop-circle",
+      "tags": "stop-circle",
+      "category": "media"
+    },
+    {
+      "name": "subtitle",
+      "tags": "Caption, Subtitle",
+      "category": "media"
+    },
+    {
+      "name": "voice",
+      "tags": "audio, sound, talk, speak, vocal, microphone, recorder, voice control, speech, talkback",
+      "category": "media"
+    },
+    {
+      "name": "vynil-01",
+      "tags": "music disc, record, vinyl record, LP, sound disc, audio disk, vintage disc, vinyl album",
+      "category": "media"
+    },
+    {
+      "name": "vynil-02",
+      "tags": "vinyl record, LP, phonograph record, sound disc, audio disk, vintage disc, vinyl album, music",
+      "category": "media"
+    },
+    {
+      "name": "vynil-03",
+      "tags": "vinyl record, LP, phonograph record, sound disc, audio disk, vintage disc, vinyl album, music",
+      "category": "media"
+    },
+    {
+      "name": "4k",
+      "tags": "4k",
+      "category": "image-camera"
+    },
+    {
+      "name": "album-01",
+      "tags": "images, photos,",
+      "category": "image-camera"
+    },
+    {
+      "name": "album-02",
+      "tags": "images, photos,",
+      "category": "image-camera"
+    },
+    {
+      "name": "album-not-found-01",
+      "tags": "no images, no photos,",
+      "category": "image-camera"
+    },
+    {
+      "name": "album-not-found-02",
+      "tags": "no images, no photos,",
+      "category": "image-camera"
+    },
+    {
+      "name": "camera-01",
+      "tags": "camera-01",
+      "category": "image-camera"
+    },
+    {
+      "name": "camera-02",
+      "tags": "camera-02",
+      "category": "image-camera"
+    },
+    {
+      "name": "camera-smile-01",
+      "tags": "camera-smile-01",
+      "category": "image-camera"
+    },
+    {
+      "name": "camera-smile-02",
+      "tags": "camera-smile-02",
+      "category": "image-camera"
+    },
+    {
+      "name": "camera-tripod",
+      "tags": "camera-tripod",
+      "category": "image-camera"
+    },
+    {
+      "name": "camera-video",
+      "tags": "camera-video",
+      "category": "image-camera"
+    },
+    {
+      "name": "center-focus",
+      "tags": "center-focus",
+      "category": "image-camera"
+    },
+    {
+      "name": "closed-caption",
+      "tags": "closed-caption",
+      "category": "image-camera"
+    },
+    {
+      "name": "closed-caption-alt",
+      "tags": "closed-caption-alt",
+      "category": "image-camera"
+    },
+    {
+      "name": "film-01",
+      "tags": "film-01",
+      "category": "image-camera"
+    },
+    {
+      "name": "film-02",
+      "tags": "film-02",
+      "category": "image-camera"
+    },
+    {
+      "name": "film-roll-01",
+      "tags": "film-roll-01",
+      "category": "image-camera"
+    },
+    {
+      "name": "film-roll-02",
+      "tags": "film-roll-02",
+      "category": "image-camera"
+    },
+    {
+      "name": "flash",
+      "tags": "flash",
+      "category": "image-camera"
+    },
+    {
+      "name": "flim-slate",
+      "tags": "flim-slate",
+      "category": "image-camera"
+    },
+    {
+      "name": "image-01",
+      "tags": "image-01",
+      "category": "image-camera"
+    },
+    {
+      "name": "image-02",
+      "tags": "image-02",
+      "category": "image-camera"
+    },
+    {
+      "name": "image-03",
+      "tags": "image-03",
+      "category": "image-camera"
+    },
+    {
+      "name": "image-composition",
+      "tags": "image-composition",
+      "category": "image-camera"
+    },
+    {
+      "name": "image-composition-oval",
+      "tags": "image-composition-oval",
+      "category": "image-camera"
+    },
+    {
+      "name": "image-not-found-01",
+      "tags": "image-not-found-01",
+      "category": "image-camera"
+    },
+    {
+      "name": "open-caption",
+      "tags": "open-caption",
+      "category": "image-camera"
+    },
+    {
+      "name": "play-circle",
+      "tags": "play-circle",
+      "category": "image-camera"
+    },
+    {
+      "name": "play-square",
+      "tags": "play-square",
+      "category": "image-camera"
+    },
+    {
+      "name": "video-01",
+      "tags": "video-01",
+      "category": "image-camera"
+    },
+    {
+      "name": "video-02",
+      "tags": "video-02",
+      "category": "image-camera"
+    },
+    {
+      "name": "video-replay",
+      "tags": "video-replay",
+      "category": "image-camera"
+    },
+    {
+      "name": "bounce-left",
+      "tags": "bounce-left",
+      "category": "animation"
+    },
+    {
+      "name": "bounce-right",
+      "tags": "bounce-right",
+      "category": "animation"
+    },
+    {
+      "name": "liner",
+      "tags": "liner",
+      "category": "animation"
+    },
+    {
+      "name": "motion-01",
+      "tags": "motion-01",
+      "category": "animation"
+    },
+    {
+      "name": "motion-02",
+      "tags": "motion-02",
+      "category": "animation"
+    }
+  ]
+}

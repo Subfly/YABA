@@ -1,0 +1,517 @@
+{
+  "metadata": {
+    "id": "user_actions",
+    "name": "User Actions",
+    "description": "Interactive user actions and gestures",
+    "main_category": "navigation_actions",
+    "icon_count": 101,
+    "version": "1.0"
+  },
+  "icons": [
+    {
+      "name": "clapping-01",
+      "tags": "clapping-01",
+      "category": "hands"
+    },
+    {
+      "name": "clapping-02",
+      "tags": "clapping-02",
+      "category": "hands"
+    },
+    {
+      "name": "four-finger-02",
+      "tags": "Hand,",
+      "category": "hands"
+    },
+    {
+      "name": "four-finger-03",
+      "tags": "hand,",
+      "category": "hands"
+    },
+    {
+      "name": "hand-prayer",
+      "tags": "hand-prayer",
+      "category": "hands"
+    },
+    {
+      "name": "hold-phone",
+      "tags": "hold-phone",
+      "category": "hands"
+    },
+    {
+      "name": "love-korean-finger",
+      "tags": "love-korean-finger",
+      "category": "hands"
+    },
+    {
+      "name": "ok-finger",
+      "tags": "ok-finger",
+      "category": "hands"
+    },
+    {
+      "name": "punch",
+      "tags": "punch",
+      "category": "hands"
+    },
+    {
+      "name": "shaka-01",
+      "tags": "shaka-01",
+      "category": "hands"
+    },
+    {
+      "name": "shaka-02",
+      "tags": "shaka-02",
+      "category": "hands"
+    },
+    {
+      "name": "shaka-03",
+      "tags": "shaka-03",
+      "category": "hands"
+    },
+    {
+      "name": "shaka-04",
+      "tags": "shaka-04",
+      "category": "hands"
+    },
+    {
+      "name": "sign-language-c",
+      "tags": "sign-language-c",
+      "category": "hands"
+    },
+    {
+      "name": "touchpad-01",
+      "tags": "touchpad-01",
+      "category": "hands"
+    },
+    {
+      "name": "touchpad-02",
+      "tags": "touchpad-02",
+      "category": "hands"
+    },
+    {
+      "name": "touchpad-03",
+      "tags": "touchpad-03",
+      "category": "hands"
+    },
+    {
+      "name": "touchpad-04",
+      "tags": "touchpad-04",
+      "category": "hands"
+    },
+    {
+      "name": "victory-finger-01",
+      "tags": "victory-finger-01",
+      "category": "hands"
+    },
+    {
+      "name": "victory-finger-02",
+      "tags": "victory-finger-02",
+      "category": "hands"
+    },
+    {
+      "name": "victory-finger-03",
+      "tags": "victory-finger-03",
+      "category": "hands"
+    },
+    {
+      "name": "waving-hand-01",
+      "tags": "waving-hand-01",
+      "category": "hands"
+    },
+    {
+      "name": "waving-hand-02",
+      "tags": "waving-hand-02",
+      "category": "hands"
+    },
+    {
+      "name": "cursor-01",
+      "tags": "cursor",
+      "category": "mouse"
+    },
+    {
+      "name": "cursor-02",
+      "tags": "cursor",
+      "category": "mouse"
+    },
+    {
+      "name": "cursor-text",
+      "tags": "cursor text, text cursor",
+      "category": "mouse"
+    },
+    {
+      "name": "loading-01",
+      "tags": "hourglass, glass, loading, wait, hour, slow",
+      "category": "mouse"
+    },
+    {
+      "name": "mouse-01",
+      "tags": "mouse",
+      "category": "mouse"
+    },
+    {
+      "name": "mouse-02",
+      "tags": "mouse",
+      "category": "mouse"
+    },
+    {
+      "name": "mouse-03",
+      "tags": "mouse",
+      "category": "mouse"
+    },
+    {
+      "name": "mouse-04",
+      "tags": "mouse",
+      "category": "mouse"
+    },
+    {
+      "name": "mouse-05",
+      "tags": "mouse",
+      "category": "mouse"
+    },
+    {
+      "name": "mouse-06",
+      "tags": "mouse",
+      "category": "mouse"
+    },
+    {
+      "name": "mouse-07",
+      "tags": "mouse",
+      "category": "mouse"
+    },
+    {
+      "name": "mouse-08",
+      "tags": "mouse",
+      "category": "mouse"
+    },
+    {
+      "name": "mouse-09",
+      "tags": "mouse",
+      "category": "mouse"
+    },
+    {
+      "name": "mouse-10",
+      "tags": "mouse",
+      "category": "mouse"
+    },
+    {
+      "name": "mouse-11",
+      "tags": "mouse",
+      "category": "mouse"
+    },
+    {
+      "name": "mouse-12",
+      "tags": "mouse",
+      "category": "mouse"
+    },
+    {
+      "name": "mouse-13",
+      "tags": "mouse",
+      "category": "mouse"
+    },
+    {
+      "name": "mouse-14",
+      "tags": "mouse",
+      "category": "mouse"
+    },
+    {
+      "name": "mouse-15",
+      "tags": "mouse",
+      "category": "mouse"
+    },
+    {
+      "name": "mouse-16",
+      "tags": "mouse",
+      "category": "mouse"
+    },
+    {
+      "name": "mouse-17",
+      "tags": "mouse",
+      "category": "mouse"
+    },
+    {
+      "name": "mouse-18",
+      "tags": "mouse",
+      "category": "mouse"
+    },
+    {
+      "name": "mouse-19",
+      "tags": "mouse",
+      "category": "mouse"
+    },
+    {
+      "name": "mouse-20",
+      "tags": "mouse",
+      "category": "mouse"
+    },
+    {
+      "name": "mouse-21",
+      "tags": "mouse",
+      "category": "mouse"
+    },
+    {
+      "name": "navigation-01",
+      "tags": "navigation",
+      "category": "mouse"
+    },
+    {
+      "name": "navigation-02",
+      "tags": "navigation,",
+      "category": "mouse"
+    },
+    {
+      "name": "add-01",
+      "tags": "add, plus, plus sign, add button",
+      "category": "add-remove"
+    },
+    {
+      "name": "add-02",
+      "tags": "add, plus, plus sign, add button",
+      "category": "add-remove"
+    },
+    {
+      "name": "add-circle",
+      "tags": "add, plus, plus sign, add button, add-circle, plus circle",
+      "category": "add-remove"
+    },
+    {
+      "name": "add-circle-half-dot",
+      "tags": "add, plus, plus sign, add button, add half-dot, plus circle half-dot",
+      "category": "add-remove"
+    },
+    {
+      "name": "add-square",
+      "tags": "add, plus, plus sign, add button, add square",
+      "category": "add-remove"
+    },
+    {
+      "name": "cancel-01",
+      "tags": "cancel, minimize-arrow, close, cross, exit, remove, minimize",
+      "category": "add-remove"
+    },
+    {
+      "name": "cancel-02",
+      "tags": "cancel, minimize-arrow, close-cross, close, cross, exit, remove, minimize",
+      "category": "add-remove"
+    },
+    {
+      "name": "cancel-circle",
+      "tags": "cancel, minimize-arrow, close-cross, close, cross, exit, cancel circle, close-circle",
+      "category": "add-remove"
+    },
+    {
+      "name": "cancel-circle-half-dot",
+      "tags": "cancel-circle-half-dot, minimize-arrow, close-cross, close, cross, exit, cancel circle, close-circle",
+      "category": "add-remove"
+    },
+    {
+      "name": "cancel-square",
+      "tags": "cancel, minimize-arrow, close-cross, close, cross, exit, remove, minimize, cancel-square, minimize-square, close-square, cross-square",
+      "category": "add-remove"
+    },
+    {
+      "name": "delete-01",
+      "tags": "delete, remove, vanish, archive, bin, trash",
+      "category": "add-remove"
+    },
+    {
+      "name": "delete-02",
+      "tags": "delete, remove, vanish, archive, bin, trash",
+      "category": "add-remove"
+    },
+    {
+      "name": "delete-03",
+      "tags": "delete, remove, vanish, archive, bin, trash",
+      "category": "add-remove"
+    },
+    {
+      "name": "delete-04",
+      "tags": "delete, remove, vanish, archive, bin, trash",
+      "category": "add-remove"
+    },
+    {
+      "name": "eraser-01",
+      "tags": "eraser, erase, remove, cancel, cancel-eraser",
+      "category": "add-remove"
+    },
+    {
+      "name": "eraser-add",
+      "tags": "add-eraser, eraser-add, plus-eraser",
+      "category": "add-remove"
+    },
+    {
+      "name": "remove-01",
+      "tags": "Remove, Minus, Minimize, Decrease Size, hide arrow,",
+      "category": "add-remove"
+    },
+    {
+      "name": "remove-circle",
+      "tags": "remove, minus, minimize, decrease size, hide Arrow, remove circle, minus-circle",
+      "category": "add-remove"
+    },
+    {
+      "name": "remove-circle-half-dot",
+      "tags": "remove, minus, minimize, decrease size, hide Arrow, remove circle, minus-circle, minus-circle-half-dot",
+      "category": "add-remove"
+    },
+    {
+      "name": "remove-square",
+      "tags": "remove, minus, minimize, decrease size, hide arrow, remove-square, minus-square",
+      "category": "add-remove"
+    },
+    {
+      "name": "unavailable",
+      "tags": "disabled, not accessible, out of service, restricted, inactive, off-duty, blocked, banned, non-operational, out of order, closed,",
+      "category": "add-remove"
+    },
+    {
+      "name": "waste",
+      "tags": "trash, restore",
+      "category": "add-remove"
+    },
+    {
+      "name": "checkmark-badge-01",
+      "tags": "tick, confirm, approve, validate, select, mark, accept, endorse, okay, pass, verify, affirm, agree, endorse, consent, indicate, checkmark, check mark, checkmark circle, checkmark badge, badge",
+      "category": "check"
+    },
+    {
+      "name": "checkmark-badge-02",
+      "tags": "tick, confirm, approve, validate, select, mark, accept, endorse, okay, pass, verify, affirm, agree, endorse, consent, indicate, checkmark, check mark, checkmark circle, checkmark badge, badge",
+      "category": "check"
+    },
+    {
+      "name": "checkmark-badge-03",
+      "tags": "tick, confirm, approve, validate, select, mark, accept, endorse, okay, pass, verify, affirm, agree, endorse, consent, indicate, checkmark, check mark, checkmark circle, checkmark badge, badge",
+      "category": "check"
+    },
+    {
+      "name": "checkmark-badge-04",
+      "tags": "tick, confirm, approve, validate, select, mark, accept, endorse, okay, pass, verify, affirm, agree, endorse, consent, indicate, checkmark, check mark, checkmark circle, checkmark badge, badge",
+      "category": "check"
+    },
+    {
+      "name": "checkmark-circle-01",
+      "tags": "tick, confirm, approve, validate, select, mark, accept, endorse, okay, pass, verify, affirm, agree, endorse, consent, indicate, checkmark, check mark, checkmark circle",
+      "category": "check"
+    },
+    {
+      "name": "checkmark-circle-02",
+      "tags": "tick, confirm, approve, validate, select, mark, accept, endorse, okay, pass, verify, affirm, agree, endorse, consent, indicate, checkmark, check mark, checkmark circle",
+      "category": "check"
+    },
+    {
+      "name": "checkmark-circle-03",
+      "tags": "tick, confirm, approve, validate, select, mark, accept, endorse, okay, pass, verify, affirm, agree, endorse, consent, indicate, checkmark, check mark, checkmark circle",
+      "category": "check"
+    },
+    {
+      "name": "checkmark-circle-04",
+      "tags": "tick, confirm, approve, validate, select, mark, accept, endorse, okay, pass, verify, affirm, agree, endorse, consent, indicate, checkmark, check mark, checkmark circle",
+      "category": "check"
+    },
+    {
+      "name": "checkmark-square-01",
+      "tags": "tick, confirm, approve, validate, select, mark, accept, endorse, okay, pass, verify, affirm, agree, endorse, consent, indicate, checkmark, check mark, checkmark square",
+      "category": "check"
+    },
+    {
+      "name": "checkmark-square-02",
+      "tags": "tick, confirm, approve, validate, select, mark, accept, endorse, okay, pass, verify, affirm, agree, endorse, consent, indicate, checkmark, check mark, checkmark square",
+      "category": "check"
+    },
+    {
+      "name": "checkmark-square-03",
+      "tags": "tick, confirm, approve, validate, select, mark, accept, endorse, okay, pass, verify, affirm, agree, endorse, consent, indicate, checkmark, check mark, checkmark square",
+      "category": "check"
+    },
+    {
+      "name": "checkmark-square-04",
+      "tags": "tick, confirm, approve, validate, select, mark, accept, endorse, okay, pass, verify, affirm, agree, endorse, consent, indicate, checkmark, check mark, checkmark square",
+      "category": "check"
+    },
+    {
+      "name": "cloud-loading",
+      "tags": "cloud-loading",
+      "category": "check"
+    },
+    {
+      "name": "cloud-saving-done-01",
+      "tags": "cloud-saving-done-01",
+      "category": "check"
+    },
+    {
+      "name": "cloud-saving-done-02",
+      "tags": "cloud-saving-done-02",
+      "category": "check"
+    },
+    {
+      "name": "credit-card-validation",
+      "tags": "credit check, card verifier, payment authentication, verify payment, validate card, payment confirmation, card validation, verify credit, payment security, credit card validation, credit card checkmark, credit card tick",
+      "category": "check"
+    },
+    {
+      "name": "document-validation",
+      "tags": "document verification, file confirmation, paper authentication, record validation, doc approval, paperwork validation, file certification, document authentication, record verification, validation check, document confirmation, document validation, document check, document checkmark",
+      "category": "check"
+    },
+    {
+      "name": "file-validation",
+      "tags": "data check, document verification, file integrity, validate file, verify data, check document, file validation, validation file, file check, file checkmark, checkmark file",
+      "category": "check"
+    },
+    {
+      "name": "tick-01",
+      "tags": "checkmark, confirm, approve, validate, select, mark, okay, agree, endorse, accept, affirm, validate, pass, done, success, complete, enable, authorize, consent, tick, check",
+      "category": "check"
+    },
+    {
+      "name": "tick-02",
+      "tags": "checkmark, confirm, approve, validate, select, mark, okay, agree, endorse, accept, affirm, validate, pass, done, success, complete, enable, authorize, consent, tick, check",
+      "category": "check"
+    },
+    {
+      "name": "tick-03",
+      "tags": "checkmark, confirm, approve, validate, select, mark, okay, agree, endorse, accept, affirm, validate, pass, done, success, complete, enable, authorize, consent, tick, check",
+      "category": "check"
+    },
+    {
+      "name": "tick-04",
+      "tags": "checkmark, confirm, approve, validate, select, mark, okay, agree, endorse, accept, affirm, validate, pass, done, success, complete, enable, authorize, consent, tick, check",
+      "category": "check"
+    },
+    {
+      "name": "tick-double-01",
+      "tags": "checkmark, confirm, approve, validate, select, mark, okay, agree, endorse, accept, affirm, validate, pass, done, success, complete, enable, authorize, consent, tick, check, tick double",
+      "category": "check"
+    },
+    {
+      "name": "tick-double-02",
+      "tags": "checkmark, confirm, approve, validate, select, mark, okay, agree, endorse, accept, affirm, validate, pass, done, success, complete, enable, authorize, consent, tick, check, tick double",
+      "category": "check"
+    },
+    {
+      "name": "tick-double-03",
+      "tags": "checkmark, confirm, approve, validate, select, mark, okay, agree, endorse, accept, affirm, validate, pass, done, success, complete, enable, authorize, consent, tick, check, tick double",
+      "category": "check"
+    },
+    {
+      "name": "tick-double-04",
+      "tags": "checkmark, confirm, approve, validate, select, mark, okay, agree, endorse, accept, affirm, validate, pass, done, success, complete, enable, authorize, consent, tick, check, tick double",
+      "category": "check"
+    },
+    {
+      "name": "validation",
+      "tags": "validation",
+      "category": "check"
+    },
+    {
+      "name": "validation-approval",
+      "tags": "validation-approval",
+      "category": "check"
+    },
+    {
+      "name": "web-validation",
+      "tags": "web-validation",
+      "category": "check"
+    }
+  ]
+}

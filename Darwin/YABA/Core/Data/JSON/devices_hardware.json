@@ -1,0 +1,667 @@
+{
+  "metadata": {
+    "id": "devices_hardware",
+    "name": "Devices & Hardware",
+    "description": "Electronic devices and hardware",
+    "main_category": "technology_computing",
+    "icon_count": 131,
+    "version": "1.0"
+  },
+  "icons": [
+    {
+      "name": "3-d-view",
+      "tags": "Perspective Mode, Dimensional Display, Tri-Dimensional View, Spatial Perspective, 3D Scene, Depth Visualization, 3d view, 3d",
+      "category": "devices"
+    },
+    {
+      "name": "airdrop",
+      "tags": "airdrop",
+      "category": "devices"
+    },
+    {
+      "name": "airplane-mode",
+      "tags": "airplane-mode",
+      "category": "devices"
+    },
+    {
+      "name": "airplane-mode-off",
+      "tags": "airplane-mode-off",
+      "category": "devices"
+    },
+    {
+      "name": "airplay-line",
+      "tags": "airplay-line",
+      "category": "devices"
+    },
+    {
+      "name": "airpod-01",
+      "tags": "airpod-01",
+      "category": "devices"
+    },
+    {
+      "name": "airpod-02",
+      "tags": "airpod-02",
+      "category": "devices"
+    },
+    {
+      "name": "airpod-03",
+      "tags": "airpod-03",
+      "category": "devices"
+    },
+    {
+      "name": "augmented-reality-ar",
+      "tags": "augmented-reality-ar",
+      "category": "devices"
+    },
+    {
+      "name": "battery-charging-01",
+      "tags": "power source, energy level, charge indicator, cell status, battery life, power gauge, energy reserve, charge level, electrical capacity, battery, battery charging, charging battery",
+      "category": "devices"
+    },
+    {
+      "name": "battery-charging-02",
+      "tags": "power source, energy level, charge indicator, cell status, battery life, power gauge, energy reserve, charge level, electrical capacity, battery, battery charging, charging battery",
+      "category": "devices"
+    },
+    {
+      "name": "battery-eco-charging",
+      "tags": "power source, energy level, charge indicator, cell status, battery life, power gauge, energy reserve, charge level, electrical capacity, battery, battery eco charging, charging eco battery",
+      "category": "devices"
+    },
+    {
+      "name": "battery-empty",
+      "tags": "power source, energy level, charge indicator, cell status, battery life, power gauge, energy reserve, charge level, electrical capacity, battery empty, empty battery, battery",
+      "category": "devices"
+    },
+    {
+      "name": "battery-full",
+      "tags": "power source, energy level, charge indicator, cell status, battery life, power gauge, energy reserve, charge level, electrical capacity, battery, battery full, full battery",
+      "category": "devices"
+    },
+    {
+      "name": "battery-low",
+      "tags": "power source, energy level, charge indicator, cell status, battery life, power gauge, energy reserve, charge level, electrical capacity, battery empty, empty battery, battery, battery low, low battery",
+      "category": "devices"
+    },
+    {
+      "name": "battery-medium-01",
+      "tags": "power source, energy level, charge indicator, cell status, battery life, power gauge, energy reserve, charge level, electrical capacity, battery, battery medium, medium battery",
+      "category": "devices"
+    },
+    {
+      "name": "battery-medium-02",
+      "tags": "power source, energy level, charge indicator, cell status, battery life, power gauge, energy reserve, charge level, electrical capacity, battery, battery medium, medium battery",
+      "category": "devices"
+    },
+    {
+      "name": "bluetooth",
+      "tags": "bluetooth",
+      "category": "devices"
+    },
+    {
+      "name": "bluetooth-circle",
+      "tags": "bluetooth-circle",
+      "category": "devices"
+    },
+    {
+      "name": "bluetooth-not-connected",
+      "tags": "bluetooth-not-connected",
+      "category": "devices"
+    },
+    {
+      "name": "bluetooth-search",
+      "tags": "bluetooth-search",
+      "category": "devices"
+    },
+    {
+      "name": "bluetooth-square",
+      "tags": "bluetooth-square",
+      "category": "devices"
+    },
+    {
+      "name": "bulb",
+      "tags": "bulb",
+      "category": "devices"
+    },
+    {
+      "name": "bulb-charging",
+      "tags": "bulb-charging",
+      "category": "devices"
+    },
+    {
+      "name": "cd",
+      "tags": "cd",
+      "category": "devices"
+    },
+    {
+      "name": "computer",
+      "tags": "desktop, screen share, imac, display, screen",
+      "category": "devices"
+    },
+    {
+      "name": "computer-activity",
+      "tags": "computer-activity",
+      "category": "devices"
+    },
+    {
+      "name": "computer-arrow-down",
+      "tags": "computer-arrow-down",
+      "category": "devices"
+    },
+    {
+      "name": "computer-arrow-up",
+      "tags": "computer-arrow-up",
+      "category": "devices"
+    },
+    {
+      "name": "computer-chart-down",
+      "tags": "computer-chart-down",
+      "category": "devices"
+    },
+    {
+      "name": "computer-chart-up",
+      "tags": "computer-chart-up",
+      "category": "devices"
+    },
+    {
+      "name": "computer-check",
+      "tags": "computer-check",
+      "category": "devices"
+    },
+    {
+      "name": "computer-cloud",
+      "tags": "desktop cloud",
+      "category": "devices"
+    },
+    {
+      "name": "computer-ethernet",
+      "tags": "computer-ethernet",
+      "category": "devices"
+    },
+    {
+      "name": "computer-phone-sync",
+      "tags": "responsive, both devices, computer and mobile",
+      "category": "devices"
+    },
+    {
+      "name": "computer-screen-share",
+      "tags": "computer-screen-share",
+      "category": "devices"
+    },
+    {
+      "name": "computer-settings",
+      "tags": "screen sharing setting, screen setting",
+      "category": "devices"
+    },
+    {
+      "name": "computer-user",
+      "tags": "computer-user",
+      "category": "devices"
+    },
+    {
+      "name": "computer-video",
+      "tags": "desktop camera, video screen share, imac, display, screen, video call",
+      "category": "devices"
+    },
+    {
+      "name": "cpu",
+      "tags": "cpu",
+      "category": "devices"
+    },
+    {
+      "name": "cpu-charge",
+      "tags": "cpu-charge",
+      "category": "devices"
+    },
+    {
+      "name": "cpu-settings",
+      "tags": "cpu-settings",
+      "category": "devices"
+    },
+    {
+      "name": "database-01",
+      "tags": "ata store, information repository, data bank, data warehouse, data vault, record hub, info cache, data reservoir, storage center, data depot, information trove, data archive, database",
+      "category": "devices"
+    },
+    {
+      "name": "database-02",
+      "tags": "ata store, information repository, data bank, data warehouse, data vault, record hub, info cache, data reservoir, storage center, data depot, information trove, data archive, database",
+      "category": "devices"
+    },
+    {
+      "name": "database-sync",
+      "tags": "ata store, information repository, data bank, data warehouse, data vault, record hub, info cache, data reservoir, storage center, data depot, information trove, data archive, database, database synce",
+      "category": "devices"
+    },
+    {
+      "name": "data-recovery",
+      "tags": "ata store, information repository, data bank, data warehouse, data vault, record hub, info cache, data reservoir, storage center, data depot, information trove, data archive, database, database recovery",
+      "category": "devices"
+    },
+    {
+      "name": "electric-plugs",
+      "tags": "electric-plugs",
+      "category": "devices"
+    },
+    {
+      "name": "external-drive",
+      "tags": "external-drive",
+      "category": "devices"
+    },
+    {
+      "name": "fan-01",
+      "tags": "fan-01",
+      "category": "devices"
+    },
+    {
+      "name": "fan-02",
+      "tags": "fan-02",
+      "category": "devices"
+    },
+    {
+      "name": "flashlight",
+      "tags": "flashlight",
+      "category": "devices"
+    },
+    {
+      "name": "flip-phone",
+      "tags": "flip-phone",
+      "category": "devices"
+    },
+    {
+      "name": "floppy-disk",
+      "tags": "floppy-disk",
+      "category": "devices"
+    },
+    {
+      "name": "fridge",
+      "tags": "fridge",
+      "category": "devices"
+    },
+    {
+      "name": "game",
+      "tags": "game",
+      "category": "devices"
+    },
+    {
+      "name": "gameboy",
+      "tags": "gameboy",
+      "category": "devices"
+    },
+    {
+      "name": "google-home",
+      "tags": "google-home",
+      "category": "devices"
+    },
+    {
+      "name": "gpu",
+      "tags": "gpu",
+      "category": "devices"
+    },
+    {
+      "name": "hard-drive",
+      "tags": "hard-drive",
+      "category": "devices"
+    },
+    {
+      "name": "hdd",
+      "tags": "hdd",
+      "category": "devices"
+    },
+    {
+      "name": "headset",
+      "tags": "earphones, headphones, audio device, sound gear, listening device, earpiece, audio headset, sound equipment, headphone set, listening gear, ear gear, stereo set, headphone icon, sound accessory, headphone symbol, ear gear symbol, audio gadget, headset symbol, headset, head set",
+      "category": "devices"
+    },
+    {
+      "name": "ipod",
+      "tags": "ipod",
+      "category": "devices"
+    },
+    {
+      "name": "keyboard",
+      "tags": "typing pad, input board, key panel, text entry, character board, typepad, key interface, letter grid, input keys, text panel, key matrix, character input, typing interface, letter pad, keyboard, key board",
+      "category": "devices"
+    },
+    {
+      "name": "lamp",
+      "tags": "lamp",
+      "category": "devices"
+    },
+    {
+      "name": "laptop",
+      "tags": "laptop",
+      "category": "devices"
+    },
+    {
+      "name": "laptop-cloud",
+      "tags": "laptop-cloud",
+      "category": "devices"
+    },
+    {
+      "name": "laptop-phone-sync",
+      "tags": "responsive, laptop and mobile",
+      "category": "devices"
+    },
+    {
+      "name": "megaphone-01",
+      "tags": "loudspeaker, announcement symbol, amplification tool, communication horn, public address device, voice projection symbol, broadcast icon, speaker cone, vocal amplifier, announcement megaphone, megaphone, mega phone, mic",
+      "category": "devices"
+    },
+    {
+      "name": "megaphone-02",
+      "tags": "loudspeaker, announcement symbol, amplification tool, communication horn, public address device, voice projection symbol, broadcast icon, speaker cone, vocal amplifier, announcement megaphone, megaphone, mega phone, mic",
+      "category": "devices"
+    },
+    {
+      "name": "mirroring-screen",
+      "tags": "mirroring-screen",
+      "category": "devices"
+    },
+    {
+      "name": "modern-tv",
+      "tags": "share screen,",
+      "category": "devices"
+    },
+    {
+      "name": "modern-tv-4-k",
+      "tags": "modern-tv-4-k",
+      "category": "devices"
+    },
+    {
+      "name": "mouse-22",
+      "tags": "mouse-22",
+      "category": "devices"
+    },
+    {
+      "name": "mouse-23",
+      "tags": "mouse-23",
+      "category": "devices"
+    },
+    {
+      "name": "printer",
+      "tags": "printer",
+      "category": "devices"
+    },
+    {
+      "name": "radio-01",
+      "tags": "radio-01",
+      "category": "devices"
+    },
+    {
+      "name": "radio-02",
+      "tags": "radio-02",
+      "category": "devices"
+    },
+    {
+      "name": "remote-control",
+      "tags": "remote-control",
+      "category": "devices"
+    },
+    {
+      "name": "router",
+      "tags": "router",
+      "category": "devices"
+    },
+    {
+      "name": "satellite",
+      "tags": "satellite",
+      "category": "devices"
+    },
+    {
+      "name": "screen-add-to-home",
+      "tags": "screen-add-to-home",
+      "category": "devices"
+    },
+    {
+      "name": "screen-add-to-home-02",
+      "tags": "screen-add-to-home-02",
+      "category": "devices"
+    },
+    {
+      "name": "sd-card",
+      "tags": "sd-card",
+      "category": "devices"
+    },
+    {
+      "name": "simcard-01",
+      "tags": "simcard-01",
+      "category": "devices"
+    },
+    {
+      "name": "simcard-02",
+      "tags": "simcard-02",
+      "category": "devices"
+    },
+    {
+      "name": "simcard-dual",
+      "tags": "simcard-dual",
+      "category": "devices"
+    },
+    {
+      "name": "smart-ac",
+      "tags": "smart-ac",
+      "category": "devices"
+    },
+    {
+      "name": "smart-phone-01",
+      "tags": "ell phone, mobile device, handset, cellular device, smartphone, mobile phone, communication device, portable phone, wireless device, pocket phone, smart phone, phone, smartphone",
+      "category": "devices"
+    },
+    {
+      "name": "smart-phone-02",
+      "tags": "ell phone, mobile device, handset, cellular device, smartphone, mobile phone, communication device, portable phone, wireless device, pocket phone, smart phone, phone, smartphone",
+      "category": "devices"
+    },
+    {
+      "name": "smart-phone-03",
+      "tags": "ell phone, mobile device, handset, cellular device, smartphone, mobile phone, communication device, portable phone, wireless device, pocket phone, smart phone, phone, smartphone",
+      "category": "devices"
+    },
+    {
+      "name": "smart-phone-04",
+      "tags": "ell phone, mobile device, handset, cellular device, smartphone, mobile phone, communication device, portable phone, wireless device, pocket phone, smart phone, phone, smartphone",
+      "category": "devices"
+    },
+    {
+      "name": "smart-phone-landscape",
+      "tags": "smart-phone-landscape",
+      "category": "devices"
+    },
+    {
+      "name": "smart-phone-landscape-02",
+      "tags": "smart-phone-landscape-02",
+      "category": "devices"
+    },
+    {
+      "name": "speaker",
+      "tags": "sound, audio, volume, amplifier, loudspeaker, audio device, sound symbol, speaker symbol, audio speaker, playback icon, sound icon, volume control, audio output, speaker symbol, speaker icon, speaker, mic",
+      "category": "devices"
+    },
+    {
+      "name": "tablet-01",
+      "tags": "tablet-01",
+      "category": "devices"
+    },
+    {
+      "name": "tablet-02",
+      "tags": "tablet-02",
+      "category": "devices"
+    },
+    {
+      "name": "tablet-pen",
+      "tags": "tablet-pen",
+      "category": "devices"
+    },
+    {
+      "name": "transmission",
+      "tags": "transmission",
+      "category": "devices"
+    },
+    {
+      "name": "tv-01",
+      "tags": "television, screen, monitor, display, viewing device, entertainment box, media screen, visual device, tv",
+      "category": "devices"
+    },
+    {
+      "name": "tv-02",
+      "tags": "television, screen, monitor, display, viewing device, entertainment box, media screen, visual device, tv",
+      "category": "devices"
+    },
+    {
+      "name": "tv-smart",
+      "tags": "television, screen, monitor, display, viewing device, entertainment box, media screen, visual device, tv, smart tv, tv smart",
+      "category": "devices"
+    },
+    {
+      "name": "usb",
+      "tags": "usb",
+      "category": "devices"
+    },
+    {
+      "name": "usb-memory-01",
+      "tags": "usb-memory-01",
+      "category": "devices"
+    },
+    {
+      "name": "usb-memory-02",
+      "tags": "usb-memory-02",
+      "category": "devices"
+    },
+    {
+      "name": "virtual-reality-vr-01",
+      "tags": "VR Experience, Immersive Tech, Simulated Reality, 3D Simulation, Virtual World, Cyber Experience, Digital Realm, Augmented Environment, VR Universe, Simulated Realm, Alternate Reality, Virtual Reality, Virtual",
+      "category": "devices"
+    },
+    {
+      "name": "virtual-reality-vr-02",
+      "tags": "VR Experience, Immersive Tech, Simulated Reality, 3D Simulation, Virtual World, Cyber Experience, Digital Realm, Augmented Environment, VR Universe, Simulated Realm, Alternate Reality, Virtual Reality, Virtual",
+      "category": "devices"
+    },
+    {
+      "name": "cellular-network",
+      "tags": "cellular-network",
+      "category": "wifi"
+    },
+    {
+      "name": "full-signal",
+      "tags": "full-signal",
+      "category": "wifi"
+    },
+    {
+      "name": "gps-signal-01",
+      "tags": "gps-signal-01",
+      "category": "wifi"
+    },
+    {
+      "name": "gps-signal-02",
+      "tags": "gps-signal-02",
+      "category": "wifi"
+    },
+    {
+      "name": "home-wifi",
+      "tags": "home-wifi",
+      "category": "wifi"
+    },
+    {
+      "name": "hotspot",
+      "tags": "hotspot",
+      "category": "wifi"
+    },
+    {
+      "name": "internet",
+      "tags": "internet",
+      "category": "wifi"
+    },
+    {
+      "name": "internet-antenna-01",
+      "tags": "internet-antenna-01",
+      "category": "wifi"
+    },
+    {
+      "name": "internet-antenna-02",
+      "tags": "internet-antenna-02",
+      "category": "wifi"
+    },
+    {
+      "name": "internet-antenna-03",
+      "tags": "internet-antenna-03",
+      "category": "wifi"
+    },
+    {
+      "name": "internet-antenna-04",
+      "tags": "internet-antenna-04",
+      "category": "wifi"
+    },
+    {
+      "name": "live-streaming-01",
+      "tags": "live-streaming-01",
+      "category": "wifi"
+    },
+    {
+      "name": "live-streaming-02",
+      "tags": "live-streaming-02",
+      "category": "wifi"
+    },
+    {
+      "name": "live-streaming-03",
+      "tags": "live-streaming-03",
+      "category": "wifi"
+    },
+    {
+      "name": "router-01",
+      "tags": "router-01",
+      "category": "wifi"
+    },
+    {
+      "name": "router-02",
+      "tags": "router-02",
+      "category": "wifi"
+    },
+    {
+      "name": "rss",
+      "tags": "rss",
+      "category": "wifi"
+    },
+    {
+      "name": "satellite-03",
+      "tags": "satellite-03",
+      "category": "wifi"
+    },
+    {
+      "name": "secured-network",
+      "tags": "secured-network",
+      "category": "wifi"
+    },
+    {
+      "name": "wifi-01",
+      "tags": "wifi-01",
+      "category": "wifi"
+    },
+    {
+      "name": "wifi-02",
+      "tags": "wifi-02",
+      "category": "wifi"
+    },
+    {
+      "name": "wifi-circle",
+      "tags": "wifi-circle",
+      "category": "wifi"
+    },
+    {
+      "name": "wifi-square",
+      "tags": "wifi-square",
+      "category": "wifi"
+    },
+    {
+      "name": "wireless",
+      "tags": "wireless",
+      "category": "wifi"
+    },
+    {
+      "name": "wireless-cloud-access",
+      "tags": "wireless-cloud-access",
+      "category": "wifi"
+    }
+  ]
+}

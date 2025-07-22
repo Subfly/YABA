@@ -1,0 +1,402 @@
+{
+  "metadata": {
+    "id": "communication_social",
+    "name": "Communication & Social",
+    "description": "Communication tools and social interaction",
+    "main_category": "entertainment_communication",
+    "icon_count": 78,
+    "version": "1.0"
+  },
+  "icons": [
+    {
+      "name": "bubble-chat",
+      "tags": "message, chat, communicate, talk, comment",
+      "category": "communications"
+    },
+    {
+      "name": "call",
+      "tags": "call",
+      "category": "communications"
+    },
+    {
+      "name": "call-02",
+      "tags": "call-02",
+      "category": "communications"
+    },
+    {
+      "name": "calling",
+      "tags": "calling",
+      "category": "communications"
+    },
+    {
+      "name": "calling-02",
+      "tags": "calling-02",
+      "category": "communications"
+    },
+    {
+      "name": "chatting-01",
+      "tags": "chatting-01",
+      "category": "communications"
+    },
+    {
+      "name": "comment-01",
+      "tags": "opinion, comment, feedback, chat",
+      "category": "communications"
+    },
+    {
+      "name": "comment-02",
+      "tags": "empty opinion, empty comment, empty feedback, no chat,",
+      "category": "communications"
+    },
+    {
+      "name": "comment-03",
+      "tags": "comment-03",
+      "category": "communications"
+    },
+    {
+      "name": "contact-01",
+      "tags": "contact-01",
+      "category": "communications"
+    },
+    {
+      "name": "contact-02",
+      "tags": "contact-02",
+      "category": "communications"
+    },
+    {
+      "name": "customer-service",
+      "tags": "24 call, 24hr, 24 service",
+      "category": "communications"
+    },
+    {
+      "name": "inbox",
+      "tags": "inbox",
+      "category": "communications"
+    },
+    {
+      "name": "mail-01",
+      "tags": "message, email, gmail",
+      "category": "communications"
+    },
+    {
+      "name": "mail-02",
+      "tags": "mail-02",
+      "category": "communications"
+    },
+    {
+      "name": "mailbox",
+      "tags": "mailbox",
+      "category": "communications"
+    },
+    {
+      "name": "mailbox-01",
+      "tags": "mailbox-01",
+      "category": "communications"
+    },
+    {
+      "name": "message-01",
+      "tags": "message-01",
+      "category": "communications"
+    },
+    {
+      "name": "message-multiple-01",
+      "tags": "communication, conversation",
+      "category": "communications"
+    },
+    {
+      "name": "message-multiple-02",
+      "tags": "message-multiple-02",
+      "category": "communications"
+    },
+    {
+      "name": "sent",
+      "tags": "submit, send, share",
+      "category": "communications"
+    },
+    {
+      "name": "sent-02",
+      "tags": "sent-02",
+      "category": "communications"
+    },
+    {
+      "name": "telephone",
+      "tags": "telephone",
+      "category": "communications"
+    },
+    {
+      "name": "edit-user-02",
+      "tags": "user, user edit, profile, avatar, member, account",
+      "category": "users"
+    },
+    {
+      "name": "female-02",
+      "tags": "female-02",
+      "category": "users"
+    },
+    {
+      "name": "female-symbol",
+      "tags": "female-symbol",
+      "category": "users"
+    },
+    {
+      "name": "male-02",
+      "tags": "male-02",
+      "category": "users"
+    },
+    {
+      "name": "male-symbol",
+      "tags": "male-symbol",
+      "category": "users"
+    },
+    {
+      "name": "man",
+      "tags": "man",
+      "category": "users"
+    },
+    {
+      "name": "man-woman",
+      "tags": "man-woman",
+      "category": "users"
+    },
+    {
+      "name": "user",
+      "tags": "user, profile, avatar, member, account",
+      "category": "users"
+    },
+    {
+      "name": "user-02",
+      "tags": "user-02",
+      "category": "users"
+    },
+    {
+      "name": "user-03",
+      "tags": "user-03",
+      "category": "users"
+    },
+    {
+      "name": "user-account",
+      "tags": "user, profile, avatar, member, account, user account",
+      "category": "users"
+    },
+    {
+      "name": "user-circle",
+      "tags": "user, profile, avatar, member, account, multiple user, group, user round, circle user",
+      "category": "users"
+    },
+    {
+      "name": "user-circle-02",
+      "tags": "user-circle-02",
+      "category": "users"
+    },
+    {
+      "name": "user-full-view",
+      "tags": "user, profile, avatar, member, account, multiple user, group, user full view",
+      "category": "users"
+    },
+    {
+      "name": "user-multiple",
+      "tags": "user, profile, avatar, member, account, multiple user, team, users, group, team, multiple users,",
+      "category": "users"
+    },
+    {
+      "name": "user-multiple-02",
+      "tags": "users, group, team, multiple users,",
+      "category": "users"
+    },
+    {
+      "name": "user-multiple-03",
+      "tags": "user-multiple-03",
+      "category": "users"
+    },
+    {
+      "name": "user-square",
+      "tags": "user, profile, avatar, member, account, multiple user,",
+      "category": "users"
+    },
+    {
+      "name": "woman",
+      "tags": "woman",
+      "category": "users"
+    },
+    {
+      "name": "alert-01",
+      "tags": "Alert, Warning, Attention, Caution, Exclamation, Advisory, Signal, Alarm, Indicator, Prompt, Reminder, Announcement, Signalization, Alertness, Notifier, Vigilance, Admonition, Heads-up, Alert Signal, Warning Symbol.",
+      "category": "alert-notification"
+    },
+    {
+      "name": "alert-02",
+      "tags": "Alert, Warning, Attention, Caution, Exclamation, Advisory, Signal, Alarm, Indicator, Prompt, Reminder, Announcement, Signalization, Alertness, Notifier, Vigilance, Admonition, Heads-up, Alert Signal, Warning Symbol.",
+      "category": "alert-notification"
+    },
+    {
+      "name": "alert-circle",
+      "tags": "Alert, Warning, Attention, Caution, Exclamation, Advisory, Signal, Alarm, Indicator, Prompt, Reminder, Announcement, Signalization, Alertness, Notifier, Vigilance, Admonition, Heads-up, Alert Signal, Warning Symbol.alert-circle",
+      "category": "alert-notification"
+    },
+    {
+      "name": "alert-diamond",
+      "tags": "alert-diamond, Alert, Warning, Attention, Caution, Exclamation, Advisory, Signal, Alarm, Indicator, Prompt, Reminder, Announcement, Signalization, Alertness, Notifier, Vigilance, Admonition, Heads-up, Alert Signal, Warning Symbol.alert-circle",
+      "category": "alert-notification"
+    },
+    {
+      "name": "alert-square",
+      "tags": "Alert, Warning, Attention, Caution, Exclamation, Advisory, Signal, Alarm, Indicator, Prompt, Reminder, Announcement, Signalization, Alertness, Notifier, Vigilance, Admonition, Heads-up, Alert Signal, Warning Symbol. Alert-square",
+      "category": "alert-notification"
+    },
+    {
+      "name": "help-circle",
+      "tags": "help-circle, help, questions",
+      "category": "alert-notification"
+    },
+    {
+      "name": "help-square",
+      "tags": "help-square, help, Questions,",
+      "category": "alert-notification"
+    },
+    {
+      "name": "information-circle",
+      "tags": "Information-circle, Info, information, Information-square, Info",
+      "category": "alert-notification"
+    },
+    {
+      "name": "information-diamond",
+      "tags": "information-diamond",
+      "category": "alert-notification"
+    },
+    {
+      "name": "information-square",
+      "tags": "Information-square, Info, information, Information-square, Info",
+      "category": "alert-notification"
+    },
+    {
+      "name": "notification-01",
+      "tags": "Notification, Notifier, Alert, Notice",
+      "category": "alert-notification"
+    },
+    {
+      "name": "notification-02",
+      "tags": "notification, notifier, alert, bell, notification bell",
+      "category": "alert-notification"
+    },
+    {
+      "name": "notification-03",
+      "tags": "Notification, Notifier, Alert, notice",
+      "category": "alert-notification"
+    },
+    {
+      "name": "notification-block-01",
+      "tags": "Notification block",
+      "category": "alert-notification"
+    },
+    {
+      "name": "notification-block-02",
+      "tags": "Notification-block",
+      "category": "alert-notification"
+    },
+    {
+      "name": "notification-block-03",
+      "tags": "notification-block, block notification, notification",
+      "category": "alert-notification"
+    },
+    {
+      "name": "notification-off-01",
+      "tags": "notification-off-01",
+      "category": "alert-notification"
+    },
+    {
+      "name": "notification-off-02",
+      "tags": "Notification off, silent, notification mute",
+      "category": "alert-notification"
+    },
+    {
+      "name": "notification-off-03",
+      "tags": "Notification-off, Mute-alert, Silence-Indicator, Alert-Silenced, Quiet-Notification, Inactive-Alert, Silent-Alert, Notice-Disabled, Hush-Alert, Notify-Off, Alert-Mute.",
+      "category": "alert-notification"
+    },
+    {
+      "name": "radioactive-alert",
+      "tags": "radioactive-alert",
+      "category": "alert-notification"
+    },
+    {
+      "name": "spam",
+      "tags": "Spam, Barrier",
+      "category": "alert-notification"
+    },
+    {
+      "name": "co-present",
+      "tags": "co-present",
+      "category": "presentation"
+    },
+    {
+      "name": "presentation-01",
+      "tags": "presentation-01",
+      "category": "presentation"
+    },
+    {
+      "name": "presentation-02",
+      "tags": "presentation-02",
+      "category": "presentation"
+    },
+    {
+      "name": "presentation-03",
+      "tags": "presentation-03",
+      "category": "presentation"
+    },
+    {
+      "name": "presentation-04",
+      "tags": "presentation-04",
+      "category": "presentation"
+    },
+    {
+      "name": "presentation-05",
+      "tags": "presentation-05",
+      "category": "presentation"
+    },
+    {
+      "name": "presentation-06",
+      "tags": "presentation-06",
+      "category": "presentation"
+    },
+    {
+      "name": "presentation-07",
+      "tags": "presentation-07",
+      "category": "presentation"
+    },
+    {
+      "name": "presentation-bar-chart-01",
+      "tags": "presentation-bar-chart-01",
+      "category": "presentation"
+    },
+    {
+      "name": "presentation-bar-chart-02",
+      "tags": "presentation-bar-chart-02",
+      "category": "presentation"
+    },
+    {
+      "name": "presentation-line-chart-01",
+      "tags": "presentation-line-chart-01",
+      "category": "presentation"
+    },
+    {
+      "name": "presentation-line-chart-02",
+      "tags": "presentation-line-chart-02",
+      "category": "presentation"
+    },
+    {
+      "name": "presentation-online",
+      "tags": "presentation-online",
+      "category": "presentation"
+    },
+    {
+      "name": "presentation-podium",
+      "tags": "presentation-podium",
+      "category": "presentation"
+    },
+    {
+      "name": "projector-01",
+      "tags": "projector-01",
+      "category": "presentation"
+    }
+  ]
+}

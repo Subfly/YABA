@@ -1,0 +1,177 @@
+{
+  "metadata": {
+    "id": "legal_compliance",
+    "name": "Legal & Compliance",
+    "description": "Legal and regulatory matters",
+    "main_category": "business_finance",
+    "icon_count": 33,
+    "version": "1.0"
+  },
+  "icons": [
+    {
+      "name": "agreement-01",
+      "tags": "hand shake, deal,",
+      "category": "legal"
+    },
+    {
+      "name": "agreement-02",
+      "tags": "hand shake, deal,",
+      "category": "legal"
+    },
+    {
+      "name": "agreement-03",
+      "tags": "legal,",
+      "category": "legal"
+    },
+    {
+      "name": "auction",
+      "tags": "legal,",
+      "category": "legal"
+    },
+    {
+      "name": "audit-01",
+      "tags": "legal,",
+      "category": "legal"
+    },
+    {
+      "name": "audit-02",
+      "tags": "audit-02",
+      "category": "legal"
+    },
+    {
+      "name": "copyright",
+      "tags": "legal,",
+      "category": "legal"
+    },
+    {
+      "name": "court-house",
+      "tags": "legal,",
+      "category": "legal"
+    },
+    {
+      "name": "court-law",
+      "tags": "legal,",
+      "category": "legal"
+    },
+    {
+      "name": "handcuffs",
+      "tags": "handcuffs",
+      "category": "legal"
+    },
+    {
+      "name": "identification",
+      "tags": "identification",
+      "category": "legal"
+    },
+    {
+      "name": "investigation",
+      "tags": "investigation",
+      "category": "legal"
+    },
+    {
+      "name": "judge",
+      "tags": "judge",
+      "category": "legal"
+    },
+    {
+      "name": "justice-scale-01",
+      "tags": "legal,",
+      "category": "legal"
+    },
+    {
+      "name": "justice-scale-02",
+      "tags": "legal,",
+      "category": "legal"
+    },
+    {
+      "name": "legal-01",
+      "tags": "legal,",
+      "category": "legal"
+    },
+    {
+      "name": "legal-02",
+      "tags": "legal,",
+      "category": "legal"
+    },
+    {
+      "name": "legal-document-01",
+      "tags": "legal,",
+      "category": "legal"
+    },
+    {
+      "name": "legal-document-02",
+      "tags": "legal-document-02",
+      "category": "legal"
+    },
+    {
+      "name": "legal-hammer",
+      "tags": "legal-hammer",
+      "category": "legal"
+    },
+    {
+      "name": "passport-01",
+      "tags": "passport-01",
+      "category": "legal"
+    },
+    {
+      "name": "podium",
+      "tags": "podium",
+      "category": "legal"
+    },
+    {
+      "name": "police-badge",
+      "tags": "police-badge",
+      "category": "legal"
+    },
+    {
+      "name": "police-cap",
+      "tags": "police-cap",
+      "category": "legal"
+    },
+    {
+      "name": "police-station",
+      "tags": "police-station",
+      "category": "legal"
+    },
+    {
+      "name": "prison",
+      "tags": "prison",
+      "category": "legal"
+    },
+    {
+      "name": "register",
+      "tags": "register",
+      "category": "legal"
+    },
+    {
+      "name": "sheriff-01",
+      "tags": "sheriff-01",
+      "category": "legal"
+    },
+    {
+      "name": "sheriff-02",
+      "tags": "sheriff-02",
+      "category": "legal"
+    },
+    {
+      "name": "stamp-01",
+      "tags": "legal,",
+      "category": "legal"
+    },
+    {
+      "name": "stamp-02",
+      "tags": "legal,",
+      "category": "legal"
+    },
+    {
+      "name": "subpoena",
+      "tags": "legal,",
+      "category": "legal"
+    },
+    {
+      "name": "trade-mark",
+      "tags": "trade-mark",
+      "category": "legal"
+    }
+  ]
+}

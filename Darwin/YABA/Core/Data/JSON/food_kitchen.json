@@ -1,0 +1,707 @@
+{
+  "metadata": {
+    "id": "food_kitchen",
+    "name": "Food & Kitchen",
+    "description": "Cooking, dining, and food services",
+    "main_category": "lifestyle_personal",
+    "icon_count": 139,
+    "version": "1.0"
+  },
+  "icons": [
+    {
+      "name": "apple-01",
+      "tags": "apple-01",
+      "category": "foods"
+    },
+    {
+      "name": "apple-pie",
+      "tags": "apple-pie",
+      "category": "foods"
+    },
+    {
+      "name": "apricot",
+      "tags": "apricot",
+      "category": "foods"
+    },
+    {
+      "name": "avocado",
+      "tags": "avocado",
+      "category": "foods"
+    },
+    {
+      "name": "banana",
+      "tags": "banana",
+      "category": "foods"
+    },
+    {
+      "name": "bbq-grill",
+      "tags": "bbq-grill",
+      "category": "foods"
+    },
+    {
+      "name": "birthday-cake",
+      "tags": "birthday-cake",
+      "category": "foods"
+    },
+    {
+      "name": "biscuit",
+      "tags": "biscuit",
+      "category": "foods"
+    },
+    {
+      "name": "bread-01",
+      "tags": "bread-01",
+      "category": "foods"
+    },
+    {
+      "name": "bread-02",
+      "tags": "bread-02",
+      "category": "foods"
+    },
+    {
+      "name": "bread-03",
+      "tags": "bread-03",
+      "category": "foods"
+    },
+    {
+      "name": "bread-04",
+      "tags": "bread-04",
+      "category": "foods"
+    },
+    {
+      "name": "broccoli",
+      "tags": "broccoli",
+      "category": "foods"
+    },
+    {
+      "name": "bubble-tea-01",
+      "tags": "bubble-tea-01",
+      "category": "foods"
+    },
+    {
+      "name": "bubble-tea-02",
+      "tags": "bubble-tea-02",
+      "category": "foods"
+    },
+    {
+      "name": "carrot",
+      "tags": "carrot",
+      "category": "foods"
+    },
+    {
+      "name": "cheese",
+      "tags": "cheese",
+      "category": "foods"
+    },
+    {
+      "name": "cheese-cake-01",
+      "tags": "cheese-cake-01",
+      "category": "foods"
+    },
+    {
+      "name": "cheese-cake-02",
+      "tags": "cheese-cake-02",
+      "category": "foods"
+    },
+    {
+      "name": "cherry",
+      "tags": "cherry",
+      "category": "foods"
+    },
+    {
+      "name": "chicken-thighs",
+      "tags": "chicken-thighs",
+      "category": "foods"
+    },
+    {
+      "name": "chocolate",
+      "tags": "chocolate",
+      "category": "foods"
+    },
+    {
+      "name": "chopsticks",
+      "tags": "chopsticks",
+      "category": "foods"
+    },
+    {
+      "name": "cinnamon-roll",
+      "tags": "cinnamon-roll",
+      "category": "foods"
+    },
+    {
+      "name": "coffee-01",
+      "tags": "coffee-01",
+      "category": "foods"
+    },
+    {
+      "name": "coffee-02",
+      "tags": "coffee-02",
+      "category": "foods"
+    },
+    {
+      "name": "coffee-beans",
+      "tags": "coffee-beans",
+      "category": "foods"
+    },
+    {
+      "name": "cookie",
+      "tags": "cookie",
+      "category": "foods"
+    },
+    {
+      "name": "corn",
+      "tags": "corn",
+      "category": "foods"
+    },
+    {
+      "name": "cotton-candy",
+      "tags": "cotton-candy",
+      "category": "foods"
+    },
+    {
+      "name": "crab",
+      "tags": "crab",
+      "category": "foods"
+    },
+    {
+      "name": "croissant",
+      "tags": "croissant",
+      "category": "foods"
+    },
+    {
+      "name": "cupcake-01",
+      "tags": "cupcake-01",
+      "category": "foods"
+    },
+    {
+      "name": "cupcake-02",
+      "tags": "cupcake-02",
+      "category": "foods"
+    },
+    {
+      "name": "cupcake-03",
+      "tags": "cupcake-03",
+      "category": "foods"
+    },
+    {
+      "name": "dim-sum-01",
+      "tags": "dim-sum-01",
+      "category": "foods"
+    },
+    {
+      "name": "dim-sum-02",
+      "tags": "dim-sum-02",
+      "category": "foods"
+    },
+    {
+      "name": "doughnut",
+      "tags": "doughnut",
+      "category": "foods"
+    },
+    {
+      "name": "drink",
+      "tags": "drink",
+      "category": "foods"
+    },
+    {
+      "name": "eggs",
+      "tags": "eggs",
+      "category": "foods"
+    },
+    {
+      "name": "fish-food",
+      "tags": "fish-food",
+      "category": "foods"
+    },
+    {
+      "name": "french-fries-01",
+      "tags": "french-fries-01",
+      "category": "foods"
+    },
+    {
+      "name": "french-fries-02",
+      "tags": "french-fries-02",
+      "category": "foods"
+    },
+    {
+      "name": "fry",
+      "tags": "fry",
+      "category": "foods"
+    },
+    {
+      "name": "grapes",
+      "tags": "grapes",
+      "category": "foods"
+    },
+    {
+      "name": "hamburger-01",
+      "tags": "hamburger-01",
+      "category": "foods"
+    },
+    {
+      "name": "hamburger-02",
+      "tags": "hamburger-02",
+      "category": "foods"
+    },
+    {
+      "name": "honey-01",
+      "tags": "honey-01",
+      "category": "foods"
+    },
+    {
+      "name": "honey-02",
+      "tags": "honey-02",
+      "category": "foods"
+    },
+    {
+      "name": "hotdog",
+      "tags": "hotdog",
+      "category": "foods"
+    },
+    {
+      "name": "ice-cream-01",
+      "tags": "ice-cream-01",
+      "category": "foods"
+    },
+    {
+      "name": "ice-cream-02",
+      "tags": "ice-cream-02",
+      "category": "foods"
+    },
+    {
+      "name": "ice-cream-03",
+      "tags": "ice-cream-03",
+      "category": "foods"
+    },
+    {
+      "name": "ice-cream-04",
+      "tags": "ice-cream-04",
+      "category": "foods"
+    },
+    {
+      "name": "ice-cubes",
+      "tags": "ice-cubes",
+      "category": "foods"
+    },
+    {
+      "name": "lollipop",
+      "tags": "lollipop",
+      "category": "foods"
+    },
+    {
+      "name": "milk-bottle",
+      "tags": "milk-bottle",
+      "category": "foods"
+    },
+    {
+      "name": "milk-carton",
+      "tags": "milk-carton",
+      "category": "foods"
+    },
+    {
+      "name": "milk-coconut",
+      "tags": "milk-coconut",
+      "category": "foods"
+    },
+    {
+      "name": "milk-oat",
+      "tags": "milk-oat",
+      "category": "foods"
+    },
+    {
+      "name": "mochi",
+      "tags": "mochi",
+      "category": "foods"
+    },
+    {
+      "name": "mushroom",
+      "tags": "mushroom",
+      "category": "foods"
+    },
+    {
+      "name": "natural-food",
+      "tags": "natural-food",
+      "category": "foods"
+    },
+    {
+      "name": "noodles",
+      "tags": "noodles",
+      "category": "foods"
+    },
+    {
+      "name": "nut",
+      "tags": "nut",
+      "category": "foods"
+    },
+    {
+      "name": "octopus",
+      "tags": "octopus",
+      "category": "foods"
+    },
+    {
+      "name": "orange",
+      "tags": "orange",
+      "category": "foods"
+    },
+    {
+      "name": "organic-food",
+      "tags": "organic-food",
+      "category": "foods"
+    },
+    {
+      "name": "paella",
+      "tags": "paella",
+      "category": "foods"
+    },
+    {
+      "name": "pie",
+      "tags": "pie",
+      "category": "foods"
+    },
+    {
+      "name": "pizza-01",
+      "tags": "pizza-01",
+      "category": "foods"
+    },
+    {
+      "name": "pizza-02",
+      "tags": "pizza-02",
+      "category": "foods"
+    },
+    {
+      "name": "pizza-03",
+      "tags": "pizza-03",
+      "category": "foods"
+    },
+    {
+      "name": "pizza-04",
+      "tags": "pizza-04",
+      "category": "foods"
+    },
+    {
+      "name": "popcorn",
+      "tags": "popcorn",
+      "category": "foods"
+    },
+    {
+      "name": "prawn",
+      "tags": "prawn",
+      "category": "foods"
+    },
+    {
+      "name": "pumpkin",
+      "tags": "pumpkin",
+      "category": "foods"
+    },
+    {
+      "name": "rice-bowl-01",
+      "tags": "rice-bowl-01",
+      "category": "foods"
+    },
+    {
+      "name": "rice-bowl-02",
+      "tags": "rice-bowl-02",
+      "category": "foods"
+    },
+    {
+      "name": "sausage",
+      "tags": "sausage",
+      "category": "foods"
+    },
+    {
+      "name": "shellfish",
+      "tags": "shellfish",
+      "category": "foods"
+    },
+    {
+      "name": "snail",
+      "tags": "snail",
+      "category": "foods"
+    },
+    {
+      "name": "soda-can",
+      "tags": "soda-can",
+      "category": "foods"
+    },
+    {
+      "name": "soft-drink-01",
+      "tags": "soft-drink-01",
+      "category": "foods"
+    },
+    {
+      "name": "soft-drink-02",
+      "tags": "soft-drink-02",
+      "category": "foods"
+    },
+    {
+      "name": "spaghetti",
+      "tags": "spaghetti",
+      "category": "foods"
+    },
+    {
+      "name": "steak",
+      "tags": "steak",
+      "category": "foods"
+    },
+    {
+      "name": "street-food",
+      "tags": "street-food",
+      "category": "foods"
+    },
+    {
+      "name": "sushi-01",
+      "tags": "sushi-01",
+      "category": "foods"
+    },
+    {
+      "name": "sushi-02",
+      "tags": "sushi-02",
+      "category": "foods"
+    },
+    {
+      "name": "sushi-03",
+      "tags": "sushi-03",
+      "category": "foods"
+    },
+    {
+      "name": "taco-01",
+      "tags": "taco-01",
+      "category": "foods"
+    },
+    {
+      "name": "taco-02",
+      "tags": "taco-02",
+      "category": "foods"
+    },
+    {
+      "name": "tea",
+      "tags": "tea",
+      "category": "foods"
+    },
+    {
+      "name": "tea-pod",
+      "tags": "tea-pod",
+      "category": "foods"
+    },
+    {
+      "name": "vegetarian-food",
+      "tags": "vegetarian-food",
+      "category": "foods"
+    },
+    {
+      "name": "watermelon",
+      "tags": "watermelon",
+      "category": "foods"
+    },
+    {
+      "name": "yogurt",
+      "tags": "yogurt",
+      "category": "foods"
+    },
+    {
+      "name": "apron",
+      "tags": "apron",
+      "category": "kitchen"
+    },
+    {
+      "name": "beater",
+      "tags": "beater",
+      "category": "kitchen"
+    },
+    {
+      "name": "blender",
+      "tags": "blender",
+      "category": "kitchen"
+    },
+    {
+      "name": "chef",
+      "tags": "chef",
+      "category": "kitchen"
+    },
+    {
+      "name": "chef-hat",
+      "tags": "chef-hat",
+      "category": "kitchen"
+    },
+    {
+      "name": "cook-book",
+      "tags": "cook-book",
+      "category": "kitchen"
+    },
+    {
+      "name": "dish-01",
+      "tags": "dish-01",
+      "category": "kitchen"
+    },
+    {
+      "name": "dish-02",
+      "tags": "dish-02",
+      "category": "kitchen"
+    },
+    {
+      "name": "dish-washer",
+      "tags": "dish-washer",
+      "category": "kitchen"
+    },
+    {
+      "name": "fork",
+      "tags": "fork",
+      "category": "kitchen"
+    },
+    {
+      "name": "gas-stove",
+      "tags": "gas-stove",
+      "category": "kitchen"
+    },
+    {
+      "name": "glove",
+      "tags": "glove",
+      "category": "kitchen"
+    },
+    {
+      "name": "hand-beater",
+      "tags": "hand-beater",
+      "category": "kitchen"
+    },
+    {
+      "name": "jar",
+      "tags": "jar",
+      "category": "kitchen"
+    },
+    {
+      "name": "kettle",
+      "tags": "kettle",
+      "category": "kitchen"
+    },
+    {
+      "name": "kettle-01",
+      "tags": "kettle-01",
+      "category": "kitchen"
+    },
+    {
+      "name": "kitchen-utensils",
+      "tags": "kitchen-utensils",
+      "category": "kitchen"
+    },
+    {
+      "name": "knife-01",
+      "tags": "knife-01",
+      "category": "kitchen"
+    },
+    {
+      "name": "knife-02",
+      "tags": "knife-02",
+      "category": "kitchen"
+    },
+    {
+      "name": "knife-bread",
+      "tags": "knife-bread",
+      "category": "kitchen"
+    },
+    {
+      "name": "knives",
+      "tags": "knives",
+      "category": "kitchen"
+    },
+    {
+      "name": "matches",
+      "tags": "matches",
+      "category": "kitchen"
+    },
+    {
+      "name": "microwave",
+      "tags": "microwave",
+      "category": "kitchen"
+    },
+    {
+      "name": "mixer",
+      "tags": "mixer",
+      "category": "kitchen"
+    },
+    {
+      "name": "napkins-01",
+      "tags": "napkins-01",
+      "category": "kitchen"
+    },
+    {
+      "name": "napkins-02",
+      "tags": "napkins-02",
+      "category": "kitchen"
+    },
+    {
+      "name": "oven",
+      "tags": "oven",
+      "category": "kitchen"
+    },
+    {
+      "name": "pan-01",
+      "tags": "pan-01",
+      "category": "kitchen"
+    },
+    {
+      "name": "pan-02",
+      "tags": "pan-02",
+      "category": "kitchen"
+    },
+    {
+      "name": "pan-03",
+      "tags": "pan-03",
+      "category": "kitchen"
+    },
+    {
+      "name": "pizza-cutter",
+      "tags": "pizza-cutter",
+      "category": "kitchen"
+    },
+    {
+      "name": "plate",
+      "tags": "plate",
+      "category": "kitchen"
+    },
+    {
+      "name": "pot-01",
+      "tags": "pot-01",
+      "category": "kitchen"
+    },
+    {
+      "name": "pot-02",
+      "tags": "pot-02",
+      "category": "kitchen"
+    },
+    {
+      "name": "refrigerator",
+      "tags": "refrigerator",
+      "category": "kitchen"
+    },
+    {
+      "name": "rolling-pin",
+      "tags": "rolling-pin",
+      "category": "kitchen"
+    },
+    {
+      "name": "serving-food",
+      "tags": "food service,",
+      "category": "kitchen"
+    },
+    {
+      "name": "spatula",
+      "tags": "spatula",
+      "category": "kitchen"
+    },
+    {
+      "name": "spoon",
+      "tags": "spoon",
+      "category": "kitchen"
+    },
+    {
+      "name": "weight-scale-01",
+      "tags": "weight-scale-01",
+      "category": "kitchen"
+    },
+    {
+      "name": "whisk",
+      "tags": "whisk",
+      "category": "kitchen"
+    }
+  ]
+}

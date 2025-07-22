@@ -9062,49 +9062,49 @@
         }
       }
     },
-    "Pick Icon" : {
-      "comment" : "Title to show when user open the icon picker",
+    "Pick Icon Category Title" : {
+      "comment" : "Title to show when user open the icon picker and prompts to select a main category",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Wähle ein Symbol"
           }
         },
         "en" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pick an Icon"
+            "state" : "needs_review",
+            "value" : "Icon Categories"
           }
         },
         "es" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Elige un ícono"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Choisis une icône"
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Scegli un’icona"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Escolher um Ícone"
           }
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Bir Simge Seç"
           }
         }

@@ -1,0 +1,1302 @@
+{
+  "metadata": {
+    "id": "branding_symbols",
+    "name": "Branding & Symbols",
+    "description": "Logos, symbols, and visual elements",
+    "main_category": "entertainment_communication",
+    "icon_count": 258,
+    "version": "1.0"
+  },
+  "icons": [
+    {
+      "name": "adobe-after-effect",
+      "tags": "adobe-after-effect",
+      "category": "logos"
+    },
+    {
+      "name": "adobe-illustrator",
+      "tags": "adobe-illustrator",
+      "category": "logos"
+    },
+    {
+      "name": "adobe-indesign",
+      "tags": "adobe-indesign",
+      "category": "logos"
+    },
+    {
+      "name": "adobe-photoshop",
+      "tags": "adobe-photoshop",
+      "category": "logos"
+    },
+    {
+      "name": "adobe-premier",
+      "tags": "adobe-premier",
+      "category": "logos"
+    },
+    {
+      "name": "adobe-xd",
+      "tags": "adobe-xd",
+      "category": "logos"
+    },
+    {
+      "name": "airbnb",
+      "tags": "airbnb",
+      "category": "logos"
+    },
+    {
+      "name": "amazon",
+      "tags": "amazon",
+      "category": "logos"
+    },
+    {
+      "name": "amie",
+      "tags": "amie",
+      "category": "logos"
+    },
+    {
+      "name": "android",
+      "tags": "android",
+      "category": "logos"
+    },
+    {
+      "name": "apple",
+      "tags": "apple",
+      "category": "logos"
+    },
+    {
+      "name": "apple-finder",
+      "tags": "apple-finder",
+      "category": "logos"
+    },
+    {
+      "name": "apple-news",
+      "tags": "apple-news",
+      "category": "logos"
+    },
+    {
+      "name": "apple-reminder",
+      "tags": "apple-reminder",
+      "category": "logos"
+    },
+    {
+      "name": "apple-stocks",
+      "tags": "apple-stocks",
+      "category": "logos"
+    },
+    {
+      "name": "apple-vision-pro",
+      "tags": "apple-vision-pro",
+      "category": "logos"
+    },
+    {
+      "name": "app-store",
+      "tags": "app-store",
+      "category": "logos"
+    },
+    {
+      "name": "arc-browser",
+      "tags": "arc-browser",
+      "category": "logos"
+    },
+    {
+      "name": "asterisk",
+      "tags": "asterisk",
+      "category": "logos"
+    },
+    {
+      "name": "asterisk-02",
+      "tags": "asterisk-02",
+      "category": "logos"
+    },
+    {
+      "name": "bebo",
+      "tags": "bebo",
+      "category": "logos"
+    },
+    {
+      "name": "behance-01",
+      "tags": "behance-01",
+      "category": "logos"
+    },
+    {
+      "name": "behance-02",
+      "tags": "behance-02",
+      "category": "logos"
+    },
+    {
+      "name": "bing",
+      "tags": "bing",
+      "category": "logos"
+    },
+    {
+      "name": "blogger",
+      "tags": "blogger",
+      "category": "logos"
+    },
+    {
+      "name": "bluesky",
+      "tags": "bluesky",
+      "category": "logos"
+    },
+    {
+      "name": "bootstrap",
+      "tags": "bootstrap",
+      "category": "logos"
+    },
+    {
+      "name": "brandfetch",
+      "tags": "brandfetch",
+      "category": "logos"
+    },
+    {
+      "name": "capcut",
+      "tags": "capcut",
+      "category": "logos"
+    },
+    {
+      "name": "capcut-rectangle",
+      "tags": "capcut-rectangle",
+      "category": "logos"
+    },
+    {
+      "name": "castbox",
+      "tags": "castbox",
+      "category": "logos"
+    },
+    {
+      "name": "chat-gpt",
+      "tags": "chat-gpt",
+      "category": "logos"
+    },
+    {
+      "name": "chrome",
+      "tags": "chrome",
+      "category": "logos"
+    },
+    {
+      "name": "claude",
+      "tags": "claude",
+      "category": "logos"
+    },
+    {
+      "name": "codesandbox",
+      "tags": "codesandbox",
+      "category": "logos"
+    },
+    {
+      "name": "coinbase",
+      "tags": "coinbase",
+      "category": "logos"
+    },
+    {
+      "name": "copilot",
+      "tags": "copilot",
+      "category": "logos"
+    },
+    {
+      "name": "creative-market",
+      "tags": "creative-market",
+      "category": "logos"
+    },
+    {
+      "name": "css-3",
+      "tags": "css-3",
+      "category": "logos"
+    },
+    {
+      "name": "datev",
+      "tags": "datev",
+      "category": "logos"
+    },
+    {
+      "name": "deepseek",
+      "tags": "deepseek",
+      "category": "logos"
+    },
+    {
+      "name": "deviantart",
+      "tags": "deviantart",
+      "category": "logos"
+    },
+    {
+      "name": "digg",
+      "tags": "digg",
+      "category": "logos"
+    },
+    {
+      "name": "discord",
+      "tags": "discord",
+      "category": "logos"
+    },
+    {
+      "name": "dribbble",
+      "tags": "dribbble",
+      "category": "logos"
+    },
+    {
+      "name": "dropbox",
+      "tags": "dropbox",
+      "category": "logos"
+    },
+    {
+      "name": "envato",
+      "tags": "envato",
+      "category": "logos"
+    },
+    {
+      "name": "facebook-01",
+      "tags": "facebook-01",
+      "category": "logos"
+    },
+    {
+      "name": "facebook-02",
+      "tags": "facebook-02",
+      "category": "logos"
+    },
+    {
+      "name": "figma",
+      "tags": "figma",
+      "category": "logos"
+    },
+    {
+      "name": "fiverr",
+      "tags": "fiverr",
+      "category": "logos"
+    },
+    {
+      "name": "flaticon",
+      "tags": "flaticon",
+      "category": "logos"
+    },
+    {
+      "name": "flickr",
+      "tags": "flickr",
+      "category": "logos"
+    },
+    {
+      "name": "forrst",
+      "tags": "forrst",
+      "category": "logos"
+    },
+    {
+      "name": "foursquare",
+      "tags": "foursquare",
+      "category": "logos"
+    },
+    {
+      "name": "framer",
+      "tags": "framer",
+      "category": "logos"
+    },
+    {
+      "name": "gitbook",
+      "tags": "gitbook",
+      "category": "logos"
+    },
+    {
+      "name": "github-01",
+      "tags": "github-01",
+      "category": "logos"
+    },
+    {
+      "name": "google",
+      "tags": "google",
+      "category": "logos"
+    },
+    {
+      "name": "google-doc",
+      "tags": "google-doc",
+      "category": "logos"
+    },
+    {
+      "name": "google-drive",
+      "tags": "google-drive",
+      "category": "logos"
+    },
+    {
+      "name": "google-gemini",
+      "tags": "google-gemini",
+      "category": "logos"
+    },
+    {
+      "name": "google-lens",
+      "tags": "google-lens",
+      "category": "logos"
+    },
+    {
+      "name": "google-maps",
+      "tags": "google-maps",
+      "category": "logos"
+    },
+    {
+      "name": "google-photos",
+      "tags": "google-photos",
+      "category": "logos"
+    },
+    {
+      "name": "google-sheet",
+      "tags": "google-sheet",
+      "category": "logos"
+    },
+    {
+      "name": "grok",
+      "tags": "grok",
+      "category": "logos"
+    },
+    {
+      "name": "grok-02",
+      "tags": "grok-02",
+      "category": "logos"
+    },
+    {
+      "name": "hackerrank",
+      "tags": "hackerrank",
+      "category": "logos"
+    },
+    {
+      "name": "halal-lab",
+      "tags": "halal-lab",
+      "category": "logos"
+    },
+    {
+      "name": "hangout",
+      "tags": "hangout",
+      "category": "logos"
+    },
+    {
+      "name": "html-5",
+      "tags": "html-5",
+      "category": "logos"
+    },
+    {
+      "name": "hugeicons",
+      "tags": "hugeicons",
+      "category": "logos"
+    },
+    {
+      "name": "iconjar",
+      "tags": "iconjar",
+      "category": "logos"
+    },
+    {
+      "name": "imo",
+      "tags": "imo",
+      "category": "logos"
+    },
+    {
+      "name": "instagram",
+      "tags": "instagram",
+      "category": "logos"
+    },
+    {
+      "name": "jsx-01",
+      "tags": "jsx-01",
+      "category": "logos"
+    },
+    {
+      "name": "kickstarter-01",
+      "tags": "kickstarter-01",
+      "category": "logos"
+    },
+    {
+      "name": "kickstarter-02",
+      "tags": "kickstarter-02",
+      "category": "logos"
+    },
+    {
+      "name": "klarna",
+      "tags": "klarna",
+      "category": "logos"
+    },
+    {
+      "name": "ko-fi",
+      "tags": "ko-fi",
+      "category": "logos"
+    },
+    {
+      "name": "last-fm",
+      "tags": "last-fm",
+      "category": "logos"
+    },
+    {
+      "name": "leetcode",
+      "tags": "leetcode",
+      "category": "logos"
+    },
+    {
+      "name": "line",
+      "tags": "line",
+      "category": "logos"
+    },
+    {
+      "name": "linkedin-01",
+      "tags": "linkedin-01",
+      "category": "logos"
+    },
+    {
+      "name": "linkedin-02",
+      "tags": "linkedin-02",
+      "category": "logos"
+    },
+    {
+      "name": "loom",
+      "tags": "loom",
+      "category": "logos"
+    },
+    {
+      "name": "lottiefiles",
+      "tags": "lottiefiles",
+      "category": "logos"
+    },
+    {
+      "name": "mastodon",
+      "tags": "mastodon",
+      "category": "logos"
+    },
+    {
+      "name": "mcp-server",
+      "tags": "mcp-server",
+      "category": "logos"
+    },
+    {
+      "name": "medium",
+      "tags": "medium",
+      "category": "logos"
+    },
+    {
+      "name": "medium-square",
+      "tags": "medium-square",
+      "category": "logos"
+    },
+    {
+      "name": "messenger",
+      "tags": "messenger",
+      "category": "logos"
+    },
+    {
+      "name": "meta",
+      "tags": "meta",
+      "category": "logos"
+    },
+    {
+      "name": "microsoft",
+      "tags": "microsoft",
+      "category": "logos"
+    },
+    {
+      "name": "mistral",
+      "tags": "mistral",
+      "category": "logos"
+    },
+    {
+      "name": "mollie",
+      "tags": "mollie",
+      "category": "logos"
+    },
+    {
+      "name": "mymind",
+      "tags": "mymind",
+      "category": "logos"
+    },
+    {
+      "name": "new-twitter",
+      "tags": "x, elon, twitter",
+      "category": "logos"
+    },
+    {
+      "name": "new-twitter-ellipse",
+      "tags": "x, elon, twitter, circle x, circle old twitter",
+      "category": "logos"
+    },
+    {
+      "name": "new-twitter-rectangle",
+      "tags": "x, elon, twitter, square x",
+      "category": "logos"
+    },
+    {
+      "name": "nike",
+      "tags": "nike",
+      "category": "logos"
+    },
+    {
+      "name": "notion-01",
+      "tags": "notion-01",
+      "category": "logos"
+    },
+    {
+      "name": "notion-02",
+      "tags": "notion-02",
+      "category": "logos"
+    },
+    {
+      "name": "npm",
+      "tags": "npm",
+      "category": "logos"
+    },
+    {
+      "name": "office-365",
+      "tags": "office-365",
+      "category": "logos"
+    },
+    {
+      "name": "path",
+      "tags": "path",
+      "category": "logos"
+    },
+    {
+      "name": "payoneer",
+      "tags": "payoneer",
+      "category": "logos"
+    },
+    {
+      "name": "paypal",
+      "tags": "paypal",
+      "category": "logos"
+    },
+    {
+      "name": "periscope",
+      "tags": "periscope",
+      "category": "logos"
+    },
+    {
+      "name": "pexels",
+      "tags": "pexels",
+      "category": "logos"
+    },
+    {
+      "name": "picasa",
+      "tags": "picasa",
+      "category": "logos"
+    },
+    {
+      "name": "pinterest",
+      "tags": "pinterest",
+      "category": "logos"
+    },
+    {
+      "name": "plaxo",
+      "tags": "plaxo",
+      "category": "logos"
+    },
+    {
+      "name": "play-store",
+      "tags": "play-store",
+      "category": "logos"
+    },
+    {
+      "name": "python",
+      "tags": "python",
+      "category": "logos"
+    },
+    {
+      "name": "quora",
+      "tags": "quora",
+      "category": "logos"
+    },
+    {
+      "name": "qwen",
+      "tags": "qwen",
+      "category": "logos"
+    },
+    {
+      "name": "react",
+      "tags": "react",
+      "category": "logos"
+    },
+    {
+      "name": "reddit",
+      "tags": "reddit",
+      "category": "logos"
+    },
+    {
+      "name": "replit",
+      "tags": "replit",
+      "category": "logos"
+    },
+    {
+      "name": "safari",
+      "tags": "safari",
+      "category": "logos"
+    },
+    {
+      "name": "scribd",
+      "tags": "scribd",
+      "category": "logos"
+    },
+    {
+      "name": "shopify",
+      "tags": "shopify",
+      "category": "logos"
+    },
+    {
+      "name": "shutterstock",
+      "tags": "shutterstock",
+      "category": "logos"
+    },
+    {
+      "name": "signal",
+      "tags": "signal",
+      "category": "logos"
+    },
+    {
+      "name": "sketch",
+      "tags": "sketch",
+      "category": "logos"
+    },
+    {
+      "name": "skool",
+      "tags": "skool",
+      "category": "logos"
+    },
+    {
+      "name": "skype",
+      "tags": "skype",
+      "category": "logos"
+    },
+    {
+      "name": "slack",
+      "tags": "slack",
+      "category": "logos"
+    },
+    {
+      "name": "slideshare",
+      "tags": "slideshare",
+      "category": "logos"
+    },
+    {
+      "name": "snapchat",
+      "tags": "snapchat",
+      "category": "logos"
+    },
+    {
+      "name": "soundcloud",
+      "tags": "soundcloud",
+      "category": "logos"
+    },
+    {
+      "name": "spotify",
+      "tags": "spotify",
+      "category": "logos"
+    },
+    {
+      "name": "stripe",
+      "tags": "stripe",
+      "category": "logos"
+    },
+    {
+      "name": "stumbleupon",
+      "tags": "stumbleupon",
+      "category": "logos"
+    },
+    {
+      "name": "swarm",
+      "tags": "swarm",
+      "category": "logos"
+    },
+    {
+      "name": "tailwindcss",
+      "tags": "tailwindcss",
+      "category": "logos"
+    },
+    {
+      "name": "teamviewer",
+      "tags": "teamviewer",
+      "category": "logos"
+    },
+    {
+      "name": "telegram",
+      "tags": "telegram",
+      "category": "logos"
+    },
+    {
+      "name": "threads",
+      "tags": "threads",
+      "category": "logos"
+    },
+    {
+      "name": "threads-ellipse",
+      "tags": "threads-ellipse",
+      "category": "logos"
+    },
+    {
+      "name": "threads-rectangle",
+      "tags": "threads-rectangle",
+      "category": "logos"
+    },
+    {
+      "name": "tiktok",
+      "tags": "tiktok",
+      "category": "logos"
+    },
+    {
+      "name": "tiltify",
+      "tags": "tiltify",
+      "category": "logos"
+    },
+    {
+      "name": "trello",
+      "tags": "trello",
+      "category": "logos"
+    },
+    {
+      "name": "tumblr",
+      "tags": "tumblr",
+      "category": "logos"
+    },
+    {
+      "name": "twitch",
+      "tags": "twitch",
+      "category": "logos"
+    },
+    {
+      "name": "twitter",
+      "tags": "twitter",
+      "category": "logos"
+    },
+    {
+      "name": "twitter-square",
+      "tags": "twitter-square",
+      "category": "logos"
+    },
+    {
+      "name": "typescript-01",
+      "tags": "typescript-01",
+      "category": "logos"
+    },
+    {
+      "name": "uber",
+      "tags": "uber",
+      "category": "logos"
+    },
+    {
+      "name": "unsplash",
+      "tags": "unsplash",
+      "category": "logos"
+    },
+    {
+      "name": "upwork",
+      "tags": "upwork",
+      "category": "logos"
+    },
+    {
+      "name": "viber",
+      "tags": "viber",
+      "category": "logos"
+    },
+    {
+      "name": "vimeo",
+      "tags": "vimeo",
+      "category": "logos"
+    },
+    {
+      "name": "vine",
+      "tags": "vine",
+      "category": "logos"
+    },
+    {
+      "name": "vine-square",
+      "tags": "vine-square",
+      "category": "logos"
+    },
+    {
+      "name": "visual-studio-code",
+      "tags": "vs code, vs extension,",
+      "category": "logos"
+    },
+    {
+      "name": "vk",
+      "tags": "vk",
+      "category": "logos"
+    },
+    {
+      "name": "vk-square",
+      "tags": "vk-square",
+      "category": "logos"
+    },
+    {
+      "name": "w-3-schools",
+      "tags": "w-3-schools",
+      "category": "logos"
+    },
+    {
+      "name": "wattpad",
+      "tags": "wattpad",
+      "category": "logos"
+    },
+    {
+      "name": "wattpad-square",
+      "tags": "wattpad-square",
+      "category": "logos"
+    },
+    {
+      "name": "waze",
+      "tags": "waze",
+      "category": "logos"
+    },
+    {
+      "name": "webflow",
+      "tags": "webflow",
+      "category": "logos"
+    },
+    {
+      "name": "webflow-ellipse",
+      "tags": "webflow-ellipse",
+      "category": "logos"
+    },
+    {
+      "name": "webflow-rectangle",
+      "tags": "webflow-rectangle",
+      "category": "logos"
+    },
+    {
+      "name": "webhook",
+      "tags": "webhook",
+      "category": "logos"
+    },
+    {
+      "name": "wechat",
+      "tags": "wechat",
+      "category": "logos"
+    },
+    {
+      "name": "whatsapp",
+      "tags": "whatsapp",
+      "category": "logos"
+    },
+    {
+      "name": "whatsapp-business",
+      "tags": "whatsapp-business",
+      "category": "logos"
+    },
+    {
+      "name": "wikipedia",
+      "tags": "wikipedia",
+      "category": "logos"
+    },
+    {
+      "name": "windows-new",
+      "tags": "windows-new",
+      "category": "logos"
+    },
+    {
+      "name": "windows-old",
+      "tags": "windows-old",
+      "category": "logos"
+    },
+    {
+      "name": "wise",
+      "tags": "wise",
+      "category": "logos"
+    },
+    {
+      "name": "wordpress",
+      "tags": "wordpress",
+      "category": "logos"
+    },
+    {
+      "name": "wps-office",
+      "tags": "wps-office",
+      "category": "logos"
+    },
+    {
+      "name": "wps-office-rectangle",
+      "tags": "wps-office-rectangle",
+      "category": "logos"
+    },
+    {
+      "name": "xing",
+      "tags": "xing",
+      "category": "logos"
+    },
+    {
+      "name": "yelp",
+      "tags": "yelp",
+      "category": "logos"
+    },
+    {
+      "name": "youtube",
+      "tags": "youtube",
+      "category": "logos"
+    },
+    {
+      "name": "zoom",
+      "tags": "zoom",
+      "category": "logos"
+    },
+    {
+      "name": "zoom-circle",
+      "tags": "zoom-circle",
+      "category": "logos"
+    },
+    {
+      "name": "zoom-square",
+      "tags": "zoom-square",
+      "category": "logos"
+    },
+    {
+      "name": "circle",
+      "tags": "circle",
+      "category": "shapes"
+    },
+    {
+      "name": "diamond",
+      "tags": "diamond",
+      "category": "shapes"
+    },
+    {
+      "name": "geometric-shapes-01",
+      "tags": "geometric-shapes-01",
+      "category": "shapes"
+    },
+    {
+      "name": "geometric-shapes-02",
+      "tags": "geometric-shapes-02",
+      "category": "shapes"
+    },
+    {
+      "name": "hexagon",
+      "tags": "hexagon",
+      "category": "shapes"
+    },
+    {
+      "name": "oval",
+      "tags": "oval",
+      "category": "shapes"
+    },
+    {
+      "name": "pentagon",
+      "tags": "pentagon",
+      "category": "shapes"
+    },
+    {
+      "name": "polygon",
+      "tags": "polygon",
+      "category": "shapes"
+    },
+    {
+      "name": "rectangular",
+      "tags": "rectangular",
+      "category": "shapes"
+    },
+    {
+      "name": "rhombus",
+      "tags": "rhombus",
+      "category": "shapes"
+    },
+    {
+      "name": "seal",
+      "tags": "seal",
+      "category": "shapes"
+    },
+    {
+      "name": "shapes",
+      "tags": "shapes",
+      "category": "shapes"
+    },
+    {
+      "name": "spirals",
+      "tags": "spirals",
+      "category": "shapes"
+    },
+    {
+      "name": "square",
+      "tags": "square",
+      "category": "shapes"
+    },
+    {
+      "name": "triangle",
+      "tags": "triangle",
+      "category": "shapes"
+    },
+    {
+      "name": "alarm-clock",
+      "tags": "timepiece, watch, timer, chronometer, hourglass, stopwatch, chronograph, timekeeper, dial, temporal gauge, clock, alarm clock",
+      "category": "date-time"
+    },
+    {
+      "name": "appointment-01",
+      "tags": "booking, calendar booked, scheduled,",
+      "category": "date-time"
+    },
+    {
+      "name": "appointment-02",
+      "tags": "booking, calendar booked, scheduled,",
+      "category": "date-time"
+    },
+    {
+      "name": "calendar-01",
+      "tags": "datebook, timetable, agenda, scheduler, planner, event planner, timekeeper, appointment book, organizer, diary, schedule, calendar, date, date and time, event tracker, timekeeper",
+      "category": "date-time"
+    },
+    {
+      "name": "calendar-02",
+      "tags": "datebook, timetable, agenda, scheduler, planner, event planner, timekeeper, appointment book, organizer, diary, schedule, calendar, date, date and time, event tracker, timekeeper",
+      "category": "date-time"
+    },
+    {
+      "name": "calendar-03",
+      "tags": "datebook, timetable, agenda, scheduler, planner, event planner, timekeeper, appointment book, organizer, diary, schedule, calendar, date, date and time, event tracker, timekeeper",
+      "category": "date-time"
+    },
+    {
+      "name": "calendar-04",
+      "tags": "datebook, timetable, agenda, scheduler, planner, event planner, timekeeper, appointment book, organizer, diary, schedule, calendar, date, date and time, event tracker, timekeeper",
+      "category": "date-time"
+    },
+    {
+      "name": "clock-01",
+      "tags": "timepiece, watch, timer, chronometer, hourglass, stopwatch, chronograph, timekeeper, dial, temporal gauge, clock",
+      "category": "date-time"
+    },
+    {
+      "name": "clock-02",
+      "tags": "timepiece, watch, timer, chronometer, hourglass, stopwatch, chronograph, timekeeper, dial, temporal gauge, clock, alarm clock",
+      "category": "date-time"
+    },
+    {
+      "name": "clock-03",
+      "tags": "timepiece, watch, timer, chronometer, hourglass, stopwatch, chronograph, timekeeper, dial, temporal gauge, clock, alarm clock",
+      "category": "date-time"
+    },
+    {
+      "name": "clock-04",
+      "tags": "timepiece, watch, timer, chronometer, hourglass, stopwatch, chronograph, timekeeper, dial, temporal gauge, clock, alarm clock",
+      "category": "date-time"
+    },
+    {
+      "name": "clock-05",
+      "tags": "timepiece, watch, timer, chronometer, hourglass, stopwatch, chronograph, timekeeper, dial, temporal gauge, clock, alarm clock",
+      "category": "date-time"
+    },
+    {
+      "name": "coming-soon-01",
+      "tags": "coming-soon-01",
+      "category": "date-time"
+    },
+    {
+      "name": "coming-soon-02",
+      "tags": "coming-soon-02",
+      "category": "date-time"
+    },
+    {
+      "name": "date-time",
+      "tags": "date-time",
+      "category": "date-time"
+    },
+    {
+      "name": "digital-clock",
+      "tags": "digital-clock",
+      "category": "date-time"
+    },
+    {
+      "name": "hourglass",
+      "tags": "timepiece, watch, timer, chronometer, hourglass, stopwatch, chronograph, timekeeper, dial, temporal gauge, clock, alarm clock",
+      "category": "date-time"
+    },
+    {
+      "name": "smart-watch-01",
+      "tags": "smart-watch-01",
+      "category": "date-time"
+    },
+    {
+      "name": "smart-watch-02",
+      "tags": "timepiece, watch, timer, chronometer, hourglass, stopwatch, chronograph, timekeeper, dial, temporal gauge, clock, alarm clock, smart watch, watch smart",
+      "category": "date-time"
+    },
+    {
+      "name": "smart-watch-03",
+      "tags": "timepiece, watch, timer, chronometer, hourglass, stopwatch, chronograph, timekeeper, dial, temporal gauge, clock, alarm clock, smart watch, watch smart",
+      "category": "date-time"
+    },
+    {
+      "name": "smart-watch-04",
+      "tags": "timepiece, watch, timer, chronometer, hourglass, stopwatch, chronograph, timekeeper, dial, temporal gauge, clock, alarm clock, smart watch, watch smart",
+      "category": "date-time"
+    },
+    {
+      "name": "stop-watch",
+      "tags": "stop-watch",
+      "category": "date-time"
+    },
+    {
+      "name": "time-01",
+      "tags": "clock, stopwatch, timer, chronometer, hourglass, watch, countdown, hour tracker, timepiece, temporal symbol, time indicator, temporal device, timekeeper, temporal gauge, time gauge, temporal meter, time",
+      "category": "date-time"
+    },
+    {
+      "name": "time-02",
+      "tags": "clock, stopwatch, timer, chronometer, hourglass, watch, countdown, hour tracker, timepiece, temporal symbol, time indicator, temporal device, timekeeper, temporal gauge, time gauge, temporal meter, time",
+      "category": "date-time"
+    },
+    {
+      "name": "time-03",
+      "tags": "clock, stopwatch, timer, chronometer, hourglass, watch, countdown, hour tracker, timepiece, temporal symbol, time indicator, temporal device, timekeeper, temporal gauge, time gauge, temporal meter, time",
+      "category": "date-time"
+    },
+    {
+      "name": "time-04",
+      "tags": "clock, stopwatch, timer, chronometer, hourglass, watch, countdown, hour tracker, timepiece, temporal symbol, time indicator, temporal device, timekeeper, temporal gauge, time gauge, temporal meter, time",
+      "category": "date-time"
+    },
+    {
+      "name": "timer-02",
+      "tags": "clock, stopwatch, timer, chronometer, hourglass, watch, countdown, hour tracker, timepiece, temporal symbol, time indicator, temporal device, timekeeper, temporal gauge, time gauge, temporal meter, time, timer",
+      "category": "date-time"
+    },
+    {
+      "name": "watch-01",
+      "tags": "watch-01",
+      "category": "date-time"
+    },
+    {
+      "name": "watch-02",
+      "tags": "watch-02",
+      "category": "date-time"
+    },
+    {
+      "name": "edit-table",
+      "tags": "edit-table",
+      "category": "layout"
+    },
+    {
+      "name": "table",
+      "tags": "kanban,",
+      "category": "layout"
+    },
+    {
+      "name": "alms",
+      "tags": "alms",
+      "category": "islamic"
+    },
+    {
+      "name": "bedug-01",
+      "tags": "bedug-01",
+      "category": "islamic"
+    },
+    {
+      "name": "bedug-02",
+      "tags": "bedug-02",
+      "category": "islamic"
+    },
+    {
+      "name": "camel",
+      "tags": "camel",
+      "category": "islamic"
+    },
+    {
+      "name": "charity",
+      "tags": "charity",
+      "category": "islamic"
+    },
+    {
+      "name": "clothes",
+      "tags": "clothes",
+      "category": "islamic"
+    },
+    {
+      "name": "dates",
+      "tags": "dates",
+      "category": "islamic"
+    },
+    {
+      "name": "dirham",
+      "tags": "dirham",
+      "category": "islamic"
+    },
+    {
+      "name": "eid-mubarak",
+      "tags": "eid-mubarak",
+      "category": "islamic"
+    },
+    {
+      "name": "halal",
+      "tags": "halal",
+      "category": "islamic"
+    },
+    {
+      "name": "hijab",
+      "tags": "hijab",
+      "category": "islamic"
+    },
+    {
+      "name": "kaaba-01",
+      "tags": "kaaba-01",
+      "category": "islamic"
+    },
+    {
+      "name": "kaaba-02",
+      "tags": "kaaba-02",
+      "category": "islamic"
+    },
+    {
+      "name": "ketupat",
+      "tags": "ketupat",
+      "category": "islamic"
+    },
+    {
+      "name": "kurta-01",
+      "tags": "kurta-01",
+      "category": "islamic"
+    },
+    {
+      "name": "lantern",
+      "tags": "lantern",
+      "category": "islamic"
+    },
+    {
+      "name": "mosque-01",
+      "tags": "mosque-01",
+      "category": "islamic"
+    },
+    {
+      "name": "mosque-02",
+      "tags": "mosque-02",
+      "category": "islamic"
+    },
+    {
+      "name": "muhammad",
+      "tags": "muhammad",
+      "category": "islamic"
+    },
+    {
+      "name": "niqab",
+      "tags": "niqab",
+      "category": "islamic"
+    },
+    {
+      "name": "prayer-rug-01",
+      "tags": "prayer-rug-01",
+      "category": "islamic"
+    },
+    {
+      "name": "prayer-rug-02",
+      "tags": "prayer-rug-02",
+      "category": "islamic"
+    },
+    {
+      "name": "ramadhan-01",
+      "tags": "ramadhan-01",
+      "category": "islamic"
+    },
+    {
+      "name": "ramadhan-02",
+      "tags": "ramadhan-02",
+      "category": "islamic"
+    },
+    {
+      "name": "reminder",
+      "tags": "reminder",
+      "category": "islamic"
+    },
+    {
+      "name": "tasbih",
+      "tags": "tasbih",
+      "category": "islamic"
+    },
+    {
+      "name": "wudu",
+      "tags": "wudu",
+      "category": "islamic"
+    }
+  ]
+}
