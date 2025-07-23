@@ -87,7 +87,13 @@ private struct IconSelectionView: View {
     let data: IconPickerData
     let onSelectIcon: (String) -> Void
     
-    private let columns = Array(repeating: GridItem(.adaptive(minimum: 60, maximum: 80), spacing: 12), count: 4)
+    private let columns = Array(
+        repeating: GridItem(
+            .adaptive(minimum: 60, maximum: 80),
+            spacing: 12
+        ),
+        count: 4
+    )
     
     var body: some View {
         ScrollView {
@@ -101,7 +107,7 @@ private struct IconSelectionView: View {
             }
             .padding()
         }
-        .navigationTitle(subcategory.name)
+        .navigationTitle(LocalizedStringKey(subcategory.name))
         .navigationBarTitleDisplayMode(.large)
         .onAppear {
             data.loadIcons(for: subcategory)
