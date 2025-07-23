@@ -61,9 +61,11 @@ struct SettingsView: View {
             }
             .navigationDestination(for: SettingsNavigationDestination.self) { destination in
                 switch destination {
-                    case .mapper: MapperView(settingsState: $settingsState)
+                case .mapper: MapperView(settingsState: $settingsState)
                         .navigationBarBackButtonHidden()
-                    case .logs: EventsLogView()
+                case .previousAnnouncements: PreviousAnnouncementsView()
+                        .navigationBarBackButtonHidden()
+                case .logs: EventsLogView()
                         .navigationBarBackButtonHidden()
                 }
             }
@@ -83,6 +85,7 @@ struct SettingsView: View {
         List {
             themeAndLangaugeSection
             appearanceSection
+            announcementsSection
             dataSection
             aboutSection
             thanksToSection
@@ -133,6 +136,38 @@ struct SettingsView: View {
                 Text("Settings Appearance Title")
             } icon: {
                 YabaIconView(bundleKey: "dashboard-square-02")
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var announcementsSection: some View {
+        Section {
+            HStack {
+                Label {
+                    Text("Settings Announcements Title")
+                } icon: {
+                    YabaIconView(bundleKey: "notification-01")
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                }
+                Spacer()
+                YabaIconView(bundleKey: "arrow-right-01")
+                    .scaledToFit()
+                    .frame(width: 24, height: 24)
+                    .foregroundStyle(.tertiary)
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
+                settingsState.onNavigateToAnnouncements()
+            }
+        } header: {
+            Label {
+                Text("Home Announcements Title")
+            } icon: {
+                YabaIconView(bundleKey: "megaphone-03")
                     .scaledToFit()
                     .frame(width: 18, height: 18)
             }

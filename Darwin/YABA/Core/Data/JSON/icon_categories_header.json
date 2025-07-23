@@ -9,8 +9,8 @@
   "categories": [
     {
       "id": "business_finance",
-      "name": "Business & Finance",
-      "description": "Corporate, financial, and commercial activities",
+      "name": "Icon Category Business Finance",
+      "description": "Icon Category Business Finance Description",
       "icon_count": 403,
       "filename": "business_finance.json",
       "header_icon": "briefcase-01",
@@ -18,8 +18,8 @@
       "subcategories": [
         {
           "id": "business_operations",
-          "name": "Business Operations",
-          "description": "Business activities and operations",
+          "name": "Icon Subcategory Business Operations",
+          "description": "Icon Subcategory Business Operations Description",
           "header_icon": "building-02",
           "color": 2,
           "icon_count": 237,
@@ -27,8 +27,8 @@
         },
         {
           "id": "finance_crypto",
-          "name": "Finance & Crypto",
-          "description": "Financial services and cryptocurrency",
+          "name": "Icon Subcategory Finance Crypto",
+          "description": "Icon Subcategory Finance Crypto Description",
           "header_icon": "bitcoin-circle",
           "color": 13,
           "icon_count": 133,
@@ -36,8 +36,8 @@
         },
         {
           "id": "legal_compliance",
-          "name": "Legal & Compliance",
-          "description": "Legal and regulatory matters",
+          "name": "Icon Subcategory Legal Compliance",
+          "description": "Icon Subcategory Legal Compliance Description",
           "header_icon": "justice-scale-01",
           "color": 4,
           "icon_count": 33,
@@ -47,8 +47,8 @@
     },
     {
       "id": "technology_computing",
-      "name": "Technology & Computing",
-      "description": "Digital devices, software, and technology",
+      "name": "Icon Category Technology Computing",
+      "description": "Icon Category Technology Computing Description",
       "icon_count": 298,
       "filename": "technology_computing.json",
       "header_icon": "computer",
@@ -56,8 +56,8 @@
       "subcategories": [
         {
           "id": "devices_hardware",
-          "name": "Devices & Hardware",
-          "description": "Electronic devices and hardware",
+          "name": "Icon Subcategory Devices Hardware",
+          "description": "Icon Subcategory Devices Hardware Description",
           "header_icon": "hold-phone",
           "color": 1,
           "icon_count": 131,
@@ -65,8 +65,8 @@
         },
         {
           "id": "programming_ai",
-          "name": "Programming & AI",
-          "description": "Software development and AI",
+          "name": "Icon Subcategory Programming AI",
+          "description": "Icon Subcategory Programming AI Description",
           "header_icon": "code",
           "color": 6,
           "icon_count": 167,
@@ -76,8 +76,8 @@
     },
     {
       "id": "design_media",
-      "name": "Design & Media",
-      "description": "Creative tools, editing, and media",
+      "name": "Icon Category Design Media",
+      "description": "Icon Category Design Media Description",
       "icon_count": 218,
       "filename": "design_media.json",
       "header_icon": "brush",
@@ -85,8 +85,8 @@
       "subcategories": [
         {
           "id": "editing_tools",
-          "name": "Editing Tools",
-          "description": "Design and editing applications",
+          "name": "Icon Subcategory Editing Tools",
+          "description": "Icon Subcategory Editing Tools Description",
           "header_icon": "edit-01",
           "color": 9,
           "icon_count": 143,
@@ -94,8 +94,8 @@
         },
         {
           "id": "media_content",
-          "name": "Media & Content",
-          "description": "Images, videos, and multimedia",
+          "name": "Icon Subcategory Media Content",
+          "description": "Icon Subcategory Media Content Description",
           "header_icon": "camera-01",
           "color": 10,
           "icon_count": 75,
@@ -105,8 +105,8 @@
     },
     {
       "id": "system_files",
-      "name": "System & Files",
-      "description": "File management and system controls",
+      "name": "Icon Category System Files",
+      "description": "Icon Category System Files Description",
       "icon_count": 252,
       "filename": "system_files.json",
       "header_icon": "folder-01",
@@ -114,8 +114,8 @@
       "subcategories": [
         {
           "id": "files_storage",
-          "name": "Files & Storage",
-          "description": "File and folder management",
+          "name": "Icon Subcategory Files Storage",
+          "description": "Icon Subcategory Files Storage Description",
           "header_icon": "folder-02",
           "color": 2,
           "icon_count": 149,
@@ -123,8 +123,8 @@
         },
         {
           "id": "system_settings",
-          "name": "System & Settings",
-          "description": "System configuration and controls",
+          "name": "Icon Subcategory System Settings",
+          "description": "Icon Subcategory System Settings Description",
           "header_icon": "settings-01",
           "color": 4,
           "icon_count": 103,
@@ -134,8 +134,8 @@
     },
     {
       "id": "navigation_actions",
-      "name": "Navigation & Actions",
-      "description": "User interface controls and navigation",
+      "name": "Icon Category Navigation Actions",
+      "description": "Icon Category Navigation Actions Description",
       "icon_count": 413,
       "filename": "navigation_actions.json",
       "header_icon": "compass",
@@ -143,8 +143,8 @@
       "subcategories": [
         {
           "id": "navigation_arrows",
-          "name": "Navigation & Arrows",
-          "description": "Navigation elements and directional arrows",
+          "name": "Icon Subcategory Navigation Arrows",
+          "description": "Icon Subcategory Navigation Arrows Description",
           "header_icon": "arrow-right-02",
           "color": 7,
           "icon_count": 108,
@@ -152,8 +152,8 @@
         },
         {
           "id": "user_actions",
-          "name": "User Actions",
-          "description": "Interactive user actions and gestures",
+          "name": "Icon Subcategory User Actions",
+          "description": "Icon Subcategory User Actions Description",
           "header_icon": "waving-hand-02",
           "color": 5,
           "icon_count": 101,
@@ -161,8 +161,8 @@
         },
         {
           "id": "data_operations",
-          "name": "Data Operations",
-          "description": "Data handling and file operations",
+          "name": "Icon Subcategory Data Operations",
+          "description": "Icon Subcategory Data Operations Description",
           "header_icon": "download-01",
           "color": 6,
           "icon_count": 56,
@@ -170,8 +170,8 @@
         },
         {
           "id": "maps_logistics",
-          "name": "Maps & Logistics",
-          "description": "Location and transportation services",
+          "name": "Icon Subcategory Maps Logistics",
+          "description": "Icon Subcategory Maps Logistics Description",
           "header_icon": "map-pin",
           "color": 3,
           "icon_count": 148,
@@ -181,8 +181,8 @@
     },
     {
       "id": "lifestyle_personal",
-      "name": "Lifestyle & Personal",
-      "description": "Personal life, health, and daily activities",
+      "name": "Icon Category Lifestyle Personal",
+      "description": "Icon Category Lifestyle Personal Description",
       "icon_count": 417,
       "filename": "lifestyle_personal.json",
       "header_icon": "home-01",
@@ -190,8 +190,8 @@
       "subcategories": [
         {
           "id": "health_fitness",
-          "name": "Health & Fitness",
-          "description": "Medical care and physical fitness",
+          "name": "Icon Subcategory Health Fitness",
+          "description": "Icon Subcategory Health Fitness Description",
           "header_icon": "favourite",
           "color": 11,
           "icon_count": 126,
@@ -199,8 +199,8 @@
         },
         {
           "id": "food_kitchen",
-          "name": "Food & Kitchen",
-          "description": "Cooking, dining, and food services",
+          "name": "Icon Subcategory Food Kitchen",
+          "description": "Icon Subcategory Food Kitchen Description",
           "header_icon": "spoon-and-knife",
           "color": 8,
           "icon_count": 139,
@@ -208,8 +208,8 @@
         },
         {
           "id": "home_living",
-          "name": "Home & Living",
-          "description": "Home, furniture, and personal items",
+          "name": "Icon Subcategory Home Living",
+          "description": "Icon Subcategory Home Living Description",
           "header_icon": "sofa-01",
           "color": 5,
           "icon_count": 152,
@@ -219,8 +219,8 @@
     },
     {
       "id": "education_learning",
-      "name": "Education & Learning",
-      "description": "Educational content and learning tools",
+      "name": "Icon Category Education Learning",
+      "description": "Icon Category Education Learning Description",
       "icon_count": 261,
       "filename": "education_learning.json",
       "header_icon": "graduation-scroll",
@@ -228,8 +228,8 @@
       "subcategories": [
         {
           "id": "academic_education",
-          "name": "Academic & Education",
-          "description": "Schools and educational institutions",
+          "name": "Icon Subcategory Academic Education",
+          "description": "Icon Subcategory Academic Education Description",
           "header_icon": "school-01",
           "color": 12,
           "icon_count": 93,
@@ -237,8 +237,8 @@
         },
         {
           "id": "mathematics",
-          "name": "Mathematics",
-          "description": "Mathematical symbols and calculations",
+          "name": "Icon Subcategory Mathematics",
+          "description": "Icon Subcategory Mathematics Description",
           "header_icon": "calculator",
           "color": 6,
           "icon_count": 125,
@@ -246,8 +246,8 @@
         },
         {
           "id": "reference_notes",
-          "name": "Reference & Notes",
-          "description": "Documentation and note-taking",
+          "name": "Icon Subcategory Reference Notes",
+          "description": "Icon Subcategory Reference Notes Description",
           "header_icon": "bookmark-01",
           "color": 12,
           "icon_count": 43,
@@ -257,8 +257,8 @@
     },
     {
       "id": "entertainment_communication",
-      "name": "Entertainment & Communication",
-      "description": "Games, media, communication, and cultural content",
+      "name": "Icon Category Entertainment Communication",
+      "description": "Icon Category Entertainment Communication Description",
       "icon_count": 825,
       "filename": "entertainment_communication.json",
       "header_icon": "game-controller-01",
@@ -266,8 +266,8 @@
       "subcategories": [
         {
           "id": "games_entertainment",
-          "name": "Games & Entertainment",
-          "description": "Gaming and entertainment activities",
+          "name": "Icon Subcategory Games Entertainment",
+          "description": "Icon Subcategory Games Entertainment Description",
           "header_icon": "game",
           "color": 8,
           "icon_count": 211,
@@ -275,8 +275,8 @@
         },
         {
           "id": "communication_social",
-          "name": "Communication & Social",
-          "description": "Communication tools and social interaction",
+          "name": "Icon Subcategory Communication Social",
+          "description": "Icon Subcategory Communication Social Description",
           "header_icon": "message-01",
           "color": 3,
           "icon_count": 78,
@@ -284,8 +284,8 @@
         },
         {
           "id": "world_environment",
-          "name": "World & Environment",
-          "description": "Weather, buildings, and environmental elements",
+          "name": "Icon Subcategory World Environment",
+          "description": "Icon Subcategory World Environment Description",
           "header_icon": "earth",
           "color": 3,
           "icon_count": 278,
@@ -293,8 +293,8 @@
         },
         {
           "id": "branding_symbols",
-          "name": "Branding & Symbols",
-          "description": "Logos, symbols, and visual elements",
+          "name": "Icon Subcategory Branding Symbols",
+          "description": "Icon Subcategory Branding Symbols Description",
           "header_icon": "bookmark-02",
           "color": 10,
           "icon_count": 258,

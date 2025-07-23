@@ -8,7 +8,7 @@
 import UniformTypeIdentifiers
 import SwiftUI
 
-struct MapperView: View {
+internal struct MapperView: View {
     @Environment(\.dismiss)
     private var dismiss
     

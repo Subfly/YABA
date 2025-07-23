@@ -56,7 +56,7 @@ private struct CategoryItemView: View {
                                 .scaledToFit()
                                 .foregroundStyle(YabaColor(rawValue: subcategory.color)?.getUIColor() ?? .accentColor)
                                 .frame(width: 24, height: 24)
-                            Text(subcategory.name)
+                            Text(LocalizedStringKey(subcategory.name))
                         }
                         Spacer()
                         HStack {
@@ -70,14 +70,14 @@ private struct CategoryItemView: View {
             }
         } header: {
             Label {
-                Text(category.name)
+                Text(LocalizedStringKey(category.name))
             } icon: {
                 YabaIconView(bundleKey: category.headerIcon)
                     .scaledToFit()
                     .frame(width: 18, height: 18)
             }.foregroundStyle(YabaColor(rawValue: category.color)?.getUIColor() ?? .accentColor)
         } footer: {
-            Text(category.description)
+            Text(LocalizedStringKey(category.description))
         }
     }
 }

@@ -23,7 +23,7 @@ struct LanguagePicker: View {
             } icon: {
                 YabaIconView(bundleKey: "arrow-right-01")
                     .scaledToFit()
-                    .frame(width: 24, height: 24)
+                    .frame(width: 22, height: 22)
                     .foregroundStyle(.tertiary)
             }.labelStyle(InverseLabelStyle())
         }

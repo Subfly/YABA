@@ -10,7 +10,7 @@ import SwiftUI
 import SwiftData
 
 internal enum SettingsNavigationDestination: Hashable {
-    case mapper, logs
+    case mapper, previousAnnouncements, logs
 }
 
 @MainActor
@@ -218,6 +218,10 @@ internal class SettingsState {
         )
     }
     
+    func onNavigateToAnnouncements() {
+        settingsNavPath.append(.previousAnnouncements)
+    }
+    
     func onNavigateToLogs() {
         settingsNavPath.append(.logs)
     }
@@ -241,7 +245,15 @@ internal class SettingsState {
         @AppStorage(Constants.preferredSortOrderKey)
         var sortOrderType: SortOrderType = .ascending
         
+        @AppStorage(Constants.announcementsYaba1_2UpdateKey)
+        var showUpdateAnnouncement: Bool = true
+        
+        @AppStorage(Constants.announcementsCloudKitDropKey)
+        var showCloudKitAnnouncement: Bool = true
+        
         hasPassedOnboarding = false
+        showUpdateAnnouncement = true
+        showCloudKitAnnouncement = true
         theme = .system
         contentAppearance = .list
         imageSizing = .small

@@ -161,6 +161,7 @@ private struct SequentialView: View {
         
     var body: some View {
         List {
+            HomeAnnouncementsView()
             if showRecents && UIDevice.current.userInterfaceIdiom == .phone {
                 HomeRecentsView(
                     onNavigationCallback: onNavigationCallbackForBookmark
