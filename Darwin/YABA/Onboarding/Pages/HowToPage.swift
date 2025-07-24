@@ -95,7 +95,7 @@ internal struct HowToPage: View {
                             withAnimation {
                                 shouldShowList[index] = true
                             }
-                            try? await Task.sleep(for: .seconds(1))
+                            try? await Task.sleep(for: .seconds(0.5))
                         }
                         onRequestButtonVisibility(true)
                         hasShown = true

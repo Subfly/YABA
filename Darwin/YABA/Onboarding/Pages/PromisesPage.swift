@@ -27,24 +27,28 @@ private struct PromiseItem: Identifiable {
                 title: LocalizedStringKey("Onboarding Promises Page Step 3 Title"),
                 detail: LocalizedStringKey("Onboarding Promises Page Step 3 Detail")
             ),
+            /* IT IS STILL A PROMISE, BUT I HAD TO REMOVE IT TO FIT THE SCREEN :(
             PromiseItem(
                 title: LocalizedStringKey("Onboarding Promises Page Step 4 Title"),
                 detail: LocalizedStringKey("Onboarding Promises Page Step 4 Detail")
             ),
+             */
             PromiseItem(
                 title: LocalizedStringKey("Onboarding Promises Page Step 5 Title"),
                 detail: LocalizedStringKey("Onboarding Promises Page Step 5 Detail")
             ),
+            /* IT IS STILL A PROMISE, BUT I HAD TO REMOVE IT TO FIT THE SCREEN :(
             PromiseItem(
                 title: LocalizedStringKey("Onboarding Promises Page Step 6 Title"),
                 detail: LocalizedStringKey("Onboarding Promises Page Step 6 Detail")
             )
+             */
         ]
     }
 }
 
 internal struct PromisesPage: View {
-    @State private var shouldShowList: [Bool] = [false, false, false, false, false, false]
+    @State private var shouldShowList: [Bool] = [false, false, false, false]
     @State private var hasShown: Bool = false
     
     private let promises = PromiseItem.items()
@@ -63,7 +67,6 @@ internal struct PromisesPage: View {
         .padding(.bottom)
         .padding(.bottom)
         .onAppear {
-            print("Promises appeared!")
             if UIDevice.current.userInterfaceIdiom != .pad {
                 Task {
                     if !hasShown {
@@ -73,7 +76,7 @@ internal struct PromisesPage: View {
                             withAnimation {
                                 shouldShowList[index] = true
                             }
-                            try? await Task.sleep(for: .seconds(1))
+                            try? await Task.sleep(for: .seconds(0.5))
                         }
                         onRequestButtonVisibility(true)
                         hasShown = true

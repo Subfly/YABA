@@ -47,11 +47,13 @@ struct AnnouncementView: View {
             }
         }
         .contentShape(Rectangle())
+        #if targetEnvironment(macCatalyst)
         .listRowBackground(
             isHovered
             ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
             : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
         )
+        #endif
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
             if !isInPreview {
                 Button {

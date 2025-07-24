@@ -71,11 +71,11 @@ internal struct GenerationPage: View {
                         onRequestButtonVisibility(false)
                         try? await Task.sleep(for: .seconds(0.5))
                         shouldShowTitle = true
-                        try? await Task.sleep(for: .seconds(1))
+                        try? await Task.sleep(for: .seconds(0.5))
                         shouldShowDescription = true
-                        try? await Task.sleep(for: .seconds(1))
+                        try? await Task.sleep(for: .seconds(0.5))
                         shouldShowRest = true
-                        try? await Task.sleep(for: .seconds(1))
+                        try? await Task.sleep(for: .seconds(0.5))
                         onRequestButtonVisibility(true)
                         hasShown = true
                     }

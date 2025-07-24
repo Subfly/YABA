@@ -107,13 +107,13 @@ internal struct PurposePage: View {
                         onRequestButtonVisibility(false)
                         try? await Task.sleep(for: .seconds(0.5))
                         showFirstItem = true
-                        try? await Task.sleep(for: .seconds(1))
+                        try? await Task.sleep(for: .seconds(0.5))
                         showSecondItem = true
-                        try? await Task.sleep(for: .seconds(1))
+                        try? await Task.sleep(for: .seconds(0.5))
                         showThirdItem = true
-                        try? await Task.sleep(for: .seconds(1))
+                        try? await Task.sleep(for: .seconds(0.5))
                         showMainItem = true
-                        try? await Task.sleep(for: .seconds(1))
+                        try? await Task.sleep(for: .seconds(0.5))
                         onRequestButtonVisibility(true)
                         hasShown = true
                     }
