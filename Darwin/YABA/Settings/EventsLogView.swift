@@ -16,12 +16,17 @@ internal struct EventsLogView: View {
     private var logs: [YabaDataLog]
     
     var body: some View {
-        List {
-            ForEach(logs, id: \.id) { log in
-                generateLogView(log)
+        ZStack {
+            AnimatedGradient(collectionColor: .accentColor)
+            List {
+                ForEach(logs, id: \.id) { log in
+                    generateLogView(log)
+                }
             }
+            .listStyle(.sidebar)
+            .scrollContentBackground(.hidden)
+            .background(.clear)
         }
-        .listStyle(.sidebar)
         .navigationTitle("Settings Event Logs Label")
         .toolbar {
             if UIDevice.current.userInterfaceIdiom == .pad {

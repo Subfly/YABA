@@ -12,33 +12,38 @@ internal struct PreviousAnnouncementsView: View {
     private var dismiss
     
     var body: some View {
-        List {
-            AnnouncementView(
-                titleKey: "Announcements CloudKit Support Drop Title",
-                severity: .warning,
-                isInPreview: true,
-                onClick: {
-                    if let url: URL = .init(string: Constants.announcementCloudKitDropLink),
-                       UIApplication.shared.canOpenURL(url) {
-                        UIApplication.shared.open(url)
-                    }
-                },
-                onDismiss: { }
-            )
-            AnnouncementView(
-                titleKey: "Announcements Update Title",
-                severity: .update,
-                isInPreview: true,
-                onClick: {
-                    if let url: URL = .init(string: Constants.updateAnnouncementLink),
-                       UIApplication.shared.canOpenURL(url) {
-                        UIApplication.shared.open(url)
-                    }
-                },
-                onDismiss: { }
-            )
+        ZStack {
+            AnimatedGradient(collectionColor: .accentColor)
+            List {
+                AnnouncementView(
+                    titleKey: "Announcements CloudKit Support Drop Title",
+                    severity: .warning,
+                    isInPreview: true,
+                    onClick: {
+                        if let url: URL = .init(string: Constants.announcementCloudKitDropLink),
+                           UIApplication.shared.canOpenURL(url) {
+                            UIApplication.shared.open(url)
+                        }
+                    },
+                    onDismiss: { }
+                )
+                AnnouncementView(
+                    titleKey: "Announcements Update Title",
+                    severity: .update,
+                    isInPreview: true,
+                    onClick: {
+                        if let url: URL = .init(string: Constants.updateAnnouncementLink),
+                           UIApplication.shared.canOpenURL(url) {
+                            UIApplication.shared.open(url)
+                        }
+                    },
+                    onDismiss: { }
+                )
+            }
+            .listStyle(.sidebar)
+            .scrollContentBackground(.hidden)
+            .background(.clear)
         }
-        .listStyle(.sidebar)
         .navigationTitle("Settings Announcements Title")
         .toolbar {
             ToolbarItem(placement: .navigation) {
