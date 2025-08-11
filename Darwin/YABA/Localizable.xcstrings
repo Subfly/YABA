@@ -5684,7 +5684,8 @@
             "value" : "导出 CSV"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "CSV Notes Bookmark ID" : {
       "comment" : "Note for Bookmark ID in mapper info section of CSV",
@@ -15856,7 +15857,8 @@
             "value" : "导出 JSON"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "Link" : {
       "comment" : "Header of Link in bookmark creation sheet",
@@ -17005,6 +17007,19 @@
           }
         }
       }
+    },
+    "MARKDOWN" : {
+      "comment" : "Name of Markdown file type",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export Markdown"
+          }
+        }
+      },
+      "shouldTranslate" : false
     },
     "Move" : {
       "comment" : "Label to show for move related functionality",

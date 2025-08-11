@@ -407,6 +407,33 @@ struct SettingsView: View {
                 )
             }
         }
+        // I just love this beautiful SwiftUI hack...
+        .fileExporter(
+            isPresented: $settingsState.shouldShowMarkupExportSheet,
+            document: settingsState.exportableMarkupDocument,
+            contentType: .plainText,
+            defaultFilename: "yaba_export",
+            onCompletion: { result in
+                switch result {
+                case .success:
+                    settingsState.toastManager.show(
+                        message: LocalizedStringKey("Export Successful Message"),
+                        accentColor: .green,
+                        acceptText: LocalizedStringKey("Ok"),
+                        iconType: .success,
+                        onAcceptPressed: { settingsState.toastManager.hide() }
+                    )
+                case .failure:
+                    settingsState.toastManager.show(
+                        message: LocalizedStringKey("Export Error Message"),
+                        accentColor: .red,
+                        acceptText: LocalizedStringKey("Ok"),
+                        iconType: .error,
+                        onAcceptPressed: { settingsState.toastManager.hide() }
+                    )
+                }
+            }
+        )
     }
     
     @ViewBuilder
@@ -462,6 +489,19 @@ struct SettingsView: View {
                         Text("CSV")
                     } icon: {
                         YabaIconView(bundleKey: "csv-02")
+                    }
+                }
+                Button {
+                    settingsState.shouldShowExportTypeSelection = false
+                    settingsState.showExportSheet(
+                        using: modelContext,
+                        withType: .plainText
+                    )
+                } label: {
+                    Label {
+                        Text("MARKDOWN")
+                    } icon: {
+                        YabaIconView(bundleKey: "file-02")
                     }
                 }
             }

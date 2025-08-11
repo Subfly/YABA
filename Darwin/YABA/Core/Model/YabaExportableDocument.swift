@@ -65,3 +65,22 @@ struct YabaExportableHtmlDocument: FileDocument {
         FileWrapper(regularFileWithContents: self.data)
     }
 }
+
+struct YabaExportableMarkupDocument: FileDocument {
+    static var readableContentTypes: [UTType] = [.plainText]
+    
+    var data: Data
+    
+    init(configuration: ReadConfiguration) throws {
+        guard let data = configuration.file.regularFileContents else { throw NSError() }
+        self.data = data
+    }
+    
+    init(data: Data) {
+        self.data = data
+    }
+    
+    func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
+        FileWrapper(regularFileWithContents: self.data)
+    }
+}

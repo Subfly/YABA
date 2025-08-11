@@ -423,6 +423,17 @@ class DataManager {
                         LocalizedStringKey("Data Manager Error During Generating Exportable Message")
                     )
                 }
+            } else if type == .plainText {
+                if let markdownContent = makeMarkdown(
+                    from: exportableCollections, 
+                    with: Array(exportableBookmarks)
+                ) {
+                    onReady(markdownContent)
+                } else {
+                    throw DataError.exportableGenerationError(
+                        LocalizedStringKey("Data Manager Error During Generating Exportable Message")
+                    )
+                }
             }
         } else {
             throw DataError.unkownError(LocalizedStringKey("Data Manager Unknown Error Message"))
@@ -485,6 +496,96 @@ class DataManager {
         let csvString = ([header.joined(separator: ",")] + rows).joined(separator: "\n")
         
         return csvString.data(using: .utf8)
+    }
+    
+    private func makeMarkdown(
+        from collections: [YabaCodableCollection], 
+        with allBookmarks: [YabaCodableBookmark]
+    ) -> Data? {
+        var markdownLines: [String] = []
+        
+        // H1 title - only one H1 as requested
+        markdownLines.append("# 📚 YABA")
+        markdownLines.append("")
+        
+        // Create a dictionary to quickly find bookmarks by ID
+        let bookmarkDict: [String: YabaCodableBookmark] = Dictionary(
+            uniqueKeysWithValues: allBookmarks.compactMap { bookmark in
+                guard let bookmarkId = bookmark.bookmarkId else { return nil }
+                return (bookmarkId, bookmark)
+            }
+        )
+        
+        // Process each collection as a folder
+        for collection in collections {
+            if collection.type == CollectionType.tag.rawValue {
+                continue
+            }
+            
+            // Find bookmarks for this collection
+            let collectionBookmarks = collection.bookmarks.compactMap { bookmarkId in
+                bookmarkDict[bookmarkId]
+            }
+            
+            // Skip empty folders
+            if collectionBookmarks.isEmpty {
+                continue
+            }
+            
+            // H2 for collection name
+            markdownLines.append("## 📁 \(collection.label)")
+            markdownLines.append("")
+            
+            // Process each bookmark in this collection
+            for bookmark in collectionBookmarks {
+                // H3 for bookmark title
+                let bookmarkTitle = bookmark.label ?? bookmark.link
+                markdownLines.append("### 🔖 \(bookmarkTitle)")
+                markdownLines.append("")
+                
+                // Add the link
+                markdownLines.append("🔗 \(bookmark.link)")
+                markdownLines.append("")
+                
+                // Add description if available
+                if let description = bookmark.bookmarkDescription, !description.isEmpty {
+                    markdownLines.append("📝 \(description)")
+                    markdownLines.append("")
+                }
+            }
+        }
+        
+        // Handle bookmarks that don't belong to any collection
+        let bookmarksWithoutCollections = allBookmarks.filter { bookmark in
+            !collections.contains { collection in
+                collection.bookmarks.contains(bookmark.bookmarkId ?? "")
+            }
+        }
+        
+        if !bookmarksWithoutCollections.isEmpty {
+            markdownLines.append("## 📂 Uncategorized")
+            markdownLines.append("")
+            
+            for bookmark in bookmarksWithoutCollections {
+                // H3 for bookmark title
+                let bookmarkTitle = bookmark.label ?? bookmark.link
+                markdownLines.append("### 🔖 \(bookmarkTitle)")
+                markdownLines.append("")
+                
+                // Add the link
+                markdownLines.append("🔗 \(bookmark.link)")
+                markdownLines.append("")
+                
+                // Add description if available
+                if let description = bookmark.bookmarkDescription, !description.isEmpty {
+                    markdownLines.append("📝 \(description)")
+                    markdownLines.append("")
+                }
+            }
+        }
+        
+        let markdownString = markdownLines.joined(separator: "\n")
+        return markdownString.data(using: .utf8)
     }
     
     private func escapeForCSV(_ field: String) -> String {

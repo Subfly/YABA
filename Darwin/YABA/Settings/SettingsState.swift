@@ -29,6 +29,7 @@ internal class SettingsState {
     var shouldShowJsonExportSheet: Bool = false
     var shouldShowCsvExportSheet: Bool = false
     var shouldShowHtmlExportSheet: Bool = false
+    var shouldShowMarkupExportSheet: Bool = false
     
     var shouldShowHugeIconsAlert: Bool = false
     var shouldShowIconKitchenAlert: Bool = false
@@ -50,6 +51,7 @@ internal class SettingsState {
     var exportableJsonDocument: YabaExportableJsonDocument? = nil
     var exportableCsvDocument: YabaExportableCsvDocument? = nil
     var exportableHtmlDocument: YabaExportableHtmlDocument? = nil
+    var exportableMarkupDocument: YabaExportableMarkupDocument? = nil
     
     func reset() {
         mappedHeaders = [
@@ -185,6 +187,9 @@ internal class SettingsState {
                     } else if type == .json {
                         self.exportableJsonDocument = .init(data: data)
                         self.shouldShowJsonExportSheet = true
+                    } else if type == .plainText {
+                        self.exportableMarkupDocument = .init(data: data)
+                        self.shouldShowMarkupExportSheet = true
                     }
                 }
             )
