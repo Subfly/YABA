@@ -9,6 +9,7 @@ import Foundation
 import UniformTypeIdentifiers
 import SwiftData
 import SwiftUI
+import UserNotifications
 
 enum MappableCSVHeaderValues: String {
     case url         = "url"
@@ -551,7 +552,7 @@ class DataManager {
     }
 }
 
-// HTML Parser class to handle HTML parsing
+// HTML Parser class to handle HTML parsing with relaxed format support
 private class HTMLParser {
     struct ParsedBookmark {
         let title: String
@@ -566,67 +567,190 @@ private class HTMLParser {
     func parse(_ htmlString: String) throws -> [ParsedFolder] {
         var folders: [ParsedFolder] = []
         var currentFolder: ParsedFolder?
+        var allBookmarks: [ParsedBookmark] = []
         
-        // Split the HTML into lines for easier processing
-        let lines = htmlString.components(separatedBy: .newlines)
+        // Normalize the HTML string for better parsing
+        let normalizedHTML = normalizeHTML(htmlString)
         
-        for line in lines {
-            let trimmedLine = line.trimmingCharacters(in: .whitespaces)
-            // Check for folder (H3 tag)
-            if trimmedLine.hasPrefix("<DT><H3>") && trimmedLine.hasSuffix("</H3>") {
-                // If we have a current folder, add it to the list
-                if let folder = currentFolder {
+        // Use regex to find all DT elements (folders and bookmarks)
+        let dtPattern = #"<DT>.*?(?=<DT>|$)"#
+        let regex = try NSRegularExpression(pattern: dtPattern, options: [.caseInsensitive, .dotMatchesLineSeparators])
+        let matches = regex.matches(in: normalizedHTML, range: NSRange(normalizedHTML.startIndex..., in: normalizedHTML))
+        
+        for match in matches {
+            guard let range = Range(match.range, in: normalizedHTML) else { continue }
+            let dtElement = String(normalizedHTML[range]).trimmingCharacters(in: .whitespaces)
+            
+            // Skip empty elements
+            if dtElement.isEmpty { continue }
+            
+            // Check if this is a folder (H3 tag) but not a document title
+            if let folderName = extractFolderName(from: dtElement), !isDocumentTitle(dtElement) {
+                // Save current folder if it exists and has bookmarks
+                if let folder = currentFolder, !folder.bookmarks.isEmpty {
                     folders.append(folder)
                 }
                 
-                // Extract folder name
-                let folderName = trimmedLine
-                    .replacingOccurrences(of: "<DT><H3>", with: "")
-                    .replacingOccurrences(of: "</H3>", with: "")
-                    .trimmingCharacters(in: .whitespaces)
-                
                 // Create new folder
                 currentFolder = ParsedFolder(label: folderName, bookmarks: [])
+                continue
             }
             
-            // Check for bookmark (A tag)
-            if trimmedLine.hasPrefix("<DT><A") {
-                if let bookmark = parseBookmark(from: trimmedLine) {
+            // Check if this is a bookmark
+            if let bookmark = parseBookmark(from: dtElement) {
+                // Add to current folder if exists, otherwise collect all bookmarks
+                if currentFolder != nil {
                     currentFolder?.bookmarks.append(bookmark)
+                } else {
+                    allBookmarks.append(bookmark)
                 }
             }
         }
         
-        // Add the last folder if exists
-        if let folder = currentFolder {
+        // Add the last folder if exists and has bookmarks
+        if let folder = currentFolder, !folder.bookmarks.isEmpty {
             folders.append(folder)
         }
         
-        // If no folders were found but we have bookmarks, create an uncategorized folder
-        if folders.isEmpty && currentFolder?.bookmarks.isEmpty == false {
-            folders.append(ParsedFolder(label: "-1", bookmarks: currentFolder?.bookmarks ?? []))
+        // If we found bookmarks but no folders, create an uncategorized folder
+        if folders.isEmpty && !allBookmarks.isEmpty {
+            folders.append(ParsedFolder(label: "-1", bookmarks: allBookmarks))
+        } else if !allBookmarks.isEmpty {
+            // If we have both folders and loose bookmarks, add loose ones to uncategorized
+            folders.append(ParsedFolder(label: "-1", bookmarks: allBookmarks))
         }
         
         return folders
     }
     
+    private func normalizeHTML(_ html: String) -> String {
+        // Make case-insensitive and normalize common variations
+        return html
+            .replacingOccurrences(of: "<dt>", with: "<DT>")
+            .replacingOccurrences(of: "<DT >", with: "<DT>")
+            .replacingOccurrences(of: "<h3>", with: "<H3>")
+            .replacingOccurrences(of: "<H3 >", with: "<H3>")
+            .replacingOccurrences(of: "</h3>", with: "</H3>")
+            .replacingOccurrences(of: "<a ", with: "<A ")
+            .replacingOccurrences(of: "<A  ", with: "<A ")
+            .replacingOccurrences(of: "href=", with: "HREF=")
+            .replacingOccurrences(of: "HREF =", with: "HREF=")
+            .replacingOccurrences(of: "</a>", with: "</A>")
+            .replacingOccurrences(of: "<dl>", with: "<DL>")
+            .replacingOccurrences(of: "</dl>", with: "</DL>")
+            .replacingOccurrences(of: "<dd>", with: "<DD>")
+            .replacingOccurrences(of: "</dd>", with: "</DD>")
+            .replacingOccurrences(of: "<p>", with: "<P>")
+            .replacingOccurrences(of: "</p>", with: "</P>")
+    }
+    
+    private func extractFolderName(from line: String) -> String? {
+        // Multiple patterns for folder detection (more focused on H3 tags)
+        let patterns = [
+            #"<DT><H3[^>]*>([^<]+)</H3>"#,           // Standard Netscape format
+            #"<H3[^>]*>([^<]+)</H3>"#,               // H3 without DT (but not H1)
+            #"<folder[^>]*>([^<]+)</folder>"#         // Some custom formats
+        ]
+        
+        for pattern in patterns {
+            if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
+               let match = regex.firstMatch(in: line, range: NSRange(line.startIndex..., in: line)),
+               let range = Range(match.range(at: 1), in: line) {
+                let folderName = String(line[range])
+                    .trimmingCharacters(in: .whitespaces)
+                
+                // Skip empty folder names
+                if !folderName.isEmpty {
+                    return decodeHTMLEntities(folderName)
+                }
+            }
+        }
+        
+        return nil
+    }
+    
+    private func isDocumentTitle(_ line: String) -> Bool {
+        // Skip H1 tags and TITLE tags as they're usually document titles, not folders
+        let titlePatterns = [
+            #"<H1[^>]*>"#,
+            #"<TITLE[^>]*>"#,
+            #"<title[^>]*>"#
+        ]
+        
+        for pattern in titlePatterns {
+            if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
+               regex.firstMatch(in: line, range: NSRange(line.startIndex..., in: line)) != nil {
+                return true
+            }
+        }
+        
+        return false
+    }
+    
     private func parseBookmark(from line: String) -> ParsedBookmark? {
-        // Extract URL and title using more precise pattern
-        let pattern = #"<DT><A HREF="([^"]+)">([^<]+)</A>"#
-        guard let regex = try? NSRegularExpression(pattern: pattern),
-              let match = regex.firstMatch(in: line, range: NSRange(line.startIndex..., in: line)),
-              let urlRange = Range(match.range(at: 1), in: line),
-              let titleRange = Range(match.range(at: 2), in: line) else {
+        // Try to extract HREF and title using a more robust approach
+        // First, find the HREF attribute value
+        guard let hrefValue = extractHrefValue(from: line) else {
             return nil
         }
         
-        let urlString = String(line[urlRange])
-        let title = String(line[titleRange])
-            .trimmingCharacters(in: .whitespaces)
+        // Then extract the title between > and </A>
+        guard let title = extractBookmarkTitle(from: line) else {
+            return nil
+        }
+        
+        // Validate URL format
+        guard !hrefValue.isEmpty && (hrefValue.hasPrefix("http") || hrefValue.hasPrefix("ftp") || hrefValue.hasPrefix("javascript")),
+              !title.isEmpty else {
+            return nil
+        }
         
         return ParsedBookmark(
-            title: title,
-            url: urlString
+            title: decodeHTMLEntities(title),
+            url: hrefValue
         )
+    }
+    
+    private func extractHrefValue(from line: String) -> String? {
+        // Multiple patterns to find HREF value, ordered by specificity
+        let hrefPatterns = [
+            #"HREF=\"([^\"]+)\""#,      // HREF="url"
+            #"HREF='([^']+)'"#,         // HREF='url' 
+            #"HREF=([^\s>]+)"#          // HREF=url (no quotes)
+        ]
+        
+        for pattern in hrefPatterns {
+            if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
+               let match = regex.firstMatch(in: line, range: NSRange(line.startIndex..., in: line)),
+               let range = Range(match.range(at: 1), in: line) {
+                return String(line[range]).trimmingCharacters(in: .whitespaces)
+            }
+        }
+        
+        return nil
+    }
+    
+    private func extractBookmarkTitle(from line: String) -> String? {
+        // Extract text between the last > and </A>
+        let pattern = #">([^<]+)</A>"#
+        
+        if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
+           let match = regex.firstMatch(in: line, range: NSRange(line.startIndex..., in: line)),
+           let range = Range(match.range(at: 1), in: line) {
+            return String(line[range]).trimmingCharacters(in: .whitespaces)
+        }
+        
+        return nil
+    }
+    
+    private func decodeHTMLEntities(_ text: String) -> String {
+        return text
+            .replacingOccurrences(of: "&amp;", with: "&")
+            .replacingOccurrences(of: "&lt;", with: "<")
+            .replacingOccurrences(of: "&gt;", with: ">")
+            .replacingOccurrences(of: "&quot;", with: "\"")
+            .replacingOccurrences(of: "&#39;", with: "'")
+            .replacingOccurrences(of: "&apos;", with: "'")
+            .replacingOccurrences(of: "&nbsp;", with: " ")
     }
 }
