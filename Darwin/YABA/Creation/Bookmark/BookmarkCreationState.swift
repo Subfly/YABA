@@ -28,6 +28,7 @@ internal class BookmarkCreationState {
             debouncedUrl.send(url)
         }
     }
+    var cleanerUrl: String = ""
     var host: String = ""
     var label: String = ""
     var description: String = ""
@@ -83,6 +84,7 @@ internal class BookmarkCreationState {
                 self.readableHTML = fetched.readableHTML
                 self.iconData = fetched.iconData
                 self.imageData = fetched.imageData
+                self.cleanerUrl = fetched.url
             }
             hasError = false
             lastFetchedUrl = urlString
@@ -140,7 +142,7 @@ internal class BookmarkCreationState {
         withAnimation {
             if let bookmarkToEdit {
                 bookmarkToEdit.label = label
-                bookmarkToEdit.link = url
+                bookmarkToEdit.link = cleanerUrl
                 bookmarkToEdit.domain = host
                 bookmarkToEdit.bookmarkDescription = description
                 bookmarkToEdit.imageUrl = imageURL
@@ -176,7 +178,7 @@ internal class BookmarkCreationState {
                 let creationTime: Date = .now
                 let newBookmark = YabaBookmark(
                     bookmarkId: UUID().uuidString,
-                    link: url,
+                    link: cleanerUrl,
                     label: label,
                     bookmarkDescription: description,
                     domain: host,

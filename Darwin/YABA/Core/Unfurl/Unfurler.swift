@@ -38,13 +38,14 @@ class Unfurler {
     
     func unfurl(urlString: String) async throws -> YabaLinkPreview? {
         let normalizedURL = normalizeURL(urlString)
-        guard let url = URL(string: normalizedURL) else {
-            self.logger.log(level: .error, "[UNFURLER] Cannot create url for: \(normalizedURL) (original: \(urlString))")
+        let cleanedUrl = LinkCleaner.clean(url: normalizedURL)
+        guard let url = URL(string: cleanedUrl) else {
+            self.logger.log(level: .error, "[UNFURLER] Cannot create url for: \(cleanedUrl) (original: \(urlString))")
             throw UnfurlError.cannotCreateURL(LocalizedStringKey("URL Error Text"))
         }
         
         do {
-            if let html = try await loadURL(for: normalizedURL, with: url) {
+            if let html = try await loadURL(for: cleanedUrl, with: url) {
                 let tags = extractAllMetaTags(from: html)
                 var metadata = extractMetaData(from: tags)
                 
@@ -71,7 +72,7 @@ class Unfurler {
                 }
                 
                 return YabaLinkPreview(
-                    url: urlString,
+                    url: cleanedUrl,
                     title: metadata[MetaKeys.title],
                     description: metadata[MetaKeys.description],
                     host: metadata[MetaKeys.domain],

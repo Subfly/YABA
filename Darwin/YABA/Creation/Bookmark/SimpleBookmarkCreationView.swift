@@ -100,16 +100,35 @@ struct SimpleBookmarkCreationView: View {
     
     @ViewBuilder
     private var textFieldContent: some View {
-        HStack(spacing: 0) {
+        VStack(spacing: 0) {
             TextField(
                 "",
                 text: $creationState.url,
                 prompt: Text(LocalizedStringKey("Create Bookmark URL Placeholder"))
             )
+            .disabled(creationState.isLoading)
             .frame(width: 275)
             .safeAreaInset(edge: .leading) {
                 createIcon(for: "link-02")
                     .foregroundStyle(.white)
+            }
+            HStack {
+                if creationState.cleanerUrl.isEmpty {
+                    Text(LocalizedStringKey("Create Bookmark Cleaned URL Placeholder"))
+                        .foregroundStyle(.tertiary)
+                        .safeAreaInset(edge: .leading) {
+                            createIcon(for: "clean")
+                                .foregroundStyle(.white)
+                        }
+                } else {
+                    Text(creationState.cleanerUrl)
+                        .safeAreaInset(edge: .leading) {
+                            createIcon(for: "clean")
+                                .foregroundStyle(.white)
+                                .padding(.trailing, 4)
+                        }
+                }
+                Spacer()
             }
         }.padding(.bottom, 4)
         TextField(

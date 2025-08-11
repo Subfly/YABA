@@ -408,6 +408,102 @@
         }
       }
     },
+    "Bookmark Creation Link Info Message" : {
+      "comment" : "Message to show in footer of link section in bookmark creation sheet to inform user about link cleaning.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieser Link ist derselbe, der von Trackern und anderem unnötigen Ballast bereinigt wurde, um deine Privatsphäre zu schützen. Genau dieser Link wird gespeichert und danach angezeigt."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The latter is the same link that cleaned from trackers and all the other unnecessary stuff to enhance your privacy. This is the link that will be saved and shown afterwards."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este es el mismo enlace que se ha limpiado de rastreadores y otros elementos innecesarios para proteger tu privacidad. Este es el enlace que se guardará y mostrará después."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce dernier est le même lien nettoyé des traqueurs et de tout autre élément inutile pour protéger ta vie privée. C’est ce lien qui sera enregistré et affiché par la suite."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "अंतिम लिंक वही लिंक है जिसे ट्रैकर और अन्य अनावश्यक तत्वों से साफ़ किया गया है ताकि आपकी गोपनीयता बेहतर हो सके। यह लिंक सहेजा जाएगा और बाद में दिखाया जाएगा।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il secondo è lo stesso link, ma ripulito da tracker e tutto il resto non necessario per migliorare la tua privacy. Questo è il link che verrà salvato e mostrato in seguito."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "後者はトラッカーやその他の不要な情報を除去してプライバシーを強化した同じリンクです。このリンクが保存され、後で表示されます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "후자는 추적기 및 기타 불필요한 요소들이 제거되어 개인 정보 보호가 강화된 동일한 링크입니다. 이 링크가 저장되어 이후에 표시됩니다."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Den sistnevnte er den samme lenken som er renset for sporere og alt annet unødvendig for å forbedre personvernet ditt. Dette er lenken som vil bli lagret og vist etterpå."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De laatste is dezelfde link, maar dan ontdaan van trackers en alle andere onnodige zaken om je privacy te verbeteren. Dit is de link die wordt opgeslagen en daarna getoond."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O último é o mesmo link que foi limpo de rastreadores e outras coisas desnecessárias para melhorar sua privacidade. Este é o link que será salvo e mostrado depois."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posledný odkaz je ten istý, ktorý bol vyčistený od sledovačov a všetkých ostatných zbytočných vecí na zvýšenie tvojho súkromia. Tento odkaz bude uložený a neskôr zobrazený."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Den senare är samma länk som rensats från spårare och allt annat onödigt för att förbättra din integritet. Det är den här länken som kommer att sparas och visas efteråt."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sonuncusu, gizliliğinizi artırmak için takipçilerin ve diğer gereksiz öğelerin temizlendiği aynı bağlantıdır. Kaydedilecek ve sonrasında gösterilecek bağlantı budur."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "后者是同一个链接，去除了追踪器及所有其他不必要的内容，以增强您的隐私保护。这就是将被保存并在以后显示的链接。"
+          }
+        }
+      }
+    },
     "Bookmark Description Placeholder" : {
       "comment" : "Placeholder to show when bookmark description is empty",
       "extractionState" : "manual",
@@ -3954,6 +4050,102 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "添加"
+          }
+        }
+      }
+    },
+    "Create Bookmark Cleaned URL Placeholder" : {
+      "comment" : "Placeholder to show when the URL is not cleaned yet.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hier erscheint die bereinigte URL"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cleaned URL will appear here"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aquí aparecerá la URL limpia"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’URL nettoyée apparaîtra ici"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "साफ़ की गई URL यहाँ प्रदर्शित होगी"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’URL pulito apparirà qui"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ここにクリーンなURLが表示されます"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정리된 URL이 여기에 표시됩니다"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renset URL vises her"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gecleanede URL verschijnt hier"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O URL limpo aparecerá aqui"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vyčistený URL sa zobrazí tu"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rensad URL visas här"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Temizlenmiş URL burada görünecek"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "清理后的 URL 会显示在这里"
           }
         }
       }
@@ -15662,6 +15854,102 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "导出 JSON"
+          }
+        }
+      }
+    },
+    "Link" : {
+      "comment" : "Header of Link in bookmark creation sheet",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Link"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Link"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enlace"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lien"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "लिंक"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Link"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "リンク"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "링크"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lenke"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Link"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Link"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Odkaz"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Länk"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bağlantı"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "链接"
           }
         }
       }

@@ -66,6 +66,20 @@ struct BookmarkCreationContent: View {
                     }
                     
                     Section {
+                        bookmarkLinkSectionItems
+                    } header: {
+                        Label {
+                            Text("Link")
+                        } icon: {
+                            YabaIconView(bundleKey: "link-04")
+                                .scaledToFit()
+                                .frame(width: 18, height: 18)
+                        }
+                    } footer: {
+                        Text("Bookmark Creation Link Info Message")
+                    }
+                    
+                    Section {
                         bookmarkInfoSectionItems
                     } header: {
                         Label {
@@ -485,7 +499,7 @@ struct BookmarkCreationContent: View {
     }
     
     @ViewBuilder
-    private var bookmarkInfoSectionItems: some View {
+    private var bookmarkLinkSectionItems: some View {
         TextField(
             "",
             text: $state.url,
@@ -496,8 +510,30 @@ struct BookmarkCreationContent: View {
                 .scaledToFit()
                 .frame(width: 20, height: 20)
                 .foregroundStyle(.tint)
+        }.disabled(state.isLoading)
+        if state.cleanerUrl.isEmpty {
+            Text(LocalizedStringKey("Create Bookmark Cleaned URL Placeholder"))
+                .foregroundStyle(.tertiary)
+                .safeAreaInset(edge: .leading) {
+                    YabaIconView(bundleKey: "clean")
+                        .scaledToFit()
+                        .frame(width: 20, height: 20)
+                        .foregroundStyle(.tint)
+                }
+            
+        } else {
+            Text(state.cleanerUrl)
+                .safeAreaInset(edge: .leading) {
+                    YabaIconView(bundleKey: "clean")
+                        .scaledToFit()
+                        .frame(width: 20, height: 20)
+                        .foregroundStyle(.tint)
+                }
         }
-        
+    }
+    
+    @ViewBuilder
+    private var bookmarkInfoSectionItems: some View {
         TextField(
             "",
             text: $state.label,
