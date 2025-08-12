@@ -24,6 +24,9 @@ struct SettingsView: View {
     @AppStorage(Constants.showRecentsKey)
     private var showRecents: Bool = true
     
+    @AppStorage(Constants.showMenuBarItem)
+    private var showMenuBarItem: Bool = true
+    
     @State
     private var settingsState = SettingsState()
     
@@ -131,6 +134,23 @@ struct SettingsView: View {
                     }
                 }
             }
+            #if targetEnvironment(macCatalyst)
+            Toggle(isOn: $showMenuBarItem) {
+                Label {
+                    Text("Settings Menu Item Visibility Title")
+                } icon: {
+                    YabaIconView(bundleKey: "bookmark-02")
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                }
+            }.onChange(of: showMenuBarItem) { _, newValue in
+                if newValue {
+                    StatusMenuHelper.setStatusMenuEnabled()
+                } else {
+                    StatusMenuHelper.setStatusMenuDisabled()
+                }
+            }
+            #endif
         } header: {
             Label {
                 Text("Settings Appearance Title")

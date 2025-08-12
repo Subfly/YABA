@@ -29860,6 +29860,18 @@
         }
       }
     },
+    "Settings Menu Item Visibility Title" : {
+      "comment" : "Title to show for menu item visibility options in settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enable Menu Item"
+          }
+        }
+      }
+    },
     "Settings Privacy Policy Link Title" : {
       "comment" : "Title of Privacy Policy link in settings",
       "extractionState" : "manual",

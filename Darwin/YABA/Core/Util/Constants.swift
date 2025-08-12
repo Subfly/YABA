@@ -28,6 +28,7 @@ struct Constants {
     static let preferredSortOrderKey = "preferredSortOrder"
     static let deviceIdKey = "deviceId"
     static let showRecentsKey = "showRecents"
+    static let showMenuBarItem = "showMenuBarItem"
     
     /// MARK: APP-WISE
     static let toastAnimationDuration: UInt64 = 150_000_000
