@@ -123,27 +123,29 @@ private struct ListSection<NoCollectionView: View>: View {
                         .frame(width: 18, height: 18)
                 }
             } footer: {
-                HStack {
-                    Spacer()
-                    Label {
-                        Text(
-                            isExpandedMobile
-                            ? LocalizedStringKey("Show Less Label")
-                            : LocalizedStringKey("Show More Label")
-                        )
-                    } icon: {
-                        YabaIconView(bundleKey: isExpandedMobile ? "arrow-up-01" : "arrow-down-01")
-                            .scaledToFit()
-                            .frame(width: 18, height: 18)
-                    }
-                    .labelStyle(InverseLabelStyle())
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        withAnimation {
-                            isExpandedMobile.toggle()
+                if collections.count > 10 {
+                    HStack {
+                        Spacer()
+                        Label {
+                            Text(
+                                isExpandedMobile
+                                ? LocalizedStringKey("Show Less Label")
+                                : LocalizedStringKey("Show More Label")
+                            )
+                        } icon: {
+                            YabaIconView(bundleKey: isExpandedMobile ? "arrow-up-01" : "arrow-down-01")
+                                .scaledToFit()
+                                .frame(width: 18, height: 18)
                         }
+                        .labelStyle(InverseLabelStyle())
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            withAnimation {
+                                isExpandedMobile.toggle()
+                            }
+                        }
+                        Spacer()
                     }
-                    Spacer()
                 }
             }
         } else {
