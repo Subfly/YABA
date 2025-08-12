@@ -509,12 +509,11 @@ class DataManager {
         markdownLines.append("")
         
         // Create a dictionary to quickly find bookmarks by ID
-        let bookmarkDict: [String: YabaCodableBookmark] = Dictionary(
-            uniqueKeysWithValues: allBookmarks.compactMap { bookmark in
-                guard let bookmarkId = bookmark.bookmarkId else { return nil }
-                return (bookmarkId, bookmark)
-            }
-        )
+        var bookmarkDict: [String: YabaCodableBookmark] = [:]
+        for bookmark in allBookmarks {
+            guard let bookmarkId = bookmark.bookmarkId else { continue }
+            bookmarkDict[bookmarkId] = bookmark // This safely overwrites duplicates
+        }
         
         // Process each collection as a folder
         for collection in collections {
