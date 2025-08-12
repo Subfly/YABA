@@ -78,7 +78,7 @@ struct YABAStatusMenuItemApp: App {
     private func showPanel() {
         if panel == nil {
             let hostingController = NSHostingController(
-                rootView: SimpleBookmarkCreationView(
+                rootView: SimpleBookmarkCreationMacOSView(
                     link: "",
                     needsTopPadding: true,
                     onClickClose: {

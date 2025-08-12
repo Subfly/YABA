@@ -163,6 +163,7 @@
 				Creation/Bookmark/BookmarkCreationState.swift,
 				Creation/Bookmark/SelectFolderContent.swift,
 				Creation/Bookmark/SelectTagsContent.swift,
+				Creation/Bookmark/SimpleBookmarkCreationView.swift,
 				Creation/Collection/CollectionCreationContent.swift,
 				Creation/Collection/CollectionCreationState.swift,
 				Credits.rtf,
@@ -173,7 +174,7 @@
 		96EB670A2DD91588009EB9EC /* Exceptions for "YABA" folder in "YABA" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Creation/Bookmark/SimpleBookmarkCreationView.swift,
+				Creation/Bookmark/SimpleBookmarkCreationMacOSView.swift,
 				Info.plist,
 			);
 			target = 96A8DFC12DB2F5A500A47601 /* YABA */;
@@ -239,7 +240,7 @@
 				Core/Util/SortType.swift,
 				Core/Util/ViewType.swift,
 				Creation/Bookmark/BookmarkCreationState.swift,
-				Creation/Bookmark/SimpleBookmarkCreationView.swift,
+				Creation/Bookmark/SimpleBookmarkCreationMacOSView.swift,
 				Credits.rtf,
 				Localizable.xcstrings,
 			);
@@ -312,7 +313,7 @@
 				Core/Util/SortType.swift,
 				Core/Util/ViewType.swift,
 				Creation/Bookmark/BookmarkCreationState.swift,
-				Creation/Bookmark/SimpleBookmarkCreationView.swift,
+				Creation/Bookmark/SimpleBookmarkCreationMacOSView.swift,
 				Credits.rtf,
 				Localizable.xcstrings,
 			);

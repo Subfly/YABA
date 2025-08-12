@@ -29,6 +29,7 @@ struct Constants {
     static let deviceIdKey = "deviceId"
     static let showRecentsKey = "showRecents"
     static let showMenuBarItem = "showMenuBarItem"
+    static let useSimplifiedShare = "useSimplifiedShare"
     
     /// MARK: APP-WISE
     static let toastAnimationDuration: UInt64 = 150_000_000

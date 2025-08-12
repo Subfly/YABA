@@ -30256,6 +30256,18 @@
         }
       }
     },
+    "Settings Simplified Share Sheet Title" : {
+      "comment" : "Title of using simplified share sheet for content creation",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use Simplified Creation on Share"
+          }
+        }
+      }
+    },
     "Settings Sorting Title" : {
       "comment" : "Title of sorting option in settings",
       "extractionState" : "manual",
@@ -31500,6 +31512,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "显示更多"
+          }
+        }
+      }
+    },
+    "Simple Bookmark Creation Info Message %@" : {
+      "comment" : "Message to show in simple bookmark creation sheet",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✨ — When you share a link to YABA, you’ll only enter a **title**. This helps you remember and find it later. Just name it, and **YABA** will fill the rest.\n\n📂 — Your bookmark will go to the **%@** folder by default. You can edit it anytime in YABA.\n\n⚙️ — You can change this in **Settings**."
           }
         }
       }

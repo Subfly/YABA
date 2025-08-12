@@ -27,6 +27,15 @@ struct SettingsView: View {
     @AppStorage(Constants.showMenuBarItem)
     private var showMenuBarItem: Bool = true
     
+    
+    @AppStorage(
+        Constants.useSimplifiedShare,
+        store: UserDefaults(
+            suiteName: "group.dev.subfly.YABA"
+        )
+    )
+    private var useSimplifiedShare: Bool = false
+    
     @State
     private var settingsState = SettingsState()
     
@@ -129,6 +138,15 @@ struct SettingsView: View {
                         Text("Settings Recents Title")
                     } icon: {
                         YabaIconView(bundleKey: "clock-01")
+                            .scaledToFit()
+                            .frame(width: 24, height: 24)
+                    }
+                }
+                Toggle(isOn: $useSimplifiedShare) {
+                    Label {
+                        Text("Settings Simplified Share Sheet Title")
+                    } icon: {
+                        YabaIconView(bundleKey: "relieved-02")
                             .scaledToFit()
                             .frame(width: 24, height: 24)
                     }

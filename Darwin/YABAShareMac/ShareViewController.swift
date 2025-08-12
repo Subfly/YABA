@@ -67,7 +67,7 @@ class ShareViewController: NSViewController {
     }
     
     private func presentSwiftUIView(link: String) {
-        let contentView = SimpleBookmarkCreationView(
+        let contentView = SimpleBookmarkCreationMacOSView(
             link: link,
             needsTopPadding: true,
             onClickClose: close

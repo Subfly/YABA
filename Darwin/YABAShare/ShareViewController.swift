@@ -85,9 +85,7 @@ class ShareViewController: UIViewController {
     
     private func createContentView(link: String) {
         let contentView = UIHostingController(
-            rootView: BookmarkCreationContent(
-                bookmarkToEdit: nil,
-                collectionToFill: nil,
+            rootView: ContentView(
                 link: link,
                 onExitRequested: close
             ).modelContext(YabaModelContainer.getContext())
@@ -107,5 +105,34 @@ class ShareViewController: UIViewController {
     
     private func close() {
         self.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
+    }
+    
+    private struct ContentView: View {
+        @AppStorage(
+            Constants.useSimplifiedShare,
+            store: UserDefaults(
+                suiteName: "group.dev.subfly.YABA"
+            )
+        )
+        private var useSimplifiedShare: Bool = false
+        
+        let link: String
+        let onExitRequested: () -> Void
+        
+        var body: some View {
+            if useSimplifiedShare {
+                SimpleBookmarkCreationView(
+                    link: link,
+                    onExitRequested: onExitRequested
+                )
+            } else {
+                BookmarkCreationContent(
+                    bookmarkToEdit: nil,
+                    collectionToFill: nil,
+                    link: link,
+                    onExitRequested: onExitRequested
+                )
+            }
+        }
     }
 }
