@@ -546,6 +546,18 @@ struct BookmarkCreationContent: View {
                 .frame(width: 20, height: 20)
                 .foregroundStyle(.tint)
         }
+        .safeAreaInset(edge: .trailing) {
+            if !state.label.isEmpty {
+                Button {
+                    state.onClearTitle()
+                } label: {
+                    YabaIconView(bundleKey: "cancel-circle")
+                        .scaledToFit()
+                        .frame(width: 16, height: 16)
+                        .foregroundStyle(.tint)
+                }
+            }
+        }
         
         HStack(alignment: .top) {
             YabaIconView(bundleKey: "paragraph")

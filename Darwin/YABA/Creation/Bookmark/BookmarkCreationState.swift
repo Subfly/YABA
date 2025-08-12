@@ -329,4 +329,8 @@ internal class BookmarkCreationState {
             }
         }
     }
+    
+    func onClearTitle() {
+        label = ""
+    }
 }
