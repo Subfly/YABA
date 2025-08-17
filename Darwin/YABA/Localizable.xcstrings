@@ -120,6 +120,102 @@
         }
       }
     },
+    "Announcements CloudKit Support Drop Urgent Title" : {
+      "comment" : "One time title for announcement that indicates Cloud Kit Support Drop",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CloudKit-Unterstützung wird im nächsten Update entfernt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CloudKit Support Will be Removed in Next Release"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El soporte para CloudKit se eliminará en la próxima versión"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La prise en charge de CloudKit sera supprimée dans la prochaine version"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "अगले संस्करण में CloudKit सपोर्ट हटाया जाएगा"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il supporto a CloudKit sarà rimosso nella prossima versione"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "次回リリースでCloudKitのサポートが終了します"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다음 버전에서 CloudKit 지원이 제거됩니다"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CloudKit-støtte vil bli fjernet i neste utgivelse"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CloudKit-ondersteuning wordt verwijderd in de volgende versie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suporte ao CloudKit será removido na próxima versão"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Podpora CloudKit bude v ďalšej verzii odstránená"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CloudKit-stödet kommer att tas bort i nästa version"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CloudKit Desteği Bir Sonraki Sürümde Kaldırılacak"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CloudKit 支持将在下个版本中移除"
+          }
+        }
+      }
+    },
     "Announcements Delete Message" : {
       "comment" : "Message to show on delete dialog for announcements",
       "extractionState" : "manual",
@@ -312,98 +408,98 @@
         }
       }
     },
-    "Announcements Update Title" : {
+    "Announcements Update Title %@" : {
       "comment" : "Announcement title that indicates there is a new update and some changes in YABA",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Was ist neu in YABA?"
+            "value" : "Was ist neu in YABA %@?"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "What’s new in YABA?"
+            "value" : "What’s new in YABA %@?"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "¿Qué hay de nuevo en YABA?"
+            "value" : "¿Qué hay de nuevo en YABA %@?"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Quoi de neuf dans YABA ?"
+            "value" : "Quoi de neuf dans YABA %@ ?"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "YABA में क्या नया है?"
+            "value" : "YABA %@ में क्या नया है?"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Novità in YABA?"
+            "value" : "Novità di YABA %@?"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "YABAの新機能情報"
+            "value" : "YABA %@ の新機能は？"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "YABA의 새로운 소식"
+            "value" : "YABA %@의 새로운 소식은 무엇인가요?"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hva er nytt i YABA?"
+            "value" : "Hva er nytt i YABA %@?"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wat is er nieuw in YABA?"
+            "value" : "Wat is er nieuw in YABA %@?"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O que há de novo no YABA?"
+            "value" : "O que há de novo no YABA %@?"
           }
         },
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Čo je nové v YABA?"
+            "value" : "Čo je nové v YABA %@?"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vad är nytt i YABA?"
+            "value" : "Vad är nytt i YABA %@?"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "YABA'da Yenilikler Neler?"
+            "value" : "YABA %@’da neler yeni?"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "YABA 有哪些新变化？"
+            "value" : "YABA %@ 更新内容"
           }
         }
       }
@@ -29864,10 +29960,94 @@
       "comment" : "Title to show for menu item visibility options in settings",
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Menüpunkt aktivieren"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Enable Menu Item"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activar elemento del menú"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activer l’élément de menu"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "मेन्यू आइटम सक्षम करें"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Attiva voce di menu"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "メニュー項目を有効にする"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "메뉴 항목 활성화"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktiver menyelement"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Menu-item inschakelen"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ativar item do menu"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Povoliť položku v ponuke"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktivera menyalternativ"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Menü Öğesini Etkinleştir"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "启用菜单项"
           }
         }
       }
@@ -30260,10 +30440,94 @@
       "comment" : "Title of using simplified share sheet for content creation",
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einfache Erstellung beim Teilen verwenden"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Use Simplified Creation on Share"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usar creación simplificada al compartir"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utiliser la création simplifiée lors du partage"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "शेयर पर सरल निर्माण का उपयोग करें"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usa creazione semplificata su Condivisione"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "簡易作成を共有に使用"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "간소화된 공유 생성 사용"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bruk forenklet opprettelse ved deling"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vereenvoudigde creatie bij delen gebruiken"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usar criação simplificada no compartilhamento"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Použiť zjednodušené vytváranie pri zdieľaní"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Använd förenklad delning för skapande"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paylaşımda Basitleştirilmiş Oluşturmayı Kullan"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用简化分享创建"
           }
         }
       }
@@ -31520,10 +31784,94 @@
       "comment" : "Message to show in simple bookmark creation sheet",
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✨ — Wenn du einen Link mit YABA teilst, gibst du nur einen **Titel** ein. Das hilft dir, ihn später leichter wiederzufinden. Einfach benennen, der Rest wird von **YABA** ausgefüllt.\n\n📂 — Lesezeichen landen standardmäßig im Ordner **%@**. Du kannst das jederzeit in YABA ändern.\n\n⚙️ — Das kannst du in den **Einstellungen** anpassen."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "✨ — When you share a link to YABA, you’ll only enter a **title**. This helps you remember and find it later. Just name it, and **YABA** will fill the rest.\n\n📂 — Your bookmark will go to the **%@** folder by default. You can edit it anytime in YABA.\n\n⚙️ — You can change this in **Settings**."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✨ — Cuando compartas un enlace a YABA, solo tendrás que introducir un **título**. Esto te ayuda a recordar y encontrarlo más tarde. Solo ponle un nombre y **YABA** completará el resto.\n\n📂 — Tu marcador se guardará por defecto en la carpeta **%@**. Puedes editarlo cuando quieras en YABA.\n\n⚙️ — Puedes cambiar esto en **Ajustes**."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✨ — Lorsque tu partages un lien vers YABA, tu n’entreras qu’un **titre**. Cela t’aide à te souvenir et à retrouver le lien plus tard. Donne-lui simplement un nom, et **YABA** remplira le reste.\n\n📂 — Ton favori ira par défaut dans le dossier **%@**. Tu peux le modifier à tout moment dans YABA.\n\n⚙️ — Tu peux changer cela dans les **Réglages**."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✨ — जब आप YABA में कोई लिंक साझा करते हैं, तो आपको केवल एक **शीर्षक** दर्ज करना होगा। इससे आपको बाद में याद रखने और खोजने में मदद मिलेगी। बस इसे नाम दें, और **YABA** बाकी भर देगा।\n\n📂 — आपकी बुकमार्क डिफ़ॉल्ट रूप से **%@** फ़ोल्डर में जाएगी। आप इसे कभी भी YABA में संपादित कर सकते हैं।\n\n⚙️ — आप इसे **सेटिंग्स** में बदल सकते हैं।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✨ — Quando condividi un link su YABA, dovrai inserire solo un **titolo**. Questo ti aiuta a ricordarlo e ritrovarlo più facilmente. Dagli un nome, e **YABA** si occuperà del resto.\n\n📂 — Il tuo segnalibro verrà salvato nella cartella **%@** di default. Potrai modificarlo quando vuoi in YABA.\n\n⚙️ — Puoi cambiare questa impostazione in **Impostazioni**."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✨ — YABAにリンクを共有するときは、**タイトル**だけを入力します。これで後で覚えて見つけやすくなります。名前を付けるだけで、**YABA**が残りを自動で入力します。\n\n📂 — ブックマークはデフォルトで**%@**フォルダに保存されます。YABAでいつでも編集可能です。\n\n⚙️ — この設定は**設定**で変更できます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✨ — YABA에 링크를 공유하면 **제목**만 입력하면 됩니다. 나중에 기억하고 찾는 데 도움이 됩니다. 이름만 지정하면 **YABA**가 나머지를 채워줍니다.\n\n📂 — 기본적으로 즐겨찾기가 **%@** 폴더에 저장됩니다. 언제든지 YABA에서 편집할 수 있습니다.\n\n⚙️ — 이 설정은 **설정**에서 변경할 수 있습니다."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✨ — Når du deler en lenke til YABA, skriver du bare inn en **tittel**. Dette hjelper deg å huske og finne den senere. Bare gi den et navn, så fyller **YABA** ut resten.\n\n📂 — Bokmerket ditt havner som standard i **%@**-mappen. Du kan endre det når som helst i YABA.\n\n⚙️ — Du kan endre dette i **Innstillinger**."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✨ — Wanneer je een link deelt naar YABA, voer je alleen een **titel** in. Zo kun je het later makkelijk onthouden en terugvinden. Geef het gewoon een naam, en **YABA** vult de rest automatisch aan.\n\n📂 — Je bladwijzer wordt standaard in de map **%@** geplaatst. Je kunt dit altijd aanpassen in YABA.\n\n⚙️ — Dit kun je wijzigen in **Instellingen**."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✨ — Quando você compartilha um link para o YABA, só precisa inserir um **título**. Isso ajuda você a lembrar e encontrar depois. Apenas nomeie, e o **YABA** cuidará do resto.\n\n📂 — Seu favorito será salvo na pasta **%@** por padrão. Você pode editá-lo a qualquer momento no YABA.\n\n⚙️ — Isso pode ser alterado em **Ajustes**."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✨ — Keď zdieľaš odkaz do YABA, zadáš iba **názov**. Pomôže ti to ho neskôr ľahko nájsť a zapamätať si ho. Stačí pomenovať, a **YABA** ostatné vyplní za teba.\n\n📂 — Tvoj záložka bude predvolene uložená v priečinku **%@**. Kedykoľvek ju môžeš v YABA upraviť.\n\n⚙️ — Toto si môžeš zmeniť v **Nastaveniach**."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✨ — När du delar en länk till YABA anger du bara en **titel**. Det hjälper dig att minnas och hitta den senare. Namnge den bara, så fyller **YABA** i resten.\n\n📂 — Din bokmärkning hamnar som standard i mappen **%@**. Du kan ändra den när som helst i YABA.\n\n⚙️ — Du kan ändra detta under **Inställningar**."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✨ — YABA'ya bir bağlantı paylaştığınızda yalnızca bir **başlık** girersiniz. Bu, onu hatırlamanıza ve daha sonra bulmanıza yardımcı olur. Sadece isim verin, geri kalanını **YABA** doldurur.\n\n📂 — Yer imi varsayılan olarak **%@** klasörüne gider. YABA içinde istediğiniz zaman düzenleyebilirsiniz.\n\n⚙️ — Bunu **Ayarlar**'dan değiştirebilirsiniz."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✨ — 当你将链接分享到 YABA 时，只需输入一个**标题**。这样可以帮助你记住并稍后找到它。只需命名，**YABA** 会自动填写其余内容。\n\n📂 — 你的书签到默认放入 **%@** 文件夹。你可以随时在 YABA 中编辑它。\n\n⚙️ — 你可以在**设置**中更改此项。"
           }
         }
       }

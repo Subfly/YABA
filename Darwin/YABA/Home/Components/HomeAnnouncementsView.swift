@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct HomeAnnouncementsView: View {
-    @AppStorage(Constants.announcementsYaba1_2UpdateKey)
+    @AppStorage(Constants.announcementsYaba1_3UpdateKey)
     private var showUpdateAnnouncement: Bool = true
     
-    @AppStorage(Constants.announcementsCloudKitDropKey)
+    @AppStorage(Constants.announcementsCloudKitDropKeyUrgent)
     private var showCloudKitAnnouncement: Bool = true
     
     var body: some View {
@@ -34,11 +34,11 @@ struct HomeAnnouncementsView: View {
     private var content: some View {
         if showUpdateAnnouncement {
             AnnouncementView(
-                titleKey: "Announcements Update Title",
+                titleKey: "Announcements Update Title \("v1.3")",
                 severity: .update,
                 isInPreview: false,
                 onClick: {
-                    if let url: URL = .init(string: Constants.updateAnnouncementLink),
+                    if let url: URL = .init(string: Constants.updateAnnouncementLink_1_3),
                        UIApplication.shared.canOpenURL(url) {
                         UIApplication.shared.open(url)
                     }
@@ -50,11 +50,11 @@ struct HomeAnnouncementsView: View {
         }
         if showCloudKitAnnouncement {
             AnnouncementView(
-                titleKey: "Announcements CloudKit Support Drop Title",
-                severity: .warning,
+                titleKey: "Announcements CloudKit Support Drop Urgent Title",
+                severity: .urgent,
                 isInPreview: false,
                 onClick: {
-                    if let url: URL = .init(string: Constants.announcementCloudKitDropLink),
+                    if let url: URL = .init(string: Constants.announcementCloudKitDropLink_2),
                        UIApplication.shared.canOpenURL(url) {
                         UIApplication.shared.open(url)
                     }

@@ -16,8 +16,10 @@ struct Constants {
     static let developerWebsiteLink = "https://www.subfly.dev/"
     static let feedbackLink = "mailto:alitaha@subfly.dev"
     static let storeLink = "https://apps.apple.com/app/yaba-yet-another-bookmark-app/id6747272081"
-    static let updateAnnouncementLink = "https://github.com/Subfly/YABA/discussions/4"
-    static let announcementCloudKitDropLink = "https://github.com/Subfly/YABA/discussions/5"
+    static let updateAnnouncementLink_1_2 = "https://github.com/Subfly/YABA/discussions/4"
+    static let updateAnnouncementLink_1_3 = "https://github.com/Subfly/YABA/discussions/6"
+    static let announcementCloudKitDropLink_1 = "https://github.com/Subfly/YABA/discussions/5"
+    static let announcementCloudKitDropLink_2 = "https://github.com/Subfly/YABA/discussions/7"
     
     /// MARK: SETTINGS
     static let hasPassedOnboardingKey = "hasPassedOnboarding"
@@ -39,7 +41,9 @@ struct Constants {
     
     /// MARK: ANNOUNCEMENTS
     static let announcementsYaba1_2UpdateKey = "announcementsYaba1_2UpdateKey"
+    static let announcementsYaba1_3UpdateKey = "announcementsYaba1_3UpdateKey"
     static let announcementsCloudKitDropKey = "announcementsCloudKitDropKey"
+    static let announcementsCloudKitDropKeyUrgent = "announcementsCloudKitDropKeyUrgent"
     
     /// MARK: MAPPER
     static let jsonExample: String = """
