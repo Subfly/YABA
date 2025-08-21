@@ -50,6 +50,7 @@ struct BookmarkItemView: View {
                 : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
             )
             #endif
+            #if !KEYBOARD_EXTENSION
             .contextMenu {
                 MenuActionItems(
                     shouldShowEditDialog: $itemState.shouldShowEditDialog,
@@ -57,6 +58,7 @@ struct BookmarkItemView: View {
                     shouldShowDeleteDialog: $itemState.shouldShowDeleteDialog
                 )
             }
+            #endif
             .alert(
                 LocalizedStringKey("Delete Bookmark Title"),
                 isPresented: $itemState.shouldShowDeleteDialog,
@@ -168,9 +170,11 @@ private struct ListView: View {
                     .foregroundStyle(.tertiary)
             }
         }
+        #if !KEYBOARD_EXTENSION
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
             swipeActionItems
         }
+        #endif
     }
     
     @ViewBuilder

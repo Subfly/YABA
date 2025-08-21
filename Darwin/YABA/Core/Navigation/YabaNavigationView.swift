@@ -95,7 +95,9 @@ private struct GenericNavigationView: View {
                 )
             } else {
                 GeneralCollectionDetail(
-                    onNavigationCallback: { _ in }
+                    onNavigationCallback: { _ in },
+                    onAcceptKeyboard: {},
+                    onDeleteKeyboard: {}
                 )
             }
         } detail: {
@@ -147,7 +149,9 @@ private struct MobileNavigationView: View {
                         collection: collection,
                         onNavigationCallback: { bookmark in
                             path.append(.bookmarkDetail(bookmark: bookmark))
-                        }
+                        },
+                        onAcceptKeyboard: {},
+                        onDeleteKeyboard: {}
                     )
                     .navigationBarBackButtonHidden()
                 case .bookmarkDetail(let bookmark):

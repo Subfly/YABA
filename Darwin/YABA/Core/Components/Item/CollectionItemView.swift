@@ -74,6 +74,7 @@ struct CollectionItemView: View {
         .onHover { hovered in
             itemState.isHovered = hovered
         }
+        #if !KEYBOARD_EXTENSION
         .contextMenu {
             MenuActionItems(
                 state: $itemState,
@@ -81,6 +82,7 @@ struct CollectionItemView: View {
                 isInBookmarkDetail: isInBookmarkDetail
             )
         }
+        #endif
         .alert(
             LocalizedStringKey(
                 collection.collectionType == .folder
@@ -232,9 +234,11 @@ private struct ListView: View {
             }
         }
         .contentShape(Rectangle())
+        #if !KEYBOARD_EXTENSION
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
             swipeActionItems
         }
+        #endif
     }
     
     @ViewBuilder

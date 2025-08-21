@@ -38,11 +38,9 @@ struct YABAApp: App {
                     setupForMacCatalyst()
                     try? Tips.configure()
                 }
-            #if targetEnvironment(macCatalyst)
                 .onOpenURL { url in
                     deepLinkManager.handleDeepLink(url)
                 }
-            #endif
                 .onReceive(NotificationCenter.default.publisher(for: .didReceiveDeepLink)) { notif in
                     if let url = notif.object as? URL {
                         deepLinkManager.handleDeepLink(url)

@@ -11,11 +11,15 @@ import SwiftData
 struct MobileCollectionDetail: View {
     let collection: YabaCollection?
     let onNavigationCallback: (YabaBookmark) -> Void
+    let onAcceptKeyboard: () -> Void
+    let onDeleteKeyboard: () -> Void
     
     var body: some View {
         CollectionDetail(
             collection: collection,
-            onNavigationCallback: onNavigationCallback
+            onNavigationCallback: onNavigationCallback,
+            onAcceptKeyboard: onAcceptKeyboard,
+            onDeleteKeyboard: onDeleteKeyboard
         )
     }
 }
@@ -25,11 +29,15 @@ struct GeneralCollectionDetail: View {
     private var appState
     
     let onNavigationCallback: (YabaBookmark) -> Void
+    let onAcceptKeyboard: () -> Void
+    let onDeleteKeyboard: () -> Void
     
     var body: some View {
         CollectionDetail(
             collection: appState.selectedCollection,
-            onNavigationCallback: onNavigationCallback
+            onNavigationCallback: onNavigationCallback,
+            onAcceptKeyboard: onAcceptKeyboard,
+            onDeleteKeyboard: onDeleteKeyboard
         )
     }
 }
@@ -52,6 +60,8 @@ private struct CollectionDetail: View {
     
     let collection: YabaCollection?
     let onNavigationCallback: (YabaBookmark) -> Void
+    let onAcceptKeyboard: () -> Void
+    let onDeleteKeyboard: () -> Void
     
     var body: some View {
         ZStack {
@@ -79,11 +89,13 @@ private struct CollectionDetail: View {
                         preferredOrder: preferredSortOrder,
                         onNavigationCallback: onNavigationCallback
                     )
+                    #if !KEYBOARD_EXTENSION
                     .searchable(
                         text: $state.searchQuery,
                         placement: .navigationBarDrawer(displayMode: .always),
                         prompt: Text("Search Collection \(collection.label)")
                     )
+                    #endif
                 }
             } else {
                 ContentUnavailableView {
@@ -105,10 +117,44 @@ private struct CollectionDetail: View {
             : Text(collection?.label ?? "")
         )
         .toolbar {
+            #if !KEYBOARD_EXTENSION
             ToolbarItem(placement: .primaryAction) {
                 ToolbarItems(collection: collection, state: $state)
                     .tint(collection?.color.getUIColor() ?? .accentColor)
             }
+            #else
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                ToolbarItem(placement: .navigation) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        YabaIconView(bundleKey: "arrow-left-01")
+                    }.buttonRepeatBehavior(.enabled)
+                }
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    onDeleteKeyboard()
+                } label: {
+                    Label {
+                        Text("Delete")
+                    } icon: {
+                        YabaIconView(bundleKey: "backward-01")
+                    }
+                }.buttonRepeatBehavior(.enabled)
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    onAcceptKeyboard()
+                } label: {
+                    Label {
+                        Text("Done")
+                    } icon: {
+                        YabaIconView(bundleKey: "checkmark-circle-02")
+                    }
+                }
+            }
+            #endif
             
             if UIDevice.current.userInterfaceIdiom == .phone {
                 ToolbarItem(placement: .navigation) {
@@ -241,8 +287,10 @@ private struct ToolbarItems: View {
                             YabaIconView(bundleKey: "plus-sign-circle")
                         }
                     }
+                    #if !KEYBOARD_EXTENSION
                     ContentAppearancePicker()
                     SortingPicker()
+                    #endif
                 } label: {
                     YabaIconView(bundleKey: "more-horizontal-circle-02")
                 }
@@ -269,6 +317,8 @@ private struct ToolbarItems: View {
 #Preview {
     CollectionDetail(
         collection: .empty(),
-        onNavigationCallback: { _ in }
+        onNavigationCallback: { _ in },
+        onAcceptKeyboard: {},
+        onDeleteKeyboard: {}
     )
 }
