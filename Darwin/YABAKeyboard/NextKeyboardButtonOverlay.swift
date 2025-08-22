@@ -9,7 +9,7 @@
 import UIKit
 import SwiftUI
 
-struct NextKeyboardButtonOverlay: UIViewRepresentable {
+internal struct NextKeyboardButtonOverlay: UIViewRepresentable {
     let action: Selector
 
     func makeUIView(context: Context) -> UIButton {

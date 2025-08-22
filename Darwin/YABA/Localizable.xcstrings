@@ -15956,6 +15956,30 @@
       },
       "shouldTranslate" : false
     },
+    "Keyboard Not Supported Message" : {
+      "comment" : "Message to show in floating panel keyboard when used in iPad",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Switch to docked keyboard to use or press the button below to switch your other keyboards "
+          }
+        }
+      }
+    },
+    "Keyboard Not Supported Title" : {
+      "comment" : "Title to show in floating panel keyboard when used in iPad",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Floating Panel Not Supported"
+          }
+        }
+      }
+    },
     "Link" : {
       "comment" : "Header of Link in bookmark creation sheet",
       "extractionState" : "manual",

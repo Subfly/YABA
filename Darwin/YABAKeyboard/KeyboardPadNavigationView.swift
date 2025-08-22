@@ -33,11 +33,26 @@ internal struct KeyboardPadNavigationView: View {
     @ViewBuilder
     private var viewSwitcher: some View {
         if layoutState.isFloating {
-            KeyboardMobileNavigationView(
-                onClickBookmark: onClickBookmark,
-                onAccept: onAccept,
-                onDelete: onDelete
-            )
+            ContentUnavailableView {
+                Label {
+                    Text("Keyboard Not Supported Title")
+                } icon: {
+                    YabaIconView(bundleKey: "keyboard")
+                        .scaledToFit()
+                        .frame(width: 52, height: 52)
+                }
+            } description: {
+                Text("Keyboard Not Supported Message")
+            } actions: {
+                YabaIconView(bundleKey: "internet")
+                    .frame(width: 28, height: 28)
+                    .foregroundStyle(.tint)
+                    .overlay {
+                        if let action = nextKeyboardAction {
+                            NextKeyboardButtonOverlay(action: action)
+                        }
+                    }
+            }
         } else {
             NavigationSplitView(columnVisibility: .constant(.doubleColumn)) {
                 ZStack {

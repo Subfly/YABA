@@ -123,15 +123,6 @@ private struct CollectionDetail: View {
                     .tint(collection?.color.getUIColor() ?? .accentColor)
             }
             #else
-            if UIDevice.current.userInterfaceIdiom == .pad {
-                ToolbarItem(placement: .navigation) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        YabaIconView(bundleKey: "arrow-left-01")
-                    }.buttonRepeatBehavior(.enabled)
-                }
-            }
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     onDeleteKeyboard()
