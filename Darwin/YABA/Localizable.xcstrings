@@ -4,6 +4,9 @@
     "" : {
       "shouldTranslate" : false
     },
+    "%@" : {
+
+    },
     "%@ (%@)" : {
       "localizations" : {
         "en" : {
@@ -3593,6 +3596,9 @@
     },
     "Changes:" : {
       "shouldTranslate" : false
+    },
+    "Choose a folder to show bookmarks from" : {
+
     },
     "Collection" : {
       "comment" : "Collection",
@@ -9158,6 +9164,9 @@
           }
         }
       }
+    },
+    "Folder Selection Title" : {
+
     },
     "Folders Title" : {
       "comment" : "Title for folders",

@@ -33,35 +33,93 @@ private struct BookmarkWidgetView: View {
     
     var entry: BookmarkListProvider.Entry
     
+    init(entry: BookmarkListProvider.Entry) {
+        self.entry = entry
+
+        if let selectedFolder = entry.configuration.selectedFolder,
+           selectedFolder.id != "recents" {
+            let id = selectedFolder.id
+            _bookmarks = Query(
+                filter: #Predicate<YabaBookmark> { bookmark in
+                    bookmark.collections?.contains { collection in
+                        collection.collectionId == id
+                    } ?? false
+                },
+                sort: \YabaBookmark.editedAt,
+                order: .reverse
+            )
+        } else {
+            _bookmarks = Query(
+                sort: \YabaBookmark.editedAt,
+                order: .reverse
+            )
+        }
+    }
+    
     var body: some View {
         ZStack {
-            AnimatedGradient(collectionColor: .accentColor)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
+            AnimatedGradient(
+                collectionColor: entry.configuration.selectedFolder?.displayColor == nil
+                ? .accentColor
+                : entry.configuration.selectedFolder!.displayColor.getUIColor()
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 16))
             VStack {
                 HStack {
                     Label {
-                        Text("Home Recents Label")
-                            .fontWeight(.semibold)
+                        if let selectedFolder = entry.configuration.selectedFolder {
+                            Text(selectedFolder.displayString)
+                                .fontWeight(.semibold)
+                        } else {
+                            Text("Home Recents Label")
+                        }
                     } icon: {
-                        YabaIconView(bundleKey: "clock-01")
-                            .scaledToFit()
-                            .frame(width: 18, height: 18)
+                        YabaIconView(
+                            bundleKey: entry.configuration.selectedFolder?.id == "recents"
+                            ? "clock-01"
+                            : entry.configuration.selectedFolder?.displayIconNameString == nil
+                            ? "folder-01"
+                            : entry.configuration.selectedFolder!.displayIconNameString
+                        )
+                        .scaledToFit()
+                        .frame(width: 18, height: 18)
                     }
                     Spacer()
-                    Button {
-                        // Dummy button :D It will auto open the app :D
-                    } label: {
-                        YabaIconView(bundleKey: "bookmark-02")
-                            .scaledToFit()
-                            .frame(width: 18, height: 18)
-                    }
+                    YabaIconView(bundleKey: "bookmark-02")
+                        .scaledToFit()
+                        .frame(width: 18, height: 18)
+                        .foregroundStyle(
+                            entry.configuration.selectedFolder?.displayColor == nil
+                            ? .accentColor
+                            : entry.configuration.selectedFolder!.displayColor.getUIColor()
+                        )
                 }.padding(.bottom)
-                ForEach(bookmarks.prefix(5)) { bookmark in
-                    if let url = URL(string: "yaba://open?id=\(bookmark.bookmarkId)") {
-                        Link(destination: url) {
-                            BookmarkView(bookmark: bookmark)
+                
+                if bookmarks.isEmpty {
+                    Spacer()
+                    ContentUnavailableView {
+                        Label {
+                            Text("No Bookmarks Title")
+                        } icon: {
+                            YabaIconView(bundleKey: "bookmark-02")
+                                .scaledToFit()
+                                .frame(width: 52, height: 52)
+                        }
+                    } description: {
+                        Text("No Bookmarks Message")
+                    }
+                } else {
+                    ForEach(bookmarks.prefix(5)) { bookmark in
+                        if let url = URL(string: "yaba://open?id=\(bookmark.bookmarkId)") {
+                            Link(destination: url) {
+                                BookmarkView(bookmark: bookmark)
+                            }
                         }
                     }
+                }
+                
+                if bookmarks.count < 5 || bookmarks.isEmpty {
+                    Spacer()
                 }
             }.padding()
         }
