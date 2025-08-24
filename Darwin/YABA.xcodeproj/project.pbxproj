@@ -11,6 +11,9 @@
 		967B9A5F2DD8D6E400181AA1 /* YABAStatusMenuItem.app in Copy Menu Item */ = {isa = PBXBuildFile; fileRef = 967B9A4B2DD8D3EF00181AA1 /* YABAStatusMenuItem.app */; platformFilter = maccatalyst; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		96A8E0B82DB5CAFF00A47601 /* YABAShare.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 96A8E0AE2DB5CAFF00A47601 /* YABAShare.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		96EA39732E56380700B8411D /* YABAKeyboard.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 96EA396C2E56380700B8411D /* YABAKeyboard.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		96EA39BD2E58EB8F00B8411D /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96EA39BC2E58EB8F00B8411D /* WidgetKit.framework */; };
+		96EA39BF2E58EB8F00B8411D /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96EA39BE2E58EB8F00B8411D /* SwiftUI.framework */; };
+		96EA39CD2E58EB9000B8411D /* YABAWidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 96EA39BB2E58EB8E00B8411D /* YABAWidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		96EB67222DD945A6009EB9EC /* YABAShareMac.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 96EB67132DD94580009EB9EC /* YABAShareMac.appex */; platformFilter = maccatalyst; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -43,6 +46,13 @@
 			remoteGlobalIDString = 96EA396B2E56380700B8411D;
 			remoteInfo = YABAKeyboard;
 		};
+		96EA39CB2E58EB9000B8411D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 96A8DFBA2DB2F5A500A47601 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 96EA39BA2E58EB8E00B8411D;
+			remoteInfo = YABAWidgetsExtension;
+		};
 		96EB67232DD945A6009EB9EC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 96A8DFBA2DB2F5A500A47601 /* Project object */;
@@ -73,6 +83,7 @@
 				96A8E0B82DB5CAFF00A47601 /* YABAShare.appex in Embed Foundation Extensions */,
 				96EB67222DD945A6009EB9EC /* YABAShareMac.appex in Embed Foundation Extensions */,
 				96EA39732E56380700B8411D /* YABAKeyboard.appex in Embed Foundation Extensions */,
+				96EA39CD2E58EB9000B8411D /* YABAWidgetsExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -84,6 +95,9 @@
 		96A8DFC22DB2F5A500A47601 /* YABA.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YABA.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		96A8E0AE2DB5CAFF00A47601 /* YABAShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = YABAShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		96EA396C2E56380700B8411D /* YABAKeyboard.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = YABAKeyboard.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		96EA39BB2E58EB8E00B8411D /* YABAWidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = YABAWidgetsExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		96EA39BC2E58EB8F00B8411D /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = /System/Library/Frameworks/WidgetKit.framework; sourceTree = "<absolute>"; };
+		96EA39BE2E58EB8F00B8411D /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = /System/Library/Frameworks/SwiftUI.framework; sourceTree = "<absolute>"; };
 		96EB67132DD94580009EB9EC /* YABAShareMac.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = YABAShareMac.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -242,6 +256,31 @@
 				Localizable.xcstrings,
 			);
 			target = 96EA396B2E56380700B8411D /* YABAKeyboard */;
+		};
+		96EA39D12E58EB9000B8411D /* Exceptions for "YABAWidgets" folder in "YABAWidgetsExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 96EA39BA2E58EB8E00B8411D /* YABAWidgetsExtension */;
+		};
+		96EA39D52E58ED9600B8411D /* Exceptions for "YABA" folder in "YABAWidgetsExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Assets.xcassets,
+				Core/Components/Gradient/AnimatedGradient.swift,
+				Core/Components/Icon/YabaIconView.swift,
+				Core/Model/BookmarkType.swift,
+				Core/Model/CollectionType.swift,
+				Core/Model/YabaBookmark.swift,
+				Core/Model/YabaCollection.swift,
+				Core/Model/YabaColor.swift,
+				"Core/Model/YabaDataLog+Helpers.swift",
+				Core/Model/YabaModelContainer.swift,
+				Core/Model/YabaSchema.swift,
+				Localizable.xcstrings,
+			);
+			target = 96EA39BA2E58EB8E00B8411D /* YABAWidgetsExtension */;
 		};
 		96EB670A2DD91588009EB9EC /* Exceptions for "YABA" folder in "YABA" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
@@ -407,6 +446,7 @@
 				96EB67272DD94A1D009EB9EC /* Exceptions for "YABA" folder in "YABAShareMac" target */,
 				96EB670E2DD9447E009EB9EC /* Exceptions for "YABA" folder in "YABAStatusMenuItem" target */,
 				96EA397C2E579DD800B8411D /* Exceptions for "YABA" folder in "YABAKeyboard" target */,
+				96EA39D52E58ED9600B8411D /* Exceptions for "YABA" folder in "YABAWidgetsExtension" target */,
 			);
 			path = YABA;
 			sourceTree = "<group>";
@@ -425,6 +465,14 @@
 				96EA39772E56380700B8411D /* Exceptions for "YABAKeyboard" folder in "YABAKeyboard" target */,
 			);
 			path = YABAKeyboard;
+			sourceTree = "<group>";
+		};
+		96EA39C02E58EB8F00B8411D /* YABAWidgets */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				96EA39D12E58EB9000B8411D /* Exceptions for "YABAWidgets" folder in "YABAWidgetsExtension" target */,
+			);
+			path = YABAWidgets;
 			sourceTree = "<group>";
 		};
 		96EB67142DD94580009EB9EC /* YABAShareMac */ = {
@@ -466,6 +514,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		96EA39B82E58EB8E00B8411D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				96EA39BF2E58EB8F00B8411D /* SwiftUI.framework in Frameworks */,
+				96EA39BD2E58EB8F00B8411D /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		96EB67102DD94580009EB9EC /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -479,6 +536,8 @@
 		967B9A0D2DD80CFA00181AA1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				96EA39BC2E58EB8F00B8411D /* WidgetKit.framework */,
+				96EA39BE2E58EB8F00B8411D /* SwiftUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -491,6 +550,7 @@
 				967B9A4C2DD8D3EF00181AA1 /* YABAStatusMenuItem */,
 				96EB67142DD94580009EB9EC /* YABAShareMac */,
 				96EA396D2E56380700B8411D /* YABAKeyboard */,
+				96EA39C02E58EB8F00B8411D /* YABAWidgets */,
 				967B9A0D2DD80CFA00181AA1 /* Frameworks */,
 				96A8DFC32DB2F5A500A47601 /* Products */,
 			);
@@ -504,6 +564,7 @@
 				967B9A4B2DD8D3EF00181AA1 /* YABAStatusMenuItem.app */,
 				96EB67132DD94580009EB9EC /* YABAShareMac.appex */,
 				96EA396C2E56380700B8411D /* YABAKeyboard.appex */,
+				96EA39BB2E58EB8E00B8411D /* YABAWidgetsExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -551,6 +612,7 @@
 				967B9A5D2DD8D68D00181AA1 /* PBXTargetDependency */,
 				96EB67242DD945A6009EB9EC /* PBXTargetDependency */,
 				96EA39722E56380700B8411D /* PBXTargetDependency */,
+				96EA39CC2E58EB9000B8411D /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				96A8DFC42DB2F5A500A47601 /* YABA */,
@@ -606,6 +668,28 @@
 			productReference = 96EA396C2E56380700B8411D /* YABAKeyboard.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		96EA39BA2E58EB8E00B8411D /* YABAWidgetsExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 96EA39CE2E58EB9000B8411D /* Build configuration list for PBXNativeTarget "YABAWidgetsExtension" */;
+			buildPhases = (
+				96EA39B72E58EB8E00B8411D /* Sources */,
+				96EA39B82E58EB8E00B8411D /* Frameworks */,
+				96EA39B92E58EB8E00B8411D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				96EA39C02E58EB8F00B8411D /* YABAWidgets */,
+			);
+			name = YABAWidgetsExtension;
+			packageProductDependencies = (
+			);
+			productName = YABAWidgetsExtension;
+			productReference = 96EA39BB2E58EB8E00B8411D /* YABAWidgetsExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		96EB67122DD94580009EB9EC /* YABAShareMac */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 96EB671F2DD94580009EB9EC /* Build configuration list for PBXNativeTarget "YABAShareMac" */;
@@ -650,6 +734,9 @@
 					96EA396B2E56380700B8411D = {
 						CreatedOnToolsVersion = 16.3;
 					};
+					96EA39BA2E58EB8E00B8411D = {
+						CreatedOnToolsVersion = 16.3;
+					};
 					96EB67122DD94580009EB9EC = {
 						CreatedOnToolsVersion = 16.3;
 					};
@@ -681,6 +768,7 @@
 				96EB67122DD94580009EB9EC /* YABAShareMac */,
 				967B9A4A2DD8D3EF00181AA1 /* YABAStatusMenuItem */,
 				96EA396B2E56380700B8411D /* YABAKeyboard */,
+				96EA39BA2E58EB8E00B8411D /* YABAWidgetsExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -709,6 +797,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		96EA396A2E56380700B8411D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		96EA39B92E58EB8E00B8411D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -753,6 +848,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		96EA39B72E58EB8E00B8411D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		96EB670F2DD94580009EB9EC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -785,6 +887,11 @@
 			platformFilter = ios;
 			target = 96EA396B2E56380700B8411D /* YABAKeyboard */;
 			targetProxy = 96EA39712E56380700B8411D /* PBXContainerItemProxy */;
+		};
+		96EA39CC2E58EB9000B8411D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 96EA39BA2E58EB8E00B8411D /* YABAWidgetsExtension */;
+			targetProxy = 96EA39CB2E58EB9000B8411D /* PBXContainerItemProxy */;
 		};
 		96EB67242DD945A6009EB9EC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1216,6 +1323,88 @@
 			};
 			name = Release;
 		};
+		96EA39CF2E58EB9000B8411D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = YABAWidgets/YABAWidgets.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = WSK3376L7S;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = YABAWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "YABA Widgets";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.subfly.YABA.YABAWidgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = auto;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				XROS_DEPLOYMENT_TARGET = 2.0;
+			};
+			name = Debug;
+		};
+		96EA39D02E58EB9000B8411D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = YABAWidgets/YABAWidgets.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = WSK3376L7S;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = YABAWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "YABA Widgets";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.subfly.YABA.YABAWidgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = auto;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				XROS_DEPLOYMENT_TARGET = 2.0;
+			};
+			name = Release;
+		};
 		96EB67202DD94580009EB9EC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1320,6 +1509,15 @@
 			buildConfigurations = (
 				96EA39752E56380700B8411D /* Debug */,
 				96EA39762E56380700B8411D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		96EA39CE2E58EB9000B8411D /* Build configuration list for PBXNativeTarget "YABAWidgetsExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				96EA39CF2E58EB9000B8411D /* Debug */,
+				96EA39D02E58EB9000B8411D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

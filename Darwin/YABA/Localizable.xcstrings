@@ -1843,6 +1843,26 @@
         }
       }
     },
+    "Bookmark List Configuration Description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "See your latest bookmarks in one place!"
+          }
+        }
+      }
+    },
+    "Bookmark List Configuration Title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bookmark List Configuration"
+          }
+        }
+      }
+    },
     "Bookmark No Tags Added Title" : {
       "comment" : "Text to show in card view when there are no tags added for that particular bookmark",
       "extractionState" : "manual",
@@ -9426,6 +9446,9 @@
           }
         }
       }
+    },
+    "Hello, World!" : {
+
     },
     "Home Announcements Title" : {
       "comment" : "Title of announcements",
