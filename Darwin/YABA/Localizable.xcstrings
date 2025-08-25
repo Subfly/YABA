@@ -21,6 +21,9 @@
     "%lld" : {
       "shouldTranslate" : false
     },
+    "%lld collections" : {
+
+    },
     "• %@:" : {
       "shouldTranslate" : false
     },
@@ -3594,10 +3597,28 @@
         }
       }
     },
+    "Category Collection" : {
+
+    },
+    "Category Collections" : {
+
+    },
+    "Category Configuration Description" : {
+
+    },
+    "Category Configuration Title" : {
+
+    },
     "Changes:" : {
       "shouldTranslate" : false
     },
-    "Choose a folder to show bookmarks from" : {
+    "Choose a folder or tag to display" : {
+
+    },
+    "Choose a folder or tag to show bookmarks from" : {
+
+    },
+    "Choose Collection Dialog Title" : {
 
     },
     "Collection" : {
@@ -3695,6 +3716,9 @@
           }
         }
       }
+    },
+    "Collection Selection Title" : {
+
     },
     "Collection Type Folder Description" : {
       "comment" : "Description for collection type -  folder",
@@ -3887,6 +3911,9 @@
           }
         }
       }
+    },
+    "Collections" : {
+
     },
     "Copy To Clipboard Success Message" : {
       "comment" : "Message to show in toast when user copied something",
@@ -8205,6 +8232,9 @@
         }
       }
     },
+    "Display ${selectedCollection}" : {
+
+    },
     "Done" : {
       "comment" : "Done",
       "extractionState" : "manual",
@@ -9165,9 +9195,6 @@
         }
       }
     },
-    "Folder Selection Title" : {
-
-    },
     "Folders Title" : {
       "comment" : "Title for folders",
       "extractionState" : "manual",
@@ -9455,9 +9482,6 @@
           }
         }
       }
-    },
-    "Hello, World!" : {
-
     },
     "Home Announcements Title" : {
       "comment" : "Title of announcements",
@@ -25597,6 +25621,9 @@
         }
       }
     },
+    "Recent Bookmarks" : {
+
+    },
     "Refresh" : {
       "comment" : "Label to show for refresh related functions",
       "extractionState" : "manual",
@@ -31643,6 +31670,9 @@
           }
         }
       }
+    },
+    "Show bookmarks from ${selectedFolder}" : {
+
     },
     "Show Less Label" : {
       "comment" : "Label of show less for collections in mobile",

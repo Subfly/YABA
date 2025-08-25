@@ -18,10 +18,16 @@ struct DeepLinkOpenBookmarkRequest: Identifiable, Equatable {
     let bookmarkId: String
 }
 
+struct DeepLinkOpenCollectionRequest: Identifiable, Equatable {
+    let id: UUID = .init()
+    let collectionId: String
+}
+
 @Observable
 class DeepLinkManager {
     var saveRequest: DeepLinkSaveBookmarkRequest? = nil
-    var openRequest: DeepLinkOpenBookmarkRequest? = nil
+    var openBookmarkRequest: DeepLinkOpenBookmarkRequest? = nil
+    var openCollectionRequest: DeepLinkOpenCollectionRequest? = nil
     
     func handleDeepLink(_ url: URL) {
         if let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
@@ -33,14 +39,19 @@ class DeepLinkManager {
             } else if components.host == "open",
                 let idQueryItem = components.queryItems?.first(where: { $0.name == "id" }),
                 let id = idQueryItem.value {
-                openRequest = DeepLinkOpenBookmarkRequest(bookmarkId: id)
+                openBookmarkRequest = DeepLinkOpenBookmarkRequest(bookmarkId: id)
+            } else if components.host == "collection",
+                let idQueryItem = components.queryItems?.first(where: { $0.name == "id" }),
+                let id = idQueryItem.value {
+                openCollectionRequest = DeepLinkOpenCollectionRequest(collectionId: id)
             }
         }
     }
     
     func onHandleDeeplink() {
         saveRequest = nil
-        openRequest = nil
+        openBookmarkRequest = nil
+        openCollectionRequest = nil
     }
 }
 

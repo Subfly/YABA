@@ -62,14 +62,19 @@ private struct BookmarkWidgetView: View {
                 collectionColor: entry.configuration.selectedFolder?.displayColor == nil
                 ? .accentColor
                 : entry.configuration.selectedFolder!.displayColor.getUIColor()
-            )
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            ).clipShape(RoundedRectangle(cornerRadius: 16))
+            
             VStack {
                 HStack {
                     Label {
                         if let selectedFolder = entry.configuration.selectedFolder {
-                            Text(selectedFolder.displayString)
-                                .fontWeight(.semibold)
+                            if selectedFolder.displayString == Constants.uncategorizedCollectionLabelKey {
+                                Text(LocalizedStringKey(Constants.uncategorizedCollectionLabelKey))
+                                    .fontWeight(.semibold)
+                            } else {
+                                Text(selectedFolder.displayString)
+                                    .fontWeight(.semibold)
+                            }
                         } else {
                             Text("Home Recents Label")
                         }
@@ -80,6 +85,11 @@ private struct BookmarkWidgetView: View {
                             : entry.configuration.selectedFolder?.displayIconNameString == nil
                             ? "folder-01"
                             : entry.configuration.selectedFolder!.displayIconNameString
+                        )
+                        .foregroundStyle(
+                            entry.configuration.selectedFolder?.displayColor == nil
+                            ? .accentColor
+                            : entry.configuration.selectedFolder!.displayColor.getUIColor()
                         )
                         .scaledToFit()
                         .frame(width: 18, height: 18)

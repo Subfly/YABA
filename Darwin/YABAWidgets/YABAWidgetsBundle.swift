@@ -12,6 +12,7 @@ import SwiftUI
 struct YABAWidgetsBundle: WidgetBundle {
     @WidgetBundleBuilder
     var body: some Widget {
+        CategoryWidget()
         BookmarkWidget()
     }
 }

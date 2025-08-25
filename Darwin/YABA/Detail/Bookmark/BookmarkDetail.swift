@@ -30,7 +30,7 @@ struct GeneralBookmarkDetail: View {
                 onDeleteBookmarkCallback(bookmark)
             }
         )
-        .onChange(of: deepLinkManager.openRequest) { oldValue, newValue in
+        .onChange(of: deepLinkManager.openBookmarkRequest) { oldValue, newValue in
             if oldValue == nil {
                 if let newRequest = newValue {
                     let id = newRequest.bookmarkId

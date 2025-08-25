@@ -25,8 +25,14 @@ struct MobileCollectionDetail: View {
 }
 
 struct GeneralCollectionDetail: View {
+    @Environment(\.modelContext)
+    private var modelContext
+
     @Environment(\.appState)
     private var appState
+    
+    @Environment(\.deepLinkManager)
+    private var deepLinkManager
     
     let onNavigationCallback: (YabaBookmark) -> Void
     let onAcceptKeyboard: () -> Void
@@ -38,7 +44,19 @@ struct GeneralCollectionDetail: View {
             onNavigationCallback: onNavigationCallback,
             onAcceptKeyboard: onAcceptKeyboard,
             onDeleteKeyboard: onDeleteKeyboard
-        )
+        ).onChange(of: deepLinkManager.openCollectionRequest) { oldValue, newValue in
+            if oldValue == nil {
+                if let newRequest = newValue {
+                    let id = newRequest.collectionId
+                    if let collections = try? modelContext.fetch(
+                        .init(predicate: #Predicate<YabaCollection> { $0.collectionId ==  id })
+                    ), let collection = collections.first {
+                        appState.selectedCollection = collection
+                    }
+                    deepLinkManager.onHandleDeeplink()
+                }
+            }
+        }
     }
 }
 

@@ -187,7 +187,7 @@ private struct MobileNavigationView: View {
                 .navigationBarBackButtonHidden()
                 .interactiveDismissDisabled()
         }
-        .onChange(of: deepLinkManager.openRequest) { oldValue, newValue in
+        .onChange(of: deepLinkManager.openBookmarkRequest) { oldValue, newValue in
             if oldValue == nil {
                 if let newRequest = newValue {
                     let id = newRequest.bookmarkId
@@ -195,6 +195,19 @@ private struct MobileNavigationView: View {
                         .init(predicate: #Predicate<YabaBookmark> { $0.bookmarkId ==  id })
                     ), let bookmark = bookmarks.first {
                         path.append(.bookmarkDetail(bookmark: bookmark))
+                    }
+                    deepLinkManager.onHandleDeeplink()
+                }
+            }
+        }
+        .onChange(of: deepLinkManager.openCollectionRequest) { oldValue, newValue in
+            if oldValue == nil {
+                if let newRequest = newValue {
+                    let id = newRequest.collectionId
+                    if let collections = try? modelContext.fetch(
+                        .init(predicate: #Predicate<YabaCollection> { $0.collectionId ==  id })
+                    ), let collection = collections.first {
+                        path.append(.collectionDetail(collection: collection))
                     }
                     deepLinkManager.onHandleDeeplink()
                 }

@@ -11,3 +11,8 @@ internal struct BookmarksListEntry: TimelineEntry {
     let date: Date
     let configuration: BookmarkListAppIntent
 }
+
+internal struct CategoryEntry: TimelineEntry {
+    let date: Date
+    let configuration: CategoryAppIntent
+}

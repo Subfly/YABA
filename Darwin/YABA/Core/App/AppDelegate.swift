@@ -31,6 +31,11 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
             DispatchQueue.main.async {
                 NotificationCenter.default.post(name: .didReceiveDeepLink, object: url)
             }
+        } else if let collectionId = response.notification.request.content.userInfo["collectionId"] as? String,
+           let url = URL(string: "yaba://collection?id=\(collectionId.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")") {
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(name: .didReceiveDeepLink, object: url)
+            }
         }
         completionHandler()
     }
