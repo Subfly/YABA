@@ -312,3 +312,29 @@ internal struct CategoryAppIntent: WidgetConfigurationIntent {
         return .result()
     }
 }
+
+internal struct OpenYABAIntent: AppIntent {
+    static var title: LocalizedStringResource = "Open YABA"
+    static var description = IntentDescription("Opens the YABA bookmark manager app")
+    
+    static var openAppWhenRun: Bool = true
+    static var isDiscoverable = true
+    
+    func perform() async throws -> some IntentResult & OpensIntent {
+        let url = URL(string: "yaba://")!
+        return .result(opensIntent: OpenURLIntent(url))
+    }
+}
+
+internal struct QuickmarkIntent: AppIntent {
+    static var title: LocalizedStringResource = "Quickmark"
+    static var description = IntentDescription("Create a quick bookmark")
+    
+    static var openAppWhenRun: Bool = true
+    static var isDiscoverable = true
+    
+    func perform() async throws -> some IntentResult & OpensIntent {
+        let url = URL(string: "yaba://save?link=example")!
+        return .result(opensIntent: OpenURLIntent(url))
+    }
+}

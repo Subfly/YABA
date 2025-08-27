@@ -14,5 +14,7 @@ struct YABAWidgetsBundle: WidgetBundle {
     var body: some Widget {
         CategoryWidget()
         BookmarkWidget()
+        YABALauncherControlCenterWidget()
+        QuickmarkControlCenterWidget()
     }
 }

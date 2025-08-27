@@ -4011,6 +4011,9 @@
         }
       }
     },
+    "Create a quick bookmark" : {
+
+    },
     "Create Bookmark" : {
       "comment" : "Label to show for creating bookmarks in plus menu",
       "extractionState" : "manual",
@@ -25045,6 +25048,12 @@
         }
       }
     },
+    "Open YABA" : {
+
+    },
+    "Opens the YABA bookmark manager app" : {
+
+    },
     "Pick Icon Category Title" : {
       "comment" : "Title to show when user open the icon picker and prompts to select a main category",
       "extractionState" : "manual",
@@ -25332,6 +25341,12 @@
           }
         }
       }
+    },
+    "Quick Bookmark" : {
+
+    },
+    "Quickmark" : {
+
     },
     "Quit" : {
       "comment" : "Mac only label to show in status bar menu item, for quitting the menu item",
@@ -34771,6 +34786,9 @@
         }
       },
       "shouldTranslate" : false
+    },
+    "YABA Quickmark" : {
+
     }
   },
   "version" : "1.0"

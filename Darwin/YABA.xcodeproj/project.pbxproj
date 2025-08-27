@@ -269,6 +269,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Assets.xcassets,
+				Core/App/AppDelegate.swift,
 				Core/Components/Gradient/AnimatedGradient.swift,
 				Core/Components/Icon/YabaIconView.swift,
 				Core/Model/BookmarkType.swift,
@@ -283,6 +284,13 @@
 				Localizable.xcstrings,
 			);
 			target = 96EA39BA2E58EB8E00B8411D /* YABAWidgetsExtension */;
+		};
+		96EA39FB2E5E0F1D00B8411D /* Exceptions for "YABAWidgets" folder in "YABA" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Core/AppIntents.swift,
+			);
+			target = 96A8DFC12DB2F5A500A47601 /* YABA */;
 		};
 		96EB670A2DD91588009EB9EC /* Exceptions for "YABA" folder in "YABA" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
@@ -472,6 +480,7 @@
 		96EA39C02E58EB8F00B8411D /* YABAWidgets */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
+				96EA39FB2E5E0F1D00B8411D /* Exceptions for "YABAWidgets" folder in "YABA" target */,
 				96EA39D12E58EB9000B8411D /* Exceptions for "YABAWidgets" folder in "YABAWidgetsExtension" target */,
 			);
 			path = YABAWidgets;
