@@ -15,6 +15,8 @@ struct YABAWidgetsBundle: WidgetBundle {
         CategoryWidget()
         BookmarkWidget()
         YABALauncherControlCenterWidget()
-        QuickmarkControlCenterWidget()
+        // What a bs that apple does not let use of URL types in here
+        // TODO: ENABLE ONCE SHORTCUTS ARE THERE
+        //QuickmarkControlCenterWidget()
     }
 }
