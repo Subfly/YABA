@@ -26,21 +26,13 @@ internal struct BookmarkListProvider: AppIntentTimelineProvider {
         in context: Context
     ) async -> Timeline<BookmarksListEntry> {
         let finalConfig = await ensureDefaultConfiguration(configuration)
-        var entries: [BookmarksListEntry] = []
-
-        // Generate a timeline consisting of five entries an hour apart, starting from the current date.
+        
+        // Create a single entry for manual updates via app CRUD operations
         let currentDate = Date()
-        for hourOffset in 0 ..< 5 {
-            let entryDate = Calendar.current.date(
-                byAdding: .hour,
-                value: hourOffset,
-                to: currentDate
-            )!
-            let entry = BookmarksListEntry(date: entryDate, configuration: finalConfig)
-            entries.append(entry)
-        }
+        let entry = BookmarksListEntry(date: currentDate, configuration: finalConfig)
+        let entries = [entry]
 
-        return Timeline(entries: entries, policy: .atEnd)
+        return Timeline(entries: entries, policy: .never)
     }
     
     private func ensureDefaultConfiguration(_ configuration: BookmarkListAppIntent) async -> BookmarkListAppIntent {
@@ -72,21 +64,13 @@ internal struct CategoryProvider: AppIntentTimelineProvider {
         in context: Context
     ) async -> Timeline<CategoryEntry> {
         let finalConfig = await ensureDefaultConfiguration(configuration)
-        var entries: [CategoryEntry] = []
-
-        // Generate a timeline consisting of five entries an hour apart, starting from the current date.
+        
+        // Create a single entry for manual updates via app CRUD operations
         let currentDate = Date()
-        for hourOffset in 0 ..< 5 {
-            let entryDate = Calendar.current.date(
-                byAdding: .hour,
-                value: hourOffset,
-                to: currentDate
-            )!
-            let entry = CategoryEntry(date: entryDate, configuration: finalConfig)
-            entries.append(entry)
-        }
+        let entry = CategoryEntry(date: currentDate, configuration: finalConfig)
+        let entries = [entry]
 
-        return Timeline(entries: entries, policy: .atEnd)
+        return Timeline(entries: entries, policy: .never)
     }
     
     private func ensureDefaultConfiguration(_ configuration: CategoryAppIntent) async -> CategoryAppIntent {
