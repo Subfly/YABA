@@ -256,6 +256,7 @@ internal class BookmarkCreationState {
         /// MARK: BOOKMARK DATA FILLER FOR VM
         if let bookmarkToEdit {
             url = bookmarkToEdit.link
+            cleanerUrl = bookmarkToEdit.link
             label = bookmarkToEdit.label
             description = bookmarkToEdit.bookmarkDescription
             host = bookmarkToEdit.domain
