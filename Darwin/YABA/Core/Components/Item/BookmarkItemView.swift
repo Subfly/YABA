@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import WidgetKit
 
 @MainActor
 @Observable
@@ -81,6 +82,8 @@ struct BookmarkItemView: View {
                         if appState.selectedBookmark?.id == bookmark.id {
                             appState.selectedBookmark = nil
                         }
+                        
+                        WidgetCenter.shared.reloadAllTimelines()
                     }
                 )
             } message: {

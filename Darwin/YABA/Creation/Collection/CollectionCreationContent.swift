@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import WidgetKit
 
 struct CollectionCreationContent: View {
     @Environment(\.dismiss)
@@ -220,7 +221,11 @@ struct CollectionCreationContent: View {
                 
                 modelContext.insert(collection)
             }
+            
             try? modelContext.save()
+            
+            WidgetCenter.shared.reloadAllTimelines()
+            
             dismiss()
         }
     }

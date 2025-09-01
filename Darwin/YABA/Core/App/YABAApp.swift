@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 import TipKit
+import WidgetKit
 
 @main
 struct YABAApp: App {
@@ -37,6 +38,7 @@ struct YABAApp: App {
                 .onAppear {
                     setupForMacCatalyst()
                     try? Tips.configure()
+                    WidgetCenter.shared.reloadAllTimelines()
                 }
                 .onOpenURL { url in
                     deepLinkManager.handleDeepLink(url)

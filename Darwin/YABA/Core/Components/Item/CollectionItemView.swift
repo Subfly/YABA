@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import WidgetKit
 
 @MainActor
 @Observable
@@ -115,6 +116,9 @@ struct CollectionItemView: View {
                     if appState.selectedCollection?.id == collection.id {
                         appState.selectedCollection = nil
                     }
+                    
+                    WidgetCenter.shared.reloadAllTimelines()
+                    
                     onDeleteCallback(collection)
                 }
             )

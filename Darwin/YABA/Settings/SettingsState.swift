@@ -8,6 +8,7 @@
 import UniformTypeIdentifiers
 import SwiftUI
 import SwiftData
+import WidgetKit
 
 internal enum SettingsNavigationDestination: Hashable {
     case mapper, previousAnnouncements, logs
@@ -141,6 +142,8 @@ internal class SettingsState {
                 }
             }
             fileUrl.stopAccessingSecurityScopedResource()
+            
+            WidgetCenter.shared.reloadAllTimelines()
         }
     }
     
@@ -162,6 +165,8 @@ internal class SettingsState {
                         iconType: .success,
                         onAcceptPressed: { self.toastManager.hide() }
                     )
+                    
+                    WidgetCenter.shared.reloadAllTimelines()
                 }
             )
         } catch {
@@ -218,6 +223,9 @@ internal class SettingsState {
                     iconType: .success,
                     onAcceptPressed: { self.toastManager.hide() }
                 )
+                
+                WidgetCenter.shared.reloadAllTimelines()
+                
                 onFinishCallback()
             }
         )

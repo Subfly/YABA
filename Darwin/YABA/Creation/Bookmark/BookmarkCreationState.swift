@@ -10,6 +10,7 @@ import Foundation
 import SwiftUI
 import Combine
 import SwiftData
+import WidgetKit
 
 @MainActor
 @Observable
@@ -200,6 +201,8 @@ internal class BookmarkCreationState {
             try? modelContext.save()
             onFinishCallback()
         }
+        
+        WidgetCenter.shared.reloadAllTimelines()
     }
     
     func onAppear(
