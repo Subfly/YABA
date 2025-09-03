@@ -2,10 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>dev.subfly.yaba.sync-task</string>
+	</array>
 	<key>CFBundleIconFile</key>
 	<string>MacAppIcons.icns</string>
-	<key>NSHumanReadableCopyright</key>
-	<string>2025 Subfly Developer - Ali Taha Dinçer</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -29,14 +31,22 @@
 		<true/>
 		<key>NSAllowsArbitraryLoadsInWebContent</key>
 		<true/>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
 		<key>NSExceptionDomains</key>
 		<dict/>
 	</dict>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_yaba-sync._tcp.</string>
+	</array>
 	<key>NSSupportsAutomaticTermination</key>
 	<true/>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>
+		<string>fetch</string>
+		<string>processing</string>
 	</array>
 </dict>
 </plist>

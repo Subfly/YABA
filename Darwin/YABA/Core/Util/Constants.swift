@@ -29,6 +29,7 @@ struct Constants {
     static let preferredSortingKey = "preferredSorting"
     static let preferredSortOrderKey = "preferredSortOrder"
     static let deviceIdKey = "deviceId"
+    static let deviceNameKey = "deviceName"
     static let showRecentsKey = "showRecents"
     static let showMenuBarItem = "showMenuBarItem"
     static let useSimplifiedShare = "useSimplifiedShare"

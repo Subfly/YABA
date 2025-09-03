@@ -95,7 +95,6 @@ struct HomeView: View {
                 onExitRequested: {}
             )
         }
-        /*
         #if !targetEnvironment(macCatalyst)
         .fullScreenCover(isPresented: $homeState.shouldShowSyncSheet) {
             SyncView().interactiveDismissDisabled()
@@ -105,14 +104,79 @@ struct HomeView: View {
             SyncView().interactiveDismissDisabled()
         }
         #endif
-         */
         .navigationTitle("YABA")
         .toolbar {
-            ToolbarIcons(
-                onNavigationCallbackForSearch: onNavigationCallbackForSearch,
-                onNavigationCallbackForSync: { homeState.shouldShowSyncSheet = true },
-                onNavigationCallbackForSettings: onNavigationCallbackForSettings
-            )
+            ToolbarItem(placement: .topBarLeading) {
+                #if targetEnvironment(macCatalyst)
+                MacOSHoverableToolbarIcon(
+                    bundleKey: "laptop-phone-sync",
+                    tooltipKey: "Synchronize Label",
+                    onPressed: {
+                        homeState.shouldShowSyncSheet = true
+                    }
+                )
+                #else
+                Button {
+                    homeState.shouldShowSyncSheet = true
+                } label: {
+                    YabaIconView(bundleKey: "laptop-phone-sync")
+                }
+                #endif
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                #if targetEnvironment(macCatalyst)
+                HStack(spacing: 0) {
+                    MacOSHoverableToolbarIcon(
+                        bundleKey: "search-01",
+                        tooltipKey: "Search Title",
+                        onPressed: onNavigationCallbackForSearch
+                    )
+                    Menu {
+                        ContentAppearancePicker()
+                        SortingPicker()
+                        Button {
+                            onNavigationCallbackForSettings()
+                        } label: {
+                            Label {
+                                Text("Settings Title")
+                            } icon: {
+                                YabaIconView(bundleKey: "settings-02")
+                            }
+                        }
+                    } label: {
+                        MacOSHoverableToolbarIcon(
+                            bundleKey:  "more-horizontal-circle-02",
+                            tooltipKey: "Show More Label",
+                            onPressed: {}
+                        )
+                    }
+                }
+                #else
+                HStack {
+                    Button {
+                        onNavigationCallbackForSearch()
+                    } label: {
+                        YabaIconView(bundleKey: "search-01")
+                    }
+                    Menu {
+                        ContentAppearancePicker()
+                        SortingPicker()
+                        Divider()
+                        Button {
+                            onNavigationCallbackForSettings()
+                        } label: {
+                            Label {
+                                Text("Settings Title")
+                            } icon: {
+                                YabaIconView(bundleKey: "settings-02")
+                            }
+                        }
+                    } label: {
+                        YabaIconView(bundleKey: "more-horizontal-circle-02")
+                    }
+                }
+                #endif
+            }
         }
         .onChange(of: deepLinkManager.saveRequest) { oldValue, newValue in
             if oldValue == nil {
@@ -245,90 +309,5 @@ private struct GridView: View {
                 )
             }.padding(.horizontal)
         }
-    }
-}
-
-private struct ToolbarIcons: View {
-    let onNavigationCallbackForSearch: () -> Void
-    let onNavigationCallbackForSync: () -> Void
-    let onNavigationCallbackForSettings: () -> Void
-    
-    var body: some View {
-        #if targetEnvironment(macCatalyst)
-        HStack(spacing: 0) {
-            MacOSHoverableToolbarIcon(
-                bundleKey: "search-01",
-                tooltipKey: "Search Title",
-                onPressed: onNavigationCallbackForSearch
-            )
-            /*
-            MacOSHoverableToolbarIcon(
-                bundleKey: "laptop-phone-sync",
-                onPressed: onNavigationCallbackForSync
-            )
-             */
-            Menu {
-                ContentAppearancePicker()
-                SortingPicker()
-                Button {
-                    onNavigationCallbackForSettings()
-                } label: {
-                    Label {
-                        Text("Settings Title")
-                    } icon: {
-                        YabaIconView(bundleKey: "settings-02")
-                    }
-                }
-            } label: {
-                MacOSHoverableToolbarIcon(
-                    bundleKey:  "more-horizontal-circle-02",
-                    tooltipKey: "Show More Label",
-                    onPressed: {}
-                )
-            }
-        }
-        #else
-        HStack {
-            Button {
-                onNavigationCallbackForSearch()
-            } label: {
-                YabaIconView(bundleKey: "search-01")
-            }
-            #if os(visionOS)
-            .buttonStyle(.plain)
-            #endif
-            Menu {
-                ContentAppearancePicker()
-                SortingPicker()
-                /*
-                Divider()
-                Button {
-                    onNavigationCallbackForSync()
-                } label: {
-                    Label {
-                        Text("Synchronize Label")
-                    } icon: {
-                        YabaIconView(bundleKey: "laptop-phone-sync")
-                    }
-                }
-                 */
-                Divider()
-                Button {
-                    onNavigationCallbackForSettings()
-                } label: {
-                    Label {
-                        Text("Settings Title")
-                    } icon: {
-                        YabaIconView(bundleKey: "settings-02")
-                    }
-                }
-            } label: {
-                YabaIconView(bundleKey: "more-horizontal-circle-02")
-            }
-            #if os(visionOS)
-            .buttonStyle(.plain)
-            #endif
-        }
-        #endif
     }
 }

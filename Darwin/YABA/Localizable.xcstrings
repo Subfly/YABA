@@ -30,6 +30,18 @@
     "+%lld" : {
       "shouldTranslate" : false
     },
+    "Accept" : {
+      "comment" : "Accept",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accept"
+          }
+        }
+      }
+    },
     "Announcements CloudKit Support Drop Title" : {
       "comment" : "One time title for announcement that indicates Cloud Kit Support Drop",
       "extractionState" : "manual",
@@ -8231,6 +8243,42 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "删除标签"
+          }
+        }
+      }
+    },
+    "Device Type Computer" : {
+      "comment" : "Title of device type Computer",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Computer"
+          }
+        }
+      }
+    },
+    "Device Type Phone" : {
+      "comment" : "Title of device type Phone",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Phone"
+          }
+        }
+      }
+    },
+    "Device Type Tablet" : {
+      "comment" : "Title of device type Tablet",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tablet"
           }
         }
       }
@@ -25735,6 +25783,18 @@
         }
       }
     },
+    "Reject" : {
+      "comment" : "Reject",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reject"
+          }
+        }
+      }
+    },
     "Remind Me" : {
       "comment" : "Label to show in menus where user can set a reminder",
       "extractionState" : "manual",
@@ -32457,194 +32517,134 @@
         }
       }
     },
-    "Sync Show Camera" : {
-      "comment" : "Label to show the Camera in manual sync view",
-      "extractionState" : "manual",
+    "Sync" : {
+      "comment" : "Sync",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mit Kamera scannen"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Scan with Camera"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Escanear con cámara"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Scanner avec la caméra"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "कैमरा से स्कैन करें"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Scansiona con la fotocamera"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "カメラでスキャン"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "카메라로 스캔하기"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Skann med kamera"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Scannen met camera"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Escanear com a Câmera"
-          }
-        },
-        "sk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Snímať fotoaparátom"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Skanna med kamera"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kamerayla Tara"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "用相机扫描"
+            "value" : "Sync"
           }
         }
       }
     },
-    "Sync Show QR" : {
-      "comment" : "Label to show the QR Code in manual sync view",
-      "extractionState" : "manual",
+    "Sync Available Devices Title" : {
+      "comment" : "Title of the available connections section in sync screen",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "QR-Code anzeigen"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Show QR Code"
+            "value" : "Available Devices"
           }
-        },
-        "es" : {
+        }
+      }
+    },
+    "Sync Complete Message %@" : {
+      "comment" : "Message to show in toast when syncing is completed",
+      "localizations" : {
+        "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mostrar código QR"
+            "value" : "Syncing with ‘%@’ completed!"
           }
-        },
-        "fr" : {
+        }
+      }
+    },
+    "Sync Error Message %@" : {
+      "comment" : "Message to show in toast when syncing has an error",
+      "localizations" : {
+        "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Afficher le code QR"
+            "value" : "There was an error while syncing with ‘%@'"
           }
-        },
-        "hi" : {
+        }
+      }
+    },
+    "Sync Failed Message %@: %@" : {
+      "comment" : "Message to show in toast when syncing has failed",
+      "localizations" : {
+        "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "QR कोड दिखाएँ"
+            "value" : "Sync failed with ‘%1$@’: %2$@"
           }
-        },
-        "it" : {
+        }
+      }
+    },
+    "Sync Request Accepted Message %@" : {
+      "comment" : "Message to show in toast when sync request has been accepted",
+      "localizations" : {
+        "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mostra codice QR"
+            "value" : "Sync request accepted by ’%@’"
           }
-        },
-        "ja" : {
+        }
+      }
+    },
+    "Sync Request Message %@" : {
+      "comment" : "Message to show in dialog when user attempts to send a sync request",
+      "localizations" : {
+        "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "QRコード表示"
+            "value" : "Are you sure you want to send a sync request to %@? "
           }
-        },
-        "ko" : {
+        }
+      }
+    },
+    "Sync Request Rejected Message %@" : {
+      "comment" : "Message to show in toast when sync request has been rejected",
+      "localizations" : {
+        "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "QR 코드 표시"
+            "value" : "Sync request rejected by ’%@’"
           }
-        },
-        "nb" : {
+        }
+      }
+    },
+    "Sync Request Sent Message %@" : {
+      "comment" : "Message to show in toast when sync request has been sent",
+      "localizations" : {
+        "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vis QR-kode"
+            "value" : "Sync request sent to ‘%@’"
           }
-        },
-        "nl" : {
+        }
+      }
+    },
+    "Sync Request Title" : {
+      "comment" : "Title of dialog when user attempts to send a sync request",
+      "localizations" : {
+        "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "QR-code tonen"
+            "value" : "Send Sync Request"
           }
-        },
-        "pt-BR" : {
+        }
+      }
+    },
+    "Sync Searching For Devices Description" : {
+      "comment" : "Description to show in sync screen while there are no devices in the available devices section.",
+      "localizations" : {
+        "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mostrar Código QR"
+            "value" : "Please make sure that your devices are connected to the same network, your device will automatically will be listed here."
           }
-        },
-        "sk" : {
+        }
+      }
+    },
+    "Sync Searching For Devices Title" : {
+      "comment" : "Title to show while searching for available devices in the network",
+      "localizations" : {
+        "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zobraziť QR kód"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Visa QR-kod"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "QR Kodunu Göster"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "显示二维码"
+            "value" : "Searching for Devices…"
           }
         }
       }
@@ -32741,6 +32741,27 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "同步"
+          }
+        }
+      }
+    },
+    "Syncing With Device Message %@" : {
+      "comment" : "Message to show in toast when sync is going on",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Syncing with ‘%@’"
+          }
+        }
+      }
+    },
+    "Syncing..." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Syncing…"
           }
         }
       }
@@ -34280,6 +34301,9 @@
           }
         }
       }
+    },
+    "Unknown" : {
+
     },
     "Unsupported File Type Message" : {
       "comment" : "Message to show when an unsupported file type is selected in file import.",

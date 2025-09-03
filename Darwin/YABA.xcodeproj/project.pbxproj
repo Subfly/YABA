@@ -167,7 +167,6 @@
 				Core/Model/YabaIcon.swift,
 				Core/Model/YabaModelContainer.swift,
 				Core/Model/YabaSchema.swift,
-				Core/Sync/Model/SyncQRCodePayload.swift,
 				Core/Unfurl/LinkCleaner.swift,
 				Core/Unfurl/ReaderModeExtractor.swift,
 				Core/Unfurl/Unfurler.swift,
@@ -346,7 +345,6 @@
 				Core/Model/YabaIcon.swift,
 				Core/Model/YabaModelContainer.swift,
 				Core/Model/YabaSchema.swift,
-				Core/Sync/Model/SyncQRCodePayload.swift,
 				Core/Unfurl/LinkCleaner.swift,
 				Core/Unfurl/ReaderModeExtractor.swift,
 				Core/Unfurl/Unfurler.swift,
@@ -420,7 +418,6 @@
 				Core/Model/YabaIcon.swift,
 				Core/Model/YabaModelContainer.swift,
 				Core/Model/YabaSchema.swift,
-				Core/Sync/Model/SyncQRCodePayload.swift,
 				Core/Unfurl/LinkCleaner.swift,
 				Core/Unfurl/ReaderModeExtractor.swift,
 				Core/Unfurl/Unfurler.swift,
@@ -1114,6 +1111,8 @@
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need camera access to scan QR codes for syncing your content across devices.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "2025 Subfly Developer - Ali Taha Dinçer";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "YABA needs network discovery permission to sync your content across your devices.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -1166,6 +1165,8 @@
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need camera access to scan QR codes for syncing your content across devices.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "2025 Subfly Developer - Ali Taha Dinçer";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "YABA needs network discovery permission to sync your content across your devices.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;

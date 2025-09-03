@@ -11,113 +11,257 @@ struct SyncView: View {
     @Environment(\.dismiss)
     private var dismiss
     
+    @Environment(\.networkSyncManager)
+    private var networkSyncManager
+    
     @Environment(\.modelContext)
     private var modelContext
     
     @State
-    private var state: SyncState?
+    private var state: SyncState = .init()
+    
+    // Alert state for sync requests
+    @State
+    private var showingSyncRequestAlert = false
+    
+    @State
+    private var currentSyncRequest: SyncRequestMessage?
+    
+    // Syncing state
+    @State
+    private var sendingRequestToDeviceId: String?
     
     var body: some View {
         NavigationView {
-            viewSwitcher
-                .animation(.smooth, value: state?.isSyncing == true)
-                .transition(.blurReplace)
-                .navigationTitle("Synchronize Label")
-                .toolbar {
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button {
-                            dismiss()
-                        } label: {
-                            YabaIconView(bundleKey: "cancel-01")
-                        }
+            ZStack {
+                AnimatedGradient(collectionColor: .accentColor)
+                content
+            }
+            .navigationTitle("Synchronize Label")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Text("Done")
                     }
                 }
-        }
-        .onDisappear {
-            // Stop servers
-        }
-        .onAppear {
-            state = .init(modelContext: modelContext)
-        }
-    }
-    
-    @ViewBuilder
-    private var viewSwitcher: some View {
-        if let state {
-            if state.isSyncing {
-                syncingContent
-            } else {
-                scanningContent
             }
-        }
-    }
-    
-    @ViewBuilder
-    private var scanningContent: some View {
-        if let state {
-            VStack {
-                // TODO: ADD TEXT TO INFORM SCAN
-                switch state.mode {
-                case .client:
-                    #if !os(visionOS)
-                    QRScannerView { scannedText in
-                        state.handleScannedPayload(scannedText)
-                    }
-                    .frame(width: 300, height: 300)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                    #else
-                    EmptyView()
-                    #endif
-                case .server:
-                    if let qrCode = state.qrImage {
-                        Image(uiImage: qrCode)
-                            .resizable()
-                            .interpolation(.none)
-                            .scaledToFit()
-                            .frame(width: 300, height: 300)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                    } else {
-                        ProgressView()
-                            .controlSize(.large)
-                            .frame(width: 300, height: 300)
+            .alert("Sync Request Title", isPresented: $showingSyncRequestAlert) {
+                Button("Accept") {
+                    Task {
+                        if let request = currentSyncRequest {
+                            do {
+                                try await state.acceptSyncRequest(request, using: modelContext)
+                            } catch {
+                                print("Failed to accept sync request: \(error)")
+                            }
+                        }
+                        currentSyncRequest = nil
                     }
                 }
                 
-            #if !targetEnvironment(macCatalyst)
-                Button {
-                    state.checkCameraPermission { isGranted in
-                        if isGranted {
-                            withAnimation {
-                                state.changeMode()
+                Button("Reject", role: .destructive) {
+                    Task {
+                        if let request = currentSyncRequest {
+                            do {
+                                try await state.rejectSyncRequest(request)
+                            } catch {
+                                print("Failed to reject sync request: \(error)")
                             }
-                        } else {
-                            // TODO: Show Toast to open settings
                         }
-                    }
-                } label: {
-                    Label {
-                        Text(
-                            state.mode == .client
-                            ? LocalizedStringKey("Sync Show QR")
-                            : LocalizedStringKey("Sync Show Camera")
-                        )
-                    } icon: {
-                        YabaIconView(
-                            bundleKey: state.mode == .client
-                            ? "qr-code"
-                            : "camera-01"
-                        ).frame(width: 22, height: 22)
+                        currentSyncRequest = nil
                     }
                 }
-                .padding(.top, 16)
-            #endif
+            } message: {
+                if let request = currentSyncRequest {
+                    Text("Sync Request Message \(request.fromDeviceName)")
+                }
+            }
+            .toast(
+                state: state.toastManager.toastState,
+                isShowing: state.toastManager.isShowing,
+                onDismiss: {
+                    state.toastManager.hide()
+                }
+            )
+            .onChange(of: state.pendingSyncRequests) { _, newRequests in
+                if let latestRequest = newRequests.first, currentSyncRequest == nil {
+                    currentSyncRequest = latestRequest
+                    showingSyncRequestAlert = true
+                }
+            }
+            .onChange(of: state.needsToSendOurData) { _, needsToSend in
+                if needsToSend {
+                    Task {
+                        do {
+                            try await state.sendOurDataIfNeeded(using: modelContext)
+                        } catch {
+                            print("Failed to send our data: \(error)")
+                        }
+                    }
+                }
+            }
+            .onChange(of: state.lastReceivedSyncData) { _, newSyncData in
+                if let syncData = newSyncData {
+                    Task {
+                        do {
+                            try await state.completeSyncWithIncomingData(syncData, using: modelContext)
+                        } catch {
+                            print("Failed to complete sync with incoming data: \(error)")
+                        }
+                    }
+                }
+            }
+            .onDisappear {
+                Task {
+                    await state.stopNetworkDiscovery()
+                }
+            }
+            .onAppear {
+                state.setNetworkSyncManager(networkSyncManager)
+                Task {
+                    try? await state.startNetworkDiscovery()
+                }
             }
         }
     }
     
     @ViewBuilder
-    private var syncingContent: some View {
-        
+    private var content: some View {
+        List {
+            Section {
+                if state.discoveredDevices.isEmpty {
+                    ContentUnavailableView {
+                        Label {
+                            Text("Sync Searching For Devices Title")
+                        } icon: {
+                            YabaIconView(bundleKey: "search-01")
+                                .scaledToFit()
+                                .frame(width: 52, height: 52)
+                        }
+                    } description: {
+                        Text("Sync Searching For Devices Description")
+                    }
+                } else {
+                    ForEach(state.discoveredDevices) { device in
+                        DiscoveredDeviceItem(
+                            device: device,
+                            isSendingRequest: sendingRequestToDeviceId == device.deviceId,
+                            isSyncing: state.syncingWithDevice == device.deviceId,
+                            isDisabled: state.syncingWithDevice != nil
+                        ) {
+                            Task {
+                                sendingRequestToDeviceId = device.deviceId
+                                do {
+                                    try await state.sendSyncRequest(to: device)
+                                } catch {
+                                    print("Failed to send sync request to \(device.name): \(error)")
+                                }
+                                sendingRequestToDeviceId = nil
+                            }
+                        }
+                    }
+                }
+            } header: {
+                Label {
+                    Text("Sync Available Devices Title")
+                } icon: {
+                    YabaIconView(bundleKey: "search-01")
+                        .frame(width: 18, height: 18)
+                }
+            }
+        }
+        .listStyle(.sidebar)
+        .scrollContentBackground(.hidden)
+    }
+}
+
+private struct DiscoveredDeviceItem: View {
+    let device: ConnectedDevice
+    let isSendingRequest: Bool
+    let isSyncing: Bool
+    let isDisabled: Bool
+    let onSendRequest: () -> Void
+    
+    var body: some View {
+        Button {
+            if !isSendingRequest && !isSyncing && !isDisabled {
+                onSendRequest()
+            }
+        } label: {
+            HStack {
+                YabaIconView(bundleKey: device.deviceType.symbolName)
+                    .frame(width: 36, height: 36)
+                    .foregroundStyle(iconColor)
+                VStack(alignment: .leading) {
+                    Text(device.name)
+                        .font(.title3)
+                        .fontWeight(.semibold)
+                    Text(statusText)
+                        .font(.subheadline)
+                        .foregroundStyle(statusColor)
+                }
+                Spacer()
+                
+                if isSendingRequest || isSyncing {
+                    ProgressView()
+                        .scaleEffect(0.8)
+                } else {
+                    YabaIconView(bundleKey: "database-sync-01")
+                        .frame(width: 22, height: 22)
+                        .foregroundStyle(.tint)
+                }
+            }
+        }
+        .disabled(isDisabled)
+        .swipeActions {
+            Button {
+                onSendRequest()
+            } label: {
+                VStack {
+                    YabaIconView(bundleKey: "database-sync-01")
+                    Text("Sync")
+                }
+            }.tint(.orange)
+        }
+    }
+    
+    private var iconColor: Color {
+        if isDisabled && !isSyncing {
+            return .gray
+        } else if isSyncing {
+            return .orange
+        } else {
+            return .accentColor
+        }
+    }
+    
+    private var statusText: String {
+        if isSendingRequest {
+            return "Sync Sending Request Label"
+        } else if isSyncing {
+            return "Syncing..."
+        } else {
+            return device.deviceType.displayName.stringKey ?? "Unknown"
+        }
+    }
+    
+    private var statusColor: Color {
+        if isSendingRequest {
+            return .blue
+        } else if isSyncing {
+            return .orange
+        } else {
+            return .secondary
+        }
+    }
+}
+
+// Extension to get string key from LocalizedStringKey
+extension LocalizedStringKey {
+    var stringKey: String? {
+        Mirror(reflecting: self).children.first(where: { $0.label == "key" })?.value as? String
     }
 }
 
