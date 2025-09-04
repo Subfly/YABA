@@ -302,7 +302,7 @@ final class NetworkSyncManager {
             
         } else {
             // Other device rejected
-            syncStatus = .failed("Sync request rejected")
+            syncStatus = .idle  // Set to idle so user can send new requests (error toast will show the rejection)
             syncingWithDevice = nil
             needsToSendOurData = false
             

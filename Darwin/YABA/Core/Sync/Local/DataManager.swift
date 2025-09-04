@@ -725,13 +725,9 @@ class DataManager {
         var conflicts: [SyncConflict] = []
         
         // Get deletion logs to check for deleted items
-        let actionType = ActionType.deleted
-        let deletionLogsDescriptor = FetchDescriptor<YabaDataLog>(
-            predicate: #Predicate<YabaDataLog> { log in
-                log.actionType == actionType
-            }
+        let deletionLogs = try modelContext.fetch(
+            .init(predicate: #Predicate<YabaDataLog> { _ in true })
         )
-        let deletionLogs = try modelContext.fetch(deletionLogsDescriptor)
         let deletedBookmarkIds = Set(deletionLogs.filter { $0.entityType == .bookmark }.map { $0.entityId })
         let deletedCollectionIds = Set(deletionLogs.filter { $0.entityType == .collection }.map { $0.entityId })
         

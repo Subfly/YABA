@@ -175,6 +175,13 @@ struct SyncView: View {
         .listStyle(.sidebar)
         .scrollContentBackground(.hidden)
     }
+    
+    private func isFailed(_ syncStatus: SyncStatus) -> Bool {
+        if case .failed = syncStatus {
+            return true
+        }
+        return false
+    }
 }
 
 private struct DiscoveredDeviceItem: View {

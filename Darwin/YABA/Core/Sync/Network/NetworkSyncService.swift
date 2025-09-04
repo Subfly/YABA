@@ -170,30 +170,101 @@ final class SimpleNetworkService: NSObject {
     private func handleIncomingConnection(_ connection: NWConnection) async {
         connection.start(queue: DispatchQueue.global())
         
-        // Simple data receiving loop
-        connection.receive(minimumIncompleteLength: 1, maximumLength: 65536) { [weak self] data, _, isComplete, error in
-            if let data = data {
-                Task { await self?.handleIncomingData(data) }
+        // Read messages with length prefix
+        await readCompleteMessage(from: connection)
+    }
+    
+    private func readCompleteMessage(from connection: NWConnection) async {
+        // First, read the message length (4 bytes)
+        connection.receive(minimumIncompleteLength: 4, maximumLength: 4) { [weak self] lengthData, _, isComplete, error in
+            guard let lengthData = lengthData, lengthData.count == 4, error == nil else {
+                connection.cancel()
+                return
             }
             
-            if error != nil || isComplete {
-                connection.cancel()
+            // Convert bytes to UInt32 length
+            let messageLength = lengthData.withUnsafeBytes { $0.load(as: UInt32.self) }
+            
+            // Now read the actual message
+            connection.receive(minimumIncompleteLength: Int(messageLength), maximumLength: Int(messageLength)) { [weak self] messageData, _, messageComplete, messageError in
+                guard let messageData = messageData, messageData.count == messageLength, messageError == nil else {
+                    connection.cancel()
+                    return
+                }
+                
+                // Process the complete message
+                Task { await self?.handleIncomingData(messageData) }
+                
+                // Continue reading more messages
+                if !isComplete && !messageComplete {
+                    Task { await self?.readCompleteMessage(from: connection) }
+                } else {
+                    connection.cancel()
+                }
             }
         }
     }
     
     private func handleIncomingData(_ data: Data) async {
-        if let syncRequest = try? JSONDecoder().decode(SyncRequestMessage.self, from: data) {
-            syncRequestsPublisher.send(syncRequest)
-        } else if let syncResponse = try? JSONDecoder().decode(SyncRequestResponse.self, from: data) {
-            syncResponsesPublisher.send(syncResponse)
-        } else if let syncData = try? JSONDecoder().decode(SyncDataMessage.self, from: data) {
-            syncDataPublisher.send(syncData)
+        // First, decode to get the message type using a more flexible approach
+        guard let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+              let messageTypeString = json["messageType"] as? String,
+              let messageType = SyncMessageType(rawValue: messageTypeString) else {
+            print("Failed to decode message type from incoming data")
+            
+            // Debug: Print what we actually received
+            if let debugString = String(data: data, encoding: .utf8) {
+                print("Raw data received: \(debugString)")
+            }
+            if let json = try? JSONSerialization.jsonObject(with: data, options: []) {
+                print("JSON parsed as: \(json)")
+            }
+            
+            // Fallback: Try to decode using the old sequential method
+            print("Attempting fallback decoding...")
+            if let syncRequest = try? JSONDecoder().decode(SyncRequestMessage.self, from: data) {
+                print("Successfully decoded as SyncRequestMessage")
+                syncRequestsPublisher.send(syncRequest)
+            } else if let syncResponse = try? JSONDecoder().decode(SyncRequestResponse.self, from: data) {
+                print("Successfully decoded as SyncRequestResponse")
+                syncResponsesPublisher.send(syncResponse)
+            } else if let syncData = try? JSONDecoder().decode(SyncDataMessage.self, from: data) {
+                print("Successfully decoded as SyncDataMessage")
+                syncDataPublisher.send(syncData)
+            } else {
+                print("Failed to decode with fallback method as well")
+            }
+            return
+        }
+        
+        // Now decode the specific message type based on the discriminator
+        switch messageType {
+        case .syncRequest:
+            if let syncRequest = try? JSONDecoder().decode(SyncRequestMessage.self, from: data) {
+                syncRequestsPublisher.send(syncRequest)
+            }
+        case .syncResponse:
+            if let syncResponse = try? JSONDecoder().decode(SyncRequestResponse.self, from: data) {
+                syncResponsesPublisher.send(syncResponse)
+            }
+        case .syncData:
+            if let syncData = try? JSONDecoder().decode(SyncDataMessage.self, from: data) {
+                syncDataPublisher.send(syncData)
+            }
         }
     }
     
     private func sendMessage<T: Codable>(_ message: T, to device: ConnectedDevice) async throws {
-        let data = try JSONEncoder().encode(message)
+        let messageData = try JSONEncoder().encode(message)
+        
+        // Create length prefix (4 bytes)
+        let messageLength = UInt32(messageData.count)
+        let lengthData = withUnsafeBytes(of: messageLength) { Data($0) }
+        
+        // Combine length prefix + message data
+        var completeData = Data()
+        completeData.append(lengthData)
+        completeData.append(messageData)
         
         // Create connection to the device using the correct port
         let endpoint = NWEndpoint.hostPort(
@@ -207,9 +278,9 @@ final class SimpleNetworkService: NSObject {
         // Wait a bit for connection to establish
         try await Task.sleep(for: .milliseconds(500))
         
-        // Send the data
+        // Send the complete data (length + message)
         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
-            connection.send(content: data, completion: .contentProcessed { _ in
+            connection.send(content: completeData, completion: .contentProcessed { _ in
                 connection.cancel()
                 continuation.resume()
             })
