@@ -119,7 +119,7 @@ final class NetworkSyncManager {
         onSyncRequestSent?(device.name)
     }
     
-    /// Accept a sync request and perform sync
+    /// Accept a sync request (just send acceptance, don't send data yet)
     func acceptSyncRequest(_ request: SyncRequestMessage, using modelContext: ModelContext) async throws {
         // Remove from pending requests
         pendingSyncRequests.removeAll { $0.requestId == request.requestId }
@@ -139,8 +139,13 @@ final class NetworkSyncManager {
         
         try await networkService.sendSyncResponse(response, to: device)
         
-        // Start sync process
-        try await performSync(with: device, modelContext: modelContext)
+        // Set up for simultaneous data exchange (don't send data immediately)
+        syncingWithDevice = device.deviceId
+        syncStatus = .syncing
+        needsToSendOurData = true
+        
+        // Notify that sync started
+        onSyncStarted?(device.name)
     }
     
     /// Send our data to the device we're syncing with (called after acceptance)

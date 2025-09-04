@@ -74,13 +74,20 @@ class DataManager {
         }
         
         // First, insert all bookmarks into the model context
+        // Update editedAt and version to prevent deleteAll conflicts
+        let now = Date.now
         mappedBookmarks.values.forEach { bookmark in
+            bookmark.editedAt = now
+            bookmark.version += 1
             modelContext.insert(bookmark)
         }
         
         if let collections = content.collections {
             collections.forEach { collection in
                 let collectionModel = collection.mapToModel()
+                // Update editedAt and version to prevent deleteAll conflicts
+                collectionModel.editedAt = now
+                collectionModel.version += 1
                 collection.bookmarks.forEach { bookmarkId in
                     if let bookmarkModel = mappedBookmarks[bookmarkId] {
                         collectionModel.bookmarks?.append(bookmarkModel)
@@ -96,10 +103,10 @@ class DataManager {
                 label: "\(Date.now.formatted(date: .abbreviated, time: .shortened))",
                 icon: "folder-01",
                 createdAt: creationTime,
-                editedAt: creationTime,
+                editedAt: now, // Use now to prevent deleteAll conflicts
                 color: .none,
                 type: .folder,
-                version: 0
+                version: 1 // Start with version 1 for import
             )
             
             mappedBookmarks.values.forEach { bookmark in
@@ -148,10 +155,10 @@ class DataManager {
             label: "\(Date.now.formatted(date: .abbreviated, time: .shortened))",
             icon: "folder-01",
             createdAt: creationTime,
-            editedAt: creationTime,
+            editedAt: creationTime, // Already using current time
             color: .none,
             type: .folder,
-            version: 0
+            version: 1 // Start with version 1 for import
         )
         
         let bookmarkRows = rows.dropFirst()
@@ -185,6 +192,10 @@ class DataManager {
                 type: Int(columns[10]) ?? 1,
                 version: Int(columns[11]) ?? 0,
             ).mapToModel()
+            
+            // Update editedAt and version to prevent deleteAll conflicts
+            bookmark.editedAt = creationTime
+            bookmark.version += 1
             
             dummyFolder.bookmarks?.append(bookmark)
             processedRows += 1
@@ -229,10 +240,10 @@ class DataManager {
             label: "\(now.formatted(date: .abbreviated, time: .shortened))",
             icon: "folder-01",
             createdAt: now,
-            editedAt: now,
+            editedAt: now, // Already using current time
             color: .none,
             type: .folder,
-            version: 0
+            version: 1 // Start with version 1 for import
         )
 
         for row in bookmarkRows {
@@ -286,6 +297,10 @@ class DataManager {
                 version: 0,
             ).mapToModel()
 
+            // Update editedAt and version to prevent deleteAll conflicts
+            bookmark.editedAt = now
+            bookmark.version += 1
+
             dummyFolder.bookmarks?.append(bookmark)
         }
 
@@ -333,10 +348,10 @@ class DataManager {
                         label: Constants.uncategorizedCollectionLabelKey,
                         icon: "folder-01",
                         createdAt: creationTime,
-                        editedAt: creationTime,
+                        editedAt: creationTime, // Already using current time
                         color: .none,
                         type: .folder,
-                        version: 0,
+                        version: 1, // Start with version 1 for import
                     )
                 }
             } else {
@@ -345,10 +360,10 @@ class DataManager {
                     label: folder.label,
                     icon: "folder-01",
                     createdAt: creationTime,
-                    editedAt: creationTime,
+                    editedAt: creationTime, // Already using current time
                     color: .none,
                     type: .folder,
-                    version: 0
+                    version: 1 // Start with version 1 for import
                 )
             }
             
@@ -361,7 +376,7 @@ class DataManager {
                     bookmarkDescription: "",
                     domain: URL(string: bookmark.url)?.host ?? "",
                     createdAt: creationTime,
-                    editedAt: creationTime,
+                    editedAt: creationTime, // Already using current time
                     imageDataHolder: nil,
                     iconDataHolder: nil,
                     imageUrl: nil,
@@ -369,7 +384,7 @@ class DataManager {
                     videoUrl: nil,
                     readableHTML: nil,
                     type: .none,
-                    version: 0
+                    version: 1 // Start with version 1 for import
                 )
                 folderModel?.bookmarks?.append(bookmarkModel)
             }
@@ -740,141 +755,10 @@ class DataManager {
         var mergedBookmarks = 0
         var mergedCollections = 0
         
-        // STEP 1: Create and insert all collections first (following SwiftData best practices)
-        print("Processing \(request.collections.count) incoming collections")
-        for incomingCollection in request.collections {
-            let collectionId = incomingCollection.collectionId
-            
-            let localDescriptor = FetchDescriptor<YabaCollection>(
-                predicate: #Predicate<YabaCollection> { collection in
-                    collection.collectionId == collectionId
-                }
-            )
-            
-            if let existingCollection = try modelContext.fetch(localDescriptor).first {
-                // Check if incoming should overwrite local (version first, then timestamp)
-                if shouldOverwrite(
-                    localVersion: existingCollection.version,
-                    localEditedAt: existingCollection.editedAt,
-                    incomingVersion: incomingCollection.version,
-                    incomingEditedAt: parseDate(incomingCollection.editedAt)
-                ) {
-                    // Update existing collection metadata only (no relationships yet)
-                    updateCollectionMetadataFromCodable(existingCollection, from: incomingCollection)
-                    print("Updated existing collection: \(incomingCollection.label)")
-                    mergedCollections += 1
-                } else {
-                    print("Kept local collection (newer): \(existingCollection.label)")
-                }
-            } else {
-                // New collection - create and insert it (no relationships yet)
-                let newCollection = incomingCollection.mapToModel()
-                // Clear any relationships that might have been set during mapping
-                newCollection.bookmarks?.removeAll()
-                modelContext.insert(newCollection)
-                print("Added new collection: \(incomingCollection.label)")
-                mergedCollections += 1
-            }
-        }
-        
-        // STEP 2: Create and insert all bookmarks (following SwiftData best practices)
-        print("Processing \(request.bookmarks.count) incoming bookmarks")
-        for incomingBookmark in request.bookmarks {
-            guard let bookmarkId = incomingBookmark.bookmarkId else { continue }
-            
-            let localDescriptor = FetchDescriptor<YabaBookmark>(
-                predicate: #Predicate<YabaBookmark> { bookmark in
-                    bookmark.bookmarkId == bookmarkId
-                }
-            )
-            
-            if let existingBookmark = try modelContext.fetch(localDescriptor).first {
-                // Check if incoming should overwrite local (version first, then timestamp)
-                if shouldOverwrite(
-                    localVersion: existingBookmark.version,
-                    localEditedAt: existingBookmark.editedAt,
-                    incomingVersion: incomingBookmark.version ?? 0,
-                    incomingEditedAt: parseDate(incomingBookmark.editedAt)
-                ) {
-                    // Update existing bookmark with incoming data
-                    updateBookmarkFromCodable(existingBookmark, from: incomingBookmark)
-                    print("Updated existing bookmark: \(incomingBookmark.label ?? bookmarkId)")
-                    mergedBookmarks += 1
-                } else {
-                    print("Kept local bookmark (newer): \(existingBookmark.label)")
-                }
-            } else {
-                // New bookmark - create and insert it WITHOUT relationships
-                let newBookmark = incomingBookmark.mapToModel()
-                modelContext.insert(newBookmark)
-                print("Added new bookmark: \(incomingBookmark.label ?? bookmarkId)")
-                mergedBookmarks += 1
-            }
-        }
-        
-        // STEP 3: NOW manipulate relationships after all objects are inserted (SwiftData requirement)
-        print("Setting up collection-bookmark relationships")
-        for incomingCollection in request.collections {
-            let collectionId = incomingCollection.collectionId
-            
-            let collectionDescriptor = FetchDescriptor<YabaCollection>(
-                predicate: #Predicate<YabaCollection> { collection in
-                    collection.collectionId == collectionId
-                }
-            )
-            
-            if let localCollection = try? modelContext.fetch(collectionDescriptor).first {
-                // Only update relationships if this collection won the merge
-                if shouldOverwrite(
-                    localVersion: localCollection.version,
-                    localEditedAt: localCollection.editedAt,
-                    incomingVersion: incomingCollection.version,
-                    incomingEditedAt: parseDate(incomingCollection.editedAt)
-                ) {
-                    // Clear existing relationships
-                    localCollection.bookmarks?.removeAll()
-                    
-                    // Add bookmarks from incoming data
-                    for bookmarkId in incomingCollection.bookmarks {
-                        let bookmarkDescriptor = FetchDescriptor<YabaBookmark>(
-                            predicate: #Predicate<YabaBookmark> { bookmark in
-                                bookmark.bookmarkId == bookmarkId
-                            }
-                        )
-                        if let bookmark = try? modelContext.fetch(bookmarkDescriptor).first {
-                            localCollection.bookmarks?.append(bookmark)
-                        }
-                    }
-                    print("Set up \(incomingCollection.bookmarks.count) bookmark relationships for collection: \(incomingCollection.label)")
-                }
-            }
-        }
-        
-        // STEP 4: Handle orphaned bookmarks (bookmarks not in any collection)
-        print("Handling orphaned bookmarks")
-        let allBookmarksDescriptor = FetchDescriptor<YabaBookmark>(predicate: #Predicate<YabaBookmark> { _ in true })
-        let allBookmarks = try modelContext.fetch(allBookmarksDescriptor)
-        
-        let allCollectionsDescriptor = FetchDescriptor<YabaCollection>(predicate: #Predicate<YabaCollection> { _ in true })
-        let allCollections = try modelContext.fetch(allCollectionsDescriptor)
-        
-        // Find bookmarks that are not in any collection
-        for bookmark in allBookmarks {
-            let isInAnyCollection = allCollections.contains { collection in
-                collection.bookmarks?.contains(where: { $0.bookmarkId == bookmark.bookmarkId }) == true
-            }
-            
-            if !isInAnyCollection {
-                // Add to uncategorized collection
-                await addBookmarkToUncategorizedCollection(bookmark, using: modelContext)
-            }
-        }
-        
-        // STEP 5: Process "deleteAll" deletion logs (compare local vs remote)
+        // STEP 0: Process "deleteAll" deletion logs FIRST (before merging any content)
         let incomingDeleteAllLogs = request.deletionLogs.filter { $0.entityType == "deleteAll" || $0.entityType == "all" }
         
         if !incomingDeleteAllLogs.isEmpty {
-            print("Processing \(incomingDeleteAllLogs.count) incoming deleteAll logs")
             
             // Get our local deleteAll logs
             let localDeleteLogsDescriptor = FetchDescriptor<YabaDataLog>(
@@ -899,25 +783,24 @@ class DataManager {
                 
                 // If remote deleteAll is newer than our local deleteAll, apply it
                 if incomingDeleteAllTimestamp > localDeleteAllTimestamp {
-                    print("Applying remote deleteAll from \(incomingDeleteAllTimestamp) (local was \(localDeleteAllTimestamp))")
+                    // Add a 3-second safety buffer to prevent deleting recently imported content
+                    let deleteAllWithBuffer = incomingDeleteAllTimestamp.addingTimeInterval(-3)
                     
-                    // Delete ALL collections and bookmarks created before the deleteAll timestamp
+                    // Delete ALL collections and bookmarks created before the deleteAll timestamp (with buffer)
                     let collectionsToDeleteDescriptor = FetchDescriptor<YabaCollection>(
                         predicate: #Predicate<YabaCollection> { collection in
-                            collection.editedAt < incomingDeleteAllTimestamp
+                            collection.editedAt < deleteAllWithBuffer
                         }
                     )
                     let collectionsToDelete = try modelContext.fetch(collectionsToDeleteDescriptor)
-                    print("Deleting \(collectionsToDelete.count) collections created before deleteAll")
                     collectionsToDelete.forEach { modelContext.delete($0) }
                     
                     let bookmarksToDeleteDescriptor = FetchDescriptor<YabaBookmark>(
                         predicate: #Predicate<YabaBookmark> { bookmark in
-                            bookmark.editedAt < incomingDeleteAllTimestamp
+                            bookmark.editedAt < deleteAllWithBuffer
                         }
                     )
                     let bookmarksToDelete = try modelContext.fetch(bookmarksToDeleteDescriptor)
-                    print("Deleting \(bookmarksToDelete.count) bookmarks created before deleteAll")
                     bookmarksToDelete.forEach { modelContext.delete($0) }
                     
                     // Remove old local deleteAll logs and add the new one
@@ -931,20 +814,159 @@ class DataManager {
                         timestamp: incomingDeleteAllTimestamp
                     )
                     modelContext.insert(newDeleteAllLog)
-                    print("Updated local deleteAll log to \(incomingDeleteAllTimestamp)")
-                } else {
-                    print("Skipping remote deleteAll (local deleteAll is newer: \(localDeleteAllTimestamp) vs \(incomingDeleteAllTimestamp))")
                 }
             }
         }
         
-        // STEP 6: Process individual deletion logs (collection and bookmark deletions)
+        // Get local deletion logs to check against incoming items
+        let allLocalDeletionLogsDescriptor = FetchDescriptor<YabaDataLog>(
+            predicate: #Predicate<YabaDataLog> { _ in true }
+        )
+        let allLocalDeletionLogs = try modelContext.fetch(allLocalDeletionLogsDescriptor)
+        let localCollectionDeletionIds = Set(allLocalDeletionLogs.filter { $0.entityType == .collection }.map { $0.entityId })
+        let localBookmarkDeletionIds = Set(allLocalDeletionLogs.filter { $0.entityType == .bookmark }.map { $0.entityId })
+        
+        // STEP 1: Create and insert all collections first (following SwiftData best practices)
+        for incomingCollection in request.collections {
+            let collectionId = incomingCollection.collectionId
+            
+            // Skip if we have a local deletion log for this collection
+            if localCollectionDeletionIds.contains(collectionId) {
+                continue
+            }
+            
+            let localDescriptor = FetchDescriptor<YabaCollection>(
+                predicate: #Predicate<YabaCollection> { collection in
+                    collection.collectionId == collectionId
+                }
+            )
+            
+            if let existingCollection = try modelContext.fetch(localDescriptor).first {
+                // Check if incoming should overwrite local (version first, then timestamp)
+                if shouldOverwrite(
+                    localVersion: existingCollection.version,
+                    localEditedAt: existingCollection.editedAt,
+                    incomingVersion: incomingCollection.version,
+                    incomingEditedAt: parseDate(incomingCollection.editedAt)
+                ) {
+                    // Update existing collection metadata only (no relationships yet)
+                    updateCollectionMetadataFromCodable(existingCollection, from: incomingCollection)
+                    mergedCollections += 1
+                }
+            } else {
+                // New collection - create and insert it (no relationships yet)
+                let newCollection = incomingCollection.mapToModel()
+                // Clear any relationships that might have been set during mapping
+                newCollection.bookmarks?.removeAll()
+                modelContext.insert(newCollection)
+                mergedCollections += 1
+            }
+        }
+        
+        // STEP 2: Create and insert all bookmarks (following SwiftData best practices)
+        for incomingBookmark in request.bookmarks {
+            guard let bookmarkId = incomingBookmark.bookmarkId else { continue }
+            
+            // Skip if we have a local deletion log for this bookmark
+            if localBookmarkDeletionIds.contains(bookmarkId) {
+                continue
+            }
+            
+            let localDescriptor = FetchDescriptor<YabaBookmark>(
+                predicate: #Predicate<YabaBookmark> { bookmark in
+                    bookmark.bookmarkId == bookmarkId
+                }
+            )
+            
+            if let existingBookmark = try modelContext.fetch(localDescriptor).first {
+                // Check if incoming should overwrite local (version first, then timestamp)
+                if shouldOverwrite(
+                    localVersion: existingBookmark.version,
+                    localEditedAt: existingBookmark.editedAt,
+                    incomingVersion: incomingBookmark.version ?? 0,
+                    incomingEditedAt: parseDate(incomingBookmark.editedAt)
+                ) {
+                    // Update existing bookmark with incoming data
+                    updateBookmarkFromCodable(existingBookmark, from: incomingBookmark)
+                    mergedBookmarks += 1
+                }
+            } else {
+                // New bookmark - create and insert it WITHOUT relationships
+                let newBookmark = incomingBookmark.mapToModel()
+                modelContext.insert(newBookmark)
+                mergedBookmarks += 1
+            }
+        }
+        
+        // STEP 3: NOW manipulate relationships after all objects are inserted (SwiftData requirement)
+        for incomingCollection in request.collections {
+            let collectionId = incomingCollection.collectionId
+            
+            // Skip if we have a local deletion log for this collection
+            if localCollectionDeletionIds.contains(collectionId) {
+                continue
+            }
+            
+            let collectionDescriptor = FetchDescriptor<YabaCollection>(
+                predicate: #Predicate<YabaCollection> { collection in
+                    collection.collectionId == collectionId
+                }
+            )
+            
+            if let localCollection = try? modelContext.fetch(collectionDescriptor).first {
+                // Check if incoming collection should set up relationships
+                // This includes both "new" collections and collections that should overwrite local ones
+                let shouldSetupRelationships = shouldOverwrite(
+                    localVersion: localCollection.version,
+                    localEditedAt: localCollection.editedAt,
+                    incomingVersion: incomingCollection.version,
+                    incomingEditedAt: parseDate(incomingCollection.editedAt)
+                ) || localCollection.bookmarks?.isEmpty == true // Also set up if local has no bookmarks
+                
+                if shouldSetupRelationships {
+                    // Clear existing relationships
+                    localCollection.bookmarks?.removeAll()
+                    
+                    // Add bookmarks from incoming data
+                for bookmarkId in incomingCollection.bookmarks {
+                        let bookmarkDescriptor = FetchDescriptor<YabaBookmark>(
+                            predicate: #Predicate<YabaBookmark> { bookmark in
+                                bookmark.bookmarkId == bookmarkId
+                            }
+                        )
+                        if let bookmark = try? modelContext.fetch(bookmarkDescriptor).first {
+                            localCollection.bookmarks?.append(bookmark)
+                        }
+                    }
+                }
+            }
+        }
+        
+        // STEP 4: Handle orphaned bookmarks (bookmarks not in any collection)
+        let allBookmarksDescriptor = FetchDescriptor<YabaBookmark>(predicate: #Predicate<YabaBookmark> { _ in true })
+        let allBookmarks = try modelContext.fetch(allBookmarksDescriptor)
+        
+        let allCollectionsDescriptor = FetchDescriptor<YabaCollection>(predicate: #Predicate<YabaCollection> { _ in true })
+        let allCollections = try modelContext.fetch(allCollectionsDescriptor)
+        
+        // Find bookmarks that are not in any collection
+        for bookmark in allBookmarks {
+            let isInAnyCollection = allCollections.contains { collection in
+                collection.bookmarks?.contains(where: { $0.bookmarkId == bookmark.bookmarkId }) == true
+            }
+            
+            if !isInAnyCollection {
+                // Add to uncategorized collection
+                await addBookmarkToUncategorizedCollection(bookmark, using: modelContext)
+            }
+        }
+        
+        // STEP 5: Process individual deletion logs (collection and bookmark deletions)
         let individualDeletionLogs = request.deletionLogs.filter { 
             $0.entityType != "deleteAll" && $0.entityType != "all" 
         }
         
         if !individualDeletionLogs.isEmpty {
-            print("Processing \(individualDeletionLogs.count) individual deletion logs")
             
             for deletionLog in individualDeletionLogs {
                 if deletionLog.entityType == "collection" {
@@ -954,7 +976,6 @@ class DataManager {
                         }
                     )
                     if let collectionToDelete = try modelContext.fetch(descriptor).first {
-                        print("Deleting collection: \(collectionToDelete.label)")
                         modelContext.delete(collectionToDelete)
                     }
                 } else if deletionLog.entityType == "bookmark" {
@@ -964,7 +985,6 @@ class DataManager {
                         }
                     )
                     if let bookmarkToDelete = try modelContext.fetch(descriptor).first {
-                        print("Deleting bookmark: \(bookmarkToDelete.label)")
                         modelContext.delete(bookmarkToDelete)
                     }
                 }
@@ -973,8 +993,6 @@ class DataManager {
         
         // Save all changes
         try modelContext.save()
-        
-        print("Merge completed: \(mergedBookmarks) bookmarks, \(mergedCollections) collections")
         
         return SyncMergeResult(
             mergedBookmarks: mergedBookmarks,

@@ -108,6 +108,11 @@ struct CollectionItemView: View {
                     if collection.collectionType == .folder {
                         collection.bookmarks?.forEach { bookmark in
                             modelContext.delete(bookmark)
+                            
+                            try? YabaDataLogger.shared.logBookmarkDelete(
+                                id: bookmark.bookmarkId,
+                                shouldSave: false
+                            )
                         }
                     }
                     modelContext.delete(collection)
