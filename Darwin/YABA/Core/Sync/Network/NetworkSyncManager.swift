@@ -170,7 +170,8 @@ final class NetworkSyncManager {
                 timestamp: syncData.timestamp,
                 ipAddress: syncData.ipAddress,
                 bookmarks: syncData.bookmarks,
-                collections: syncData.collections
+                collections: syncData.collections,
+                deletionLogs: syncData.deletionLogs
             )
             
             // Merge the incoming data with our local data
@@ -335,7 +336,8 @@ final class NetworkSyncManager {
                 timestamp: syncData.timestamp,
                 ipAddress: syncData.ipAddress,
                 bookmarks: syncData.bookmarks,
-                collections: syncData.collections
+                collections: syncData.collections,
+                deletionLogs: syncData.deletionLogs
             )
             
             try await networkService.sendSyncData(message, to: device)

@@ -66,8 +66,9 @@ struct SyncDataMessage: Codable, Equatable {
     let ipAddress: String
     let bookmarks: [YabaCodableBookmark]
     let collections: [YabaCodableCollection]
+    let deletionLogs: [YabaCodableDeletionLog]
     
-    init(deviceId: String, deviceName: String, timestamp: String, ipAddress: String, bookmarks: [YabaCodableBookmark], collections: [YabaCodableCollection]) {
+    init(deviceId: String, deviceName: String, timestamp: String, ipAddress: String, bookmarks: [YabaCodableBookmark], collections: [YabaCodableCollection], deletionLogs: [YabaCodableDeletionLog]) {
         self.messageType = .syncData
         self.deviceId = deviceId
         self.deviceName = deviceName
@@ -75,6 +76,7 @@ struct SyncDataMessage: Codable, Equatable {
         self.ipAddress = ipAddress
         self.bookmarks = bookmarks
         self.collections = collections
+        self.deletionLogs = deletionLogs
     }
 }
 
@@ -88,6 +90,7 @@ struct SyncRequest: Codable, Equatable {
     let ipAddress: String
     let bookmarks: [YabaCodableBookmark]
     let collections: [YabaCodableCollection]
+    let deletionLogs: [YabaCodableDeletionLog]
 }
 
 /// Sync response used by DataManager
@@ -97,6 +100,16 @@ struct SyncResponse: Codable, Equatable {
     let timestamp: String
     let bookmarks: [YabaCodableBookmark]
     let collections: [YabaCodableCollection]
+    let deletionLogs: [YabaCodableDeletionLog]
+}
+
+// MARK: - Deletion Log Support
+
+/// Codable version of deletion log for sync
+struct YabaCodableDeletionLog: Codable, Equatable {
+    let entityId: String
+    let entityType: String // "bookmark", "collection", "deleteAll"
+    let timestamp: String
 }
 
 // MARK: - Simple Result Types

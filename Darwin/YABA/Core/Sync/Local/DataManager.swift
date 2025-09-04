@@ -677,13 +677,29 @@ class DataManager {
             }
         }
         
+        // Fetch deletion logs
+        let deletionLogsDescriptor = FetchDescriptor<YabaDataLog>(
+            predicate: #Predicate { _ in true }
+        )
+        let deletionLogs = try modelContext.fetch(deletionLogsDescriptor)
+        
+        // Convert deletion logs to codable format
+        let codableDeletionLogs = deletionLogs.map { log in
+            YabaCodableDeletionLog(
+                entityId: log.entityId,
+                entityType: log.entityType.rawValue,
+                timestamp: ISO8601DateFormatter().string(from: log.timestamp)
+            )
+        }
+        
         return SyncRequest(
             deviceId: deviceId,
             deviceName: deviceName,
             timestamp: ISO8601DateFormatter().string(from: Date()),
             ipAddress: ipAddress,
             bookmarks: Array(codableBookmarks),
-            collections: codableCollections
+            collections: codableCollections,
+            deletionLogs: codableDeletionLogs
         )
     }
     
@@ -695,9 +711,6 @@ class DataManager {
         deviceName: String,
         ipAddress: String
     ) async throws -> SyncResponse {
-        // Merge incoming data with local data
-        let _ = try await mergeIncomingData(request, using: modelContext)
-        
         // Prepare response with current data
         let localData = try prepareSyncData(
             using: modelContext,
@@ -706,131 +719,31 @@ class DataManager {
             ipAddress: ipAddress
         )
         
+        // Merge incoming data with local data
+        let _ = try await mergeIncomingData(request, using: modelContext)
+        
         return SyncResponse(
             deviceId: deviceId,
             deviceName: deviceName,
             timestamp: ISO8601DateFormatter().string(from: Date()),
             bookmarks: localData.bookmarks,
-            collections: localData.collections
+            collections: localData.collections,
+            deletionLogs: localData.deletionLogs
         )
     }
     
-    /// Merge incoming sync data with local data
+    /// Merge incoming sync data with local data using simplified logic
     private func mergeIncomingData(
         _ request: SyncRequest,
         using modelContext: ModelContext
     ) async throws -> SyncMergeResult {
         var mergedBookmarks = 0
         var mergedCollections = 0
-        var conflicts: [SyncConflict] = []
         
-        // Get deletion logs to check for deleted items
-        let deletionLogs = try modelContext.fetch(
-            .init(predicate: #Predicate<YabaDataLog> { _ in true })
-        )
-        let deletedBookmarkIds = Set(deletionLogs.filter { $0.entityType == .bookmark }.map { $0.entityId })
-        let deletedCollectionIds = Set(deletionLogs.filter { $0.entityType == .collection }.map { $0.entityId })
-        
-        // Create mapping of incoming bookmarks by ID
-        var incomingBookmarkMap: [String: YabaCodableBookmark] = [:]
-        for bookmark in request.bookmarks {
-            if let bookmarkId = bookmark.bookmarkId {
-                incomingBookmarkMap[bookmarkId] = bookmark
-            }
-        }
-        
-        // Merge bookmarks using deletion logs and versioning
-        for incomingBookmark in request.bookmarks {
-            guard let bookmarkId = incomingBookmark.bookmarkId else { continue }
-            
-            // Skip if we have deleted this bookmark
-            if deletedBookmarkIds.contains(bookmarkId) {
-                // Check if incoming version is newer than our deletion
-                if let deletionLog = deletionLogs.first(where: { $0.entityId == bookmarkId }),
-                   let incomingEditDate = parseDate(incomingBookmark.editedAt),
-                   incomingEditDate > deletionLog.timestamp {
-                    // Incoming is newer than deletion, restore the bookmark
-                    let newBookmark = incomingBookmark.mapToModel()
-                    await addBookmarkToAppropriateCollection(newBookmark, using: modelContext)
-                    mergedBookmarks += 1
-                    
-                    // Remove deletion log
-                    modelContext.delete(deletionLog)
-                }
-                continue
-            }
-            
-            // Check if bookmark exists locally
-            let localDescriptor = FetchDescriptor<YabaBookmark>(
-                predicate: #Predicate<YabaBookmark> { bookmark in
-                    bookmark.bookmarkId == bookmarkId
-                }
-            )
-            
-            if let existingBookmark = try modelContext.fetch(localDescriptor).first {
-                // Handle version and timestamp conflict resolution
-                let conflictResolution = resolveBookmarkConflict(
-                    local: existingBookmark,
-                    incoming: incomingBookmark
-                )
-                
-                switch conflictResolution {
-                case .keepRemote:
-                    updateBookmarkFromCodable(existingBookmark, from: incomingBookmark)
-                    mergedBookmarks += 1
-                case .keepLocal:
-                    conflicts.append(SyncConflict(
-                        type: .bookmark,
-                        itemId: bookmarkId,
-                        localTimestamp: existingBookmark.editedAt,
-                        remoteTimestamp: parseDate(incomingBookmark.editedAt) ?? Date.distantPast,
-                        resolution: .keepLocal
-                    ))
-                case .needsManualResolution:
-                    conflicts.append(SyncConflict(
-                        type: .bookmark,
-                        itemId: bookmarkId,
-                        localTimestamp: existingBookmark.editedAt,
-                        remoteTimestamp: parseDate(incomingBookmark.editedAt) ?? Date.distantPast,
-                        resolution: .needsManualResolution
-                    ))
-                }
-            } else {
-                // New bookmark - add it
-                let newBookmark = incomingBookmark.mapToModel()
-                await addBookmarkToAppropriateCollection(newBookmark, using: modelContext)
-                mergedBookmarks += 1
-            }
-        }
-        
-        // Merge collections
+        // STEP 1: Create and insert all collections first (following SwiftData best practices)
+        print("Processing \(request.collections.count) incoming collections")
         for incomingCollection in request.collections {
             let collectionId = incomingCollection.collectionId
-            
-            // Skip if we have deleted this collection
-            if deletedCollectionIds.contains(collectionId) {
-                if let deletionLog = deletionLogs.first(where: { $0.entityId == collectionId }),
-                   let incomingEditDate = parseDate(incomingCollection.editedAt),
-                   incomingEditDate > deletionLog.timestamp {
-                    // Incoming is newer than deletion, restore the collection
-                    let newCollection = incomingCollection.mapToModel()
-                    
-                    // Add bookmarks to collection
-                    for bookmarkId in incomingCollection.bookmarks {
-                        if let incomingBookmark = incomingBookmarkMap[bookmarkId] {
-                            let bookmarkModel = incomingBookmark.mapToModel()
-                            newCollection.bookmarks?.append(bookmarkModel)
-                        }
-                    }
-                    
-                    modelContext.insert(newCollection)
-                    mergedCollections += 1
-                    
-                    // Remove deletion log
-                    modelContext.delete(deletionLog)
-                }
-                continue
-            }
             
             let localDescriptor = FetchDescriptor<YabaCollection>(
                 predicate: #Predicate<YabaCollection> { collection in
@@ -839,156 +752,261 @@ class DataManager {
             )
             
             if let existingCollection = try modelContext.fetch(localDescriptor).first {
-                // Handle collection conflict
-                let conflictResolution = resolveCollectionConflict(
-                    local: existingCollection,
-                    incoming: incomingCollection
-                )
-                
-                switch conflictResolution {
-                case .keepRemote:
-                    updateCollectionFromCodable(
-                        existingCollection,
-                        from: incomingCollection,
-                        bookmarkMap: incomingBookmarkMap,
-                        using: modelContext
-                    )
+                // Check if incoming should overwrite local (version first, then timestamp)
+                if shouldOverwrite(
+                    localVersion: existingCollection.version,
+                    localEditedAt: existingCollection.editedAt,
+                    incomingVersion: incomingCollection.version,
+                    incomingEditedAt: parseDate(incomingCollection.editedAt)
+                ) {
+                    // Update existing collection metadata only (no relationships yet)
+                    updateCollectionMetadataFromCodable(existingCollection, from: incomingCollection)
+                    print("Updated existing collection: \(incomingCollection.label)")
                     mergedCollections += 1
-                case .keepLocal:
-                    conflicts.append(SyncConflict(
-                        type: .collection,
-                        itemId: collectionId,
-                        localTimestamp: existingCollection.editedAt,
-                        remoteTimestamp: parseDate(incomingCollection.editedAt) ?? Date.distantPast,
-                        resolution: .keepLocal
-                    ))
-                case .needsManualResolution:
-                    conflicts.append(SyncConflict(
-                        type: .collection,
-                        itemId: collectionId,
-                        localTimestamp: existingCollection.editedAt,
-                        remoteTimestamp: parseDate(incomingCollection.editedAt) ?? Date.distantPast,
-                        resolution: .needsManualResolution
-                    ))
+                } else {
+                    print("Kept local collection (newer): \(existingCollection.label)")
                 }
             } else {
-                // New collection - add it
+                // New collection - create and insert it (no relationships yet)
                 let newCollection = incomingCollection.mapToModel()
-                
-                // Add bookmarks to collection
-                for bookmarkId in incomingCollection.bookmarks {
-                    if let incomingBookmark = incomingBookmarkMap[bookmarkId] {
-                        let bookmarkModel = incomingBookmark.mapToModel()
-                        newCollection.bookmarks?.append(bookmarkModel)
-                    }
-                }
-                
+                // Clear any relationships that might have been set during mapping
+                newCollection.bookmarks?.removeAll()
                 modelContext.insert(newCollection)
+                print("Added new collection: \(incomingCollection.label)")
                 mergedCollections += 1
             }
         }
         
-        // Save changes
+        // STEP 2: Create and insert all bookmarks (following SwiftData best practices)
+        print("Processing \(request.bookmarks.count) incoming bookmarks")
+        for incomingBookmark in request.bookmarks {
+            guard let bookmarkId = incomingBookmark.bookmarkId else { continue }
+            
+            let localDescriptor = FetchDescriptor<YabaBookmark>(
+                predicate: #Predicate<YabaBookmark> { bookmark in
+                    bookmark.bookmarkId == bookmarkId
+                }
+            )
+            
+            if let existingBookmark = try modelContext.fetch(localDescriptor).first {
+                // Check if incoming should overwrite local (version first, then timestamp)
+                if shouldOverwrite(
+                    localVersion: existingBookmark.version,
+                    localEditedAt: existingBookmark.editedAt,
+                    incomingVersion: incomingBookmark.version ?? 0,
+                    incomingEditedAt: parseDate(incomingBookmark.editedAt)
+                ) {
+                    // Update existing bookmark with incoming data
+                    updateBookmarkFromCodable(existingBookmark, from: incomingBookmark)
+                    print("Updated existing bookmark: \(incomingBookmark.label ?? bookmarkId)")
+                    mergedBookmarks += 1
+                } else {
+                    print("Kept local bookmark (newer): \(existingBookmark.label)")
+                }
+            } else {
+                // New bookmark - create and insert it WITHOUT relationships
+                let newBookmark = incomingBookmark.mapToModel()
+                modelContext.insert(newBookmark)
+                print("Added new bookmark: \(incomingBookmark.label ?? bookmarkId)")
+                mergedBookmarks += 1
+            }
+        }
+        
+        // STEP 3: NOW manipulate relationships after all objects are inserted (SwiftData requirement)
+        print("Setting up collection-bookmark relationships")
+        for incomingCollection in request.collections {
+            let collectionId = incomingCollection.collectionId
+            
+            let collectionDescriptor = FetchDescriptor<YabaCollection>(
+                predicate: #Predicate<YabaCollection> { collection in
+                    collection.collectionId == collectionId
+                }
+            )
+            
+            if let localCollection = try? modelContext.fetch(collectionDescriptor).first {
+                // Only update relationships if this collection won the merge
+                if shouldOverwrite(
+                    localVersion: localCollection.version,
+                    localEditedAt: localCollection.editedAt,
+                    incomingVersion: incomingCollection.version,
+                    incomingEditedAt: parseDate(incomingCollection.editedAt)
+                ) {
+                    // Clear existing relationships
+                    localCollection.bookmarks?.removeAll()
+                    
+                    // Add bookmarks from incoming data
+                    for bookmarkId in incomingCollection.bookmarks {
+                        let bookmarkDescriptor = FetchDescriptor<YabaBookmark>(
+                            predicate: #Predicate<YabaBookmark> { bookmark in
+                                bookmark.bookmarkId == bookmarkId
+                            }
+                        )
+                        if let bookmark = try? modelContext.fetch(bookmarkDescriptor).first {
+                            localCollection.bookmarks?.append(bookmark)
+                        }
+                    }
+                    print("Set up \(incomingCollection.bookmarks.count) bookmark relationships for collection: \(incomingCollection.label)")
+                }
+            }
+        }
+        
+        // STEP 4: Handle orphaned bookmarks (bookmarks not in any collection)
+        print("Handling orphaned bookmarks")
+        let allBookmarksDescriptor = FetchDescriptor<YabaBookmark>(predicate: #Predicate<YabaBookmark> { _ in true })
+        let allBookmarks = try modelContext.fetch(allBookmarksDescriptor)
+        
+        let allCollectionsDescriptor = FetchDescriptor<YabaCollection>(predicate: #Predicate<YabaCollection> { _ in true })
+        let allCollections = try modelContext.fetch(allCollectionsDescriptor)
+        
+        // Find bookmarks that are not in any collection
+        for bookmark in allBookmarks {
+            let isInAnyCollection = allCollections.contains { collection in
+                collection.bookmarks?.contains(where: { $0.bookmarkId == bookmark.bookmarkId }) == true
+            }
+            
+            if !isInAnyCollection {
+                // Add to uncategorized collection
+                await addBookmarkToUncategorizedCollection(bookmark, using: modelContext)
+            }
+        }
+        
+        // STEP 5: Process "deleteAll" deletion logs (compare local vs remote)
+        let incomingDeleteAllLogs = request.deletionLogs.filter { $0.entityType == "deleteAll" || $0.entityType == "all" }
+        
+        if !incomingDeleteAllLogs.isEmpty {
+            print("Processing \(incomingDeleteAllLogs.count) incoming deleteAll logs")
+            
+            // Get our local deleteAll logs
+            let localDeleteLogsDescriptor = FetchDescriptor<YabaDataLog>(
+                predicate: #Predicate<YabaDataLog> { _ in true}
+            )
+            let localDeleteLogs = try modelContext.fetch(localDeleteLogsDescriptor)
+            let localDeleteAllLogs = localDeleteLogs.filter { log in log.actionType == .deletedAll }
+            
+            // Find the newest incoming deleteAll
+            let newestIncomingDeleteAll = incomingDeleteAllLogs.max { log1, log2 in
+                guard let date1 = parseDate(log1.timestamp),
+                      let date2 = parseDate(log2.timestamp) else { return false }
+                return date1 < date2
+            }
+            
+            if let newestIncoming = newestIncomingDeleteAll,
+               let incomingDeleteAllTimestamp = parseDate(newestIncoming.timestamp) {
+                
+                // Find our newest local deleteAll
+                let newestLocalDeleteAll = localDeleteAllLogs.max { $0.timestamp < $1.timestamp }
+                let localDeleteAllTimestamp = newestLocalDeleteAll?.timestamp ?? Date.distantPast
+                
+                // If remote deleteAll is newer than our local deleteAll, apply it
+                if incomingDeleteAllTimestamp > localDeleteAllTimestamp {
+                    print("Applying remote deleteAll from \(incomingDeleteAllTimestamp) (local was \(localDeleteAllTimestamp))")
+                    
+                    // Delete ALL collections and bookmarks created before the deleteAll timestamp
+                    let collectionsToDeleteDescriptor = FetchDescriptor<YabaCollection>(
+                        predicate: #Predicate<YabaCollection> { collection in
+                            collection.editedAt < incomingDeleteAllTimestamp
+                        }
+                    )
+                    let collectionsToDelete = try modelContext.fetch(collectionsToDeleteDescriptor)
+                    print("Deleting \(collectionsToDelete.count) collections created before deleteAll")
+                    collectionsToDelete.forEach { modelContext.delete($0) }
+                    
+                    let bookmarksToDeleteDescriptor = FetchDescriptor<YabaBookmark>(
+                        predicate: #Predicate<YabaBookmark> { bookmark in
+                            bookmark.editedAt < incomingDeleteAllTimestamp
+                        }
+                    )
+                    let bookmarksToDelete = try modelContext.fetch(bookmarksToDeleteDescriptor)
+                    print("Deleting \(bookmarksToDelete.count) bookmarks created before deleteAll")
+                    bookmarksToDelete.forEach { modelContext.delete($0) }
+                    
+                    // Remove old local deleteAll logs and add the new one
+                    localDeleteAllLogs.forEach { modelContext.delete($0) }
+                    
+                    // Create and insert the new deleteAll log in our local database
+                    let newDeleteAllLog = YabaDataLog(
+                        entityId: UUID().uuidString,
+                        entityType: .all,
+                        actionType: .deletedAll,
+                        timestamp: incomingDeleteAllTimestamp
+                    )
+                    modelContext.insert(newDeleteAllLog)
+                    print("Updated local deleteAll log to \(incomingDeleteAllTimestamp)")
+                } else {
+                    print("Skipping remote deleteAll (local deleteAll is newer: \(localDeleteAllTimestamp) vs \(incomingDeleteAllTimestamp))")
+                }
+            }
+        }
+        
+        // STEP 6: Process individual deletion logs (collection and bookmark deletions)
+        let individualDeletionLogs = request.deletionLogs.filter { 
+            $0.entityType != "deleteAll" && $0.entityType != "all" 
+        }
+        
+        if !individualDeletionLogs.isEmpty {
+            print("Processing \(individualDeletionLogs.count) individual deletion logs")
+            
+            for deletionLog in individualDeletionLogs {
+                if deletionLog.entityType == "collection" {
+                    let descriptor = FetchDescriptor<YabaCollection>(
+                        predicate: #Predicate<YabaCollection> { collection in
+                            collection.collectionId == deletionLog.entityId
+                        }
+                    )
+                    if let collectionToDelete = try modelContext.fetch(descriptor).first {
+                        print("Deleting collection: \(collectionToDelete.label)")
+                        modelContext.delete(collectionToDelete)
+                    }
+                } else if deletionLog.entityType == "bookmark" {
+                    let descriptor = FetchDescriptor<YabaBookmark>(
+                        predicate: #Predicate<YabaBookmark> { bookmark in
+                            bookmark.bookmarkId == deletionLog.entityId
+                        }
+                    )
+                    if let bookmarkToDelete = try modelContext.fetch(descriptor).first {
+                        print("Deleting bookmark: \(bookmarkToDelete.label)")
+                        modelContext.delete(bookmarkToDelete)
+                    }
+                }
+            }
+        }
+        
+        // Save all changes
         try modelContext.save()
+        
+        print("Merge completed: \(mergedBookmarks) bookmarks, \(mergedCollections) collections")
         
         return SyncMergeResult(
             mergedBookmarks: mergedBookmarks,
             mergedCollections: mergedCollections,
-            conflicts: conflicts
+            conflicts: [] // No conflicts in simplified logic
         )
     }
     
     // MARK: - Private Sync Helper Methods
     
-    /// Resolve bookmark conflict based on version and timestamp
-    private func resolveBookmarkConflict(
-        local: YabaBookmark,
-        incoming: YabaCodableBookmark
-    ) -> SyncConflict.ConflictResolution {
-        let localVersion = local.version
-        let incomingVersion = incoming.version ?? 0
-        
-        // Compare versions first
+    /// Simple logic to determine if incoming data should overwrite local data
+    private func shouldOverwrite(
+        localVersion: Int,
+        localEditedAt: Date,
+        incomingVersion: Int,
+        incomingEditedAt: Date?
+    ) -> Bool {
+        // First check versions - higher version wins
         if incomingVersion > localVersion {
-            return .keepRemote
+            return true
         } else if localVersion > incomingVersion {
-            return .keepLocal
+            return false
         }
         
-        // Same version - compare timestamps
-        let localTimestamp = local.editedAt
-        let incomingTimestamp = parseDate(incoming.editedAt) ?? Date.distantPast
-        
-        if incomingTimestamp > localTimestamp {
-            return .keepRemote
-        } else if localTimestamp > incomingTimestamp {
-            return .keepLocal
-        }
-        
-        // Same timestamp and version - check content differences
-        if bookmarksAreEqual(local, incoming) {
-            return .keepLocal // No changes needed
-        }
-        
-        // Content differs with same timestamp/version - manual resolution needed
-        return .needsManualResolution
-    }
-    
-    /// Resolve collection conflict based on version and timestamp
-    private func resolveCollectionConflict(
-        local: YabaCollection,
-        incoming: YabaCodableCollection
-    ) -> SyncConflict.ConflictResolution {
-        let localVersion = local.version
-        let incomingVersion = incoming.version
-        
-        // Compare versions first
-        if incomingVersion > localVersion {
-            return .keepRemote
-        } else if localVersion > incomingVersion {
-            return .keepLocal
-        }
-        
-        // Same version - compare timestamps
-        let localTimestamp = local.editedAt
-        let incomingTimestamp = parseDate(incoming.editedAt) ?? Date.distantPast
-        
-        if incomingTimestamp > localTimestamp {
-            return .keepRemote
-        } else if localTimestamp > incomingTimestamp {
-            return .keepLocal
-        }
-        
-        // Same timestamp and version - check content differences
-        if collectionsAreEqual(local, incoming) {
-            return .keepLocal // No changes needed
-        }
-        
-        // Content differs with same timestamp/version - manual resolution needed
-        return .needsManualResolution
+        // Same version - check timestamps
+        guard let incomingEditedAt = incomingEditedAt else { return false }
+        return incomingEditedAt > localEditedAt
     }
     
     private func parseDate(_ dateString: String?) -> Date? {
         guard let dateString = dateString else { return nil }
         return ISO8601DateFormatter().date(from: dateString)
-    }
-    
-    private func bookmarksAreEqual(
-        _ local: YabaBookmark,
-        _ remote: YabaCodableBookmark
-    ) -> Bool {
-        return local.link == remote.link &&
-               local.label == remote.label &&
-               local.bookmarkDescription == remote.bookmarkDescription
-    }
-    
-    private func collectionsAreEqual(
-        _ local: YabaCollection,
-        _ remote: YabaCodableCollection
-    ) -> Bool {
-        return local.label == remote.label &&
-               local.icon == remote.icon &&
-               local.color.rawValue == remote.color
     }
     
     private func updateBookmarkFromCodable(
@@ -1011,10 +1029,26 @@ class DataManager {
         }
     }
     
+    private func updateCollectionMetadataFromCodable(
+        _ collection: YabaCollection,
+        from codable: YabaCodableCollection
+    ) {
+        collection.label = codable.label
+        collection.icon = codable.icon
+        collection.color = YabaColor(rawValue: codable.color) ?? .none
+        collection.version = codable.version
+        
+        if let editedAt = parseDate(codable.editedAt) {
+            collection.editedAt = editedAt
+        }
+        
+        // Don't touch bookmark associations - they're handled separately
+    }
+    
     private func updateCollectionFromCodable(
         _ collection: YabaCollection,
         from codable: YabaCodableCollection,
-        bookmarkMap: [String: YabaCodableBookmark],
+        bookmarkMap: [String: YabaBookmark],
         using modelContext: ModelContext
     ) {
         collection.label = codable.label
@@ -1026,22 +1060,11 @@ class DataManager {
             collection.editedAt = editedAt
         }
         
-        // Update bookmark associations
+        // Update bookmark associations using the bookmark map for better performance
         collection.bookmarks?.removeAll()
         for bookmarkId in codable.bookmarks {
-            // Find existing bookmark or create from incoming data
-            let descriptor = FetchDescriptor<YabaBookmark>(
-                predicate: #Predicate<YabaBookmark> { bookmark in
-                    bookmark.bookmarkId == bookmarkId
-                }
-            )
-            
-            if let existingBookmark = try? modelContext.fetch(descriptor).first {
-                collection.bookmarks?.append(existingBookmark)
-            } else if let incomingBookmark = bookmarkMap[bookmarkId] {
-                let bookmarkModel = incomingBookmark.mapToModel()
-                modelContext.insert(bookmarkModel)
-                collection.bookmarks?.append(bookmarkModel)
+            if let bookmark = bookmarkMap[bookmarkId] {
+                collection.bookmarks?.append(bookmark)
             }
         }
     }
@@ -1078,6 +1101,38 @@ class DataManager {
         }
         
         modelContext.insert(bookmark)
+    }
+    
+    private func addBookmarkToUncategorizedCollection(
+        _ bookmark: YabaBookmark,
+        using modelContext: ModelContext
+    ) async {
+        // Try to find uncategorized collection
+        let uncategorizedId = Constants.uncategorizedCollectionId
+        let descriptor = FetchDescriptor<YabaCollection>(
+            predicate: #Predicate<YabaCollection> { collection in
+                collection.collectionId == uncategorizedId
+            }
+        )
+        
+        if let uncategorizedCollection = try? modelContext.fetch(descriptor).first {
+            uncategorizedCollection.bookmarks?.append(bookmark)
+        } else {
+            // Create uncategorized collection
+            let creationTime = Date.now
+            let uncategorizedCollection = YabaCollection(
+                collectionId: uncategorizedId,
+                label: Constants.uncategorizedCollectionLabelKey,
+                icon: "folder-01",
+                createdAt: creationTime,
+                editedAt: creationTime,
+                color: .none,
+                type: .folder,
+                version: 0
+            )
+            uncategorizedCollection.bookmarks?.append(bookmark)
+            modelContext.insert(uncategorizedCollection)
+        }
     }
 }
 
