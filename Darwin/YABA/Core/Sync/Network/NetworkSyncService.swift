@@ -308,6 +308,13 @@ extension SimpleNetworkService: NetServiceBrowserDelegate {
         if let deviceId = extractDeviceId(from: service) {
             connectedDevices.removeValue(forKey: deviceId)
             updateDiscoveredDevices()
+        } else {
+            // Fallback: TXT record is empty during disconnection, but service.name is still available
+            // Find device by matching service name with device name
+            if let deviceToRemove = connectedDevices.values.first(where: { $0.name == service.name }) {
+                connectedDevices.removeValue(forKey: deviceToRemove.id)
+                updateDiscoveredDevices()
+            }
         }
     }
 }
