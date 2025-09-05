@@ -244,13 +244,13 @@ private struct DiscoveredDeviceItem: View {
         }
     }
     
-    private var statusText: String {
+    private var statusText: LocalizedStringKey {
         if isSendingRequest {
             return "Sync Sending Request Label"
         } else if isSyncing {
-            return "Syncing..."
+            return "Sync Syncing Label"
         } else {
-            return device.deviceType.displayName.stringKey ?? "Unknown"
+            return device.deviceType.displayName
         }
     }
     
@@ -262,13 +262,6 @@ private struct DiscoveredDeviceItem: View {
         } else {
             return .secondary
         }
-    }
-}
-
-// Extension to get string key from LocalizedStringKey
-extension LocalizedStringKey {
-    var stringKey: String? {
-        Mirror(reflecting: self).children.first(where: { $0.label == "key" })?.value as? String
     }
 }
 

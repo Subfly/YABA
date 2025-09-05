@@ -49,7 +49,11 @@ final class NetworkSyncManager {
     @ObservationIgnored
     @AppStorage(Constants.deviceNameKey)
     private var deviceName: String = {
+        #if targetEnvironment(macCatalyst)
+        return "Mac"
+        #else
         return UIDevice.current.name
+        #endif
     }()
     
     private let networkService: SimpleNetworkService

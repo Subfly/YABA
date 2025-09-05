@@ -32584,12 +32584,12 @@
       }
     },
     "Sync Request Message %@" : {
-      "comment" : "Message to show in dialog when user attempts to send a sync request",
+      "comment" : "Message of dialog when user receives a sync request",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Are you sure you want to send a sync request to %@? "
+            "value" : "You have received a sync request from ‘%@’.  Would you like to proceed?"
           }
         }
       }
@@ -32617,12 +32617,12 @@
       }
     },
     "Sync Request Title" : {
-      "comment" : "Title of dialog when user attempts to send a sync request",
+      "comment" : "Title of dialog when user receives a sync request",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Send Sync Request"
+            "value" : "Sync Request"
           }
         }
       }
@@ -32645,6 +32645,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Searching for Devices…"
+          }
+        }
+      }
+    },
+    "Sync Sending Request Label" : {
+      "comment" : "Subtitle to show in the items when a sync request has sent",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sending sync request…"
+          }
+        }
+      }
+    },
+    "Sync Syncing Label" : {
+      "comment" : "Subtitle to show in the items when there is an ongoing sync",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Syncing…"
           }
         }
       }
@@ -32752,16 +32776,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Syncing with ‘%@’"
-          }
-        }
-      }
-    },
-    "Syncing..." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Syncing…"
           }
         }
       }
