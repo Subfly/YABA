@@ -45,6 +45,7 @@ extension YabaCodableCollection {
 }
 
 extension YabaBookmark {
+    /// Maps to codable format for exports (JSON, CSV, HTML) - excludes image data
     func mapToCodable() -> YabaCodableBookmark {
         return .init(
             bookmarkId: self.bookmarkId,
@@ -59,7 +60,30 @@ extension YabaBookmark {
             videoUrl: self.videoUrl,
             readableHTML: nil, // Exclude HTML content to prevent import/export issues
             type: self.type,
-            version: self.version
+            version: self.version,
+            imageData: nil, // Explicitly exclude image data for exports
+            iconData: nil   // Explicitly exclude icon data for exports
+        )
+    }
+    
+    /// Maps to codable format for sync - includes image data
+    func mapToCodableForSync() -> YabaCodableBookmark {
+        return .init(
+            bookmarkId: self.bookmarkId,
+            label: self.label,
+            bookmarkDescription: self.bookmarkDescription,
+            link: self.link,
+            domain: self.domain,
+            createdAt: self.createdAt.ISO8601Format(),
+            editedAt: self.editedAt.ISO8601Format(),
+            imageUrl: self.imageUrl,
+            iconUrl: self.iconUrl,
+            videoUrl: self.videoUrl,
+            readableHTML: nil, // Exclude HTML content to prevent sync issues
+            type: self.type,
+            version: self.version,
+            imageData: self.imageDataHolder, // Include image data for sync
+            iconData: self.iconDataHolder    // Include icon data for sync
         )
     }
 }
@@ -77,8 +101,8 @@ extension YabaCodableBookmark {
             domain: self.domain ?? "",
             createdAt: ISO8601DateFormatter().date(from: self.createdAt ?? currentDate) ?? .now,
             editedAt: ISO8601DateFormatter().date(from: self.editedAt ?? currentDate) ?? .now,
-            imageDataHolder: nil,
-            iconDataHolder: nil,
+            imageDataHolder: self.imageData, // Include image data from sync
+            iconDataHolder: self.iconData,   // Include icon data from sync
             imageUrl: self.imageUrl,
             iconUrl: self.iconUrl,
             videoUrl: self.videoUrl,

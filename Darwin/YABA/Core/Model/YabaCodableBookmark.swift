@@ -21,4 +21,8 @@ struct YabaCodableBookmark: Codable, Hashable {
     let readableHTML: String?
     let type: Int?
     let version: Int?
+    
+    // Image data fields for sync (not included in exports)
+    let imageData: Data?
+    let iconData: Data?
 }

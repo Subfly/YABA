@@ -191,6 +191,8 @@ class DataManager {
                 readableHTML: nil, // Set to nil to prevent CSV parsing issues
                 type: Int(columns[10]) ?? 1,
                 version: Int(columns[11]) ?? 0,
+                imageData: nil,
+                iconData: nil
             ).mapToModel()
             
             // Update editedAt and version to prevent deleteAll conflicts
@@ -295,6 +297,8 @@ class DataManager {
                 readableHTML: nil,
                 type: 1,
                 version: 0,
+                imageData: nil,
+                iconData: nil,
             ).mapToModel()
 
             // Update editedAt and version to prevent deleteAll conflicts
@@ -688,7 +692,7 @@ class DataManager {
         var codableBookmarks: Set<YabaCodableBookmark> = []
         collections.forEach { collection in
             collection.bookmarks?.forEach { bookmark in
-                codableBookmarks.insert(bookmark.mapToCodable())
+                codableBookmarks.insert(bookmark.mapToCodableForSync())
             }
         }
         
@@ -726,7 +730,7 @@ class DataManager {
         deviceName: String,
         ipAddress: String
     ) async throws -> SyncResponse {
-        // Prepare response with current data
+        // Prepare response with current data (this will use mapToCodableForSync)
         let localData = try prepareSyncData(
             using: modelContext,
             deviceId: deviceId,
@@ -1040,6 +1044,14 @@ class DataManager {
         bookmark.videoUrl = codable.videoUrl
         bookmark.readableHTML = codable.readableHTML
         bookmark.version = codable.version ?? bookmark.version
+        
+        // Update image data if available from sync
+        if let imageData = codable.imageData {
+            bookmark.imageDataHolder = imageData
+        }
+        if let iconData = codable.iconData {
+            bookmark.iconDataHolder = iconData
+        }
         
         if let editedAtString = codable.editedAt,
            let editedAt = parseDate(editedAtString) {
