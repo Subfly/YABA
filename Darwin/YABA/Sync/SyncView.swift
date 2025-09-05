@@ -171,6 +171,17 @@ struct SyncView: View {
                         .frame(width: 18, height: 18)
                 }
             }
+            
+            Section {
+                Text("Sync Description")
+            } header: {
+                Label {
+                    Text("Info")
+                } icon: {
+                    YabaIconView(bundleKey: "information-circle")
+                        .frame(width: 18, height: 18)
+                }
+            }
         }
         .listStyle(.sidebar)
         .scrollContentBackground(.hidden)
