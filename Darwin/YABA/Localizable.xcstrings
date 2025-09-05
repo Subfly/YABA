@@ -32598,14 +32598,14 @@
         }
       }
     },
-    "Sync Description" : {
+    "Sync Description %@" : {
       "comment" : "Explanation of the sync in the sync screen.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "For syncing, you have to be connected to the same network with your devices. Then you can select any device to send a sync request. Once approved, the syncing will automatically start. Please do not close this screen until syncing is complete."
+            "value" : "For syncing, you have to be connected to the same network with your devices. Then you can select any device to send a sync request. Once approved, the syncing will automatically start. Please do not close this screen until syncing is complete.\n *Your device name is: **%@***"
           }
         }
       }

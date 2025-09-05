@@ -17,6 +17,9 @@ struct SyncView: View {
     @Environment(\.modelContext)
     private var modelContext
     
+    @AppStorage(Constants.deviceNameKey)
+    private var deviceName: String = ""
+    
     @State
     private var state: SyncState = .init()
     
@@ -173,7 +176,7 @@ struct SyncView: View {
             }
             
             Section {
-                Text("Sync Description")
+                Text("Sync Description \(deviceName)")
             } header: {
                 Label {
                     Text("Info")

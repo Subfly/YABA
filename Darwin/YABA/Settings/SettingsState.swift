@@ -264,14 +264,22 @@ internal class SettingsState {
         @AppStorage(Constants.announcementsCloudKitDropKey)
         var showCloudKitAnnouncement: Bool = true
         
+        @AppStorage(Constants.hasNamedDeviceKey)
+        var hasNamedDevice: Bool = false
+        
+        @AppStorage(Constants.deviceNameKey)
+        var deviceName: String = ""
+        
         hasPassedOnboarding = false
         showUpdateAnnouncement = true
         showCloudKitAnnouncement = true
+        hasNamedDevice = false
         theme = .system
         contentAppearance = .list
         imageSizing = .small
         sortType = .createdAt
         sortOrderType = .ascending
+        deviceName = ""
     }
     
     private func handleError(error: Error) {
