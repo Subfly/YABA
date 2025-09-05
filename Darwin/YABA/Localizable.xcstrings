@@ -17440,6 +17440,42 @@
         }
       }
     },
+    "Name Device Message" : {
+      "comment" : "Message to show in name device sheet",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "For sync purposes, you have to give a name to this device. Be creative, be unique, this is your device in the end 😄.\n\nYou can always set your device name again in the settings."
+          }
+        }
+      }
+    },
+    "Name Device Prompt" : {
+      "comment" : "Prompt to show in text field of device name",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your unique device name…"
+          }
+        }
+      }
+    },
+    "Name Device Title" : {
+      "comment" : "Title to show in name device popup",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name Your Device"
+          }
+        }
+      }
+    },
     "New" : {
       "comment" : "New",
       "extractionState" : "manual",
@@ -30210,6 +30246,18 @@
         }
       }
     },
+    "Settings Name Device Label" : {
+      "comment" : "Label of device name in settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device Name"
+          }
+        }
+      }
+    },
     "Settings Privacy Policy Link Title" : {
       "comment" : "Title of Privacy Policy link in settings",
       "extractionState" : "manual",
@@ -32669,6 +32717,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Syncing…"
+          }
+        }
+      }
+    },
+    "Synchronization" : {
+      "comment" : "Synchronization",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synchronization"
           }
         }
       }

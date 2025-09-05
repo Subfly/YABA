@@ -23,6 +23,7 @@ struct Constants {
     
     /// MARK: SETTINGS
     static let hasPassedOnboardingKey = "hasPassedOnboarding"
+    static let hasNamedDeviceKey = "hasNamedDevice"
     static let preferredThemeKey = "preferredTheme"
     static let preferredContentAppearanceKey = "preferredContentAppearance"
     static let preferredCardImageSizingKey = "preferredCardImageSizing"

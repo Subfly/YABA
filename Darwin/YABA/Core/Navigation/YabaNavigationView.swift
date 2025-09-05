@@ -11,11 +11,17 @@ struct YabaNavigationView: View {
     @AppStorage(Constants.hasPassedOnboardingKey)
     private var hasPassedOnboarding: Bool = false
     
+    @AppStorage(Constants.hasNamedDeviceKey)
+    private var hasNamedDevice: Bool = false
+    
     @Environment(\.modelContext)
     private var modelContext
     
     @State
     private var shouldShowOnboardingView: Bool = false
+    
+    @State
+    private var shouldShowNameDeviceView: Bool = false
     
     var body: some View {
         navigationSwitcher
@@ -24,15 +30,30 @@ struct YabaNavigationView: View {
                     hasPassedOnboarding = true
                 }
             }
+            .sheet(isPresented: $shouldShowNameDeviceView) {
+                NameDeviceView {
+                    hasNamedDevice = true
+                }
+            }
             .onAppear {
                 YabaDataLogger.shared.setContext(modelContext)
                 if !hasPassedOnboarding {
                     shouldShowOnboardingView = true
+                } else if !hasNamedDevice {
+                    shouldShowNameDeviceView = true
                 }
             }
             .onChange(of: hasPassedOnboarding) { _, passed in
                 if passed {
                     shouldShowOnboardingView = false
+                    if !hasNamedDevice {
+                        shouldShowNameDeviceView = true
+                    }
+                }
+            }
+            .onChange(of: hasNamedDevice) { _, named in
+                if named {
+                    shouldShowNameDeviceView = false
                 }
             }
     }

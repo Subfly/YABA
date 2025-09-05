@@ -27,7 +27,6 @@ struct SettingsView: View {
     @AppStorage(Constants.showMenuBarItem)
     private var showMenuBarItem: Bool = true
     
-    
     @AppStorage(
         Constants.useSimplifiedShare,
         store: UserDefaults(
@@ -35,6 +34,9 @@ struct SettingsView: View {
         )
     )
     private var useSimplifiedShare: Bool = false
+    
+    @AppStorage(Constants.deviceNameKey)
+    private var deviceName: String = ""
     
     @State
     private var settingsState = SettingsState()
@@ -98,6 +100,7 @@ struct SettingsView: View {
             themeAndLangaugeSection
             appearanceSection
             announcementsSection
+            syncSection
             dataSection
             aboutSection
             thanksToSection
@@ -206,6 +209,32 @@ struct SettingsView: View {
                 Text("Home Announcements Title")
             } icon: {
                 YabaIconView(bundleKey: "megaphone-03")
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var syncSection: some View {
+        Section {
+            HStack {
+                Label {
+                    Text("Settings Name Device Label")
+                } icon: {
+                    YabaIconView(bundleKey: DeviceType.current.symbolName)
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                }
+                TextField("", text: $deviceName)
+                    .multilineTextAlignment(.trailing)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+            }
+        } header: {
+            Label {
+                Text("Synchronization")
+            } icon: {
+                YabaIconView(bundleKey: "computer-phone-sync")
                     .scaledToFit()
                     .frame(width: 18, height: 18)
             }
