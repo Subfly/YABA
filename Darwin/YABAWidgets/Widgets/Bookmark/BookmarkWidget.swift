@@ -24,6 +24,8 @@ internal struct BookmarkWidget: Widget {
         }
         .supportedFamilies([.systemLarge, .systemExtraLarge])
         .contentMarginsDisabled()
+        .configurationDisplayName("Widget Bookmark List Display Title")
+        .description("Widget Bookmark List Display Description")
     }
 }
 

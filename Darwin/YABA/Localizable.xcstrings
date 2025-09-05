@@ -3609,29 +3609,30 @@
         }
       }
     },
-    "Category Collection" : {
-
-    },
-    "Category Collections" : {
-
-    },
     "Category Configuration Description" : {
-
+      "comment" : "Description of widget of category widgets while configuring",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select a category to shown in the widget"
+          }
+        }
+      }
     },
     "Category Configuration Title" : {
-
+      "comment" : "Title of widget of category widgets while configuring",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configure Collection Widget"
+          }
+        }
+      }
     },
     "Changes:" : {
       "shouldTranslate" : false
-    },
-    "Choose a folder or tag to display" : {
-
-    },
-    "Choose a folder or tag to show bookmarks from" : {
-
-    },
-    "Choose Collection Dialog Title" : {
-
     },
     "Collection" : {
       "comment" : "Collection",
@@ -3728,9 +3729,6 @@
           }
         }
       }
-    },
-    "Collection Selection Title" : {
-
     },
     "Collection Type Folder Description" : {
       "comment" : "Description for collection type -  folder",
@@ -3924,9 +3922,6 @@
         }
       }
     },
-    "Collections" : {
-
-    },
     "Copy To Clipboard Success Message" : {
       "comment" : "Message to show in toast when user copied something",
       "extractionState" : "manual",
@@ -4022,9 +4017,6 @@
           }
         }
       }
-    },
-    "Create a quick bookmark" : {
-
     },
     "Create Bookmark" : {
       "comment" : "Label to show for creating bookmarks in plus menu",
@@ -8284,7 +8276,14 @@
       }
     },
     "Display ${selectedCollection}" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Display ${selectedCollection}"
+          }
+        }
+      }
     },
     "Done" : {
       "comment" : "Done",
@@ -25132,12 +25131,6 @@
         }
       }
     },
-    "Open YABA" : {
-
-    },
-    "Opens the YABA bookmark manager app" : {
-
-    },
     "Pick Icon Category Title" : {
       "comment" : "Title to show when user open the icon picker and prompts to select a main category",
       "extractionState" : "manual",
@@ -25427,10 +25420,18 @@
       }
     },
     "Quick Bookmark" : {
-
+      "shouldTranslate" : false
     },
     "Quickmark" : {
-
+      "comment" : "Quickmark name",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quickmark"
+          }
+        }
+      }
     },
     "Quit" : {
       "comment" : "Mac only label to show in status bar menu item, for quitting the menu item",
@@ -25719,9 +25720,6 @@
           }
         }
       }
-    },
-    "Recent Bookmarks" : {
-
     },
     "Refresh" : {
       "comment" : "Label to show for refresh related functions",
@@ -31795,7 +31793,14 @@
       }
     },
     "Show bookmarks from ${selectedFolder}" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show bookmarks from ${selectedFolder}"
+          }
+        }
+      }
     },
     "Show Less Label" : {
       "comment" : "Label of show less for collections in mobile",
@@ -34389,7 +34394,15 @@
       }
     },
     "Unknown" : {
-
+      "comment" : "Unknown",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unknown"
+          }
+        }
+      }
     },
     "Unsupported File Type Message" : {
       "comment" : "Message to show when an unsupported file type is selected in file import.",
@@ -34871,6 +34884,138 @@
         }
       }
     },
+    "Widget Bookmark List Display Description" : {
+      "comment" : "Description of display name of the bookmark widget",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Access your bookmarks directly in a specific folder"
+          }
+        }
+      }
+    },
+    "Widget Bookmark List Display Title" : {
+      "comment" : "Title of display name of the bookmark widget",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YABA Bookmarks Widget"
+          }
+        }
+      }
+    },
+    "Widget Category Display Description" : {
+      "comment" : "Description of display name of the category widget",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quickly launch your favorite tag or folder in a tap"
+          }
+        }
+      }
+    },
+    "Widget Category Display Title" : {
+      "comment" : "Title of display name of the category widget",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yaba Category Widget"
+          }
+        }
+      }
+    },
+    "Widget Choose Collection Dialog Title" : {
+      "comment" : "Not seen anywhere but supposedly shown in title of a dialog when user is trying to select a collection in widget",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose a Collection"
+          }
+        }
+      }
+    },
+    "Widget Collection Selection Description" : {
+      "comment" : "Description of parameter collection selection of widgets",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose a folder or tag to show bookmarks from"
+          }
+        }
+      }
+    },
+    "Widget Collection Selection Title" : {
+      "comment" : "Title to prompt user to select a collection in widget",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selected Collection:"
+          }
+        }
+      }
+    },
+    "Widget Collections Label" : {
+      "comment" : "Label of collections in widgets",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Collections"
+          }
+        }
+      }
+    },
+    "Widget Create a Quick Bookmark" : {
+      "comment" : "Title of widget creating a quick bookmark",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create a Quick Bookmark"
+          }
+        }
+      }
+    },
+    "Widget Open YABA Description" : {
+      "comment" : "Description to show for open YABA widget",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quickly launch YABA!"
+          }
+        }
+      }
+    },
+    "Widget Open YABA Title" : {
+      "comment" : "Title to show for open YABA widget",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open YABA"
+          }
+        }
+      }
+    },
+    "Widget Recent Bookmarks" : {
+      "comment" : "Explanation of recent bookmarks for widgets",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recent Bookmarks"
+          }
+        }
+      }
+    },
     "YABA" : {
       "comment" : "App name",
       "extractionState" : "manual",
@@ -34898,7 +35043,15 @@
       "shouldTranslate" : false
     },
     "YABA Quickmark" : {
-
+      "comment" : "Name of control center widget Quickmark",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YABA Quickmark"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

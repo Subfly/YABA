@@ -20,6 +20,6 @@ struct QuickmarkControlCenterWidget: ControlWidget {
             }
         }
         .displayName("YABA Quickmark")
-        .description("Create a quick bookmark")
+        .description("Widget Create a Quick Bookmark")
     }
 }

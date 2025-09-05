@@ -32,7 +32,7 @@ internal struct CollectionEntity: AppEntity {
         
         return DisplayRepresentation(
             title: title,
-            subtitle: collectionType == "recents" ? "Recent Bookmarks" : (collectionType == "folder" ? "Folder" : "Tag"),
+            subtitle: collectionType == "recents" ? "Widget Recent Bookmarks" : (collectionType == "folder" ? "Folder" : "Tag"),
             image: .init(
                 named: displayIconNameString,
                 isTemplate: true,
@@ -42,7 +42,7 @@ internal struct CollectionEntity: AppEntity {
     }
     
     static var caseDisplayRepresentation: TypeDisplayRepresentation {
-        TypeDisplayRepresentation(name: "Collections")
+        TypeDisplayRepresentation(name: "Widget Collections Label")
     }
 }
 
@@ -146,7 +146,7 @@ internal struct CategoryCollectionEntity: AppEntity {
     let bookmarkCount: Int
     
     static var typeDisplayRepresentation: TypeDisplayRepresentation = TypeDisplayRepresentation(
-        name: "Category Collection",
+        name: "Widget Collections Label",
         numericFormat: "\(placeholder: .int) collections"
     )
     static var defaultQuery = CategoryCollectionEntityQuery()
@@ -170,7 +170,7 @@ internal struct CategoryCollectionEntity: AppEntity {
     }
     
     static var caseDisplayRepresentation: TypeDisplayRepresentation {
-        TypeDisplayRepresentation(name: "Category Collections")
+        TypeDisplayRepresentation(name: "Widget Collections Label")
     }
 }
 
@@ -260,9 +260,9 @@ internal struct BookmarkListAppIntent: WidgetConfigurationIntent {
     static var description: IntentDescription { "Bookmark List Configuration Description" }
     
     @Parameter(
-        title: "Collection Selection Title", 
-        description: "Choose a folder or tag to show bookmarks from",
-        requestValueDialog: "Choose Collection Dialog Title"
+        title: "Widget Collection Selection Title", 
+        description: "Widget Collection Selection Description",
+        requestValueDialog: "Widget Collection Selection Title"
     )
     var selectedFolder: CollectionEntity?
     
@@ -289,9 +289,9 @@ internal struct CategoryAppIntent: WidgetConfigurationIntent {
     static var description: IntentDescription { "Category Configuration Description" }
     
     @Parameter(
-        title: "Collection Selection Title", 
-        description: "Choose a folder or tag to display",
-        requestValueDialog: "Choose Collection Dialog Title"
+        title: "Widget Collection Selection Title", 
+        description: "Widget Collection Selection Description",
+        requestValueDialog: "Widget Choose Collection Dialog Title"
     )
     var selectedCollection: CategoryCollectionEntity?
     
@@ -314,8 +314,8 @@ internal struct CategoryAppIntent: WidgetConfigurationIntent {
 }
 
 internal struct OpenYABAIntent: AppIntent {
-    static var title: LocalizedStringResource = "Open YABA"
-    static var description = IntentDescription("Opens the YABA bookmark manager app")
+    static var title: LocalizedStringResource = "Widget Open YABA Title"
+    static var description = IntentDescription("Widget Open YABA Description")
     
     static var openAppWhenRun: Bool = true
     static var isDiscoverable = true
@@ -328,7 +328,7 @@ internal struct OpenYABAIntent: AppIntent {
 
 internal struct QuickmarkIntent: AppIntent {
     static var title: LocalizedStringResource = "Quickmark"
-    static var description = IntentDescription("Create a quick bookmark")
+    static var description = IntentDescription("Widget Create a Quick Bookmark")
     
     static var openAppWhenRun: Bool = true
     static var isDiscoverable = true

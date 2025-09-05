@@ -17,10 +17,10 @@ struct YABALauncherControlCenterWidget: ControlWidget {
             ControlWidgetButton(action: OpenYABAIntent()) {
                 // Thanks Apple for not letting me use it normally
                 // And when I use any converter, it just fucks up like this
-                Label("Open YABA", image: .fakeAppIcon)
+                Label("Widget Open YABA Title", image: .fakeAppIcon)
             }
         }
         .displayName("YABA")
-        .description("Open YABA")
+        .description("Widget Open YABA Title")
     }
 }

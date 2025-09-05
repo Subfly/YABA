@@ -23,6 +23,8 @@ internal struct CategoryWidget: Widget {
         }
         .supportedFamilies([.systemSmall, .systemMedium])
         .contentMarginsDisabled()
+        .configurationDisplayName("Widget Category Display Title")
+        .description("Widget Category Display Description")
     }
 }
 
