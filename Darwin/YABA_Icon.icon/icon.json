@@ -1,0 +1,248 @@
+{
+  "fill-specializations" : [
+    {
+      "value" : {
+        "linear-gradient" : [
+          "display-p3:0.00000,0.53333,1.00000,1.00000",
+          "srgb:0.11765,0.43137,0.95686,1.00000"
+        ]
+      }
+    },
+    {
+      "appearance" : "dark",
+      "value" : {
+        "linear-gradient" : [
+          "display-p3:0.10980,0.10980,0.11765,1.00000",
+          "srgb:0.14118,0.14118,0.14902,1.00000"
+        ]
+      }
+    }
+  ],
+  "groups" : [
+    {
+      "blur-material" : 1,
+      "layers" : [
+        {
+          "blend-mode" : "plus-darker",
+          "fill-specializations" : [
+            {
+              "value" : "none"
+            },
+            {
+              "appearance" : "dark",
+              "value" : "none"
+            }
+          ],
+          "glass" : true,
+          "image-name" : "YABA_icon.png",
+          "name" : "YABA_icon",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              0,
+              0
+            ]
+          }
+        }
+      ],
+      "lighting" : "individual",
+      "shadow" : {
+        "kind" : "layer-color",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    },
+    {
+      "blend-mode" : "plus-darker",
+      "blur-material" : 0.5,
+      "hidden" : false,
+      "layers" : [
+        {
+          "image-name" : "YABA_circle.png",
+          "name" : "YABA_circle",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              -186.78125,
+              234.9609375
+            ]
+          }
+        },
+        {
+          "image-name" : "YABA_circle.png",
+          "name" : "YABA_circle",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              224.796875,
+              -223.2734375
+            ]
+          }
+        },
+        {
+          "image-name" : "YABA_circle.png",
+          "name" : "YABA_circle",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              224.953125,
+              225.1875
+            ]
+          }
+        },
+        {
+          "image-name" : "YABA_circle.png",
+          "name" : "YABA_circle",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              -253.0234375,
+              -212.3203125
+            ]
+          }
+        },
+        {
+          "image-name" : "YABA_circle.png",
+          "name" : "YABA_circle",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              -263.4765625,
+              56.7890625
+            ]
+          }
+        },
+        {
+          "image-name" : "YABA_circle.png",
+          "name" : "YABA_circle",
+          "position" : {
+            "scale" : 0.75,
+            "translation-in-points" : [
+              284.796875,
+              -390.4140625
+            ]
+          }
+        },
+        {
+          "image-name" : "YABA_circle.png",
+          "name" : "YABA_circle",
+          "position" : {
+            "scale" : 1.25,
+            "translation-in-points" : [
+              -377.859375,
+              197.6796875
+            ]
+          }
+        },
+        {
+          "image-name" : "YABA_circle.png",
+          "name" : "YABA_circle",
+          "position" : {
+            "scale" : 0.6,
+            "translation-in-points" : [
+              -0.28125,
+              -367.8359375
+            ]
+          }
+        },
+        {
+          "image-name" : "YABA_circle.png",
+          "name" : "YABA_circle",
+          "position" : {
+            "scale" : 0.9,
+            "translation-in-points" : [
+              63.7421875,
+              370.1171875
+            ]
+          }
+        },
+        {
+          "image-name" : "YABA_circle.png",
+          "name" : "YABA_circle",
+          "position" : {
+            "scale" : 0.85,
+            "translation-in-points" : [
+              -331.2421875,
+              -76.84375
+            ]
+          }
+        },
+        {
+          "image-name" : "YABA_circle.png",
+          "name" : "YABA_circle",
+          "position" : {
+            "scale" : 0.75,
+            "translation-in-points" : [
+              317.7109375,
+              62.015625
+            ]
+          }
+        },
+        {
+          "image-name" : "YABA_circle.png",
+          "name" : "YABA_circle",
+          "position" : {
+            "scale" : 0.5,
+            "translation-in-points" : [
+              -247.984375,
+              379.203125
+            ]
+          }
+        },
+        {
+          "image-name" : "YABA_circle.png",
+          "name" : "YABA_circle",
+          "position" : {
+            "scale" : 0.75,
+            "translation-in-points" : [
+              343.3828125,
+              337.8984375
+            ]
+          }
+        },
+        {
+          "image-name" : "YABA_circle.png",
+          "name" : "YABA_circle",
+          "position" : {
+            "scale" : 0.85,
+            "translation-in-points" : [
+              373.765625,
+              -186.484375
+            ]
+          }
+        },
+        {
+          "image-name" : "YABA_circle.png",
+          "name" : "YABA_circle",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              -312.4609375,
+              -354.59375
+            ]
+          }
+        }
+      ],
+      "lighting" : "individual",
+      "name" : "Group",
+      "shadow" : {
+        "kind" : "layer-color",
+        "opacity" : 1
+      },
+      "specular" : false,
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}
