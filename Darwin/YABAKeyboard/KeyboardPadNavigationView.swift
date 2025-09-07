@@ -75,13 +75,26 @@ internal struct KeyboardPadNavigationView: View {
                 .navigationTitle(Text("YABA"))
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
-                        YabaIconView(bundleKey: "internet")
-                            .foregroundStyle(.tint)
-                            .overlay {
-                                if let action = nextKeyboardAction {
-                                    NextKeyboardButtonOverlay(action: action)
+                        if #available(iOS 26, *) {
+                            YabaIconView(bundleKey: "internet")
+                                .frame(width: 24, height: 24)
+                                .foregroundStyle(.white)
+                                .glassEffect()
+                                .overlay {
+                                    if let action = nextKeyboardAction {
+                                        NextKeyboardButtonOverlay(action: action)
+                                    }
                                 }
-                            }
+                        } else {
+                            YabaIconView(bundleKey: "internet")
+                                .frame(width: 24, height: 24)
+                                .foregroundStyle(.tint)
+                                .overlay {
+                                    if let action = nextKeyboardAction {
+                                        NextKeyboardButtonOverlay(action: action)
+                                    }
+                                }
+                        }
                     }
                 }
             } detail: {

@@ -125,55 +125,56 @@ struct HomeView: View {
             }
             ToolbarItem(placement: .topBarTrailing) {
                 #if targetEnvironment(macCatalyst)
-                HStack(spacing: 0) {
-                    MacOSHoverableToolbarIcon(
-                        bundleKey: "search-01",
-                        tooltipKey: "Search Title",
-                        onPressed: onNavigationCallbackForSearch
-                    )
-                    Menu {
-                        ContentAppearancePicker()
-                        SortingPicker()
-                        Button {
-                            onNavigationCallbackForSettings()
-                        } label: {
-                            Label {
-                                Text("Settings Title")
-                            } icon: {
-                                YabaIconView(bundleKey: "settings-02")
-                            }
-                        }
+                MacOSHoverableToolbarIcon(
+                    bundleKey: "search-01",
+                    tooltipKey: "Search Title",
+                    onPressed: onNavigationCallbackForSearch
+                )
+                #else
+                Button {
+                    onNavigationCallbackForSearch()
+                } label: {
+                    YabaIconView(bundleKey: "search-01")
+                }
+                #endif
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                #if targetEnvironment(macCatalyst)
+                Menu {
+                    ContentAppearancePicker()
+                    SortingPicker()
+                    Button {
+                        onNavigationCallbackForSettings()
                     } label: {
-                        MacOSHoverableToolbarIcon(
-                            bundleKey:  "more-horizontal-circle-02",
-                            tooltipKey: "Show More Label",
-                            onPressed: {}
-                        )
+                        Label {
+                            Text("Settings Title")
+                        } icon: {
+                            YabaIconView(bundleKey: "settings-02")
+                        }
                     }
+                } label: {
+                    MacOSHoverableToolbarIcon(
+                        bundleKey:  "more-horizontal-circle-02",
+                        tooltipKey: "Show More Label",
+                        onPressed: {}
+                    )
                 }
                 #else
-                HStack {
+                Menu {
+                    ContentAppearancePicker()
+                    SortingPicker()
+                    Divider()
                     Button {
-                        onNavigationCallbackForSearch()
+                        onNavigationCallbackForSettings()
                     } label: {
-                        YabaIconView(bundleKey: "search-01")
-                    }
-                    Menu {
-                        ContentAppearancePicker()
-                        SortingPicker()
-                        Divider()
-                        Button {
-                            onNavigationCallbackForSettings()
-                        } label: {
-                            Label {
-                                Text("Settings Title")
-                            } icon: {
-                                YabaIconView(bundleKey: "settings-02")
-                            }
+                        Label {
+                            Text("Settings Title")
+                        } icon: {
+                            YabaIconView(bundleKey: "settings-02")
                         }
-                    } label: {
-                        YabaIconView(bundleKey: "more-horizontal-circle-02")
                     }
+                } label: {
+                    YabaIconView(bundleKey: "more-horizontal-circle-02")
                 }
                 #endif
             }

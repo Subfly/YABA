@@ -8,6 +8,47 @@
 import SwiftUI
 
 struct MacOSHoverableToolbarIcon: View {
+    let bundleKey: String
+    let tooltipKey: String
+    let onPressed: () -> Void
+    
+    var body: some View {
+        if #available(iOS 26, *) {
+            GlassyMacOSHoverableToolbarIcon(
+                bundleKey: bundleKey,
+                tooltipKey: tooltipKey,
+                onPressed: onPressed
+            )
+        } else {
+            LegacyMacOSHoverableToolbarIcon(
+                bundleKey: bundleKey,
+                tooltipKey: tooltipKey,
+                onPressed: onPressed
+            )
+        }
+    }
+}
+
+@available(iOS 26, *)
+private struct GlassyMacOSHoverableToolbarIcon: View {
+    let bundleKey: String
+    let tooltipKey: String
+    let onPressed: () -> Void
+    
+    var body: some View {
+        Button {
+            onPressed()
+        } label: {
+            YabaIconView(bundleKey: bundleKey)
+                .scaledToFit()
+                .frame(width: 28, height: 28)
+        }
+        .glassEffect(.regular.interactive())
+        .help(LocalizedStringKey(tooltipKey))
+    }
+}
+
+private struct LegacyMacOSHoverableToolbarIcon: View {
     @State
     private var isHovered: Bool = false
     

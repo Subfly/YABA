@@ -165,7 +165,7 @@ private struct BookmarkDetail: View {
             }
             #if !targetEnvironment(macCatalyst)
             if bookmark != nil {
-                ToolbarItem(placement: .primaryAction) {
+                ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         state.changeMode()
                     } label: {
@@ -175,16 +175,42 @@ private struct BookmarkDetail: View {
             }
             #endif
             if bookmark != nil {
-                ToolbarItem(placement: .primaryAction) {
-                    OptionItems(
-                        shouldShowEditBookmarkSheet: $state.shouldShowEditBookmarkSheet,
-                        shouldShowTimePicker: $state.shouldShowTimePicker,
-                        shouldShowShareDialog: $state.shouldShowShareDialog,
-                        shouldShowDeleteDialog: $state.shouldShowDeleteDialog,
-                        onModeChangeRequested: {
+                #if targetEnvironment(macCatalyst)
+                ToolbarItem(placement: .topBarTrailing) {
+                    MacOSHoverableToolbarIcon(
+                        bundleKey: "text-font",
+                        tooltipKey: "Tooltip Title Reader",
+                        onPressed: {
                             state.changeMode()
-                        },
-                        onRefresh: {
+                        }
+                    )
+                    .tint(.green)
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    MacOSHoverableToolbarIcon(
+                        bundleKey: "edit-02",
+                        tooltipKey: "Edit",
+                        onPressed: {
+                            state.shouldShowEditBookmarkSheet = true
+                        }
+                    )
+                    .tint(.orange)
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    MacOSHoverableToolbarIcon(
+                        bundleKey: "notification-01",
+                        tooltipKey: "Tooltip Title Notification",
+                        onPressed: {
+                            state.shouldShowTimePicker = true
+                        }
+                    )
+                    .tint(.yellow)
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    MacOSHoverableToolbarIcon(
+                        bundleKey: "refresh",
+                        tooltipKey: "Refresh",
+                        onPressed: {
                             if let bookmark {
                                 Task {
                                     await state.refetchData(with: bookmark, using: modelContext)
@@ -192,7 +218,92 @@ private struct BookmarkDetail: View {
                             }
                         }
                     )
+                    .tint(.blue)
                 }
+                ToolbarItem(placement: .topBarTrailing) {
+                    MacOSHoverableToolbarIcon(
+                        bundleKey: "share-03",
+                        tooltipKey: "Share",
+                        onPressed: {
+                            state.shouldShowShareDialog = true
+                        }
+                    )
+                    .tint(.indigo)
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    MacOSHoverableToolbarIcon(
+                        bundleKey: "delete-02",
+                        tooltipKey: "Delete",
+                        onPressed: {
+                            state.shouldShowDeleteDialog = true
+                        }
+                    )
+                    .tint(.red)
+                }
+                #else
+                ToolbarItem(placement: .topBarTrailing) {
+                    Menu {
+                        Button {
+                            state.shouldShowEditBookmarkSheet = true
+                        } label: {
+                            Label {
+                                Text("Edit")
+                            } icon: {
+                                YabaIconView(bundleKey: "edit-02")
+                                    .scaledToFit()
+                            }
+                        }.tint(.orange)
+                        Button {
+                            state.shouldShowTimePicker = true
+                        } label: {
+                            Label {
+                                Text("Remind Me")
+                            } icon: {
+                                YabaIconView(bundleKey: "notification-01")
+                                    .scaledToFit()
+                            }
+                        }.tint(.yellow)
+                        Button {
+                            if let bookmark {
+                                Task {
+                                    await state.refetchData(with: bookmark, using: modelContext)
+                                }
+                            }
+                        } label: {
+                            Label {
+                                Text("Refresh")
+                            } icon: {
+                                YabaIconView(bundleKey: "refresh")
+                                    .scaledToFit()
+                            }
+                        }.tint(.blue)
+                        Button {
+                            state.shouldShowShareDialog = true
+                        } label: {
+                            Label {
+                                Text("Share")
+                            } icon: {
+                                YabaIconView(bundleKey: "share-03")
+                                    .scaledToFit()
+                            }
+                        }.tint(.indigo)
+                        Divider()
+                        Button(role: .destructive) {
+                            state.shouldShowDeleteDialog = true
+                        } label: {
+                            Label {
+                                Text("Delete")
+                            } icon: {
+                                YabaIconView(bundleKey: "delete-02")
+                                    .scaledToFit()
+                            }
+                        }.tint(.red)
+                    } label: {
+                        YabaIconView(bundleKey: "more-horizontal-circle-02")
+                            .scaledToFit()
+                    }
+                }
+                #endif
             }
         }
         .alert(
@@ -601,131 +712,6 @@ private struct TagsSection: View {
                     .frame(width: 18, height: 18)
             }
         }
-    }
-}
-
-private struct OptionItems: View {
-    @Binding
-    var shouldShowEditBookmarkSheet: Bool
-    
-    @Binding
-    var shouldShowTimePicker: Bool
-    
-    @Binding
-    var shouldShowShareDialog: Bool
-    
-    @Binding
-    var shouldShowDeleteDialog: Bool
-    
-    let onModeChangeRequested: () -> Void
-    let onRefresh: () -> Void
-    
-    var body: some View {
-        #if targetEnvironment(macCatalyst)
-        HStack(spacing: 0) {
-            MacOSHoverableToolbarIcon(
-                bundleKey: "text-font",
-                tooltipKey: "Tooltip Title Reader",
-                onPressed: onModeChangeRequested
-            )
-            .tint(.green)
-            MacOSHoverableToolbarIcon(
-                bundleKey: "edit-02",
-                tooltipKey: "Edit",
-                onPressed: {
-                    shouldShowEditBookmarkSheet = true
-                }
-            )
-            .tint(.orange)
-            MacOSHoverableToolbarIcon(
-                bundleKey: "notification-01",
-                tooltipKey: "Tooltip Title Notification",
-                onPressed: {
-                    shouldShowTimePicker = true
-                }
-            )
-            .tint(.yellow)
-            MacOSHoverableToolbarIcon(
-                bundleKey: "refresh",
-                tooltipKey: "Refresh",
-                onPressed: onRefresh
-            )
-            .tint(.blue)
-            MacOSHoverableToolbarIcon(
-                bundleKey: "share-03",
-                tooltipKey: "Share",
-                onPressed: {
-                    shouldShowShareDialog = true
-                }
-            )
-            .tint(.indigo)
-            MacOSHoverableToolbarIcon(
-                bundleKey: "delete-02",
-                tooltipKey: "Delete",
-                onPressed: {
-                    shouldShowDeleteDialog = true
-                }
-            )
-            .tint(.red)
-        }
-        #else
-        Menu {
-            Button {
-                shouldShowEditBookmarkSheet = true
-            } label: {
-                Label {
-                    Text("Edit")
-                } icon: {
-                    YabaIconView(bundleKey: "edit-02")
-                        .scaledToFit()
-                }
-            }.tint(.orange)
-            Button {
-                shouldShowTimePicker = true
-            } label: {
-                Label {
-                    Text("Remind Me")
-                } icon: {
-                    YabaIconView(bundleKey: "notification-01")
-                        .scaledToFit()
-                }
-            }.tint(.yellow)
-            Button {
-                onRefresh()
-            } label: {
-                Label {
-                    Text("Refresh")
-                } icon: {
-                    YabaIconView(bundleKey: "refresh")
-                        .scaledToFit()
-                }
-            }.tint(.blue)
-            Button {
-                shouldShowShareDialog = true
-            } label: {
-                Label {
-                    Text("Share")
-                } icon: {
-                    YabaIconView(bundleKey: "share-03")
-                        .scaledToFit()
-                }
-            }.tint(.indigo)
-            Divider()
-            Button(role: .destructive) {
-                shouldShowDeleteDialog = true
-            } label: {
-                Label {
-                    Text("Delete")
-                } icon: {
-                    YabaIconView(bundleKey: "delete-02")
-                        .scaledToFit()
-                }
-            }.tint(.red)
-        } label: {
-            YabaIconView(bundleKey: "more-horizontal-circle-02")
-                .scaledToFit()
-        }
-        #endif
     }
 }
 
