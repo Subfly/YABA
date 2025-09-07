@@ -197,8 +197,12 @@
 				Creation/Collection/CollectionCreationContent.swift,
 				Creation/Collection/CollectionCreationState.swift,
 				Credits.rtf,
+				LaunchScreen.storyboard,
 				Localizable.xcstrings,
 			);
+			platformFiltersByRelativePath = {
+				LaunchScreen.storyboard = (ios, );
+			};
 			target = 96A8E0AD2DB5CAFF00A47601 /* YABAShare */;
 		};
 		96EA39772E56380700B8411D /* Exceptions for "YABAKeyboard" folder in "YABAKeyboard" target */ = {
@@ -260,6 +264,7 @@
 				Detail/Collection/CollectionDetail.swift,
 				Detail/Collection/CollectionDetailState.swift,
 				Home/Components/HomeCollectionView.swift,
+				LaunchScreen.storyboard,
 				Localizable.xcstrings,
 			);
 			target = 96EA396B2E56380700B8411D /* YABAKeyboard */;
@@ -287,8 +292,12 @@
 				Core/Model/YabaModelContainer.swift,
 				Core/Model/YabaSchema.swift,
 				Core/Util/Constants.swift,
+				LaunchScreen.storyboard,
 				Localizable.xcstrings,
 			);
+			platformFiltersByRelativePath = {
+				LaunchScreen.storyboard = (ios, );
+			};
 			target = 96EA39BA2E58EB8E00B8411D /* YABAWidgetsExtension */;
 		};
 		96EA39FB2E5E0F1D00B8411D /* Exceptions for "YABAWidgets" folder in "YABA" target */ = {
@@ -304,6 +313,9 @@
 				Creation/Bookmark/SimpleBookmarkCreationMacOSView.swift,
 				Info.plist,
 			);
+			platformFiltersByRelativePath = {
+				LaunchScreen.storyboard = (ios, );
+			};
 			target = 96A8DFC12DB2F5A500A47601 /* YABA */;
 		};
 		96EB670E2DD9447E009EB9EC /* Exceptions for "YABA" folder in "YABAStatusMenuItem" target */ = {
