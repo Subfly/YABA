@@ -1,12 +1,11 @@
 # Darwin Platform - YABA
 
-The Apple platform implementation of YABA, supporting iOS, macOS, and visionOS with native SwiftUI and SwiftData, built with privacy and offline-first principles.
+The Apple platform implementation of YABA, supporting iOS, iPadOS and macOS with native SwiftUI and SwiftData, built with privacy and offline-first principles.
 
 ## 🍎 Platform Support
 
-- **iOS**: 17.0+ (iPhone, iPad)
-- **macOS**: 14.0+ (Mac)
-- **visionOS**: 1.0+ (Apple Vision Pro)
+- **iOS**: 18.0+ (iPhone, iPad)
+- **macOS**: 15.0+ (Mac)
 
 ## 📁 Project Structure
 
@@ -32,6 +31,8 @@ Darwin/
 │   └── Assets.xcassets/   # App assets and resources
 ├── YABAShare/             # iOS Share Extension
 ├── YABAShareMac/          # macOS Share Extension
+├── YABAKeyboard/          # iOS Keyboard Extension
+├── YABAWidgets/           # iOS/macOS Widget Extension
 ├── YABAStatusMenuItem/    # macOS Status Menu Item
 ├── YABA.xcodeproj/        # Xcode project file
 └── buildServer.json       # Build server configuration
@@ -82,6 +83,8 @@ User Action → SwiftUI View → @Observable State → Business Logic → SwiftD
 - **UniformTypeIdentifiers**: File type handling
 - **UserNotifications**: Local notifications
 - **TipKit**: In-app guidance and tips
+- **Bonjour**: Local peer-to-peer sync
+- **WidgetKit**: Widget extension framework
 
 ### Build & Development
 - **Xcode**: IDE and build system
@@ -94,6 +97,7 @@ User Action → SwiftUI View → @Observable State → Business Logic → SwiftD
 - **Collections**: Folders and tags for organization
 - **Search**: Full-text search with Spotlight integration
 - **Import/Export**: JSON, CSV, and HTML format support
+- **Synchronization**: Sync devices in a local network
 - **Offline First**: All functionality works without internet connection
 
 ### Platform-Specific Features
@@ -101,18 +105,16 @@ User Action → SwiftUI View → @Observable State → Business Logic → SwiftD
 #### iOS
 - Native iOS design language
 - Share extension for quick bookmarking
+- Keyboard extension for easy bookmarking
+- Widget extension for quick access
 - Spotlight search integration
-- Widget support (planned)
 - Shortcuts integration (planned)
 
 #### macOS
 - Native macOS design language
 - Status menu integration
+- Widget extension for quick access
 - Keyboard shortcuts
-
-#### visionOS
-- Spatial computing interface
-- Immersive experiences
 
 ### Advanced Features
 - **Link Previews**: Automatic metadata extraction
@@ -126,7 +128,7 @@ User Action → SwiftUI View → @Observable State → Business Logic → SwiftD
 
 ### Prerequisites
 - Xcode 15.0+
-- iOS 17.0+, macOS 14.0+, visionOS 1.0+
+- iOS 18.0+, macOS 15.0+
 - Apple Developer Account (for distribution)
 
 ### Development Setup
@@ -151,9 +153,11 @@ User Action → SwiftUI View → @Observable State → Business Logic → SwiftD
 1. Configure custom URL scheme in Info.plist
 2. Handle deep links in `DeepLinkManager`
 
-#### Share Extensions
-1. Configure app groups for data sharing
-2. Set up entitlements for extensions
+#### Extensions
+1. Configure app groups for data sharing between main app and extensions
+2. Set up entitlements for share, keyboard, and widget extensions
+3. Configure keyboard extension permissions
+4. Set up widget extension capabilities
 
 ## 📦 Building & Distribution
 
@@ -176,6 +180,8 @@ xcodebuild -project YABA.xcodeproj -scheme YABA -configuration Release archive
 - **YABA**: Main application
 - **YABAShare**: iOS share extension
 - **YABAShareMac**: macOS share extension
+- **YABAKeyboard**: iOS keyboard extension
+- **YABAWidgets**: iOS/macOS widget extension
 - **YABAStatusMenuItem**: macOS status menu item
 
 ## 🔧 Configuration
@@ -186,15 +192,19 @@ xcodebuild -project YABA.xcodeproj -scheme YABA -configuration Release archive
 - **TestFlight**: Beta testing configuration
 
 ### Entitlements
-- App groups for extensions
-- Network access
-- File access
+- App groups for data sharing with extensions
+- Network access for synchronization
+- File access for import/export
+- Keyboard extension permissions
+- Widget extension capabilities
 
 ## 🐛 Debugging
 
 ### Common Issues
-1. **Share Extension Problems**: Verify app group settings
-2. **Build Errors**: Clean build folder and rebuild
+1. **Extension Problems**: Verify app group settings for share, keyboard, and widget extensions
+2. **Keyboard Extension**: Check keyboard permissions and full access settings
+3. **Widget Extension**: Verify widget capabilities and data sharing setup
+4. **Build Errors**: Clean build folder and rebuild
 
 ### Debug Tools
 - Xcode Instruments for performance profiling

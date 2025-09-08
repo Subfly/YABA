@@ -5,29 +5,26 @@ A modern, cross-platform bookmark manager designed to provide a seamless bookmar
 ## 💡 Planning
 For the latest planning and roadmap, please visit the [Public Trello board](https://trello.com/b/hCgH33AC/yaba-board).
 
-> **Disclaimer:**  
-> I am currently a master's student and will be having exams until August 6th. Active development on YABA will resume right after my exams. Thank you for your patience and understanding!
-
 ## 🏗️ Project Structure
 
 ```
 YABA/
-├── Darwin/           # Apple Platform Implementation
-│   ├── YABA/        # Main iOS/macOS/visionOS App
-│   ├── YABAShare/   # iOS Share Extension
-│   ├── YABAShareMac/# macOS Share Extension
-│   └── YABAStatusMenuItem/ # macOS Status Menu Item
-├── Compose/          # Android/JVM Platform Implementation
-│   └── (Future Compose Multiplatform code)
-└── Common/           # Shared Libraries & Business Logic
-    └── (Future shared code)
+├── Darwin/                   # Apple Platform Implementation
+│   ├── YABA/                 # Main iOS/macOS/visionOS App
+│   ├── YABAShare/            # iOS Share Extension
+│   ├── YABAShareMac/         # macOS Share Extension
+│   ├── YABAKeyboard/         # iOS Keyboard Extension
+│   ├── YABAWidgets/          # iOS/macOS Widget Extension
+│   └── YABAStatusMenuItem/   # macOS Status Menu Item
+├── Compose/                  # Android/JVM Platform Implementation
+    └── (Future Compose Multiplatform code)
 ```
 
 ## 🎯 Project Vision
 
 YABA aims to be the ultimate cross-platform bookmark manager with:
 - **Native Performance**: Platform-specific implementations for optimal user experience
-- **Cross-Platform Sync**: Seamless data synchronization across devices
+- **Server-less Sync**: Peer-to-peer data synchronization across devices without servers
 - **Modern Architecture**: Built with the latest platform technologies
 - **Extensible Design**: Modular architecture supporting future platforms
 - **Privacy First**: All data stays on your devices, no tracking, no analytics
@@ -41,6 +38,7 @@ YABA aims to be the ultimate cross-platform bookmark manager with:
 - **Data Persistence**: SwiftData
 - **Reactive Programming**: Combine
 - **Concurrency**: Swift Concurrency (async/await)
+- **Extensions**: WidgetKit, UIKit for keyboard extension
 - **Build System**: Xcode
 
 ### Compose Platform (Planned)
@@ -48,12 +46,6 @@ YABA aims to be the ultimate cross-platform bookmark manager with:
 - **Language**: Kotlin
 - **Data Persistence**: Room
 - **Reactive Programming**: Kotlin Flow
-- **Networking**: Ktor Client
-- **Build System**: Gradle
-
-### Common Libraries (Planned)
-- **Language**: Kotlin Multiplatform
-- **Serialization**: Kotlinx Serialization
 - **Networking**: Ktor Client
 - **Build System**: Gradle
 
@@ -70,12 +62,12 @@ YABA aims to be the ultimate cross-platform bookmark manager with:
 - **Collections**: Folders and tags for organization
 - **Search**: Full-text search with filters
 - **Import/Export**: Support for JSON, CSV, and HTML formats
-- **Share Extensions**: Quick bookmarking from other apps
+- **Extensions**: Share, keyboard, and widget extensions for seamless integration
 - **Offline First**: All functionality works without internet connection
 
 ### Platform-Specific Features
-- **iOS**: Native iOS design, Share extension, Spotlight integration
-- **macOS**: Status menu, keyboard shortcuts, window management
+- **iOS**: Native iOS design, Share extension, Keyboard extension, Widget extension, Spotlight integration
+- **macOS**: Status menu, Widget extension, keyboard shortcuts, window management
 - **visionOS**: Spatial computing interface, immersive experiences
 - **Android**: Material Design 3, adaptive UI, Android share integration
 
@@ -92,7 +84,6 @@ YABA aims to be the ultimate cross-platform bookmark manager with:
 - **Darwin Development**:
   - Xcode 15.0+
   - iOS 18.0+, macOS 15.0+, visionOS 2.0+
-  - Apple Developer Account (for CloudKit features, soon to be removed...)
 - **Compose Development** (Future):
   - Android Studio Hedgehog+
   - JDK 17+
