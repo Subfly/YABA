@@ -38,7 +38,15 @@ struct SyncView: View {
         NavigationView {
             ZStack {
                 AnimatedGradient(collectionColor: .accentColor)
+                #if !targetEnvironment(macCatalyst)
+                if UIDevice.current.userInterfaceIdiom == .pad {
+                    content.padding(150)
+                } else {
+                    content
+                }
+                #else
                 content
+                #endif
             }
             .navigationTitle("Synchronize Label")
             .toolbar {

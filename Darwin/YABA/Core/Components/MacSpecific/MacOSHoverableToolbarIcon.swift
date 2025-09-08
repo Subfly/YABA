@@ -43,7 +43,6 @@ private struct GlassyMacOSHoverableToolbarIcon: View {
                 .scaledToFit()
                 .frame(width: 28, height: 28)
         }
-        .glassEffect(.regular.interactive())
         .help(LocalizedStringKey(tooltipKey))
     }
 }
