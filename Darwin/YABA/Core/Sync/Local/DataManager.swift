@@ -759,10 +759,15 @@ class DataManager {
         var mergedBookmarks = 0
         var mergedCollections = 0
         
-        // STEP 0: Process "deleteAll" deletion logs FIRST (before merging any content)
-        let incomingDeleteAllLogs = request.deletionLogs.filter { $0.entityType == "deleteAll" || $0.entityType == "all" }
+        // Check if deletion sync is prevented
+        let preventDeletionSync = UserDefaults.standard.bool(forKey: Constants.preventDeletionSyncKey)
         
-        if !incomingDeleteAllLogs.isEmpty {
+        // STEP 0: Process "deleteAll" deletion logs FIRST (before merging any content)
+        // Only process incoming deleteAll logs if deletion sync is not prevented
+        if !preventDeletionSync {
+            let incomingDeleteAllLogs = request.deletionLogs.filter { $0.entityType == "deleteAll" || $0.entityType == "all" }
+            
+            if !incomingDeleteAllLogs.isEmpty {
             
             // Get our local deleteAll logs
             let localDeleteLogsDescriptor = FetchDescriptor<YabaDataLog>(
@@ -821,14 +826,20 @@ class DataManager {
                 }
             }
         }
+        } // End of !preventDeletionSync check for deleteAll logs
         
-        // Get local deletion logs to check against incoming items
-        let allLocalDeletionLogsDescriptor = FetchDescriptor<YabaDataLog>(
-            predicate: #Predicate<YabaDataLog> { _ in true }
-        )
-        let allLocalDeletionLogs = try modelContext.fetch(allLocalDeletionLogsDescriptor)
-        let localCollectionDeletionIds = Set(allLocalDeletionLogs.filter { $0.entityType == .collection }.map { $0.entityId })
-        let localBookmarkDeletionIds = Set(allLocalDeletionLogs.filter { $0.entityType == .bookmark }.map { $0.entityId })
+        // Get local deletion logs to check against incoming items (only if deletion sync is not prevented)
+        var localCollectionDeletionIds: Set<String> = []
+        var localBookmarkDeletionIds: Set<String> = []
+        
+        if !preventDeletionSync {
+            let allLocalDeletionLogsDescriptor = FetchDescriptor<YabaDataLog>(
+                predicate: #Predicate<YabaDataLog> { _ in true }
+            )
+            let allLocalDeletionLogs = try modelContext.fetch(allLocalDeletionLogsDescriptor)
+            localCollectionDeletionIds = Set(allLocalDeletionLogs.filter { $0.entityType == .collection }.map { $0.entityId })
+            localBookmarkDeletionIds = Set(allLocalDeletionLogs.filter { $0.entityType == .bookmark }.map { $0.entityId })
+        }
         
         // STEP 1: Create and insert all collections first (following SwiftData best practices)
         for incomingCollection in request.collections {
@@ -906,8 +917,8 @@ class DataManager {
         for incomingCollection in request.collections {
             let collectionId = incomingCollection.collectionId
             
-            // Skip if we have a local deletion log for this collection
-            if localCollectionDeletionIds.contains(collectionId) {
+            // Skip if we have a local deletion log for this collection (only if deletion sync is not prevented)
+            if !preventDeletionSync && localCollectionDeletionIds.contains(collectionId) {
                 continue
             }
             
@@ -966,11 +977,13 @@ class DataManager {
         }
         
         // STEP 5: Process individual deletion logs (collection and bookmark deletions)
-        let individualDeletionLogs = request.deletionLogs.filter { 
-            $0.entityType != "deleteAll" && $0.entityType != "all" 
-        }
-        
-        if !individualDeletionLogs.isEmpty {
+        // Only process incoming deletion logs if deletion sync is not prevented
+        if !preventDeletionSync {
+            let individualDeletionLogs = request.deletionLogs.filter { 
+                $0.entityType != "deleteAll" && $0.entityType != "all" 
+            }
+            
+            if !individualDeletionLogs.isEmpty {
             
             for deletionLog in individualDeletionLogs {
                 if deletionLog.entityType == "collection" {
@@ -994,6 +1007,7 @@ class DataManager {
                 }
             }
         }
+        } // End of !preventDeletionSync check
         
         // Save all changes
         try modelContext.save()
