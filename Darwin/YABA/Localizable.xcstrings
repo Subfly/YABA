@@ -31783,6 +31783,30 @@
         }
       }
     },
+    "Settings Prevent Deletion Sync Description" : {
+      "comment" : "Explanation to show for prevent deletion sync toggle",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Normally, sync also transfers deletions to keep devices in the same state. With this option, only existing content is synced, which may restore deleted items. Useful for moving your data to another device."
+          }
+        }
+      }
+    },
+    "Settings Prevent Deletion Sync Label" : {
+      "comment" : "Label to show in toggle for syncing deletion events",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sync Without Deletes"
+          }
+        }
+      }
+    },
     "Settings Privacy Policy Link Title" : {
       "comment" : "Title of Privacy Policy link in settings",
       "extractionState" : "manual",

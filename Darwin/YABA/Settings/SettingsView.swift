@@ -27,6 +27,9 @@ struct SettingsView: View {
     @AppStorage(Constants.showMenuBarItem)
     private var showMenuBarItem: Bool = true
     
+    @AppStorage(Constants.preventDeletionSyncKey)
+    private var preventDeletionSync: Bool = false
+    
     @AppStorage(
         Constants.useSimplifiedShare,
         store: UserDefaults(
@@ -230,6 +233,15 @@ struct SettingsView: View {
                     .multilineTextAlignment(.trailing)
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
+            Toggle(isOn: $preventDeletionSync) {
+                Label {
+                    Text("Settings Prevent Deletion Sync Label")
+                } icon: {
+                    YabaIconView(bundleKey: "folder-transfer")
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                }
+            }
         } header: {
             Label {
                 Text("Synchronization")
@@ -238,6 +250,8 @@ struct SettingsView: View {
                     .scaledToFit()
                     .frame(width: 18, height: 18)
             }
+        } footer: {
+            Text("Settings Prevent Deletion Sync Description")
         }
     }
     

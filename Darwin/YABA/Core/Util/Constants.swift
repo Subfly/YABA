@@ -16,10 +16,16 @@ struct Constants {
     static let developerWebsiteLink = "https://www.subfly.dev/"
     static let feedbackLink = "mailto:alitaha@subfly.dev"
     static let storeLink = "https://apps.apple.com/app/yaba-yet-another-bookmark-app/id6747272081"
+    
+    /// MARK: ANNOUNCEMENTS
     static let updateAnnouncementLink_1_2 = "https://github.com/Subfly/YABA/discussions/4"
     static let updateAnnouncementLink_1_3 = "https://github.com/Subfly/YABA/discussions/6"
+    static let updateAnnouncementLink_1_4 = "https://github.com/Subfly/YABA/discussions/6"
     static let announcementCloudKitDropLink_1 = "https://github.com/Subfly/YABA/discussions/5"
     static let announcementCloudKitDropLink_2 = "https://github.com/Subfly/YABA/discussions/7"
+    static let announcementNewSyncSystem = ""
+    static let announcementKeyboardExtension = ""
+    static let announcementWidgets = ""
     
     /// MARK: SETTINGS
     static let hasPassedOnboardingKey = "hasPassedOnboarding"
@@ -34,6 +40,7 @@ struct Constants {
     static let showRecentsKey = "showRecents"
     static let showMenuBarItem = "showMenuBarItem"
     static let useSimplifiedShare = "useSimplifiedShare"
+    static let preventDeletionSyncKey = "preventDeletionSync"
     
     /// MARK: APP-WISE
     static let toastAnimationDuration: UInt64 = 150_000_000
