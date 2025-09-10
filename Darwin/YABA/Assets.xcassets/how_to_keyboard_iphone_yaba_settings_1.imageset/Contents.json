@@ -1,0 +1,23 @@
+{
+  "images" : [
+    {
+      "filename" : "yaba_settings_1_compressed.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "yaba_settings_1_compressed 1.png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "yaba_settings_1_compressed 2.png",
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

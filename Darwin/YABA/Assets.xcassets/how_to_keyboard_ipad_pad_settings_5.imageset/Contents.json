@@ -1,0 +1,23 @@
+{
+  "images" : [
+    {
+      "filename" : "compressed_pad_settings_general_5.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "compressed_pad_settings_general_5 1.png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "compressed_pad_settings_general_5 2.png",
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

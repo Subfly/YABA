@@ -24,6 +24,7 @@ internal class SettingsState {
     
     var settingsNavPath: [SettingsNavigationDestination] = []
     
+    var shouldShowGuideSheet: Bool = false
     var showDeleteAllDialog: Bool = false
     var shouldShowImportSheet: Bool = false
     var shouldShowExportTypeSelection: Bool = false

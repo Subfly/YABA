@@ -9908,6 +9908,42 @@
         }
       }
     },
+    "FAB Centered" : {
+      "comment" : "Label of center aligned FAB",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Centered"
+          }
+        }
+      }
+    },
+    "FAB Left Aligned" : {
+      "comment" : "Label of left aligned FAB",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Left Aligned"
+          }
+        }
+      }
+    },
+    "FAB Right Aligned" : {
+      "comment" : "Label of right aligned FAB",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Right Aligned"
+          }
+        }
+      }
+    },
     "Folder" : {
       "comment" : "Placeholder for naming \"Folder\"",
       "extractionState" : "manual",
@@ -10576,6 +10612,581 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "最近浏览"
+          }
+        }
+      }
+    },
+    "How To Keyboard General Message 1" : {
+      "comment" : "Message to show in how to keyboard page of iphone and ipad devices, first part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YABA includes a custom keyboard, giving you quick access to your saved content without leaving your current app—for example, your browser or a messaging app. Setting it up is a simple two-step process. Start with navigating to settings and finding the **Enable YABA Keyboard** option."
+          }
+        }
+      }
+    },
+    "How To Keyboard General Message 2" : {
+      "comment" : "Message to show in how to keyboard page of iphone and ipad devices, 2nd part",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "After tapping **Enable YABA Keyboard**, you’ll be taken to YABA’s settings on your device. Here you can also change the app’s language or enable/disable local network access. To continue setup, tap **Keyboards**."
+          }
+        }
+      }
+    },
+    "How To Keyboard General Message 3" : {
+      "comment" : "Message to show in how to keyboard page of iphone and ipad devices, 3rd part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You’ll see two options here. To see YABA as a keyboard in a later step, make sure to enable both."
+          }
+        }
+      }
+    },
+    "How To Keyboard General Message 4" : {
+      "comment" : "Message to show in how to keyboard page of iphone and ipad devices, 4th part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When enabling the second option, a system pop-up will appear. Don’t worry—YABA will never collect your data or send anything to a remote server, as promised during onboarding. To use YABA as a keyboard, tap **Allow**. You can always review the open-source codebase to see exactly how YABA Keyboard works and confirm that no data is ever collected."
+          }
+        }
+      }
+    },
+    "How To Keyboard General Message 5" : {
+      "comment" : "Message to show in how to keyboard page of iphone and ipad devices, 5th part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Now you’re ready for the second step. Go back to your device settings, find the **General** tab, and tap it."
+          }
+        }
+      }
+    },
+    "How To Keyboard General Message 6" : {
+      "comment" : "Message to show in how to keyboard page of iphone and ipad devices, 6th part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In there, you have to find “Keyboard” and tap it."
+          }
+        }
+      }
+    },
+    "How To Keyboard General Message 7" : {
+      "comment" : "Message to show in how to keyboard page of iphone and ipad devices, 7th part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When you reach **Keyboards**, you’ll see your existing keyboards. If YABA is already listed, you’re all set. If not, tap **Add New Keyboard**."
+          }
+        }
+      }
+    },
+    "How To Keyboard General Message 8" : {
+      "comment" : "Message to show in how to keyboard page of iphone and ipad devices, 8th part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In the pop-up, look under **Third-Party Keyboards**. YABA should appear here if you enabled both options in the previous step. Don’t worry if you don’t see it right away—just make sure both options are enabled."
+          }
+        }
+      }
+    },
+    "How To Keyboard General Message 9" : {
+      "comment" : "Message to show in how to keyboard page of iphone and ipad devices, 9th part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Once YABA is added, you can use the Edit button to change its order among your keyboards."
+          }
+        }
+      }
+    },
+    "How To Keyboard General Message 10" : {
+      "comment" : "Message to show in how to keyboard page of iphone and ipad devices, 10th part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If everything went smoothly, YABA Keyboard is now ready to use. When your main keyboard is visible, tap the **Globe** icon at the bottom left to switch keyboards. You can also tap and hold the icon to see all your keyboards in a pop-up. If YABA Keyboard appears here, the setup is complete."
+          }
+        }
+      }
+    },
+    "How To Keyboard General Message 11" : {
+      "comment" : "Message to show in how to keyboard page of iphone and ipad devices, 11th part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Once YABA Keyboard is open, you’ll see a familiar interface. You can easily browse your folders and tags to access your bookmarks."
+          }
+        }
+      }
+    },
+    "How To Keyboard General Message 12" : {
+      "comment" : "Message to show in how to keyboard page of iphone and ipad devices, 12th part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tapping a bookmark automatically inserts its link into the currently focused text box. Use the buttons in the top-right corner to delete the link or confirm the paste. Depending on the app, confirming may trigger a search, send a message, or perform another action."
+          }
+        }
+      }
+    },
+    "How To Keyboard Title" : {
+      "comment" : "Title of how to guide for keyboard",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keyboard"
+          }
+        }
+      }
+    },
+    "How To Reminders General Message 1" : {
+      "comment" : "Message to show in how to reminders page of all devices, first part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Setting up reminders in YABA is simple. In the bookmark details, you’ll find several options—on Mac they’re shown directly, while on iOS/iPad you can tap the three dots icon for more. On all devices, tap the yellow **bell** icon to create a reminder."
+          }
+        }
+      }
+    },
+    "How To Reminders General Message 2" : {
+      "comment" : "Message to show in how to reminders page of all devices, second part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "After tapping, a pop-up will appear where you can select a time for your reminder. Tap Done to save it."
+          }
+        }
+      }
+    },
+    "How To Reminders General Message 3" : {
+      "comment" : "Message to show in how to reminders page of all devices, third part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YABA only asks for permissions when they’re truly needed. The first time you set up a reminder, you’ll see a prompt asking for notification access. Simply tap **Allow** to let YABA send your reminder notifications. Don’t worry—YABA will never send notifications for anything else."
+          }
+        }
+      }
+    },
+    "How To Reminders General Message 4" : {
+      "comment" : "Message to show in how to reminders page of all devices, fourth part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Once set up, you’ll see a confirmation of your reminder, and the scheduled time will appear as the last item in the bookmark’s info section."
+          }
+        }
+      }
+    },
+    "How To Reminders General Message 5" : {
+      "comment" : "Message to show in how to reminders page of all devices, fifth part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You can cancel a reminder anytime by swiping its tile. When you tap **Delete**, a confirmation pop-up will appear to prevent accidental cancellations."
+          }
+        }
+      }
+    },
+    "How To Reminders General Message 6" : {
+      "comment" : "Message to show in how to reminders page of all devices, sixth part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When your reminder triggers, YABA will notify you to return to your bookmark—sometimes with a funny message to keep things light. 😉"
+          }
+        }
+      }
+    },
+    "How To Reminders Title" : {
+      "comment" : "Title of how to guide for reminders",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reminders"
+          }
+        }
+      }
+    },
+    "How To Share General Message 1" : {
+      "comment" : "Message to show in how to share page of iphone and ipad devices, first part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When sharing content, you’ll see the YABA icon in the share pop-up. YABA works with almost any app, and if the shared content includes a link, it will automatically open YABA’s bookmark creation view."
+          }
+        }
+      }
+    },
+    "How To Share General Message 2" : {
+      "comment" : "Message to show in how to share page of iphone and ipad devices, second part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The first time you use sharing, YABA may not appear in the share pop-up. Simply swipe to the end of the app list and tap the **three dots icon** to manage and enable YABA."
+          }
+        }
+      }
+    },
+    "How To Share General Message 3" : {
+      "comment" : "Message to show in how to share page of iphone and ipad devices, third part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "After tapping the three dots icon, you’ll see a list of available apps. Simply add YABA by tapping the green plus button next to it."
+          }
+        }
+      }
+    },
+    "How To Share General Message 4" : {
+      "comment" : "Message to show in how to share page of iphone and ipad devices, fourth part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Once added, you can reorder the apps using the sliders on the right. Feel free to move YABA to the top for quicker access. 😉"
+          }
+        }
+      }
+    },
+    "How To Share General Message 5" : {
+      "comment" : "Message to show in how to share page of iphone and ipad devices, fifth part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Once YABA is added to your shareable apps, it will always appear as an option when sharing links. Selecting YABA opens a pop-up to save your bookmark. YABA will automatically fetch details like the image, title, and description, but we recommend writing your own title and description for easier recall and search later. In this pop-up, you can also choose a folder for your bookmark (if none is selected, it will be saved under **Uncategorized**) and add tags for better organization. You can even create new folders and tags on the spot."
+          }
+        }
+      }
+    },
+    "How To Share General Message 6" : {
+      "comment" : "Message to show in how to share page of iphone and ipad devices, sixth part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If you prefer a quicker flow, you can enable **Simple Share Sheet** mode in Settings to streamline the process."
+          }
+        }
+      }
+    },
+    "How To Share General Message 7" : {
+      "comment" : "Message to show in how to share page of iphone and ipad devices, seventh part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Once enabled, you’ll experience a simpler flow. The process works the same in the background—YABA will still fetch content automatically. All you need to do is set a title for your bookmark (recommended for easier search, even though it’s auto-filled). \n\nBookmarks saved through Simple Share Sheet are placed in the Uncategorized folder without tags. In future updates, AI-powered features (still free) are planned to make this smoother, but for now you’ll need to organize these bookmarks manually in the app."
+          }
+        }
+      }
+    },
+    "How To Share General Message 8" : {
+      "comment" : "Message to show in how to share page of iphone and ipad devices, eightieth part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Some apps may hide the native share sheet since they offer their own bookmarking features. But YABA is usually a better option 😎, so you might need to navigate a bit to find it. For example, in the Reddit app, tapping Share brings up a menu where you’ll need to tap the three dots icon to access YABA."
+          }
+        }
+      }
+    },
+    "How To Share General Message 9" : {
+      "comment" : "Message to show in how to share page of iphone and ipad devices, ninth part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sometimes the native share sheet is nested deeper. For example, in the Reddit app, tapping the three dots opens a custom share sheet, and you may need to tap the three dots again to reach the native share sheet. It’s not the most convenient, but if you don’t see YABA, just keep tapping the three dots until it appears. 😉"
+          }
+        }
+      }
+    },
+    "How To Share Mac Message 1" : {
+      "comment" : "Message to show in how to share page of mac devices, first part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quickly add bookmarks to YABA with **⌘⇧Y (Command + Shift + Y)**. A window will pop up for you to paste your link. YABA will fetch the title automatically within seconds, but we recommend writing your own title to make finding it later even easier."
+          }
+        }
+      }
+    },
+    "How To Share Mac Message 2" : {
+      "comment" : "Message to show in how to share page of mac devices, second part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To use the quick key **(⌘⇧Y)** and open the quick share/save pop-up, the menu bar item must be running. The menu bar item also makes it easy to browse your recently saved bookmarks or open the quick share/save pop-up with a single click."
+          }
+        }
+      }
+    },
+    "How To Share Mac Message 3" : {
+      "comment" : "Message to show in how to share page of mac devices, third part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You can enable or disable the menu bar item anytime in Settings."
+          }
+        }
+      }
+    },
+    "How To Share Title" : {
+      "comment" : "Title of how to guide for share sheet",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share"
+          }
+        }
+      }
+    },
+    "How To Step Label %lld" : {
+      "comment" : "Label of step indicator for how to sub-pages",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Step %lld"
+          }
+        }
+      }
+    },
+    "How To Sync Title" : {
+      "comment" : "Title of how to guide for syncing",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sync Content"
+          }
+        }
+      }
+    },
+    "How To Tips Title" : {
+      "comment" : "Title of how to guide for tips and tricks",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tips & Tricks"
+          }
+        }
+      }
+    },
+    "How To Widgets General Message 1" : {
+      "comment" : "Message to show in how to widgets page of iphone and ipad devices, first part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YABA widgets make it easy to quickly open your favorite content from folders or tags, or to view your most recently saved bookmarks. Adding a widget is simple—just press and hold anywhere on your home screen until the icons start jiggling."
+          }
+        }
+      }
+    },
+    "How To Widgets General Message 2" : {
+      "comment" : "Message to show in how to widgets page of iphone and ipad devices, second part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When the icons begin to jiggle, the next step depends on your iOS version. On iOS 26, tap **Edit** in the top-left corner and select **Add Widget** from the pop-up. On iOS 18, tap the **+** button in the top-left corner, rest is the same."
+          }
+        }
+      }
+    },
+    "How To Widgets General Message 3" : {
+      "comment" : "Message to show in how to widgets page of iphone and ipad devices, third part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "After tapping, a pop-up will appear showing all available widgets. Search for **YABA** to see its options. You’ll find two types of widgets: **Collection Widgets**, available in two sizes, which let you quickly open a favorite folder or tag from your Home Screen; and the **Bookmark Widget**, which shows the most recently saved bookmarks from a chosen folder or tag."
+          }
+        }
+      }
+    },
+    "How To Widgets General Message 4" : {
+      "comment" : "Message to show in how to widgets page of iphone and ipad devices, fourth part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Once a widget is added, press and hold on it to open a pop-up, then select **Edit Widget** to customize it."
+          }
+        }
+      }
+    },
+    "How To Widgets General Message 5" : {
+      "comment" : "Message to show in how to widgets page of iphone and ipad devices, fifth part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All YABA widgets include the option to select a folder or tag. When you tap this setting, you’ll see your folders and tags listed in order—just choose the one you want to link to the widget."
+          }
+        }
+      }
+    },
+    "How To Widgets General Message 6" : {
+      "comment" : "Message to show in how to widgets page of iphone and ipad devices, sixth part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Finally, there’s an extra option called **Recents**, which shows the five most recently saved bookmarks across all of your folders. This gives you a quick glance at your latest saves and an easy way to jump back to them."
+          }
+        }
+      }
+    },
+    "How To Widgets Mac Message 1" : {
+      "comment" : "Message to show in how to widgets page of mac devices, first part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YABA widgets make it easy to quickly open your favorite content from folders or tags, or to view your most recently saved bookmarks. Adding a widget is simple—just double click (click with two fingers) anywhere on your desktop to see the options menu, and click on **Edit Widgets…**."
+          }
+        }
+      }
+    },
+    "How To Widgets Mac Message 2" : {
+      "comment" : "Message to show in how to widgets page of mac devices, second part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "After clicking, a pop-up will appear showing all available widgets. Search for **YABA** to see its options. You’ll find two types of widgets: **Collection Widgets**, which let you quickly open a favorite folder or tag from your Home Screen; and the **Bookmark Widget**, which shows the most recently saved bookmarks from a chosen folder or tag. Both widgets are available in two different sizes."
+          }
+        }
+      }
+    },
+    "How To Widgets Mac Message 3" : {
+      "comment" : "Message to show in how to widgets page of mac devices, third part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Once a widget is added, double click (click with two fingers) on it to open the options menu, then select **Edit YABA…** to customize it."
+          }
+        }
+      }
+    },
+    "How To Widgets Mac Message 4" : {
+      "comment" : "Message to show in how to widgets page of mac devices, fourth part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All YABA widgets include the option to select a folder or tag. When you click this setting, you’ll see your folders and tags listed in order—just choose the one you want to link to the widget."
+          }
+        }
+      }
+    },
+    "How To Widgets Mac Message 5" : {
+      "comment" : "Message to show in how to widgets page of mac devices, fifth part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Finally, there’s an extra option called **Recents**, which shows the five most recently saved bookmarks across all of your folders. This gives you a quick glance at your latest saves and an easy way to jump back to them."
+          }
+        }
+      }
+    },
+    "How To Widgets Title" : {
+      "comment" : "Title of how to guide for widgets",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widgets"
           }
         }
       }
@@ -30919,6 +31530,30 @@
         }
       }
     },
+    "Settings FAB Position Title" : {
+      "comment" : "Title of FAB position setting in settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create Button Position"
+          }
+        }
+      }
+    },
+    "Settings How To Guide Title" : {
+      "comment" : "Title of how to guide in settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "How to Guide"
+          }
+        }
+      }
+    },
     "Settings HugeIcons Description" : {
       "comment" : "Description of HugeIcons in settings",
       "extractionState" : "manual",
@@ -31395,6 +32030,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "导入收藏"
+          }
+        }
+      }
+    },
+    "Settings Keyboard Label" : {
+      "comment" : "Label to show in keyboard section of settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enable YABA Keyboard"
+          }
+        }
+      }
+    },
+    "Settings Keyboard Title" : {
+      "comment" : "Title of keyboard section in settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keyboard"
           }
         }
       }
@@ -31999,6 +32658,18 @@
         }
       }
     },
+    "Settings Reddit Link Title" : {
+      "comment" : "Title of link to official reddit page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Official Reddit Page"
+          }
+        }
+      }
+    },
     "Settings Repo Link Title" : {
       "comment" : "Title of repository link in settings",
       "extractionState" : "manual",
@@ -32283,6 +32954,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "使用简化分享创建"
+          }
+        }
+      }
+    },
+    "Settings Socials Title" : {
+      "comment" : "Title of socials section in settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Socials"
           }
         }
       }

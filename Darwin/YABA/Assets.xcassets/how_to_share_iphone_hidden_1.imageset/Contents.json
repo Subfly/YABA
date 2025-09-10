@@ -1,0 +1,23 @@
+{
+  "images" : [
+    {
+      "filename" : "compressed_step_hidden_first.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "compressed_step_hidden_first 1.png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "compressed_step_hidden_first 2.png",
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

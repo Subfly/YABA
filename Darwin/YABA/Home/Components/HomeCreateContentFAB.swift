@@ -29,6 +29,9 @@ struct HomeCreateContentFAB: View {
 
 @available(iOS 26, *)
 private struct GlassyHomeCreateContentFAB: View {
+    @AppStorage(Constants.preferredFabPositionKey)
+    private var preferredPosition: FABPosition = .center
+    
     @Namespace private var animation
     
     @Binding
@@ -45,7 +48,13 @@ private struct GlassyHomeCreateContentFAB: View {
                 .onTapGesture {
                     onClickAction(.main)
                 }
-        }.overlay(alignment: .bottom) {
+        }.overlay(
+            alignment: preferredPosition == .center
+            ? .bottom
+            : preferredPosition == .left
+            ? .bottomLeading
+            : .bottomTrailing
+        ) {
             GlassEffectContainer(spacing: 18) {
                 VStack(spacing: 16) {
                     if isActive {
@@ -83,6 +92,8 @@ private struct GlassyHomeCreateContentFAB: View {
                 }
                 .padding(.bottom)
                 .padding(.bottom)
+                .padding(.leading, preferredPosition == .left ? 32 : 0)
+                .padding(.trailing, preferredPosition == .right ? 32 : 0)
             }.animation(.smooth, value: isActive)
         }
     }
@@ -107,6 +118,9 @@ private struct GlassyHomeCreateContentFAB: View {
 }
 
 private struct LegacyHomeCreateContentFAB: View {
+    @AppStorage(Constants.preferredFabPositionKey)
+    private var preferredPosition: FABPosition = .center
+    
     @Binding
     var isActive: Bool
     let onClickAction: (_ type: CreationType) -> Void
@@ -121,7 +135,13 @@ private struct LegacyHomeCreateContentFAB: View {
                 .onTapGesture {
                     onClickAction(.main)
                 }
-        }.overlay(alignment: .bottom) {
+        }.overlay(
+            alignment: preferredPosition == .center
+            ? .bottom
+            : preferredPosition == .left
+            ? .bottomLeading
+            : .bottomTrailing
+        ) {
             VStack(spacing: 15) {
                 clickableMiniFab(type: .bookmark)
                 clickableMiniFab(type: .folder)
@@ -135,6 +155,8 @@ private struct LegacyHomeCreateContentFAB: View {
             .padding(.bottom)
             .padding(.bottom)
             .padding(.leading, UIDevice.current.userInterfaceIdiom == .pad ? 96 : 0)
+            .padding(.leading, preferredPosition == .left ? 32 : 0)
+            .padding(.trailing, preferredPosition == .right ? 32 : 0)
         }
     }
 

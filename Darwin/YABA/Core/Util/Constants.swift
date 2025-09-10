@@ -14,6 +14,7 @@ struct Constants {
     static let tosLink = "https://github.com/Subfly/YABA/blob/main/TERMS_OF_SERVICE.md"
     static let privacyPolicyLink = "https://github.com/Subfly/YABA/blob/main/PRIVACY_POLICY.md"
     static let developerWebsiteLink = "https://www.subfly.dev/"
+    static let officialRedditLink = "https://www.reddit.com/r/YetAnotherBookmarkApp/"
     static let feedbackLink = "mailto:alitaha@subfly.dev"
     static let storeLink = "https://apps.apple.com/app/yaba-yet-another-bookmark-app/id6747272081"
     
@@ -35,6 +36,7 @@ struct Constants {
     static let preferredCardImageSizingKey = "preferredCardImageSizing"
     static let preferredSortingKey = "preferredSorting"
     static let preferredSortOrderKey = "preferredSortOrder"
+    static let preferredFabPositionKey = "preferredFabPosition"
     static let deviceIdKey = "deviceId"
     static let deviceNameKey = "deviceName"
     static let showRecentsKey = "showRecents"

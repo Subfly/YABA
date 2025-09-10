@@ -102,10 +102,14 @@ struct SettingsView: View {
         List {
             themeAndLangaugeSection
             appearanceSection
+            #if !targetEnvironment(macCatalyst)
+            keyboardSection
+            #endif
             announcementsSection
             syncSection
             dataSection
             aboutSection
+            socialsSection
             thanksToSection
             #if DEBUG
             developerSection
@@ -115,6 +119,9 @@ struct SettingsView: View {
         .scrollContentBackground(.hidden)
         .background(.clear)
         .navigationTitle("Settings Title")
+        .sheet(isPresented: $settingsState.shouldShowGuideSheet) {
+            HowToGuideView()
+        }
     }
     
     @ViewBuilder
@@ -148,16 +155,18 @@ struct SettingsView: View {
                             .frame(width: 24, height: 24)
                     }
                 }
-                Toggle(isOn: $useSimplifiedShare) {
-                    Label {
-                        Text("Settings Simplified Share Sheet Title")
-                    } icon: {
-                        YabaIconView(bundleKey: "relieved-02")
-                            .scaledToFit()
-                            .frame(width: 24, height: 24)
-                    }
+            }
+            #if !targetEnvironment(macCatalyst)
+            Toggle(isOn: $useSimplifiedShare) {
+                Label {
+                    Text("Settings Simplified Share Sheet Title")
+                } icon: {
+                    YabaIconView(bundleKey: "relieved-02")
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
                 }
             }
+            #endif
             #if targetEnvironment(macCatalyst)
             Toggle(isOn: $showMenuBarItem) {
                 Label {
@@ -175,11 +184,51 @@ struct SettingsView: View {
                 }
             }
             #endif
+            #if !targetEnvironment(macCatalyst)
+            if UIDevice.current.userInterfaceIdiom == .phone {
+                FABLocationPicker()
+            }
+            #endif
         } header: {
             Label {
                 Text("Settings Appearance Title")
             } icon: {
                 YabaIconView(bundleKey: "dashboard-square-02")
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var keyboardSection: some View {
+        Section {
+            HStack {
+                Label {
+                    Text("Settings Keyboard Label")
+                } icon: {
+                    YabaIconView(bundleKey: "keyboard")
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                }
+                Spacer()
+                YabaIconView(bundleKey: "arrow-right-01")
+                    .scaledToFit()
+                    .frame(width: 24, height: 24)
+                    .foregroundStyle(.tertiary)
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
+                let settingsURL = URL(string: UIApplication.openSettingsURLString)
+                if let url: URL = settingsURL, UIApplication.shared.canOpenURL(url) {
+                    UIApplication.shared.open(url)
+                }
+            }
+        } header: {
+            Label {
+                Text("Settings Keyboard Title")
+            } icon: {
+                YabaIconView(bundleKey: "keyboard")
                     .scaledToFit()
                     .frame(width: 18, height: 18)
             }
@@ -273,8 +322,60 @@ struct SettingsView: View {
     }
     
     @ViewBuilder
+    private var socialsSection: some View {
+        Section {
+            generateLinkableItem(
+                title: LocalizedStringKey("Settings Reddit Link Title"),
+                iconKey: "reddit",
+                urlToOpen: Constants.officialRedditLink
+            )
+            generateLinkableItem(
+                title: LocalizedStringKey("Settings Developer Website Link Title"),
+                iconKey: "developer",
+                urlToOpen: Constants.developerWebsiteLink
+            )
+            generateLinkableItem(
+                title: LocalizedStringKey("Settings Mailto Link Title"),
+                iconKey: "mail-01",
+                urlToOpen: Constants.feedbackLink
+            )
+            generateLinkableItem(
+                title: LocalizedStringKey("Settings Store Link Title"),
+                iconKey: "app-store",
+                urlToOpen: Constants.storeLink
+            )
+        } header: {
+            Label {
+                Text("Settings Socials Title")
+            } icon: {
+                YabaIconView(bundleKey: "rss")
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
+            }
+        }
+    }
+    
+    @ViewBuilder
     private var aboutSection: some View {
         Section {
+            HStack {
+                Label {
+                    Text("Settings How To Guide Title")
+                } icon: {
+                    YabaIconView(bundleKey: "book-open-02")
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                }
+                Spacer()
+                YabaIconView(bundleKey: "arrow-right-01")
+                    .scaledToFit()
+                    .frame(width: 24, height: 24)
+                    .foregroundStyle(.tertiary)
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
+                settingsState.shouldShowGuideSheet = true
+            }
             generateLinkableItem(
                 title: LocalizedStringKey("Settings Repo Link Title"),
                 iconKey: "github",
@@ -294,21 +395,6 @@ struct SettingsView: View {
                 title: LocalizedStringKey("Settings Privacy Policy Link Title"),
                 iconKey: "justice-scale-02",
                 urlToOpen: Constants.privacyPolicyLink
-            )
-            generateLinkableItem(
-                title: LocalizedStringKey("Settings Developer Website Link Title"),
-                iconKey: "developer",
-                urlToOpen: Constants.developerWebsiteLink
-            )
-            generateLinkableItem(
-                title: LocalizedStringKey("Settings Mailto Link Title"),
-                iconKey: "mail-01",
-                urlToOpen: Constants.feedbackLink
-            )
-            generateLinkableItem(
-                title: LocalizedStringKey("Settings Store Link Title"),
-                iconKey: "app-store",
-                urlToOpen: Constants.storeLink
             )
         } header: {
             Label {
