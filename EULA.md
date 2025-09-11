@@ -1,6 +1,6 @@
 # End User License Agreement (EULA)
 
-**Last Updated:** January 2025
+**Last Updated:** September 2025
 
 ## 1. Acceptance of Terms
 
@@ -30,27 +30,27 @@ You acknowledge and agree that:
 - You are responsible for backing up your data
 - You are responsible for the security of your data
 - You are responsible for ensuring compliance with applicable laws regarding your data
-- You are responsible for your iCloud account and CloudKit data management
+- You are responsible for securing your devices and network connections during synchronization
 
 ### 4.2 Usage
 - You are responsible for how you use the Software
 - You are responsible for ensuring your use complies with applicable laws
 - You are responsible for any content you create or store using the Software
 - You are responsible for any third-party services you integrate with the Software
-- You are responsible for CloudKit synchronization settings and data
+- You are responsible for server-less synchronization settings and ensuring sync occurs only between trusted devices
 
 ### 4.3 Content
 - You are solely responsible for all content you create, store, or manage
 - You represent that you have the right to use any content you store
 - You are responsible for ensuring your content does not violate any laws or third-party rights
-- You are responsible for content stored in CloudKit
+- You are responsible for content transmitted during peer-to-peer synchronization
 
-### 4.4 CloudKit Usage
-- You are responsible for your iCloud account security
-- You are responsible for CloudKit data management
-- You agree to Apple's iCloud Terms of Service by using YABA
-- You are responsible for CloudKit data backup and recovery
-- You are responsible for CloudKit synchronization settings
+### 4.4 Server-less Synchronization Usage
+- You are responsible for the security of your devices participating in synchronization
+- You are responsible for network security during data transmission
+- You are responsible for ensuring synchronization occurs only between devices you own and control
+- You are responsible for data backup and recovery across all your devices
+- You are responsible for managing which devices participate in synchronization
 
 ## 5. Disclaimers
 
@@ -59,29 +59,29 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ### 5.2 Data Loss
 - The Licensor is not responsible for any data loss, corruption, or damage
-- The Licensor is not responsible for CloudKit data loss or corruption
+- The Licensor is not responsible for sync data loss or corruption during transmission
 - The Licensor does not guarantee data preservation or recovery
-- The Licensor does not guarantee CloudKit data preservation or recovery
-- You are responsible for implementing appropriate backup strategies
-- You are responsible for CloudKit data backup strategies
-- The Licensor is not responsible for any consequences of data loss
+- The Licensor does not guarantee successful data synchronization between devices
+- You are responsible for implementing appropriate backup strategies across all devices
+- You are responsible for sync data backup strategies
+- The Licensor is not responsible for any consequences of data loss or failed synchronization
 
 ### 5.3 Functionality
 - The Software is provided without any guarantees of functionality
 - The Licensor does not guarantee that the Software will meet your requirements
 - The Licensor does not guarantee that the Software will be error-free
 - The Licensor does not guarantee that the Software will be available at all times
-- The Licensor does not guarantee CloudKit synchronization functionality
-- The Licensor does not guarantee CloudKit data availability
+- The Licensor does not guarantee server-less synchronization functionality
+- The Licensor does not guarantee data availability during synchronization
 
-### 5.4 CloudKit Disclaimer
-- CloudKit is provided by Apple Inc. and not by the Licensor
-- The Licensor is not responsible for CloudKit service availability
-- The Licensor is not responsible for CloudKit data security
-- The Licensor is not responsible for CloudKit privacy compliance
-- The Licensor does not guarantee CloudKit synchronization
-- The Licensor does not guarantee CloudKit data preservation
-- The Licensor is not responsible for CloudKit service interruptions
+### 5.4 Server-less Synchronization Disclaimer
+- Server-less synchronization relies on direct device-to-device communication
+- The Licensor is not responsible for network connectivity between your devices
+- The Licensor is not responsible for data security during transmission between devices
+- The Licensor is not responsible for synchronization failures due to network issues
+- The Licensor does not guarantee successful peer-to-peer communication
+- The Licensor does not guarantee data integrity during transmission
+- The Licensor is not responsible for unauthorized access during data transmission
 
 ### 5.5 Use at Own Risk
 - You use the Software entirely at your own risk
@@ -92,8 +92,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ### 5.6 Force Majeure
 - The Licensor is not liable for any failure to perform due to circumstances beyond reasonable control
-- This includes but is not limited to: natural disasters, war, government actions, internet outages, Apple service disruptions
-- The Licensor is not responsible for delays or failures caused by third-party services
+- This includes but is not limited to: natural disasters, war, government actions, internet outages, network infrastructure failures
+- The Licensor is not responsible for delays or failures caused by third-party services or network providers
 
 ## 6. Limitation of Liability
 
@@ -106,10 +106,10 @@ The Licensor shall not be liable for:
 - Any loss of profits, data, or business opportunities
 - Any damages resulting from the use or inability to use the Software
 - Any damages resulting from data loss or corruption
-- Any damages resulting from CloudKit data loss or corruption
+- Any damages resulting from sync data loss or corruption during transmission
 - Any damages resulting from third-party actions or services
-- Any damages resulting from Apple's CloudKit service
-- Any damages resulting from iCloud account issues
+- Any damages resulting from network connectivity issues
+- Any damages resulting from failed synchronization between devices
 
 ### 6.3 Maximum Liability
 In jurisdictions where limitations of liability are not permitted, the Licensor's total liability shall not exceed the amount paid by you for the Software (if any).
@@ -122,11 +122,13 @@ You agree to indemnify, defend, and hold harmless the Licensor from and against 
 - Your violation of any applicable laws
 - Your content or data
 - Your integration with third-party services
-- Your use of CloudKit features
-- Your iCloud account management
-- Your CloudKit data handling
+- Your use of server-less synchronization features
+- Your device and network security management
+- Your data handling during synchronization
 - Any intellectual property claims related to your content or data
 - Any decisions or actions taken based on Software output
+- Any unauthorized access to your data during transmission
+- Any network security breaches involving your devices
 
 ## 8. Termination
 
@@ -139,9 +141,9 @@ The Licensor may terminate this license if you fail to comply with any term of t
 ### 8.3 Effect of Termination
 Upon termination, your right to use the Software ceases immediately. However:
 - The MIT License terms continue to apply to any copies you have made
-- Your CloudKit data may persist in your iCloud account
-- You are responsible for managing your CloudKit data after termination
-- The Licensor is not responsible for CloudKit data after termination
+- Your data remains on your devices and may persist
+- You are responsible for managing your data after termination
+- The Licensor is not responsible for data accessibility after termination
 
 ## 9. Governing Law and Jurisdiction
 
@@ -153,7 +155,7 @@ This EULA shall be governed by and construed in accordance with the laws of Germ
 - You are responsible for compliance with local laws in your jurisdiction
 - The Licensor makes no representation that the Software is appropriate for use in all locations
 - You use the Software at your own risk and in compliance with applicable local laws
-- You are responsible for CloudKit compliance in your jurisdiction
+- You are responsible for synchronization and data transmission compliance in your jurisdiction
 
 ### 9.3 Dispute Resolution
 - Any disputes shall be resolved in the courts of Germany
@@ -174,20 +176,6 @@ For questions about this EULA, please contact:
 - Email: alitaha@subfly.dev
 - GitHub Issues: https://github.com/Subfly/YABA/issues
 
-## 13. CloudKit Terms
-
-### 13.1 Apple's Terms
-- CloudKit is subject to Apple's iCloud Terms of Service
-- You must comply with Apple's CloudKit usage terms
-- Apple's terms are separate from this EULA
-- The Licensor is not responsible for Apple's terms compliance
-
-### 13.2 No CloudKit Liability
-- The Licensor is not liable for CloudKit service issues
-- The Licensor is not liable for CloudKit data loss
-- The Licensor is not liable for Apple's CloudKit decisions
-- The Licensor is not liable for iCloud account issues
-
 ---
 
-**By using YABA, you acknowledge that you have read, understood, and agree to be bound by this EULA.** 
+**By using YABA, you acknowledge that you have read, understood, and agree to be bound by this EULA. You further acknowledge that you use the Software entirely at your own risk and that the Licensor bears no responsibility for any damages, losses, or consequences arising from your use of the Software.** 

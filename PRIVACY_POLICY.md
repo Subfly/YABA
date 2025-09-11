@@ -1,10 +1,11 @@
 # Privacy Policy
 
-**Last Updated:** January 2025
+**Last Updated:** September 2025  
+**Effective Date:** September 15, 2025
 
 ## 1. Introduction
 
-This Privacy Policy describes how YABA ("the Application") handles information. YABA is committed to protecting your privacy and operates on a privacy-first, offline-first principle with CloudKit synchronization enabled by default.
+This Privacy Policy describes how YABA ("the Application") handles information. YABA is committed to protecting your privacy and operates on a privacy-first, offline-first principle with server-less peer-to-peer synchronization capabilities.
 
 ## 2. Data Collection and Storage
 
@@ -36,22 +37,22 @@ All data is primarily stored locally on your device:
 - Import/export data
 - Cache and temporary files
 
-### 3.2 CloudKit Synchronization
-YABA uses CloudKit synchronization by default for:
-- Bookmarks and collections
-- Delete logs for sync purposes
-- Data is encrypted and stored in your personal iCloud account
-- Data is stored under your iCloud account, not ours
-- We have no access to your CloudKit data
-- Data persists in your iCloud even if the app is deleted
+### 3.2 Server-less Synchronization
+YABA uses a server-less peer-to-peer synchronization system:
+- No servers or cloud services are involved in data transmission
+- Data is transmitted directly between your devices
+- All data remains under your complete control
+- We have no access to your data during transmission
+- We cannot intercept, store, or process your sync data
+- Synchronization occurs only between devices you control
 
-### 3.3 CloudKit Data Handling
-- All CloudKit data is encrypted by Apple
-- Data is stored in your personal iCloud storage space
-- We cannot access, read, or recover your CloudKit data
-- We cannot use your CloudKit data for any purpose
-- Data is subject to Apple's iCloud Terms of Service
-- You control your CloudKit data through your Apple ID settings
+### 3.3 Sync Data Handling
+- All sync data is encrypted during transmission
+- Data is transmitted directly between your devices only
+- We cannot access, read, or recover your sync data
+- We cannot use your sync data for any purpose
+- No third-party services are involved in synchronization
+- You control all aspects of data synchronization
 
 ## 4. Data Ownership
 
@@ -64,26 +65,27 @@ YABA uses CloudKit synchronization by default for:
 
 ### 4.2 No Access
 - We cannot access your local data
-- We cannot access your CloudKit data
+- We cannot access your sync data
 - We cannot view your bookmarks
 - We cannot see your preferences
 - We cannot recover your data if lost
 
 ## 5. Third-Party Services
 
-### 5.1 Apple CloudKit
-By using YABA, you agree to CloudKit synchronization:
-- You agree to Apple's iCloud Terms of Service
-- Data is stored in your personal iCloud account
-- Apple handles CloudKit data security and privacy
-- We are not responsible for CloudKit data handling
-- You can disable CloudKit sync in your device settings
+### 5.1 No Third-Party Services
+YABA's server-less synchronization does not involve any third-party services:
+- No cloud storage services are used
+- No external servers are involved
+- No third-party data processing occurs
+- All data transmission is direct between your devices
+- We are not responsible for any third-party services you may choose to use independently
 
-### 5.2 No Other Third-Party Data Sharing
-- We do not share data with other third parties
+### 5.2 No Data Sharing
+- We do not share data with any third parties
 - We do not sell data to third parties
 - We do not allow third-party access to your data
 - We do not integrate with data collection services
+- No data leaves your devices except for direct peer-to-peer sync
 
 ### 5.3 Optional Integrations
 If you choose to use optional features that integrate with third-party services:
@@ -95,18 +97,20 @@ If you choose to use optional features that integrate with third-party services:
 ## 6. Data Security
 
 ### 6.1 Your Responsibility
-- You are responsible for securing your device
+- You are responsible for securing your devices
 - You are responsible for backing up your data
 - You are responsible for protecting your data
 - You are responsible for data recovery if needed
-- You are responsible for your iCloud account security
+- You are responsible for securing your network connections during sync
+- You are responsible for ensuring sync occurs only between trusted devices
 
 ### 6.2 No Security Guarantees
-- We do not guarantee data security
+- We do not guarantee data security during transmission or storage
 - We do not provide data recovery services
 - We are not responsible for data breaches
 - We are not responsible for device security
-- We are not responsible for iCloud security
+- We are not responsible for network security during synchronization
+- We are not responsible for unauthorized access to your data
 
 ## 7. Data Retention
 
@@ -116,11 +120,11 @@ If you choose to use optional features that integrate with third-party services:
 - Data persists until you remove the application
 - We have no control over data retention
 
-### 7.2 CloudKit Retention
-- CloudKit data is retained according to Apple's policies
-- Data may persist in your iCloud even after app deletion
-- You control CloudKit data through your Apple ID settings
-- We have no control over CloudKit data retention
+### 7.2 Sync Data Retention
+- Sync data is retained only on your devices
+- No data is retained on any servers or external services
+- Data persists only as long as you keep it on your devices
+- We have no control over or access to your data retention
 
 ### 7.3 No Remote Retention
 - We do not retain any data on our servers
@@ -141,8 +145,8 @@ Since we do not collect any data:
 - Parents are responsible for monitoring children's use
 - Parents are responsible for device security
 - Parents are responsible for data management
-- Parents are responsible for iCloud account management
-- We are not responsible for children's data
+- Parents are responsible for network security during synchronization
+- We are not responsible for children's data or device usage
 
 ## 9. International Users
 
@@ -153,11 +157,11 @@ Since we do not collect or store data on our servers:
 - No CCPA compliance is required for our data handling
 - No other privacy regulations apply to our data handling
 
-### 9.2 CloudKit Data Transfers
-- CloudKit data transfers are handled by Apple
-- Apple is responsible for CloudKit compliance
-- We are not responsible for CloudKit data transfers
-- You are responsible for local privacy compliance
+### 9.2 Peer-to-Peer Data Transfers
+- Data transfers occur directly between your devices only
+- No international data transfers through our servers occur
+- We are not responsible for data transfers between your devices
+- You are responsible for local privacy compliance regarding your own data
 
 ### 9.3 Local Compliance
 - You are responsible for local privacy compliance
@@ -177,7 +181,6 @@ If we make changes to this Privacy Policy:
 ### 10.2 No Retroactive Changes
 - Changes do not affect previously stored data
 - Your local data remains unchanged
-- Your CloudKit data remains unchanged
 - You maintain control over your data
 - You can export your data at any time
 
@@ -193,7 +196,7 @@ For questions about this Privacy Policy:
 - We do not handle individual privacy requests
 - We do not process data access requests
 - We do not maintain user accounts
-- We cannot access your CloudKit data
+- We cannot access your data in any form
 
 ## 12. Legal Basis
 
@@ -215,17 +218,17 @@ Since we do not hold your data:
 
 ### 13.1 No Guarantees
 - We do not guarantee privacy protection
-- We do not guarantee data security
+- We do not guarantee data security during transmission or storage
 - We do not guarantee compliance with laws
 - We do not guarantee error-free operation
-- We do not guarantee CloudKit functionality
+- We do not guarantee synchronization functionality
 
 ### 13.2 Your Responsibility
 - You are responsible for your privacy
 - You are responsible for your data security
 - You are responsible for legal compliance
 - You are responsible for data management
-- You are responsible for iCloud account management
+- You are responsible for securing your devices and network connections
 
 ## 14. Open Source
 
@@ -235,22 +238,6 @@ Since we do not hold your data:
 - You can verify privacy claims
 - You can modify the application
 
-## 15. CloudKit Disclaimer
-
-### 15.1 Apple's Responsibility
-- CloudKit is provided by Apple Inc.
-- Apple is responsible for CloudKit service availability
-- Apple is responsible for CloudKit data security
-- Apple is responsible for CloudKit privacy compliance
-- We are not responsible for CloudKit functionality
-
-### 15.2 No CloudKit Guarantees
-- We do not guarantee CloudKit synchronization
-- We do not guarantee CloudKit data preservation
-- We do not guarantee CloudKit availability
-- We are not responsible for CloudKit data loss
-- We are not responsible for CloudKit service interruptions
-
 ---
 
-**This Privacy Policy reflects our commitment to privacy-first development. By using YABA, you acknowledge that you have read and understood this Privacy Policy.** 
+**This Privacy Policy reflects our commitment to privacy-first, server-less development. By using YABA, you acknowledge that you have read and understood this Privacy Policy and agree to use the application entirely at your own risk.** 
