@@ -14132,6 +14132,774 @@
         }
       }
     },
+    "How To Sync General Message 1" : {
+      "comment" : "Message to show in how to sync page of all devices, first part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synchronisieren ist eine Kernfunktion von YABA — und ein großer Grund, warum die App kostenlos bleibt. YABA verlässt sich nicht auf Server, deine Daten werden also nie irgendwo anders gespeichert — du hast jederzeit die volle Kontrolle. Da YABA Geräte außerhalb des Apple‑Ökosystems unterstützt, brauchten wir eine kostenfreie Lösung, die deine Daten dennoch vollständig bei dir lässt. Das Ergebnis ist ein lokales, multicast‑basiertes Synchronisationssystem. Stell es dir vor wie das Exportieren deiner Inhalte, das E-Mail an dich selbst und das Importieren auf einem anderen Gerät — nur dass alles für dich vollautomatisch abläuft. 😉 Um mit dem Synchronisieren zu beginnen, braucht dein Gerät einen Namen. Dieser wird normalerweise nach dem Onboarding oder beim Neustart von YABA gesetzt, du kannst ihn aber jederzeit in den Einstellungen ändern."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Syncing is a core feature of YABA—and a big reason it stays free. YABA doesn’t rely on servers, so your data is never stored elsewhere—you have full ownership at all times. Because YABA supports devices beyond the Apple ecosystem, we needed a cost-free solution that still keeps your data fully yours. The result is a local, multicast-based synchronization system. Think of it like exporting your content, emailing it to yourself, and importing it on another device—but fully automated for you. 😉 To start syncing, your device needs a name. This is usually set after onboarding or when you relaunch YABA, but you can change it anytime in Settings."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La sincronización es una función clave de YABA —y una gran razón por la que sigue siendo gratis. YABA no depende de servidores, así que tus datos nunca se almacenan en otro sitio: siempre tienes la propiedad total. Como YABA es compatible con dispositivos fuera del ecosistema Apple, necesitábamos una solución sin costes que mantuviera tus datos completamente tuyos. El resultado es un sistema de sincronización local basado en multicast. Piensa en ello como exportar tu contenido, enviártelo por email e importarlo en otro dispositivo —pero totalmente automatizado para ti. 😉 Para empezar a sincronizar, tu dispositivo necesita un nombre. Normalmente se configura tras la configuración inicial o al volver a abrir YABA, pero puedes cambiarlo en cualquier momento en Ajustes."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La synchronisation est une fonctionnalité centrale de YABA — et une grande raison pour laquelle elle reste gratuite. YABA ne dépend pas de serveurs, donc tes données ne sont jamais stockées ailleurs — tu gardes la pleine propriété à tout moment. Comme YABA prend en charge des appareils au-delà de l’écosystème Apple, il nous fallait une solution sans coût qui préserve entièrement tes données. Le résultat : un système de synchronisation local basé sur le multicast. Imagine que tu exportes ton contenu, que tu te l'envoies par e‑mail et que tu l'importes sur un autre appareil — mais entièrement automatisé pour toi. 😉 Pour commencer la synchronisation, ton appareil doit avoir un nom. Il est généralement défini après l’initialisation ou quand tu relances YABA, mais tu peux le modifier à tout moment dans Réglages."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सिंक करना YABA की एक प्रमुख सुविधा है—और यही एक बड़ी वजह है कि यह मुफ्त रहता है। YABA सर्वरों पर निर्भर नहीं करता, इसलिए आपका डेटा कहीं और स्टोर नहीं होता—आपके पास हर समय पूरा स्वामित्व रहता है। चूंकि YABA Apple इकोसिस्टम के बाहर भी डिवाइस सपोर्ट करता है, हमें एक मुफ्त ऐसा समाधान चाहिए था जो आपके डेटा को पूरी तरह आपका ही रखे। नतीजा एक लोकल, मल्टीकास्ट-आधारित सिंक्रनाइज़ेशन सिस्टम है। इसे ऐसे समझिए जैसे आप अपना कंटेंट एक्सपोर्ट करके खुद को ईमेल कर रहे हों और किसी दूसरे डिवाइस पर इम्पोर्ट कर रहे हों—बस यह सब आपके लिए पूरी तरह ऑटोमैटिक होता है। 😉 सिंक शुरू करने के लिए, आपके डिवाइस का एक नाम होना जरूरी है। यह आम तौर पर ऑनबोर्डिंग के बाद या YABA को फिर से खोलने पर सेट हो जाता है, लेकिन आप इसे कभी भी सेटिंग्स में बदल सकते हैं।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La sincronizzazione è una funzione fondamentale di YABA — e una delle principali ragioni per cui rimane gratuita. YABA non si appoggia a server, quindi i tuoi dati non vengono mai memorizzati altrove: ne hai la piena proprietà in ogni momento. Poiché YABA supporta dispositivi al di fuori dell’ecosistema Apple, avevamo bisogno di una soluzione senza costi che mantenesse comunque i tuoi dati completamente tuoi. Il risultato è un sistema di sincronizzazione locale basato su multicast. Pensalo come esportare i tuoi contenuti, inviarteli via e‑mail e importarli su un altro dispositivo — ma completamente automatizzato per te. 😉 Per iniziare a sincronizzare, il tuo dispositivo ha bisogno di un nome. Questo viene di solito impostato dopo la configurazione iniziale o quando riavvii YABA, ma puoi cambiarlo in qualsiasi momento nelle Impostazioni."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同期はYABAのコア機能であり、無料で提供されている大きな理由のひとつです。YABAはサーバーに頼らないため、あなたのデータが外部に保存されることはなく、常に完全に所有できます。Appleのエコシステム以外のデバイスもサポートする必要があったため、費用がかからず、かつデータの所有権を守る仕組みが必要でした。その結果、ローカルのマルチキャストベースの同期システムを採用しています。これは、自分のコンテンツをエクスポートして自分宛てにメールし、別のデバイスでインポートするようなイメージですが、あなたのために完全に自動化されています。😉 同期を開始するには、デバイスに名前が必要です。通常はオンボーディング後やYABAを再起動したときに設定されますが、設定でいつでも変更できます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "동기화는 YABA의 핵심 기능이자 무료로 제공되는 주요 이유 중 하나입니다. YABA는 서버에 의존하지 않으므로 데이터가 외부에 저장되지 않으며 항상 완전한 소유권을 유지합니다. 또한 YABA는 Apple 생태계 외의 기기도 지원하기 때문에 비용이 들지 않으면서도 데이터 소유권을 지킬 수 있는 해결책이 필요했습니다. 그 결과 로컬 멀티캐스트 기반 동기화 시스템을 도입하게 되었습니다. 이를 본인의 콘텐츠를 내보내 메일로 보내고 다른 기기에서 가져오는 과정과 같다고 생각하되, 모든 과정이 완전히 자동으로 이루어진다고 보시면 됩니다. 😉 동기화를 시작하려면 기기 이름이 필요합니다. 이 이름은 보통 온보딩 후 또는 YABA를 다시 실행할 때 설정되지만, 설정에서 언제든지 변경할 수 있습니다."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synkronisering er en kjernefunksjon i YABA—and en viktig grunn til at den forblir gratis. YABA er ikke avhengig av servere, så dataene dine lagres aldri andre steder—you har full eierskap til enhver tid. Fordi YABA støtter enheter utenfor Apple-økosystemet, trengte vi en kostnadsfri løsning som likevel lar dataene dine forbli helt dine. Resultatet er et lokalt synkroniseringssystem basert på multicast. Tenk på det som å eksportere innholdet ditt, sende det til deg selv på e-post og importere det på en annen enhet—but helt automatisert for deg. 😉 To start syncing, your device needs a name. This is usually set after onboarding or when you relaunch YABA, but you can change it anytime in Settings."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synchroniseren is een kernfunctie van YABA — en een belangrijke reden dat het gratis blijft. YABA vertrouwt niet op servers, dus je data wordt nooit elders opgeslagen — jij hebt te allen tijde volledige eigendom. Omdat YABA apparaten buiten het Apple-ecosysteem ondersteunt, hadden we een kosteloze oplossing nodig die je data toch volledig van jou houdt. Het resultaat is een lokale, multicast-gebaseerd synchronisatiesysteem. Zie het als het exporteren van je content, het naar jezelf e-mailen en het importeren op een ander apparaat — maar volledig geautomatiseerd voor jou. 😉 Om te beginnen met synchroniseren moet je apparaat een naam hebben. Die wordt meestal ingesteld na de onboarding of wanneer je YABA opnieuw opstart, maar je kunt het op elk moment wijzigen in Instellingen."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincronizar é um recurso central do YABA — e um grande motivo pelo qual ele continua grátis. O YABA não depende de servidores, então seus dados nunca ficam armazenados em outro lugar — você tem total propriedade o tempo todo. Como o YABA oferece suporte a dispositivos além do ecossistema Apple, precisávamos de uma solução sem custo que ainda mantivesse seus dados totalmente seus. O resultado é um sistema de sincronização local baseado em multicast. Pense nisso como exportar seu conteúdo, enviar por e‑mail para si mesmo e importar em outro dispositivo — mas totalmente automatizado para você. 😉 Para começar a sincronizar, seu dispositivo precisa de um nome. Isso geralmente é definido após a configuração inicial ou quando você relança o YABA, mas você pode alterá‑lo a qualquer momento em Ajustes."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synchronizácia je základná funkcia YABA — a veľký dôvod, prečo zostáva zadarmo. YABA sa nespolieha na servery, takže tvoje dáta nie sú nikdy uložené nikde inde — máš nad nimi plné vlastníctvo stále. Keďže YABA podporuje zariadenia mimo Apple ekosystému, potrebovali sme bezplatné riešenie, ktoré zároveň zachová tvoje dáta len pre teba. Výsledkom je lokálny, multicastom založený synchronizačný systém. Predstav si to ako exportovanie obsahu, odoslanie ho sebe e‑mailom a importovanie na inom zariadení — lenže plne automatizované pre teba. 😉 Aby sa synchronizácia spustila, tvoje zariadenie potrebuje názov. Zvyčajne sa nastaví po prvom spuštění alebo pri opätovnom spustení YABA, ale môžeš ho kedykoľvek zmeniť v Nastaveniach."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synkronisering är en kärnfunktion i YABA — och en stor anledning till att den förblir gratis. YABA är inte beroende av servrar, så dina data lagras aldrig någon annanstans — du har ägandet helt och hållet hela tiden. Eftersom YABA stödjer enheter utanför Apples ekosystem behövde vi en kostnadsfri lösning som ändå håller dina data helt dina. Resultatet är ett lokalt, multicast-baserat synkroniseringssystem. Tänk på det som att exportera ditt innehåll, mejla det till dig själv och importera det på en annan enhet — men helt automatiserat för dig. 😉 För att börja synka behöver din enhet ett namn. Det här ställs vanligen in efter introduktionen eller när du startar om YABA, men du kan ändra det när som helst i Inställningar."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eşitleme, YABA'nın temel özelliklerinden biridir—ve uygulamanın ücretsiz kalmasının büyük bir nedeni. YABA sunuculara dayanmaz, bu yüzden verileriniz hiçbir zaman başka bir yerde depolanmaz—her zaman tam sahipliğe sahipsiniz. YABA, Apple ekosisteminin ötesindeki cihazları da desteklediği için verilerinizin tamamen size ait kaldığı, maliyetsiz bir çözüm gerekiyordu. Sonuç olarak yerel, multicast tabanlı bir senkronizasyon sistemi ortaya çıktı. Bunu içeriğinizi dışa aktarıp kendinize e‑posta ile göndermek ve başka bir cihazda içe aktarmak gibi düşünün—ama tamamen sizin için otomatikleştirilmiş. 😉 Eşitlemeyi başlatmak için cihazınızın bir adı olmalı. Bu genellikle ilk kurulumdan sonra veya YABA'yı yeniden başlattığınızda ayarlanır, ancak istediğiniz zaman Ayarlar'dan değiştirebilirsiniz."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同步是 YABA 的核心功能——也是它能保持免费的重要原因之一。YABA 不依赖服务器，所以你的数据从不被存储到别处——你始终完全拥有它。因为 YABA 支持超出 Apple 生态系统的设备，我们需要一个无需额外费用但仍能让数据完全属于你的解决方案。结果是一个本地的、基于组播的同步系统。把它想象成把内容导出、通过邮件发给自己，然后在另一台设备上导入——但这一切都为你自动完成。😉 要开始同步，你的设备需要一个名称。通常在初次使用引导后或重新打开 YABA 时会设置好，但你可以随时在 “设置” 中更改它。"
+          }
+        }
+      }
+    },
+    "How To Sync General Message 2" : {
+      "comment" : "Message to show in how to sync page of all devices, second part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auf allen Geräten ist Sync leicht erreichbar — oben links auf dem Home‑Bildschirm deines Mobilgeräts oder in der Seitenleiste auf Tablets und Computern. Wird es geöffnet, sucht ein lokaler Server automatisch im aktuellen Netzwerk nach deinen Geräten und erkennt sie."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On all devices, Sync is easy to access—at the top left of your Home Screen on mobile, or in the sidebar on tablets and computers. Once opened, a local server will automatically search for and detect your devices on the current network."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En todos los dispositivos, Sync es fácil de encontrar: arriba a la izquierda de la pantalla de inicio en el móvil, o en la barra lateral en tablets y ordenadores. Al abrirlo, un servidor local buscará y detectará automáticamente tus dispositivos en la red actual."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sur tous les appareils, Sync est facile d’accès — en haut à gauche de ton écran d’accueil sur mobile, ou dans la barre latérale sur les tablettes et ordinateurs. Une fois ouvert, un serveur local recherchera automatiquement et détectera tes appareils sur le réseau local."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सभी डिवाइसों पर, सिंक तक पहुँचना आसान है — मोबाइल पर आपकी होम स्क्रीन के ऊपरी बाएँ कोने में, या टैबलेट और कंप्यूटर पर साइडबार में। एक बार खोलने पर, एक लोकल सर्वर स्वतः ही वर्तमान नेटवर्क पर आपके डिवाइस खोजकर उनका पता लगा लेगा।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Su tutti i dispositivi, Sync è facile da raggiungere: in alto a sinistra della tua Schermata Home sui dispositivi mobili, o nella barra laterale su tablet e computer. Una volta aperto, un server locale cercherà automaticamente e rileverà i tuoi dispositivi sulla rete corrente."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべてのデバイスでは、Syncはアクセスしやすい場所にあります—モバイルではホーム画面の左上に、タブレットやコンピュータではサイドバーにあります。開くと、ローカルサーバーが自動的に現在のネットワーク上のデバイスを検索して検出します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모든 기기에서 동기화는 쉽게 접근할 수 있습니다 — 모바일에서는 홈 화면 왼쪽 상단에, 태블릿과 컴퓨터에서는 사이드바에 있습니다. 열면 로컬 서버가 현재 네트워크에서 자동으로 기기를 검색하여 감지합니다."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "På alle enheter er Synk enkelt å få tilgang til — øverst til venstre på Hjem-skjermen på mobil, eller i sidepanelet på nettbrett og datamaskiner. Når det åpnes, vil en lokal server automatisk søke etter og oppdage enhetene dine på det gjeldende nettverket."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Op al je apparaten is Sync eenvoudig toegankelijk — linksboven op je startscherm op mobiel, of in de zijbalk op tablets en computers. Zodra je het opent, zal een lokale server automatisch zoeken naar en je apparaten detecteren op het huidige netwerk."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Em todos os dispositivos, o Sync é fácil de acessar — no canto superior esquerdo da sua Tela Inicial no celular, ou na barra lateral em tablets e computadores. Uma vez aberto, um servidor local procurará e detectará automaticamente seus dispositivos na rede atual."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Na všetkých zariadeniach je Sync ľahko dostupný — v ľavom hornom rohu domovskej obrazovky na mobile alebo v postrannom paneli na tabletoch a počítačoch. Po otvorení bude lokálny server automaticky vyhľadávať a detegovať tvoje zariadenia v aktuálnej sieti."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "På alla enheter är Sync lätt att nå — uppe till vänster på hemskärmen på mobilen eller i sidofältet på surfplattor och datorer. När den öppnats kommer en lokal server automatiskt att söka efter och upptäcka dina enheter i det aktuella nätverket."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tüm cihazlarda Senkron'a erişim kolaydır — mobilde Ana Ekranın sol üstünde, tablet ve bilgisayarlarda ise kenar çubuğunda. Açıldığında, yerel bir sunucu mevcut ağdaki cihazlarınızı otomatik olarak arar ve algılar."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在所有设备上，同步都很容易找到——在手机上位于主屏幕的左上角，在平板和电脑上位于侧边栏。打开后，本地服务器会自动在当前网络中搜索并检测你的设备。"
+          }
+        }
+      }
+    },
+    "How To Sync General Message 3" : {
+      "comment" : "Message to show in how to sync page of all devices, third part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn du Sync zum ersten Mal nutzt, fragt YABA nach der Erlaubnis, auf das lokale Netzwerk zuzugreifen. Das muss aktiviert sein, damit Sync funktioniert. Wenn du es ablehnst, musst du den Zugriff auf das lokale Netzwerk für YABA manuell in den Einstellungen deines Geräts aktivieren, da YABA diese Erlaubnis nicht erneut anfragen darf."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The first time you use Sync, YABA will ask for permission to access the Local Network. This must be enabled for Sync to work. If you deny it, you’ll need to manually enable Local Network access for YABA in your device’s Settings, as YABA is not allowed to request it again."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La primera vez que uses Sync, YABA pedirá permiso para acceder a la red local. Esto debe estar activado para que Sync funcione. Si lo deniegas, tendrás que activar manualmente el acceso a la red local para YABA en los Ajustes de tu dispositivo, ya que YABA no puede solicitarlo de nuevo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La première fois que tu utilises Sync, YABA demandera l’autorisation d’accéder au réseau local. Cette autorisation doit être activée pour que Sync fonctionne. Si tu la refuses, tu devras activer manuellement l’accès au réseau local pour YABA dans les Réglages de ton appareil, car YABA ne peut pas le redemander."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "जब आप पहली बार सिंक का उपयोग करेंगे, YABA स्थानीय नेटवर्क तक पहुँच की अनुमति मांगेगा। सिंक के काम करने के लिए यह सक्षम होना आवश्यक है। यदि आप इसे अस्वीकार कर देते हैं, तो आपको अपने डिवाइस की सेटिंग्स में YABA के लिए स्थानीय नेटवर्क एक्सेस मैन्युअली सक्षम करना होगा, क्योंकि YABA को यह अनुमति फिर से मांगने की अनुमति नहीं है।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La prima volta che usi Sync, YABA chiederà il permesso di accedere alla Rete locale. Deve essere abilitato perché Sync funzioni. Se lo rifiuti, dovrai abilitare manualmente l'accesso alla Rete locale per YABA nelle Impostazioni del tuo dispositivo, poiché YABA non potrà richiederlo di nuovo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "初めてSyncを使うとき、YABAはローカルネットワークへのアクセス許可を求めます。Syncを機能させるにはこれを有効にする必要があります。許可を拒否した場合、YABAは再度要求できないため、デバイスの設定でYABAのローカルネットワークアクセスを手動で有効にする必要があります。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "동기화를 처음 사용할 때 YABA는 로컬 네트워크 접근 권한을 요청합니다. 동기화가 작동하려면 이 권한을 반드시 허용해야 합니다. 거부하면 YABA가 다시 요청할 수 없으므로 기기 설정에서 YABA의 로컬 네트워크 접근을 수동으로 활성화해야 합니다."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Første gang du bruker Synk, vil YABA be om tillatelse til å få tilgang til det lokale nettverket. Dette må være aktivert for at Synk skal fungere. Hvis du nekter, må du manuelt aktivere tilgang til det lokale nettverket for YABA i enhetens Innstillinger, siden YABA ikke har lov til å be om det igjen."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De eerste keer dat je Sync gebruikt, vraagt YABA toestemming om het lokale netwerk te gebruiken. Dit moet ingeschakeld zijn om Sync te laten werken. Als je dit weigert, moet je in de Instellingen van je apparaat handmatig toegang tot het lokale netwerk voor YABA inschakelen, omdat YABA die toestemming niet opnieuw mag aanvragen."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Na primeira vez que você usar o Sync, o YABA pedirá permissão para acessar a Rede Local. Isso precisa ser habilitado para o Sync funcionar. Se você negar, será necessário habilitar manualmente o acesso à Rede Local para o YABA nas Ajustes do seu dispositivo, pois o YABA não poderá solicitar novamente."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pri prvom použití Sync ťa YABA požiada o povolenie na prístup k lokálnej sieti. To musí byť povolené, aby Sync fungoval. Ak ho odmietneš, budeš musieť ručne povoliť prístup k lokálnej sieti pre YABA v Nastaveniach zariadenia, pretože YABA už znova nemôže o toto povolenie požiadať."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Första gången du använder Sync kommer YABA att be om tillåtelse att få åtkomst till det lokala nätverket. Detta måste vara aktiverat för att Sync ska fungera. Om du nekar kommer du behöva aktivera åtkomsten till det lokala nätverket för YABA manuellt i enhetens Inställningar, eftersom YABA inte får fråga om det igen."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Senkron'u ilk kullandığınızda, YABA Yerel Ağa erişim izni isteyecektir. Senkronun çalışması için bu etkinleştirilmelidir. Redderseniz, YABA yeniden isteyemeyeceği için cihazınızın Ayarlar'ından YABA için Yerel Ağ erişimini manuel olarak etkinleştirmeniz gerekecektir."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "首次使用同步时，YABA 会请求访问本地网络的权限。必须启用此权限才能使同步功能正常工作。如果你拒绝，你需要在设备的“设置”中手动为 YABA 启用本地网络访问，因为 YABA 无法再次发起该权限请求。"
+          }
+        }
+      }
+    },
+    "How To Sync General Message 4" : {
+      "comment" : "Message to show in how to sync page of all devices, fourth part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn du die Erlaubnis erteilst, siehst du einen Bildschirm mit Anweisungen und einer Liste der Geräte in deinem Netzwerk. Damit deine anderen Geräte sichtbar werden, müssen sie mit demselben Netzwerk verbunden sein und der Sync‑Bildschirm geöffnet sein. Eine aktive Internetverbindung ist nicht erforderlich — die Verbindung über denselben Hotspot reicht, damit YABA deine Geräte entdeckt."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Once allowed, you’ll see a screen with instructions and a list of devices on your network. To make your other devices visible, ensure they’re connected to the same network and have the Sync screen open. An active internet connection isn’t required—connecting through the same hotspot is enough for YABA to discover your devices."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una vez que lo permitas, verás una pantalla con instrucciones y una lista de dispositivos en tu red. Para que tus otros dispositivos sean visibles, asegúrate de que estén conectados a la misma red y de que tengan abierta la pantalla de Sincronización. No hace falta una conexión a Internet activa —conectarse al mismo punto de acceso es suficiente para que YABA descubra tus dispositivos."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une fois l’autorisation accordée, tu verras un écran avec des instructions et une liste des appareils sur ton réseau. Pour rendre tes autres appareils visibles, assure-toi qu’ils sont connectés au même réseau et que l’écran de synchronisation est ouvert. Une connexion Internet active n’est pas nécessaire — se connecter au même point d’accès suffit pour que YABA découvre tes appareils."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "अनुमति देने के बाद, आप निर्देशों वाली एक स्क्रीन और आपके नेटवर्क पर मौजूद डिवाइसों की एक सूची देखेंगे। अपने अन्य डिवाइस दिखाने के लिए सुनिश्चित करें कि वे उसी नेटवर्क से जुड़े हों और Sync स्क्रीन खुली हो। एक सक्रिय इंटरनेट कनेक्शन आवश्यक नहीं है—एक ही हॉटस्पॉट से जुड़ना YABA के लिए आपके डिवाइस खोजने के लिए पर्याप्त है।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una volta autorizzato, vedrai una schermata con le istruzioni e un elenco dei dispositivi sulla tua rete. Per rendere visibili gli altri dispositivi, assicurati che siano connessi alla stessa rete e che la schermata Sincronizzazione sia aperta. Non è necessaria una connessione Internet attiva: basta essere connessi allo stesso hotspot affinché YABA possa rilevare i dispositivi."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "許可すると、指示とネットワーク上のデバイス一覧が表示される画面が表示されます。ほかのデバイスを表示するには、それらが同じネットワークに接続され、Sync画面が開かれていることを確認してください。アクティブなインターネット接続は必要ありません—同じホットスポットに接続されていればYABAがデバイスを検出できます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "권한을 허용하면 지침과 네트워크에 있는 기기 목록이 표시되는 화면이 나타납니다. 다른 기기를 표시하려면 해당 기기들이 동일한 네트워크에 연결되어 있고 동기화 화면을 열어 두었는지 확인하세요. 활성 인터넷 연결은 필요하지 않습니다—동일한 핫스팟에 연결되어 있으면 YABA가 기기를 발견할 수 있습니다."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Når du har gitt tillatelse, ser du en skjerm med instruksjoner og en liste over enheter på nettverket ditt. For at de andre enhetene skal bli synlige, må du sørge for at de er koblet til samme nettverk og har Synkroniseringsskjermen åpen. En aktiv internettforbindelse er ikke påkrevd—tilkobling via samme hotspot er nok for at YABA skal oppdage enhetene dine."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zodra je toestemming geeft, zie je een scherm met instructies en een lijst met apparaten op je netwerk. Zorg dat je andere apparaten zichtbaar zijn door ze op hetzelfde netwerk aan te sluiten en het synchronisatiescherm te openen. Een actieve internetverbinding is niet nodig — verbinding via dezelfde hotspot is voldoende zodat YABA je apparaten kan ontdekken."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uma vez permitido, você verá uma tela com instruções e uma lista de dispositivos na sua rede. Para tornar seus outros dispositivos visíveis, certifique‑se de que eles estejam conectados à mesma rede e com a tela Sincronizar aberta. Uma conexão ativa com a internet não é necessária — conectar‑se pelo mesmo hotspot é suficiente para o YABA descobrir seus dispositivos."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keď povolíš, zobrazí sa obrazovka s pokynmi a zoznamom zariadení v tvojej sieti. Aby sa tvoje ostatné zariadenia zobrazili, uisti sa, že sú pripojené k tej istej sieti a majú otvorenú obrazovku Synchronizácia. Aktívne internetové pripojenie nie je potrebné — stačí pripojenie cez rovnaký hotspot, aby YABA našla tvoje zariadenia."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "När du tillåter det ser du en skärm med instruktioner och en lista över enheter på ditt nätverk. För att göra dina andra enheter synliga, se till att de är anslutna till samma nätverk och har synkroniseringsskärmen öppen. En aktiv internetanslutning krävs inte—att vara uppkopplad mot samma hotspot räcker för att YABA ska hitta dina enheter."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İzin verdikten sonra, talimatların ve ağınızdaki cihazların bir listesinin olduğu bir ekran göreceksiniz. Diğer cihazlarınızın görünür olması için aynı ağa bağlı olduklarından ve Eşitleme ekranının açık olduğundan emin olun. YABA'nın cihazlarınızı bulması için aktif bir internet bağlantısı gerekmez—aynı hotspot'a bağlanmak yeterlidir."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "允许后，你会看到带有说明和网络上设备列表的界面。要让其他设备可见，请确保它们连接到相同的网络并打开同步界面。无需活动的互联网连接——通过同一热点连接就足够让 YABA 发现你的设备。"
+          }
+        }
+      }
+    },
+    "How To Sync General Message 5" : {
+      "comment" : "Message to show in how to sync page of all devices, fifth part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn deine Geräte im selben Netzwerk sind und der Sync‑Bildschirm geöffnet ist, erscheinen sie in der Liste **Verfügbare Geräte**."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When your devices are on the same network and the Sync screen is open, they’ll appear in the list of **Available Devices**."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuando tus dispositivos estén en la misma red y la pantalla de Sincronización esté abierta, aparecerán en la lista **Dispositivos disponibles**."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quand tes appareils sont sur le même réseau et que l’écran de synchronisation est ouvert, ils apparaîtront dans la liste **Appareils disponibles**."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "जब आपके डिवाइस एक ही नेटवर्क पर होंगे और Sync स्क्रीन खुली होगी, तो वे **उपलब्ध डिवाइस** की सूची में दिखाई देंगे।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quando i tuoi dispositivi sono sulla stessa rete e la schermata Sincronizzazione è aperta, appariranno nell'elenco **Dispositivi disponibili**."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイスが同じネットワーク上にありSync画面が開かれていると、**利用可能なデバイス**の一覧に表示されます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기기들이 동일한 네트워크에 있고 동기화 화면이 열려 있으면 **사용 가능한 기기** 목록에 나타납니다."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Når enhetene dine er på samme nettverk og Synkroniseringsskjermen er åpen, vil de vises i listen **Tilgjengelige enheter**."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wanneer je apparaten op hetzelfde netwerk zitten en het synchronisatiescherm open is, verschijnen ze in de lijst **Beschikbare apparaten**."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quando seus dispositivos estiverem na mesma rede e a tela Sincronizar estiver aberta, eles aparecerão na lista de **Dispositivos Disponíveis**."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keď sú zariadenia v rovnakej sieti a obrazovka Synchronizácia je otvorená, zobrazia sa v zozname **Dostupné zariadenia**."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "När dina enheter är på samma nätverk och synkroniseringsskärmen är öppen kommer de att visas i listan **Tillgängliga enheter**."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cihazlarınız aynı ağda ve Eşitleme ekranı açıksa, **Kullanılabilir Cihazlar** listesinde görünecekler."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当你的设备处于同一网络且同步界面已打开时，它们会出现在 **可用设备** 列表中。"
+          }
+        }
+      }
+    },
+    "How To Sync General Message 6" : {
+      "comment" : "Message to show in how to sync page of all devices, sixth part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn du ein Gerät auswählst, erhält es eine Synchronisationsanfrage. Dieser Schritt stellt sicher, dass du dich nicht versehentlich mit anderen Geräten im selben Netzwerk verbindest und schützt dich vor unerwünschtem Zugriff. Sobald die Anfrage akzeptiert wurde, beginnt die Synchronisation automatisch."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When you select a device, it will receive a sync request. This step ensures you don’t accidentally connect to other devices on the same network, protecting you from unwanted access. Once the request is accepted, synchronization begins automatically."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuando selecciones un dispositivo, este recibirá una solicitud de sincronización. Este paso asegura que no te conectes por error a otros dispositivos en la misma red y te protege de accesos no deseados. Una vez aceptada la solicitud, la sincronización comienza automáticamente."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lorsque tu sélectionnes un appareil, il recevra une demande de synchronisation. Cette étape évite que tu te connectes accidentellement à d’autres appareils sur le même réseau et te protège contre tout accès non souhaité. Une fois la demande acceptée, la synchronisation démarre automatiquement."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "जब आप किसी डिवाइस का चयन करेंगे, उसे एक सिंक अनुरोध भेजा जाएगा। यह कदम सुनिश्चित करता है कि आप गलती से उसी नेटवर्क पर मौजूद अन्य डिवाइस से कनेक्ट न हो जाएँ और अनचाही पहुँच से आप सुरक्षित रहें। अनुरोध स्वीकार होते ही समन्वयन स्वचालित रूप से शुरू हो जाएगा।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quando selezioni un dispositivo, riceverà una richiesta di sincronizzazione. Questo passaggio evita che tu ti connetta per errore ad altri dispositivi sulla stessa rete, proteggendoti da accessi indesiderati. Una volta accettata la richiesta, la sincronizzazione inizia automaticamente."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイスを選択すると、同期リクエストが送信されます。この手順により、同じネットワーク上の他のデバイスに誤って接続することを防ぎ、不要なアクセスから保護します。リクエストが承認されると、自動的に同期が開始されます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기기를 선택하면 동기화 요청이 전송됩니다. 이 단계는 같은 네트워크의 다른 기기와 실수로 연결되는 것을 방지하여 원치 않는 접근으로부터 보호합니다. 요청이 수락되면 동기화가 자동으로 시작됩니다."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Når du velger en enhet, vil den motta en synkroniseringsforespørsel. Dette steget sørger for at du ikke ved et uhell kobler til andre enheter på samme nettverk, og beskytter deg mot uønsket tilgang. Når forespørselen er akseptert, starter synkroniseringen automatisk."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wanneer je een apparaat selecteert, ontvangt het een synchronisatieverzoek. Deze stap voorkomt dat je per ongeluk verbinding maakt met andere apparaten op hetzelfde netwerk en beschermt je tegen ongewenste toegang. Zodra het verzoek is geaccepteerd, begint de synchronisatie automatisch."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ao selecionar um dispositivo, ele receberá uma solicitação de sincronização. Esse passo garante que você não se conecte acidentalmente a outros dispositivos na mesma rede, protegendo você de acessos indesejados. Assim que a solicitação for aceita, a sincronização começa automaticamente."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keď vyberieš zariadenie, dostane žiadosť o synchronizáciu. Tento krok zaisťuje, že sa náhodne nepripojíš k iným zariadeniam v rovnakej sieti, čím ťa chráni pred nechceným prístupom. Po prijatí žiadosti sa synchronizácia spustí automaticky."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "När du väljer en enhet får den en synkroniseringsförfrågan. Detta steg ser till att du inte av misstag ansluter till andra enheter på samma nätverk och skyddar dig från oönskad åtkomst. När förfrågan accepteras startar synkroniseringen automatiskt."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bir cihaz seçtiğinizde, o cihaza bir eşitleme isteği gönderilir. Bu adım, aynı ağdaki diğer cihazlara yanlışlıkla bağlanmanızı engelleyerek istenmeyen erişimlerden korur. İstek kabul edildikten sonra eşitleme otomatik olarak başlar."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当你选择某台设备时，该设备会收到一个同步请求。此步骤可确保你不会不小心连接到同一网络上的其他设备，从而防止未经授权的访问。请求被接受后，同步会自动开始。"
+          }
+        }
+      }
+    },
+    "How To Sync General Message 7" : {
+      "comment" : "Message to show in how to sync page of all devices, seventh part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn die Synchronisation abgeschlossen ist, bestätigt eine Toast‑Nachricht, dass sie erfolgreich war."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When syncing is complete, a toast message will confirm that it was successful."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuando la sincronización termine, un mensaje tipo toast confirmará que se realizó correctamente."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quand la synchronisation est terminée, une notification confirmera que l’opération a réussi."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सिंक पूरा होने पर, एक टोस्ट संदेश पुष्टि करेगा कि यह सफल रहा।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Al termine della sincronizzazione, un messaggio toast confermerà che è avvenuta con successo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同期が完了すると、トーストメッセージで成功が確認できます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "동기화가 완료되면 토스트 메시지로 성공이 확인됩니다."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Når synkroniseringen er fullført, vil en toast-melding bekrefte at den var vellykket."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Als de synchronisatie klaar is, bevestigt een toastmelding dat deze succesvol was."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quando a sincronização for concluída, uma mensagem toast confirmará que foi bem‑sucedida."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Po dokončení synchronizácie sa zobrazí toast s potvrdením, že prebehla úspešne."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "När synkroniseringen är klar visas ett toast-meddelande som bekräftar att den lyckades."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eşitleme tamamlandığında, işlem başarılı olduğunu belirten bir kısa bildirim (toast) gösterilir."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同步完成后，会有一条提示确认同步已成功。"
+          }
+        }
+      }
+    },
+    "How To Sync General Message 8" : {
+      "comment" : "Message to show in how to sync page of all devices, eight part.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : ""
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In Settings, you’ll find the option **Sync Without Deletes**, which changes how syncing behaves across your devices. Since sync happens between two devices at a time, let’s call them Device A and Device B:\"\n\n**Both devices: option disabled** →\n\n- All deletions are synced. Both devices end up with the same content (including removed items).\n\n**Both devices: option enabled** →\n\n- Deletions are skipped. Each device transfers its data to the other, so deleted items reappear.\nUseful for recovering from accidental deletes or transferring content without losses.\n\n**Device A enabled, Device B disabled** →\n\n- Device A skips deletions from B but accepts all of B’s content.\n\n- Device B processes deletions from A normally.\nUseful if you want one device to act as a full archive while another stays more curated.\n\nYou can experiment with these settings to find the setup that works best for you."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En Ajustes, encontrarás la opción **Sincronizar sin eliminaciones**, que cambia cómo se comporta la sincronización entre tus dispositivos. Como la sincronización ocurre entre dos dispositivos a la vez, llamémoslos Dispositivo A y Dispositivo B:\n\n**Ambos dispositivos: opción desactivada** →\n\n- Todas las eliminaciones se sincronizan. Ambos dispositivos terminan con el mismo contenido (incluyendo los elementos eliminados).\n\n**Ambos dispositivos: opción activada** →\n\n- Se omiten las eliminaciones. Cada dispositivo transfiere sus datos al otro, por lo que los elementos eliminados vuelven a aparecer.\nÚtil para recuperar eliminaciones accidentales o transferir contenido sin pérdidas.\n\n**Dispositivo A activado, Dispositivo B desactivado** →\n\n- El Dispositivo A omite las eliminaciones provenientes de B pero acepta todo el contenido de B.\n\n- El Dispositivo B procesa las eliminaciones del A con normalidad.\nÚtil si quieres que un dispositivo actúe como archivo completo mientras otro se mantiene más seleccionado.\n\nPuedes experimentar con estos ajustes para encontrar la configuración que mejor funcione para ti."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dans Réglages, tu trouveras l’option **Sync Without Deletes**, qui modifie le comportement de la synchronisation entre tes appareils. Comme la synchronisation se fait entre deux appareils à la fois, appelons-les Appareil A et Appareil B :\n\n**Les deux appareils : option désactivée** →\n\n- Toutes les suppressions sont synchronisées. Les deux appareils ont le même contenu (y compris les éléments supprimés).\n\n**Les deux appareils : option activée** →\n\n- Les suppressions sont ignorées. Chaque appareil transfère ses données à l’autre, donc les éléments supprimés réapparaissent.\nUtile pour récupérer des suppressions accidentelles ou transférer du contenu sans pertes.\n\n**Appareil A activé, Appareil B désactivé** →\n\n- L’Appareil A ignore les suppressions venant de B mais accepte tout le contenu de B.\n\n- L’Appareil B traite normalement les suppressions venant de A.\nUtile si tu veux qu’un appareil serve d’archive complète pendant qu’un autre reste plus trié.\n\nTu peux expérimenter avec ces réglages pour trouver la configuration qui te convient le mieux."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\n\n**दोनों डिवाइस: विकल्प अक्षम** →\n\n- सभी deletions सिंक हो जाती हैं। दोनों डिवाइसों पर एक ही कंटेंट रहता है (हटाई गई आइटम्स भी शामिल)।\n\n**दोनों डिवाइस: विकल्प सक्षम** →\n\n- deletions को स्किप किया जाता है। हर डिवाइस अपनी डाटा दूसरी डिवाइस को ट्रांसफर करता है, इसलिए हटाई गई आइटम्स फिर से दिखाई देंगी।\nयह अचानक हुए डिलीट्स से रिकवर करने या बिना कोई कंटेंट खोये ट्रांसफर करने के लिए उपयोगी है।\n\n**Device A सक्षम, Device B अक्षम** →\n\n- Device A, B की deletions को स्किप करता है पर B की सारी content स्वीकार कर लेता है।\n\n- Device B, A की deletions को सामान्य रूप से प्रोसेस करता है।\nयह तब काम आता है जब आप चाहते हैं कि एक डिवाइस पूरा आर्काइव की तरह रहे जबकि दूसरा अधिक curated रहे।\n\nआप इन सेटिंग्स के साथ प्रयोग कर के वह सेटअप ढूँढ सकते हैं जो आपके लिए सबसे उपयुक्त हो।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nelle Impostazioni trovi l’opzione **Sincronizza senza cancellazioni**, che modifica il comportamento della sincronizzazione tra i tuoi dispositivi. Poiché la sincronizzazione avviene tra due dispositivi alla volta, chiamiamoli Dispositivo A e Dispositivo B:\n\n**Entrambi i dispositivi: opzione disabilitata** →\n\n- Tutte le cancellazioni vengono sincronizzate. Entrambi i dispositivi finiscono con lo stesso contenuto (compresi gli elementi rimossi).\n\n**Entrambi i dispositivi: opzione abilitata** →\n\n- Le cancellazioni vengono ignorate. Ogni dispositivo trasferisce i propri dati all’altro, quindi gli elementi eliminati riappaiono.\nUtile per recuperare cancellazioni accidentali o per trasferire contenuti senza perdite.\n\n**Dispositivo A abilitato, Dispositivo B disabilitato** →\n\n- Il Dispositivo A ignora le cancellazioni provenienti da B ma accetta tutto il contenuto di B.\n\n- Il Dispositivo B elabora normalmente le cancellazioni provenienti da A.\nUtile se vuoi che un dispositivo funga da archivio completo mentre l’altro rimane più curato.\n\nPuoi sperimentare con queste impostazioni per trovare la configurazione che funziona meglio per te."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定で、**Sync Without Deletes（削除を同期しない）** オプションが見つかります。これはデバイス間の同期の動作を変更します。同期は一度に2台のデバイス間で行われるので、便宜上それらをデバイスAとデバイスBと呼びます：\n\n**両方のデバイス：オプション無効** →\n\n- すべての削除が同期されます。両方のデバイスは同じ内容（削除された項目も含む）になります。\n\n**両方のデバイス：オプション有効** →\n\n- 削除はスキップされます。各デバイスは自分のデータを相手に転送するため、削除された項目が復活します。\n間違って削除してしまった場合の復元や、内容を失わずに移行したいときに便利です。\n\n**デバイスA：有効、デバイスB：無効** →\n\n- デバイスAはBからの削除を無視しますが、Bのすべてのコンテンツは受け入れます。\n\n- デバイスBは通常どおりAからの削除を処理します。\n一方を完全なアーカイブとして使い、もう一方をより厳選した状態に保ちたい場合に有用です。\n\nこれらの設定を試して、自分にとって最適な構成を見つけてください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "설정에서 **Sync Without Deletes**(삭제 동기화 안 함) 옵션을 찾을 수 있으며, 이 옵션은 기기들 간 동기화 동작을 변경합니다. 동기화는 한 번에 두 기기씩 이루어지므로, 이를 기기 A와 기기 B라고 하겠습니다:\n\n**양쪽 기기: 옵션 비활성화** →\n\n- 모든 삭제가 동기화됩니다. 두 기기는 동일한 콘텐츠(삭제된 항목 포함)를 갖게 됩니다.\n\n**양쪽 기기: 옵션 활성화** →\n\n- 삭제는 건너뜁니다. 각 기기는 자신의 데이터를 다른 기기로 전송하므로 삭제된 항목이 다시 나타납니다.\n\n실수로 삭제한 항목을 복구하거나 손실 없이 콘텐츠를 전송할 때 유용합니다.\n\n**기기 A 활성화, 기기 B 비활성화** →\n\n- 기기 A는 B에서 발생한 삭제를 건너뛰지만 B의 모든 콘텐츠는 받아들입니다.\n\n- 기기 B는 A의 삭제를 정상적으로 처리합니다.\n\n한 기기를 전체 아카이브로 두고 다른 기기는 더 엄선된 상태로 유지하고 싶을 때 유용합니다.\n\n이 설정들을 직접 시도해 보며 자신에게 가장 잘 맞는 구성을 찾아보세요."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I Innstillinger finner du valget **Synkroniser uten sletting**, som endrer hvordan synkronisering oppfører seg mellom enhetene dine. Siden synkronisering skjer mellom to enheter om gangen, la oss kalle dem Enhet A og Enhet B:\n\n**Begge enheter: valget av** →\n\n- Alle slettinger synkroniseres. Begge enheter ender opp med samme innhold (inkludert fjernede elementer).\n\n**Begge enheter: valget på** →\n\n- Slettinger hoppes over. Hver enhet overfører sitt innhold til den andre, så slettede elementer dukker opp igjen.\nNyttig for å gjenopprette ved tilfeldige slettinger eller overføre innhold uten tap.\n\n**Enhet A på, Enhet B av** →\n\n- Enhet A ignorerer slettinger fra B, men tar imot alt innhold fra B.\n\n- Enhet B håndterer slettinger fra A som vanlig.\nNyttig hvis du vil at én enhet skal fungere som et komplett arkiv mens en annen holdes mer kuratert.\n\nDu kan prøve deg fram med disse innstillingene for å finne oppsettet som passer best for deg."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In Instellingen vind je de optie **Sync Without Deletes**, die bepaalt hoe synchroniseren werkt tussen je apparaten. Omdat synchronisatie steeds tussen twee apparaten tegelijk plaatsvindt, noemen we ze Device A en Device B:\n\n**Beide apparaten: optie uitgeschakeld** →\n\n- Alle verwijderingen worden gesynchroniseerd. Beide apparaten hebben uiteindelijk dezelfde inhoud (inclusief verwijderde items).\n\n**Beide apparaten: optie ingeschakeld** →\n\n- Verwijderingen worden overgeslagen. Elk apparaat zendt zijn data naar het andere, dus verwijderde items verschijnen weer.\nHandig om per ongeluk verwijderde items terug te halen of om content over te zetten zonder verlies.\n\n**Device A ingeschakeld, Device B uitgeschakeld** →\n\n- Device A slaat verwijderingen vanaf B over maar accepteert alle inhoud van B.\n\n- Device B verwerkt verwijderingen van A normaal.\nHandig als je wilt dat één apparaat als volledig archief fungeert terwijl het andere meer gecureerd blijft.\n\nJe kunt met deze instellingen experimenteren om de setup te vinden die het beste voor je werkt."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Em Ajustes, você encontrará a opção **Sincronizar sem exclusões**, que altera como a sincronização funciona entre seus dispositivos. Como a sincronização ocorre entre dois dispositivos por vez, vamos chamá‑los de Dispositivo A e Dispositivo B:\n\n**Ambos os dispositivos: opção desativada** →\n\n- Todas as exclusões são sincronizadas. Ambos os dispositivos ficam com o mesmo conteúdo (incluindo itens removidos).\n\n**Ambos os dispositivos: opção ativada** →\n\n- Exclusões são ignoradas. Cada dispositivo transfere seus dados para o outro, então itens excluídos reaparecem.\nÚtil para recuperar exclusões acidentais ou transferir conteúdo sem perdas.\n\n**Dispositivo A ativado, Dispositivo B desativado** →\n\n- O Dispositivo A ignora as exclusões vindas do B, mas aceita todo o conteúdo do B.\n\n- O Dispositivo B processa normalmente as exclusões vindas do A.\nÚtil se você quiser que um dispositivo funcione como um arquivo completo enquanto outro permanece mais selecionado.\n\nVocê pode experimentar essas configurações para encontrar a combinação que funciona melhor para você."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "V Nastaveniach nájdeš možnosť **Synchronizovať bez mazania**, ktorá mení správanie synchronizácie medzi tvojimi zariadeniami. Keďže sa synchronizuje vždy medzi dvoma zariadeniami naraz, nazvime ich Zariadenie A a Zariadenie B:\n\n**Obe zariadenia: možnosť vypnutá** →\n\n- Všetky zmazania sa synchronizujú. Obe zariadenia skončia s rovnakým obsahom (vrátane odstránených položiek).\n\n**Obe zariadenia: možnosť zapnutá** →\n\n- Zmazania sa preskočia. Každé zariadenie prenesie svoje dáta na druhé, takže zmazané položky sa znovu objavia.\nUžitočné pri obnovovaní po neúmyselnom zmazaní alebo pri prenose obsahu bez strát.\n\n**Zariadenie A zapnuté, Zariadenie B vypnuté** →\n\n- Zariadenie A preskočí zmazania z B, ale príjme všetok obsah z B.\n\n- Zariadenie B spracuje zmazania z A normálne.\nUžitočné, ak chceš, aby jedno zariadenie fungovalo ako plný archív, zatiaľ čo druhé zostalo viac upravené."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I Inställningar hittar du alternativet **Sync Without Deletes**, som ändrar hur synkronisering fungerar mellan dina enheter. Eftersom synkronisering sker mellan två enheter i taget, låt oss kalla dem Enhet A och Enhet B:\n\n**Båda enheter: alternativet inaktiverat** →\n\n- Alla raderingar synkas. Båda enheterna får samma innehåll (inklusive borttagna objekt).\n\n**Båda enheter: alternativet aktiverat** →\n\n- Raderingar hoppas över. Varje enhet överför sina data till den andra, så borttagna objekt återkommer.\nBra för att återställa av misstag raderade saker eller för att överföra innehåll utan förluster.\n\n**Enhet A aktiverad, Enhet B inaktiverad** →\n\n- Enhet A hoppar över raderingar från B men accepterar allt innehåll från B.\n\n- Enhet B behandlar raderingar från A som vanligt.\nBra om du vill att en enhet ska fungera som ett komplett arkiv medan den andra är mer utvald.\n\nDu kan experimentera med dessa inställningar för att hitta den konfiguration som fungerar bäst för dig."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ayarlar’da **Silme Olmadan Senkronize Et** seçeneğini bulacaksın; bu seçenek cihazların arasındaki senkronizasyon davranışını değiştirir. Senkronizasyon aynı anda iki cihaz arasında gerçekleştiği için bunlara Cihaz A ve Cihaz B diyelim:\n\n**Her iki cihaz: seçenek devre dışı** →\n\n- Tüm silmeler senkronize edilir. Her iki cihaz aynı içeriğe sahip olur (silinmiş öğeler de dahil).\n\n**Her iki cihaz: seçenek etkin** →\n\n- Silmeler atlanır. Her cihaz kendi verisini diğerine aktarır, bu yüzden silinmiş öğeler yeniden görünür.\n\nKazara silmelerden kurtarmak veya içerikleri kayıp olmadan aktarmak için kullanışlıdır.\n\n**Cihaz A etkin, Cihaz B devre dışı** →\n\n- Cihaz A, B’den gelen silmeleri atlar fakat B’nin tüm içeriğini kabul eder.\n\n- Cihaz B, A’dan gelen silmeleri normal şekilde işler.\n\nBir cihazı tam bir arşiv gibi, diğerini ise daha özenli tutmak istiyorsan faydalıdır.\n\nBu ayarlarla deney yaparak senin için en uygun düzeni bulabilirsin."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在“设置”中，你会看到选项 **不删除同步（Sync Without Deletes）**，它会改变设备间同步的行为。由于同步是两台设备一组进行的，我们把它们称为 设备 A 和 设备 B：\n\n**两台设备：选项关闭** →\n\n- 所有删除都会被同步。两台设备最终内容相同（包括被删除的项目）。\n\n**两台设备：选项开启** →\n\n- 删除操作会被跳过。每台设备都会将其数据传给另一台，因此被删除的项目会重新出现。\n这在从误删中恢复或在不丢失内容的情况下传输内容时很有用。\n\n**设备 A 开启，设备 B 关闭** →\n\n- 设备 A 会跳过来自 B 的删除，但会接受 B 的所有内容。\n\n- 设备 B 会照常处理来自 A 的删除。\n这在你希望一台设备作为完整存档而另一台保持更精简时很有用。\n\n你可以尝试这些设置，找到最适合你的配置。"
+          }
+        }
+      }
+    },
     "How To Sync Title" : {
       "comment" : "Title of how to guide for syncing",
       "extractionState" : "manual",
@@ -14224,6 +14992,582 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "同步内容"
+          }
+        }
+      }
+    },
+    "How To Tip Label %lld" : {
+      "comment" : "Label of tip indicator for how to sub-pages",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tipp %lld"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tip %lld"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consejo %lld"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Astuce %lld"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "टिप %lld"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suggerimento %lld"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ヒント %lld"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "팁 %lld"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tips %lld"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tip %lld"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dica %lld"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tip %lld"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tips %lld"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İpucu %lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "提示 %lld"
+          }
+        }
+      }
+    },
+    "How To Tips Message 1" : {
+      "comment" : "Message to show in how to tips page of all devices, first tip.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fast alles in YABA ist interaktiv — du kannst bei vielen Einträgen wischen, um zusätzliche Optionen anzuzeigen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Almost everything in YABA is interactive—you can swipe on many items to reveal additional options."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Casi todo en YABA es interactivo—you can swipe on many items to reveal additional options."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Presque tout dans YABA est interactif : tu peux faire glisser de nombreux éléments pour afficher des options supplémentaires."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YABA में लगभग सब कुछ इंटरैक्टिव है — आप कई आइटम पर स्वाइप करके अतिरिक्त विकल्प देख सकते हैं।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quasi tutto in YABA è interattivo — puoi scorrere molti elementi per rivelare opzioni aggiuntive."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YABA のほとんどの項目は対話式です—多くの項目をスワイプすると追加オプションが表示されます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YABA의 거의 모든 항목은 상호작용 가능합니다—많은 항목에서 스와이프하여 추가 옵션을 표시할 수 있습니다."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nesten alt i YABA er interaktivt—du kan sveipe på mange elementer for å vise flere valg."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bijna alles in YABA is interactief—je kunt op veel items vegen om extra opties te tonen."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quase tudo no YABA é interativo—você pode deslizar muitos itens para revelar opções adicionais."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Takmer všetko v YABA je interaktívne — na mnohých položkách môžeš potiahnuť prstom a odhaliť ďalšie možnosti."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nästan allt i YABA är interaktivt — du kan svepa på många objekt för att visa fler alternativ."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YABA’daki neredeyse her şey etkileşimli — birçok öğede ek seçenekleri görmek için kaydırabilirsiniz."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YABA 中几乎所有内容都是可交互的——你可以在许多项目上滑动以显示更多选项。"
+          }
+        }
+      }
+    },
+    "How To Tips Message 2" : {
+      "comment" : "Message to show in how to tips page of all devices, second tip.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du kannst auch auf einen Eintrag tippen und halten (oder auf dem Mac mit einem Zwei‑Finger‑Tipp), um ein Pop‑up‑Menü mit denselben Optionen wie beim Wischen zu öffnen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You can also tap and hold (or use a two-finger tap for Mac) on any item to open a pop-up menu with the same options as swiping."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "También puedes tocar y mantener pulsado (o usar un toque con dos dedos en Mac) sobre cualquier elemento para abrir un menú emergente con las mismas opciones que al deslizar."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu peux aussi appuyer longuement (ou faire un appui à deux doigts sur Mac) sur n’importe quel élément pour ouvrir un menu contextuel avec les mêmes options que le glissement."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "आप किसी भी आइटम पर टैप करके दबा भी सकते हैं (Mac पर दो-आंगुल टैप का उपयोग करें) ताकि वही विकल्पों वाला पॉप-अप मेनू खुले जो स्वाइप करने पर मिलता है।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puoi anche toccare e tenere premuto (o usare un tocco con due dita su Mac) su qualsiasi elemento per aprire un menu a comparsa con le stesse opzioni dello scorrimento."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "項目を長押し（Mac では2本指タップ）すると、スワイプと同じオプションがあるポップアップメニューを開けます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "또한 항목을 길게 누르거나(맥에서는 두 손가락 탭을 사용) 팝업 메뉴를 열어 스와이프와 동일한 옵션을 사용할 수 있습니다."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du kan også trykke og holde (eller bruke et trykk med to fingre på Mac) på et element for å åpne en hurtigmeny med samme valg som ved sveiping."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je kunt ook tikken en vasthouden (of op de Mac een tweevinger-tik gebruiken) op elk item om een pop-upmenu te openen met dezelfde opties als bij vegen."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você também pode tocar e segurar (ou usar um toque com dois dedos no Mac) em qualquer item para abrir um menu pop-up com as mesmas opções do gesto de deslizar."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Môžeš tiež podržať prst na položke (alebo použiť ťuknutie dvoma prstami na Macu), čím otvoríš vyskakovacie menu s rovnakými možnosťami ako pri potiahnutí."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du kan också trycka och hålla (eller använda ett tvåfingertryck på Mac) på ett objekt för att öppna en popupmeny med samma alternativ som vid svep."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Herhangi bir öğeye dokunup basılı tutabilir veya Mac’te iki parmakla dokunarak, kaydırma ile aynı seçenekleri sunan açılır menüyü açabilirsiniz."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你也可以长按（在 Mac 上使用双指轻点）任何项目以打开与滑动相同选项的弹出菜单。"
+          }
+        }
+      }
+    },
+    "How To Tips Message 3" : {
+      "comment" : "Message to show in how to tips page of all devices, third tip.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ankündigungen kannst du durch Wischen, mit einem Zwei‑Finger‑Tipp auf dem Mac oder durch Tippen auf das Papierkorb‑Symbol löschen. Keine Sorge — vergangene Ankündigungen kannst du jederzeit in den Einstellungen ansehen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You can delete announcements by swiping, using a two-finger tap on Mac, or tapping the trash icon. Don’t worry—you can always view past announcements in Settings."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puedes eliminar anuncios deslizando, usando un toque con dos dedos en Mac, o pulsando el icono de la papelera. No te preocupes: siempre puedes ver anuncios anteriores en Ajustes."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu peux supprimer les annonces en les faisant glisser, en faisant un appui à deux doigts sur Mac, ou en touchant l’icône de corbeille. Ne t’inquiète pas : tu peux toujours consulter les annonces passées dans Réglages."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "आप घोषणाएँ स्वाइप करके, Mac पर दो-आंगुल टैप से, या ट्रैश आइकन टैप करके हटा सकते हैं। चिंता न करें — आप हमेशा सेटिंग्स में पिछली घोषणाएँ देख सकते हैं।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puoi eliminare gli annunci scorrendo, usando un tocco con due dita su Mac o toccando l'icona del cestino. Non preoccuparti — puoi sempre visualizzare gli annunci passati nelle Impostazioni."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "お知らせはスワイプ、Mac の2本指タップ、またはゴミ箱アイコンをタップして削除できます。ご安心ください—過去のお知らせは設定でいつでも確認できます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "공지사항은 스와이프로 삭제하거나 맥에서 두 손가락 탭을 하거나 휴지통 아이콘을 탭하여 삭제할 수 있습니다. 걱정하지 마세요—설정에서 이전 공지사항을 언제든지 볼 수 있습니다."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du kan slette kunngjøringer ved å sveipe, bruke et trykk med to fingre på Mac eller trykke på søppelkasseikonet. Ikke bekymre deg — du kan alltid se tidligere kunngjøringer i Innstillinger."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je kunt aankondigingen verwijderen door te vegen, een tweevinger-tik op de Mac te gebruiken of op het prullenbak-icoon te tikken. Geen zorgen—je kunt eerdere aankondigingen altijd bekijken in Instellingen."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você pode excluir anúncios deslizando, usando um toque com dois dedos no Mac ou tocando no ícone de lixeira. Não se preocupe—você sempre pode ver anúncios antigos em Ajustes."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oznamy môžeš odstrániť potiahnutím, dvojprstovým ťuknutím na Macu alebo klepnutím na ikonu koša. Nemaj obavy — staršie oznámenia si vždy môžeš zobraziť v Nastaveniach."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du kan ta bort meddelanden genom att svepa, använda ett tvåfingertryck på Mac eller trycka på papperskorgsikonen. Oroa dig inte — du kan alltid se tidigare meddelanden i Inställningar."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duyuruları kaydırarak, Mac’te iki parmakla dokunarak ya da çöp kutusu simgesine dokunarak silebilirsiniz. Endişelenmeyin — geçmiş duyuruları her zaman Ayarlar’da görebilirsiniz."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你可以通过滑动、在 Mac 上双指轻点或点击垃圾桶图标来删除公告。别担心——你随时可以在“设置”中查看过去的公告。"
+          }
+        }
+      }
+    },
+    "How To Tips Message 4" : {
+      "comment" : "Message to show in how to tips page of all devices, fourth tip.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du kannst auf allen Geräten einen Schnellzugriff für YABA zum Kontrollzentrum hinzufügen und ihn sogar auf dem Sperrbildschirm deines iPhone oder iPad platzieren."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You can add a quick launcher for YABA to your Control Center on all devices, and even place it on the lock screen of your iPhone or iPad."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puedes añadir un lanzador rápido para YABA al Centro de Control en todos los dispositivos, e incluso colocarlo en la pantalla de bloqueo de tu iPhone o iPad."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu peux ajouter un lancement rapide pour YABA au Centre de contrôle sur tous les appareils, et même le placer sur l’écran verrouillé de ton iPhone ou iPad."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "आप सभी डिवाइसों के कंट्रोल सेंटर में YABA के लिए एक त्वरित लॉन्चर जोड़ सकते हैं, और अपने iPhone या iPad की लॉक स्क्रीन पर भी रख सकते हैं।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puoi aggiungere una scorciatoia rapida per YABA al Centro di Controllo su tutti i dispositivi e persino posizionarla nella schermata di blocco del tuo iPhone o iPad."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべてのデバイスで YABA のクイックランチャーをコントロールセンターに追加でき、iPhone や iPad のロック画面に配置することもできます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모든 기기에서 제어 센터에 YABA의 빠른 실행기를 추가할 수 있으며, iPhone이나 iPad의 잠금 화면에도 배치할 수 있습니다."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du kan legge til en raskstarter for YABA i Kontrollsenteret på alle enheter, og til og med plassere den på låseskjermen på iPhone eller iPad."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je kunt op alle apparaten een snelle launcher voor YABA toevoegen aan het Bedieningspaneel en deze zelfs op het vergrendelscherm van je iPhone of iPad plaatsen."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você pode adicionar um lançador rápido do YABA à Central de Controle em todos os dispositivos e até colocá‑lo na tela de bloqueio do seu iPhone ou iPad."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Môžeš pridať rýchly spúšťač pre YABA do Ovládacieho centra na všetkých zariadeniach a dokonca ho umiestniť aj na zamknutú obrazovku iPhonu alebo iPadu."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du kan lägga till en snabbstart för YABA i Kontrollcenter på alla enheter, och till och med placera den på låsskärmen på din iPhone eller iPad."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tüm cihazlarda YABA için Hızlı Başlatıcı’yı Kontrol Merkezi’ne ekleyebilir, hatta iPhone veya iPad’inizin kilit ekranına bile yerleştirebilirsiniz."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你可以在所有设备的控制中心为 YABA 添加快速启动器，甚至把它放到 iPhone 或 iPad 的锁屏上。"
+          }
+        }
+      }
+    },
+    "How To Tips Message 5" : {
+      "comment" : "Message to show in how to tips page of all devices, fifth tip.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auf Mac und iPad kannst du Bereiche einfach durch Ziehen an ihren Kanten in der Größe ändern. Das funktioniert sowohl für die Seitenleiste als auch für die Trennlinie zwischen Inhalt und Detailansicht."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On Mac and iPad, you can easily resize panes by dragging their edges. This works for both the sidebar and the content/detail dividers."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En Mac y iPad puedes redimensionar fácilmente los paneles arrastrando sus bordes. Esto funciona tanto para la barra lateral como para los divisores de contenido/detalle."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sur Mac et iPad, tu peux redimensionner facilement les panneaux en faisant glisser leurs bords. Cela fonctionne pour la barre latérale comme pour les séparateurs contenu/détail."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mac और iPad पर, आप किनारों को खींचकर पैनल का आकार आसानी से बदल सकते हैं। यह साइडबार और सामग्री/विवरण डिवाइडरों दोनों के लिए काम करता है।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Su Mac e iPad puoi ridimensionare facilmente i pannelli trascinando i loro bordi. Questo funziona sia per la barra laterale sia per i divisori tra contenuto e dettaglio."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mac と iPad では、枠の境界をドラッグしてペインのサイズを簡単に変更できます。サイドバーとコンテンツ／詳細の区切りの両方に適用されます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mac과 iPad에서는 가장자리를 드래그해 창 분할의 크기를 쉽게 조절할 수 있습니다. 사이드바와 콘텐츠/상세 구분선 모두에서 작동합니다."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "På Mac og iPad kan du enkelt endre størrelse på paneler ved å dra i kantene deres. Dette gjelder både sidepanelet og skillerne mellom innhold og detaljvisning."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Op Mac en iPad kun je panelen eenvoudig van grootte veranderen door aan hun randen te slepen. Dit werkt zowel voor de zijbalk als voor de scheidslijnen tussen inhoud en details."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Mac e no iPad, você pode redimensionar painéis arrastando suas bordas. Isso funciona tanto para a barra lateral quanto para os divisores de conteúdo/detalhes."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Na Macu a iPade môžeš jednoducho zmeniť veľkosť panelov potiahnutím ich okrajov. Funguje to ako pre postranný panel, tak pre deliace čiary medzi obsahom a detailmi."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "På Mac och iPad kan du enkelt ändra storlek på paneler genom att dra i deras kanter. Detta gäller både sidofältet och delarna som separerar innehåll och detalj."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mac ve iPad’de bölmelerin kenarlarını sürükleyerek kolayca yeniden boyutlandırabilirsiniz. Bu, hem kenar çubuğu hem de içerik/detay ayırıcıları için geçerlidir."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 Mac 和 iPad 上，你可以通过拖动边缘来轻松调整窗格大小。这适用于侧边栏以及内容/详细信息分隔栏。"
           }
         }
       }

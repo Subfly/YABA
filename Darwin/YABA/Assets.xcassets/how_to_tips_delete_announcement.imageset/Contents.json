@@ -1,0 +1,23 @@
+{
+  "images" : [
+    {
+      "filename" : "swipe_to_delete_announcement_compressed.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "swipe_to_delete_announcement_compressed 1.png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "swipe_to_delete_announcement_compressed 2.png",
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

@@ -86,7 +86,7 @@ struct HowToGuideView: View {
                 case .widgets: HowToWidgets()
                 case .sync: HowToSync()
                 case .reminders: HowToReminders()
-                case .tips: EmptyView()
+                case .tips: HowToTips()
                 }
             }
             .presentationDetents([.large])
