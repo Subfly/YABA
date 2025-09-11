@@ -63,7 +63,7 @@ private struct GlassyHomeCreateContentFAB: View {
                         } label: {
                             fab(isMini: true, type: .bookmark)
                         }
-                        .glassEffectTransition(.matchedGeometry(properties: [.position]))
+                        .glassEffectTransition(.matchedGeometry)
                         .glassEffectID(4, in: animation)
                         
                         Button {
@@ -71,7 +71,7 @@ private struct GlassyHomeCreateContentFAB: View {
                         } label: {
                             fab(isMini: true, type: .folder)
                         }
-                        .glassEffectTransition(.matchedGeometry(properties: [.position]))
+                        .glassEffectTransition(.matchedGeometry)
                         .glassEffectID(3, in: animation)
 
                         Button {
@@ -79,7 +79,7 @@ private struct GlassyHomeCreateContentFAB: View {
                         } label: {
                             fab(isMini: true, type: .tag)
                         }
-                        .glassEffectTransition(.matchedGeometry(properties: [.position]))
+                        .glassEffectTransition(.matchedGeometry)
                         .glassEffectID(2, in: animation)
                     }
                     
