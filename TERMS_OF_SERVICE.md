@@ -237,4 +237,7 @@ For questions about these Terms, please contact:
 
 ---
 
+**Previous versions of these Terms of Service are available:**
+- [Previous Terms of Service (with CloudKit/iCloud sync)](https://github.com/Subfly/YABA/blob/5bf540dc/TERMS_OF_SERVICE.md)
+
 **By using YABA, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service. You further acknowledge that you use the Service entirely at your own risk and that the developer bears no responsibility for any damages, losses, or consequences arising from your use of the Service.** 

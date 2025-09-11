@@ -240,4 +240,7 @@ Since we do not hold your data:
 
 ---
 
+**Previous versions of this Privacy Policy are available:**
+- [Previous Privacy Policy (with CloudKit/iCloud sync)](https://github.com/Subfly/YABA/blob/5bf540dc/PRIVACY_POLICY.md)
+
 **This Privacy Policy reflects our commitment to privacy-first, server-less development. By using YABA, you acknowledge that you have read and understood this Privacy Policy and agree to use the application entirely at your own risk.** 

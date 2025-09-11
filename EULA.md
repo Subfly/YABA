@@ -178,4 +178,7 @@ For questions about this EULA, please contact:
 
 ---
 
+**Previous versions of this EULA are available:**
+- [Previous EULA (with CloudKit/iCloud sync)](https://github.com/Subfly/YABA/blob/5bf540dc/EULA.md)
+
 **By using YABA, you acknowledge that you have read, understood, and agree to be bound by this EULA. You further acknowledge that you use the Software entirely at your own risk and that the Licensor bears no responsibility for any damages, losses, or consequences arising from your use of the Software.** 
