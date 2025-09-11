@@ -226,6 +226,102 @@
         }
       }
     },
+    "Announcement CloudKit Deletion Title" : {
+      "comment" : "One time title for announcement that indicates Cloud Kit Database Deletion",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Löschung der CloudKit-Datenbank"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CloudKit Database Deletion"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminación de la base de datos de CloudKit"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suppression de la base de données CloudKit"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CloudKit डेटाबेस हटाना"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminazione del database CloudKit"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CloudKit データベースの削除"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CloudKit 데이터베이스 삭제"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sletting av CloudKit-database"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CloudKit-database verwijderen"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exclusão do banco de dados do CloudKit"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vymazanie databázy CloudKit"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Radering av CloudKit-databas"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CloudKit Veritabanı Silme"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除 CloudKit 数据库"
+          }
+        }
+      }
+    },
     "Announcements CloudKit Support Drop Title" : {
       "comment" : "One time title for announcement that indicates Cloud Kit Support Drop",
       "extractionState" : "manual",
@@ -606,6 +702,102 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "删除公告"
+          }
+        }
+      }
+    },
+    "Announcements Legals Update CloudKit Title" : {
+      "comment" : "Announcement title that indicates legal documents are updated due to CloudKit removal",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datenschutzrichtlinie, Nutzungsbedingungen und EULA wurden aufgrund der Entfernung der CloudKit-Synchronisierung aktualisiert"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacy Policy, ToS and EULA is updated due to removal of CloudKit Sync"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La Política de privacidad, los Términos de servicio y el EULA se han actualizado debido a la eliminación de la sincronización con CloudKit"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La politique de confidentialité, les conditions d'utilisation et l'EULA ont été mises à jour suite à la suppression de la synchronisation CloudKit"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CloudKit सिंक हटाने के कारण गोपनीयता नीति, ToS और EULA अपडेट किए गए हैं"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informativa sulla privacy, ToS e EULA aggiornati per la rimozione della sincronizzazione CloudKit"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CloudKit 同期の廃止に伴い、プライバシーポリシー、利用規約、EULAを更新しました"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CloudKit 동기화 제거로 인해 개인정보처리방침, 이용약관 및 EULA가 업데이트되었습니다"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Personvernerklæring, vilkår for bruk og EULA er oppdatert på grunn av fjerning av CloudKit-synkronisering"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacybeleid, ToS en EULA zijn bijgewerkt vanwege het verwijderen van CloudKit-synchronisatie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Política de Privacidade, Termos de Serviço e EULA foram atualizados devido à remoção da sincronização do CloudKit"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zásady ochrany osobných údajov, Podmienky služby a EULA boli aktualizované kvôli odstráneniu synchronizácie CloudKit"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Integritetspolicyn, användarvillkoren och EULA har uppdaterats på grund av borttagning av CloudKit-synk"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CloudKit senkronizasyonunun kaldırılması nedeniyle Gizlilik Politikası, Hizmet Şartları ve EULA güncellendi"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "由于移除 CloudKit 同步，隐私政策、服务条款和 EULA 已更新"
           }
         }
       }
@@ -14810,8 +15002,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : ""
+            "state" : "translated",
+            "value" : "In den Einstellungen findest du die Option **Sync Without Deletes**, die das Verhalten der Synchronisation zwischen deinen Geräten ändert. Da die Synchronisation jeweils zwischen zwei Geräten erfolgt, nennen wir sie Gerät A und Gerät B:"
           }
         },
         "en" : {
