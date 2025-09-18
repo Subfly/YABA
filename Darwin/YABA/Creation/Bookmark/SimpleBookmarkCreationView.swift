@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct SimpleBookmarkCreationView: View {
     @Environment(\.modelContext)
@@ -13,6 +14,9 @@ struct SimpleBookmarkCreationView: View {
     
     @Environment(\.dismiss)
     private var dismiss
+    
+    @AppStorage(Constants.saveToArchiveOrgKey)
+    private var saveToArchiveOrg: Bool = false
     
     @State
     private var creationState: BookmarkCreationState = .init(isInEditMode: false)
@@ -53,7 +57,8 @@ struct SimpleBookmarkCreationView: View {
                             onFinishCallback: {
                                 onExitRequested()
                                 dismiss()
-                            }
+                            },
+                            saveToArchiveOrg: saveToArchiveOrg
                         )
                     }.disabled(
                         creationState.url.isEmpty ||

@@ -136,7 +136,8 @@ internal class BookmarkCreationState {
     func onDone(
         bookmarkToEdit: YabaBookmark?,
         using modelContext: ModelContext,
-        onFinishCallback: @escaping () -> Void
+        onFinishCallback: @escaping () -> Void,
+        saveToArchiveOrg: Bool
     ) {
         guard let selectedFolder else { return }
         
@@ -199,7 +200,15 @@ internal class BookmarkCreationState {
                 modelContext.insert(newBookmark)
             }
             try? modelContext.save()
+            
+            // Close the bookmark creation panel immediately
             onFinishCallback()
+            
+            // Archive to archive.org in background if toggle is enabled
+            if saveToArchiveOrg && bookmarkToEdit == nil {
+                // Only archive new bookmarks, in background
+                archiveURLInBackground(cleanerUrl)
+            }
         }
         
         WidgetCenter.shared.reloadAllTimelines()
@@ -336,5 +345,129 @@ internal class BookmarkCreationState {
     
     func onClearTitle() {
         label = ""
+    }
+    
+    private func archiveURLInBackground(_ url: String) {
+        // Start background archiving with retry mechanism
+        Task.detached { [weak self] in
+            await self?.performArchiveWithRetry(url: url, attempt: 1, maxAttempts: 3)
+        }
+    }
+    
+    private func performArchiveWithRetry(url: String, attempt: Int, maxAttempts: Int) async {
+        print("YABA Archive Debug: Attempt \(attempt)/\(maxAttempts) - Starting to archive URL: \(url)")
+        
+        do {
+            // Use the correct archive.org endpoint format: https://web.archive.org/save/[URL]
+            // Based on JavaScript: javascript:void(window.open('https://web.archive.org/save/'+location.href));
+            let archiveURLString = "https://web.archive.org/save/\(url)"
+            
+            guard let archiveURL = URL(string: archiveURLString) else {
+                print("YABA Archive Debug: Failed to create archive URL: \(archiveURLString)")
+                await MainActor.run {
+                    toastManager.show(
+                        message: LocalizedStringKey("Failed to archive link - invalid URL"),
+                        accentColor: .red,
+                        acceptText: LocalizedStringKey("Ok"),
+                        iconType: .error,
+                        onAcceptPressed: { self.toastManager.hide() }
+                    )
+                }
+                return
+            }
+            
+            print("YABA Archive Debug: Archive URL: \(archiveURLString)")
+            
+            // Use GET request (not POST) as per archive.org API
+            var request = URLRequest(url: archiveURL)
+            request.httpMethod = "GET"
+            request.timeoutInterval = 60.0 // Increase timeout for archive.org processing
+            
+            // Add user agent to avoid blocking
+            request.setValue("YABA-BookmarkApp/1.0", forHTTPHeaderField: "User-Agent")
+            
+            print("YABA Archive Debug: Sending GET request to archive.org")
+            
+            let (data, response) = try await URLSession.shared.data(for: request)
+            
+            print("YABA Archive Debug: Received response from archive.org")
+            
+            if let httpResponse = response as? HTTPURLResponse {
+                print("YABA Archive Debug: HTTP Status Code: \(httpResponse.statusCode)")
+                
+                if httpResponse.statusCode == 200 || httpResponse.statusCode == 302 || httpResponse.statusCode == 301 {
+                    // Success (200), redirect (302/301) - all indicate successful archiving
+                    print("YABA Archive Debug: Successfully archived URL on attempt \(attempt)")
+                    await MainActor.run {
+                        toastManager.show(
+                            message: LocalizedStringKey("Link archived successfully"),
+                            accentColor: .green,
+                            acceptText: LocalizedStringKey("Ok"),
+                            iconType: .success,
+                            onAcceptPressed: { self.toastManager.hide() }
+                        )
+                    }
+                    return // Success, no need to retry
+                } else {
+                    // Error response - try to retry
+                    print("YABA Archive Debug: Archive.org returned error status: \(httpResponse.statusCode) on attempt \(attempt)")
+                    if attempt < maxAttempts {
+                        // Wait before retrying (exponential backoff)
+                        let delay = UInt64(pow(2.0, Double(attempt)) * 1_000_000_000) // 2^attempt seconds
+                        try await Task.sleep(nanoseconds: delay)
+                        await performArchiveWithRetry(url: url, attempt: attempt + 1, maxAttempts: maxAttempts)
+                        return
+                    } else {
+                        // Max attempts reached
+                        await MainActor.run {
+                            toastManager.show(
+                                message: LocalizedStringKey("Failed to archive link after \(maxAttempts) attempts - server error (\(httpResponse.statusCode))"),
+                                accentColor: .red,
+                                acceptText: LocalizedStringKey("Ok"),
+                                iconType: .error,
+                                onAcceptPressed: { self.toastManager.hide() }
+                            )
+                        }
+                    }
+                }
+            } else {
+                print("YABA Archive Debug: No HTTP response received on attempt \(attempt)")
+                if attempt < maxAttempts {
+                    // Wait before retrying
+                    let delay = UInt64(pow(2.0, Double(attempt)) * 1_000_000_000) // 2^attempt seconds
+                    try await Task.sleep(nanoseconds: delay)
+                    await performArchiveWithRetry(url: url, attempt: attempt + 1, maxAttempts: maxAttempts)
+                    return
+                } else {
+                    await MainActor.run {
+                        toastManager.show(
+                            message: LocalizedStringKey("Failed to archive link after \(maxAttempts) attempts - no response"),
+                            accentColor: .red,
+                            acceptText: LocalizedStringKey("Ok"),
+                            iconType: .error,
+                            onAcceptPressed: { self.toastManager.hide() }
+                        )
+                    }
+                }
+            }
+        } catch {
+            print("YABA Archive Debug: Network error on attempt \(attempt): \(error.localizedDescription)")
+            if attempt < maxAttempts {
+                // Wait before retrying
+                let delay = UInt64(pow(2.0, Double(attempt)) * 1_000_000_000) // 2^attempt seconds
+                try? await Task.sleep(nanoseconds: delay)
+                await performArchiveWithRetry(url: url, attempt: attempt + 1, maxAttempts: maxAttempts)
+            } else {
+                await MainActor.run {
+                    toastManager.show(
+                        message: LocalizedStringKey("Failed to archive link after \(maxAttempts) attempts - network error"),
+                        accentColor: .red,
+                        acceptText: LocalizedStringKey("Ok"),
+                        iconType: .error,
+                        onAcceptPressed: { self.toastManager.hide() }
+                    )
+                }
+            }
+        }
     }
 }
