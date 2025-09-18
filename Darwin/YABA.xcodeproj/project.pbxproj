@@ -1235,10 +1235,11 @@
 				CODE_SIGN_ENTITLEMENTS = YABAShare/YABAShare.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1.3;
-				DEVELOPMENT_TEAM = WSK3376L7S;
+				DEVELOPMENT_TEAM = 52LLHYP8BK;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = YABAShare/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = YABA;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "YABA Share";
 				INSTALL_PATH = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
@@ -1248,7 +1249,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.3;
-				PRODUCT_BUNDLE_IDENTIFIER = dev.subfly.YABA.YABAShare;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.nurvx.YABA.YABAShare;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -1270,10 +1271,11 @@
 				CODE_SIGN_ENTITLEMENTS = YABAShare/YABAShare.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1.3;
-				DEVELOPMENT_TEAM = WSK3376L7S;
+				DEVELOPMENT_TEAM = 52LLHYP8BK;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = YABAShare/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = YABA;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "YABA Share";
 				INSTALL_PATH = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
@@ -1283,7 +1285,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.3;
-				PRODUCT_BUNDLE_IDENTIFIER = dev.subfly.YABA.YABAShare;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.nurvx.YABA.YABAShare;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -1305,7 +1307,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = WSK3376L7S;
+				DEVELOPMENT_TEAM = 52LLHYP8BK;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = YABAKeyboard/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "YABA Keyboard";
@@ -1319,7 +1321,7 @@
 				MARKETING_VERSION = 1.0;
 				OTHER_SWIFT_FLAGS = KEYBOARD_EXTENSION;
 				"OTHER_SWIFT_FLAGS[arch=*]" = "";
-				PRODUCT_BUNDLE_IDENTIFIER = dev.subfly.YABA.YABAKeyboard;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.nurvx.YABA.YABAKeyboard;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -1337,7 +1339,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = WSK3376L7S;
+				DEVELOPMENT_TEAM = 52LLHYP8BK;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = YABAKeyboard/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "YABA Keyboard";
@@ -1351,7 +1353,7 @@
 				MARKETING_VERSION = 1.0;
 				OTHER_SWIFT_FLAGS = KEYBOARD_EXTENSION;
 				"OTHER_SWIFT_FLAGS[arch=*]" = "";
-				PRODUCT_BUNDLE_IDENTIFIER = dev.subfly.YABA.YABAKeyboard;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.nurvx.YABA.YABAKeyboard;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
