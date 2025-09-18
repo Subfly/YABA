@@ -2,28 +2,26 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
 	<key>CFBundleIconFile</key>
 	<string>icon</string>
 	<key>NSExtension</key>
 	<dict>
 		<key>NSExtensionAttributes</key>
 		<dict>
+			<key>NSExtensionActivationDictionaryVersion</key>
+			<integer>2</integer>
 			<key>NSExtensionActivationRule</key>
 			<dict/>
-			<key>NSExtensionActivationSupportsWebURLWithMaxCount</key>
+			<key>NSExtensionActivationSupportsAttachmentsWithMaxCount</key>
 			<integer>10</integer>
-			<key>NSExtensionActivationSupportsWebPageWithMaxCount</key>
+			<key>NSExtensionActivationSupportsImageWithMaxCount</key>
 			<integer>10</integer>
 			<key>NSExtensionActivationSupportsText</key>
 			<true/>
-			<key>NSExtensionActivationSupportsImageWithMaxCount</key>
+			<key>NSExtensionActivationSupportsWebPageWithMaxCount</key>
 			<integer>10</integer>
-			<key>NSExtensionActivationSupportsAttachmentsWithMaxCount</key>
+			<key>NSExtensionActivationSupportsWebURLWithMaxCount</key>
 			<integer>10</integer>
-			<key>NSExtensionActivationDictionaryVersion</key>
-			<integer>2</integer>
 		</dict>
 		<key>NSExtensionPointIdentifier</key>
 		<string>com.apple.share-services</string>
