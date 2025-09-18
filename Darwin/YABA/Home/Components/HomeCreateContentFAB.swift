@@ -63,24 +63,24 @@ private struct GlassyHomeCreateContentFAB: View {
                         } label: {
                             fab(isMini: true, type: .bookmark)
                         }
-                        .glassEffectTransition(.matchedGeometry(properties: [.position]))
-                        .glassEffectID(4, in: animation)
+                        // 👇 Corrected Line
+                        .matchedGeometryEffect(id: 4, in: animation, properties: [.position])
                         
                         Button {
                             onClickAction(.folder)
                         } label: {
                             fab(isMini: true, type: .folder)
                         }
-                        .glassEffectTransition(.matchedGeometry(properties: [.position]))
-                        .glassEffectID(3, in: animation)
+                        // 👇 Corrected Line
+                        .matchedGeometryEffect(id: 3, in: animation, properties: [.position])
 
                         Button {
                             onClickAction(.tag)
                         } label: {
                             fab(isMini: true, type: .tag)
                         }
-                        .glassEffectTransition(.matchedGeometry(properties: [.position]))
-                        .glassEffectID(2, in: animation)
+                        // 👇 Corrected Line
+                        .matchedGeometryEffect(id: 2, in: animation, properties: [.position])
                     }
                     
                     Button {
@@ -88,7 +88,8 @@ private struct GlassyHomeCreateContentFAB: View {
                     } label: {
                         fab(isMini: false, type: .main)
                     }
-                    .glassEffectID(1, in: animation)
+                    // 👇 Corrected Line
+                    .matchedGeometryEffect(id: 1, in: animation)
                 }
                 .padding(.bottom)
                 .padding(.bottom)
