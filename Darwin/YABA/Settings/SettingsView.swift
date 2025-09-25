@@ -285,6 +285,15 @@ struct SettingsView: View {
                     .multilineTextAlignment(.trailing)
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
+            Toggle(isOn: $saveToArchiveOrg) {
+                Label {
+                    Text("Save to Archive.org")
+                } icon: {
+                    YabaIconView(bundleKey: "folder-shared-01")
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                }
+            }
             Toggle(isOn: $preventDeletionSync) {
                 Label {
                     Text("Settings Prevent Deletion Sync Label")
@@ -298,15 +307,6 @@ struct SettingsView: View {
                 Rectangle()
                     .fill(.thinMaterial)
             )
-            Toggle(isOn: $saveToArchiveOrg) {
-                Label {
-                    Text("Settings Save To Archive Org Label")
-                } icon: {
-                    YabaIconView(bundleKey: "folder-shared-01")
-                        .scaledToFit()
-                        .frame(width: 24, height: 24)
-                }
-            }
         } header: {
             Label {
                 Text("Synchronization")
