@@ -6,7 +6,7 @@
 	<true/>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.dev.subfly.YABA</string>
+		<string>group.dev.nurvx.YABA.YABAWidgets</string>
 	</array>
 </dict>
 </plist>

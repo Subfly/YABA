@@ -281,6 +281,9 @@ internal class SettingsState {
         sortType = .createdAt
         sortOrderType = .ascending
         deviceName = ""
+        @AppStorage(Constants.saveToArchiveOrgKey)
+        var saveToArchiveOrg: Bool = false
+        saveToArchiveOrg = false
     }
     
     private func handleError(error: Error) {

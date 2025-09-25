@@ -20,6 +20,9 @@ struct SimpleBookmarkCreationMacOSView: View {
     @Environment(\.modelContext)
     private var modelContext
     
+    @AppStorage(Constants.saveToArchiveOrgKey)
+    private var saveToArchiveOrg: Bool = false
+    
     @State
     private var creationState: BookmarkCreationState = .init(isInEditMode: false)
     @State
@@ -179,7 +182,8 @@ struct SimpleBookmarkCreationMacOSView: View {
                 creationState.onDone(
                     bookmarkToEdit: nil,
                     using: modelContext,
-                    onFinishCallback: onClickClose
+                    onFinishCallback: onClickClose,
+                    saveToArchiveOrg: saveToArchiveOrg
                 )
             } label: {
                 Text(LocalizedStringKey("Save"))

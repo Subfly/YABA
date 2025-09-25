@@ -30,6 +30,9 @@ struct SettingsView: View {
     @AppStorage(Constants.preventDeletionSyncKey)
     private var preventDeletionSync: Bool = false
     
+    @AppStorage(Constants.saveToArchiveOrgKey)
+    private var saveToArchiveOrg: Bool = false
+    
     @AppStorage(
         Constants.useSimplifiedShare,
         store: UserDefaults(
@@ -282,6 +285,15 @@ struct SettingsView: View {
                     .multilineTextAlignment(.trailing)
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
+            Toggle(isOn: $saveToArchiveOrg) {
+                Label {
+                    Text("Save to Archive.org")
+                } icon: {
+                    YabaIconView(bundleKey: "folder-shared-01")
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                }
+            }
             Toggle(isOn: $preventDeletionSync) {
                 Label {
                     Text("Settings Prevent Deletion Sync Label")
@@ -291,6 +303,10 @@ struct SettingsView: View {
                         .frame(width: 24, height: 24)
                 }
             }
+            .listRowBackground(
+                Rectangle()
+                    .fill(.thinMaterial)
+            )
         } header: {
             Label {
                 Text("Synchronization")
@@ -816,3 +832,4 @@ struct SettingsView: View {
 #Preview {
     SettingsView()
 }
+

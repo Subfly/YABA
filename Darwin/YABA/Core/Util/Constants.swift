@@ -42,6 +42,7 @@ struct Constants {
     static let showMenuBarItem = "showMenuBarItem"
     static let useSimplifiedShare = "useSimplifiedShare"
     static let preventDeletionSyncKey = "preventDeletionSync"
+    static let saveToArchiveOrgKey = "saveToArchiveOrg"
     
     /// MARK: APP-WISE
     static let toastAnimationDuration: UInt64 = 150_000_000

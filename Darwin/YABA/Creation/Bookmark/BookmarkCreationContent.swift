@@ -21,6 +21,9 @@ struct BookmarkCreationContent: View {
     @AppStorage(Constants.preferredCardImageSizingKey)
     private var storedCardImageSizing: CardViewTypeImageSizing = .small
     
+    @AppStorage(Constants.saveToArchiveOrgKey)
+    private var saveToArchiveOrg: Bool = false
+    
     @State
     private var state: BookmarkCreationState
     private let navigationTitle: String
@@ -135,7 +138,7 @@ struct BookmarkCreationContent: View {
                             onFinishCallback: {
                                 onExitRequested()
                                 dismiss()
-                            }
+                            }, saveToArchiveOrg: saveToArchiveOrg
                         )
                     }.disabled(state.url.isEmpty || state.label.isEmpty || state.isLoading)
                 }
@@ -710,3 +713,4 @@ struct BookmarkCreationContent: View {
         onExitRequested: {}
     )
 }
+
