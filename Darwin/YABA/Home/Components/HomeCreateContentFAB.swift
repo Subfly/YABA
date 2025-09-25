@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct HomeCreateContentFAB: View {
+    @AppStorage(Constants.preferredFabPositionKey)
+    private var preferredPosition: FABPosition = .center
+    
     @Binding
     var isActive: Bool
     let onClickAction: (_ type: CreationType) -> Void

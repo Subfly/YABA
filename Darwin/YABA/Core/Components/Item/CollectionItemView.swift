@@ -17,45 +17,168 @@ private class ItemState {
     var shouldShowEditSheet: Bool = false
     var shouldShowMenuItems: Bool = false
     var shouldShowCreateBookmarkSheet: Bool = false
+    var shouldShowCreateFolderSheet: Bool = false
+    var shouldShowMoveSheet: Bool = false
 }
 
 struct CollectionItemView: View {
-    @Environment(\.modelContext)
-    private var modelContext
-    
     @Environment(\.appState)
     private var appState
-    
-    @AppStorage(Constants.preferredContentAppearanceKey)
-    private var contentAppearance: ViewType = .list
     
     @State
     private var itemState: ItemState = .init()
     
     let collection: YabaCollection
-    let isInSelectionMode: Bool
+    let inSelectionModeAndSelected: Bool
+    let isInCreationMode: Bool
     let isInBookmarkDetail: Bool
     let onDeleteCallback: (YabaCollection) -> Void
     let onEditCallback: (YabaCollection) -> Void
     let onNavigationCallback: (YabaCollection) -> Void
     
     var body: some View {
+        if collection.collectionType == .folder {
+            if collection.children.isEmpty {
+                CollectionItemViewWrappable(
+                    itemState: $itemState,
+                    collection: collection,
+                    inSelectionModeAndSelected: inSelectionModeAndSelected,
+                    isCurrentFocus: appState.selectedCollection?.collectionId == collection.collectionId,
+                    isInCreationMode: isInCreationMode,
+                    isInBookmarkDetail: isInBookmarkDetail,
+                    onDeleteCallback: onDeleteCallback,
+                    onEditCallback: onEditCallback,
+                    onNavigationCallback: { selected in
+                        withAnimation {
+                            if !inSelectionModeAndSelected {
+                                appState.selectedCollection = selected
+                            }
+                            onNavigationCallback(collection)
+                        }
+                    },
+                    onFoucDeleteCallback: {
+                        appState.selectedCollection = nil
+                    }
+                )
+            } else {
+                DisclosureGroup {
+                    ForEach(collection.children) { child in
+                        CollectionItemView(
+                            collection: child,
+                            inSelectionModeAndSelected: inSelectionModeAndSelected,
+                            isInCreationMode: isInCreationMode,
+                            isInBookmarkDetail: isInBookmarkDetail,
+                            onDeleteCallback: onDeleteCallback,
+                            onEditCallback: onEditCallback,
+                            onNavigationCallback: onNavigationCallback
+                        )
+                    }
+                } label: {
+                    CollectionItemViewWrappable(
+                        itemState: $itemState,
+                        collection: collection,
+                        inSelectionModeAndSelected: inSelectionModeAndSelected,
+                        isCurrentFocus: appState.selectedCollection?.collectionId == collection.collectionId,
+                        isInCreationMode: isInCreationMode,
+                        isInBookmarkDetail: isInBookmarkDetail,
+                        onDeleteCallback: onDeleteCallback,
+                        onEditCallback: onEditCallback,
+                        onNavigationCallback: { selected in
+                            withAnimation {
+                                if !inSelectionModeAndSelected {
+                                    appState.selectedCollection = selected
+                                }
+                                onNavigationCallback(collection)
+                            }
+                        },
+                        onFoucDeleteCallback: {
+                            appState.selectedCollection = nil
+                        }
+                    )
+                }
+                #if targetEnvironment(macCatalyst)
+                .listRowBackground(
+                    inSelectionModeAndSelected
+                    ? RoundedRectangle(cornerRadius: 8).fill(collection.color.getUIColor().opacity(0.25))
+                    : appState.selectedCollection?.id == collection.id
+                    ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
+                    : itemState.isHovered
+                    ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
+                    : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
+                )
+                #else
+                .listRowBackground(
+                    inSelectionModeAndSelected
+                    ? RoundedRectangle(cornerRadius: 0).fill(collection.color.getUIColor().opacity(0.25))
+                    : UIDevice.current.userInterfaceIdiom == .phone
+                    ? nil
+                    : appState.selectedCollection?.id == collection.id
+                    ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
+                    : itemState.isHovered
+                    ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
+                    : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
+                )
+                #endif
+            }
+        } else {
+            CollectionItemViewWrappable(
+                itemState: $itemState,
+                collection: collection,
+                inSelectionModeAndSelected: inSelectionModeAndSelected,
+                isCurrentFocus: appState.selectedCollection?.collectionId == collection.collectionId,
+                isInCreationMode: isInCreationMode,
+                isInBookmarkDetail: isInBookmarkDetail,
+                onDeleteCallback: onDeleteCallback,
+                onEditCallback: onEditCallback,
+                onNavigationCallback: { selected in
+                    withAnimation {
+                        if !inSelectionModeAndSelected {
+                            appState.selectedCollection = selected
+                        }
+                        onNavigationCallback(collection)
+                    }
+                },
+                onFoucDeleteCallback: {
+                    appState.selectedCollection = nil
+                }
+            )
+        }
+    }
+}
+
+private struct CollectionItemViewWrappable: View {
+    @Environment(\.modelContext)
+    private var modelContext
+    
+    @AppStorage(Constants.preferredContentAppearanceKey)
+    private var contentAppearance: ViewType = .list
+    
+    @Binding
+    var itemState: ItemState
+    
+    let collection: YabaCollection
+    let inSelectionModeAndSelected: Bool
+    let isCurrentFocus: Bool
+    let isInCreationMode: Bool
+    let isInBookmarkDetail: Bool
+    let onDeleteCallback: (YabaCollection) -> Void
+    let onEditCallback: (YabaCollection) -> Void
+    let onNavigationCallback: (YabaCollection) -> Void
+    let onFoucDeleteCallback: () -> Void
+    
+    var body: some View {
         MainLabel(
             collection: collection,
             state: $itemState,
-            isInSelectionMode: isInSelectionMode,
+            isInCreationMode: isInCreationMode,
             isInBookmarkDetail: isInBookmarkDetail,
-            onNavigationCallback: {
-                withAnimation {
-                    appState.selectedCollection = collection
-                    onNavigationCallback(collection)
-                }
-            }
+            onNavigationCallback: onNavigationCallback,
         )
-        .padding(.leading, isInSelectionMode ? 0 : 8)
         #if targetEnvironment(macCatalyst)
         .listRowBackground(
-            appState.selectedCollection?.id == collection.id
+            inSelectionModeAndSelected
+            ? RoundedRectangle(cornerRadius: 8).fill(collection.color.getUIColor().opacity(0.25))
+            : isCurrentFocus
             ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
             : itemState.isHovered
             ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
@@ -63,9 +186,11 @@ struct CollectionItemView: View {
         )
         #else
         .listRowBackground(
-            UIDevice.current.userInterfaceIdiom == .phone
+            inSelectionModeAndSelected
+            ? RoundedRectangle(cornerRadius: 0).fill(collection.color.getUIColor().opacity(0.25))
+            : UIDevice.current.userInterfaceIdiom == .phone
             ? nil
-            : appState.selectedCollection?.id == collection.id
+            : isCurrentFocus
             ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
             : itemState.isHovered
             ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
@@ -79,7 +204,8 @@ struct CollectionItemView: View {
         .contextMenu {
             MenuActionItems(
                 state: $itemState,
-                isInSelectionMode: isInSelectionMode,
+                isTag: collection.collectionType == .tag,
+                isInCreationMode: isInCreationMode,
                 isInBookmarkDetail: isInBookmarkDetail
             )
         }
@@ -118,8 +244,8 @@ struct CollectionItemView: View {
                     modelContext.delete(collection)
                     
                     try? modelContext.save()
-                    if appState.selectedCollection?.id == collection.id {
-                        appState.selectedCollection = nil
+                    if isCurrentFocus {
+                        onFoucDeleteCallback()
                     }
                     
                     WidgetCenter.shared.reloadAllTimelines()
@@ -133,7 +259,16 @@ struct CollectionItemView: View {
         .sheet(isPresented: $itemState.shouldShowEditSheet) {
             CollectionCreationContent(
                 collectionType: collection.collectionType,
+                collectionToAdd: nil,
                 collectionToEdit: collection,
+                onEditCallback: onEditCallback
+            )
+        }
+        .sheet(isPresented: $itemState.shouldShowCreateFolderSheet) {
+            CollectionCreationContent(
+                collectionType: .folder,
+                collectionToAdd: nil,
+                collectionToEdit: nil,
                 onEditCallback: onEditCallback
             )
         }
@@ -145,6 +280,25 @@ struct CollectionItemView: View {
                 onExitRequested: {}
             )
         }
+        .sheet(isPresented: $itemState.shouldShowMoveSheet) {
+            NavigationView {
+                SelectFolderContent(
+                    mode: .moving,
+                    folderInAction: collection,
+                    selectedFolder: collection.parentCollection,
+                    onSelectNewFolder: { newParent in
+                        collection.parentCollection = newParent
+                        try? modelContext.save()
+                    },
+                    onEditSelectedFolderDuringCreation: { _ in
+                        // No need to do anything...
+                    },
+                    onDeleteSelectedFolderDuringCreation: {
+                        // No need to do anything...
+                    }
+                )
+            }
+        }
         .id(collection.id)
     }
 }
@@ -155,27 +309,29 @@ private struct MainLabel: View {
     @Binding
     var state: ItemState
     
-    let isInSelectionMode: Bool
+    let isInCreationMode: Bool
     let isInBookmarkDetail: Bool
-    let onNavigationCallback: () -> Void
+    let onNavigationCallback: (YabaCollection) -> Void
     
     var body: some View {
-        if isInSelectionMode {
+        if isInCreationMode {
             ListView(
                 collection: collection,
                 state: $state,
-                isInSelectionMode: isInSelectionMode,
+                isInCreationMode: isInCreationMode,
                 isInBookmarkDetail: isInBookmarkDetail
-            )
+            ).onTapGesture {
+                onNavigationCallback(collection)
+            }
         } else {
             if isInBookmarkDetail {
                 Button {
-                    onNavigationCallback()
+                    onNavigationCallback(collection)
                 } label: {
                     ListView(
                         collection: collection,
                         state: $state,
-                        isInSelectionMode: isInSelectionMode,
+                        isInCreationMode: isInCreationMode,
                         isInBookmarkDetail: isInBookmarkDetail
                     )
                 }.buttonStyle(.plain)
@@ -183,11 +339,10 @@ private struct MainLabel: View {
                 ListView(
                     collection: collection,
                     state: $state,
-                    isInSelectionMode: isInSelectionMode,
+                    isInCreationMode: isInCreationMode,
                     isInBookmarkDetail: isInBookmarkDetail
-                )
-                .onTapGesture {
-                    onNavigationCallback()
+                ).onTapGesture {
+                    onNavigationCallback(collection)
                 }
             }
         }
@@ -200,7 +355,7 @@ private struct ListView: View {
     @Binding
     var state: ItemState
     
-    let isInSelectionMode: Bool
+    let isInCreationMode: Bool
     let isInBookmarkDetail: Bool
     
     var body: some View {
@@ -218,11 +373,12 @@ private struct ListView: View {
             }
             Spacer()
             HStack {
-                if state.isHovered && !isInSelectionMode {
+                if state.isHovered && !isInCreationMode {
                     Menu {
                         MenuActionItems(
                             state: $state,
-                            isInSelectionMode: isInSelectionMode,
+                            isTag: collection.collectionType == .tag,
+                            isInCreationMode: isInCreationMode,
                             isInBookmarkDetail: isInBookmarkDetail
                         )
                     } label: {
@@ -235,23 +391,20 @@ private struct ListView: View {
                     .foregroundStyle(.secondary)
                     .fontWeight(.medium)
             }.foregroundStyle(.secondary)
-            if UIDevice.current.userInterfaceIdiom == .phone && !isInSelectionMode {
-                YabaIconView(bundleKey: "arrow-right-01")
-                    .scaledToFit()
-                    .frame(width: 20, height: 20)
-                    .foregroundStyle(.tertiary)
-            }
         }
         .contentShape(Rectangle())
         #if !KEYBOARD_EXTENSION
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-            swipeActionItems
+            rightSwipeActionItems
+        }
+        .swipeActions(edge: .leading, allowsFullSwipe: false) {
+            leftSwipeActionItems
         }
         #endif
     }
     
     @ViewBuilder
-    private var swipeActionItems: some View {
+    private var rightSwipeActionItems: some View {
         if !isInBookmarkDetail {
             Button {
                 state.shouldShowDeleteDialog = true
@@ -270,15 +423,39 @@ private struct ListView: View {
                 Text("Edit")
             }
         }.tint(.orange)
-        if !isInSelectionMode {
+        if !isInCreationMode && !isInBookmarkDetail && collection.collectionType != .tag {
+            Button {
+                state.shouldShowMoveSheet = true
+            } label: {
+                VStack {
+                    YabaIconView(bundleKey: "arrow-move-down-right")
+                    Text("Move")
+                }
+            }.tint(.cyan)
+        }
+    }
+    
+    @ViewBuilder
+    private var leftSwipeActionItems: some View {
+        if !isInCreationMode {
             Button {
                 state.shouldShowCreateBookmarkSheet = true
             } label: {
                 VStack {
                     YabaIconView(bundleKey: "bookmark-add-02")
-                    Text("New")
+                    Text("New Bookmark")
                 }
             }.tint(.mint)
+        }
+        if !isInCreationMode && !isInBookmarkDetail && collection.collectionType != .tag {
+            Button {
+                state.shouldShowCreateFolderSheet = true
+            } label: {
+                VStack {
+                    YabaIconView(bundleKey: "folder-add")
+                    Text("New Folder")
+                }
+            }.tint(.green)
         }
     }
 }
@@ -289,7 +466,7 @@ private struct GridView: View {
     @Binding
     var state: ItemState
     
-    let isInSelectionMode: Bool
+    let isInCreationMode: Bool
     let isInBookmarkDetail: Bool
     
     var body: some View {
@@ -302,11 +479,12 @@ private struct GridView: View {
                 Spacer()
                 VStack {
                     #if targetEnvironment(macCatalyst)
-                    if state.isHovered && !isInSelectionMode {
+                    if state.isHovered && !isInCreationMode {
                         Menu {
                             MenuActionItems(
                                 state: $state,
-                                isInSelectionMode: isInSelectionMode,
+                                isTag: collection.collectionType == .tag,
+                                isInCreationMode: isInCreationMode,
                                 isInBookmarkDetail: isInBookmarkDetail
                             )
                         } label: {
@@ -320,7 +498,8 @@ private struct GridView: View {
                     Menu {
                         MenuActionItems(
                             state: $state,
-                            isInSelectionMode: isInSelectionMode,
+                            isTag: collection.collectionType == .tag,
+                            isInCreationMode: isInCreationMode,
                             isInBookmarkDetail: isInBookmarkDetail
                         )
                     } label: {
@@ -341,25 +520,6 @@ private struct GridView: View {
                 Spacer()
             }
         }
-        /**
-        .padding()
-        .background {
-            #if targetEnvironment(macCatalyst)
-            RoundedRectangle(cornerRadius: 12)
-                .fill(
-                    .gray.opacity(
-                        appState.selectedCollection?.id == collection.id
-                        ? 0.3
-                        : itemState.isHovered ? 0.2 : 0.1
-                    )
-                )
-            #else
-            RoundedRectangle(cornerRadius: 12)
-                .fill(.thickMaterial)
-            #endif
-        }
-         .contentShape(Rectangle())
-         */
     }
 }
 
@@ -367,20 +527,32 @@ private struct MenuActionItems: View {
     @Binding
     var state: ItemState
     
-    let isInSelectionMode: Bool
+    let isTag: Bool
+    let isInCreationMode: Bool
     let isInBookmarkDetail: Bool
     
     var body: some View {
-        if !isInSelectionMode {
+        if !isInCreationMode {
             Button {
                 state.shouldShowCreateBookmarkSheet = true
             } label: {
                 VStack {
                     YabaIconView(bundleKey: "bookmark-add-02")
-                    Text("New")
+                    Text("New Bookmark")
                 }
             }.tint(.mint)
         }
+        if !isInCreationMode && !isInBookmarkDetail && !isTag {
+            Button {
+                state.shouldShowCreateFolderSheet = true
+            } label: {
+                VStack {
+                    YabaIconView(bundleKey: "folder-add")
+                    Text("New Folder")
+                }
+            }.tint(.green)
+        }
+        Divider()
         Button {
             state.shouldShowEditSheet = true
         } label: {
@@ -389,6 +561,17 @@ private struct MenuActionItems: View {
                 Text("Edit")
             }
         }.tint(.orange)
+        if !isInCreationMode && !isInBookmarkDetail && !isTag {
+            Button {
+                state.shouldShowMoveSheet = true
+            } label: {
+                VStack {
+                    YabaIconView(bundleKey: "arrow-move-down-right")
+                    Text("Move")
+                }
+            }.tint(.cyan)
+        }
+        Divider()
         if !isInBookmarkDetail {
             Button(role: .destructive) {
                 state.shouldShowDeleteDialog = true

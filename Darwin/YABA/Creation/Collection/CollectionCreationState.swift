@@ -16,4 +16,5 @@ internal class CollectionCreationState {
     var shouldShowIconPicker: Bool = false
     var shouldShowColorPicker: Bool = false
     var selectedColor: YabaColor = .none
+    var selectedParent: YabaCollection? = nil
 }

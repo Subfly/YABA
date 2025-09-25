@@ -8,7 +8,6 @@
 import SwiftUI
 import SwiftData
 
-// TODO: MOVE IT TO DETAIL, NOT LET BE A PART OF HOME
 struct SearchView: View {
     @Environment(\.dismiss)
     private var dismiss

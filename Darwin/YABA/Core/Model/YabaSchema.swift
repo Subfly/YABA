@@ -103,6 +103,12 @@ enum YabaSchemaV1: VersionedSchema {
     
     @Model
     final class Collection {
+        // Below relationship already covers this one.
+        var parentCollection: Collection? = nil
+        
+        @Relationship(inverse: \Collection.parentCollection)
+        var children: [Collection] = []
+        
         @Relationship(inverse: \Bookmark.collections)
         var bookmarks: [Bookmark]? = []
 
@@ -126,6 +132,8 @@ enum YabaSchemaV1: VersionedSchema {
             createdAt: Date = .now,
             editedAt: Date = .now,
             bookmarks: [Bookmark]? = [],
+            parentCollection: Collection? = nil,
+            children: [Collection] = [],
             color: YabaColor = .none,
             type: CollectionType = .folder,
             version: Int = 1,
@@ -135,6 +143,8 @@ enum YabaSchemaV1: VersionedSchema {
             self.createdAt = createdAt
             self.editedAt = editedAt
             self.bookmarks = bookmarks
+            self.parentCollection = parentCollection
+            self.children = children
             self.icon = icon
             self.color = color
             self.type = type.rawValue

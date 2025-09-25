@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftData
+import UniformTypeIdentifiers
 
 /// FOR THE MODEL ITSELF, LOOK TO _YABA_SCHEMA_
 extension YabaCollection {

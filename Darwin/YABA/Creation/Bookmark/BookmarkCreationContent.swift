@@ -580,7 +580,20 @@ struct BookmarkCreationContent: View {
     @ViewBuilder
     private var bookmarkFolderSelectionView: some View {
         NavigationLink {
-            SelectFolderContent(selectedFolder: $state.selectedFolder)
+            SelectFolderContent(
+                mode: .parent,
+                folderInAction: nil, // We don't care this in here, just show all the folders
+                selectedFolder: state.selectedFolder,
+                onSelectNewFolder: { newFolder in
+                    state.selectedFolder = newFolder
+                },
+                onEditSelectedFolderDuringCreation: { editedFolder in
+                    state.selectedFolder = editedFolder
+                },
+                onDeleteSelectedFolderDuringCreation: {
+                    state.selectedFolder = nil
+                }
+            )
         } label: {
             if let folder = state.selectedFolder {
                 HStack {

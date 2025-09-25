@@ -655,7 +655,8 @@ private struct FolderSection: View {
         Section {
             CollectionItemView(
                 collection: folder,
-                isInSelectionMode: false,
+                inSelectionModeAndSelected: false,
+                isInCreationMode: false,
                 isInBookmarkDetail: true,
                 onDeleteCallback: { _ in },
                 onEditCallback: { _ in },
@@ -695,7 +696,8 @@ private struct TagsSection: View {
                 ForEach(tags) { tag in
                     CollectionItemView(
                         collection: tag,
-                        isInSelectionMode: false,
+                        inSelectionModeAndSelected: false,
+                        isInCreationMode: false,
                         isInBookmarkDetail: true,
                         onDeleteCallback: { _ in },
                         onEditCallback: { _ in },

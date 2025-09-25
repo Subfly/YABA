@@ -30,6 +30,9 @@ struct YABAApp: App {
     @State
     private var networkSyncManager: NetworkSyncManager = .init()
     
+    @State
+    private var selectionManager: SelectionManager = .init()
+    
     var body: some Scene {
         WindowGroup {
             YabaNavigationView()
@@ -38,6 +41,7 @@ struct YABAApp: App {
                 .environment(\.appState, appState)
                 .environment(\.deepLinkManager, deepLinkManager)
                 .environment(\.networkSyncManager, networkSyncManager)
+                .environment(\.selectionManager, selectionManager)
                 .preferredColorScheme(preferredTheme.getScheme())
                 .onAppear {
                     setupForMacCatalyst()

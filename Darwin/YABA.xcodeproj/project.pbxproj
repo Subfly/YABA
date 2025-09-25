@@ -129,6 +129,8 @@
 				Core/Components/Item/AnnouncementView.swift,
 				Core/Components/Item/BookmarkItemView.swift,
 				Core/Components/Item/CollectionItemView.swift,
+				Core/Components/Selection/SelectFolderContent.swift,
+				Core/Components/Selection/SelectTagsContent.swift,
 				Core/Components/Share/ShareSheet.swift,
 				Core/Components/Toast/ToastDuration.swift,
 				Core/Components/Toast/ToastIconType.swift,
@@ -174,6 +176,7 @@
 				Core/Model/YabaIcon.swift,
 				Core/Model/YabaModelContainer.swift,
 				Core/Model/YabaSchema.swift,
+				Core/Selection/SelectionManager.swift,
 				Core/Unfurl/LinkCleaner.swift,
 				Core/Unfurl/ReaderModeExtractor.swift,
 				Core/Unfurl/Unfurler.swift,
@@ -192,8 +195,6 @@
 				Core/Util/ViewType.swift,
 				Creation/Bookmark/BookmarkCreationContent.swift,
 				Creation/Bookmark/BookmarkCreationState.swift,
-				Creation/Bookmark/SelectFolderContent.swift,
-				Creation/Bookmark/SelectTagsContent.swift,
 				Creation/Bookmark/SimpleBookmarkCreationView.swift,
 				Creation/Collection/CollectionCreationContent.swift,
 				Creation/Collection/CollectionCreationState.swift,
@@ -225,6 +226,8 @@
 				Core/Components/IconPicker/IconPickerView.swift,
 				Core/Components/Item/BookmarkItemView.swift,
 				Core/Components/Item/CollectionItemView.swift,
+				Core/Components/Selection/SelectFolderContent.swift,
+				Core/Components/Selection/SelectTagsContent.swift,
 				Core/Components/Settings/ContentAppearancePicker.swift,
 				Core/Components/Settings/SortingPicker.swift,
 				Core/Components/Share/ShareSheet.swift,
@@ -245,6 +248,7 @@
 				Core/Model/YabaSchema.swift,
 				Core/Navigation/DeepLinkManager.swift,
 				Core/Navigation/NavigationDestination.swift,
+				Core/Selection/SelectionManager.swift,
 				Core/Unfurl/LinkCleaner.swift,
 				Core/Unfurl/Unfurler.swift,
 				Core/Unfurl/YabaLinkPreview.swift,
@@ -259,8 +263,6 @@
 				Core/Util/ViewType.swift,
 				Creation/Bookmark/BookmarkCreationContent.swift,
 				Creation/Bookmark/BookmarkCreationState.swift,
-				Creation/Bookmark/SelectFolderContent.swift,
-				Creation/Bookmark/SelectTagsContent.swift,
 				Creation/Collection/CollectionCreationContent.swift,
 				Creation/Collection/CollectionCreationState.swift,
 				Detail/Collection/CollectionDetail.swift,
@@ -293,6 +295,7 @@
 				"Core/Model/YabaDataLog+Helpers.swift",
 				Core/Model/YabaModelContainer.swift,
 				Core/Model/YabaSchema.swift,
+				Core/Selection/SelectionManager.swift,
 				Core/Util/Constants.swift,
 				LaunchScreen.storyboard,
 				Localizable.xcstrings,
@@ -366,6 +369,7 @@
 				Core/Model/YabaIcon.swift,
 				Core/Model/YabaModelContainer.swift,
 				Core/Model/YabaSchema.swift,
+				Core/Selection/SelectionManager.swift,
 				Core/Unfurl/LinkCleaner.swift,
 				Core/Unfurl/ReaderModeExtractor.swift,
 				Core/Unfurl/Unfurler.swift,
@@ -440,6 +444,7 @@
 				Core/Model/YabaIcon.swift,
 				Core/Model/YabaModelContainer.swift,
 				Core/Model/YabaSchema.swift,
+				Core/Selection/SelectionManager.swift,
 				Core/Unfurl/LinkCleaner.swift,
 				Core/Unfurl/ReaderModeExtractor.swift,
 				Core/Unfurl/Unfurler.swift,
@@ -1391,6 +1396,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.4;
+				OTHER_SWIFT_FLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = dev.subfly.YABA.YABAWidgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -1398,6 +1404,7 @@
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
@@ -1433,6 +1440,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.4;
+				OTHER_SWIFT_FLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = dev.subfly.YABA.YABAWidgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -1440,6 +1448,7 @@
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";

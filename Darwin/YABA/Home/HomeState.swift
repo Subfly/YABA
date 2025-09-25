@@ -13,6 +13,7 @@ internal class HomeState {
     var isFABActive: Bool = false
     var shouldShowCreateContentSheet: Bool = false
     var shouldShowCreateBookmarkSheet: Bool = false
+    var shouldShowMoveFoldersSheet: Bool = false
     var shouldShowSyncSheet: Bool = false
     var selectedContentCreationType: CollectionType? = nil
     var shouldShowBackground: Bool = false

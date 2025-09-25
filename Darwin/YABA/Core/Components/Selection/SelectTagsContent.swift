@@ -58,6 +58,7 @@ struct SelectTagsContent: View {
         .sheet(isPresented: $showTagCreationSheet) {
             CollectionCreationContent(
                 collectionType: .tag,
+                collectionToAdd: nil,
                 collectionToEdit: nil,
                 onEditCallback: { _ in }
             )
@@ -119,7 +120,9 @@ private struct SelectTagsSearchableContent: View {
                     ForEach(selectedTags) { tag in
                         CollectionItemView(
                             collection: tag,
-                            isInSelectionMode: true,
+                            // Tags have their own section to indicate tag is already selected
+                            inSelectionModeAndSelected: false,
+                            isInCreationMode: true,
                             isInBookmarkDetail: false,
                             onDeleteCallback: { collection in
                                 withAnimation {
@@ -215,7 +218,8 @@ private struct SelectTagsSearchableContent: View {
                     ForEach(tags) { tag in
                         CollectionItemView(
                             collection: tag,
-                            isInSelectionMode: true,
+                            inSelectionModeAndSelected: true,
+                            isInCreationMode: true,
                             isInBookmarkDetail: false,
                             onDeleteCallback: { _ in },
                             onEditCallback: { _ in },

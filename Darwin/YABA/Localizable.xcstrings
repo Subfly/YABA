@@ -25374,6 +25374,18 @@
         }
       }
     },
+    "New Folder" : {
+      "comment" : "Label to show for new folder buttons",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New Folder"
+          }
+        }
+      }
+    },
     "No Bookmarks Menu Item Message" : {
       "comment" : "Mac only message to show when no bookmarks added yet",
       "extractionState" : "manual",
@@ -32838,6 +32850,18 @@
         }
       }
     },
+    "Parent Folder Label" : {
+      "comment" : "Label to show in parent folder",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Parent Folder"
+          }
+        }
+      }
+    },
     "Pick Icon Category Title" : {
       "comment" : "Title to show when user open the icon picker and prompts to select a main category",
       "extractionState" : "manual",
@@ -33796,6 +33820,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "提醒我"
+          }
+        }
+      }
+    },
+    "Root Parent Label" : {
+      "comment" : "Label of root when a collection does not have any parent",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Root"
           }
         }
       }
@@ -35139,6 +35175,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "选择文件夹"
+          }
+        }
+      }
+    },
+    "Select Label" : {
+      "comment" : "Label of Select",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select"
           }
         }
       }

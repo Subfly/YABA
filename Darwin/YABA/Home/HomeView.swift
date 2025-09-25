@@ -21,6 +21,9 @@ struct HomeView: View {
     @Environment(\.deepLinkManager)
     private var deepLinkManager
     
+    @Environment(\.selectionManager)
+    private var selectionManager
+    
     @State
     private var homeState: HomeState = .init()
     
@@ -74,6 +77,7 @@ struct HomeView: View {
             if let creationType = homeState.selectedContentCreationType {
                 CollectionCreationContent(
                     collectionType: creationType,
+                    collectionToAdd: nil,
                     collectionToEdit: nil,
                     onEditCallback: { _ in }
                 )
@@ -143,6 +147,7 @@ struct HomeView: View {
                 Menu {
                     ContentAppearancePicker()
                     SortingPicker()
+                    Divider()
                     Button {
                         onNavigationCallbackForSettings()
                     } label: {

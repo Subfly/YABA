@@ -66,6 +66,9 @@ struct HomeCollectionView: View {
 }
 
 private struct ListSection<NoCollectionView: View>: View {
+    @Environment(\.selectionManager)
+    private var selectionManager
+    
     @State
     private var isExpandedGeneral: Bool = true
     
@@ -87,27 +90,9 @@ private struct ListSection<NoCollectionView: View>: View {
                     if collections.count <= 10 {
                         generateItems(for: collections)
                     } else {
-                        ForEach(collections.prefix(10)) { collection in
-                            CollectionItemView(
-                                collection: collection,
-                                isInSelectionMode: false,
-                                isInBookmarkDetail: false,
-                                onDeleteCallback: { _ in },
-                                onEditCallback: { _ in },
-                                onNavigationCallback: onNavigationCallback
-                            )
-                        }
+                        generateItems(for: Array(collections.prefix(10)))
                         if isExpandedMobile {
-                            ForEach(collections.suffix(from: 10)) { collection in
-                                CollectionItemView(
-                                    collection: collection,
-                                    isInSelectionMode: false,
-                                    isInBookmarkDetail: false,
-                                    onDeleteCallback: { _ in },
-                                    onEditCallback: { _ in },
-                                    onNavigationCallback: onNavigationCallback
-                                )
-                            }
+                            generateItems(for: Array(collections.suffix(from: 10)))
                         }
                     }
                 }
@@ -172,10 +157,11 @@ private struct ListSection<NoCollectionView: View>: View {
     
     @ViewBuilder
     private func generateItems(for given: [YabaCollection]) -> some View {
-        ForEach(given) { collection in
+        ForEach(given.filter { $0.parentCollection == nil }, id: \.collectionId) { collection in
             CollectionItemView(
                 collection: collection,
-                isInSelectionMode: false,
+                inSelectionModeAndSelected: false,
+                isInCreationMode: false,
                 isInBookmarkDetail: false,
                 onDeleteCallback: { _ in },
                 onEditCallback: { _ in },
@@ -239,7 +225,7 @@ private struct GridSection: View {
                 ForEach(collections) { collection in
                     CollectionItemView(
                         collection: collection,
-                        isInSelectionMode: false,
+                        isInCreationMode: false,
                         isInBookmarkDetail: false,
                         onDeleteCallback: { _ in },
                         onEditCallback: { _ in },
@@ -255,7 +241,8 @@ private struct GridSection: View {
             ForEach(collections) { collection in
                 CollectionItemView(
                     collection: collection,
-                    isInSelectionMode: false,
+                    inSelectionModeAndSelected: false,
+                    isInCreationMode: false,
                     isInBookmarkDetail: false,
                     onDeleteCallback: { _ in },
                     onEditCallback: { _ in },
