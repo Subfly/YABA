@@ -176,7 +176,7 @@ internal class BookmarkCreationState {
             } else {
                 var collections = selectedTags
                 collections.append(selectedFolder)
-                
+
                 let creationTime: Date = .now
                 let newBookmark = YabaBookmark(
                     bookmarkId: UUID().uuidString,
@@ -196,18 +196,37 @@ internal class BookmarkCreationState {
                     version: 0,
                     collections: collections
                 )
-                
+
                 modelContext.insert(newBookmark)
             }
+
+            let bookmarkToArchive: YabaBookmark
+            if let bookmarkToEdit {
+                bookmarkToArchive = bookmarkToEdit
+            } else {
+                // For new bookmarks, we need to find the one we just created
+                // Since we can't easily reference it, let's fetch it by recent creation
+                let descriptor = FetchDescriptor<YabaBookmark>(
+                    predicate: #Predicate<YabaBookmark> { bookmark in
+                        bookmark.link == cleanerUrl
+                    },
+                    sortBy: [SortDescriptor(\YabaBookmark.createdAt, order: .reverse)]
+                )
+                guard let newBookmark = try? modelContext.fetch(descriptor).first else {
+                    // If we can't find it, skip archiving
+                    return
+                }
+                bookmarkToArchive = newBookmark
+            }
             try? modelContext.save()
-            
+
             // Close the bookmark creation panel immediately
             onFinishCallback()
-            
+
             // Archive to archive.org in background if toggle is enabled
-            if saveToArchiveOrg && bookmarkToEdit == nil {
-                // Only archive new bookmarks, in background
-                archiveURLInBackground(cleanerUrl)
+            if saveToArchiveOrg {
+                // Archive all bookmarks when enabled, in background
+                archiveURLInBackground(cleanerUrl, bookmark: bookmarkToArchive, modelContext: modelContext)
             }
         }
         
@@ -346,15 +365,59 @@ internal class BookmarkCreationState {
     func onClearTitle() {
         label = ""
     }
+
+    // Helper function to find or create a tag
+    private func findOrCreateTag(label: String, using modelContext: ModelContext) -> YabaCollection {
+        let descriptor = FetchDescriptor<YabaCollection>(
+            predicate: #Predicate<YabaCollection> { collection in
+                collection.label == label && collection.type == 2
+            }
+        )
+        if let existingTag = try? modelContext.fetch(descriptor).first {
+            return existingTag
+        } else {
+            let newTag = YabaCollection(
+                collectionId: UUID().uuidString,
+                label: label,
+                icon: "tag-01",
+                createdAt: .now,
+                editedAt: .now,
+                color: .none,
+                type: .tag,
+                version: 0
+            )
+            modelContext.insert(newTag)
+            return newTag
+        }
+    }
+
+    // Helper function to add tag to bookmark, avoiding duplicates and removing opposite
+    private func addTagToBookmark(_ tagLabel: String, removeOpposite: String?, bookmark: YabaBookmark, using modelContext: ModelContext) {
+        let tag = findOrCreateTag(label: tagLabel, using: modelContext)
+
+        // Remove opposite tag if it exists
+        if let oppositeLabel = removeOpposite {
+            bookmark.collections?.removeAll { collection in
+                collection.label == oppositeLabel && collection.collectionType == .tag
+            }
+        }
+
+        // Add tag if not already present
+        if !(bookmark.collections?.contains(where: { $0.label == tagLabel && $0.collectionType == .tag }) ?? false) {
+            bookmark.collections?.append(tag)
+        }
+
+        try? modelContext.save()
+    }
     
-    private func archiveURLInBackground(_ url: String) {
+    private func archiveURLInBackground(_ url: String, bookmark: YabaBookmark, modelContext: ModelContext) {
         // Start background archiving with retry mechanism
         Task.detached { [weak self] in
-            await self?.performArchiveWithRetry(url: url, attempt: 1, maxAttempts: 3)
+            await self?.performArchiveWithRetry(url: url, bookmark: bookmark, modelContext: modelContext, attempt: 1, maxAttempts: 3)
         }
     }
     
-    private func performArchiveWithRetry(url: String, attempt: Int, maxAttempts: Int) async {
+    private func performArchiveWithRetry(url: String, bookmark: YabaBookmark, modelContext: ModelContext, attempt: Int, maxAttempts: Int) async {
         print("YABA Archive Debug: Attempt \(attempt)/\(maxAttempts) - Starting to archive URL: \(url)")
         
         do {
@@ -365,6 +428,9 @@ internal class BookmarkCreationState {
             guard let archiveURL = URL(string: archiveURLString) else {
                 print("YABA Archive Debug: Failed to create archive URL: \(archiveURLString)")
                 await MainActor.run {
+                    // Add "unarchived" tag and remove "archived" tag if present
+                    addTagToBookmark("unarchived", removeOpposite: "archived", bookmark: bookmark, using: modelContext)
+
                     toastManager.show(
                         message: LocalizedStringKey("Failed to archive link - invalid URL"),
                         accentColor: .red,
@@ -399,6 +465,9 @@ internal class BookmarkCreationState {
                     // Success (200), redirect (302/301) - all indicate successful archiving
                     print("YABA Archive Debug: Successfully archived URL on attempt \(attempt)")
                     await MainActor.run {
+                        // Add "archived" tag and remove "unarchived" tag if present
+                        addTagToBookmark("archived", removeOpposite: "unarchived", bookmark: bookmark, using: modelContext)
+
                         toastManager.show(
                             message: LocalizedStringKey("Link archived successfully"),
                             accentColor: .green,
@@ -415,11 +484,14 @@ internal class BookmarkCreationState {
                         // Wait before retrying (exponential backoff)
                         let delay = UInt64(pow(2.0, Double(attempt)) * 1_000_000_000) // 2^attempt seconds
                         try await Task.sleep(nanoseconds: delay)
-                        await performArchiveWithRetry(url: url, attempt: attempt + 1, maxAttempts: maxAttempts)
+                        await performArchiveWithRetry(url: url, bookmark: bookmark, modelContext: modelContext, attempt: attempt + 1, maxAttempts: maxAttempts)
                         return
                     } else {
                         // Max attempts reached
                         await MainActor.run {
+                            // Add "unarchived" tag and remove "archived" tag if present
+                            addTagToBookmark("unarchived", removeOpposite: "archived", bookmark: bookmark, using: modelContext)
+
                             toastManager.show(
                                 message: LocalizedStringKey("Failed to archive link after \(maxAttempts) attempts - server error (\(httpResponse.statusCode))"),
                                 accentColor: .red,
@@ -436,10 +508,13 @@ internal class BookmarkCreationState {
                     // Wait before retrying
                     let delay = UInt64(pow(2.0, Double(attempt)) * 1_000_000_000) // 2^attempt seconds
                     try await Task.sleep(nanoseconds: delay)
-                    await performArchiveWithRetry(url: url, attempt: attempt + 1, maxAttempts: maxAttempts)
+                    await performArchiveWithRetry(url: url, bookmark: bookmark, modelContext: modelContext, attempt: attempt + 1, maxAttempts: maxAttempts)
                     return
                 } else {
                     await MainActor.run {
+                        // Add "unarchived" tag and remove "archived" tag if present
+                        addTagToBookmark("unarchived", removeOpposite: "archived", bookmark: bookmark, using: modelContext)
+
                         toastManager.show(
                             message: LocalizedStringKey("Failed to archive link after \(maxAttempts) attempts - no response"),
                             accentColor: .red,
@@ -456,9 +531,12 @@ internal class BookmarkCreationState {
                 // Wait before retrying
                 let delay = UInt64(pow(2.0, Double(attempt)) * 1_000_000_000) // 2^attempt seconds
                 try? await Task.sleep(nanoseconds: delay)
-                await performArchiveWithRetry(url: url, attempt: attempt + 1, maxAttempts: maxAttempts)
+                await performArchiveWithRetry(url: url, bookmark: bookmark, modelContext: modelContext, attempt: attempt + 1, maxAttempts: maxAttempts)
             } else {
                 await MainActor.run {
+                    // Add "unarchived" tag and remove "archived" tag if present
+                    addTagToBookmark("unarchived", removeOpposite: "archived", bookmark: bookmark, using: modelContext)
+
                     toastManager.show(
                         message: LocalizedStringKey("Failed to archive link after \(maxAttempts) attempts - network error"),
                         accentColor: .red,
