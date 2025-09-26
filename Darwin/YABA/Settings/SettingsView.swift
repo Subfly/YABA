@@ -30,6 +30,9 @@ struct SettingsView: View {
     @AppStorage(Constants.preventDeletionSyncKey)
     private var preventDeletionSync: Bool = false
     
+    @AppStorage(Constants.disableBackgroundAnimationKey)
+    private var disableBackgroundAnimation: Bool = false
+    
     @AppStorage(
         Constants.useSimplifiedShare,
         store: UserDefaults(
@@ -184,6 +187,15 @@ struct SettingsView: View {
                 }
             }
             #endif
+            Toggle(isOn: $disableBackgroundAnimation) {
+                Label {
+                    Text("Settings Disable Background Animation Title")
+                } icon: {
+                    YabaIconView(bundleKey: "background")
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                }
+            }
             #if !targetEnvironment(macCatalyst)
             if UIDevice.current.userInterfaceIdiom == .phone {
                 FABLocationPicker()

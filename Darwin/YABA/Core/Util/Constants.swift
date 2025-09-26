@@ -36,6 +36,7 @@ struct Constants {
     static let preferredSortingKey = "preferredSorting"
     static let preferredSortOrderKey = "preferredSortOrder"
     static let preferredFabPositionKey = "preferredFabPosition"
+    static let disableBackgroundAnimationKey = "disableBackgroundAnimation"
     static let deviceIdKey = "deviceId"
     static let deviceNameKey = "deviceName"
     static let showRecentsKey = "showRecents"

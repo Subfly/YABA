@@ -10,6 +10,9 @@
 import SwiftUI
 
 struct AnimatedGradient: View {
+    @AppStorage(Constants.disableBackgroundAnimationKey)
+    private var disableBackgroundAnimation: Bool = false
+    
     private let collectionColor: Color
     
     @State
@@ -47,8 +50,10 @@ struct AnimatedGradient: View {
         .opacity(0.5)
         .blur(radius: 10)
         .onAppear {
-            withAnimation(.easeInOut(duration: 3).repeatForever(autoreverses: true)) {
-                shouldAnimate.toggle()
+            if !disableBackgroundAnimation {
+                withAnimation(.easeInOut(duration: 3).repeatForever(autoreverses: true)) {
+                    shouldAnimate.toggle()
+                }
             }
         }
     }

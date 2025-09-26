@@ -37063,6 +37063,18 @@
         }
       }
     },
+    "Settings Disable Background Animation Title" : {
+      "comment" : "Background animation toggle setting title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disable Background Animation"
+          }
+        }
+      }
+    },
     "Settings EULA Link Title" : {
       "comment" : "Title of EULA link in settings",
       "extractionState" : "manual",
