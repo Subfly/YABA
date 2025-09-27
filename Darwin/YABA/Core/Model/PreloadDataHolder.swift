@@ -19,6 +19,7 @@ struct PreloadDataHolder: Codable {
 }
 
 struct PreloadCollection: Codable {
+    let id: String
     let label: String
     let icon: String
     let color: Int
@@ -26,7 +27,7 @@ struct PreloadCollection: Codable {
     func toCollectionModel(type: CollectionType) -> YabaCollection {
         let now = Date()
         return YabaCollection(
-            collectionId: UUID().uuidString,
+            collectionId: id,
             label: label,
             icon: icon,
             createdAt: now,
