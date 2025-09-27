@@ -8,6 +8,7 @@
 import UIKit
 import SwiftUI
 import SwiftData
+import TipKit
 import UniformTypeIdentifiers
 import OSLog
 
@@ -16,6 +17,7 @@ class ShareViewController: UIViewController {
     private var logger: Logger = .init()
     
     override func viewDidLoad() {
+        try? Tips.configure()
         super.viewDidLoad()
         Task {
             await handleSharedItems()

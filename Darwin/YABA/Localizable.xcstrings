@@ -4922,6 +4922,30 @@
         }
       }
     },
+    "Create Bookmark Change Image Tip Message" : {
+      "comment" : "Message to be shown in the tip of changing bookmark, down under the bookmark preview",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Easily switch the bookmark image — just tap the preview to cycle through the fetched options."
+          }
+        }
+      }
+    },
+    "Create Bookmark Change Image Tip Title" : {
+      "comment" : "Title to be shown in the tip of changing bookmark, down under the bookmark preview",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change Bookmark Image"
+          }
+        }
+      }
+    },
     "Create Bookmark Cleaned URL Placeholder" : {
       "comment" : "Placeholder to show when the URL is not cleaned yet.",
       "extractionState" : "manual",
@@ -35139,6 +35163,42 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "选择文件夹"
+          }
+        }
+      }
+    },
+    "Select Image No Image Found Message" : {
+      "comment" : "Message to show in content unavailable view of image selection sheet during creating/editing a bookmark",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "There are no more images found in the link that can fit."
+          }
+        }
+      }
+    },
+    "Select Image No Image Found Title" : {
+      "comment" : "Title to show in content unavailable view of image selection sheet during creating/editing a bookmark",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Images Found"
+          }
+        }
+      }
+    },
+    "Select Image Title" : {
+      "comment" : "Title to show when image picker is open",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select an Image"
           }
         }
       }

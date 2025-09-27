@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import TipKit
 
 struct BookmarkCreationContent: View {
     @Environment(\.dismiss)
@@ -23,6 +24,9 @@ struct BookmarkCreationContent: View {
     
     @State
     private var state: BookmarkCreationState
+    
+    private let changeBookmarkImageTip = ChangeBookmarkImageTip()
+    
     private let navigationTitle: String
     
     let bookmarkToEdit: YabaBookmark?
@@ -61,6 +65,10 @@ struct BookmarkCreationContent: View {
                     Section {
                         bookmarkPreviewItem
                             .redacted(reason: state.isLoading ? .placeholder : [])
+                            .onTapGesture {
+                                state.shouldShowImageSelectionSheet = true
+                            }
+                        TipView(changeBookmarkImageTip)
                     } header: {
                         bookmarkPreviewHeader
                     }
@@ -145,6 +153,16 @@ struct BookmarkCreationContent: View {
         #if !targetEnvironment(macCatalyst)
         .presentationDragIndicator(.visible)
         #endif
+        .sheet(isPresented: $state.shouldShowImageSelectionSheet) {
+            SelectImageContent(
+                selectables: state.selectableImages,
+                isLoading: state.isImagesLoading,
+                onSelectImage: { url, imageData in
+                    state.imageURL = url
+                    state.imageData = imageData
+                }
+            )
+        }
         .tint(
             state.selectedFolder == nil
             ? .accentColor
@@ -155,6 +173,7 @@ struct BookmarkCreationContent: View {
             state.listenUrlChanges { url in
                 Task { await state.fetchData(with: url) }
             }
+            // Set contents of bookmark to be edited
             Task {
                 await state.onAppear(
                     link: link,
@@ -165,6 +184,8 @@ struct BookmarkCreationContent: View {
                     using: modelContext
                 )
             }
+            // Show the bookmark image change link
+            ChangeBookmarkImageTip.isPresented = true
         }
         .toast(
             state: state.toastManager.toastState,

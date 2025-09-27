@@ -66,10 +66,29 @@ class Unfurler {
                 
                 let favIconURL = extractFaviconURL(from: html, with: url)
                 
-                if metadata[MetaKeys.imageUrl] == nil {
-                    let imageFallback = extractMainImageFallback(from: html, baseURL: url)
-                    metadata[MetaKeys.imageUrl] = imageFallback
+                // Extract all candidate images from the HTML
+                var allImageUrls = extractAllImages(from: html, baseURL: url)
+                
+                // Add meta tag image if available and not already in the list
+                if let metaImageUrl = metadata[MetaKeys.imageUrl],
+                   !allImageUrls.contains(metaImageUrl) {
+                    allImageUrls.insert(metaImageUrl, at: 0) // Prioritize meta tag image
                 }
+                
+                // If no images found from meta tags or content, try fallback
+                if allImageUrls.isEmpty {
+                    if let imageFallback = extractMainImageFallback(from: html, baseURL: url) {
+                        allImageUrls.append(imageFallback)
+                        metadata[MetaKeys.imageUrl] = imageFallback
+                    }
+                } else {
+                    // Set the first (highest scored) image as the primary one for backward compatibility
+                    metadata[MetaKeys.imageUrl] = allImageUrls.first
+                }
+                
+                // Download image data for all candidate images (limit to top 10 for performance)
+                let limitedImageUrls = Array(allImageUrls.prefix(10))
+                let imageOptions = await downloadMultipleImageData(from: limitedImageUrls)
                 
                 return YabaLinkPreview(
                     url: cleanedUrl,
@@ -80,7 +99,8 @@ class Unfurler {
                     imageURL: metadata[MetaKeys.imageUrl],
                     videoURL: metadata[MetaKeys.videoUrl],
                     iconData: try? await downloadImageData(from: favIconURL),
-                    imageData: try? await downloadImageData(from: metadata[MetaKeys.imageUrl]),
+                    imageData: imageOptions[metadata[MetaKeys.imageUrl] ?? ""], // Use primary image data for backward compatibility
+                    imageOptions: imageOptions,
                     readableHTML: html
                 )
             }
@@ -154,10 +174,10 @@ class Unfurler {
         return String(data: data, encoding: .utf8)
     }
     
-    private func extractMainImageFallback(from html: String, baseURL: URL) -> String? {
+    private func extractAllImages(from html: String, baseURL: URL) -> [String] {
         let pattern = #"<img\s+[^>]*src\s*=\s*["']([^"']+)["'][^>]*>"#
         guard let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive) else {
-            return nil
+            return []
         }
         
         let nsrange = NSRange(html.startIndex..<html.endIndex, in: html)
@@ -171,26 +191,96 @@ class Unfurler {
             
             let lowerSrc = src.lowercased()
             
-            // Score based on heuristics
-            var score = 0
-            if lowerSrc.contains("hero") || lowerSrc.contains("main") || lowerSrc.contains("header") {
-                score += 3
+            // Skip low-quality/unwanted images
+            if shouldSkipImage(src: lowerSrc) {
+                continue
             }
-            if lowerSrc.contains("logo") || lowerSrc.contains("icon") || lowerSrc.contains("sprite") {
-                score -= 5
-            }
-            if lowerSrc.hasSuffix(".png") || lowerSrc.hasSuffix(".jpg") || lowerSrc.hasSuffix(".jpeg") {
-                score += 1
-            }
+            
+            // Score based on heuristics for quality
+            var score = calculateImageScore(src: lowerSrc)
+            
             if !lowerSrc.starts(with: "data:") { // skip embedded base64 images
                 candidates.append((src, score))
             }
         }
         
-        print(candidates)
+        // Sort by score and convert to absolute URLs
+        let sortedCandidates = candidates.sorted { $0.score > $1.score }
+        return sortedCandidates.compactMap { candidate in
+            URL(string: candidate.src, relativeTo: baseURL)?.absoluteString
+        }
+    }
+    
+    private func shouldSkipImage(src: String) -> Bool {
+        let lowercased = src.lowercased()
         
-        let best = candidates.sorted { $0.score > $1.score }.first
-        return best.flatMap { URL(string: $0.src, relativeTo: baseURL)?.absoluteString }
+        // Skip common low-quality indicators
+        let skipPatterns = [
+            "icon", "sprite", "badge", "button", "arrow", "bullet",
+            "tracking", "pixel", "analytics", "ad", "banner",
+            "logo", "favicon", "thumbnail", "avatar", "profile"
+        ]
+        
+        for pattern in skipPatterns {
+            if lowercased.contains(pattern) {
+                return true
+            }
+        }
+        
+        // Skip very small images based on common naming patterns
+        let sizePatterns = [
+            "16x16", "32x32", "48x48", "64x64", "1x1", "2x2",
+            "small", "tiny", "mini", "_s.", "_xs.", "_sm."
+        ]
+        
+        for pattern in sizePatterns {
+            if lowercased.contains(pattern) {
+                return true
+            }
+        }
+        
+        return false
+    }
+    
+    private func calculateImageScore(src: String) -> Int {
+        var score = 0
+        let lowercased = src.lowercased()
+        
+        // Positive indicators
+        if lowercased.contains("hero") || lowercased.contains("main") || lowercased.contains("header") {
+            score += 5
+        }
+        if lowercased.contains("feature") || lowercased.contains("cover") || lowercased.contains("banner") {
+            score += 3
+        }
+        if lowercased.contains("large") || lowercased.contains("big") || lowercased.contains("full") {
+            score += 2
+        }
+        
+        // File format preferences
+        if lowercased.hasSuffix(".jpg") || lowercased.hasSuffix(".jpeg") {
+            score += 2
+        } else if lowercased.hasSuffix(".png") {
+            score += 1
+        } else if lowercased.hasSuffix(".webp") {
+            score += 1
+        }
+        
+        // Size indicators in filename
+        if lowercased.contains("1200") || lowercased.contains("1920") || lowercased.contains("2048") {
+            score += 3
+        } else if lowercased.contains("800") || lowercased.contains("1024") {
+            score += 2
+        } else if lowercased.contains("600") || lowercased.contains("640") {
+            score += 1
+        }
+        
+        return score
+    }
+    
+    private func extractMainImageFallback(from html: String, baseURL: URL) -> String? {
+        let allImages = extractAllImages(from: html, baseURL: baseURL)
+        return allImages.first
     }
     
     private func extractFaviconURL(from html: String, with baseURL: URL) -> String? {
@@ -368,6 +458,47 @@ class Unfurler {
             return nil
         }
         return data
+    }
+    
+    private func downloadMultipleImageData(from imageUrls: [String]) async -> [String: Data] {
+        var imageOptions: [String: Data] = [:]
+        
+        // Download images concurrently
+        await withTaskGroup(of: (String, Data?).self) { group in
+            for imageUrl in imageUrls {
+                group.addTask {
+                    let data = try? await self.downloadImageData(from: imageUrl)
+                    return (imageUrl, data)
+                }
+            }
+            
+            for await (url, data) in group {
+                if let data = data {
+                    // Additional quality filtering based on actual image data
+                    if await self.isHighQualityImage(data: data) {
+                        imageOptions[url] = data
+                    }
+                }
+            }
+        }
+        
+        return imageOptions
+    }
+    
+    private func isHighQualityImage(data: Data) async -> Bool {
+        // Basic size check - skip very small images (likely icons/sprites)
+        if data.count < 1024 { // Less than 1KB
+            return false
+        }
+        
+        // For more sophisticated filtering, you could decode the image
+        // and check dimensions, but for now we'll use file size as a proxy
+        // Skip extremely large files too (over 5MB) for performance
+        if data.count > 5 * 1024 * 1024 {
+            return false
+        }
+        
+        return true
     }
     
     func decodeHTMLEntities(_ string: String) -> String {

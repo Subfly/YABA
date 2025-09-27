@@ -44,7 +44,10 @@ internal class BookmarkCreationState {
     var selectedFolder: YabaCollection? = nil
     var selectedTags: [YabaCollection] = []
     
+    var selectableImages: [String: Data] = [:]
+    
     var isLoading: Bool = false
+    var isImagesLoading: Bool = false
     var hasError: Bool = false
     
     var contentAppearance: PreviewContentAppearance = .list
@@ -52,6 +55,8 @@ internal class BookmarkCreationState {
     var uncatagroizedFolderCreationRequired: Bool = false
     
     let toastManager: ToastManager = .init()
+    
+    var shouldShowImageSelectionSheet: Bool = false
     
     @ObservationIgnored
     let isInEditMode: Bool
@@ -66,8 +71,10 @@ internal class BookmarkCreationState {
         }
         
         isLoading = true
+        isImagesLoading = true
         defer {
             isLoading = false
+            isImagesLoading = false
         }
         
         do {
@@ -86,6 +93,7 @@ internal class BookmarkCreationState {
                 self.iconData = fetched.iconData
                 self.imageData = fetched.imageData
                 self.cleanerUrl = fetched.url
+                self.selectableImages = fetched.imageOptions
             }
             hasError = false
             lastFetchedUrl = urlString
@@ -267,6 +275,16 @@ internal class BookmarkCreationState {
             selectedType = bookmarkToEdit.bookmarkType
             selectedFolder = bookmarkToEdit.collections?.first(where: { $0.collectionType == .folder })
             selectedTags = bookmarkToEdit.collections?.filter { $0.collectionType == .tag } ?? []
+            
+            // MARK: FETCH EDITABLE IMAGES
+            isImagesLoading = true
+            Task { @MainActor in
+                let fetched = try? await unfurler.unfurl(urlString: bookmarkToEdit.link)
+                if let options = fetched?.imageOptions {
+                    self.selectableImages = options
+                }
+                self.isImagesLoading = false
+            }
         } else {
             selectedFolder = folderToFill
         }
