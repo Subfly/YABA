@@ -9,37 +9,29 @@ import SwiftUI
 import SwiftData
 
 struct MenuItemMainContent: View {
-    @Query(sort: \YabaBookmark.editedAt, order: .reverse, animation: .smooth)
-    private var bookmarks: [YabaBookmark]
+    @State
+    private var searchQuery: String = ""
     
     let onCreateNewBookmarkRequested: () -> Void
     
     var body: some View {
         VStack(spacing: 0) {
-            if bookmarks.isEmpty {
-                noContentView
-            } else {
-                HStack {
-                    Label {
-                        Text("Home Recents Label")
-                            .font(.title3)
-                    } icon: {
-                        Image("clock-01")
-                            .renderingMode(.template)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 18, height: 18)
-                    }
-                    Spacer()
+            HStack(spacing: 2) {
+                Label {
+                    Text("YABA").font(.headline)
+                } icon: {
+                    Image("bookmark-02")
+                        .renderingMode(.template)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 18, height: 18)
                 }
-                .padding(.horizontal)
-                .padding(.vertical, 12)
-                List {
-                    ForEach(bookmarks.prefix(10)) { bookmark in
-                        BookmarkItemView(bookmark: bookmark)
-                    }
-                }.listStyle(.sidebar)
+                Spacer()
+                TextField("", text: $searchQuery, prompt: Text("Search Prompt"))
             }
+            .padding(.horizontal)
+            .padding(.vertical, 12)
+            SearchableContent(searchQuery: searchQuery)
             buttons
                 .padding(.horizontal)
                 .padding(.vertical, 12)
@@ -56,22 +48,69 @@ struct MenuItemMainContent: View {
             )
         }
     }
+}
+
+private struct SearchableContent: View {
+    @Query
+    private var bookmarks: [YabaBookmark]
     
-    @ViewBuilder
-    private var noContentView: some View {
-        ContentUnavailableView {
-            Label {
-                Text("No Bookmarks Title")
-            } icon: {
-                Image("bookmark-off-02")
-                    .renderingMode(.template)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 44, height: 44)
+    let searchQuery: String
+    
+    init(searchQuery: String) {
+        self.searchQuery = searchQuery
+        
+        _bookmarks = .init(
+            filter: #Predicate<YabaBookmark> { bookmark in
+                if searchQuery.isEmpty {
+                    true
+                } else {
+                    bookmark.label.localizedStandardContains(searchQuery)
+                    || bookmark.bookmarkDescription.localizedStandardContains(searchQuery)
+                }
+            },
+            sort: [SortDescriptor<YabaBookmark>(\.editedAt, order: .reverse)],
+            animation: .smooth
+        )
+    }
+    
+    var body: some View {
+        if bookmarks.isEmpty {
+            if searchQuery.isEmpty {
+                ContentUnavailableView {
+                    Label {
+                        Text("No Bookmarks Title")
+                    } icon: {
+                        Image("bookmark-off-02")
+                            .renderingMode(.template)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 44, height: 44)
+                    }
+                } description: {
+                    Text("No Bookmarks Menu Item Message")
+                }.padding()
+            } else {
+                ContentUnavailableView {
+                    Label {
+                        Text("Search No Bookmarks Found Title")
+                    } icon: {
+                        Image("bookmark-off-02")
+                            .renderingMode(.template)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 44, height: 44)
+                    }
+                } description: {
+                    Text("Search No Bookmarks Found Description \(searchQuery)")
+                }.padding()
             }
-        } description: {
-            Text("No Bookmarks Menu Item Message")
-        }.padding()
+        } else {
+            List {
+                ForEach(bookmarks) { bookmark in
+                    BookmarkItemView(bookmark: bookmark)
+                }
+            }.listStyle(.sidebar)
+        }
     }
 }
 
@@ -89,17 +128,21 @@ private struct BookmarkItemView: View {
                 .font(.title3)
                 .fontWeight(.medium)
                 .lineLimit(1)
+            Spacer()
         }
-        .background {
-            if isHovered {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.gray.opacity(0.2))
-            }
+        .listRowBackground(
+            isHovered
+            ? RoundedRectangle(cornerRadius: 8).fill(.gray.opacity(0.2))
+            : RoundedRectangle(cornerRadius: 0).fill(.clear)
+        )
+        .contentShape(Rectangle())
+        .swipeActions(edge: .trailing) {
+            
         }
         .onHover { hovered in
-            self.isHovered = hovered
+            isHovered = hovered
+            print("hovered on: \(bookmark.label)")
         }
-        .contentShape(Rectangle())
         .onTapGesture {
             let id = bookmark.bookmarkId
             if let url = URL(
