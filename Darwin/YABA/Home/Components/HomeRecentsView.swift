@@ -16,21 +16,31 @@ struct HomeRecentsView: View {
     
     var body: some View {
         if !bookmarks.isEmpty {
-            Section {
-                ForEach(bookmarks.prefix(5)) { bookmark in
-                    BookmarkItemView(
-                        bookmark: bookmark,
-                        onNavigationCallback: onNavigationCallback
-                    )
-                }
-            } header: {
+            HStack {
                 Label {
                     Text("Home Recents Label")
+                        .font(.headline)
+                        .fontWeight(.semibold)
                 } icon: {
                     YabaIconView(bundleKey: "clock-01")
                         .scaledToFit()
-                        .frame(width: 18, height: 18)
+                        .frame(width: 22, height: 22)
                 }
+                .foregroundStyle(.secondary)
+                .font(.headline)
+                Spacer()
+            }
+            .contentShape(Rectangle())
+            .padding(.horizontal)
+            .padding(.bottom)
+            
+            ForEach(bookmarks.prefix(5)) { bookmark in
+                BookmarkItemView(
+                    bookmark: bookmark,
+                    isInRecents: true,
+                    onNavigationCallback: onNavigationCallback
+                )
+                Spacer().frame(height: 6)
             }
         }
     }

@@ -13,6 +13,7 @@ import WidgetKit
 @Observable
 private class ItemState {
     var isHovered: Bool = false
+    var isTargeted: Bool = false
     var shouldShowDeleteDialog: Bool = false
     var shouldShowEditSheet: Bool = false
     var shouldShowMenuItems: Bool = false
@@ -20,6 +21,123 @@ private class ItemState {
 }
 
 struct CollectionItemView: View {
+    @Environment(\.appState)
+    private var appState
+    
+    @State
+    private var itemState: ItemState = .init()
+    
+    let collection: YabaCollection
+    let isInHome: Bool
+    let isInSelectionMode: Bool
+    let isInBookmarkDetail: Bool
+    let onDeleteCallback: (YabaCollection) -> Void
+    let onEditCallback: (YabaCollection) -> Void
+    let onNavigationCallback: (YabaCollection) -> Void
+    
+    var body: some View {
+        content
+            .onHover { hovered in
+                itemState.isHovered = hovered
+            }
+            #if !KEYBOARD_EXTENSION
+            .contextMenu {
+                MenuActionItems(
+                    state: $itemState,
+                    isInSelectionMode: isInSelectionMode,
+                    isInBookmarkDetail: isInBookmarkDetail
+                )
+            }
+            #endif
+            .draggable(collection.label) {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(collection.color.getUIColor().opacity(0.5))
+                    .frame(width: 54, height: 54)
+                    .overlay {
+                        YabaIconView(bundleKey: collection.icon)
+                            .frame(width: 32, height: 32)
+                            .foregroundStyle(collection.color.getUIColor())
+                    }
+            }
+            .onDrop(of: [.text], isTargeted: $itemState.isTargeted) { providers in
+                return false
+            }
+            .sensoryFeedback(.impact(weight: .heavy, intensity: 1), trigger: itemState.isTargeted)
+    }
+    
+    @ViewBuilder
+    private var content: some View {
+        if isInHome {
+            CollectionItemViewWrappable(
+                itemState: $itemState,
+                collection: collection,
+                isInSelectionMode: isInSelectionMode,
+                isInBookmarkDetail: isInBookmarkDetail,
+                onDeleteCallback: onDeleteCallback,
+                onEditCallback: onEditCallback,
+                onNavigationCallback: onNavigationCallback
+            )
+            .padding()
+            .background {
+                #if targetEnvironment(macCatalyst)
+                if itemState.isTargeted {
+                    RoundedRectangle(cornerRadius: 16).fill(collection.color.getUIColor().opacity(0.2))
+                } else if !isInBookmarkDetail && appState.selectedCollection?.collectionId == collection.collectionId {
+                    RoundedRectangle(cornerRadius: 16).fill(Color.gray.opacity(0.2))
+                } else if !isInBookmarkDetail && itemState.isHovered {
+                    RoundedRectangle(cornerRadius: 16).fill(Color.gray.opacity(0.1))
+                } else {
+                    RoundedRectangle(cornerRadius: 16).fill(Color.clear)
+                }
+                #else
+                if itemState.isTargeted {
+                    RoundedRectangle(cornerRadius: 24).fill(collection.color.getUIColor().opacity(0.1))
+                } else if UIDevice.current.userInterfaceIdiom == .phone {
+                    RoundedRectangle(cornerRadius: 24).fill(Color.gray.opacity(0.05))
+                } else if appState.selectedCollection?.collectionId == collection.collectionId {
+                    RoundedRectangle(cornerRadius: 24).fill(Color.gray.opacity(0.2))
+                } else if itemState.isHovered {
+                    RoundedRectangle(cornerRadius: 24).fill(Color.gray.opacity(0.1))
+                } else {
+                    RoundedRectangle(cornerRadius: 24).fill(Color.clear)
+                }
+                #endif
+            }
+            .padding(.horizontal)
+        } else {
+            CollectionItemViewWrappable(
+                itemState: $itemState,
+                collection: collection,
+                isInSelectionMode: isInSelectionMode,
+                isInBookmarkDetail: isInBookmarkDetail,
+                onDeleteCallback: onDeleteCallback,
+                onEditCallback: onEditCallback,
+                onNavigationCallback: onNavigationCallback
+            )
+            #if targetEnvironment(macCatalyst)
+            .listRowBackground(
+                appState.selectedCollection?.id == collection.id
+                ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
+                : itemState.isHovered
+                ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
+                : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
+            )
+            #else
+            .listRowBackground(
+                UIDevice.current.userInterfaceIdiom == .phone
+                ? nil
+                : appState.selectedCollection?.id == collection.id
+                ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
+                : itemState.isHovered
+                ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
+                : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
+            )
+            #endif
+        }
+    }
+}
+
+private struct CollectionItemViewWrappable: View {
     @Environment(\.modelContext)
     private var modelContext
     
@@ -29,9 +147,8 @@ struct CollectionItemView: View {
     @AppStorage(Constants.preferredContentAppearanceKey)
     private var contentAppearance: ViewType = .list
     
-    @State
-    private var itemState: ItemState = .init()
-    
+    @Binding
+    var itemState: ItemState
     let collection: YabaCollection
     let isInSelectionMode: Bool
     let isInBookmarkDetail: Bool
@@ -46,44 +163,11 @@ struct CollectionItemView: View {
             isInSelectionMode: isInSelectionMode,
             isInBookmarkDetail: isInBookmarkDetail,
             onNavigationCallback: {
-                withAnimation {
-                    appState.selectedCollection = collection
-                    onNavigationCallback(collection)
-                }
+                appState.selectedCollection = collection
+                onNavigationCallback(collection)
             }
         )
         .padding(.leading, isInSelectionMode ? 0 : 8)
-        #if targetEnvironment(macCatalyst)
-        .listRowBackground(
-            appState.selectedCollection?.id == collection.id
-            ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
-            : itemState.isHovered
-            ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
-            : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
-        )
-        #else
-        .listRowBackground(
-            UIDevice.current.userInterfaceIdiom == .phone
-            ? nil
-            : appState.selectedCollection?.id == collection.id
-            ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
-            : itemState.isHovered
-            ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
-            : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
-        )
-        #endif
-        .onHover { hovered in
-            itemState.isHovered = hovered
-        }
-        #if !KEYBOARD_EXTENSION
-        .contextMenu {
-            MenuActionItems(
-                state: $itemState,
-                isInSelectionMode: isInSelectionMode,
-                isInBookmarkDetail: isInBookmarkDetail
-            )
-        }
-        #endif
         .alert(
             LocalizedStringKey(
                 collection.collectionType == .folder

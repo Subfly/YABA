@@ -47,14 +47,26 @@ struct AnnouncementView: View {
             }
         }
         .contentShape(Rectangle())
-        #if targetEnvironment(macCatalyst)
-        .listRowBackground(
-            isHovered
-            ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
-            : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
-        )
-        #endif
-        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+        .padding()
+        .background {
+            #if targetEnvironment(macCatalyst)
+            if isHovered {
+                RoundedRectangle(cornerRadius: 16).fill(Color.gray.opacity(0.1))
+            } else {
+                RoundedRectangle(cornerRadius: 16).fill(Color.clear)
+            }
+            #else
+            if UIDevice.current.userInterfaceIdiom == .phone {
+                RoundedRectangle(cornerRadius: 24).fill(Color.gray.opacity(0.05))
+            } else if isHovered {
+                RoundedRectangle(cornerRadius: 24).fill(Color.gray.opacity(0.1))
+            } else {
+                RoundedRectangle(cornerRadius: 24).fill(Color.clear)
+            }
+            #endif
+        }
+        .padding(.horizontal)
+        .contextMenu {
             if !isInPreview {
                 Button {
                     showDeleteDialog = true
@@ -65,6 +77,9 @@ struct AnnouncementView: View {
                     }
                 }.tint(.red)
             }
+        }
+        .onHover { hovered in
+            isHovered = hovered
         }
         .alert(
             "Announcements Delete Title",
@@ -85,9 +100,6 @@ struct AnnouncementView: View {
             }
         } message: {
             Text("Announcements Delete Message")
-        }
-        .onHover { hovered in
-            isHovered = hovered
         }
         .onTapGesture {
             onClick()

@@ -18,9 +18,6 @@ private class ItemState {
 }
 
 struct BookmarkItemView: View {
-    @Environment(\.modelContext)
-    private var modelContext
-    
     @Environment(\.appState)
     private var appState
     
@@ -28,10 +25,37 @@ struct BookmarkItemView: View {
     private var itemState: ItemState = .init()
     
     let bookmark: YabaBookmark
+    let isInRecents: Bool
     let onNavigationCallback: (YabaBookmark) -> Void
     
     var body: some View {
-        MainLabel(bookmark: bookmark, state: $itemState)
+        // Recents view is only available in Mobile
+        if isInRecents {
+            BookmarkItemViewWrappable(
+                itemState: $itemState,
+                bookmark: bookmark,
+                onNavigationCallback: onNavigationCallback
+            )
+            .padding()
+            .background {
+                RoundedRectangle(cornerRadius: 24).fill(Color.gray.opacity(0.05))
+            }
+            .padding(.horizontal)
+            #if !KEYBOARD_EXTENSION
+            .contextMenu {
+                MenuActionItems(
+                    shouldShowEditDialog: $itemState.shouldShowEditDialog,
+                    shouldShowShareDialog: $itemState.shouldShowShareDialog,
+                    shouldShowDeleteDialog: $itemState.shouldShowDeleteDialog
+                )
+            }
+            #endif
+        } else {
+            BookmarkItemViewWrappable(
+                itemState: $itemState,
+                bookmark: bookmark,
+                onNavigationCallback: onNavigationCallback
+            )
             #if targetEnvironment(macCatalyst)
             .listRowBackground(
                 appState.selectedBookmark?.id == bookmark.id
@@ -60,6 +84,24 @@ struct BookmarkItemView: View {
                 )
             }
             #endif
+        }
+    }
+}
+
+private struct BookmarkItemViewWrappable: View {
+    @Environment(\.modelContext)
+    private var modelContext
+    
+    @Environment(\.appState)
+    private var appState
+    
+    @Binding
+    var itemState: ItemState
+    let bookmark: YabaBookmark
+    let onNavigationCallback: (YabaBookmark) -> Void
+    
+    var body: some View {
+        MainLabel(bookmark: bookmark, state: $itemState)
             .alert(
                 LocalizedStringKey("Delete Bookmark Title"),
                 isPresented: $itemState.shouldShowDeleteDialog,

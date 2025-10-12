@@ -34,7 +34,6 @@ struct HomeView: View {
             #if !targetEnvironment(macCatalyst)
             AnimatedGradient(collectionColor: .accentColor)
             #endif
-            // TODO: CHANGE THIS WHEN LAZYVGRID IS RECYCABLE
             SequentialView(
                 preferredSorting: preferredSorting,
                 preferredOrder: preferredSortOrder,
@@ -225,90 +224,30 @@ private struct SequentialView: View {
     }
         
     var body: some View {
-        List {
-            HomeAnnouncementsView()
-            if showRecents && UIDevice.current.userInterfaceIdiom == .phone {
-                HomeRecentsView(
-                    onNavigationCallback: onNavigationCallbackForBookmark
-                )
-            }
-            HomeCollectionView(
-                collectionType: .folder,
-                collections: collections.filter { $0.collectionType == .folder },
-                onNavigationCallback: onNavigationCallbackForCollection
-            )
-            HomeCollectionView(
-                collectionType: .tag,
-                collections: collections.filter { $0.collectionType == .tag },
-                onNavigationCallback: onNavigationCallbackForCollection
-            )
-            Spacer().frame(
-                height: UIDevice.current.userInterfaceIdiom == .pad
-                ? 100
-                : 0
-            ).listRowBackground(Color.clear)
-        }
-    }
-}
-
-private struct GridView: View {
-    @AppStorage(Constants.preferredSortingKey)
-    private var preferredSorting: SortType = .createdAt
-    
-    @AppStorage(Constants.preferredSortOrderKey)
-    private var preferredSortOrder: SortOrderType = .ascending
-    
-    @Query
-    private var collections: [YabaCollection]
-    
-    let onNavigationCallbackForCollection: (YabaCollection) -> Void
-    let onNavigationCallbackForBookmark: (YabaBookmark) -> Void
-    
-    init(
-        onNavigationCallbackForCollection: @escaping (YabaCollection) -> Void,
-        onNavigationCallbackForBookmark: @escaping (YabaBookmark) -> Void
-    ) {
-        self.onNavigationCallbackForCollection = onNavigationCallbackForCollection
-        self.onNavigationCallbackForBookmark = onNavigationCallbackForBookmark
-        
-        let sortDescriptor: SortDescriptor<YabaCollection> = switch preferredSorting {
-        case .createdAt:
-                .init(\.createdAt, order: preferredSortOrder == .ascending ? .forward : .reverse)
-        case .editedAt:
-                .init(\.editedAt, order: preferredSortOrder == .ascending ? .forward : .reverse)
-        case .label:
-                .init(\.label, order: preferredSortOrder == .ascending ? .forward : .reverse)
-        }
-        
-        _collections = Query(
-            sort: [sortDescriptor],
-            animation: .smooth
-        )
-    }
-    
-    var body: some View {
         ScrollView {
-            LazyVGrid(
-                columns: [
-                    .init(.flexible()),
-                    .init(.flexible())
-                ]
-            ) {
-                Section {} header: { Spacer().frame(height: 12) }
+            LazyVStack(spacing: 0) {
+                Spacer().frame(height: 24)
+                HomeAnnouncementsView()
+                if showRecents && UIDevice.current.userInterfaceIdiom == .phone {
+                    Spacer().frame(height: 24)
+                    HomeRecentsView(
+                        onNavigationCallback: onNavigationCallbackForBookmark
+                    )
+                }
+                Spacer().frame(height: 24)
                 HomeCollectionView(
                     collectionType: .folder,
-                    collections: collections,
+                    collections: collections.filter { $0.collectionType == .folder },
                     onNavigationCallback: onNavigationCallbackForCollection
                 )
-                Section {} header: { Spacer().frame(height: 12) }
+                Spacer().frame(height: 24)
                 HomeCollectionView(
                     collectionType: .tag,
-                    collections: collections,
-                    onNavigationCallback: { collection in
-                        onNavigationCallbackForCollection(collection)
-                    }
+                    collections: collections.filter { $0.collectionType == .tag },
+                    onNavigationCallback: onNavigationCallbackForCollection
                 )
-            }.padding(.horizontal)
+                Spacer().frame(height: 100)
+            }
         }
     }
 }

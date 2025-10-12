@@ -80,107 +80,138 @@ private struct ListSection<NoCollectionView: View>: View {
     
     var body: some View {
         if UIDevice.current.userInterfaceIdiom == .phone {
-            Section {
-                if collections.isEmpty {
-                    noCollectionView
-                } else {
-                    if collections.count <= 10 {
-                        generateItems(for: collections)
-                    } else {
-                        ForEach(collections.prefix(10)) { collection in
-                            CollectionItemView(
-                                collection: collection,
-                                isInSelectionMode: false,
-                                isInBookmarkDetail: false,
-                                onDeleteCallback: { _ in },
-                                onEditCallback: { _ in },
-                                onNavigationCallback: onNavigationCallback
-                            )
-                        }
-                        if isExpandedMobile {
-                            ForEach(collections.suffix(from: 10)) { collection in
-                                CollectionItemView(
-                                    collection: collection,
-                                    isInSelectionMode: false,
-                                    isInBookmarkDetail: false,
-                                    onDeleteCallback: { _ in },
-                                    onEditCallback: { _ in },
-                                    onNavigationCallback: onNavigationCallback
-                                )
-                            }
-                        }
-                    }
-                }
-            } header: {
-                Label {
-                    Text(LocalizedStringKey(labelTitle))
-                    #if targetEnvironment(macCatalyst)
-                        .font(.headline)
-                    #endif
-                } icon: {
-                    YabaIconView(bundleKey: collectionIcon)
-                        .scaledToFit()
-                        .frame(width: 18, height: 18)
-                }
-            } footer: {
-                if collections.count > 10 {
-                    HStack {
-                        Spacer()
-                        Label {
-                            Text(
-                                isExpandedMobile
-                                ? LocalizedStringKey("Show Less Label")
-                                : LocalizedStringKey("Show More Label")
-                            )
-                        } icon: {
-                            YabaIconView(bundleKey: isExpandedMobile ? "arrow-up-01" : "arrow-down-01")
-                                .scaledToFit()
-                                .frame(width: 18, height: 18)
-                        }
-                        .labelStyle(InverseLabelStyle())
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            withAnimation {
-                                isExpandedMobile.toggle()
-                            }
-                        }
-                        Spacer()
-                    }
+            mobileView
+        } else {
+            generalView
+        }
+    }
+    
+    @ViewBuilder
+    private var mobileView: some View {
+        generateHeaderView(includeExpansion: false)
+        if collections.isEmpty {
+            noCollectionView
+        } else {
+            if collections.count <= 10 {
+                generateItems(
+                    for: collections,
+                    includeSpacerAtStart: true
+                )
+            } else {
+                generateItems(
+                    for: Array(collections.prefix(10)),
+                    includeSpacerAtStart: true
+                )
+                if isExpandedMobile {
+                    generateItems(
+                        for: Array(collections.suffix(from: 10)),
+                        includeSpacerAtStart: false
+                    )
                 }
             }
-        } else {
-            Section(isExpanded: $isExpandedGeneral) {
-                if collections.isEmpty {
-                    noCollectionView
-                } else {
-                    generateItems(for: collections)
-                }
-            } header: {
+        }
+        if collections.count > 10 {
+            HStack {
+                Spacer()
                 Label {
-                    Text(LocalizedStringKey(labelTitle))
-                    #if targetEnvironment(macCatalyst)
-                        .font(.headline)
-                    #endif
+                    Text(
+                        isExpandedMobile
+                        ? LocalizedStringKey("Show Less Label")
+                        : LocalizedStringKey("Show More Label")
+                    )
+                    .font(.callout)
+                    .foregroundStyle(Color(.secondaryLabel))
                 } icon: {
-                    YabaIconView(bundleKey: collectionIcon)
+                    YabaIconView(bundleKey: isExpandedMobile ? "arrow-up-01" : "arrow-down-01")
                         .scaledToFit()
                         .frame(width: 18, height: 18)
+                        .foregroundStyle(Color(.secondaryLabel))
                 }
+                .labelStyle(InverseLabelStyle())
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    withAnimation {
+                        isExpandedMobile.toggle()
+                    }
+                }
+                Spacer()
+            }.padding(.top)
+        }
+    }
+    
+    @ViewBuilder
+    private var generalView: some View {
+        generateHeaderView(includeExpansion: true)
+        if isExpandedGeneral {
+            if collections.isEmpty {
+                noCollectionView
+            } else {
+                generateItems(
+                    for: collections,
+                    includeSpacerAtStart: true
+                )
+            }
+        } else {
+            EmptyView()
+        }
+    }
+    
+    @ViewBuilder
+    private func generateHeaderView(includeExpansion: Bool = false) -> some View {
+        HStack {
+            Label {
+                Text(LocalizedStringKey(labelTitle))
+                    .font(.headline)
+                    .fontWeight(.semibold)
+            } icon: {
+                YabaIconView(bundleKey: collectionIcon)
+                    .scaledToFit()
+                    .frame(width: 22, height: 22)
+            }
+            .foregroundStyle(.secondary)
+            .font(.headline)
+            Spacer()
+            if includeExpansion {
+                YabaIconView(bundleKey: "arrow-right-01")
+                    .scaledToFit()
+                    .frame(width: 22, height: 22)
+                    .foregroundStyle(.secondary)
+                    .rotationEffect(isExpandedGeneral ? .init(degrees: 90) : .zero)
+                    .animation(.smooth, value: isExpandedGeneral)
+            }
+        }
+        .contentShape(Rectangle())
+        .padding(.horizontal)
+        .padding(.bottom)
+        .onTapGesture {
+            withAnimation {
+                isExpandedGeneral.toggle()
             }
         }
     }
     
     @ViewBuilder
-    private func generateItems(for given: [YabaCollection]) -> some View {
+    private func generateItems(
+        for given: [YabaCollection],
+        includeSpacerAtStart: Bool,
+    ) -> some View {
         ForEach(given) { collection in
+            if includeSpacerAtStart && given.first?.collectionId == collection.collectionId {
+                SeparatorItemView()
+            }
+            Spacer().frame(height: 1)
             CollectionItemView(
                 collection: collection,
+                isInHome: true,
                 isInSelectionMode: false,
                 isInBookmarkDetail: false,
                 onDeleteCallback: { _ in },
                 onEditCallback: { _ in },
                 onNavigationCallback: onNavigationCallback
             )
+            Spacer().frame(height: 1)
+            SeparatorItemView()
+            Spacer().frame(height: 1)
         }
     }
 }
@@ -239,6 +270,7 @@ private struct GridSection: View {
                 ForEach(collections) { collection in
                     CollectionItemView(
                         collection: collection,
+                        isInHome: true,
                         isInSelectionMode: false,
                         isInBookmarkDetail: false,
                         onDeleteCallback: { _ in },
@@ -255,6 +287,7 @@ private struct GridSection: View {
             ForEach(collections) { collection in
                 CollectionItemView(
                     collection: collection,
+                    isInHome: true,
                     isInSelectionMode: false,
                     isInBookmarkDetail: false,
                     onDeleteCallback: { _ in },

@@ -242,6 +242,7 @@ private struct SearchableContent: View {
                 ForEach(bookmarks) { bookmark in
                     BookmarkItemView(
                         bookmark: bookmark,
+                        isInRecents: false,
                         onNavigationCallback: onNavigationCallback
                     )
                 }

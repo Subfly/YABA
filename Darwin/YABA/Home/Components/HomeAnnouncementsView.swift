@@ -19,17 +19,23 @@ struct HomeAnnouncementsView: View {
     
     var body: some View {
         if showUpdateAnnouncement || showLegalsAnnouncement || showCloudKitAnnouncement {
-            Section {
-                content.transition(.blurReplace)
-            } header: {
+            HStack {
                 Label {
                     Text("Home Announcements Title")
+                        .font(.headline)
+                        .fontWeight(.semibold)
                 } icon: {
                     YabaIconView(bundleKey: "megaphone-03")
                         .scaledToFit()
-                        .frame(width: 18, height: 18)
+                        .frame(width: 22, height: 22)
                 }
+                .foregroundStyle(.secondary)
+                .font(.headline)
+                Spacer()
             }
+            .padding(.horizontal)
+            .padding(.bottom)
+            content.transition(.blurReplace)
         }
     }
     
@@ -50,6 +56,7 @@ struct HomeAnnouncementsView: View {
                     showUpdateAnnouncement = false
                 }
             ).animation(.smooth, value: showUpdateAnnouncement)
+            Spacer().frame(height: 6)
         }
         if showLegalsAnnouncement {
             AnnouncementView(
@@ -66,6 +73,7 @@ struct HomeAnnouncementsView: View {
                     showLegalsAnnouncement = false
                 }
             ).animation(.smooth, value: showLegalsAnnouncement)
+            Spacer().frame(height: 6)
         }
         if showCloudKitAnnouncement {
             AnnouncementView(
