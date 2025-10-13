@@ -103,6 +103,12 @@ enum YabaSchemaV1: VersionedSchema {
     
     @Model
     final class Collection {
+        // Below relationship already covers this one.
+        var parent: Collection? = nil
+                
+        @Relationship(inverse: \Collection.parent)
+        var children: [Collection] = []
+        
         @Relationship(inverse: \Bookmark.collections)
         var bookmarks: [Bookmark]? = []
 

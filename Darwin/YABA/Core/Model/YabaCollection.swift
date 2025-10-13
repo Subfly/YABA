@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 import SwiftData
 
 /// FOR THE MODEL ITSELF, LOOK TO _YABA_SCHEMA_
@@ -22,6 +23,28 @@ extension YabaCollection {
             type: .folder,
             version: 0,
         )
+    }
+    
+    func getParentColorsInOrder() -> [YabaColor] {
+        var colors: [YabaColor] = []
+        var current: YabaCollection? = self
+        
+        while let parent = current?.parent {
+            colors.append(parent.color)
+            current = current?.parent
+        }
+        
+        return colors.reversed()
+    }
+    
+    func getDescendants() -> [YabaCollection] {
+        var result: [YabaCollection] = []
+        var stack: [YabaCollection] = children
+        while let current = stack.popLast() {
+            result.append(current)
+            stack.append(contentsOf: current.children)
+        }
+        return result
     }
     
     func hasChanges(with other: YabaCollection) -> Bool {

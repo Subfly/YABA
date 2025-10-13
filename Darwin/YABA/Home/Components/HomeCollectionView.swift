@@ -198,8 +198,8 @@ private struct ListSection<NoCollectionView: View>: View {
         ForEach(given) { collection in
             if includeSpacerAtStart && given.first?.collectionId == collection.collectionId {
                 SeparatorItemView()
+                Spacer().frame(height: 1)
             }
-            Spacer().frame(height: 1)
             CollectionItemView(
                 collection: collection,
                 isInHome: true,

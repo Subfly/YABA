@@ -237,7 +237,9 @@ private struct SequentialView: View {
                 Spacer().frame(height: 24)
                 HomeCollectionView(
                     collectionType: .folder,
-                    collections: collections.filter { $0.collectionType == .folder },
+                    collections: collections.filter {
+                        $0.collectionType == .folder && $0.parent == nil
+                    },
                     onNavigationCallback: onNavigationCallbackForCollection
                 )
                 Spacer().frame(height: 24)
