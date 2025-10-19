@@ -10,6 +10,7 @@ import SwiftUI
 
 @MainActor
 @Observable
+@preconcurrency
 class ToastManager {
     var toastState: ToastState = .init()
     var isShowing = false
@@ -84,4 +85,8 @@ class ToastManager {
             }
         }
     }
+}
+
+extension EnvironmentValues {
+    @Entry var toastManager: ToastManager = .init()
 }

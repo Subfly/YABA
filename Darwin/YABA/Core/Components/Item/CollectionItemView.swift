@@ -173,7 +173,8 @@ private struct CollectionItemViewWrappable: View {
         if isInHome {
             HStack {
                 let parentColors = collection.getParentColorsInOrder()
-                ForEach(Array(parentColors), id: \.self) { color in
+                ForEach(parentColors.indices, id: \.self) { index in
+                    let color = parentColors[index]
                     color.getUIColor()
                         .frame(width: 4, height: 20)
                         .clipShape(RoundedRectangle(cornerRadius: 1))
@@ -434,7 +435,7 @@ private struct ListView: View {
                 YabaIconView(bundleKey: "arrow-right-01")
                     .scaledToFit()
                     .frame(width: 20, height: 20)
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(collection.color.getUIColor())
                     .rotationEffect(state.isExpanded ? .init(degrees: 90) : .zero)
                     .animation(.smooth, value: state.isExpanded)
                     .onTapGesture {

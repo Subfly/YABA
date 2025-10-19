@@ -37,14 +37,22 @@ struct YABAApp: App {
         WindowGroup {
             YabaNavigationView()
                 .modelContext(YabaModelContainer.getContext())
-                .environment(toastManager)
+                .environment(\.toastManager, toastManager)
                 .environment(\.appState, appState)
                 .environment(\.deepLinkManager, deepLinkManager)
                 .environment(\.networkSyncManager, networkSyncManager)
                 .environment(\.moveManager, moveManager)
                 .preferredColorScheme(preferredTheme.getScheme())
+                .toast(
+                    state: toastManager.toastState,
+                    isShowing: toastManager.isShowing,
+                    onDismiss: {
+                        toastManager.hide()
+                    }
+                )
                 .onAppear {
                     setupForMacCatalyst()
+                    moveManager.setToastManager(with: toastManager)
                     try? Tips.configure()
                     WidgetCenter.shared.reloadAllTimelines()
                 }
