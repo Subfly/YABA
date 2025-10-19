@@ -147,7 +147,8 @@ struct SettingsView: View {
     private var appearanceSection: some View {
         Section {
             ContentAppearancePicker()
-            SortingPicker()
+            SortingPicker(contentType: .collection)
+            SortingPicker(contentType: .bookmark)
             if UIDevice.current.userInterfaceIdiom == .phone {
                 Toggle(isOn: $showRecents) {
                     Label {

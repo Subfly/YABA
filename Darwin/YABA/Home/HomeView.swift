@@ -12,7 +12,7 @@ struct HomeView: View {
     @AppStorage(Constants.preferredContentAppearanceKey)
     private var contentAppearance: ViewType = .list
     
-    @AppStorage(Constants.preferredSortingKey)
+    @AppStorage(Constants.preferredCollectionSortingKey)
     private var preferredSorting: SortType = .createdAt
     
     @AppStorage(Constants.preferredSortOrderKey)
@@ -141,7 +141,7 @@ struct HomeView: View {
                 #if targetEnvironment(macCatalyst)
                 Menu {
                     ContentAppearancePicker()
-                    SortingPicker()
+                    SortingPicker(contentType: .collection)
                     Button {
                         onNavigationCallbackForSettings()
                     } label: {
@@ -161,8 +161,7 @@ struct HomeView: View {
                 #else
                 Menu {
                     ContentAppearancePicker()
-                    SortingPicker()
-                    Divider()
+                    SortingPicker(contentType: .collection)
                     Button {
                         onNavigationCallbackForSettings()
                     } label: {
@@ -215,6 +214,8 @@ private struct SequentialView: View {
                 .init(\.editedAt, order: preferredOrder == .ascending ? .forward : .reverse)
         case .label:
                 .init(\.label, order: preferredOrder == .ascending ? .forward : .reverse)
+        case .custom:
+                .init(\.order, order: .forward)
         }
         
         _collections = Query(

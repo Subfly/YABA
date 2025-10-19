@@ -195,10 +195,10 @@ private struct ListSection<NoCollectionView: View>: View {
         for given: [YabaCollection],
         includeSpacerAtStart: Bool,
     ) -> some View {
+        let firstCollectionId = given.first?.collectionId
         ForEach(given) { collection in
-            if includeSpacerAtStart && given.first?.collectionId == collection.collectionId {
+            if includeSpacerAtStart && firstCollectionId == collection.collectionId {
                 SeparatorItemView()
-                Spacer().frame(height: 1)
             }
             CollectionItemView(
                 collection: collection,
@@ -209,9 +209,7 @@ private struct ListSection<NoCollectionView: View>: View {
                 onEditCallback: { _ in },
                 onNavigationCallback: onNavigationCallback
             )
-            Spacer().frame(height: 1)
             SeparatorItemView()
-            Spacer().frame(height: 1)
         }
     }
 }

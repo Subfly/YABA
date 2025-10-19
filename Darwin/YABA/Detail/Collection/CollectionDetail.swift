@@ -67,7 +67,7 @@ private struct CollectionDetail: View {
     @AppStorage(Constants.preferredContentAppearanceKey)
     private var contentAppearance: ViewType = .list
     
-    @AppStorage(Constants.preferredSortingKey)
+    @AppStorage(Constants.preferredBookmarkSortingKey)
     private var preferredSorting: SortType = .createdAt
     
     @AppStorage(Constants.preferredSortOrderKey)
@@ -212,6 +212,8 @@ private struct SearchableContent: View {
                 .init(\.editedAt, order: preferredOrder == .ascending ? .forward : .reverse)
         case .label:
                 .init(\.label, order: preferredOrder == .ascending ? .forward : .reverse)
+        case .custom: // Will not execute as it is not possible
+                .init(\.createdAt, order: preferredOrder == .ascending ? .forward : .reverse)
         }
         
         bookmarks = collection.bookmarks?.filter { bookmark in
@@ -299,7 +301,7 @@ private struct ToolbarItems: View {
                     }
                     #if !KEYBOARD_EXTENSION
                     ContentAppearancePicker()
-                    SortingPicker()
+                    SortingPicker(contentType: .bookmark)
                     #endif
                 } label: {
                     YabaIconView(bundleKey: "more-horizontal-circle-02")

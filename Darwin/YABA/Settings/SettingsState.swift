@@ -253,8 +253,11 @@ internal class SettingsState {
         @AppStorage(Constants.preferredCardImageSizingKey)
         var imageSizing: CardViewTypeImageSizing = .small
         
-        @AppStorage(Constants.preferredSortingKey)
-        var sortType: SortType = .createdAt
+        @AppStorage(Constants.preferredCollectionSortingKey)
+        var collectionSortType: SortType = .createdAt
+        
+        @AppStorage(Constants.preferredBookmarkSortingKey)
+        var bookmarkSortType: SortType = .createdAt
         
         @AppStorage(Constants.preferredSortOrderKey)
         var sortOrderType: SortOrderType = .ascending
@@ -278,7 +281,8 @@ internal class SettingsState {
         theme = .system
         contentAppearance = .list
         imageSizing = .small
-        sortType = .createdAt
+        collectionSortType = .createdAt
+        bookmarkSortType = .createdAt
         sortOrderType = .ascending
         deviceName = ""
     }

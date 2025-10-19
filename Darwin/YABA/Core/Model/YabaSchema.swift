@@ -80,7 +80,7 @@ enum YabaSchemaV1: VersionedSchema {
             readableHTML: String?,
             type: BookmarkType = .none,
             version: Int = 1,
-            collections: [YabaCollection]? = []
+            collections: [YabaCollection]? = [],
         ) {
             self.bookmarkId = bookmarkId
             self.link = link
@@ -118,6 +118,7 @@ enum YabaSchemaV1: VersionedSchema {
         var createdAt: Date = Date.now
         var editedAt: Date = Date.now
         var color: YabaColor = YabaColor.none
+        var order: Int = -1 // Used only in custom ordering active
         var type: Int = 1
         var version: Int = 1
         
@@ -135,6 +136,9 @@ enum YabaSchemaV1: VersionedSchema {
             color: YabaColor = .none,
             type: CollectionType = .folder,
             version: Int = 1,
+            parent: YabaCollection? = nil,
+            children: [YabaCollection] = [],
+            order: Int = -1,
         ) {
             self.collectionId = collectionId
             self.label = label
@@ -145,6 +149,9 @@ enum YabaSchemaV1: VersionedSchema {
             self.color = color
             self.type = type.rawValue
             self.version = version
+            self.parent = parent
+            self.children = children
+            self.order = -1
         }
     }
     

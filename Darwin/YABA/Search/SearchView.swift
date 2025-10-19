@@ -13,7 +13,7 @@ struct SearchView: View {
     @Environment(\.dismiss)
     private var dismiss
     
-    @AppStorage(Constants.preferredSortingKey)
+    @AppStorage(Constants.preferredBookmarkSortingKey)
     private var preferredSorting: SortType = .createdAt
     
     @AppStorage(Constants.preferredSortOrderKey)
@@ -73,7 +73,7 @@ struct SearchView: View {
                 ToolbarItem(placement: .primaryAction) {
                     Menu {
                         ContentAppearancePicker()
-                        SortingPicker()
+                        SortingPicker(contentType: .bookmark)
                     } label: {
                         YabaIconView(bundleKey: "more-horizontal-circle-02")
                     }
@@ -111,6 +111,8 @@ private struct SearchableContent: View {
                 .init(\.editedAt, order: preferredOrder == .ascending ? .forward : .reverse)
         case .label:
                 .init(\.label, order: preferredOrder == .ascending ? .forward : .reverse)
+        case .custom: // Will not execute as it is not possible
+                .init(\.createdAt, order: preferredOrder == .ascending ? .forward : .reverse)
         }
         
         let query = searchQuery.wrappedValue

@@ -42,6 +42,11 @@ class MoveManager {
         
         guard let folder2 else { return }
         
+        // MOVE Folder to Tag - Tag to Folder - Tag to Tag, SKIP
+        if folder1.collectionType == .tag || folder2.collectionType == .tag {
+            return
+        }
+        
         // MOVE CHILDREN TO IT'S PARENT AGAIN, SKIP
         if folder2.children.contains(where: { $0.collectionId == folder1ID }) {
             return
@@ -53,13 +58,89 @@ class MoveManager {
         }
         
         do {
-            if let parentOfFolder1 = folder1.parent {
-                parentOfFolder1.children.removeAll(where: { $0.collectionId == folder1ID })
+            // 1. Remove from old parent's children and reorder them
+            if let oldParent = folder1.parent {
+                oldParent.children.removeAll(where: { $0.collectionId == folder1ID })
+                
+                let sortedOld = sortSiblings(oldParent.children)
+                for (index, item) in sortedOld.enumerated() {
+                    item.order = index
+                }
+                oldParent.children = sortedOld
             }
+
+            // 2. Add to new parent's children
+            folder1.parent = folder2
             folder2.children.append(folder1)
+
+            // 3. Determine new order
+            if folder2.children.count == 1 {
+                folder1.order = 0 // first child
+            } else {
+                let maxOrder = folder2.children.map { $0.order }.max() ?? -1
+                folder1.order = maxOrder + 1
+            }
+
+            // 4. Normalize numbering in new parent's children
+            let sortedNew = sortSiblings(folder2.children)
+            for (index, item) in sortedNew.enumerated() {
+                item.order = index
+            }
+            folder2.children = sortedNew
+            
             try modelContext.save()
         } catch {
             return
+        }
+    }
+    
+    func onCustomSortCollections() {
+        // Fetch all collections
+        guard let allCollections: [YabaCollection] = try? modelContext.fetch(
+            FetchDescriptor<YabaCollection>()
+        ) else { return }
+        
+        // 1) Handle folders: find root folders (parent == nil) and assign 0..n-1
+        let allFolders = allCollections.filter { $0.collectionType == .folder }
+        let rootFolders = allFolders.filter { $0.parent == nil }
+        assignPerGroupOrders(rootFolders)
+        
+        // 2) Handle tags (flat list) - assign 0..tags.count-1
+        let tags = allCollections.filter { $0.collectionType == .tag }
+        let sortedTags = sortSiblings(tags)
+        for (index, tag) in sortedTags.enumerated() {
+            tag.order = index
+        }
+        
+        // 3) Save context
+        do {
+            try modelContext.save()
+        } catch {
+            return
+        }
+    }
+    
+    // Recursively assign per-sibling-group orders starting from 0 inside each group
+    private func assignPerGroupOrders(_ siblings: [YabaCollection]) {
+        let sorted = sortSiblings(siblings)
+        for (index, item) in sorted.enumerated() {
+            item.order = index
+            // If this item is a folder, recurse into its children (they get their own 0..n-1)
+            if item.collectionType == .folder {
+                assignPerGroupOrders(item.children)
+            }
+        }
+    }
+    
+    // Sort siblings based on existing order (or fallback to label)
+    private func sortSiblings(_ siblings: [YabaCollection]) -> [YabaCollection] {
+        siblings.sorted { a, b in
+            if a.order != -1 && b.order != -1 {
+                return a.order < b.order
+            }
+            if a.order != -1 { return true }
+            if b.order != -1 { return false }
+            return a.label.localizedCompare(b.label) == .orderedAscending
         }
     }
 }

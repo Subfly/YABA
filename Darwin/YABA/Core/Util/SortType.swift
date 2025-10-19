@@ -9,13 +9,14 @@ import Foundation
 import SwiftUI
 
 enum SortType: Int, Hashable, CaseIterable {
-    case createdAt, editedAt, label
+    case createdAt, editedAt, label, custom
     
     func getUITitle() -> LocalizedStringKey {
         return switch self {
         case .createdAt: LocalizedStringKey("Sort Created At")
         case .editedAt: LocalizedStringKey("Sort Edited At")
         case .label: LocalizedStringKey("Sort Label")
+        case .custom: LocalizedStringKey("Sort Custom")
         }
     }
     
@@ -24,6 +25,7 @@ enum SortType: Int, Hashable, CaseIterable {
         case .createdAt: "clock-04"
         case .editedAt: "edit-02"
         case .label: "sorting-a-z-02"
+        case .custom: "custom-field"
         }
     }
 }

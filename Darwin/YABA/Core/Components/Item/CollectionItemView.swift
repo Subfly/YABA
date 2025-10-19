@@ -23,6 +23,12 @@ private class ItemState {
 }
 
 struct CollectionItemView: View {
+    @AppStorage(Constants.preferredCollectionSortingKey)
+    private var preferredSortingForFolders: SortType = .createdAt
+    
+    @AppStorage(Constants.preferredSortOrderKey)
+    private var preferredSortOrderForFolders: SortOrderType = .ascending
+    
     @State
     private var itemState: ItemState = .init()
     
@@ -41,10 +47,22 @@ struct CollectionItemView: View {
             } else {
                 wrappable
                 if itemState.isExpanded {
-                    ForEach(collection.children) { child in
+                    let sortDescriptor: SortDescriptor<YabaCollection> = switch preferredSortingForFolders {
+                    case .createdAt:
+                            .init(\.createdAt, order: preferredSortOrderForFolders == .ascending ? .forward : .reverse)
+                    case .editedAt:
+                            .init(\.editedAt, order: preferredSortOrderForFolders == .ascending ? .forward : .reverse)
+                    case .label:
+                            .init(\.label, order: preferredSortOrderForFolders == .ascending ? .forward : .reverse)
+                    case .custom:
+                            .init(\.order, order: .forward)
+                    }
+                    
+                    let children = collection.children.sorted(using: sortDescriptor)
+                    
+                    ForEach(children) { child in
                         if child.collectionId == collection.children.first?.collectionId {
                             SeparatorItemView()
-                            Spacer().frame(height: 1)
                         }
                         CollectionItemView(
                             collection: child,
@@ -55,10 +73,8 @@ struct CollectionItemView: View {
                             onEditCallback: onEditCallback,
                             onNavigationCallback: onNavigationCallback
                         )
-                        Spacer().frame(height: 1)
                         if child.collectionId != collection.children.last?.collectionId {
                             SeparatorItemView()
-                            Spacer().frame(height: 1)
                         }
                     }
                 }
