@@ -6,8 +6,9 @@
 //
 
 import Foundation
+import CoreTransferable
 
-struct YabaCodableCollection: Codable, Hashable {
+struct YabaCodableCollection: Codable, Hashable, Transferable {
     let collectionId: String
     let label: String
     let icon: String
@@ -17,4 +18,8 @@ struct YabaCodableCollection: Codable, Hashable {
     let type: Int
     let bookmarks: [String] // String id's of stored bookmarks
     let version: Int
+    
+    static var transferRepresentation: some TransferRepresentation {
+        CodableRepresentation(contentType: .yabaCollection)
+    }
 }

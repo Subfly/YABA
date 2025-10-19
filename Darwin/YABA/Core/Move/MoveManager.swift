@@ -20,6 +20,82 @@ class MoveManager {
         globalToastManager = manager
     }
     
+    func onMoveBookmark(
+        bookmarkID: String,
+        toCollectionID: String,
+    ) {
+        let bookmark: YabaBookmark? = try? modelContext.fetch(
+            FetchDescriptor<YabaBookmark>(
+                predicate: #Predicate {
+                    $0.bookmarkId == bookmarkID
+                }
+            )
+        ).first
+        
+        guard let bookmark else {
+            return
+        }
+        
+        let collection: YabaCollection? = try? modelContext.fetch(
+            FetchDescriptor<YabaCollection>(
+                predicate: #Predicate {
+                    $0.collectionId == toCollectionID
+                }
+            )
+        ).first
+        
+        guard let collection else {
+            return
+        }
+        
+        // MARK TAG INTERACTIONS
+        if collection.collectionType == .tag {
+            if collection.bookmarks?.contains(bookmark) == true {
+                // Tag already exists in bookmark, warn the user
+                return
+            }
+            
+            // Add tag to bookmark
+            do {
+                collection.bookmarks?.append(bookmark)
+                try modelContext.save()
+                return
+            } catch {
+                return
+            }
+        }
+        
+        // MARK FOLDER INTERACTIONS
+        if collection.collectionType == .folder {
+            // MOVE BOOKMARK TO SAME FOLDER, SKIP
+            if collection.bookmarks?.contains(bookmark) == true {
+                return
+            }
+            
+            // REMOVE BOOKMARK FROM OLD PARENT
+            let oldParent = bookmark.collections?.first { innerCollection in
+                innerCollection.collectionType == .folder
+            }
+            
+            guard let oldParent else {
+                return
+            }
+            
+            oldParent.bookmarks?.removeAll { innerBookmark in
+                innerBookmark.bookmarkId == bookmark.bookmarkId
+            }
+            
+            // MOVE BOOKMARK TO NEW PARENT
+            collection.bookmarks?.append(bookmark)
+            
+            do {
+                try modelContext.save()
+            } catch {
+                return
+            }
+        }
+    }
+    
     func onMoveFolder(
         from folder1ID: String,
         to folder2ID: String

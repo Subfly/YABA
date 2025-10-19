@@ -15,11 +15,15 @@ private class ItemState {
     var shouldShowShareDialog: Bool = false
     var shouldShowDeleteDialog: Bool = false
     var isHovered: Bool = false
+    var isTargeted: Bool = false
 }
 
 struct BookmarkItemView: View {
     @Environment(\.appState)
     private var appState
+    
+    @Environment(\.moveManager)
+    private var moveManager
     
     @State
     private var itemState: ItemState = .init()
@@ -29,6 +33,43 @@ struct BookmarkItemView: View {
     let onNavigationCallback: (YabaBookmark) -> Void
     
     var body: some View {
+        content
+            .draggable(bookmark.mapToCodable()) {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(bookmark.getFolderColor().opacity(0.5))
+                    .frame(width: 54, height: 54)
+                    .overlay {
+                        BookmarkImage(bookmark: bookmark)
+                    }
+            }
+            .onDrop(
+                of: [.yabaCollection],
+                isTargeted: $itemState.isTargeted
+            ) { providers in
+                guard let provider = providers.first else {
+                    return false
+                }
+                
+                let _ = provider.loadTransferable(type: YabaCodableCollection.self) { result in
+                    switch result {
+                    case .success(let item):
+                        // Sometimes, just wtf...
+                        Task { @MainActor in
+                            moveManager.onMoveBookmark(
+                                bookmarkID: bookmark.bookmarkId,
+                                toCollectionID: item.collectionId
+                            )
+                        }
+                    case .failure: return
+                    }
+                }
+                
+                return true
+            }
+    }
+    
+    @ViewBuilder
+    private var content: some View {
         // Recents view is only available in Mobile
         if isInRecents {
             BookmarkItemViewWrappable(

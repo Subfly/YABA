@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 /// FOR THE MODEL ITSELF, LOOK TO _YABA_SCHEMA_
 extension YabaBookmark {
@@ -49,5 +50,11 @@ extension YabaBookmark {
             version: 0,
             collections: []
         )
+    }
+    
+    func getFolderColor() -> Color {
+        return collections?.first { collection in
+            collection.collectionType == .folder
+        }?.color.getUIColor() ?? .accentColor
     }
 }

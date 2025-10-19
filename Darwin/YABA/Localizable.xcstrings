@@ -24853,7 +24853,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Can’t move the folder to itself 😄"
+            "value" : "Can’t move the folder to itself"
           }
         }
       }
@@ -24877,7 +24877,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Can’t move the folder to same parent again 😄"
+            "value" : "Can’t move the folder to same parent again"
           }
         }
       }

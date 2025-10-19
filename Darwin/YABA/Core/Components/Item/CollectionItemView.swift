@@ -117,27 +117,47 @@ private struct CollectionItemViewWrappable: View {
     let onNavigationCallback: (YabaCollection) -> Void
     
     var body: some View {
-        modifiedContent.onDrop(
-            of: [.text],
-            isTargeted: $itemState.isTargeted
-        ) { providers in
-            guard let provider = providers.first else {
-                return false
-            }
-            
-            provider.loadItem(forTypeIdentifier: "public.utf8-plain-text", options: nil) { (item, error) in
-                if let data = item as? Data,
-                   let folderId = String(data: data, encoding: .utf8) {
-                    moveManager.onMoveFolder(from: folderId, to: collection.collectionId)
-                } else if let folderId = item as? String {
-                    moveManager.onMoveFolder(from: folderId, to: collection.collectionId)
-                } else {
-                    return
+        modifiedContent
+            .onDrop(
+                of: [.yabaCollection, .yabaBookmark],
+                isTargeted: $itemState.isTargeted
+            ) { providers in
+                guard let provider = providers.first else {
+                    return false
                 }
+                
+                // Try YabaCollection first
+                let _ = provider.loadTransferable(type: YabaCodableCollection.self) { result in
+                    switch result {
+                    case .success(let item):
+                        Task { @MainActor in
+                            moveManager.onMoveFolder(
+                                from: item.collectionId,
+                                to: collection.collectionId
+                            )
+                        }
+                    case .failure:
+                        // If not a collection, try bookmark
+                        let _ = provider.loadTransferable(type: YabaCodableBookmark.self) { result in
+                            switch result {
+                            case .success(let bookmark):
+                                Task { @MainActor in
+                                    if let bookmarkId = bookmark.bookmarkId {
+                                        moveManager.onMoveBookmark(
+                                            bookmarkID: bookmarkId,
+                                            toCollectionID: collection.collectionId
+                                        )
+                                    }
+                                }
+                            case .failure:
+                                break
+                            }
+                        }
+                    }
+                }
+                
+                return true
             }
-            
-            return true
-        }
     }
     
     @ViewBuilder
@@ -146,7 +166,7 @@ private struct CollectionItemViewWrappable: View {
             .onHover { hovered in
                 itemState.isHovered = hovered
             }
-            #if !KEYBOARD_EXTENSION
+#if !KEYBOARD_EXTENSION
             .contextMenu {
                 MenuActionItems(
                     state: $itemState,
@@ -154,8 +174,8 @@ private struct CollectionItemViewWrappable: View {
                     isInBookmarkDetail: isInBookmarkDetail
                 )
             }
-            #endif
-            .draggable(collection.collectionId) {
+#endif
+            .draggable(collection.mapToCodable()) {
                 RoundedRectangle(cornerRadius: 12)
                     .fill(collection.color.getUIColor().opacity(0.5))
                     .frame(width: 54, height: 54)
@@ -190,7 +210,7 @@ private struct CollectionItemViewWrappable: View {
                 )
                 .padding()
                 .background {
-                    #if targetEnvironment(macCatalyst)
+#if targetEnvironment(macCatalyst)
                     if itemState.isTargeted {
                         RoundedRectangle(cornerRadius: 16).fill(collection.color.getUIColor().opacity(0.2))
                     } else if !isInBookmarkDetail && appState.selectedCollection?.collectionId == collection.collectionId {
@@ -200,7 +220,7 @@ private struct CollectionItemViewWrappable: View {
                     } else {
                         RoundedRectangle(cornerRadius: 16).fill(Color.clear)
                     }
-                    #else
+#else
                     if itemState.isTargeted {
                         RoundedRectangle(cornerRadius: 24).fill(collection.color.getUIColor().opacity(0.1))
                     } else if UIDevice.current.userInterfaceIdiom == .phone {
@@ -212,7 +232,7 @@ private struct CollectionItemViewWrappable: View {
                     } else {
                         RoundedRectangle(cornerRadius: 24).fill(Color.clear)
                     }
-                    #endif
+#endif
                 }
             }
             .padding(.horizontal)
@@ -226,7 +246,7 @@ private struct CollectionItemViewWrappable: View {
                 onEditCallback: onEditCallback,
                 onNavigationCallback: onNavigationCallback
             )
-            #if targetEnvironment(macCatalyst)
+#if targetEnvironment(macCatalyst)
             .listRowBackground(
                 appState.selectedCollection?.id == collection.id
                 ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
@@ -234,7 +254,7 @@ private struct CollectionItemViewWrappable: View {
                 ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
                 : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
             )
-            #else
+#else
             .listRowBackground(
                 UIDevice.current.userInterfaceIdiom == .phone
                 ? nil
@@ -244,7 +264,7 @@ private struct CollectionItemViewWrappable: View {
                 ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
                 : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
             )
-            #endif
+#endif
         }
     }
 }
@@ -446,11 +466,11 @@ private struct ListView: View {
             }
         }
         .contentShape(Rectangle())
-        #if !KEYBOARD_EXTENSION
+#if !KEYBOARD_EXTENSION
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
             swipeActionItems
         }
-        #endif
+#endif
     }
     
     @ViewBuilder
@@ -504,7 +524,7 @@ private struct GridView: View {
                     .frame(width: 48, height: 48)
                 Spacer()
                 VStack {
-                    #if targetEnvironment(macCatalyst)
+#if targetEnvironment(macCatalyst)
                     if state.isHovered && !isInSelectionMode {
                         Menu {
                             MenuActionItems(
@@ -519,7 +539,7 @@ private struct GridView: View {
                                 .foregroundStyle(.secondary)
                         }.tint(.secondary)
                     }
-                    #else
+#else
                     Menu {
                         MenuActionItems(
                             state: $state,
@@ -532,7 +552,7 @@ private struct GridView: View {
                             .frame(width: 22, height: 22)
                             .foregroundStyle(.secondary)
                     }.tint(.secondary)
-                    #endif
+#endif
                     Spacer()
                 }
             }
@@ -545,22 +565,22 @@ private struct GridView: View {
             }
         }
         /**
-        .padding()
-        .background {
-            #if targetEnvironment(macCatalyst)
-            RoundedRectangle(cornerRadius: 12)
-                .fill(
-                    .gray.opacity(
-                        appState.selectedCollection?.id == collection.id
-                        ? 0.3
-                        : itemState.isHovered ? 0.2 : 0.1
-                    )
-                )
-            #else
-            RoundedRectangle(cornerRadius: 12)
-                .fill(.thickMaterial)
-            #endif
-        }
+         .padding()
+         .background {
+         #if targetEnvironment(macCatalyst)
+         RoundedRectangle(cornerRadius: 12)
+         .fill(
+         .gray.opacity(
+         appState.selectedCollection?.id == collection.id
+         ? 0.3
+         : itemState.isHovered ? 0.2 : 0.1
+         )
+         )
+         #else
+         RoundedRectangle(cornerRadius: 12)
+         .fill(.thickMaterial)
+         #endif
+         }
          .contentShape(Rectangle())
          */
     }
