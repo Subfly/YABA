@@ -14,11 +14,6 @@ import SwiftData
 @preconcurrency
 class MoveManager {
     private let modelContext: ModelContext = YabaModelContainer.getContext()
-    private var globalToastManager: ToastManager?
-    
-    func setToastManager(with manager: ToastManager) {
-        globalToastManager = manager
-    }
     
     func onMoveBookmark(
         bookmarkID: String,
@@ -51,7 +46,6 @@ class MoveManager {
         // MARK TAG INTERACTIONS
         if collection.collectionType == .tag {
             if collection.bookmarks?.contains(bookmark) == true {
-                // Tag already exists in bookmark, warn the user
                 return
             }
             
@@ -102,13 +96,6 @@ class MoveManager {
     ) {
         // MOVE CHILDREN TO SELF, SKIP
         if folder1ID == folder2ID {
-            globalToastManager?.show(
-                message: LocalizedStringKey("Move Error Folder To Same Folder"),
-                accentColor: .red,
-                acceptText: LocalizedStringKey("Ok"),
-                iconType: .error,
-                onAcceptPressed: { self.globalToastManager?.hide() }
-            )
             return
         }
         
@@ -121,13 +108,6 @@ class MoveManager {
         ).first
         
         guard let folder1 else {
-            globalToastManager?.show(
-                message: LocalizedStringKey("Move Error Folder Not Exist"),
-                accentColor: .red,
-                acceptText: LocalizedStringKey("Ok"),
-                iconType: .error,
-                onAcceptPressed: { self.globalToastManager?.hide() }
-            )
             return
         }
         
@@ -140,49 +120,21 @@ class MoveManager {
         ).first
         
         guard let folder2 else {
-            globalToastManager?.show(
-                message: LocalizedStringKey("Move Error Folder Not Exist"),
-                accentColor: .red,
-                acceptText: LocalizedStringKey("Ok"),
-                iconType: .error,
-                onAcceptPressed: { self.globalToastManager?.hide() }
-            )
             return
         }
         
         // MOVE Folder to Tag - Tag to Folder - Tag to Tag, SKIP
         if folder1.collectionType == .tag || folder2.collectionType == .tag {
-            globalToastManager?.show(
-                message: LocalizedStringKey("Move Error Except Folder"),
-                accentColor: .red,
-                acceptText: LocalizedStringKey("Ok"),
-                iconType: .error,
-                onAcceptPressed: { self.globalToastManager?.hide() }
-            )
             return
         }
         
         // MOVE CHILDREN TO IT'S PARENT AGAIN, SKIP
         if folder2.children.contains(where: { $0.collectionId == folder1ID }) {
-            globalToastManager?.show(
-                message: LocalizedStringKey("Move Error Move To Same Directory"),
-                accentColor: .yellow,
-                acceptText: LocalizedStringKey("Ok"),
-                iconType: .warning,
-                onAcceptPressed: { self.globalToastManager?.hide() }
-            )
             return
         }
         
         // MOVE PARENT TO CHILDREN IS ILLEGAL, SKIP
         if folder1.getDescendants().contains(where: { $0.collectionId == folder2ID }) {
-            globalToastManager?.show(
-                message: LocalizedStringKey("Move Error Move Parent To Child"),
-                accentColor: .red,
-                acceptText: LocalizedStringKey("Ok"),
-                iconType: .error,
-                onAcceptPressed: { self.globalToastManager?.hide() }
-            )
             return
         }
         
@@ -219,13 +171,6 @@ class MoveManager {
             
             try modelContext.save()
         } catch {
-            globalToastManager?.show(
-                message: LocalizedStringKey("Move Error Folder Not Exist"),
-                accentColor: .red,
-                acceptText: LocalizedStringKey("Ok"),
-                iconType: .error,
-                onAcceptPressed: { self.globalToastManager?.hide() }
-            )
             return
         }
     }

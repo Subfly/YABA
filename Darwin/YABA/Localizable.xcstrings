@@ -24822,66 +24822,6 @@
         }
       }
     },
-    "Move Error Except Folder" : {
-      "comment" : "Error to show when user tried to move tag to folder, or folder to tag, or tag to tag",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Only folders are allowed to be nested"
-          }
-        }
-      }
-    },
-    "Move Error Folder Not Exist" : {
-      "comment" : "Error to show when folder could not be found in database. This error should not be expected to be shown in UI",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "An unexpected error happened"
-          }
-        }
-      }
-    },
-    "Move Error Folder To Same Folder" : {
-      "comment" : "Error to show when user tried to move folder to itself",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Can’t move the folder to itself"
-          }
-        }
-      }
-    },
-    "Move Error Move Parent To Child" : {
-      "comment" : "Error to show if user tried to move parent folder to it’s child folders",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Can’t move parent folder to it’s subfolders"
-          }
-        }
-      }
-    },
-    "Move Error Move To Same Directory" : {
-      "comment" : "Error to show when user tried to move folder to it’s parent again",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Can’t move the folder to same parent again"
-          }
-        }
-      }
-    },
     "Name" : {
       "comment" : "Collection name title to show in macOS",
       "extractionState" : "manual",
