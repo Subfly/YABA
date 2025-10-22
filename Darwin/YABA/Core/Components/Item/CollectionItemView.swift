@@ -20,20 +20,76 @@ private class ItemState {
     var shouldShowEditSheet: Bool = false
     var shouldShowMenuItems: Bool = false
     var shouldShowCreateBookmarkSheet: Bool = false
+    
+    func onDropTakeAction(
+        providers: [NSItemProvider],
+        onMoveFolder: @escaping (String) -> Void,
+        onMoveBookmark: @escaping (String) -> Void
+    ) -> Bool {
+        guard let provider = providers.first else {
+            return false
+        }
+        
+        // Try YabaCollection first
+        let _ = provider.loadTransferable(type: YabaCodableCollection.self) { result in
+            switch result {
+            case .success(let item):
+                Task { @MainActor in
+                    onMoveFolder(item.collectionId)
+                }
+            case .failure:
+                // If not a collection, try bookmark
+                Task { @MainActor in
+                    self.unwrapBookmarkAndTakeAction(
+                        provider: provider,
+                        onMoveBookmark: onMoveBookmark
+                    )
+                }
+            }
+        }
+        
+        return true
+    }
+    
+    private func unwrapBookmarkAndTakeAction(
+        provider: NSItemProvider,
+        onMoveBookmark: @escaping (String) -> Void
+    ) {
+        let _ = provider.loadTransferable(type: YabaCodableBookmark.self) { result in
+            switch result {
+            case .success(let bookmark):
+                Task { @MainActor in
+                    if let bookmarkId = bookmark.bookmarkId {
+                        onMoveBookmark(bookmarkId)
+                    }
+                }
+            case .failure:
+                break
+            }
+        }
+    }
 }
 
-struct CollectionItemView: View {
+/**
+ * COLLECTION ITEM VIEW THAT SHOULD BE
+ * USED ONLY IN HOME VIEW TO SUPPORT
+ * CORRECT DRAG AND DROP FUNCTIONALITY
+ * IN HOME VIEW
+ */
+struct HomeCollectionItemView: View {
     @AppStorage(Constants.preferredCollectionSortingKey)
     private var preferredSortingForFolders: SortType = .createdAt
     
     @AppStorage(Constants.preferredSortOrderKey)
     private var preferredSortOrderForFolders: SortOrderType = .ascending
     
+    @Environment(\.appState)
+    private var appState
+    
     @State
     private var itemState: ItemState = .init()
     
     let collection: YabaCollection
-    let isInHome: Bool
     let isInSelectionMode: Bool
     let isInBookmarkDetail: Bool
     let onDeleteCallback: (YabaCollection) -> Void
@@ -64,9 +120,8 @@ struct CollectionItemView: View {
                         if child.collectionId == collection.children.first?.collectionId {
                             SeparatorItemView()
                         }
-                        CollectionItemView(
+                        HomeCollectionItemView(
                             collection: child,
-                            isInHome: isInHome,
                             isInSelectionMode: isInSelectionMode,
                             isInBookmarkDetail: isInBookmarkDetail,
                             onDeleteCallback: onDeleteCallback,
@@ -86,158 +141,16 @@ struct CollectionItemView: View {
     
     @ViewBuilder
     private var wrappable: some View {
-        CollectionItemViewWrappable(
-            itemState: $itemState,
-            collection: collection,
-            isInHome: isInHome,
-            isInSelectionMode: isInSelectionMode,
-            isInBookmarkDetail: isInBookmarkDetail,
-            onDeleteCallback: onDeleteCallback,
-            onEditCallback: onEditCallback,
-            onNavigationCallback: onNavigationCallback
-        )
-    }
-}
-
-private struct CollectionItemViewWrappable: View {
-    @Environment(\.appState)
-    private var appState
-    
-    @Environment(\.moveManager)
-    private var moveManager
-    
-    @Binding
-    var itemState: ItemState
-    let collection: YabaCollection
-    let isInHome: Bool
-    let isInSelectionMode: Bool
-    let isInBookmarkDetail: Bool
-    let onDeleteCallback: (YabaCollection) -> Void
-    let onEditCallback: (YabaCollection) -> Void
-    let onNavigationCallback: (YabaCollection) -> Void
-    
-    var body: some View {
-        modifiedContent
-            .onDrop(
-                of: [.yabaCollection, .yabaBookmark],
-                isTargeted: $itemState.isTargeted
-            ) { providers in
-                guard let provider = providers.first else {
-                    return false
-                }
-                
-                // Try YabaCollection first
-                let _ = provider.loadTransferable(type: YabaCodableCollection.self) { result in
-                    switch result {
-                    case .success(let item):
-                        Task { @MainActor in
-                            moveManager.onMoveFolder(
-                                from: item.collectionId,
-                                to: collection.collectionId
-                            )
-                        }
-                    case .failure:
-                        // If not a collection, try bookmark
-                        let _ = provider.loadTransferable(type: YabaCodableBookmark.self) { result in
-                            switch result {
-                            case .success(let bookmark):
-                                Task { @MainActor in
-                                    if let bookmarkId = bookmark.bookmarkId {
-                                        moveManager.onMoveBookmark(
-                                            bookmarkID: bookmarkId,
-                                            toCollectionID: collection.collectionId
-                                        )
-                                    }
-                                }
-                            case .failure:
-                                break
-                            }
-                        }
-                    }
-                }
-                
-                return true
+        SeparatorItemView()
+        HStack {
+            let parentColors = collection.getParentColorsInOrder()
+            ForEach(parentColors.indices, id: \.self) { index in
+                let color = parentColors[index]
+                color.getUIColor()
+                    .frame(width: 4, height: 20)
+                    .clipShape(RoundedRectangle(cornerRadius: 1))
             }
-    }
-    
-    @ViewBuilder
-    private var modifiedContent: some View {
-        backgroundedContent
-            .onHover { hovered in
-                itemState.isHovered = hovered
-            }
-#if !KEYBOARD_EXTENSION
-            .contextMenu {
-                MenuActionItems(
-                    state: $itemState,
-                    isInSelectionMode: isInSelectionMode,
-                    isInBookmarkDetail: isInBookmarkDetail
-                )
-            }
-#endif
-            .draggable(collection.mapToCodable()) {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(collection.color.getUIColor().opacity(0.5))
-                    .frame(width: 54, height: 54)
-                    .overlay {
-                        YabaIconView(bundleKey: collection.icon)
-                            .frame(width: 32, height: 32)
-                            .foregroundStyle(collection.color.getUIColor())
-                    }
-            }
-            .sensoryFeedback(.impact(weight: .heavy, intensity: 1), trigger: itemState.isTargeted)
-    }
-    
-    @ViewBuilder
-    private var backgroundedContent: some View {
-        if isInHome {
-            HStack {
-                let parentColors = collection.getParentColorsInOrder()
-                ForEach(parentColors.indices, id: \.self) { index in
-                    let color = parentColors[index]
-                    color.getUIColor()
-                        .frame(width: 4, height: 20)
-                        .clipShape(RoundedRectangle(cornerRadius: 1))
-                }
-                MainLabelWrapper(
-                    itemState: $itemState,
-                    collection: collection,
-                    isInSelectionMode: isInSelectionMode,
-                    isInBookmarkDetail: isInBookmarkDetail,
-                    onDeleteCallback: onDeleteCallback,
-                    onEditCallback: onEditCallback,
-                    onNavigationCallback: onNavigationCallback
-                )
-                .padding()
-                .background {
-#if targetEnvironment(macCatalyst)
-                    if itemState.isTargeted {
-                        RoundedRectangle(cornerRadius: 16).fill(collection.color.getUIColor().opacity(0.2))
-                    } else if !isInBookmarkDetail && appState.selectedCollection?.collectionId == collection.collectionId {
-                        RoundedRectangle(cornerRadius: 16).fill(Color.gray.opacity(0.2))
-                    } else if !isInBookmarkDetail && itemState.isHovered {
-                        RoundedRectangle(cornerRadius: 16).fill(Color.gray.opacity(0.1))
-                    } else {
-                        RoundedRectangle(cornerRadius: 16).fill(Color.clear)
-                    }
-#else
-                    if itemState.isTargeted {
-                        RoundedRectangle(cornerRadius: 24).fill(collection.color.getUIColor().opacity(0.1))
-                    } else if UIDevice.current.userInterfaceIdiom == .phone {
-                        RoundedRectangle(cornerRadius: 24).fill(Color.gray.opacity(0.05))
-                    } else if appState.selectedCollection?.collectionId == collection.collectionId {
-                        RoundedRectangle(cornerRadius: 24).fill(Color.gray.opacity(0.2))
-                    } else if itemState.isHovered {
-                        RoundedRectangle(cornerRadius: 24).fill(Color.gray.opacity(0.1))
-                    } else {
-                        RoundedRectangle(cornerRadius: 24).fill(Color.clear)
-                    }
-#endif
-                }
-            }
-            .padding(.horizontal)
-        } else {
-            MainLabelWrapper(
+            InteractableView(
                 itemState: $itemState,
                 collection: collection,
                 isInSelectionMode: isInSelectionMode,
@@ -246,35 +159,101 @@ private struct CollectionItemViewWrappable: View {
                 onEditCallback: onEditCallback,
                 onNavigationCallback: onNavigationCallback
             )
-#if targetEnvironment(macCatalyst)
-            .listRowBackground(
-                appState.selectedCollection?.id == collection.id
-                ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
-                : itemState.isHovered
-                ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
-                : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
-            )
-#else
-            .listRowBackground(
-                UIDevice.current.userInterfaceIdiom == .phone
-                ? nil
-                : appState.selectedCollection?.id == collection.id
-                ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
-                : itemState.isHovered
-                ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
-                : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
-            )
-#endif
+            .padding()
+            .background {
+                #if targetEnvironment(macCatalyst)
+                if itemState.isTargeted {
+                    RoundedRectangle(cornerRadius: 16).fill(collection.color.getUIColor().opacity(0.2))
+                } else if !isInBookmarkDetail && appState.selectedCollection?.collectionId == collection.collectionId {
+                    RoundedRectangle(cornerRadius: 16).fill(Color.gray.opacity(0.2))
+                } else if !isInBookmarkDetail && itemState.isHovered {
+                    RoundedRectangle(cornerRadius: 16).fill(Color.gray.opacity(0.1))
+                } else {
+                    RoundedRectangle(cornerRadius: 16).fill(Color.clear)
+                }
+                #else
+                if itemState.isTargeted {
+                    RoundedRectangle(cornerRadius: 24).fill(collection.color.getUIColor().opacity(0.1))
+                } else if UIDevice.current.userInterfaceIdiom == .phone {
+                    RoundedRectangle(cornerRadius: 24).fill(Color.gray.opacity(0.05))
+                } else if appState.selectedCollection?.collectionId == collection.collectionId {
+                    RoundedRectangle(cornerRadius: 24).fill(Color.gray.opacity(0.2))
+                } else if itemState.isHovered {
+                    RoundedRectangle(cornerRadius: 24).fill(Color.gray.opacity(0.1))
+                } else {
+                    RoundedRectangle(cornerRadius: 24).fill(Color.clear)
+                }
+                #endif
+            }
         }
+        .padding(.horizontal)
+        SeparatorItemView()
     }
 }
 
-private struct MainLabelWrapper: View {
+/**
+ * COLLECTION ITEM VIEW THAT SHOULD BE
+ * USED IN VIEWS THAT USES LISTS
+ */
+struct ListCollectionItemView: View {
+    @Environment(\.appState)
+    private var appState
+    
+    @State
+    private var itemState: ItemState = .init()
+    
+    let collection: YabaCollection
+    let isInSelectionMode: Bool
+    let isInBookmarkDetail: Bool
+    let onDeleteCallback: (YabaCollection) -> Void
+    let onEditCallback: (YabaCollection) -> Void
+    let onNavigationCallback: (YabaCollection) -> Void
+    
+    var body: some View {
+        InteractableView(
+            itemState: $itemState,
+            collection: collection,
+            isInSelectionMode: isInSelectionMode,
+            isInBookmarkDetail: isInBookmarkDetail,
+            onDeleteCallback: onDeleteCallback,
+            onEditCallback: onEditCallback,
+            onNavigationCallback: onNavigationCallback
+        )
+        #if targetEnvironment(macCatalyst)
+        .listRowBackground(
+            appState.selectedCollection?.id == collection.id
+            ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
+            : itemState.isHovered
+            ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
+            : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
+        )
+        #else
+        .listRowBackground(
+            UIDevice.current.userInterfaceIdiom == .phone
+            ? nil
+            : appState.selectedCollection?.id == collection.id
+            ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
+            : itemState.isHovered
+            ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
+            : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
+        )
+        #endif
+    }
+}
+
+/**
+ * ITEM VIEW THAT ADDS ALERTS, DIALOGS, SWIPES AND
+ * DRAG FUNCTIONALITIES TO CONDITIONAL VIEW
+ */
+private struct InteractableView: View {
     @Environment(\.modelContext)
     private var modelContext
     
     @Environment(\.appState)
     private var appState
+    
+    @Environment(\.moveManager)
+    private var moveManager
     
     @AppStorage(Constants.preferredContentAppearanceKey)
     private var contentAppearance: ViewType = .list
@@ -289,7 +268,7 @@ private struct MainLabelWrapper: View {
     let onNavigationCallback: (YabaCollection) -> Void
     
     var body: some View {
-        MainLabel(
+        ConditionalView(
             collection: collection,
             state: $itemState,
             isInSelectionMode: isInSelectionMode,
@@ -300,6 +279,48 @@ private struct MainLabelWrapper: View {
             }
         )
         .padding(.leading, isInSelectionMode ? 0 : 8)
+        .onHover { hovered in
+            itemState.isHovered = hovered
+        }
+#if !KEYBOARD_EXTENSION
+        .contextMenu {
+            MenuActionItems(
+                state: $itemState,
+                isInSelectionMode: isInSelectionMode,
+                isInBookmarkDetail: isInBookmarkDetail
+            )
+        }
+        .draggable(collection.mapToCodable()) {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(collection.color.getUIColor().opacity(0.5))
+                .frame(width: 54, height: 54)
+                .overlay {
+                    YabaIconView(bundleKey: collection.icon)
+                        .frame(width: 32, height: 32)
+                        .foregroundStyle(collection.color.getUIColor())
+                }
+        }
+        .onDrop(
+            of: [.yabaCollection, .yabaBookmark],
+            isTargeted: $itemState.isTargeted
+        ) { providers in
+            itemState.onDropTakeAction(
+                providers: providers,
+                onMoveFolder: { fromItemId in
+                    moveManager.onMoveFolder(
+                        from: fromItemId,
+                        to: collection.collectionId
+                    )
+                },
+                onMoveBookmark: { bookmarkId in
+                    moveManager.onMoveBookmark(
+                        bookmarkID: bookmarkId,
+                        toCollectionID: collection.collectionId
+                    )
+                }
+            )
+        }
+#endif
         .alert(
             LocalizedStringKey(
                 collection.collectionType == .folder
@@ -361,11 +382,19 @@ private struct MainLabelWrapper: View {
                 onExitRequested: {}
             )
         }
+        .sensoryFeedback(
+            .impact(weight: .heavy, intensity: 1),
+            trigger: itemState.isTargeted
+        )
         .id(collection.id)
     }
 }
 
-private struct MainLabel: View {
+/**
+ * ITEM VIEW THAT DECIDE WHICH VIEW SHOULD BE SHOWN
+ * BASED ON THE GIVEN VIEW CONDITIONS
+ */
+private struct ConditionalView: View {
     let collection: YabaCollection
     
     @Binding
@@ -410,6 +439,7 @@ private struct MainLabel: View {
     }
 }
 
+/// MARK: BASE ITEMS
 private struct ListView: View {
     let collection: YabaCollection
     
@@ -451,7 +481,7 @@ private struct ListView: View {
                     .foregroundStyle(.secondary)
                     .fontWeight(.medium)
             }.foregroundStyle(.secondary)
-            if !collection.children.isEmpty {
+            if !isInSelectionMode && !isInBookmarkDetail && !collection.children.isEmpty {
                 YabaIconView(bundleKey: "arrow-right-01")
                     .scaledToFit()
                     .frame(width: 20, height: 20)
@@ -586,6 +616,8 @@ private struct GridView: View {
     }
 }
 
+
+/// MARK: HELPER ITEMS
 private struct MenuActionItems: View {
     @Binding
     var state: ItemState

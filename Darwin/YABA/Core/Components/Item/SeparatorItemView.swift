@@ -11,6 +11,9 @@
 import SwiftUI
 
 struct SeparatorItemView: View {
+    @Environment(\.moveManager)
+    private var moveManager
+    
     @State
     private var isTargeted: Bool = false
     
@@ -20,7 +23,10 @@ struct SeparatorItemView: View {
             .contentShape(RoundedRectangle(cornerRadius: 8))
             .padding(.horizontal)
             .padding(.horizontal)
-            .onDrop(of: [.text], isTargeted: $isTargeted) { providers in
+            .onDrop(
+                of: [.yabaCollection],
+                isTargeted: $isTargeted
+            ) { providers in
                 return false
             }
             .sensoryFeedback(.impact(weight: .heavy, intensity: 1), trigger: isTargeted)

@@ -117,9 +117,8 @@ private struct SelectTagsSearchableContent: View {
                     }
                 } else {
                     ForEach(selectedTags) { tag in
-                        CollectionItemView(
+                        ListCollectionItemView(
                             collection: tag,
-                            isInHome: false,
                             isInSelectionMode: true,
                             isInBookmarkDetail: false,
                             onDeleteCallback: { collection in
@@ -214,9 +213,8 @@ private struct SelectTagsSearchableContent: View {
                     }
                 } else {
                     ForEach(tags) { tag in
-                        CollectionItemView(
+                        ListCollectionItemView(
                             collection: tag,
-                            isInHome: false,
                             isInSelectionMode: true,
                             isInBookmarkDetail: false,
                             onDeleteCallback: { _ in },

@@ -195,21 +195,15 @@ private struct ListSection<NoCollectionView: View>: View {
         for given: [YabaCollection],
         includeSpacerAtStart: Bool,
     ) -> some View {
-        let firstCollectionId = given.first?.collectionId
         ForEach(given) { collection in
-            if includeSpacerAtStart && firstCollectionId == collection.collectionId {
-                SeparatorItemView()
-            }
-            CollectionItemView(
+            HomeCollectionItemView(
                 collection: collection,
-                isInHome: true,
                 isInSelectionMode: false,
                 isInBookmarkDetail: false,
                 onDeleteCallback: { _ in },
                 onEditCallback: { _ in },
                 onNavigationCallback: onNavigationCallback
             )
-            SeparatorItemView()
         }
     }
 }
@@ -283,9 +277,8 @@ private struct GridSection: View {
             Section {} header: { }
         } else {
             ForEach(collections) { collection in
-                CollectionItemView(
+                HomeCollectionItemView(
                     collection: collection,
-                    isInHome: true,
                     isInSelectionMode: false,
                     isInBookmarkDetail: false,
                     onDeleteCallback: { _ in },

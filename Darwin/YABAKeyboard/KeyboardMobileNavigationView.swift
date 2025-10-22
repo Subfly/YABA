@@ -9,7 +9,11 @@ import SwiftUI
 import SwiftData
 
 internal struct KeyboardMobileNavigationView: View {
-    @Query
+    @Query(
+        filter: #Predicate<YabaCollection> { collection in
+            collection.parent == nil
+        }
+    )
     private var collections: [YabaCollection]
     
     @State
@@ -23,23 +27,27 @@ internal struct KeyboardMobileNavigationView: View {
         NavigationStack(path: $path) {
             ZStack {
                 AnimatedGradient(collectionColor: .accentColor)
-                List {
-                    HomeCollectionView(
-                        collectionType: .folder,
-                        collections: collections.filter { $0.collectionType == .folder },
-                        onNavigationCallback: { collection in
-                            path.append(.collectionDetail(collection: collection))
-                        }
-                    )
-                    HomeCollectionView(
-                        collectionType: .tag,
-                        collections: collections.filter { $0.collectionType == .tag },
-                        onNavigationCallback: { collection in
-                            path.append(.collectionDetail(collection: collection))
-                        }
-                    )
+                ScrollView {
+                    LazyVStack(spacing: 0) {
+                        Spacer().frame(height: 24)
+                        HomeCollectionView(
+                            collectionType: .folder,
+                            collections: collections.filter { $0.collectionType == .folder },
+                            onNavigationCallback: { collection in
+                                path.append(.collectionDetail(collection: collection))
+                            }
+                        )
+                        Spacer().frame(height: 24)
+                        HomeCollectionView(
+                            collectionType: .tag,
+                            collections: collections.filter { $0.collectionType == .tag },
+                            onNavigationCallback: { collection in
+                                path.append(.collectionDetail(collection: collection))
+                            }
+                        )
+                        Spacer().frame(height: 24)
+                    }
                 }
-                .listStyle(.sidebar)
                 .scrollContentBackground(.hidden)
             }
             .navigationTitle(Text("YABA"))

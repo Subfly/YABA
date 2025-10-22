@@ -653,9 +653,8 @@ private struct FolderSection: View {
 
     var body: some View {
         Section {
-            CollectionItemView(
+            ListCollectionItemView(
                 collection: folder,
-                isInHome: false,
                 isInSelectionMode: false,
                 isInBookmarkDetail: true,
                 onDeleteCallback: { _ in },
@@ -694,9 +693,8 @@ private struct TagsSection: View {
                 }
             } else {
                 ForEach(tags) { tag in
-                    CollectionItemView(
+                    ListCollectionItemView(
                         collection: tag,
-                        isInHome: false,
                         isInSelectionMode: false,
                         isInBookmarkDetail: true,
                         onDeleteCallback: { _ in },

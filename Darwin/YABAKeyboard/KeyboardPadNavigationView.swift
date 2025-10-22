@@ -12,7 +12,11 @@ internal struct KeyboardPadNavigationView: View {
     @EnvironmentObject
     private var layoutState: KeyboardLayoutState
     
-    @Query
+    @Query(
+        filter: #Predicate<YabaCollection> { collection in
+            collection.parent == nil
+        }
+    )
     private var collections: [YabaCollection]
     
     @State
@@ -57,19 +61,23 @@ internal struct KeyboardPadNavigationView: View {
             NavigationSplitView(columnVisibility: .constant(.doubleColumn)) {
                 ZStack {
                     AnimatedGradient(collectionColor: .accentColor)
-                    List {
-                        HomeCollectionView(
-                            collectionType: .folder,
-                            collections: collections.filter { $0.collectionType == .folder },
-                            onNavigationCallback: { _ in }
-                        )
-                        HomeCollectionView(
-                            collectionType: .tag,
-                            collections: collections.filter { $0.collectionType == .tag },
-                            onNavigationCallback: { _ in }
-                        )
+                    ScrollView {
+                        LazyVStack(spacing: 0) {
+                            Spacer().frame(height: 24)
+                            HomeCollectionView(
+                                collectionType: .folder,
+                                collections: collections.filter { $0.collectionType == .folder },
+                                onNavigationCallback: { _ in }
+                            )
+                            Spacer().frame(height: 24)
+                            HomeCollectionView(
+                                collectionType: .tag,
+                                collections: collections.filter { $0.collectionType == .tag },
+                                onNavigationCallback: { _ in }
+                            )
+                            Spacer().frame(height: 24)
+                        }
                     }
-                    .listStyle(.sidebar)
                     .scrollContentBackground(.hidden)
                 }
                 .navigationTitle(Text("YABA"))

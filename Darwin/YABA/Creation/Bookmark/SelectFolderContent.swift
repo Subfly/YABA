@@ -130,9 +130,8 @@ private struct SelectFolderSearchableContent: View {
                 }
             } else {
                 ForEach(allFolders) { folder in
-                    CollectionItemView(
+                    ListCollectionItemView(
                         collection: folder,
-                        isInHome: false,
                         isInSelectionMode: true,
                         isInBookmarkDetail: false,
                         onDeleteCallback: { collection in
