@@ -224,6 +224,174 @@ class MoveManager {
             return a.label.localizedCompare(b.label) == .orderedAscending
         }
     }
+
+    func onReorderCollection(
+        draggedCollectionID: String,
+        targetCollectionID: String,
+        zone: DropZone
+    ) {
+        // Skip if dragging onto itself
+        if draggedCollectionID == targetCollectionID {
+            return
+        }
+
+        let draggedCollection: YabaCollection? = try? modelContext.fetch(
+            FetchDescriptor<YabaCollection>(
+                predicate: #Predicate {
+                    $0.collectionId == draggedCollectionID
+                }
+            )
+        ).first
+
+        let targetCollection: YabaCollection? = try? modelContext.fetch(
+            FetchDescriptor<YabaCollection>(
+                predicate: #Predicate {
+                    $0.collectionId == targetCollectionID
+                }
+            )
+        ).first
+
+        guard let draggedCollection, let targetCollection else {
+            return
+        }
+
+        // Tags can only be reordered among tags, not moved into folders
+        if draggedCollection.collectionType == .tag || targetCollection.collectionType == .tag {
+            // Both must be tags for reordering
+            if draggedCollection.collectionType != .tag || targetCollection.collectionType != .tag {
+                return
+            }
+
+            // Get all tags for reordering
+            guard let allCollections: [YabaCollection] = try? modelContext.fetch(
+                FetchDescriptor<YabaCollection>()
+            ) else { return }
+
+            let allTags = allCollections.filter { $0.collectionType == .tag }
+            reorderTags(allTags, draggedCollection: draggedCollection, targetCollection: targetCollection, zone: zone)
+        } else {
+            // Both are folders - reorder at the same level
+            reorderFolders(draggedCollection: draggedCollection, targetCollection: targetCollection, zone: zone)
+        }
+    }
+
+    private func reorderTags(_ allTags: [YabaCollection], draggedCollection: YabaCollection, targetCollection: YabaCollection, zone: DropZone) {
+        let sortedTags = sortSiblings(allTags)
+
+        // Create new order by removing dragged collection first
+        var newOrder = sortedTags.filter { $0.collectionId != draggedCollection.collectionId }
+
+        // Find target's position in the filtered array
+        guard let targetIndexInFiltered = newOrder.firstIndex(where: { $0.collectionId == targetCollection.collectionId }) else {
+            return
+        }
+
+        // Calculate where to insert the dragged collection
+        let insertIndex: Int
+        if zone == .top {
+            // Insert before target
+            insertIndex = targetIndexInFiltered
+        } else { // .bottom
+            // Insert after target
+            insertIndex = targetIndexInFiltered + 1
+        }
+
+        // Insert dragged collection at the calculated position
+        newOrder.insert(draggedCollection, at: insertIndex)
+
+        // Update orders
+        for (index, tag) in newOrder.enumerated() {
+            tag.order = index
+        }
+
+        do {
+            try modelContext.save()
+        } catch {
+            return
+        }
+    }
+
+    private func reorderFolders(draggedCollection: YabaCollection, targetCollection: YabaCollection, zone: DropZone) {
+        // Determine the target parent
+        let targetParent = targetCollection.parent
+
+        // If dragged collection is not already in the target parent, move it there
+        let wasMoved = draggedCollection.parent?.collectionId != targetParent?.collectionId
+        if wasMoved {
+            // Remove from old parent
+            if let oldParent = draggedCollection.parent {
+                oldParent.children.removeAll(where: { $0.collectionId == draggedCollection.collectionId })
+
+                // Reorder old parent's children
+                let sortedOld = sortSiblings(oldParent.children)
+                for (index, item) in sortedOld.enumerated() {
+                    item.order = index
+                }
+                oldParent.children = sortedOld
+            }
+
+            // Add to new parent
+            draggedCollection.parent = targetParent
+            if let newParent = targetParent {
+                newParent.children.append(draggedCollection)
+            }
+        }
+
+        // Get all siblings in the target parent
+        let allSiblings: [YabaCollection]
+        if let targetParent = targetParent {
+            allSiblings = targetParent.children
+        } else {
+            // Root level - need to update the global collection list
+            guard let allCollections: [YabaCollection] = try? modelContext.fetch(
+                FetchDescriptor<YabaCollection>()
+            ) else { return }
+            allSiblings = allCollections.filter { $0.collectionType == .folder && $0.parent == nil }
+        }
+
+        // Sort siblings to get current visual order
+        let sortedSiblings = sortSiblings(allSiblings)
+
+        // Create new order by removing dragged collection first
+        var newOrder = sortedSiblings.filter { $0.collectionId != draggedCollection.collectionId }
+
+        // Find target's position in the filtered array
+        guard let targetIndexInFiltered = newOrder.firstIndex(where: { $0.collectionId == targetCollection.collectionId }) else {
+            return
+        }
+
+        // Calculate where to insert the dragged collection
+        let insertIndex: Int
+        if zone == .top {
+            // Insert before target
+            insertIndex = targetIndexInFiltered
+        } else { // .bottom
+            // Insert after target
+            insertIndex = targetIndexInFiltered + 1
+        }
+
+        // Insert dragged collection at the calculated position
+        newOrder.insert(draggedCollection, at: insertIndex)
+
+        // Update order values and reorder the children array
+        for (index, sibling) in newOrder.enumerated() {
+            sibling.order = index
+        }
+
+        // Update the parent's children array to match the new order
+        if let targetParent = targetParent {
+            targetParent.children = newOrder
+        } else {
+            // For root level, we can't directly reorder the fetched array,
+            // but the order properties are updated which should be used for sorting
+        }
+
+        do {
+            try modelContext.save()
+        } catch {
+            return
+        }
+    }
 }
 
 extension EnvironmentValues {

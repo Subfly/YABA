@@ -306,6 +306,7 @@
 				Core/App/AppDelegate.swift,
 				Core/Components/Gradient/AnimatedGradient.swift,
 				Core/Components/Icon/YabaIconView.swift,
+				Core/Components/Item/Collection/DropZone.swift,
 				Core/Components/Toast/ToastDuration.swift,
 				Core/Components/Toast/ToastIconType.swift,
 				Core/Components/Toast/ToastManager.swift,
@@ -351,6 +352,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Assets.xcassets,
+				Core/Components/Item/Collection/DropZone.swift,
 				Core/Components/Toast/ToastDuration.swift,
 				Core/Components/Toast/ToastIconType.swift,
 				Core/Components/Toast/ToastManager.swift,
@@ -427,6 +429,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Assets.xcassets,
+				Core/Components/Item/Collection/DropZone.swift,
 				Core/Components/Toast/ToastDuration.swift,
 				Core/Components/Toast/ToastIconType.swift,
 				Core/Components/Toast/ToastManager.swift,

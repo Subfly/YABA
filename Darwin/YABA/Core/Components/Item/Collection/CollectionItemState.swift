@@ -105,4 +105,27 @@ internal class CollectionItemState {
             }
         }
     }
+
+    func onDropCollectionReorderTakeAction(
+        providers: [NSItemProvider],
+        targetCollectionID: String,
+        zone: DropZone,
+        onReorderCollection: @escaping (String, String, DropZone) -> Void
+    ) {
+        guard let provider = providers.first else { return }
+
+        if provider.hasItemConformingToTypeIdentifier(UTType.yabaCollection.identifier) {
+            // It's a collection
+            _ = provider.loadTransferable(type: YabaCodableCollection.self) { result in
+                switch result {
+                case .success(let item):
+                    Task { @MainActor in
+                        onReorderCollection(item.collectionId, targetCollectionID, zone)
+                    }
+                case .failure:
+                    break
+                }
+            }
+        }
+    }
 }

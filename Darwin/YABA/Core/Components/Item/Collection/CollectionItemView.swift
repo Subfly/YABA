@@ -192,6 +192,18 @@ struct HomeCollectionItemView: View {
                     } else {
                         // This is only possible for ordering
                         // tags and folders.
+                        itemState.onDropCollectionReorderTakeAction(
+                            providers: providers,
+                            targetCollectionID: collection.collectionId,
+                            zone: zone,
+                            onReorderCollection: { draggedId, targetId, dropZone in
+                                moveManager.onReorderCollection(
+                                    draggedCollectionID: draggedId,
+                                    targetCollectionID: targetId,
+                                    zone: dropZone
+                                )
+                            }
+                        )
                     }
                 },
                 onBookmarkDropDone: { providers in
