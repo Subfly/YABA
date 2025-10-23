@@ -7,6 +7,6 @@
 
 import Foundation
 
-internal enum DropZone {
+enum DropZone {
     case top, middle, bottom, none
 }

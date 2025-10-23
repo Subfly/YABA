@@ -177,10 +177,33 @@ struct HomeCollectionItemView: View {
                 itemState: $itemState,
                 targetCollection: collection,
                 onCollectionDropDone: { providers, zone in
-                    
+                    if zone == .middle {
+                        // This is only possible for folders,
+                        // and means move folder to folder
+                        itemState.onDropFolderTakeAction(
+                            providers: providers,
+                            onMoveFolder: { fromItemId in
+                                moveManager.onMoveFolder(
+                                    from: fromItemId,
+                                    to: collection.collectionId
+                                )
+                            },
+                        )
+                    } else {
+                        // This is only possible for ordering
+                        // tags and folders.
+                    }
                 },
                 onBookmarkDropDone: { providers in
-                    
+                    itemState.onDropBookmarkTakeAction(
+                        providers: providers,
+                        onMoveBookmark: { bookmarkId in
+                            moveManager.onMoveBookmark(
+                                bookmarkID: bookmarkId,
+                                toCollectionID: collection.collectionId
+                            )
+                        }
+                    )
                 }
             )
         )

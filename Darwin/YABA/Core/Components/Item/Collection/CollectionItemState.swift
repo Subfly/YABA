@@ -1,5 +1,5 @@
 //
-//  ItemState.swift
+//  CollectionItemState.swift
 //  YABA
 //
 //  Created by Ali Taha on 23.10.2025.
@@ -61,5 +61,48 @@ internal class CollectionItemState {
         }
 
         return true
+    }
+    
+    func onDropBookmarkTakeAction(
+        providers: [NSItemProvider],
+        onMoveBookmark: @escaping (String) -> Void
+    ) {
+        guard let provider = providers.first else { return }
+        
+        if provider.hasItemConformingToTypeIdentifier(UTType.yabaBookmark.identifier) {
+            _ = provider.loadTransferable(type: YabaCodableBookmark.self) { result in
+                switch result {
+                case .success(let bookmark):
+                    Task { @MainActor in
+                        if let bookmarkId = bookmark.bookmarkId {
+                            onMoveBookmark(bookmarkId)
+                        }
+                    }
+                case .failure:
+                    break
+                }
+            }
+        }
+    }
+    
+    func onDropFolderTakeAction(
+        providers: [NSItemProvider],
+        onMoveFolder: @escaping (String) -> Void,
+    ) {
+        guard let provider = providers.first else { return }
+
+        if provider.hasItemConformingToTypeIdentifier(UTType.yabaCollection.identifier) {
+            // It's a collection
+            _ = provider.loadTransferable(type: YabaCodableCollection.self) { result in
+                switch result {
+                case .success(let item):
+                    Task { @MainActor in
+                        onMoveFolder(item.collectionId)
+                    }
+                case .failure:
+                    break
+                }
+            }
+        }
     }
 }
