@@ -8786,6 +8786,7 @@
     },
     "Delete Folder Title" : {
       "comment" : "Title to show in dialog when a folder is deleting",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

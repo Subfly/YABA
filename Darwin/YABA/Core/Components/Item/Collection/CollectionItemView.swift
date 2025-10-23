@@ -10,66 +10,6 @@ import SwiftUI
 import WidgetKit
 import UniformTypeIdentifiers
 
-@MainActor
-@Observable
-private class ItemState {
-    var isHovered: Bool = false
-    var isTargeted: Bool = false
-    var isExpanded: Bool = false
-    var shouldShowDeleteDialog: Bool = false
-    var shouldShowEditSheet: Bool = false
-    var shouldShowMenuItems: Bool = false
-    var shouldShowCreateBookmarkSheet: Bool = false
-    
-    func onDropTakeAction(
-        providers: [NSItemProvider],
-        onMoveFolder: @escaping (String) -> Void,
-        onMoveBookmark: @escaping (String) -> Void
-    ) -> Bool {
-        guard let provider = providers.first else {
-            return false
-        }
-        
-        // Try YabaCollection first
-        let _ = provider.loadTransferable(type: YabaCodableCollection.self) { result in
-            switch result {
-            case .success(let item):
-                Task { @MainActor in
-                    onMoveFolder(item.collectionId)
-                }
-            case .failure:
-                // If not a collection, try bookmark
-                Task { @MainActor in
-                    self.unwrapBookmarkAndTakeAction(
-                        provider: provider,
-                        onMoveBookmark: onMoveBookmark
-                    )
-                }
-            }
-        }
-        
-        return true
-    }
-    
-    private func unwrapBookmarkAndTakeAction(
-        provider: NSItemProvider,
-        onMoveBookmark: @escaping (String) -> Void
-    ) {
-        let _ = provider.loadTransferable(type: YabaCodableBookmark.self) { result in
-            switch result {
-            case .success(let bookmark):
-                Task { @MainActor in
-                    if let bookmarkId = bookmark.bookmarkId {
-                        onMoveBookmark(bookmarkId)
-                    }
-                }
-            case .failure:
-                break
-            }
-        }
-    }
-}
-
 /**
  * COLLECTION ITEM VIEW THAT SHOULD BE
  * USED ONLY IN HOME VIEW TO SUPPORT
@@ -79,16 +19,16 @@ private class ItemState {
 struct HomeCollectionItemView: View {
     @AppStorage(Constants.preferredCollectionSortingKey)
     private var preferredSortingForFolders: SortType = .createdAt
-    
+
     @AppStorage(Constants.preferredSortOrderKey)
     private var preferredSortOrderForFolders: SortOrderType = .ascending
-    
+
     @Environment(\.appState)
     private var appState
-    
+
     @State
-    private var itemState: ItemState = .init()
-    
+    private var itemState: CollectionItemState = .init()
+
     let collection: YabaCollection
     let isInSelectionMode: Bool
     let isInBookmarkDetail: Bool
@@ -115,11 +55,8 @@ struct HomeCollectionItemView: View {
                     }
                     
                     let children = collection.children.sorted(using: sortDescriptor)
-                    
+
                     ForEach(children) { child in
-                        if child.collectionId == collection.children.first?.collectionId {
-                            SeparatorItemView()
-                        }
                         HomeCollectionItemView(
                             collection: child,
                             isInSelectionMode: isInSelectionMode,
@@ -128,9 +65,6 @@ struct HomeCollectionItemView: View {
                             onEditCallback: onEditCallback,
                             onNavigationCallback: onNavigationCallback
                         )
-                        if child.collectionId != collection.children.last?.collectionId {
-                            SeparatorItemView()
-                        }
                     }
                 }
             }
@@ -141,7 +75,6 @@ struct HomeCollectionItemView: View {
     
     @ViewBuilder
     private var wrappable: some View {
-        SeparatorItemView()
         HStack {
             let parentColors = collection.getParentColorsInOrder()
             ForEach(parentColors.indices, id: \.self) { index in
@@ -162,8 +95,32 @@ struct HomeCollectionItemView: View {
             .padding()
             .background {
                 #if targetEnvironment(macCatalyst)
-                if itemState.isTargeted {
+                if itemState.dropZone == .middle {
                     RoundedRectangle(cornerRadius: 16).fill(collection.color.getUIColor().opacity(0.2))
+                } else if itemState.dropZone == .top {
+                    RoundedRectangle(cornerRadius: 16).fill(
+                        LinearGradient(
+                            colors: [
+                                collection.color.getUIColor().opacity(0.4),
+                                Color.gray.opacity(0.05),
+                                Color.gray.opacity(0.05)
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                } else if itemState.dropZone == .bottom {
+                    RoundedRectangle(cornerRadius: 16).fill(
+                        LinearGradient(
+                            colors: [
+                                Color.gray.opacity(0.05),
+                                Color.gray.opacity(0.05),
+                                collection.color.getUIColor().opacity(0.4)
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
                 } else if !isInBookmarkDetail && appState.selectedCollection?.collectionId == collection.collectionId {
                     RoundedRectangle(cornerRadius: 16).fill(Color.gray.opacity(0.2))
                 } else if !isInBookmarkDetail && itemState.isHovered {
@@ -172,8 +129,32 @@ struct HomeCollectionItemView: View {
                     RoundedRectangle(cornerRadius: 16).fill(Color.clear)
                 }
                 #else
-                if itemState.isTargeted {
-                    RoundedRectangle(cornerRadius: 24).fill(collection.color.getUIColor().opacity(0.1))
+                if itemState.dropZone == .middle {
+                    RoundedRectangle(cornerRadius: 24).fill(collection.color.getUIColor().opacity(0.2))
+                } else if itemState.dropZone == .top {
+                    RoundedRectangle(cornerRadius: 24).fill(
+                        LinearGradient(
+                            colors: [
+                                collection.color.getUIColor().opacity(0.4),
+                                Color.gray.opacity(0.05),
+                                Color.gray.opacity(0.05)
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                } else if itemState.dropZone == .bottom {
+                    RoundedRectangle(cornerRadius: 24).fill(
+                        LinearGradient(
+                            colors: [
+                                Color.gray.opacity(0.05),
+                                Color.gray.opacity(0.05),
+                                collection.color.getUIColor().opacity(0.4)
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
                 } else if UIDevice.current.userInterfaceIdiom == .phone {
                     RoundedRectangle(cornerRadius: 24).fill(Color.gray.opacity(0.05))
                 } else if appState.selectedCollection?.collectionId == collection.collectionId {
@@ -187,7 +168,19 @@ struct HomeCollectionItemView: View {
             }
         }
         .padding(.horizontal)
-        SeparatorItemView()
+        .onDrop(
+            of: [.yabaCollection, .yabaBookmark],
+            delegate: CollectionDropDelegate(
+                itemState: $itemState,
+                targetCollection: collection,
+                onDropDone: {
+                    
+                }
+            )
+        )
+        .sensoryFeedback(.impact(weight: .medium, intensity: 1), trigger: itemState.dropZone == .top)
+        .sensoryFeedback(.impact(weight: .medium, intensity: 1), trigger: itemState.dropZone == .bottom)
+        .sensoryFeedback(.impact(weight: .heavy, intensity: 1), trigger: itemState.dropZone == .middle)
     }
 }
 
@@ -199,8 +192,11 @@ struct ListCollectionItemView: View {
     @Environment(\.appState)
     private var appState
     
+    @Environment(\.moveManager)
+    private var moveManager
+    
     @State
-    private var itemState: ItemState = .init()
+    private var itemState: CollectionItemState = .init()
     
     let collection: YabaCollection
     let isInSelectionMode: Bool
@@ -238,6 +234,26 @@ struct ListCollectionItemView: View {
             : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
         )
         #endif
+        .onDrop(
+            of: [.yabaCollection, .yabaBookmark],
+            isTargeted: $itemState.isTargeted
+        ) { providers in
+            itemState.onDropTakeAction(
+                providers: providers,
+                onMoveFolder: { fromItemId in
+                    moveManager.onMoveFolder(
+                        from: fromItemId,
+                        to: collection.collectionId
+                    )
+                },
+                onMoveBookmark: { bookmarkId in
+                    moveManager.onMoveBookmark(
+                        bookmarkID: bookmarkId,
+                        toCollectionID: collection.collectionId
+                    )
+                }
+            )
+        }
     }
 }
 
@@ -252,14 +268,11 @@ private struct InteractableView: View {
     @Environment(\.appState)
     private var appState
     
-    @Environment(\.moveManager)
-    private var moveManager
-    
     @AppStorage(Constants.preferredContentAppearanceKey)
     private var contentAppearance: ViewType = .list
     
     @Binding
-    var itemState: ItemState
+    var itemState: CollectionItemState
     let collection: YabaCollection
     let isInSelectionMode: Bool
     let isInBookmarkDetail: Bool
@@ -299,26 +312,6 @@ private struct InteractableView: View {
                         .frame(width: 32, height: 32)
                         .foregroundStyle(collection.color.getUIColor())
                 }
-        }
-        .onDrop(
-            of: [.yabaCollection, .yabaBookmark],
-            isTargeted: $itemState.isTargeted
-        ) { providers in
-            itemState.onDropTakeAction(
-                providers: providers,
-                onMoveFolder: { fromItemId in
-                    moveManager.onMoveFolder(
-                        from: fromItemId,
-                        to: collection.collectionId
-                    )
-                },
-                onMoveBookmark: { bookmarkId in
-                    moveManager.onMoveBookmark(
-                        bookmarkID: bookmarkId,
-                        toCollectionID: collection.collectionId
-                    )
-                }
-            )
         }
 #endif
         .alert(
@@ -398,7 +391,7 @@ private struct ConditionalView: View {
     let collection: YabaCollection
     
     @Binding
-    var state: ItemState
+    var state: CollectionItemState
     
     let isInSelectionMode: Bool
     let isInBookmarkDetail: Bool
@@ -444,7 +437,7 @@ private struct ListView: View {
     let collection: YabaCollection
     
     @Binding
-    var state: ItemState
+    var state: CollectionItemState
     
     let isInSelectionMode: Bool
     let isInBookmarkDetail: Bool
@@ -540,7 +533,7 @@ private struct GridView: View {
     let collection: YabaCollection
     
     @Binding
-    var state: ItemState
+    var state: CollectionItemState
     
     let isInSelectionMode: Bool
     let isInBookmarkDetail: Bool
@@ -620,7 +613,7 @@ private struct GridView: View {
 /// MARK: HELPER ITEMS
 private struct MenuActionItems: View {
     @Binding
-    var state: ItemState
+    var state: CollectionItemState
     
     let isInSelectionMode: Bool
     let isInBookmarkDetail: Bool
@@ -659,7 +652,7 @@ private struct MenuActionItems: View {
 
 private struct AlertActionItems: View {
     @Binding
-    var state: ItemState
+    var state: CollectionItemState
     
     let onDeleteCallback: () -> Void
     

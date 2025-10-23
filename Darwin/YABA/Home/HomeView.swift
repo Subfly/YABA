@@ -226,7 +226,7 @@ private struct SequentialView: View {
         
     var body: some View {
         ScrollView {
-            LazyVStack(spacing: 0) {
+            LazyVStack {
                 Spacer().frame(height: 24)
                 HomeAnnouncementsView()
                 if showRecents && UIDevice.current.userInterfaceIdiom == .phone {
