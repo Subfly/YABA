@@ -31,15 +31,15 @@ internal struct CollectionDropDelegate: DropDelegate {
 
     func performDrop(info: DropInfo) -> Bool {
         // decode the actual transferable here if needed
-        withAnimation(.smooth) {
-            itemState.dropZone = .none
-        }
         if info.hasItemsConforming(to: [.yabaBookmark]) {
             let providers = info.itemProviders(for: [.yabaBookmark])
             onBookmarkDropDone(providers)
         } else if info.hasItemsConforming(to: [.yabaCollection]) {
             let providers = info.itemProviders(for: [.yabaCollection])
             onCollectionDropDone(providers, itemState.dropZone)
+        }
+        withAnimation(.smooth) {
+            itemState.dropZone = .none
         }
         return true
     }
