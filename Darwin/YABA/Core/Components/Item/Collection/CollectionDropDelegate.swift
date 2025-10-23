@@ -11,7 +11,8 @@ import UniformTypeIdentifiers
 internal struct CollectionDropDelegate: DropDelegate {
     @Binding var itemState: CollectionItemState
     let targetCollection: YabaCollection
-    let onDropDone: () -> Void
+    let onCollectionDropDone: ([NSItemProvider], DropZone) -> Void
+    let onBookmarkDropDone: ([NSItemProvider]) -> Void
 
     func dropEntered(info: DropInfo) {
         updateDropZone(info: info)
@@ -33,7 +34,13 @@ internal struct CollectionDropDelegate: DropDelegate {
         withAnimation(.smooth) {
             itemState.dropZone = .none
         }
-        onDropDone()
+        if info.hasItemsConforming(to: [.yabaBookmark]) {
+            let providers = info.itemProviders(for: [.yabaBookmark])
+            onBookmarkDropDone(providers)
+        } else if info.hasItemsConforming(to: [.yabaCollection]) {
+            let providers = info.itemProviders(for: [.yabaCollection])
+            onCollectionDropDone(providers, itemState.dropZone)
+        }
         return true
     }
 

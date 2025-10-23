@@ -25,6 +25,9 @@ struct HomeCollectionItemView: View {
 
     @Environment(\.appState)
     private var appState
+    
+    @Environment(\.moveManager)
+    private var moveManager
 
     @State
     private var itemState: CollectionItemState = .init()
@@ -173,7 +176,10 @@ struct HomeCollectionItemView: View {
             delegate: CollectionDropDelegate(
                 itemState: $itemState,
                 targetCollection: collection,
-                onDropDone: {
+                onCollectionDropDone: { providers, zone in
+                    
+                },
+                onBookmarkDropDone: { providers in
                     
                 }
             )

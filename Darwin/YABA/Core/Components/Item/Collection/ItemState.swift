@@ -20,6 +20,9 @@ internal class CollectionItemState {
     var shouldShowMenuItems: Bool = false
     var shouldShowCreateBookmarkSheet: Bool = false
     
+    /**
+     * Should be used only for list items. Home item's have their own access to specific functions directly.
+     */
     func onDropTakeAction(
         providers: [NSItemProvider],
         onMoveFolder: @escaping (String) -> Void,
