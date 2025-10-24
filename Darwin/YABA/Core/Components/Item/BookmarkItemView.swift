@@ -19,6 +19,9 @@ private class ItemState {
 }
 
 struct BookmarkItemView: View {
+    @AppStorage(Constants.preferredContentAppearanceKey)
+    private var contentAppearance: ViewType = .list
+    
     @Environment(\.appState)
     private var appState
     
@@ -30,10 +33,12 @@ struct BookmarkItemView: View {
     
     let bookmark: YabaBookmark
     let isInRecents: Bool
+    let isSelected: Bool
+    let isInSelectionMode: Bool
     let onNavigationCallback: (YabaBookmark) -> Void
     
     var body: some View {
-        content
+        selectableContent
             .draggable(bookmark.mapToCodable()) {
                 RoundedRectangle(cornerRadius: 12)
                     .fill(bookmark.getFolderColor().opacity(0.5))
@@ -66,6 +71,24 @@ struct BookmarkItemView: View {
                 
                 return true
             }
+    }
+    
+    @ViewBuilder
+    private var selectableContent: some View {
+        HStack(
+            alignment: contentAppearance == .list ? .center : .top
+        ) {
+            if isInSelectionMode {
+                YabaIconView(
+                    bundleKey: isSelected
+                    ? "checkmark-circle-01"
+                    : "circle"
+                )
+                .frame(width: 24, height: 24)
+                .foregroundStyle(bookmark.getFolderColor())
+            }
+            content
+        }
     }
     
     @ViewBuilder

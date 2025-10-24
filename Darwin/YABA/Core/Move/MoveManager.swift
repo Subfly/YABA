@@ -255,6 +255,11 @@ class MoveManager {
             return
         }
 
+        // Prevent moving a parent to its descendant's top/bottom (would break hierarchy)
+        if draggedCollection.getDescendants().contains(where: { $0.collectionId == targetCollectionID }) {
+            return
+        }
+
         // Tags can only be reordered among tags, not moved into folders
         if draggedCollection.collectionType == .tag || targetCollection.collectionType == .tag {
             // Both must be tags for reordering

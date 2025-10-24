@@ -103,9 +103,17 @@ private struct CollectionDetail: View {
                     SearchableContent(
                         collection: collection,
                         searchQuery: state.searchQuery,
+                        selectedBookmarks: $state.selectedBookmarks,
+                        isInSelectionMode: state.isInSelectionMode,
                         preferredSorting: preferredSorting,
                         preferredOrder: preferredSortOrder,
-                        onNavigationCallback: onNavigationCallback
+                        onNavigationCallback: { bookmark in
+                            if state.isInSelectionMode {
+                                state.upsertBookmarkInSelections(bookmark)
+                            } else {
+                                onNavigationCallback(bookmark)
+                            }
+                        }
                     )
                     #if !KEYBOARD_EXTENSION
                     .searchable(
@@ -191,6 +199,10 @@ private struct SearchableContent: View {
     @AppStorage(Constants.preferredContentAppearanceKey)
     private var contentAppearance: ViewType = .list
     
+    @Binding
+    var selectedBookmarks: Set<YabaBookmark>
+    let isInSelectionMode: Bool
+    
     private let bookmarks: [YabaBookmark]
     let searchQuery: String
     let onNavigationCallback: (YabaBookmark) -> Void
@@ -198,12 +210,16 @@ private struct SearchableContent: View {
     init(
         collection: YabaCollection,
         searchQuery: String,
+        selectedBookmarks: Binding<Set<YabaBookmark>>,
+        isInSelectionMode: Bool,
         preferredSorting: SortType,
         preferredOrder: SortOrderType,
         onNavigationCallback: @escaping (YabaBookmark) -> Void
     ) {
         self.searchQuery = searchQuery
         self.onNavigationCallback = onNavigationCallback
+        _selectedBookmarks = selectedBookmarks
+        self.isInSelectionMode = isInSelectionMode
         
         let sortDescriptor: SortDescriptor<YabaBookmark> = switch preferredSorting {
         case .createdAt:
@@ -240,14 +256,14 @@ private struct SearchableContent: View {
                 Text("Search No Bookmarks Found Description \(searchQuery)")
             }
         } else {
-            List {
-                ForEach(bookmarks) { bookmark in
-                    BookmarkItemView(
-                        bookmark: bookmark,
-                        isInRecents: false,
-                        onNavigationCallback: onNavigationCallback
-                    )
-                }
+            List(bookmarks) { bookmark in
+                BookmarkItemView(
+                    bookmark: bookmark,
+                    isInRecents: false,
+                    isSelected: selectedBookmarks.contains(bookmark),
+                    isInSelectionMode: isInSelectionMode,
+                    onNavigationCallback: onNavigationCallback
+                )
             }
             .listRowSeparator(.hidden)
             .listRowSpacing(contentAppearance == .list ? 0 : 8)
@@ -255,28 +271,6 @@ private struct SearchableContent: View {
             .listStyle(.sidebar)
         }
     }
-    
-    /** TODO: OPEN WHEN LAZYVSTACK RECYCLES
-    @ViewBuilder
-    private var gridView: some View {
-        ScrollView {
-            LazyVGrid(
-                columns: [
-                    .init(.flexible()),
-                    .init(.flexible())
-                ]
-            ) {
-                ForEach(collection.bookmarks) { bookmark in
-                    BookmarkItemView(
-                        bookmark: bookmark,
-                        onNavigationCallback: onNavigationCallback
-                    )
-                }
-            }.padding()
-        }
-        .scrollContentBackground(.hidden)
-    }
-    */
 }
 
 private struct ToolbarItems: View {
@@ -299,7 +293,39 @@ private struct ToolbarItems: View {
                             YabaIconView(bundleKey: "plus-sign-circle")
                         }
                     }
+                    if state.isInSelectionMode {
+                        Divider()
+                        Button {
+                            state.shouldShowMoveBookmarksSheet = true
+                        } label: {
+                            Label {
+                                Text("Bookmark Selection Move")
+                            } icon: {
+                                YabaIconView(bundleKey: "arrow-move-up-right")
+                            }
+                        }
+                    }
+                    Button {
+                        withAnimation {
+                            state.isInSelectionMode.toggle()
+                        }
+                    } label: {
+                        Label {
+                            Text(
+                                state.isInSelectionMode
+                                ? "Bookmark Selection Cancel"
+                                : "Bookmark Selection Enable"
+                            )
+                        } icon: {
+                            YabaIconView(
+                                bundleKey: state.isInSelectionMode
+                                ? "cancel-circle"
+                                : "checkmark-circle-01"
+                            )
+                        }
+                    }
                     #if !KEYBOARD_EXTENSION
+                    Divider()
                     ContentAppearancePicker()
                     SortingPicker(contentType: .bookmark)
                     #endif
@@ -312,6 +338,28 @@ private struct ToolbarItems: View {
                 } label: {
                     YabaIconView(bundleKey: "plus-sign-circle")
                 }
+                Button {
+                    withAnimation {
+                        state.isInSelectionMode.toggle()
+                    }
+                } label: {
+                    Label {
+                        Text(
+                            state.isInSelectionMode
+                            ? "Bookmark Selection Cancel"
+                            : "Bookmark Selection Enable"
+                        )
+                    } icon: {
+                        YabaIconView(
+                            bundleKey: state.isInSelectionMode
+                            ? "cancel-circle"
+                            : "checkmark-circle-01"
+                        )
+                    }
+                }
+                #if !KEYBOARD_EXTENSION
+                SortingPicker(contentType: .bookmark)
+                #endif
             }
             #else
             MacOSHoverableToolbarIcon(
@@ -321,6 +369,7 @@ private struct ToolbarItems: View {
                     state.shouldShowCreateBookmarkSheet = true
                 }
             )
+            SortingPicker(contentType: .bookmark)
             #endif
         }
     }

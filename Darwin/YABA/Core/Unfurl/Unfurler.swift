@@ -197,7 +197,7 @@ class Unfurler {
             }
             
             // Score based on heuristics for quality
-            var score = calculateImageScore(src: lowerSrc)
+            let score = calculateImageScore(src: lowerSrc)
             
             if !lowerSrc.starts(with: "data:") { // skip embedded base64 images
                 candidates.append((src, score))

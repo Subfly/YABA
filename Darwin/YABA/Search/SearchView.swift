@@ -163,6 +163,8 @@ private struct SearchableContent: View {
                     BookmarkItemView(
                         bookmark: bookmark,
                         isInRecents: false,
+                        isSelected: false,
+                        isInSelectionMode: false,
                         onNavigationCallback: onNavigationCallback
                     )
                     .listRowSeparator(.hidden)

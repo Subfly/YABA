@@ -2521,6 +2521,42 @@
         }
       }
     },
+    "Bookmark Selection Cancel" : {
+      "comment" : "Bookmark selection action cancel label in collection detail",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel Selection"
+          }
+        }
+      }
+    },
+    "Bookmark Selection Enable" : {
+      "comment" : "Bookmark selection action enable label in collection detail",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select"
+          }
+        }
+      }
+    },
+    "Bookmark Selection Move" : {
+      "comment" : "Bookmark selection action move label in collection detail",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Move Selection"
+          }
+        }
+      }
+    },
     "Bookmark Title Placeholder" : {
       "comment" : "Placeholder to show when bookmark title is empty",
       "extractionState" : "manual",

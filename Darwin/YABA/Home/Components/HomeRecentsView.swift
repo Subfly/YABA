@@ -38,6 +38,8 @@ struct HomeRecentsView: View {
                 BookmarkItemView(
                     bookmark: bookmark,
                     isInRecents: true,
+                    isSelected: false,
+                    isInSelectionMode: false,
                     onNavigationCallback: onNavigationCallback
                 )
                 Spacer().frame(height: 6)
