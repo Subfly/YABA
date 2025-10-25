@@ -10,8 +10,14 @@ import SwiftData
 
 enum FolderSelectionMode {
     case folderSelection
-    case parentSelection
-    case moveBookmarks(YabaCollection, () -> Void) // onSelectCallback for selection
+    case parentSelection(
+        YabaCollection?, // the current collection itself
+        () -> Void // onSelectCallback for selection
+    )
+    case moveBookmarks(
+        YabaCollection, // containing folder of bookmark
+        () -> Void // onSelectCallback for selection
+    )
 }
 
 struct SelectFolderContent: View {
@@ -116,8 +122,13 @@ private struct SelectFolderSearchableContent: View {
     }
     
     var body: some View {
+        let foldersToBeShown = if case .parentSelection(let currentCollection, _) = mode {
+            availableParentFolders(for: currentCollection, from: allFolders)
+        } else {
+            allFolders
+        }
         List {
-            if allFolders.isEmpty {
+            if foldersToBeShown.isEmpty {
                 if searchQuery.isEmpty {
                     ContentUnavailableView {
                         Label {
@@ -152,7 +163,19 @@ private struct SelectFolderSearchableContent: View {
                     }
                 }
             } else {
-                ForEach(allFolders) { folder in
+                if case .parentSelection(let currentCollection, let onMoveToRoot) = mode {
+                    if currentCollection?.parent != nil {
+                        Label {
+                            Text("Select Folder Move To Root Label")
+                        } icon: {
+                            YabaIconView(bundleKey: "arrow-move-up-right")
+                        }.onTapGesture {
+                            onMoveToRoot()
+                            selectedFolder = nil
+                        }
+                    }
+                }
+                ForEach(foldersToBeShown) { folder in
                     ListCollectionItemView(
                         collection: folder,
                         isInSelectionMode: true,
@@ -182,6 +205,8 @@ private struct SelectFolderSearchableContent: View {
                              */
                             if case .moveBookmarks(_, let onSelected) = mode {
                                 onSelected()
+                            } else if case .parentSelection(_, let onSelected) = mode {
+                                onSelected()
                             }
                             selectedFolder = folder
                         }
@@ -189,6 +214,26 @@ private struct SelectFolderSearchableContent: View {
                 }
             }
         }.listRowSpacing(0)
+    }
+    
+    func availableParentFolders(
+        for currentCollection: YabaCollection?,
+        from allFolders: [YabaCollection]
+    ) -> [YabaCollection] {
+        guard let currentCollection else { return allFolders }
+        
+        // Collect all descendant IDs (recursive)
+        let descendantIds = Set(currentCollection.getDescendants().map { $0.collectionId })
+        
+        return allFolders.filter { collection in
+            // Exclude:
+            // - the current collection itself
+            // - its current parent
+            // - any of its descendants
+            collection.collectionId != currentCollection.collectionId &&
+            collection.collectionId != currentCollection.parent?.collectionId &&
+            !descendantIds.contains(collection.collectionId)
+        }
     }
 }
 

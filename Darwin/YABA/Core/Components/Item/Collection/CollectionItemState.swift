@@ -15,10 +15,12 @@ internal class CollectionItemState {
     var isTargeted: Bool = false // Used for list style targeting
     var isExpanded: Bool = false
     var dropZone: DropZone = .none // Used for home view targeting
+    var selectedParent: YabaCollection? = nil
     var shouldShowDeleteDialog: Bool = false
     var shouldShowEditSheet: Bool = false
     var shouldShowMenuItems: Bool = false
     var shouldShowCreateBookmarkSheet: Bool = false
+    var shouldShowFolderSelectionSheet: Bool = false
     
     /**
      * Should be used only for list items. Home item's have their own access to specific functions directly.

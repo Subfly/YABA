@@ -306,6 +306,9 @@ private struct InteractableView: View {
     @Environment(\.modelContext)
     private var modelContext
     
+    @Environment(\.moveManager)
+    private var moveManager
+    
     @Environment(\.appState)
     private var appState
     
@@ -415,6 +418,21 @@ private struct InteractableView: View {
                 link: nil,
                 onExitRequested: {}
             )
+        }
+        .sheet(isPresented: $itemState.shouldShowFolderSelectionSheet) {
+            NavigationView {
+                SelectFolderContent(
+                    selectedFolder: $itemState.selectedParent,
+                    mode: .parentSelection(collection) {
+                        itemState.shouldShowFolderSelectionSheet = false
+                    }
+                )
+            }.onDisappear {
+                collection.parent = nil
+                itemState.selectedParent?.children.append(collection)
+                try? modelContext.save()
+                itemState.selectedParent = nil
+            }
         }
         .sensoryFeedback(
             .impact(weight: .heavy, intensity: 1),
@@ -532,13 +550,16 @@ private struct ListView: View {
         .contentShape(Rectangle())
 #if !KEYBOARD_EXTENSION
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-            swipeActionItems
+            rightActionItems
+        }
+        .swipeActions(edge: .leading, allowsFullSwipe: false) {
+            leftActionItems
         }
 #endif
     }
     
     @ViewBuilder
-    private var swipeActionItems: some View {
+    private var rightActionItems: some View {
         if !isInBookmarkDetail {
             Button {
                 state.shouldShowDeleteDialog = true
@@ -557,6 +578,18 @@ private struct ListView: View {
                 Text("Edit")
             }
         }.tint(.orange)
+    }
+    
+    @ViewBuilder
+    private var leftActionItems: some View {
+        Button {
+            state.shouldShowFolderSelectionSheet = true
+        } label: {
+            VStack {
+                YabaIconView(bundleKey: "arrow-move-up-right")
+                Text("Move")
+            }
+        }.tint(.teal)
         if !isInSelectionMode {
             Button {
                 state.shouldShowCreateBookmarkSheet = true
@@ -678,7 +711,16 @@ private struct MenuActionItems: View {
                 Text("Edit")
             }
         }.tint(.orange)
+        Button {
+            state.shouldShowFolderSelectionSheet = true
+        } label: {
+            VStack {
+                YabaIconView(bundleKey: "arrow-move-up-right")
+                Text("Move")
+            }
+        }.tint(.teal)
         if !isInBookmarkDetail {
+            Divider()
             Button(role: .destructive) {
                 state.shouldShowDeleteDialog = true
             } label: {

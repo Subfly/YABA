@@ -10570,6 +10570,18 @@
         }
       }
     },
+    "Folder Creation Select Folder Message" : {
+      "comment" : "Message to show in folder creation to prompt the user to select a parent folder",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Click to select a parent folder"
+          }
+        }
+      }
+    },
     "Folder Search Prompt" : {
       "comment" : "Prompt to show while searching in folder selection",
       "extractionState" : "manual",
@@ -34649,6 +34661,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "选择颜色"
+          }
+        }
+      }
+    },
+    "Select Folder Move To Root Label" : {
+      "comment" : "Label of move to root in folder selection sheet",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Move to root"
           }
         }
       }

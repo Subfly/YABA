@@ -20,6 +20,7 @@ struct CollectionCreationContent: View {
     
     private let navigationTitle: String
     private let textFieldPlaceholder: String
+    private let presentationDetentsFraction: CGFloat
     
     let collectionToEdit: YabaCollection?
     let collectionType: CollectionType
@@ -33,6 +34,8 @@ struct CollectionCreationContent: View {
         self.collectionToEdit = collectionToEdit
         self.collectionType = collectionType
         self.onEditCallback = onEditCallback
+        
+        self.presentationDetentsFraction = collectionType == .folder ? 0.3 : 0.25
         
         if let content = collectionToEdit {
             self.navigationTitle = switch content.collectionType {
@@ -57,29 +60,44 @@ struct CollectionCreationContent: View {
     
     var body: some View {
         NavigationView {
-            HStack(alignment: .center, spacing: 24) {
-                generateIconPickerButton(
-                    frameSize: 24,
-                    backgroundSize: 52
-                )
-                textField
-                    .background {
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(.tertiary.opacity(0.3))
-                            .frame(height: 52)
-                    }
-                generateColorPickerButton(
-                    frameSize: 24,
-                    backgroundSize: 52
-                )
+            VStack(spacing: 24) {
+                HStack(alignment: .center, spacing: 24) {
+                    generateIconPickerButton(
+                        frameSize: 24,
+                        backgroundSize: 52
+                    )
+                    textField
+                        .background {
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(.tertiary.opacity(0.3))
+                                .frame(height: 52)
+                        }
+                    generateColorPickerButton(
+                        frameSize: 24,
+                        backgroundSize: 52
+                    )
+                }
+                .padding(.horizontal)
+                if collectionType == .folder {
+                    parentFolderPicker
+                }
             }
             .padding()
-            .padding(.horizontal)
             .sheet(isPresented: $state.shouldShowIconPicker) {
                 iconPicker
             }
             .sheet(isPresented: $state.shouldShowColorPicker) {
                 colorPicker
+            }
+            .sheet(isPresented: $state.shouldShowParentFolderPicker) {
+                NavigationView {
+                    SelectFolderContent(
+                        selectedFolder: $state.selectedParentFolder,
+                        mode: .parentSelection(collectionToEdit) {
+                            state.shouldShowParentFolderPicker = false
+                        }
+                    )
+                }
             }
             .navigationTitle(LocalizedStringKey(navigationTitle))
             .toolbarTitleDisplayMode(.inline)
@@ -101,7 +119,7 @@ struct CollectionCreationContent: View {
                 }
             }
         }
-        .presentationDetents([.fraction(0.25)])
+        .presentationDetents([.fraction(presentationDetentsFraction)])
         #if !targetEnvironment(macCatalyst)
         .presentationDragIndicator(.visible)
         #endif
@@ -182,6 +200,36 @@ struct CollectionCreationContent: View {
         )
     }
     
+    @ViewBuilder
+    private var parentFolderPicker: some View {
+        HStack {
+            if let parent = state.selectedParentFolder {
+                YabaIconView(bundleKey: parent.icon)
+                    .frame(width: 24, height: 24)
+                    .foregroundStyle(parent.color.getUIColor())
+                Text(parent.label)
+                Spacer()
+                YabaIconView(bundleKey: "arrow-right-01")
+                    .frame(width: 24, height: 24)
+                    .foregroundStyle(.tertiary)
+            } else {
+                Text("Folder Creation Select Folder Message")
+                Spacer()
+                YabaIconView(bundleKey: "arrow-right-01")
+                    .frame(width: 24, height: 24)
+                    .foregroundStyle(.tertiary)
+            }
+        }
+        .padding()
+        .background {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(.tertiary.opacity(0.3))
+        }
+        .onTapGesture {
+            state.shouldShowParentFolderPicker = true
+        }
+    }
+    
     func onAppear() {
         switch collectionType {
         case .folder:
@@ -194,6 +242,7 @@ struct CollectionCreationContent: View {
             state.collectionName = collectionToEdit.label
             state.selectedIconName = collectionToEdit.icon
             state.selectedColor = collectionToEdit.color
+            state.selectedParentFolder = collectionToEdit.parent
         }
     }
     
@@ -206,6 +255,11 @@ struct CollectionCreationContent: View {
                 collectionToEdit.editedAt = .now
                 collectionToEdit.version += 1
                 
+                if collectionToEdit.parent != state.selectedParentFolder {
+                    collectionToEdit.parent = state.selectedParentFolder
+                    state.selectedParentFolder?.version += 1
+                }
+                
                 onEditCallback(collectionToEdit)
             } else {
                 let collection = YabaCollection(
@@ -217,6 +271,7 @@ struct CollectionCreationContent: View {
                     color: state.selectedColor,
                     type: collectionType,
                     version: 0,
+                    parent: state.selectedParentFolder
                 )
                 
                 modelContext.insert(collection)
