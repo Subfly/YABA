@@ -8,6 +8,12 @@
 import SwiftUI
 import SwiftData
 
+enum FolderSelectionMode {
+    case folderSelection
+    case parentSelection
+    case moveBookmarks(YabaCollection, () -> Void) // onSelectCallback for selection
+}
+
 struct SelectFolderContent: View {
     @Environment(\.dismiss)
     private var dismiss
@@ -21,8 +27,11 @@ struct SelectFolderContent: View {
     @Binding
     var selectedFolder: YabaCollection?
     
+    let mode: FolderSelectionMode
+    
     var body: some View {
         SelectFolderSearchableContent(
+            mode: mode,
             selectedFolder: $selectedFolder,
             searchQuery: $searchQuery
         )
@@ -72,22 +81,36 @@ private struct SelectFolderSearchableContent: View {
     @Binding
     var searchQuery: String
     
+    let mode: FolderSelectionMode
+    
     init(
+        mode: FolderSelectionMode,
         selectedFolder: Binding<YabaCollection?>,
         searchQuery: Binding<String>
     ) {
+        self.mode = mode
+    
+        var parentFolder: YabaCollection? = nil
+        if case .moveBookmarks(let yabaCollection, _) = mode {
+            parentFolder = yabaCollection
+        }
+        
         let compareValue = CollectionType.folder.rawValue
         let query = searchQuery.wrappedValue
+        let parentCollectionId = parentFolder?.collectionId ?? ""
         _allFolders = Query(
             filter: #Predicate<YabaCollection> {
                 if query.isEmpty {
                     $0.type == compareValue
+                    && $0.collectionId != parentCollectionId
                 } else {
                     $0.type == compareValue
                     && $0.label.localizedStandardContains(query)
+                    && $0.collectionId != parentCollectionId
                 }
             }
         )
+        
         _selectedFolder = selectedFolder
         _searchQuery = searchQuery
     }
@@ -154,6 +177,12 @@ private struct SelectFolderSearchableContent: View {
                     .onTapGesture {
                         withAnimation {
                             dismiss()
+                            /**
+                             * Worst and best thing I've ever seen in a language
+                             */
+                            if case .moveBookmarks(_, let onSelected) = mode {
+                                onSelected()
+                            }
                             selectedFolder = folder
                         }
                     }
@@ -164,5 +193,8 @@ private struct SelectFolderSearchableContent: View {
 }
 
 #Preview {
-    SelectFolderContent(selectedFolder: .constant(nil))
+    SelectFolderContent(
+        selectedFolder: .constant(nil),
+        mode: .folderSelection
+    )
 }

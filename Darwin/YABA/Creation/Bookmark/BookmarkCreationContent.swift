@@ -601,7 +601,10 @@ struct BookmarkCreationContent: View {
     @ViewBuilder
     private var bookmarkFolderSelectionView: some View {
         NavigationLink {
-            SelectFolderContent(selectedFolder: $state.selectedFolder)
+            SelectFolderContent(
+                selectedFolder: $state.selectedFolder,
+                mode: .folderSelection,
+            )
         } label: {
             if let folder = state.selectedFolder {
                 HStack {

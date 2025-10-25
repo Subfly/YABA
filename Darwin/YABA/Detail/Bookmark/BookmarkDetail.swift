@@ -198,6 +198,16 @@ private struct BookmarkDetail: View {
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     MacOSHoverableToolbarIcon(
+                        bundleKey: "arrow-move-up-right",
+                        tooltipKey: "Move",
+                        onPressed: {
+                            state.shouldShowFolderSelectionSheet = true
+                        }
+                    )
+                    .tint(.teal)
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    MacOSHoverableToolbarIcon(
                         bundleKey: "notification-01",
                         tooltipKey: "Tooltip Title Notification",
                         onPressed: {
@@ -253,6 +263,16 @@ private struct BookmarkDetail: View {
                                     .scaledToFit()
                             }
                         }.tint(.orange)
+                        Button {
+                            state.shouldShowFolderSelectionSheet = true
+                        } label: {
+                            Label {
+                                Text("Move")
+                            } icon: {
+                                YabaIconView(bundleKey: "arrow-move-up-right")
+                                    .scaledToFit()
+                            }
+                        }.tint(.teal)
                         Button {
                             state.shouldShowTimePicker = true
                         } label: {
@@ -334,6 +354,25 @@ private struct BookmarkDetail: View {
         }
         .sheet(isPresented: $state.shouldShowTimePicker) {
             setupReminderContent
+        }
+        .sheet(isPresented: $state.shouldShowFolderSelectionSheet) {
+            NavigationView {
+                if let folder = state.folder {
+                    SelectFolderContent(
+                        selectedFolder: $state.selectedFolderToMove,
+                        mode: .moveBookmarks(folder) {
+                            state.shouldShowFolderSelectionSheet = false
+                        }
+                    ).onDisappear {
+                        if let bookmark {
+                            state.handleFolderChangeRequest(
+                                for: bookmark,
+                                with: modelContext
+                            )
+                        }
+                    }
+                }
+            }
         }
         .toast(
             state: state.toastManager.toastState,

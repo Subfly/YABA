@@ -2533,6 +2533,30 @@
         }
       }
     },
+    "Bookmark Selection Delete" : {
+      "comment" : "Bookmark selection action delete label in collection detail",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete Selection"
+          }
+        }
+      }
+    },
+    "Bookmark Selection Delete All Message" : {
+      "comment" : "Bookmark selection delete selections dialog message ",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Are you sure you want to delete selected bookmarks? This operation can not be undone!"
+          }
+        }
+      }
+    },
     "Bookmark Selection Enable" : {
       "comment" : "Bookmark selection action enable label in collection detail",
       "extractionState" : "manual",

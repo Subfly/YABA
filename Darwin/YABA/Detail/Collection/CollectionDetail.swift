@@ -64,6 +64,9 @@ private struct CollectionDetail: View {
     @Environment(\.dismiss)
     private var dismiss
     
+    @Environment(\.modelContext)
+    private var modelContext
+    
     @AppStorage(Constants.preferredContentAppearanceKey)
     private var contentAppearance: ViewType = .list
     
@@ -191,6 +194,39 @@ private struct CollectionDetail: View {
                 onExitRequested: {}
             )
         }
+        .sheet(isPresented: $state.shouldShowMoveBookmarksSheet) {
+            NavigationView {
+                if let collection {
+                    SelectFolderContent(
+                        selectedFolder: $state.selectedFolderToMove,
+                        // Sometimes, swift makes me wtf is this...
+                        mode: .moveBookmarks(collection) {
+                            state.shouldShowMoveBookmarksSheet = false
+                        },
+                    )
+                }
+            }.onDisappear {
+                state.handleChangeFolderRequest(with: modelContext)
+            }
+        }
+        .alert(
+            LocalizedStringKey("Bookmark Selection Delete All Message"),
+            isPresented: $state.shouldShowDeleteDialog
+        ) {
+            Button(role: .cancel) {
+                state.shouldShowDeleteDialog = false
+            } label: {
+                Text("Cancel")
+            }
+            Button(role: .destructive) {
+                withAnimation {
+                    state.handleDeletionRequest(with: modelContext)
+                    state.shouldShowDeleteDialog = false
+                }
+            } label: {
+                Text("Delete")
+            }
+        }
         .tint(collection?.color.getUIColor() ?? .accentColor)
     }
 }
@@ -293,7 +329,7 @@ private struct ToolbarItems: View {
                             YabaIconView(bundleKey: "plus-sign-circle")
                         }
                     }
-                    if state.isInSelectionMode {
+                    if collection?.collectionType == .folder && state.isInSelectionMode {
                         Divider()
                         Button {
                             state.shouldShowMoveBookmarksSheet = true
@@ -304,24 +340,36 @@ private struct ToolbarItems: View {
                                 YabaIconView(bundleKey: "arrow-move-up-right")
                             }
                         }
+                        
+                        Button {
+                            state.shouldShowDeleteDialog = true
+                        } label: {
+                            Label {
+                                Text("Bookmark Selection Delete")
+                            } icon: {
+                                YabaIconView(bundleKey: "delete-02")
+                            }
+                        }.tint(.red)
                     }
-                    Button {
-                        withAnimation {
-                            state.isInSelectionMode.toggle()
-                        }
-                    } label: {
-                        Label {
-                            Text(
-                                state.isInSelectionMode
-                                ? "Bookmark Selection Cancel"
-                                : "Bookmark Selection Enable"
-                            )
-                        } icon: {
-                            YabaIconView(
-                                bundleKey: state.isInSelectionMode
-                                ? "cancel-circle"
-                                : "checkmark-circle-01"
-                            )
+                    if collection?.collectionType == .folder {
+                        Button {
+                            withAnimation {
+                                state.isInSelectionMode.toggle()
+                            }
+                        } label: {
+                            Label {
+                                Text(
+                                    state.isInSelectionMode
+                                    ? "Bookmark Selection Cancel"
+                                    : "Bookmark Selection Enable"
+                                )
+                            } icon: {
+                                YabaIconView(
+                                    bundleKey: state.isInSelectionMode
+                                    ? "cancel-circle"
+                                    : "checkmark-circle-01"
+                                )
+                            }
                         }
                     }
                     #if !KEYBOARD_EXTENSION

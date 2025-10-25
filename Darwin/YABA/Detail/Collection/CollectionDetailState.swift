@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import SwiftData
 
 @MainActor
 @Observable
@@ -14,6 +15,7 @@ internal class CollectionDetailState {
     var searchQuery: String = ""
     var shouldShowCreateBookmarkSheet: Bool = false
     var shouldShowMoveBookmarksSheet: Bool = false
+    var shouldShowDeleteDialog: Bool = false
     
     var isInSelectionMode: Bool = false {
         didSet {
@@ -23,6 +25,7 @@ internal class CollectionDetailState {
         }
     }
     var selectedBookmarks: Set<YabaBookmark> = []
+    var selectedFolderToMove: YabaCollection? = nil
     
     func upsertBookmarkInSelections(_ bookmark: YabaBookmark) {
         if selectedBookmarks.contains(bookmark) {
@@ -34,5 +37,32 @@ internal class CollectionDetailState {
                 selectedBookmarks.insert(bookmark)
             }
         }
+    }
+    
+    func handleChangeFolderRequest(with modelContext: ModelContext) {
+        guard let selectedFolderToMove else {
+            return
+        }
+        
+        selectedBookmarks.forEach { bookmark in
+            bookmark.collections?.removeAll { collection in
+                collection.collectionType == .folder
+            }
+            bookmark.collections?.append(selectedFolderToMove)
+        }
+        
+        isInSelectionMode = false
+        
+        try? modelContext.save()
+    }
+    
+    func handleDeletionRequest(with modelContext: ModelContext) {
+        selectedBookmarks.forEach { bookmark in
+            modelContext.delete(bookmark)
+        }
+        
+        isInSelectionMode = false
+        
+        try? modelContext.save()
     }
 }

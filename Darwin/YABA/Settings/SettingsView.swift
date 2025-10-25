@@ -729,7 +729,7 @@ struct SettingsView: View {
                 YabaIconView(bundleKey: "delete-02")
                     .scaledToFit()
                     .frame(width: 24, height: 24)
-                    .tint(.red)
+                    .foregroundStyle(.red)
             }
             Spacer()
             YabaIconView(bundleKey: "arrow-right-01")

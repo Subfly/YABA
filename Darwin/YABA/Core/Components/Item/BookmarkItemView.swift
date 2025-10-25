@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 import WidgetKit
 
 @MainActor
@@ -14,8 +15,25 @@ private class ItemState {
     var shouldShowEditDialog: Bool = false
     var shouldShowShareDialog: Bool = false
     var shouldShowDeleteDialog: Bool = false
+    var shouldShowFolderSelectionSheet: Bool = false
     var isHovered: Bool = false
     var isTargeted: Bool = false
+    var selectedFolderToMove: YabaCollection? = nil
+    
+    func handleFolderChangeRequest(
+        for bookmark: YabaBookmark,
+        with modelContext: ModelContext
+    ) {
+        guard let newFolder = selectedFolderToMove else { return }
+        
+        bookmark.collections?.removeAll { collection in
+            collection.collectionType == .folder
+        }
+        
+        bookmark.collections?.append(newFolder)
+        
+        try? modelContext.save()
+    }
 }
 
 struct BookmarkItemView: View {
@@ -109,6 +127,7 @@ struct BookmarkItemView: View {
             .contextMenu {
                 MenuActionItems(
                     shouldShowEditDialog: $itemState.shouldShowEditDialog,
+                    shouldShowFolderSelectionSheet: $itemState.shouldShowFolderSelectionSheet,
                     shouldShowShareDialog: $itemState.shouldShowShareDialog,
                     shouldShowDeleteDialog: $itemState.shouldShowDeleteDialog
                 )
@@ -143,6 +162,7 @@ struct BookmarkItemView: View {
             .contextMenu {
                 MenuActionItems(
                     shouldShowEditDialog: $itemState.shouldShowEditDialog,
+                    shouldShowFolderSelectionSheet: $itemState.shouldShowFolderSelectionSheet,
                     shouldShowShareDialog: $itemState.shouldShowShareDialog,
                     shouldShowDeleteDialog: $itemState.shouldShowDeleteDialog
                 )
@@ -208,6 +228,23 @@ private struct BookmarkItemViewWrappable: View {
                     ShareSheet(bookmarkLink: link)
                         .presentationDetents([.medium])
                         .presentationDragIndicator(.visible)
+                }
+            }
+            .sheet(isPresented: $itemState.shouldShowFolderSelectionSheet) {
+                NavigationView {
+                    if let folder = bookmark.getParentFolder() {
+                        SelectFolderContent(
+                            selectedFolder: $itemState.selectedFolderToMove,
+                            mode: .moveBookmarks(folder) {
+                                itemState.shouldShowFolderSelectionSheet = false
+                            }
+                        ).onDisappear {
+                            itemState.handleFolderChangeRequest(
+                                for: bookmark,
+                                with: modelContext
+                            )
+                        }
+                    }
                 }
             }
             .onHover { hovered in
@@ -281,21 +318,16 @@ private struct ListView: View {
         }
         #if !KEYBOARD_EXTENSION
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-            swipeActionItems
+            rightSwipeActionItems
+        }
+        .swipeActions(edge: .leading, allowsFullSwipe: false) {
+            leftSwipeActionItems
         }
         #endif
     }
     
     @ViewBuilder
-    private var swipeActionItems: some View {
-        Button {
-            state.shouldShowDeleteDialog = true
-        } label: {
-            VStack {
-                YabaIconView(bundleKey: "delete-02")
-                Text("Delete")
-            }
-        }.tint(.red)
+    private var leftSwipeActionItems: some View {
         Button {
             state.shouldShowShareDialog = true
         } label: {
@@ -306,6 +338,28 @@ private struct ListView: View {
                     .scaledToFit()
             }
         }.tint(.indigo)
+        Button {
+            state.shouldShowFolderSelectionSheet = true
+        } label: {
+            Label {
+                Text("Move")
+            } icon: {
+                YabaIconView(bundleKey: "arrow-move-up-right")
+                    .scaledToFit()
+            }
+        }.tint(.teal)
+    }
+    
+    @ViewBuilder
+    private var rightSwipeActionItems: some View {
+        Button {
+            state.shouldShowDeleteDialog = true
+        } label: {
+            VStack {
+                YabaIconView(bundleKey: "delete-02")
+                Text("Delete")
+            }
+        }.tint(.red)
         Button {
             state.shouldShowEditDialog = true
         } label: {
@@ -612,6 +666,7 @@ private struct ClickableOptionsIcon: View {
             Menu {
                 MenuActionItems(
                     shouldShowEditDialog: $state.shouldShowEditDialog,
+                    shouldShowFolderSelectionSheet: $state.shouldShowFolderSelectionSheet,
                     shouldShowShareDialog: $state.shouldShowShareDialog,
                     shouldShowDeleteDialog: $state.shouldShowDeleteDialog
                 )
@@ -631,6 +686,7 @@ private struct ClickableOptionsIcon: View {
         Menu {
             MenuActionItems(
                 shouldShowEditDialog: $state.shouldShowEditDialog,
+                shouldShowFolderSelectionSheet: $state.shouldShowFolderSelectionSheet,
                 shouldShowShareDialog: $state.shouldShowShareDialog,
                 shouldShowDeleteDialog: $state.shouldShowDeleteDialog
             )
@@ -654,6 +710,9 @@ private struct MenuActionItems: View {
     var shouldShowEditDialog: Bool
     
     @Binding
+    var shouldShowFolderSelectionSheet: Bool
+    
+    @Binding
     var shouldShowShareDialog: Bool
     
     @Binding
@@ -668,6 +727,16 @@ private struct MenuActionItems: View {
                 Text("Edit")
             }
         }.tint(.orange)
+        Button {
+            shouldShowFolderSelectionSheet = true
+        } label: {
+            Label {
+                Text("Move")
+            } icon: {
+                YabaIconView(bundleKey: "arrow-move-up-right")
+                    .scaledToFit()
+            }
+        }.tint(.teal)
         Button {
             shouldShowShareDialog = true
         } label: {

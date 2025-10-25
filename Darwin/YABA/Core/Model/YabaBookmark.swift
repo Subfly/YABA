@@ -57,4 +57,10 @@ extension YabaBookmark {
             collection.collectionType == .folder
         }?.color.getUIColor() ?? .accentColor
     }
+    
+    func getParentFolder() -> YabaCollection? {
+        return collections?.first { collection in
+            collection.collectionType == .folder
+        }
+    }
 }

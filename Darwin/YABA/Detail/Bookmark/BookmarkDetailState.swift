@@ -22,6 +22,7 @@ internal class BookmarkDetailState {
     let toastManager: ToastManager = .init()
     
     var shouldShowEditBookmarkSheet: Bool = false
+    var shouldShowFolderSelectionSheet: Bool = false
     var shouldShowTimePicker: Bool = false
     var shouldShowDeleteDialog: Bool = false
     var shouldShowShareDialog: Bool = false
@@ -33,6 +34,7 @@ internal class BookmarkDetailState {
     var meshColor: Color
     var reminderDate: Date?
     var folder: YabaCollection?
+    var selectedFolderToMove: YabaCollection?
     var tags: [YabaCollection]
     
     init(with bookmark: YabaBookmark?) {
@@ -246,6 +248,21 @@ internal class BookmarkDetailState {
                 onAcceptPressed: { self.toastManager.hide() }
             )
         }
+    }
+    
+    func handleFolderChangeRequest(
+        for bookmark: YabaBookmark,
+        with modelContext: ModelContext
+    ) {
+        guard let newFolder = selectedFolderToMove else { return }
+        
+        bookmark.collections?.removeAll { collection in
+            collection.collectionType == .folder
+        }
+        
+        bookmark.collections?.append(newFolder)
+        
+        try? modelContext.save()
     }
 }
 
