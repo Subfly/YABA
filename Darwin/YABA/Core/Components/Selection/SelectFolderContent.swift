@@ -12,7 +12,7 @@ enum FolderSelectionMode {
     case folderSelection
     case parentSelection(
         YabaCollection?, // the current collection itself
-        () -> Void // onSelectCallback for selection
+        (Bool) -> Void // onSelectCallback for selection
     )
     case moveBookmarks(
         YabaCollection, // containing folder of bookmark
@@ -170,7 +170,7 @@ private struct SelectFolderSearchableContent: View {
                         } icon: {
                             YabaIconView(bundleKey: "arrow-move-up-right")
                         }.onTapGesture {
-                            onMoveToRoot()
+                            onMoveToRoot(true)
                             selectedFolder = nil
                         }
                     }
@@ -206,7 +206,7 @@ private struct SelectFolderSearchableContent: View {
                             if case .moveBookmarks(_, let onSelected) = mode {
                                 onSelected()
                             } else if case .parentSelection(_, let onSelected) = mode {
-                                onSelected()
+                                onSelected(false)
                             }
                             selectedFolder = folder
                         }

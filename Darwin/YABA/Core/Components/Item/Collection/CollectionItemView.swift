@@ -344,7 +344,8 @@ private struct InteractableView: View {
             MenuActionItems(
                 state: $itemState,
                 isInSelectionMode: isInSelectionMode,
-                isInBookmarkDetail: isInBookmarkDetail
+                isInBookmarkDetail: isInBookmarkDetail,
+                isFolder: collection.collectionType == .folder
             )
         }
         .draggable(collection.mapToCodable()) {
@@ -423,15 +424,23 @@ private struct InteractableView: View {
             NavigationView {
                 SelectFolderContent(
                     selectedFolder: $itemState.selectedParent,
-                    mode: .parentSelection(collection) {
+                    mode: .parentSelection(collection) { moveToRoot in
+                        itemState.moveToRoot = moveToRoot
                         itemState.shouldShowFolderSelectionSheet = false
                     }
                 )
             }.onDisappear {
-                collection.parent = nil
-                itemState.selectedParent?.children.append(collection)
-                try? modelContext.save()
-                itemState.selectedParent = nil
+                if itemState.moveToRoot {
+                    collection.parent = nil
+                    try? modelContext.save()
+                    itemState.selectedParent = nil
+                    itemState.moveToRoot = false
+                } else if itemState.selectedParent != nil {
+                    collection.parent = nil
+                    itemState.selectedParent?.children.append(collection)
+                    try? modelContext.save()
+                    itemState.selectedParent = nil
+                }
             }
         }
         .sensoryFeedback(
@@ -521,7 +530,8 @@ private struct ListView: View {
                         MenuActionItems(
                             state: $state,
                             isInSelectionMode: isInSelectionMode,
-                            isInBookmarkDetail: isInBookmarkDetail
+                            isInBookmarkDetail: isInBookmarkDetail,
+                            isFolder: collection.collectionType == .folder
                         )
                     } label: {
                         YabaIconView(bundleKey: "more-horizontal-circle-02")
@@ -582,14 +592,16 @@ private struct ListView: View {
     
     @ViewBuilder
     private var leftActionItems: some View {
-        Button {
-            state.shouldShowFolderSelectionSheet = true
-        } label: {
-            VStack {
-                YabaIconView(bundleKey: "arrow-move-up-right")
-                Text("Move")
-            }
-        }.tint(.teal)
+        if collection.collectionType == .folder {
+            Button {
+                state.shouldShowFolderSelectionSheet = true
+            } label: {
+                VStack {
+                    YabaIconView(bundleKey: "arrow-move-up-right")
+                    Text("Move")
+                }
+            }.tint(.teal)
+        }
         if !isInSelectionMode {
             Button {
                 state.shouldShowCreateBookmarkSheet = true
@@ -627,7 +639,8 @@ private struct GridView: View {
                             MenuActionItems(
                                 state: $state,
                                 isInSelectionMode: isInSelectionMode,
-                                isInBookmarkDetail: isInBookmarkDetail
+                                isInBookmarkDetail: isInBookmarkDetail,
+                                isFolder: collection.collectionType == .folder
                             )
                         } label: {
                             YabaIconView(bundleKey: "more-horizontal-circle-02")
@@ -641,7 +654,8 @@ private struct GridView: View {
                         MenuActionItems(
                             state: $state,
                             isInSelectionMode: isInSelectionMode,
-                            isInBookmarkDetail: isInBookmarkDetail
+                            isInBookmarkDetail: isInBookmarkDetail,
+                            isFolder: collection.collectionType == .folder
                         )
                     } label: {
                         YabaIconView(bundleKey: "more-horizontal-circle-02")
@@ -691,6 +705,7 @@ private struct MenuActionItems: View {
     
     let isInSelectionMode: Bool
     let isInBookmarkDetail: Bool
+    let isFolder: Bool
     
     var body: some View {
         if !isInSelectionMode {
@@ -711,14 +726,16 @@ private struct MenuActionItems: View {
                 Text("Edit")
             }
         }.tint(.orange)
-        Button {
-            state.shouldShowFolderSelectionSheet = true
-        } label: {
-            VStack {
-                YabaIconView(bundleKey: "arrow-move-up-right")
-                Text("Move")
-            }
-        }.tint(.teal)
+        if isFolder {
+            Button {
+                state.shouldShowFolderSelectionSheet = true
+            } label: {
+                VStack {
+                    YabaIconView(bundleKey: "arrow-move-up-right")
+                    Text("Move")
+                }
+            }.tint(.teal)
+        }
         if !isInBookmarkDetail {
             Divider()
             Button(role: .destructive) {

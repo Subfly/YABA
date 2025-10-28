@@ -93,7 +93,9 @@ struct CollectionCreationContent: View {
                 NavigationView {
                     SelectFolderContent(
                         selectedFolder: $state.selectedParentFolder,
-                        mode: .parentSelection(collectionToEdit) {
+                        mode: .parentSelection(collectionToEdit) { moveToRoot in
+                            // TODO: INDICATE FOLDER WILL BE VISIBLE IN THE ROOT
+                            state.moveToRoot = moveToRoot
                             state.shouldShowParentFolderPicker = false
                         }
                     )

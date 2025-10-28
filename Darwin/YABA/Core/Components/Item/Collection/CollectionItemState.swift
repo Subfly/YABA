@@ -16,6 +16,7 @@ internal class CollectionItemState {
     var isExpanded: Bool = false
     var dropZone: DropZone = .none // Used for home view targeting
     var selectedParent: YabaCollection? = nil
+    var moveToRoot: Bool = false
     var shouldShowDeleteDialog: Bool = false
     var shouldShowEditSheet: Bool = false
     var shouldShowMenuItems: Bool = false

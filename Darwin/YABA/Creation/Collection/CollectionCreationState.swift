@@ -18,4 +18,5 @@ internal class CollectionCreationState {
     var shouldShowParentFolderPicker: Bool = false
     var selectedColor: YabaColor = .none
     var selectedParentFolder: YabaCollection? = nil
+    var moveToRoot: Bool = false
 }

@@ -28,7 +28,7 @@ internal struct KeyboardMobileNavigationView: View {
             ZStack {
                 AnimatedGradient(collectionColor: .accentColor)
                 ScrollView {
-                    LazyVStack(spacing: 0) {
+                    LazyVStack {
                         Spacer().frame(height: 24)
                         HomeCollectionView(
                             collectionType: .folder,
