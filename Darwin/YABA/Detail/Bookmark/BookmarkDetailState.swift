@@ -255,12 +255,16 @@ internal class BookmarkDetailState {
         with modelContext: ModelContext
     ) {
         guard let newFolder = selectedFolderToMove else { return }
+        newFolder.version += 1
         
+        guard let oldParent = bookmark.getParentFolder() else { return }
         bookmark.collections?.removeAll { collection in
             collection.collectionType == .folder
         }
+        oldParent.version += 1
         
         bookmark.collections?.append(newFolder)
+        bookmark.version += 1
         
         try? modelContext.save()
     }

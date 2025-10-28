@@ -19,29 +19,21 @@ class MoveManager {
         bookmarkID: String,
         toCollectionID: String,
     ) {
-        let bookmark: YabaBookmark? = try? modelContext.fetch(
+        guard let bookmark: YabaBookmark = try? modelContext.fetch(
             FetchDescriptor<YabaBookmark>(
                 predicate: #Predicate {
                     $0.bookmarkId == bookmarkID
                 }
             )
-        ).first
+        ).first else { return }
         
-        guard let bookmark else {
-            return
-        }
-        
-        let collection: YabaCollection? = try? modelContext.fetch(
+        guard let collection: YabaCollection = try? modelContext.fetch(
             FetchDescriptor<YabaCollection>(
                 predicate: #Predicate {
                     $0.collectionId == toCollectionID
                 }
             )
-        ).first
-        
-        guard let collection else {
-            return
-        }
+        ).first else { return }
         
         // MARK TAG INTERACTIONS
         if collection.collectionType == .tag {
@@ -51,6 +43,8 @@ class MoveManager {
             
             // Add tag to bookmark
             do {
+                bookmark.version += 1
+                collection.version += 1
                 collection.bookmarks?.append(bookmark)
                 try modelContext.save()
                 return
@@ -67,20 +61,17 @@ class MoveManager {
             }
             
             // REMOVE BOOKMARK FROM OLD PARENT
-            let oldParent = bookmark.collections?.first { innerCollection in
-                innerCollection.collectionType == .folder
-            }
-            
-            guard let oldParent else {
-                return
-            }
+            guard let oldParent = bookmark.getParentFolder() else { return }
             
             oldParent.bookmarks?.removeAll { innerBookmark in
                 innerBookmark.bookmarkId == bookmark.bookmarkId
             }
+            oldParent.version += 1
             
             // MOVE BOOKMARK TO NEW PARENT
+            bookmark.version += 1
             collection.bookmarks?.append(bookmark)
+            collection.version += 1
             
             do {
                 try modelContext.save()
@@ -99,29 +90,21 @@ class MoveManager {
             return
         }
         
-        let folder1: YabaCollection? = try? modelContext.fetch(
+        guard let folder1: YabaCollection = try? modelContext.fetch(
             FetchDescriptor<YabaCollection>(
                 predicate: #Predicate {
                     $0.collectionId == folder1ID
                 }
             )
-        ).first
+        ).first else { return }
         
-        guard let folder1 else {
-            return
-        }
-        
-        let folder2: YabaCollection? = try? modelContext.fetch(
+        guard let folder2: YabaCollection = try? modelContext.fetch(
             FetchDescriptor<YabaCollection>(
                 predicate: #Predicate {
                     $0.collectionId == folder2ID
                 }
             )
-        ).first
-        
-        guard let folder2 else {
-            return
-        }
+        ).first else { return }
         
         // MOVE Folder to Tag - Tag to Folder - Tag to Tag, SKIP
         if folder1.collectionType == .tag || folder2.collectionType == .tag {
@@ -146,8 +129,10 @@ class MoveManager {
                 let sortedOld = sortSiblings(oldParent.children)
                 for (index, item) in sortedOld.enumerated() {
                     item.order = index
+                    item.version += 1
                 }
                 oldParent.children = sortedOld
+                oldParent.version += 1
             }
 
             // 2. Add to new parent's children
@@ -166,8 +151,12 @@ class MoveManager {
             let sortedNew = sortSiblings(folder2.children)
             for (index, item) in sortedNew.enumerated() {
                 item.order = index
+                item.version += 1
             }
             folder2.children = sortedNew
+            
+            folder1.version += 1
+            folder2.version += 1
             
             try modelContext.save()
         } catch {
@@ -191,6 +180,7 @@ class MoveManager {
         let sortedTags = sortSiblings(tags)
         for (index, tag) in sortedTags.enumerated() {
             tag.order = index
+            tag.version += 1
         }
         
         // 3) Save context
@@ -206,6 +196,7 @@ class MoveManager {
         let sorted = sortSiblings(siblings)
         for (index, item) in sorted.enumerated() {
             item.order = index
+            item.version += 1
             // If this item is a folder, recurse into its children (they get their own 0..n-1)
             if item.collectionType == .folder {
                 assignPerGroupOrders(item.children)
@@ -235,25 +226,21 @@ class MoveManager {
             return
         }
 
-        let draggedCollection: YabaCollection? = try? modelContext.fetch(
+        guard let draggedCollection: YabaCollection = try? modelContext.fetch(
             FetchDescriptor<YabaCollection>(
                 predicate: #Predicate {
                     $0.collectionId == draggedCollectionID
                 }
             )
-        ).first
+        ).first else { return }
 
-        let targetCollection: YabaCollection? = try? modelContext.fetch(
+        guard let targetCollection: YabaCollection = try? modelContext.fetch(
             FetchDescriptor<YabaCollection>(
                 predicate: #Predicate {
                     $0.collectionId == targetCollectionID
                 }
             )
-        ).first
-
-        guard let draggedCollection, let targetCollection else {
-            return
-        }
+        ).first else { return }
 
         // Prevent moving a parent to its descendant's top/bottom (would break hierarchy)
         if draggedCollection.getDescendants().contains(where: { $0.collectionId == targetCollectionID }) {
@@ -273,14 +260,28 @@ class MoveManager {
             ) else { return }
 
             let allTags = allCollections.filter { $0.collectionType == .tag }
-            reorderTags(allTags, draggedCollection: draggedCollection, targetCollection: targetCollection, zone: zone)
+            reorderTags(
+                allTags,
+                draggedCollection: draggedCollection,
+                targetCollection: targetCollection,
+                zone: zone
+            )
         } else {
             // Both are folders - reorder at the same level
-            reorderFolders(draggedCollection: draggedCollection, targetCollection: targetCollection, zone: zone)
+            reorderFolders(
+                draggedCollection: draggedCollection,
+                targetCollection: targetCollection,
+                zone: zone
+            )
         }
     }
 
-    private func reorderTags(_ allTags: [YabaCollection], draggedCollection: YabaCollection, targetCollection: YabaCollection, zone: DropZone) {
+    private func reorderTags(
+        _ allTags: [YabaCollection],
+        draggedCollection: YabaCollection,
+        targetCollection: YabaCollection,
+        zone: DropZone
+    ) {
         let sortedTags = sortSiblings(allTags)
 
         // Create new order by removing dragged collection first
@@ -307,6 +308,7 @@ class MoveManager {
         // Update orders
         for (index, tag) in newOrder.enumerated() {
             tag.order = index
+            tag.version += 1
         }
 
         do {
@@ -316,7 +318,11 @@ class MoveManager {
         }
     }
 
-    private func reorderFolders(draggedCollection: YabaCollection, targetCollection: YabaCollection, zone: DropZone) {
+    private func reorderFolders(
+        draggedCollection: YabaCollection,
+        targetCollection: YabaCollection,
+        zone: DropZone
+    ) {
         // Determine the target parent
         let targetParent = targetCollection.parent
 
@@ -331,14 +337,18 @@ class MoveManager {
                 let sortedOld = sortSiblings(oldParent.children)
                 for (index, item) in sortedOld.enumerated() {
                     item.order = index
+                    item.version += 1
                 }
                 oldParent.children = sortedOld
+                oldParent.version += 1
             }
 
             // Add to new parent
             draggedCollection.parent = targetParent
+            draggedCollection.version += 1
             if let newParent = targetParent {
                 newParent.children.append(draggedCollection)
+                newParent.version += 1
             }
         }
 
@@ -381,11 +391,13 @@ class MoveManager {
         // Update order values and reorder the children array
         for (index, sibling) in newOrder.enumerated() {
             sibling.order = index
+            sibling.version += 1
         }
 
         // Update the parent's children array to match the new order
         if let targetParent = targetParent {
             targetParent.children = newOrder
+            targetParent.version += 1
         } else {
             // For root level, we can't directly reorder the fetched array,
             // but the order properties are updated which should be used for sorting

@@ -45,10 +45,14 @@ internal class CollectionDetailState {
         }
         
         selectedBookmarks.forEach { bookmark in
+            selectedFolderToMove.version += 1
+            guard let oldParent = bookmark.getParentFolder() else { return }
+            oldParent.version += 1
             bookmark.collections?.removeAll { collection in
                 collection.collectionType == .folder
             }
             bookmark.collections?.append(selectedFolderToMove)
+            bookmark.version += 1
         }
         
         isInSelectionMode = false

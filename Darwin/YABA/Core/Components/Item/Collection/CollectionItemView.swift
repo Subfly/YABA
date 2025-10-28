@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import SwiftData
 import WidgetKit
 import UniformTypeIdentifiers
 
@@ -431,13 +432,31 @@ private struct InteractableView: View {
                 )
             }.onDisappear {
                 if itemState.moveToRoot {
+                    guard let currentRootItems: [YabaCollection] = try? modelContext.fetch(
+                        FetchDescriptor(
+                            predicate: #Predicate { collection in
+                                collection.parent == nil
+                            },
+                            sortBy: [SortDescriptor(\.order)]
+                        )
+                    ) else { return }
+                    collection.parent?.version += 1
                     collection.parent = nil
+                    collection.order = (currentRootItems.last?.order ?? -1) + 1
+                    collection.version += 1
                     try? modelContext.save()
                     itemState.selectedParent = nil
                     itemState.moveToRoot = false
                 } else if itemState.selectedParent != nil {
+                    collection.parent?.version += 1
                     collection.parent = nil
+                    let order = itemState.selectedParent?.children.sorted(
+                        using: SortDescriptor(\.order)
+                    ).last?.order ?? -1
+                    collection.order = order + 1
+                    collection.version += 1
                     itemState.selectedParent?.children.append(collection)
+                    itemState.selectedParent?.version += 1
                     try? modelContext.save()
                     itemState.selectedParent = nil
                 }
