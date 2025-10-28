@@ -406,6 +406,8 @@ class DataManager {
                     type: .none,
                     version: 1
                 )
+                // Ensure the bookmark is inserted into the context before linking
+                modelContext.insert(model)
                 collection.bookmarks?.append(model)
             }
 
@@ -462,6 +464,8 @@ class DataManager {
                     type: .none,
                     version: 1
                 )
+                // Ensure the bookmark is inserted into the context before linking
+                modelContext.insert(model)
                 uncategorized.bookmarks?.append(model)
             }
 
@@ -1437,6 +1441,8 @@ class HTMLBookmarksImporter {
                 break
             }
             index = dtRange.upperBound
+            // Allow whitespace/newlines between <DT> and the next tag
+            skipWhitespace(in: html, index: &index)
 
             // Folder: <H3> ... </H3> followed by optional <DL> ... </DL>
             if let h3Open = html.range(of: "<H3", options: .caseInsensitive, range: index..<html.endIndex),
@@ -1449,9 +1455,10 @@ class HTMLBookmarksImporter {
                 var childFolders: [FolderNode] = []
                 var childBookmarks: [BookmarkNode] = []
                 var afterFolderIndex = h3End.upperBound
+                // Allow whitespace/newlines between </H3> and <DL>
+                skipWhitespace(in: html, index: &afterFolderIndex)
 
                 if let dlStart = html.range(of: "<DL>", options: .caseInsensitive, range: afterFolderIndex..<html.endIndex),
-                   dlStart.lowerBound == afterFolderIndex,
                    let balanced = findBalancedRange(tag: "DL", in: html, from: dlStart.lowerBound) {
                     let inner = String(html[balanced].dropFirst(4).dropLast(5))
                     let (childrenFolders, childrenBookmarks, _) = parseList(in: inner, from: inner.startIndex)
@@ -1552,5 +1559,11 @@ class HTMLBookmarksImporter {
             .replacingOccurrences(of: "&#39;", with: "'")
             .replacingOccurrences(of: "&apos;", with: "'")
             .replacingOccurrences(of: "&nbsp;", with: " ")
+    }
+
+    private func skipWhitespace(in html: String, index: inout String.Index) {
+        while index < html.endIndex, html[index].isWhitespace {
+            index = html.index(after: index)
+        }
     }
 }
