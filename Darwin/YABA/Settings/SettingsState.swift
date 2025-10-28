@@ -196,6 +196,9 @@ internal class SettingsState {
                     } else if type == .plainText {
                         self.exportableMarkupDocument = .init(data: data)
                         self.shouldShowMarkupExportSheet = true
+                    } else if type == .html {
+                        self.exportableHtmlDocument = .init(data: data)
+                        self.shouldShowHtmlExportSheet = true
                     }
                 }
             )

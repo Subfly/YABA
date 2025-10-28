@@ -17109,6 +17109,19 @@
         }
       }
     },
+    "HTML" : {
+      "comment" : "Name of HTML file type",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export HTML"
+          }
+        }
+      },
+      "shouldTranslate" : false
+    },
     "Icon Category Business Finance" : {
       "comment" : "Business & Finance category name",
       "extractionState" : "manual",
@@ -24218,91 +24231,91 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Bitte lesen, bevor du fortfährst ✨\n\nWir konnten deine HTML-Datei nicht automatisch einlesen — aber keine Sorge, du bist fast am Ziel! Die meisten Browser wie Chrome, Safari und Firefox exportieren Lesezeichen in einem Standardformat, das von YABA unterstützt wird.\n\nStelle nur sicher, dass du die Datei direkt aus deinem Browser exportiert hast (meist über „Lesezeichen exportieren“ oder „Als HTML exportieren“). YABA erwartet Links in folgendem Format:\n\n    <DT><A HREF=\"https://example.com\">Titel des Lesezeichens</A>\n\nOrdner helfen, deine Lesezeichen zu organisieren — aber beachte: YABA unterstützt keine Ordner innerhalb von Ordnern. Unterordner-Lesezeichen werden automatisch unter ihrem übergeordneten Ordner einsortiert.\n\n📄 Beispiel für ein unterstütztes HTML-Format:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Lesezeichen</TITLE>\n    <H1>Lesezeichen</H1>\n    <DT><H3>Mein Ordner</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Beispielseite</A>\n        <DT><A HREF=\"https://another.com\">Weitere Seite</A>\n    </DL><p>\n\nWenn deine Datei ähnlich aussieht und du trotzdem noch Probleme hast, versuche bitte, die Datei erneut zu exportieren und hochzuladen."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Read before proceeding ✨\n\nWe couldn’t automatically read your HTML file — but don’t worry, you’re almost there! Most browsers like Chrome, Safari, and Firefox export bookmarks in a standard format that YABA supports.\n\nJust make sure you exported the file directly from your browser (usually via “Export Bookmarks” or “Export as HTML”). YABA expects links in this format:\n\n    <DT><A HREF=\"https://example.com\">Bookmark Title</A>\n\nFolders help organize your bookmarks — but keep in mind: YABA doesn’t support folders inside folders. Subfolder bookmarks will be placed under their top-level parent automatically.\n\n📄 Example of a supported HTML format:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Bookmarks</TITLE>\n    <H1>Bookmarks</H1>\n    <DT><H3>My Folder</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Example Site</A>\n        <DT><A HREF=\"https://another.com\">Another Site</A>\n    </DL><p>\n\nIf your file looks similar to this and you're still seeing issues, try re-exporting and uploading again."
+            "value" : "Read before proceeding ✨\n\nWe couldn’t automatically read your HTML file — but don’t worry, you’re almost there! Most browsers like Chrome, Safari, and Firefox export bookmarks in a standard format that YABA supports.\n\nJust make sure you exported the file directly from your browser (usually via “Export Bookmarks” or “Export as HTML”). YABA expects links in this format:\n\n    <DT><A HREF=\"https://example.com\">Bookmark Title</A>\n\nDon’t forget that tags and icons are not exported to the HTML document!.\n\n📄 Example of a supported HTML format:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Bookmarks</TITLE>\n    <H1>Bookmarks</H1>\n    <DT><H3>My Folder</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Example Site</A>\n        <DT><A HREF=\"https://another.com\">Another Site</A>\n    </DL><p>\n\nIf your file looks similar to this and you're still seeing issues, try re-exporting and uploading again."
           }
         },
         "es" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Lee antes de continuar ✨\n\nNo pudimos leer automáticamente tu archivo HTML — ¡pero no te preocupes, ya casi lo tienes! La mayoría de los navegadores como Chrome, Safari y Firefox exportan los marcadores en un formato estándar que YABA soporta.\n\nSolo asegúrate de haber exportado el archivo directamente desde tu navegador (normalmente a través de \"Exportar marcadores\" o \"Exportar como HTML\"). YABA espera enlaces en este formato:\n\n    <DT><A HREF=\"https://example.com\">Título del marcador</A>\n\nLas carpetas ayudan a organizar tus marcadores — pero ten en cuenta: YABA no soporta carpetas dentro de carpetas. Los marcadores de subcarpetas se colocarán automáticamente bajo su carpeta principal de nivel superior.\n\n📄 Ejemplo de un formato HTML soportado:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Marcadores</TITLE>\n    <H1>Marcadores</H1>\n    <DT><H3>Mi carpeta</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Sitio de ejemplo</A>\n        <DT><A HREF=\"https://another.com\">Otro sitio</A>\n    </DL><p>\n\nSi tu archivo se parece a esto y sigues teniendo problemas, intenta exportarlo y subirlo otra vez."
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "À lire avant de continuer ✨\n\nNous n’avons pas pu lire automatiquement votre fichier HTML — mais ne vous inquiétez pas, vous y êtes presque ! La plupart des navigateurs comme Chrome, Safari et Firefox exportent les favoris dans un format standard que YABA supporte.\n\nAssurez-vous simplement d’avoir exporté le fichier directement depuis votre navigateur (généralement via « Exporter les favoris » ou « Exporter au format HTML »). YABA attend des liens dans ce format :\n\n    <DT><A HREF=\"https://example.com\">Titre du Favori</A>\n\nLes dossiers aident à organiser vos favoris — mais gardez à l’esprit : YABA ne prend pas en charge les dossiers imbriqués. Les favoris dans des sous-dossiers seront automatiquement placés sous leur dossier parent de premier niveau.\n\n📄 Exemple d’un format HTML supporté :\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Favoris</TITLE>\n    <H1>Favoris</H1>\n    <DT><H3>Mon Dossier</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Site Exemple</A>\n        <DT><A HREF=\"https://another.com\">Un Autre Site</A>\n    </DL><p>\n\nSi votre fichier ressemble à ceci et que vous rencontrez toujours des problèmes, essayez de l’exporter à nouveau puis de le télécharger."
           }
         },
         "hi" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "आगे बढ़ने से पहले पढ़ें ✨\n\nहम आपके HTML फ़ाइल को स्वचालित रूप से पढ़ पाने में असमर्थ थे — लेकिन चिंता न करें, आप लगभग वहां पहुंच चुके हैं! अधिकांश ब्राउज़र जैसे क्रोम, सफारी और फ़ायरफॉक्स बुकमार्क्स को एक मानक प्रारूप में एक्सपोर्ट करते हैं जिसे YABA सपोर्ट करता है।\n\nसुनिश्चित करें कि आपने वह फ़ाइल सीधे अपने ब्राउज़र से एक्सपोर्ट की है (आमतौर पर “Export Bookmarks” या “Export as HTML” के द्वारा)। YABA इस प्रारूप में लिंक EXPECT करता है:\n\n    <DT><A HREF=\"https://example.com\">बुकमार्क शीर्षक</A>\n\nफ़ोल्डर आपके बुकमार्क्स को व्यवस्थित करने में मदद करते हैं — लेकिन ध्यान रखें: YABA फोल्डर के अंदर फोल्डर को सपोर्ट नहीं करता। सबफ़ोल्डर बुकमार्क्स अपने शीर्ष-स्तरीय पैरेंट के अंतर्गत अपने आप रख दिए जाएंगे।\n\n📄 समर्थित HTML प्रारूप का उदाहरण:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>बुकमार्क्स</TITLE>\n    <H1>बुकमार्क्स</H1>\n    <DT><H3>मेरा फ़ोल्डर</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">उदाहरण साइट</A>\n        <DT><A HREF=\"https://another.com\">एक और साइट</A>\n    </DL><p>\n\nअगर आपकी फ़ाइल इससे मिलती-जुलती दिखती है और फिर भी समस्या आ रही है, तो कृपया फिर से एक्सपोर्ट करके अपलोड करने का प्रयास करें।"
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Leggi prima di procedere ✨\n\nNon siamo riusciti a leggere automaticamente il tuo file HTML — ma non preoccuparti, sei quasi arrivato! La maggior parte dei browser come Chrome, Safari e Firefox esportano i segnalibri in un formato standard supportato da YABA.\n\nAssicurati solo di aver esportato il file direttamente dal tuo browser (di solito tramite “Esporta segnalibri” o “Esporta come HTML”). YABA si aspetta link in questo formato:\n\n    <DT><A HREF=\"https://example.com\">Titolo del Segnalibro</A>\n\nLe cartelle aiutano a organizzare i tuoi segnalibri — ma tieni presente: YABA non supporta cartelle dentro altre cartelle. I segnalibri nelle sottocartelle verranno posizionati automaticamente sotto la loro cartella principale di primo livello.\n\n📄 Esempio di un formato HTML supportato:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Segnalibri</TITLE>\n    <H1>Segnalibri</H1>\n    <DT><H3>La mia cartella</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Sito di esempio</A>\n        <DT><A HREF=\"https://another.com\">Altro sito</A>\n    </DL><p>\n\nSe il tuo file è simile a questo e hai ancora problemi, prova a esportare di nuovo e a caricare ancora."
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "進行する前にお読みください ✨\n\nお使いのHTMLファイルを自動で読み取ることができませんでしたが、ご安心ください、もう少しで完了です！Chrome、Safari、Firefoxなどの多くのブラウザは、YABAが対応している標準フォーマットでブックマークをエクスポートします。\n\nファイルは必ずブラウザの\"ブックマークをエクスポート\"や\"HTMLとしてエクスポート\"などの機能で直接エクスポートしてください。YABAは以下の形式のリンクを期待しています：\n\n    <DT><A HREF=\"https://example.com\">ブックマークタイトル</A>\n\nフォルダはブックマークを整理するのに便利ですが、YABAはフォルダ内のフォルダ（サブフォルダ）には対応していません。サブフォルダのブックマークは自動的に最上位の親フォルダに配置されます。\n\n📄 対応しているHTML形式の例：\n\n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>ブックマーク</TITLE>\n    <H1>ブックマーク</H1>\n    <DT><H3>マイフォルダ</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">例のサイト</A>\n        <DT><A HREF=\"https://another.com\">別のサイト</A>\n    </DL><p>\n\nファイルがこのような形式に似ているのに問題が続く場合は、再度エクスポートしてアップロードし直してください。"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "계속하기 전에 읽어주세요 ✨\n\nHTML 파일을 자동으로 읽을 수 없었습니다 — 걱정 마세요, 거의 완료되었습니다! 크롬, 사파리, 파이어폭스와 같은 대부분의 브라우저는 YABA가 지원하는 표준 형식으로 북마크를 내보냅니다.\n\n파일을 브라우저에서 직접 \"북마크 내보내기\" 또는 \"HTML로 내보내기\" 등을 통해 내보냈는지 확인하세요. YABA는 다음 형식의 링크를 기대합니다:\n\n    <DT><A HREF=\"https://example.com\">북마크 제목</A>\n\n폴더는 북마크를 정리하는 데 도움이 되지만, YABA는 폴더 안의 폴더를 지원하지 않는 점에 유의하세요. 하위 폴더의 북마크는 자동으로 최상위 상위 폴더 아래에 배치됩니다.\n\n📄 지원되는 HTML 형식 예시:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>북마크</TITLE>\n    <H1>북마크</H1>\n    <DT><H3>내 폴더</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">예시 사이트</A>\n        <DT><A HREF=\"https://another.com\">다른 사이트</A>\n    </DL><p>\n\n파일이 위와 비슷한데도 문제가 계속된다면, 다시 내보내기 후 업로드해 보세요."
           }
         },
         "nb" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Les før du fortsetter ✨\n\nVi klarte ikke å lese HTML-filen din automatisk — men ikke bekymre deg, du er nesten i mål! De fleste nettlesere som Chrome, Safari og Firefox eksporterer bokmerker i et standardformat som YABA støtter.\n\nBare sørg for at du eksporterte filen direkte fra nettleseren din (vanligvis via «Eksporter bokmerker» eller «Eksporter som HTML»). YABA forventer lenker i dette formatet:\n\n    <DT><A HREF=\"https://example.com\">Bokmerketittel</A>\n\nMapper hjelper deg å organisere bokmerkene — men husk: YABA støtter ikke mapper i mapper. Bokmerker i undermapper vil automatisk plasseres under overordnede mappen.\n\n📄 Eksempel på støttet HTML-format:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Bokmerker</TITLE>\n    <H1>Bokmerker</H1>\n    <DT><H3>Min mappe</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Eksempelside</A>\n        <DT><A HREF=\"https://another.com\">En annen side</A>\n    </DL><p>\n\nSer filen din slik ut, men du opplever fortsatt problemer? Prøv å eksportere på nytt og last opp igjen."
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Lees dit voordat je verdergaat ✨\n\nWe konden je HTML-bestand niet automatisch lezen — maar maak je geen zorgen, je bent er bijna! De meeste browsers zoals Chrome, Safari en Firefox exporteren bladwijzers in een standaardformaat dat YABA ondersteunt.\n\nZorg er gewoon voor dat je het bestand rechtstreeks vanuit je browser hebt geëxporteerd (meestal via \"Bladwijzers exporteren\" of \"Exporteren als HTML\"). YABA verwacht links in dit formaat:\n\n    <DT><A HREF=\"https://example.com\">Titel bladwijzer</A>\n\nMappen helpen je bladwijzers te ordenen — maar houd er rekening mee: YABA ondersteunt geen mappen binnen mappen. Submap-bladwijzers worden automatisch onder hun bovenliggende map geplaatst.\n\n📄 Voorbeeld van een ondersteund HTML-formaat:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Bladwijzers</TITLE>\n    <H1>Bladwijzers</H1>\n    <DT><H3>Mijn map</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Voorbeeldsite</A>\n        <DT><A HREF=\"https://another.com\">Andere site</A>\n    </DL><p>\n\nAls je bestand er ongeveer zo uitziet en je nog steeds problemen hebt, probeer dan opnieuw te exporteren en het opnieuw te uploaden."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Leia antes de continuar ✨\n\nNão conseguimos ler seu arquivo HTML automaticamente — mas não se preocupe, você está quase lá! A maioria dos navegadores, como Chrome, Safari e Firefox, exporta favoritos em um formato padrão que o YABA suporta.\n\nCertifique-se de ter exportado o arquivo diretamente do seu navegador (normalmente via “Exportar favoritos” ou “Exportar como HTML”). O YABA espera links nesse formato:\n\n    <DT><A HREF=\"https://example.com\">Título do Favorito</A>\n\nPastas ajudam a organizar seus favoritos — mas lembre-se: o YABA não suporta pastas dentro de pastas. Favoritos em subpastas serão colocados automaticamente sob a pasta pai de nível superior.\n\n📄 Exemplo de um formato HTML suportado:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Favoritos</TITLE>\n    <H1>Favoritos</H1>\n    <DT><H3>Minha Pasta</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Site Exemplo</A>\n        <DT><A HREF=\"https://another.com\">Outro Site</A>\n    </DL><p>\n\nSe seu arquivo parecer similar a este e ainda assim você estiver enfrentando problemas, tente exportar e carregar novamente."
           }
         },
         "sk" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Prečítaj si pred pokračovaním ✨\n\nNepodarilo sa nám automaticky načítať tvoj HTML súbor — ale neboj sa, si takmer pri cieli! Väčšina prehliadačov ako Chrome, Safari a Firefox exportuje záložky vo formáte, ktorý YABA podporuje.\n\nIba sa uisti, že si súbor exportoval priamo z prehliadača (zvyčajne cez „Exportovať záložky“ alebo „Exportovať ako HTML“). YABA očakáva odkazy v tomto formáte:\n\n    <DT><A HREF=\"https://example.com\">Názov záložky</A>\n\nZložky pomáhajú organizovať tvoje záložky — ale maj na pamäti: YABA nepodporuje zložky vo vnútri zložiek. Záložky v podzložkách sa automaticky umiestnia pod ich najvyššiu nadradenú zložku.\n\n📄 Príklad podporovaného formátu HTML:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Záložky</TITLE>\n    <H1>Záložky</H1>\n    <DT><H3>Moja zložka</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Príklad stránky</A>\n        <DT><A HREF=\"https://another.com\">Iná stránka</A>\n    </DL><p>\n\nAk tvoj súbor vyzerá podobne a stále sa vyskytujú problémy, skúšaj exportovať a nahrávať ho znova."
           }
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Läs innan du fortsätter ✨\n\nVi kunde inte automatiskt läsa din HTML-fil — men oroa dig inte, du är nästan klar! De flesta webbläsare som Chrome, Safari och Firefox exporterar bokmärken i ett standardformat som YABA stödjer.\n\nSe bara till att du exporterade filen direkt från din webbläsare (vanligtvis via “Exportera bokmärken” eller “Exportera som HTML”). YABA förväntar sig länkar i detta format:\n\n    <DT><A HREF=\"https://example.com\">Bokmärkestitel</A>\n\nMappar hjälper till att organisera dina bokmärken — men tänk på att YABA inte stödjer mappar inuti mappar. Bokmärken i undermappar placeras automatiskt under deras överordnade nivå.\n\n📄 Exempel på ett stödformat för HTML:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Bokmärken</TITLE>\n    <H1>Bokmärken</H1>\n    <DT><H3>Min mapp</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Exempelsida</A>\n        <DT><A HREF=\"https://another.com\">En annan sida</A>\n    </DL><p>\n\nOm din fil ser liknande ut och du fortfarande har problem, försök att exportera och ladda upp igen."
           }
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Devam etmeden önce oku ✨\n\nHTML dosyanızı otomatik olarak okuyamadık — ama merak etme, neredeyse oradasın! Chrome, Safari ve Firefox gibi çoğu tarayıcı, YABA'nın desteklediği standart bir formatta yer işaretleri (bookmark) dışa aktarır.\n\nDosyayı doğrudan tarayıcından dışa aktardığından emin ol (genellikle “Yer İşaretlerini Dışa Aktar” veya “HTML olarak Dışa Aktar” ile). YABA, bağlantıları şu formatta bekler:\n\n    <DT><A HREF=\"https://example.com\">Yer İşareti Başlığı</A>\n\nKlasörler, yer işaretlerini düzenlemeye yardımcı olur — ancak şunu unutma: YABA, klasör içinde klasörleri desteklemez. Alt klasörlerin yer işaretleri otomatik olarak en üst düzey klasörün altına yerleştirilir.\n\n📄 Desteklenen HTML formatına örnek:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Yer İşaretleri</TITLE>\n    <H1>Yer İşaretleri</H1>\n    <DT><H3>Klasörüm</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Örnek Site</A>\n        <DT><A HREF=\"https://another.com\">Başka Bir Site</A>\n    </DL><p>\n\nDosyan benzer görünüyorsa ve hâlâ sorunlar varsa, tekrar dışa aktar ve dosyayı tekrar yüklemeyi dene."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "请在继续之前阅读 ✨\n\n我们无法自动读取你的 HTML 文件 —— 但别担心，马上就完成了！大多数浏览器如 Chrome、Safari 和 Firefox 都以 YABA 支持的标准格式导出书签。\n\n只要确保你是直接从浏览器导出的文件（通常通过“导出书签”或“导出为 HTML”）。YABA 期望链接格式如下：\n\n    <DT><A HREF=\"https://example.com\">书签标题</A>\n\n文件夹帮助你组织书签 —— 但请注意：YABA 不支持文件夹内嵌套文件夹。子文件夹中的书签会自动放置在其顶层父文件夹下。\n\n📄 支持的 HTML 格式示例如下：\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>书签</TITLE>\n    <H1>书签</H1>\n    <DT><H3>我的文件夹</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">示例网站</A>\n        <DT><A HREF=\"https://another.com\">另一个网站</A>\n    </DL><p>\n\n如果你的文件格式类似但仍遇到问题，请尝试重新导出并再次上传。"
           }
         }

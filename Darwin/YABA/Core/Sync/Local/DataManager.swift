@@ -82,48 +82,48 @@ class DataManager {
             // Create a mapping of collection IDs to collection models
             var mappedCollections: [String: YabaCollection] = [:]
             var usedCollectionIds: Set<String> = []
-
+            
             // First pass: Create all collections without relationships
             for codableCollection in collections {
                 var collectionId = codableCollection.collectionId
-
+                
                 // Handle duplicate IDs by generating new ones
                 while usedCollectionIds.contains(collectionId) {
                     collectionId = UUID().uuidString
                 }
                 usedCollectionIds.insert(collectionId)
-
+                
                 let collectionModel = codableCollection.mapToModel()
                 // Ensure the collection has the correct ID
                 collectionModel.collectionId = collectionId
                 // Update editedAt and version to prevent deleteAll conflicts
                 collectionModel.editedAt = now
                 collectionModel.version += 1
-
+                
                 mappedCollections[collectionId] = collectionModel
                 modelContext.insert(collectionModel)
             }
-
+            
             // Second pass: Establish parent/children relationships
             for collectionModel in mappedCollections.values {
                 // Find the corresponding codable collection by matching IDs
                 guard let codableCollection = collections.first(where: { $0.collectionId == collectionModel.collectionId }) else {
                     continue
                 }
-
+                
                 // Set parent relationship
                 if let parentId = codableCollection.parent,
                    let parentCollection = mappedCollections[parentId] {
                     collectionModel.parent = parentCollection
                 }
-
+                
                 // Set children relationships
                 for childId in codableCollection.children {
                     if let childCollection = mappedCollections[childId] {
                         collectionModel.children.append(childCollection)
                     }
                 }
-
+                
                 // Set bookmark relationships
                 codableCollection.bookmarks.forEach { bookmarkId in
                     if let bookmarkModel = mappedBookmarks[bookmarkId] {
@@ -161,7 +161,7 @@ class DataManager {
         guard let content = String(data: data, encoding: .utf8) else {
             throw DataError.invalidCSVEncoding("Data Manager Invalid CSV Encoding Message")
         }
-
+        
         let rows = content.components(separatedBy: "\n").filter {
             !$0.trimmingCharacters(in: .whitespaces).isEmpty
         }
@@ -177,7 +177,7 @@ class DataManager {
         // Validate header content matches YABA's expected format
         let expectedHeaders = [
             "bookmarkId", "label", "bookmarkDescription", "link", "domain",
-            "createdAt", "editedAt", "imageUrl", "iconUrl", "videoUrl", 
+            "createdAt", "editedAt", "imageUrl", "iconUrl", "videoUrl",
             "type", "version"
         ]
         guard header == expectedHeaders else {
@@ -211,7 +211,7 @@ class DataManager {
             guard !columns[3].trimmingCharacters(in: .whitespaces).isEmpty else {
                 throw DataError.invalidCSVEncoding("Data Manager Invalid CSV Encoding Message")
             }
-
+            
             let bookmark = YabaCodableBookmark(
                 bookmarkId: columns[0].isEmpty ? nil : columns[0],
                 label: columns[1].isEmpty ? nil : columns[1],
@@ -261,17 +261,17 @@ class DataManager {
         guard let data, let content = String(data: data, encoding: .utf8) else {
             throw DataError.invalidCSVEncoding("Data Manager Invalid CSV Encoding Message")
         }
-
+        
         let rows = content.components(separatedBy: "\n").filter {
             !$0.trimmingCharacters(in: .whitespaces).isEmpty
         }
         guard rows.count > 1 else {
             throw DataError.emptyCSV("Data Manager Empty CSV Message")
         }
-
+        
         let bookmarkRows = rows.dropFirst()
         let now = Date.now
-
+        
         let dummyFolder = YabaCollection(
             collectionId: UUID().uuidString,
             label: "\(now.formatted(date: .abbreviated, time: .shortened))",
@@ -282,31 +282,31 @@ class DataManager {
             type: .folder,
             version: 1 // Start with version 1 for import
         )
-
+        
         for row in bookmarkRows {
             let columns = parseCSVRow(row)
             guard let urlIndex = headers[.url] ?? nil, urlIndex < columns.count else { continue }
-
+            
             let urlString = columns[urlIndex].trimmingCharacters(in: .whitespacesAndNewlines)
             guard let url = URL(string: urlString),
                   url.scheme?.hasPrefix("http") == true else {
                 throw DataError.invalidBookmarkUrl("Data Manager Invalid Bookmark URL Message \(urlString)")
             }
-
+            
             let label = headers[.label].flatMap { index in
                 if let index = index, index < columns.count {
                     return columns[index]
                 }
                 return nil
             } ?? urlString
-
+            
             let description = headers[.description].flatMap { index in
                 if let index = index, index < columns.count {
                     return columns[index]
                 }
                 return nil
             } ?? ""
-
+            
             let createdAtStr = headers[.createdAt].flatMap { index in
                 if let index = index, index < columns.count {
                     return columns[index]
@@ -317,7 +317,7 @@ class DataManager {
             let createdAt = createdAtStr.flatMap {
                 ISO8601DateFormatter().date(from: $0)
             } ?? now
-
+            
             let bookmark = YabaCodableBookmark(
                 bookmarkId: UUID().uuidString,
                 label: label,
@@ -335,14 +335,14 @@ class DataManager {
                 imageData: nil,
                 iconData: nil,
             ).mapToModel()
-
+            
             // Update editedAt and version to prevent deleteAll conflicts
             bookmark.editedAt = now
             bookmark.version += 1
-
+            
             dummyFolder.bookmarks?.append(bookmark)
         }
-
+        
         modelContext.insert(dummyFolder)
         try modelContext.save()
         onFinish()
@@ -356,134 +356,128 @@ class DataManager {
             throw DataError.invalidHTML("Data Manager Invalid HTML Encoding Message")
         }
 
-        // Parse HTML and extract folders with bookmarks
-        let parser = HTMLParser()
-        let folders = try parser.parse(htmlString)
+        // Parse HTML into a hierarchical folder/bookmark tree
+        let importer = HTMLBookmarksImporter()
+        let parsed = importer.parse(htmlString)
 
-        if folders.isEmpty {
+        // Ensure there is something to import
+        if parsed.folders.isEmpty && parsed.rootBookmarks.isEmpty {
             throw DataError.emptyHTML("Data Manager Empty HTML Message")
         }
 
         let creationTime = Date.now
-        var createdCollections: [String: YabaCollection] = [:]
+        var orderCounter = 0
 
-        // Recursively create collections and establish relationships
-        for folder in folders {
-            try createCollectionFromParsedFolder(
-                folder,
-                parentId: nil,
-                creationTime: creationTime,
-                createdCollections: &createdCollections,
-                modelContext: modelContext
-            )
-        }
-
-        try modelContext.save()
-    }
-
-    private func createCollectionFromParsedFolder(
-        _ folder: HTMLParser.ParsedFolder,
-        parentId: String?,
-        creationTime: Date,
-        createdCollections: inout [String: YabaCollection],
-        modelContext: ModelContext
-    ) throws {
-        var collectionId = UUID().uuidString
-        var collectionLabel = folder.label
-        var collectionModel: YabaCollection
-
-        // Handle uncategorized folder specially
-        if folder.label == "-1" {
-            collectionId = Constants.uncategorizedCollectionId
-            collectionLabel = Constants.uncategorizedCollectionLabelKey
-
-            let descriptor = FetchDescriptor<YabaCollection>(
-                predicate: #Predicate<YabaCollection> { collection in
-                    collection.collectionId == collectionId
-                }
-            )
-
-            if let existingUncategorized = try? modelContext.fetch(descriptor).first {
-                collectionModel = existingUncategorized
-            } else {
-                collectionModel = YabaCollection(
-                    collectionId: collectionId,
-                    label: collectionLabel,
-                    icon: "folder-01",
-                    createdAt: creationTime,
-                    editedAt: creationTime,
-                    color: .none,
-                    type: .folder,
-                    version: 1,
-                    parent: nil,
-                    children: [],
-                    order: 0
-                )
-                modelContext.insert(collectionModel)
-            }
-        } else {
-            collectionModel = YabaCollection(
-                collectionId: collectionId,
-                label: collectionLabel,
+        // Helper to create collections recursively and return the created collection
+        func createCollection(from node: HTMLBookmarksImporter.FolderNode, parent: YabaCollection?) -> YabaCollection {
+            let collection = YabaCollection(
+                collectionId: UUID().uuidString,
+                label: node.label,
                 icon: "folder-01",
                 createdAt: creationTime,
                 editedAt: creationTime,
                 color: .none,
                 type: .folder,
                 version: 1,
-                parent: nil, // Will be set below
+                parent: parent,
                 children: [],
-                order: 0
+                order: orderCounter
             )
-            modelContext.insert(collectionModel)
+
+            // Increment order for the next created collection
+            orderCounter += 1
+
+            // Add bookmarks to this collection
+            for bookmark in node.bookmarks {
+                let model = YabaBookmark(
+                    bookmarkId: UUID().uuidString,
+                    link: bookmark.url,
+                    label: bookmark.title.isEmpty ? bookmark.url : bookmark.title,
+                    bookmarkDescription: "",
+                    domain: URL(string: bookmark.url)?.host ?? "",
+                    createdAt: creationTime,
+                    editedAt: creationTime,
+                    imageDataHolder: nil,
+                    iconDataHolder: nil,
+                    imageUrl: nil,
+                    iconUrl: nil,
+                    videoUrl: nil,
+                    readableHTML: nil,
+                    type: .none,
+                    version: 1
+                )
+                collection.bookmarks?.append(model)
+            }
+
+            // Insert collection before creating its children (SwiftData relationship-friendly)
+            modelContext.insert(collection)
+
+            // Recursively create child collections and attach them
+            for child in node.children {
+                let childCollection = createCollection(from: child, parent: collection)
+                collection.children.append(childCollection)
+            }
+
+            return collection
         }
 
-        // Store the created collection
-        createdCollections[folder.id] = collectionModel
-
-        // Set parent relationship if this is not a root folder
-        if let parentId = parentId, let parentCollection = createdCollections[parentId] {
-            collectionModel.parent = parentCollection
+        // Create all top-level collections
+        for folder in parsed.folders {
+            _ = createCollection(from: folder, parent: nil)
         }
 
-        // Create bookmark models and add them to the collection
-        for bookmark in folder.bookmarks {
-            let bookmarkModel = YabaBookmark(
-                bookmarkId: UUID().uuidString,
-                link: bookmark.url,
-                label: bookmark.title,
-                bookmarkDescription: "",
-                domain: URL(string: bookmark.url)?.host ?? "",
+        // If there are root-level bookmarks without a folder, group them under a timestamped folder
+        if !parsed.rootBookmarks.isEmpty {
+            let uncategorized = YabaCollection(
+                collectionId: UUID().uuidString,
+                label: "\(creationTime.formatted(date: .abbreviated, time: .shortened))",
+                icon: "folder-01",
                 createdAt: creationTime,
                 editedAt: creationTime,
-                imageDataHolder: nil,
-                iconDataHolder: nil,
-                imageUrl: nil,
-                iconUrl: nil,
-                videoUrl: nil,
-                readableHTML: nil,
-                type: .none,
-                version: 1
+                color: .none,
+                type: .folder,
+                version: 1,
+                parent: nil,
+                children: [],
+                order: orderCounter
             )
-            collectionModel.bookmarks?.append(bookmarkModel)
+
+            orderCounter += 1
+
+            for bookmark in parsed.rootBookmarks {
+                let model = YabaBookmark(
+                    bookmarkId: UUID().uuidString,
+                    link: bookmark.url,
+                    label: bookmark.title.isEmpty ? bookmark.url : bookmark.title,
+                    bookmarkDescription: "",
+                    domain: URL(string: bookmark.url)?.host ?? "",
+                    createdAt: creationTime,
+                    editedAt: creationTime,
+                    imageDataHolder: nil,
+                    iconDataHolder: nil,
+                    imageUrl: nil,
+                    iconUrl: nil,
+                    videoUrl: nil,
+                    readableHTML: nil,
+                    type: .none,
+                    version: 1
+                )
+                uncategorized.bookmarks?.append(model)
+            }
+
+            modelContext.insert(uncategorized)
         }
 
-        // Recursively create child collections
-        for childFolder in folder.children {
-            try createCollectionFromParsedFolder(
-                childFolder,
-                parentId: collectionModel.collectionId,
-                creationTime: creationTime,
-                createdCollections: &createdCollections,
-                modelContext: modelContext
-            )
-
-            // Add the child to parent's children array
-            if let childCollection = createdCollections[childFolder.id] {
-                collectionModel.children.append(childCollection)
-            }
+        do {
+            try modelContext.save()
+        } catch {
+            print("LELE")
+            print(error.localizedDescription)
+            throw error
         }
     }
+
+    // New HTML importer implemented below
     
     func prepareExportableData(
         using modelContext: ModelContext,
@@ -529,10 +523,21 @@ class DataManager {
                 }
             } else if type == .plainText {
                 if let markdownContent = makeMarkdown(
-                    from: exportableCollections, 
+                    from: exportableCollections,
                     with: Array(exportableBookmarks)
                 ) {
                     onReady(markdownContent)
+                } else {
+                    throw DataError.exportableGenerationError(
+                        LocalizedStringKey("Data Manager Error During Generating Exportable Message")
+                    )
+                }
+            } else if type == .html {
+                if let htmlContent = makeHTML(
+                    from: exportableCollections,
+                    with: Array(exportableBookmarks)
+                ) {
+                    onReady(htmlContent)
                 } else {
                     throw DataError.exportableGenerationError(
                         LocalizedStringKey("Data Manager Error During Generating Exportable Message")
@@ -578,20 +583,20 @@ class DataManager {
     
     func extractCSVHeaders(from data: Data) -> [String] {
         guard let content = String(data: data, encoding: .utf8) else { return [] }
-
+        
         let rows = content.components(separatedBy: "\n").filter {
             !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         }
         
         guard let headerRow = rows.first else { return [] }
-
+        
         return parseCSVRow(headerRow)
     }
     
     private func makeCSV(from bookmarks: [YabaCodableBookmark]) -> Data? {
         let header = [
             "bookmarkId", "label", "bookmarkDescription", "link", "domain",
-            "createdAt", "editedAt", "imageUrl", "iconUrl", "videoUrl", 
+            "createdAt", "editedAt", "imageUrl", "iconUrl", "videoUrl",
             "type", "version"
             // Removed readableHTML to prevent CSV parsing issues
         ]
@@ -603,7 +608,7 @@ class DataManager {
     }
     
     private func makeMarkdown(
-        from collections: [YabaCodableCollection], 
+        from collections: [YabaCodableCollection],
         with allBookmarks: [YabaCodableBookmark]
     ) -> Data? {
         var markdownLines: [String] = []
@@ -691,6 +696,103 @@ class DataManager {
         return markdownString.data(using: .utf8)
     }
     
+    private func makeHTML(
+        from collections: [YabaCodableCollection],
+        with allBookmarks: [YabaCodableBookmark]
+    ) -> Data? {
+        var htmlLines: [String] = []
+        
+        // HTML document header
+        htmlLines.append("<!DOCTYPE NETSCAPE-Bookmark-file-1>")
+        htmlLines.append("<!-- This is an automatically generated file.")
+        htmlLines.append("     It will be read and overwritten.")
+        htmlLines.append("     DO NOT EDIT! -->")
+        htmlLines.append("<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=UTF-8\">")
+        htmlLines.append("<TITLE>Bookmarks</TITLE>")
+        htmlLines.append("<H1>Bookmarks</H1>")
+        htmlLines.append("")
+        htmlLines.append("<DL><p>")
+        
+        // Create a dictionary to quickly find bookmarks by ID
+        var bookmarkDict: [String: YabaCodableBookmark] = [:]
+        for bookmark in allBookmarks {
+            guard let bookmarkId = bookmark.bookmarkId else { continue }
+            bookmarkDict[bookmarkId] = bookmark
+        }
+        
+        // Process each collection as a folder
+        for collection in collections {
+            if collection.type == CollectionType.tag.rawValue {
+                continue
+            }
+            
+            // Find bookmarks for this collection
+            let collectionBookmarks = collection.bookmarks.compactMap { bookmarkId in
+                bookmarkDict[bookmarkId]
+            }
+            
+            // Generate folder structure (include empty folders to preserve structure)
+            generateHTMLFolder(collection: collection, bookmarks: collectionBookmarks, htmlLines: &htmlLines)
+        }
+        
+        // Handle bookmarks that don't belong to any collection
+        let bookmarksWithoutCollections = allBookmarks.filter { bookmark in
+            !collections.contains { collection in
+                collection.bookmarks.contains(bookmark.bookmarkId ?? "")
+            }
+        }
+        
+        if !bookmarksWithoutCollections.isEmpty {
+            // Create an "Uncategorized" folder for orphaned bookmarks
+            htmlLines.append("    <DT><H3>Uncategorized</H3>")
+            htmlLines.append("    <DL><p>")
+            
+            for bookmark in bookmarksWithoutCollections {
+                let bookmarkTitle = escapeHTML(bookmark.label ?? bookmark.link)
+                let bookmarkUrl = bookmark.link
+                htmlLines.append("        <DT><A HREF=\"\(bookmarkUrl)\">\(bookmarkTitle)</A>")
+            }
+            
+            htmlLines.append("    </DL><p>")
+        }
+        
+        // Close the main DL
+        htmlLines.append("</DL><p>")
+        
+        let htmlString = htmlLines.joined(separator: "\n")
+        return htmlString.data(using: .utf8)
+    }
+    
+    private func generateHTMLFolder(
+        collection: YabaCodableCollection,
+        bookmarks: [YabaCodableBookmark],
+        htmlLines: inout [String]
+    ) {
+        let folderName = escapeHTML(collection.label)
+        
+        htmlLines.append("    <DT><H3>\(folderName)</H3>")
+        htmlLines.append("    <DL><p>")
+        
+        // Add bookmarks in this folder
+        for bookmark in bookmarks {
+            let bookmarkTitle = escapeHTML(bookmark.label ?? bookmark.link)
+            let bookmarkUrl = bookmark.link
+            htmlLines.append("        <DT><A HREF=\"\(bookmarkUrl)\">\(bookmarkTitle)</A>")
+        }
+        
+        // Close this folder
+        htmlLines.append("    </DL><p>")
+    }
+    
+    private func escapeHTML(_ text: String) -> String {
+        return text
+            .replacingOccurrences(of: "&", with: "&amp;")
+            .replacingOccurrences(of: "<", with: "&lt;")
+            .replacingOccurrences(of: ">", with: "&gt;")
+            .replacingOccurrences(of: "\"", with: "&quot;")
+            .replacingOccurrences(of: "'", with: "&#39;")
+    }
+    
     private func escapeForCSV(_ field: String) -> String {
         let needsQuotes = field.contains(",") || field.contains("\"") || field.contains("\n")
         var escaped = field.replacingOccurrences(of: "\"", with: "\"\"")
@@ -719,13 +821,13 @@ class DataManager {
         list.append(String(bookmark.version ?? 0)) // Add missing version column
         return list.map { escapeForCSV($0) }.joined(separator: ",")
     }
-
+    
     private func parseCSVRow(_ row: String) -> [String] {
         var result: [String] = []
         var field = ""
         var insideQuotes = false
         var i = row.startIndex
-
+        
         while i < row.endIndex {
             let char = row[i]
             
@@ -854,64 +956,64 @@ class DataManager {
             let incomingDeleteAllLogs = request.deletionLogs.filter { $0.entityType == "deleteAll" || $0.entityType == "all" }
             
             if !incomingDeleteAllLogs.isEmpty {
-            
-            // Get our local deleteAll logs
-            let localDeleteLogsDescriptor = FetchDescriptor<YabaDataLog>(
-                predicate: #Predicate<YabaDataLog> { _ in true}
-            )
-            let localDeleteLogs = try modelContext.fetch(localDeleteLogsDescriptor)
-            let localDeleteAllLogs = localDeleteLogs.filter { log in log.actionType == .deletedAll }
-            
-            // Find the newest incoming deleteAll
-            let newestIncomingDeleteAll = incomingDeleteAllLogs.max { log1, log2 in
-                guard let date1 = parseDate(log1.timestamp),
-                      let date2 = parseDate(log2.timestamp) else { return false }
-                return date1 < date2
-            }
-            
-            if let newestIncoming = newestIncomingDeleteAll,
-               let incomingDeleteAllTimestamp = parseDate(newestIncoming.timestamp) {
                 
-                // Find our newest local deleteAll
-                let newestLocalDeleteAll = localDeleteAllLogs.max { $0.timestamp < $1.timestamp }
-                let localDeleteAllTimestamp = newestLocalDeleteAll?.timestamp ?? Date.distantPast
+                // Get our local deleteAll logs
+                let localDeleteLogsDescriptor = FetchDescriptor<YabaDataLog>(
+                    predicate: #Predicate<YabaDataLog> { _ in true}
+                )
+                let localDeleteLogs = try modelContext.fetch(localDeleteLogsDescriptor)
+                let localDeleteAllLogs = localDeleteLogs.filter { log in log.actionType == .deletedAll }
                 
-                // If remote deleteAll is newer than our local deleteAll, apply it
-                if incomingDeleteAllTimestamp > localDeleteAllTimestamp {
-                    // Add a 3-second safety buffer to prevent deleting recently imported content
-                    let deleteAllWithBuffer = incomingDeleteAllTimestamp.addingTimeInterval(-3)
+                // Find the newest incoming deleteAll
+                let newestIncomingDeleteAll = incomingDeleteAllLogs.max { log1, log2 in
+                    guard let date1 = parseDate(log1.timestamp),
+                          let date2 = parseDate(log2.timestamp) else { return false }
+                    return date1 < date2
+                }
+                
+                if let newestIncoming = newestIncomingDeleteAll,
+                   let incomingDeleteAllTimestamp = parseDate(newestIncoming.timestamp) {
                     
-                    // Delete ALL collections and bookmarks created before the deleteAll timestamp (with buffer)
-                    let collectionsToDeleteDescriptor = FetchDescriptor<YabaCollection>(
-                        predicate: #Predicate<YabaCollection> { collection in
-                            collection.editedAt < deleteAllWithBuffer
-                        }
-                    )
-                    let collectionsToDelete = try modelContext.fetch(collectionsToDeleteDescriptor)
-                    collectionsToDelete.forEach { modelContext.delete($0) }
+                    // Find our newest local deleteAll
+                    let newestLocalDeleteAll = localDeleteAllLogs.max { $0.timestamp < $1.timestamp }
+                    let localDeleteAllTimestamp = newestLocalDeleteAll?.timestamp ?? Date.distantPast
                     
-                    let bookmarksToDeleteDescriptor = FetchDescriptor<YabaBookmark>(
-                        predicate: #Predicate<YabaBookmark> { bookmark in
-                            bookmark.editedAt < deleteAllWithBuffer
-                        }
-                    )
-                    let bookmarksToDelete = try modelContext.fetch(bookmarksToDeleteDescriptor)
-                    bookmarksToDelete.forEach { modelContext.delete($0) }
-                    
-                    // Remove old local deleteAll logs and add the new one
-                    localDeleteAllLogs.forEach { modelContext.delete($0) }
-                    
-                    // Create and insert the new deleteAll log in our local database
-                    let newDeleteAllLog = YabaDataLog(
-                        entityId: UUID().uuidString,
-                        entityType: .all,
-                        actionType: .deletedAll,
-                        timestamp: incomingDeleteAllTimestamp
-                    )
-                    modelContext.insert(newDeleteAllLog)
+                    // If remote deleteAll is newer than our local deleteAll, apply it
+                    if incomingDeleteAllTimestamp > localDeleteAllTimestamp {
+                        // Add a 3-second safety buffer to prevent deleting recently imported content
+                        let deleteAllWithBuffer = incomingDeleteAllTimestamp.addingTimeInterval(-3)
+                        
+                        // Delete ALL collections and bookmarks created before the deleteAll timestamp (with buffer)
+                        let collectionsToDeleteDescriptor = FetchDescriptor<YabaCollection>(
+                            predicate: #Predicate<YabaCollection> { collection in
+                                collection.editedAt < deleteAllWithBuffer
+                            }
+                        )
+                        let collectionsToDelete = try modelContext.fetch(collectionsToDeleteDescriptor)
+                        collectionsToDelete.forEach { modelContext.delete($0) }
+                        
+                        let bookmarksToDeleteDescriptor = FetchDescriptor<YabaBookmark>(
+                            predicate: #Predicate<YabaBookmark> { bookmark in
+                                bookmark.editedAt < deleteAllWithBuffer
+                            }
+                        )
+                        let bookmarksToDelete = try modelContext.fetch(bookmarksToDeleteDescriptor)
+                        bookmarksToDelete.forEach { modelContext.delete($0) }
+                        
+                        // Remove old local deleteAll logs and add the new one
+                        localDeleteAllLogs.forEach { modelContext.delete($0) }
+                        
+                        // Create and insert the new deleteAll log in our local database
+                        let newDeleteAllLog = YabaDataLog(
+                            entityId: UUID().uuidString,
+                            entityType: .all,
+                            actionType: .deletedAll,
+                            timestamp: incomingDeleteAllTimestamp
+                        )
+                        modelContext.insert(newDeleteAllLog)
+                    }
                 }
             }
-        }
         } // End of !preventDeletionSync check for deleteAll logs
         
         // Get local deletion logs to check against incoming items (only if deletion sync is not prevented)
@@ -1027,9 +1129,9 @@ class DataManager {
                 if shouldSetupRelationships {
                     // Clear existing relationships
                     localCollection.bookmarks?.removeAll()
-
+                    
                     // Add bookmarks from incoming data
-                for bookmarkId in incomingCollection.bookmarks {
+                    for bookmarkId in incomingCollection.bookmarks {
                         let bookmarkDescriptor = FetchDescriptor<YabaBookmark>(
                             predicate: #Predicate<YabaBookmark> { bookmark in
                                 bookmark.bookmarkId == bookmarkId
@@ -1065,34 +1167,34 @@ class DataManager {
         // STEP 5: Process individual deletion logs (collection and bookmark deletions)
         // Only process incoming deletion logs if deletion sync is not prevented
         if !preventDeletionSync {
-            let individualDeletionLogs = request.deletionLogs.filter { 
-                $0.entityType != "deleteAll" && $0.entityType != "all" 
+            let individualDeletionLogs = request.deletionLogs.filter {
+                $0.entityType != "deleteAll" && $0.entityType != "all"
             }
             
             if !individualDeletionLogs.isEmpty {
-            
-            for deletionLog in individualDeletionLogs {
-                if deletionLog.entityType == "collection" {
-                    let descriptor = FetchDescriptor<YabaCollection>(
-                        predicate: #Predicate<YabaCollection> { collection in
-                            collection.collectionId == deletionLog.entityId
+                
+                for deletionLog in individualDeletionLogs {
+                    if deletionLog.entityType == "collection" {
+                        let descriptor = FetchDescriptor<YabaCollection>(
+                            predicate: #Predicate<YabaCollection> { collection in
+                                collection.collectionId == deletionLog.entityId
+                            }
+                        )
+                        if let collectionToDelete = try modelContext.fetch(descriptor).first {
+                            modelContext.delete(collectionToDelete)
                         }
-                    )
-                    if let collectionToDelete = try modelContext.fetch(descriptor).first {
-                        modelContext.delete(collectionToDelete)
-                    }
-                } else if deletionLog.entityType == "bookmark" {
-                    let descriptor = FetchDescriptor<YabaBookmark>(
-                        predicate: #Predicate<YabaBookmark> { bookmark in
-                            bookmark.bookmarkId == deletionLog.entityId
+                    } else if deletionLog.entityType == "bookmark" {
+                        let descriptor = FetchDescriptor<YabaBookmark>(
+                            predicate: #Predicate<YabaBookmark> { bookmark in
+                                bookmark.bookmarkId == deletionLog.entityId
+                            }
+                        )
+                        if let bookmarkToDelete = try modelContext.fetch(descriptor).first {
+                            modelContext.delete(bookmarkToDelete)
                         }
-                    )
-                    if let bookmarkToDelete = try modelContext.fetch(descriptor).first {
-                        modelContext.delete(bookmarkToDelete)
                     }
                 }
             }
-        }
         } // End of !preventDeletionSync check
         
         // Save all changes
@@ -1266,222 +1368,155 @@ class DataManager {
     }
 }
 
-// HTML Parser class to handle HTML parsing with nested folder support
-private class HTMLParser {
-    struct ParsedBookmark {
+// New robust HTML bookmarks importer with nested folder support
+class HTMLBookmarksImporter {
+    struct BookmarkNode {
         let title: String
         let url: String
     }
 
-    struct ParsedFolder {
-        let id: String
+    struct FolderNode {
         let label: String
-        var bookmarks: [ParsedBookmark]
-        var children: [ParsedFolder]
-        var parentId: String?
-
-        init(label: String, parentId: String? = nil, bookmarks: [ParsedBookmark] = []) {
-            self.id = UUID().uuidString
-            self.label = label
-            self.bookmarks = bookmarks
-            self.children = []
-            self.parentId = parentId
-        }
+        var bookmarks: [BookmarkNode]
+        var children: [FolderNode]
     }
 
-    func parse(_ htmlString: String) throws -> [ParsedFolder] {
-        let normalizedHTML = normalizeHTML(htmlString)
-        var folderStack: [ParsedFolder] = []
-        var rootFolders: [ParsedFolder] = []
-        var allBookmarks: [ParsedBookmark] = []
-
-        // Split HTML into lines for easier processing
-        let lines = normalizedHTML.components(separatedBy: .newlines)
-        var i = 0
-
-        while i < lines.count {
-            let line = lines[i].trimmingCharacters(in: .whitespacesAndNewlines)
-
-            // Check for folder start
-            if let folderName = extractFolderName(from: line), !isDocumentTitle(line) {
-                let newFolder = ParsedFolder(
-                    label: folderName,
-                    parentId: folderStack.last?.id
-                )
-
-                // Add to parent's children if we have a parent
-                if !folderStack.isEmpty {
-                    folderStack[folderStack.count - 1].children.append(newFolder)
-                }
-
-                folderStack.append(newFolder)
-
-                // Skip to the opening DL tag
-                while i < lines.count && !lines[i].contains("<DL>") {
-                    i += 1
-                }
-            }
-            // Check for folder end
-            else if line.contains("</DL>") {
-                if let completedFolder = folderStack.popLast() {
-                    // If this was a root folder, add it to rootFolders
-                    if completedFolder.parentId == nil {
-                        rootFolders.append(completedFolder)
-                    }
-                }
-            }
-            // Check for bookmark
-            else if let bookmark = parseBookmark(from: line) {
-                if !folderStack.isEmpty {
-                    folderStack[folderStack.count - 1].bookmarks.append(bookmark)
-                } else {
-                    allBookmarks.append(bookmark)
-                }
-            }
-
-            i += 1
-        }
-
-        // Handle any remaining folders in stack
-        while let folder = folderStack.popLast() {
-            if folder.parentId == nil {
-                rootFolders.append(folder)
-            }
-        }
-
-        // If we found bookmarks but no folders, create an uncategorized folder
-        if rootFolders.isEmpty && !allBookmarks.isEmpty {
-            rootFolders.append(ParsedFolder(label: "-1", bookmarks: allBookmarks))
-        } else if !allBookmarks.isEmpty {
-            // If we have both folders and loose bookmarks, add loose ones to uncategorized
-            let uncategorized = ParsedFolder(label: "-1", bookmarks: allBookmarks)
-            rootFolders.append(uncategorized)
-        }
-
-        return rootFolders
+    struct ParsedRoot {
+        var folders: [FolderNode]
+        var rootBookmarks: [BookmarkNode]
     }
-    
-    private func normalizeHTML(_ html: String) -> String {
-        // Make case-insensitive and normalize common variations
+
+    func parse(_ html: String) -> ParsedRoot {
+        let normalized = normalize(html)
+        if let firstDLStart = normalized.range(of: "<DL>", options: .caseInsensitive),
+           let fullDLRange = findBalancedRange(tag: "DL", in: normalized, from: firstDLStart.lowerBound) {
+            let inner = String(normalized[fullDLRange].dropFirst(4).dropLast(5))
+            let (folders, bookmarks, _) = parseList(in: inner, from: inner.startIndex)
+            return ParsedRoot(folders: folders, rootBookmarks: bookmarks)
+        }
+        let (folders, bookmarks, _) = parseList(in: normalized, from: normalized.startIndex)
+        return ParsedRoot(folders: folders, rootBookmarks: bookmarks)
+    }
+
+    // MARK: - Core Parsing
+
+    private func parseList(in html: String, from start: String.Index) -> ([FolderNode], [BookmarkNode], String.Index) {
+        var folders: [FolderNode] = []
+        var bookmarks: [BookmarkNode] = []
+        var index = start
+
+        while index < html.endIndex {
+            guard let dtRange = html.range(of: "<DT>", options: .caseInsensitive, range: index..<html.endIndex) else {
+                break
+            }
+            index = dtRange.upperBound
+
+            // Folder: <H3> ... </H3> followed by optional <DL> ... </DL>
+            if let h3Open = html.range(of: "<H3", options: .caseInsensitive, range: index..<html.endIndex),
+               h3Open.lowerBound == index,
+               let h3CloseStart = html.range(of: ">", options: .caseInsensitive, range: h3Open.upperBound..<html.endIndex)?.upperBound,
+               let h3End = html.range(of: "</H3>", options: .caseInsensitive, range: h3CloseStart..<html.endIndex) {
+                let rawLabel = String(html[h3CloseStart..<h3End.lowerBound]).trimmingCharacters(in: .whitespacesAndNewlines)
+                let label = decodeEntities(rawLabel)
+
+                var childFolders: [FolderNode] = []
+                var childBookmarks: [BookmarkNode] = []
+                var afterFolderIndex = h3End.upperBound
+
+                if let dlStart = html.range(of: "<DL>", options: .caseInsensitive, range: afterFolderIndex..<html.endIndex),
+                   dlStart.lowerBound == afterFolderIndex,
+                   let balanced = findBalancedRange(tag: "DL", in: html, from: dlStart.lowerBound) {
+                    let inner = String(html[balanced].dropFirst(4).dropLast(5))
+                    let (childrenFolders, childrenBookmarks, _) = parseList(in: inner, from: inner.startIndex)
+                    childFolders = childrenFolders
+                    childBookmarks = childrenBookmarks
+                    afterFolderIndex = balanced.upperBound
+                }
+
+                folders.append(FolderNode(label: label, bookmarks: childBookmarks, children: childFolders))
+                index = afterFolderIndex
+                continue
+            }
+
+            // Bookmark: <A HREF="...">title</A>
+            if let aOpen = html.range(of: "<A ", options: .caseInsensitive, range: index..<html.endIndex),
+               aOpen.lowerBound == index,
+               let hrefValueRange = findAttribute(named: "HREF", in: html, from: aOpen.upperBound),
+               let aEnd = html.range(of: ">", options: .caseInsensitive, range: hrefValueRange.upperBound..<html.endIndex)?.upperBound,
+               let closeRange = html.range(of: "</A>", options: .caseInsensitive, range: aEnd..<html.endIndex) {
+                let url = String(html[hrefValueRange]).trimmingCharacters(in: .whitespacesAndNewlines)
+                let titleRaw = String(html[aEnd..<closeRange.lowerBound]).trimmingCharacters(in: .whitespacesAndNewlines)
+                let title = decodeEntities(titleRaw)
+                if !url.isEmpty {
+                    bookmarks.append(BookmarkNode(title: title, url: url))
+                }
+                index = closeRange.upperBound
+                continue
+            }
+
+            index = html.index(after: index)
+        }
+
+        return (folders, bookmarks, index)
+    }
+
+    // MARK: - Utilities
+
+    private func findBalancedRange(tag: String, in html: String, from start: String.Index) -> Range<String.Index>? {
+        let open = "<\(tag)>"
+        let close = "</\(tag)>"
+        var depth = 0
+        var idx = start
+        var startIdx: String.Index?
+        while idx < html.endIndex {
+            if let openRange = html.range(of: open, options: .caseInsensitive, range: idx..<html.endIndex),
+               (startIdx == nil || openRange.lowerBound < html.range(of: close, options: .caseInsensitive, range: idx..<html.endIndex)?.lowerBound ?? html.endIndex) {
+                if startIdx == nil { startIdx = openRange.lowerBound }
+                depth += 1
+                idx = openRange.upperBound
+                continue
+            }
+            if let closeRange = html.range(of: close, options: .caseInsensitive, range: idx..<html.endIndex) {
+                depth -= 1
+                idx = closeRange.upperBound
+                if depth == 0, let s = startIdx { return s..<closeRange.upperBound }
+                continue
+            }
+            break
+        }
+        return nil
+    }
+
+    private func findAttribute(named name: String, in html: String, from start: String.Index) -> Range<String.Index>? {
+        // Matches name="..."; forgiving about spacing
+        let search = start..<html.endIndex
+        if let nameRange = html.range(of: name + "=\"", options: [.caseInsensitive], range: search) {
+            let valueStart = nameRange.upperBound
+            if let endQuote = html.range(of: "\"", options: [], range: valueStart..<html.endIndex) {
+                return valueStart..<endQuote.lowerBound
+            }
+        }
+        return nil
+    }
+
+    private func normalize(_ html: String) -> String {
         return html
             .replacingOccurrences(of: "<dt>", with: "<DT>")
             .replacingOccurrences(of: "<DT >", with: "<DT>")
-            .replacingOccurrences(of: "<h3>", with: "<H3>")
-            .replacingOccurrences(of: "<H3 >", with: "<H3>")
+            .replacingOccurrences(of: "<h3", with: "<H3")
             .replacingOccurrences(of: "</h3>", with: "</H3>")
             .replacingOccurrences(of: "<a ", with: "<A ")
-            .replacingOccurrences(of: "<A  ", with: "<A ")
             .replacingOccurrences(of: "href=", with: "HREF=")
-            .replacingOccurrences(of: "HREF =", with: "HREF=")
             .replacingOccurrences(of: "</a>", with: "</A>")
             .replacingOccurrences(of: "<dl>", with: "<DL>")
             .replacingOccurrences(of: "</dl>", with: "</DL>")
-            .replacingOccurrences(of: "<dd>", with: "<DD>")
-            .replacingOccurrences(of: "</dd>", with: "</DD>")
-            .replacingOccurrences(of: "<p>", with: "<P>")
-            .replacingOccurrences(of: "</p>", with: "</P>")
+            .replacingOccurrences(of: "<dd>", with: "")
+            .replacingOccurrences(of: "</dd>", with: "")
+            .replacingOccurrences(of: "<p>", with: "")
+            .replacingOccurrences(of: "</p>", with: "")
     }
-    
-    private func extractFolderName(from line: String) -> String? {
-        // Multiple patterns for folder detection (more focused on H3 tags)
-        let patterns = [
-            #"<DT><H3[^>]*>([^<]+)</H3>"#,           // Standard Netscape format
-            #"<H3[^>]*>([^<]+)</H3>"#,               // H3 without DT (but not H1)
-            #"<folder[^>]*>([^<]+)</folder>"#         // Some custom formats
-        ]
-        
-        for pattern in patterns {
-            if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
-               let match = regex.firstMatch(in: line, range: NSRange(line.startIndex..., in: line)),
-               let range = Range(match.range(at: 1), in: line) {
-                let folderName = String(line[range])
-                    .trimmingCharacters(in: .whitespaces)
-                
-                // Skip empty folder names
-                if !folderName.isEmpty {
-                    return decodeHTMLEntities(folderName)
-                }
-            }
-        }
-        
-        return nil
-    }
-    
-    private func isDocumentTitle(_ line: String) -> Bool {
-        // Skip H1 tags and TITLE tags as they're usually document titles, not folders
-        let titlePatterns = [
-            #"<H1[^>]*>"#,
-            #"<TITLE[^>]*>"#,
-            #"<title[^>]*>"#
-        ]
-        
-        for pattern in titlePatterns {
-            if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
-               regex.firstMatch(in: line, range: NSRange(line.startIndex..., in: line)) != nil {
-                return true
-            }
-        }
-        
-        return false
-    }
-    
-    private func parseBookmark(from line: String) -> ParsedBookmark? {
-        // Try to extract HREF and title using a more robust approach
-        // First, find the HREF attribute value
-        guard let hrefValue = extractHrefValue(from: line) else {
-            return nil
-        }
-        
-        // Then extract the title between > and </A>
-        guard let title = extractBookmarkTitle(from: line) else {
-            return nil
-        }
-        
-        // Validate URL format
-        guard !hrefValue.isEmpty && (hrefValue.hasPrefix("http") || hrefValue.hasPrefix("ftp") || hrefValue.hasPrefix("javascript")),
-              !title.isEmpty else {
-            return nil
-        }
-        
-        return ParsedBookmark(
-            title: decodeHTMLEntities(title),
-            url: hrefValue
-        )
-    }
-    
-    private func extractHrefValue(from line: String) -> String? {
-        // Multiple patterns to find HREF value, ordered by specificity
-        let hrefPatterns = [
-            #"HREF=\"([^\"]+)\""#,      // HREF="url"
-            #"HREF='([^']+)'"#,         // HREF='url' 
-            #"HREF=([^\s>]+)"#          // HREF=url (no quotes)
-        ]
-        
-        for pattern in hrefPatterns {
-            if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
-               let match = regex.firstMatch(in: line, range: NSRange(line.startIndex..., in: line)),
-               let range = Range(match.range(at: 1), in: line) {
-                return String(line[range]).trimmingCharacters(in: .whitespaces)
-            }
-        }
-        
-        return nil
-    }
-    
-    private func extractBookmarkTitle(from line: String) -> String? {
-        // Extract text between the last > and </A>
-        let pattern = #">([^<]+)</A>"#
-        
-        if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
-           let match = regex.firstMatch(in: line, range: NSRange(line.startIndex..., in: line)),
-           let range = Range(match.range(at: 1), in: line) {
-            return String(line[range]).trimmingCharacters(in: .whitespaces)
-        }
-        
-        return nil
-    }
-    
-    private func decodeHTMLEntities(_ text: String) -> String {
+
+    private func decodeEntities(_ text: String) -> String {
         return text
             .replacingOccurrences(of: "&amp;", with: "&")
             .replacingOccurrences(of: "&lt;", with: "<")

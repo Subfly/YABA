@@ -292,14 +292,16 @@ private struct SearchableContent: View {
                 Text("Search No Bookmarks Found Description \(searchQuery)")
             }
         } else {
-            List(bookmarks) { bookmark in
-                BookmarkItemView(
-                    bookmark: bookmark,
-                    isInRecents: false,
-                    isSelected: selectedBookmarks.contains(bookmark),
-                    isInSelectionMode: isInSelectionMode,
-                    onNavigationCallback: onNavigationCallback
-                )
+            List {
+                ForEach(bookmarks) { bookmark in
+                    BookmarkItemView(
+                        bookmark: bookmark,
+                        isInRecents: false,
+                        isSelected: selectedBookmarks.contains(bookmark),
+                        isInSelectionMode: isInSelectionMode,
+                        onNavigationCallback: onNavigationCallback
+                    )
+                }
             }
             .listRowSeparator(.hidden)
             .listRowSpacing(contentAppearance == .list ? 0 : 8)
@@ -317,108 +319,67 @@ private struct ToolbarItems: View {
     
     var body: some View {
         if collection != nil {
-            #if !targetEnvironment(macCatalyst)
-            if UIDevice.current.userInterfaceIdiom == .phone {
-                Menu {
-                    Button {
-                        state.shouldShowCreateBookmarkSheet = true
-                    } label: {
-                        Label {
-                            Text("New")
-                        } icon: {
-                            YabaIconView(bundleKey: "plus-sign-circle")
-                        }
-                    }
-                    if collection?.collectionType == .folder && state.isInSelectionMode {
-                        Divider()
-                        Button {
-                            state.shouldShowMoveBookmarksSheet = true
-                        } label: {
-                            Label {
-                                Text("Bookmark Selection Move")
-                            } icon: {
-                                YabaIconView(bundleKey: "arrow-move-up-right")
-                            }
-                        }
-                        
-                        Button {
-                            state.shouldShowDeleteDialog = true
-                        } label: {
-                            Label {
-                                Text("Bookmark Selection Delete")
-                            } icon: {
-                                YabaIconView(bundleKey: "delete-02")
-                            }
-                        }.tint(.red)
-                    }
-                    if collection?.collectionType == .folder {
-                        Button {
-                            withAnimation {
-                                state.isInSelectionMode.toggle()
-                            }
-                        } label: {
-                            Label {
-                                Text(
-                                    state.isInSelectionMode
-                                    ? "Bookmark Selection Cancel"
-                                    : "Bookmark Selection Enable"
-                                )
-                            } icon: {
-                                YabaIconView(
-                                    bundleKey: state.isInSelectionMode
-                                    ? "cancel-circle"
-                                    : "checkmark-circle-01"
-                                )
-                            }
-                        }
-                    }
-                    #if !KEYBOARD_EXTENSION
-                    Divider()
-                    ContentAppearancePicker()
-                    SortingPicker(contentType: .bookmark)
-                    #endif
-                } label: {
-                    YabaIconView(bundleKey: "more-horizontal-circle-02")
-                }
-            } else {
+            Menu {
                 Button {
                     state.shouldShowCreateBookmarkSheet = true
                 } label: {
-                    YabaIconView(bundleKey: "plus-sign-circle")
-                }
-                Button {
-                    withAnimation {
-                        state.isInSelectionMode.toggle()
-                    }
-                } label: {
                     Label {
-                        Text(
-                            state.isInSelectionMode
-                            ? "Bookmark Selection Cancel"
-                            : "Bookmark Selection Enable"
-                        )
+                        Text("New")
                     } icon: {
-                        YabaIconView(
-                            bundleKey: state.isInSelectionMode
-                            ? "cancel-circle"
-                            : "checkmark-circle-01"
-                        )
+                        YabaIconView(bundleKey: "plus-sign-circle")
+                    }
+                }
+                if collection?.collectionType == .folder && state.isInSelectionMode {
+                    Divider()
+                    Button {
+                        state.shouldShowMoveBookmarksSheet = true
+                    } label: {
+                        Label {
+                            Text("Bookmark Selection Move")
+                        } icon: {
+                            YabaIconView(bundleKey: "arrow-move-up-right")
+                        }
+                    }
+                    
+                    Button {
+                        state.shouldShowDeleteDialog = true
+                    } label: {
+                        Label {
+                            Text("Bookmark Selection Delete")
+                        } icon: {
+                            YabaIconView(bundleKey: "delete-02")
+                        }
+                    }.tint(.red)
+                }
+                if collection?.collectionType == .folder {
+                    Button {
+                        withAnimation {
+                            state.isInSelectionMode.toggle()
+                        }
+                    } label: {
+                        Label {
+                            Text(
+                                state.isInSelectionMode
+                                ? "Bookmark Selection Cancel"
+                                : "Bookmark Selection Enable"
+                            )
+                        } icon: {
+                            YabaIconView(
+                                bundleKey: state.isInSelectionMode
+                                ? "cancel-circle"
+                                : "checkmark-circle-01"
+                            )
+                        }
                     }
                 }
                 #if !KEYBOARD_EXTENSION
+                Divider()
+                ContentAppearancePicker()
                 SortingPicker(contentType: .bookmark)
                 #endif
+            } label: {
+                YabaIconView(bundleKey: "more-horizontal-circle-02")
             }
-            #else
-            MacOSHoverableToolbarIcon(
-                bundleKey: "plus-sign-circle",
-                tooltipKey: "Create Bookmark Title",
-                onPressed: {
-                    state.shouldShowCreateBookmarkSheet = true
-                }
-            )
-            SortingPicker(contentType: .bookmark)
-            #endif
         }
     }
 }

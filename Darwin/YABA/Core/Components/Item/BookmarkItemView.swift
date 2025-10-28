@@ -141,7 +141,7 @@ struct BookmarkItemView: View {
             )
             #if targetEnvironment(macCatalyst)
             .listRowBackground(
-                appState.selectedBookmark?.id == bookmark.id
+                appState.selectedBookmark?.bookmarkId == bookmark.bookmarkId
                 ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
                 : itemState.isHovered
                 ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
@@ -151,7 +151,7 @@ struct BookmarkItemView: View {
             .listRowBackground(
                 UIDevice.current.userInterfaceIdiom == .phone
                 ? nil
-                : appState.selectedBookmark?.id == bookmark.id
+                : appState.selectedBookmark?.bookmarkId == bookmark.bookmarkId
                 ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
                 : itemState.isHovered
                 ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
