@@ -20,7 +20,12 @@ extension YabaCollection {
             bookmarks: self.bookmarks?.map { bookmark in
                 bookmark.bookmarkId
             } ?? [],
-            version: self.version
+            version: self.version,
+            parent: self.parent?.collectionId,
+            children: self.children.map { child in
+                child.collectionId
+            },
+            order: self.order
         )
     }
 }
@@ -29,7 +34,7 @@ extension YabaCodableCollection {
     func mapToModel() -> YabaCollection {
         let color = YabaColor(rawValue: self.color) ?? .none
         let type = CollectionType(rawValue: self.type) ?? .folder
-        
+
         return .init(
             collectionId: self.collectionId,
             label: self.label,
@@ -39,7 +44,10 @@ extension YabaCodableCollection {
             bookmarks: [], // Set as empty as it will be filled in another iteration.
             color: color,
             type: type,
-            version: self.version
+            version: self.version,
+            parent: nil, // Set as nil as relationships will be established later
+            children: [], // Set as empty as relationships will be established later
+            order: self.order
         )
     }
 }

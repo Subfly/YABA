@@ -151,7 +151,7 @@ enum YabaSchemaV1: VersionedSchema {
             self.version = version
             self.parent = parent
             self.children = children
-            self.order = -1
+            self.order = order
         }
     }
     

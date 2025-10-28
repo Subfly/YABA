@@ -18,6 +18,9 @@ struct YabaCodableCollection: Codable, Hashable, Transferable {
     let type: Int
     let bookmarks: [String] // String id's of stored bookmarks
     let version: Int
+    let parent: String? // Parent collection id
+    let children: [String] // Child collection ids
+    let order: Int
     
     static var transferRepresentation: some TransferRepresentation {
         CodableRepresentation(contentType: .yabaCollection)

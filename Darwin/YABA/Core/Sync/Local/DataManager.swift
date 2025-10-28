@@ -49,10 +49,6 @@ class DataManager {
             throw DataError.invalidJSON("Data Manager Invalid JSON Format Message")
         }
         
-        if content.bookmarks.isEmpty {
-            throw DataError.emptyJSON("Data Manager Empty JSON Message")
-        }
-        
         // Create a mapping of bookmark IDs to bookmark models
         // Generate new IDs for bookmarks that don't have them or have duplicates
         var mappedBookmarks: [String: YabaBookmark] = [:]
@@ -83,18 +79,57 @@ class DataManager {
         }
         
         if let collections = content.collections {
-            collections.forEach { collection in
-                let collectionModel = collection.mapToModel()
+            // Create a mapping of collection IDs to collection models
+            var mappedCollections: [String: YabaCollection] = [:]
+            var usedCollectionIds: Set<String> = []
+
+            // First pass: Create all collections without relationships
+            for codableCollection in collections {
+                var collectionId = codableCollection.collectionId
+
+                // Handle duplicate IDs by generating new ones
+                while usedCollectionIds.contains(collectionId) {
+                    collectionId = UUID().uuidString
+                }
+                usedCollectionIds.insert(collectionId)
+
+                let collectionModel = codableCollection.mapToModel()
+                // Ensure the collection has the correct ID
+                collectionModel.collectionId = collectionId
                 // Update editedAt and version to prevent deleteAll conflicts
                 collectionModel.editedAt = now
                 collectionModel.version += 1
-                collection.bookmarks.forEach { bookmarkId in
+
+                mappedCollections[collectionId] = collectionModel
+                modelContext.insert(collectionModel)
+            }
+
+            // Second pass: Establish parent/children relationships
+            for collectionModel in mappedCollections.values {
+                // Find the corresponding codable collection by matching IDs
+                guard let codableCollection = collections.first(where: { $0.collectionId == collectionModel.collectionId }) else {
+                    continue
+                }
+
+                // Set parent relationship
+                if let parentId = codableCollection.parent,
+                   let parentCollection = mappedCollections[parentId] {
+                    collectionModel.parent = parentCollection
+                }
+
+                // Set children relationships
+                for childId in codableCollection.children {
+                    if let childCollection = mappedCollections[childId] {
+                        collectionModel.children.append(childCollection)
+                    }
+                }
+
+                // Set bookmark relationships
+                codableCollection.bookmarks.forEach { bookmarkId in
                     if let bookmarkModel = mappedBookmarks[bookmarkId] {
                         collectionModel.bookmarks?.append(bookmarkModel)
                     }
                 }
-                
-                modelContext.insert(collectionModel)
             }
         } else {
             let creationTime = Date.now
@@ -320,85 +355,134 @@ class DataManager {
         guard let htmlString = String(data: data, encoding: .utf8) else {
             throw DataError.invalidHTML("Data Manager Invalid HTML Encoding Message")
         }
-        
+
         // Parse HTML and extract folders with bookmarks
         let parser = HTMLParser()
         let folders = try parser.parse(htmlString)
-        
+
         if folders.isEmpty {
             throw DataError.emptyHTML("Data Manager Empty HTML Message")
         }
-        
+
         let creationTime = Date.now
-        
-        // Create folder models and their bookmarks
+        var createdCollections: [String: YabaCollection] = [:]
+
+        // Recursively create collections and establish relationships
         for folder in folders {
-            var folderModel: YabaCollection? = nil
+            try createCollectionFromParsedFolder(
+                folder,
+                parentId: nil,
+                creationTime: creationTime,
+                createdCollections: &createdCollections,
+                modelContext: modelContext
+            )
+        }
 
-            if folder.label == "-1" {
-                let id = Constants.uncategorizedCollectionId // Thanks #Predicate for that...
-                let descriptor = FetchDescriptor<YabaCollection>(
-                    predicate: #Predicate<YabaCollection> { collection in
-                        collection.collectionId == id
-                    }
-                )
+        try modelContext.save()
+    }
 
-                if let existingUncatagorizedFolder = try? modelContext.fetch(descriptor).first {
-                    folderModel = existingUncatagorizedFolder
-                } else {
-                    let creationTime = Date.now
-                    folderModel = YabaCollection(
-                        collectionId: Constants.uncategorizedCollectionId,
-                        label: Constants.uncategorizedCollectionLabelKey,
-                        icon: "folder-01",
-                        createdAt: creationTime,
-                        editedAt: creationTime, // Already using current time
-                        color: .none,
-                        type: .folder,
-                        version: 1, // Start with version 1 for import
-                    )
+    private func createCollectionFromParsedFolder(
+        _ folder: HTMLParser.ParsedFolder,
+        parentId: String?,
+        creationTime: Date,
+        createdCollections: inout [String: YabaCollection],
+        modelContext: ModelContext
+    ) throws {
+        var collectionId = UUID().uuidString
+        var collectionLabel = folder.label
+        var collectionModel: YabaCollection
+
+        // Handle uncategorized folder specially
+        if folder.label == "-1" {
+            collectionId = Constants.uncategorizedCollectionId
+            collectionLabel = Constants.uncategorizedCollectionLabelKey
+
+            let descriptor = FetchDescriptor<YabaCollection>(
+                predicate: #Predicate<YabaCollection> { collection in
+                    collection.collectionId == collectionId
                 }
+            )
+
+            if let existingUncategorized = try? modelContext.fetch(descriptor).first {
+                collectionModel = existingUncategorized
             } else {
-                folderModel = YabaCollection(
-                    collectionId: UUID().uuidString,
-                    label: folder.label,
+                collectionModel = YabaCollection(
+                    collectionId: collectionId,
+                    label: collectionLabel,
                     icon: "folder-01",
                     createdAt: creationTime,
-                    editedAt: creationTime, // Already using current time
+                    editedAt: creationTime,
                     color: .none,
                     type: .folder,
-                    version: 1 // Start with version 1 for import
+                    version: 1,
+                    parent: nil,
+                    children: [],
+                    order: 0
                 )
+                modelContext.insert(collectionModel)
             }
-            
-            // Create bookmark models and add them to the folder
-            for bookmark in folder.bookmarks {
-                let bookmarkModel = YabaBookmark(
-                    bookmarkId: UUID().uuidString,
-                    link: bookmark.url,
-                    label: bookmark.title,
-                    bookmarkDescription: "",
-                    domain: URL(string: bookmark.url)?.host ?? "",
-                    createdAt: creationTime,
-                    editedAt: creationTime, // Already using current time
-                    imageDataHolder: nil,
-                    iconDataHolder: nil,
-                    imageUrl: nil,
-                    iconUrl: nil,
-                    videoUrl: nil,
-                    readableHTML: nil,
-                    type: .none,
-                    version: 1 // Start with version 1 for import
-                )
-                folderModel?.bookmarks?.append(bookmarkModel)
-            }
-            
-            if let folderModel {
-                modelContext.insert(folderModel)
+        } else {
+            collectionModel = YabaCollection(
+                collectionId: collectionId,
+                label: collectionLabel,
+                icon: "folder-01",
+                createdAt: creationTime,
+                editedAt: creationTime,
+                color: .none,
+                type: .folder,
+                version: 1,
+                parent: nil, // Will be set below
+                children: [],
+                order: 0
+            )
+            modelContext.insert(collectionModel)
+        }
+
+        // Store the created collection
+        createdCollections[folder.id] = collectionModel
+
+        // Set parent relationship if this is not a root folder
+        if let parentId = parentId, let parentCollection = createdCollections[parentId] {
+            collectionModel.parent = parentCollection
+        }
+
+        // Create bookmark models and add them to the collection
+        for bookmark in folder.bookmarks {
+            let bookmarkModel = YabaBookmark(
+                bookmarkId: UUID().uuidString,
+                link: bookmark.url,
+                label: bookmark.title,
+                bookmarkDescription: "",
+                domain: URL(string: bookmark.url)?.host ?? "",
+                createdAt: creationTime,
+                editedAt: creationTime,
+                imageDataHolder: nil,
+                iconDataHolder: nil,
+                imageUrl: nil,
+                iconUrl: nil,
+                videoUrl: nil,
+                readableHTML: nil,
+                type: .none,
+                version: 1
+            )
+            collectionModel.bookmarks?.append(bookmarkModel)
+        }
+
+        // Recursively create child collections
+        for childFolder in folder.children {
+            try createCollectionFromParsedFolder(
+                childFolder,
+                parentId: collectionModel.collectionId,
+                creationTime: creationTime,
+                createdCollections: &createdCollections,
+                modelContext: modelContext
+            )
+
+            // Add the child to parent's children array
+            if let childCollection = createdCollections[childFolder.id] {
+                collectionModel.children.append(childCollection)
             }
         }
-        
-        try modelContext.save()
     }
     
     func prepareExportableData(
@@ -407,7 +491,8 @@ class DataManager {
         onReady: @escaping (Data) -> Void
     ) throws {
         let descriptor = FetchDescriptor<YabaCollection>(
-            predicate: #Predicate { _ in true }
+            predicate: #Predicate { _ in true },
+            sortBy: [SortDescriptor(\.order)]
         )
         
         if let collections = try? modelContext.fetch(descriptor) {
@@ -681,7 +766,8 @@ class DataManager {
     ) throws -> SyncRequest {
         // Fetch all collections
         let collectionsDescriptor = FetchDescriptor<YabaCollection>(
-            predicate: #Predicate { _ in true }
+            predicate: #Predicate { _ in true },
+            sortBy: [SortDescriptor(\.order)]
         )
         let collections = try modelContext.fetch(collectionsDescriptor)
         
@@ -941,7 +1027,7 @@ class DataManager {
                 if shouldSetupRelationships {
                     // Clear existing relationships
                     localCollection.bookmarks?.removeAll()
-                    
+
                     // Add bookmarks from incoming data
                 for bookmarkId in incomingCollection.bookmarks {
                         let bookmarkDescriptor = FetchDescriptor<YabaBookmark>(
@@ -1180,75 +1266,99 @@ class DataManager {
     }
 }
 
-// HTML Parser class to handle HTML parsing with relaxed format support
+// HTML Parser class to handle HTML parsing with nested folder support
 private class HTMLParser {
     struct ParsedBookmark {
         let title: String
         let url: String
     }
-    
+
     struct ParsedFolder {
+        let id: String
         let label: String
         var bookmarks: [ParsedBookmark]
+        var children: [ParsedFolder]
+        var parentId: String?
+
+        init(label: String, parentId: String? = nil, bookmarks: [ParsedBookmark] = []) {
+            self.id = UUID().uuidString
+            self.label = label
+            self.bookmarks = bookmarks
+            self.children = []
+            self.parentId = parentId
+        }
     }
-    
+
     func parse(_ htmlString: String) throws -> [ParsedFolder] {
-        var folders: [ParsedFolder] = []
-        var currentFolder: ParsedFolder?
-        var allBookmarks: [ParsedBookmark] = []
-        
-        // Normalize the HTML string for better parsing
         let normalizedHTML = normalizeHTML(htmlString)
-        
-        // Use regex to find all DT elements (folders and bookmarks)
-        let dtPattern = #"<DT>.*?(?=<DT>|$)"#
-        let regex = try NSRegularExpression(pattern: dtPattern, options: [.caseInsensitive, .dotMatchesLineSeparators])
-        let matches = regex.matches(in: normalizedHTML, range: NSRange(normalizedHTML.startIndex..., in: normalizedHTML))
-        
-        for match in matches {
-            guard let range = Range(match.range, in: normalizedHTML) else { continue }
-            let dtElement = String(normalizedHTML[range]).trimmingCharacters(in: .whitespaces)
-            
-            // Skip empty elements
-            if dtElement.isEmpty { continue }
-            
-            // Check if this is a folder (H3 tag) but not a document title
-            if let folderName = extractFolderName(from: dtElement), !isDocumentTitle(dtElement) {
-                // Save current folder if it exists and has bookmarks
-                if let folder = currentFolder, !folder.bookmarks.isEmpty {
-                    folders.append(folder)
+        var folderStack: [ParsedFolder] = []
+        var rootFolders: [ParsedFolder] = []
+        var allBookmarks: [ParsedBookmark] = []
+
+        // Split HTML into lines for easier processing
+        let lines = normalizedHTML.components(separatedBy: .newlines)
+        var i = 0
+
+        while i < lines.count {
+            let line = lines[i].trimmingCharacters(in: .whitespacesAndNewlines)
+
+            // Check for folder start
+            if let folderName = extractFolderName(from: line), !isDocumentTitle(line) {
+                let newFolder = ParsedFolder(
+                    label: folderName,
+                    parentId: folderStack.last?.id
+                )
+
+                // Add to parent's children if we have a parent
+                if !folderStack.isEmpty {
+                    folderStack[folderStack.count - 1].children.append(newFolder)
                 }
-                
-                // Create new folder
-                currentFolder = ParsedFolder(label: folderName, bookmarks: [])
-                continue
+
+                folderStack.append(newFolder)
+
+                // Skip to the opening DL tag
+                while i < lines.count && !lines[i].contains("<DL>") {
+                    i += 1
+                }
             }
-            
-            // Check if this is a bookmark
-            if let bookmark = parseBookmark(from: dtElement) {
-                // Add to current folder if exists, otherwise collect all bookmarks
-                if currentFolder != nil {
-                    currentFolder?.bookmarks.append(bookmark)
+            // Check for folder end
+            else if line.contains("</DL>") {
+                if let completedFolder = folderStack.popLast() {
+                    // If this was a root folder, add it to rootFolders
+                    if completedFolder.parentId == nil {
+                        rootFolders.append(completedFolder)
+                    }
+                }
+            }
+            // Check for bookmark
+            else if let bookmark = parseBookmark(from: line) {
+                if !folderStack.isEmpty {
+                    folderStack[folderStack.count - 1].bookmarks.append(bookmark)
                 } else {
                     allBookmarks.append(bookmark)
                 }
             }
+
+            i += 1
         }
-        
-        // Add the last folder if exists and has bookmarks
-        if let folder = currentFolder, !folder.bookmarks.isEmpty {
-            folders.append(folder)
+
+        // Handle any remaining folders in stack
+        while let folder = folderStack.popLast() {
+            if folder.parentId == nil {
+                rootFolders.append(folder)
+            }
         }
-        
+
         // If we found bookmarks but no folders, create an uncategorized folder
-        if folders.isEmpty && !allBookmarks.isEmpty {
-            folders.append(ParsedFolder(label: "-1", bookmarks: allBookmarks))
+        if rootFolders.isEmpty && !allBookmarks.isEmpty {
+            rootFolders.append(ParsedFolder(label: "-1", bookmarks: allBookmarks))
         } else if !allBookmarks.isEmpty {
             // If we have both folders and loose bookmarks, add loose ones to uncategorized
-            folders.append(ParsedFolder(label: "-1", bookmarks: allBookmarks))
+            let uncategorized = ParsedFolder(label: "-1", bookmarks: allBookmarks)
+            rootFolders.append(uncategorized)
         }
-        
-        return folders
+
+        return rootFolders
     }
     
     private func normalizeHTML(_ html: String) -> String {

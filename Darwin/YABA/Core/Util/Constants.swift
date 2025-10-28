@@ -74,7 +74,11 @@ struct Constants {
           "editedAt": "2025-05-23T10:30:00Z",
           "color": 1,
           "type": 1,
-          "bookmarks": ["bookmark-id-1", "bookmark-id-2"]
+          "bookmarks": ["bookmark-uuid-1", "bookmark-uuid-2"],
+          "version": 1,
+          "parent": "parent-id",
+          "children": ["child-folder-uuid-1", "child-folder-uuid-2"],
+          "order": 0
         }
       ],
       "bookmarks": [
