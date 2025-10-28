@@ -133,21 +133,14 @@ private struct BookmarkItemView: View {
         .listRowBackground(
             isHovered
             ? RoundedRectangle(cornerRadius: 8).fill(.gray.opacity(0.2))
-            : RoundedRectangle(cornerRadius: 0).fill(.clear)
+            : nil
         )
         .contentShape(Rectangle())
-        .swipeActions(edge: .trailing) {
-            
-        }
         .onHover { hovered in
             isHovered = hovered
-            print("hovered on: \(bookmark.label)")
         }
         .onTapGesture {
-            let id = bookmark.bookmarkId
-            if let url = URL(
-                string: "yaba://open?id=\(id.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"
-            ) {
+            if let url = URL(string: bookmark.link) {
                 NSWorkspace.shared.open(url)
             }
         }

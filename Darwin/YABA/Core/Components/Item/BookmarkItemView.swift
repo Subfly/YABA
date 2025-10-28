@@ -89,6 +89,25 @@ struct BookmarkItemView: View {
                 
                 return true
             }
+            #if targetEnvironment(macCatalyst)
+            .listRowBackground(
+                appState.selectedBookmark?.bookmarkId == bookmark.bookmarkId
+                ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
+                : itemState.isHovered
+                ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
+                : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
+            )
+            #else
+            .listRowBackground(
+                UIDevice.current.userInterfaceIdiom == .phone
+                ? nil
+                : appState.selectedBookmark?.bookmarkId == bookmark.bookmarkId
+                ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
+                : itemState.isHovered
+                ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
+                : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
+            )
+            #endif
     }
     
     @ViewBuilder
@@ -139,25 +158,6 @@ struct BookmarkItemView: View {
                 bookmark: bookmark,
                 onNavigationCallback: onNavigationCallback
             )
-            #if targetEnvironment(macCatalyst)
-            .listRowBackground(
-                appState.selectedBookmark?.bookmarkId == bookmark.bookmarkId
-                ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
-                : itemState.isHovered
-                ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
-                : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
-            )
-            #else
-            .listRowBackground(
-                UIDevice.current.userInterfaceIdiom == .phone
-                ? nil
-                : appState.selectedBookmark?.bookmarkId == bookmark.bookmarkId
-                ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.2))
-                : itemState.isHovered
-                ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
-                : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
-            )
-            #endif
             #if !KEYBOARD_EXTENSION
             .contextMenu {
                 MenuActionItems(
