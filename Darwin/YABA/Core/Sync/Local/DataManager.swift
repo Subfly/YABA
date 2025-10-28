@@ -1129,7 +1129,9 @@ class DataManager {
                 if shouldSetupRelationships {
                     // Clear existing relationships
                     localCollection.bookmarks?.removeAll()
-                    
+                    localCollection.children.removeAll()
+                    localCollection.parent = nil
+
                     // Add bookmarks from incoming data
                     for bookmarkId in incomingCollection.bookmarks {
                         let bookmarkDescriptor = FetchDescriptor<YabaBookmark>(
@@ -1139,6 +1141,30 @@ class DataManager {
                         )
                         if let bookmark = try? modelContext.fetch(bookmarkDescriptor).first {
                             localCollection.bookmarks?.append(bookmark)
+                        }
+                    }
+
+                    // Add parent relationship from incoming data
+                    if let parentId = incomingCollection.parent {
+                        let parentDescriptor = FetchDescriptor<YabaCollection>(
+                            predicate: #Predicate<YabaCollection> { collection in
+                                collection.collectionId == parentId
+                            }
+                        )
+                        if let parentCollection = try? modelContext.fetch(parentDescriptor).first {
+                            localCollection.parent = parentCollection
+                        }
+                    }
+
+                    // Add children relationships from incoming data
+                    for childId in incomingCollection.children {
+                        let childDescriptor = FetchDescriptor<YabaCollection>(
+                            predicate: #Predicate<YabaCollection> { collection in
+                                collection.collectionId == childId
+                            }
+                        )
+                        if let childCollection = try? modelContext.fetch(childDescriptor).first {
+                            localCollection.children.append(childCollection)
                         }
                     }
                 }
@@ -1269,12 +1295,13 @@ class DataManager {
         collection.icon = codable.icon
         collection.color = YabaColor(rawValue: codable.color) ?? .none
         collection.version = codable.version
-        
+        collection.order = codable.order
+
         if let editedAt = parseDate(codable.editedAt) {
             collection.editedAt = editedAt
         }
-        
-        // Don't touch bookmark associations - they're handled separately
+
+        // Don't touch relationships - they're handled separately
     }
     
     private func updateCollectionFromCodable(
