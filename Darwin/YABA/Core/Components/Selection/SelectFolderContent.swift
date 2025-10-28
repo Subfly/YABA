@@ -165,11 +165,7 @@ private struct SelectFolderSearchableContent: View {
             } else {
                 if case .parentSelection(let currentCollection, let onMoveToRoot) = mode {
                     if currentCollection?.parent != nil {
-                        Label {
-                            Text("Select Folder Move To Root Label")
-                        } icon: {
-                            YabaIconView(bundleKey: "arrow-move-up-right")
-                        }.onTapGesture {
+                        MoveToRootItem().onTapGesture {
                             onMoveToRoot(true)
                             selectedFolder = nil
                         }
