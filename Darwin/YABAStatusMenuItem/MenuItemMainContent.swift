@@ -115,6 +115,9 @@ private struct SearchableContent: View {
 }
 
 private struct BookmarkItemView: View {
+    @Environment(\.modelContext)
+    private var modelContext
+    
     @State
     private var isHovered: Bool = false
     
@@ -129,6 +132,17 @@ private struct BookmarkItemView: View {
                 .fontWeight(.medium)
                 .lineLimit(1)
             Spacer()
+            if isHovered {
+                Menu {
+                    menuItems
+                } label: {
+                    Image("more-horizontal-circle-02")
+                        .renderingMode(.template)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 18, height: 18)
+                }.buttonStyle(.plain)
+            }
         }
         .listRowBackground(
             isHovered
@@ -138,6 +152,44 @@ private struct BookmarkItemView: View {
         .contentShape(Rectangle())
         .onHover { hovered in
             isHovered = hovered
+        }
+        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+            Button {
+                if let url = URL(string: bookmark.link) {
+                    NSWorkspace.shared.open(url)
+                }
+            } label: {
+                Image("internet")
+                    .renderingMode(.template)
+                    .resizable()
+                    .scaledToFit()
+            }.tint(.teal)
+            Button {
+                let id = bookmark.bookmarkId
+                let encodedID = id.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+                if let url = URL(
+                    string: "yaba://open?id=\(encodedID ?? "")"
+                ) {
+                    NSWorkspace.shared.open(url)
+                }
+            } label: {
+                Image("bookmark-02")
+                    .renderingMode(.template)
+                    .resizable()
+                    .scaledToFit()
+            }.tint(.blue)
+            Button(role: .destructive) {
+                modelContext.delete(bookmark)
+                try? modelContext.save()
+            } label: {
+                Image("delete-02")
+                    .renderingMode(.template)
+                    .resizable()
+                    .scaledToFit()
+            }.tint(.red)
+        }
+        .contextMenu {
+            menuItems
         }
         .onTapGesture {
             if let url = URL(string: bookmark.link) {
@@ -166,6 +218,59 @@ private struct BookmarkItemView: View {
                         .foregroundStyle(.tint)
                         .frame(width: 24, height: 24)
                 }
+        }
+    }
+    
+    @ViewBuilder
+    private var menuItems: some View {
+        Button {
+            if let url = URL(string: bookmark.link) {
+                NSWorkspace.shared.open(url)
+            }
+        } label: {
+            VStack {
+                Image("internet")
+                    .renderingMode(.template)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
+                    .foregroundStyle(.teal)
+                Text("Menu Item Open Web Label")
+            }
+        }
+        Button {
+            let id = bookmark.bookmarkId
+            let encodedID = id.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+            if let url = URL(
+                string: "yaba://open?id=\(encodedID ?? "")"
+            ) {
+                NSWorkspace.shared.open(url)
+            }
+        } label: {
+            VStack {
+                Image("bookmark-02")
+                    .renderingMode(.template)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
+                    .foregroundStyle(.blue)
+                Text("Menu Item Open Yaba Label")
+            }
+        }
+        Divider()
+        Button(role: .destructive) {
+            modelContext.delete(bookmark)
+            try? modelContext.save()
+        } label: {
+            VStack {
+                Image("delete-02")
+                    .renderingMode(.template)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
+                    .foregroundStyle(.red)
+                Text("Delete")
+            }
         }
     }
 }

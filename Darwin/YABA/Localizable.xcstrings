@@ -24812,6 +24812,30 @@
       },
       "shouldTranslate" : false
     },
+    "Menu Item Open Web Label" : {
+      "comment" : "Label of open in browser button",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open in Browser"
+          }
+        }
+      }
+    },
+    "Menu Item Open Yaba Label" : {
+      "comment" : "Label of open in YABA button",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open in YABA"
+          }
+        }
+      }
+    },
     "Move" : {
       "comment" : "Label to show for move related functionality",
       "extractionState" : "manual",
