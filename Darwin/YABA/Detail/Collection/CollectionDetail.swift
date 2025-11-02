@@ -340,6 +340,7 @@ private struct ToolbarItems: View {
                             YabaIconView(bundleKey: "arrow-move-up-right")
                         }
                     }
+                    .disabled(state.selectedBookmarks.isEmpty)
                     
                     Button {
                         state.shouldShowDeleteDialog = true
@@ -349,7 +350,9 @@ private struct ToolbarItems: View {
                         } icon: {
                             YabaIconView(bundleKey: "delete-02")
                         }
-                    }.tint(.red)
+                    }
+                    .tint(.red)
+                    .disabled(state.selectedBookmarks.isEmpty)
                 }
                 if collection?.collectionType == .folder {
                     Button {
