@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.maven.publish)
     alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
 }
 
 kotlin {
@@ -12,7 +14,6 @@ kotlin {
     jvm()
     iosX64()
     iosArm64()
-    iosSimulatorArm64()
 
     sourceSets {
         commonMain.dependencies {
@@ -26,6 +27,8 @@ kotlin {
             implementation(libs.ktor.client.serialization)
             implementation(libs.ktor.serialization.json)
             implementation(libs.ktor.client.logging)
+            implementation(libs.room.runtime)
+            implementation(libs.sqlite.bundled)
         }
 
         commonTest.dependencies {
@@ -66,4 +69,16 @@ android {
     defaultConfig {
         minSdk = 21
     }
+}
+
+dependencies {
+    ksp(libs.room.compiler)
+    add("kspAndroid", libs.room.compiler)
+    add("kspIosX64", libs.room.compiler)
+    add("kspIosArm64", libs.room.compiler)
+    add("kspJvm", libs.room.compiler)
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }
