@@ -8,17 +8,14 @@
 import SwiftUI
 
 struct HomeAnnouncementsView: View {
-    @AppStorage(Constants.announcementsYaba1_4UpdateKey)
+    @AppStorage(Constants.announcementsYaba1_5UpdateKey)
     private var showUpdateAnnouncement: Bool = true
     
-    @AppStorage(Constants.announcementsLegalsUpdateKey)
+    @AppStorage(Constants.announcementsLegalsUpdate_2Key)
     private var showLegalsAnnouncement: Bool = true
     
-    @AppStorage(Constants.announcementsCloudKitDatabaseWipeKey)
-    private var showCloudKitAnnouncement: Bool = true
-    
     var body: some View {
-        if showUpdateAnnouncement || showLegalsAnnouncement || showCloudKitAnnouncement {
+        if showUpdateAnnouncement || showLegalsAnnouncement {
             HStack {
                 Label {
                     Text("Home Announcements Title")
@@ -43,11 +40,11 @@ struct HomeAnnouncementsView: View {
     private var content: some View {
         if showUpdateAnnouncement {
             AnnouncementView(
-                titleKey: "Announcements Update Title \("v1.4")",
+                titleKey: "Announcements Update Title \("v1.5")",
                 severity: .update,
                 isInPreview: false,
                 onClick: {
-                    if let url: URL = .init(string: Constants.updateAnnouncementLink_1_4),
+                    if let url: URL = .init(string: Constants.updateAnnouncementLink_1_5),
                        UIApplication.shared.canOpenURL(url) {
                         UIApplication.shared.open(url)
                     }
@@ -60,11 +57,11 @@ struct HomeAnnouncementsView: View {
         }
         if showLegalsAnnouncement {
             AnnouncementView(
-                titleKey: "Announcements Legals Update CloudKit Title",
+                titleKey: "Announcements Legals Update MIT Title",
                 severity: .warning,
                 isInPreview: false,
                 onClick: {
-                    if let url: URL = .init(string: Constants.announcementLegalsUpdateLink_1),
+                    if let url: URL = .init(string: Constants.announcementLegalsUpdateLink_2),
                        UIApplication.shared.canOpenURL(url) {
                         UIApplication.shared.open(url)
                     }
@@ -74,22 +71,6 @@ struct HomeAnnouncementsView: View {
                 }
             ).animation(.smooth, value: showLegalsAnnouncement)
             Spacer().frame(height: 6)
-        }
-        if showCloudKitAnnouncement {
-            AnnouncementView(
-                titleKey: "Announcement CloudKit Deletion Title",
-                severity: .urgent,
-                isInPreview: false,
-                onClick: {
-                    if let url: URL = .init(string: Constants.announcementCloudKitDropLink_3),
-                       UIApplication.shared.canOpenURL(url) {
-                        UIApplication.shared.open(url)
-                    }
-                },
-                onDismiss: {
-                    showCloudKitAnnouncement = false
-                }
-            ).animation(.smooth, value: showCloudKitAnnouncement)
         }
     }
 }

@@ -802,6 +802,102 @@
         }
       }
     },
+    "Announcements Legals Update MIT Title" : {
+      "comment" : "Announcement title that indicates legal documents are updated due to code license change",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AGB und EULA wurden aktualisiert "
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ToS and EULA are updated "
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los ToS y la EULA se han actualizado "
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les CGU et l'EULA ont été mises à jour "
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सेवा की शर्तें और EULA अपडेट किए गए हैं "
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ToS e EULA sono stati aggiornati "
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "利用規約とEULAが更新されました "
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "서비스 약관과 EULA가 업데이트되었습니다 "
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vilkår for tjenesten og EULA er oppdatert "
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ToS en EULA zijn bijgewerkt "
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ToS e EULA foram atualizados "
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ToS a EULA boli aktualizované "
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Användarvillkor och EULA har uppdaterats "
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ToS ve EULA güncellendi "
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用条款和 EULA 已更新 "
+          }
+        }
+      }
+    },
     "Announcements Update Title %@" : {
       "comment" : "Announcement title that indicates there is a new update and some changes in YABA",
       "extractionState" : "manual",

@@ -22,10 +22,12 @@ struct Constants {
     static let updateAnnouncementLink_1_2 = "https://github.com/Subfly/YABA/discussions/4"
     static let updateAnnouncementLink_1_3 = "https://github.com/Subfly/YABA/discussions/6"
     static let updateAnnouncementLink_1_4 = "https://github.com/Subfly/YABA/discussions/8"
+    static let updateAnnouncementLink_1_5 = "https://github.com/Subfly/YABA/discussions/12"
     static let announcementCloudKitDropLink_1 = "https://github.com/Subfly/YABA/discussions/5"
     static let announcementCloudKitDropLink_2 = "https://github.com/Subfly/YABA/discussions/7"
     static let announcementCloudKitDropLink_3 = "https://github.com/Subfly/YABA/discussions/10"
     static let announcementLegalsUpdateLink_1 = "https://github.com/Subfly/YABA/discussions/9"
+    static let announcementLegalsUpdateLink_2 = "https://github.com/Subfly/YABA/discussions/13"
     
     /// MARK: SETTINGS
     static let hasPassedOnboardingKey = "hasPassedOnboarding"
@@ -55,10 +57,12 @@ struct Constants {
     static let announcementsYaba1_2UpdateKey = "announcementsYaba1_2UpdateKey"
     static let announcementsYaba1_3UpdateKey = "announcementsYaba1_3UpdateKey"
     static let announcementsYaba1_4UpdateKey = "announcementsYaba1_4UpdateKey"
+    static let announcementsYaba1_5UpdateKey = "announcementsYaba1_5UpdateKey"
     static let announcementsCloudKitDropKey = "announcementsCloudKitDropKey"
     static let announcementsCloudKitDropKeyUrgent = "announcementsCloudKitDropKeyUrgent"
     static let announcementsCloudKitDatabaseWipeKey = "announcementsCloudKitDatabaseWipe"
     static let announcementsLegalsUpdateKey = "announcementsLegalsUpdate"
+    static let announcementsLegalsUpdate_2Key = "announcementsLegalsUpdate_2"
     
     /// MARK: MAPPER
     static let jsonExample: String = """

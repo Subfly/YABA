@@ -16,6 +16,30 @@ internal struct PreviousAnnouncementsView: View {
             AnimatedGradient(collectionColor: .accentColor)
             List {
                 AnnouncementView(
+                    titleKey: "Announcements Legals Update MIT Title",
+                    severity: .warning,
+                    isInPreview: true,
+                    onClick: {
+                        if let url: URL = .init(string: Constants.announcementLegalsUpdateLink_2),
+                           UIApplication.shared.canOpenURL(url) {
+                            UIApplication.shared.open(url)
+                        }
+                    },
+                    onDismiss: { }
+                )
+                AnnouncementView(
+                    titleKey: "Announcements Update Title \("v1.5")",
+                    severity: .update,
+                    isInPreview: true,
+                    onClick: {
+                        if let url: URL = .init(string: Constants.updateAnnouncementLink_1_5),
+                           UIApplication.shared.canOpenURL(url) {
+                            UIApplication.shared.open(url)
+                        }
+                    },
+                    onDismiss: { }
+                )
+                AnnouncementView(
                     titleKey: "Announcement CloudKit Deletion Title",
                     severity: .urgent,
                     isInPreview: true,

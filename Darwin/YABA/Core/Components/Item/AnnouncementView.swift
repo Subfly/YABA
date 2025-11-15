@@ -21,6 +21,84 @@ struct AnnouncementView: View {
     let onDismiss: () -> Void
     
     var body: some View {
+        viewSwitcher
+            .onHover { hovered in
+                isHovered = hovered
+            }
+            .alert(
+                "Announcements Delete Title",
+                isPresented: $showDeleteDialog,
+            ) {
+                Button(role: .cancel) {
+                    showDeleteDialog = false
+                } label: {
+                    Text("Cancel")
+                }
+                Button(role: .destructive) {
+                    withAnimation {
+                        onDismiss()
+                        showDeleteDialog = false
+                    }
+                } label: {
+                    Text("Delete")
+                }
+            } message: {
+                Text("Announcements Delete Message")
+            }
+            .onTapGesture {
+                onClick()
+            }
+    }
+    
+    @ViewBuilder
+    private var viewSwitcher: some View {
+        if !isInPreview {
+            baseView
+                .padding()
+                .background {
+                    #if targetEnvironment(macCatalyst)
+                    if isHovered {
+                        RoundedRectangle(cornerRadius: 16).fill(Color.gray.opacity(0.1))
+                    } else {
+                        RoundedRectangle(cornerRadius: 16).fill(Color.clear)
+                    }
+                    #else
+                    if UIDevice.current.userInterfaceIdiom == .phone {
+                        RoundedRectangle(cornerRadius: 24).fill(Color.gray.opacity(0.05))
+                    } else if isHovered {
+                        RoundedRectangle(cornerRadius: 24).fill(Color.gray.opacity(0.1))
+                    } else {
+                        RoundedRectangle(cornerRadius: 24).fill(Color.clear)
+                    }
+                    #endif
+                }
+                .padding(.horizontal)
+                .contextMenu {
+                    if !isInPreview {
+                        Button {
+                            showDeleteDialog = true
+                        } label: {
+                            VStack {
+                                YabaIconView(bundleKey: "delete-02")
+                                Text("Delete")
+                            }
+                        }.tint(.red)
+                    }
+                }
+        } else {
+            baseView
+            #if targetEnvironment(macCatalyst)
+                .listRowBackground(
+                    isHovered
+                    ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
+                    : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
+                )
+            #endif
+        }
+    }
+    
+    @ViewBuilder
+    private var baseView: some View {
         HStack {
             HStack {
                 YabaIconView(bundleKey: severity.getUIIcon())
@@ -47,62 +125,5 @@ struct AnnouncementView: View {
             }
         }
         .contentShape(Rectangle())
-        .padding()
-        .background {
-            #if targetEnvironment(macCatalyst)
-            if isHovered {
-                RoundedRectangle(cornerRadius: 16).fill(Color.gray.opacity(0.1))
-            } else {
-                RoundedRectangle(cornerRadius: 16).fill(Color.clear)
-            }
-            #else
-            if UIDevice.current.userInterfaceIdiom == .phone {
-                RoundedRectangle(cornerRadius: 24).fill(Color.gray.opacity(0.05))
-            } else if isHovered {
-                RoundedRectangle(cornerRadius: 24).fill(Color.gray.opacity(0.1))
-            } else {
-                RoundedRectangle(cornerRadius: 24).fill(Color.clear)
-            }
-            #endif
-        }
-        .padding(.horizontal)
-        .contextMenu {
-            if !isInPreview {
-                Button {
-                    showDeleteDialog = true
-                } label: {
-                    VStack {
-                        YabaIconView(bundleKey: "delete-02")
-                        Text("Delete")
-                    }
-                }.tint(.red)
-            }
-        }
-        .onHover { hovered in
-            isHovered = hovered
-        }
-        .alert(
-            "Announcements Delete Title",
-            isPresented: $showDeleteDialog,
-        ) {
-            Button(role: .cancel) {
-                showDeleteDialog = false
-            } label: {
-                Text("Cancel")
-            }
-            Button(role: .destructive) {
-                withAnimation {
-                    onDismiss()
-                    showDeleteDialog = false
-                }
-            } label: {
-                Text("Delete")
-            }
-        } message: {
-            Text("Announcements Delete Message")
-        }
-        .onTapGesture {
-            onClick()
-        }
     }
 }
