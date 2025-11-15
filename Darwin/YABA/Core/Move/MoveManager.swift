@@ -43,8 +43,11 @@ class MoveManager {
             
             // Add tag to bookmark
             do {
+                let now = Date.now
                 bookmark.version += 1
+                bookmark.editedAt = now
                 collection.version += 1
+                collection.editedAt = now
                 collection.bookmarks?.append(bookmark)
                 try modelContext.save()
                 return
@@ -63,15 +66,19 @@ class MoveManager {
             // REMOVE BOOKMARK FROM OLD PARENT
             guard let oldParent = bookmark.getParentFolder() else { return }
             
+            let now = Date.now
             oldParent.bookmarks?.removeAll { innerBookmark in
                 innerBookmark.bookmarkId == bookmark.bookmarkId
             }
             oldParent.version += 1
+            oldParent.editedAt = now
             
             // MOVE BOOKMARK TO NEW PARENT
             bookmark.version += 1
+            bookmark.editedAt = now
             collection.bookmarks?.append(bookmark)
             collection.version += 1
+            collection.editedAt = now
             
             do {
                 try modelContext.save()
@@ -122,6 +129,8 @@ class MoveManager {
         }
         
         do {
+            let now = Date.now
+            
             // 1. Remove from old parent's children and reorder them
             if let oldParent = folder1.parent {
                 oldParent.children.removeAll(where: { $0.collectionId == folder1ID })
@@ -130,9 +139,11 @@ class MoveManager {
                 for (index, item) in sortedOld.enumerated() {
                     item.order = index
                     item.version += 1
+                    item.editedAt = now
                 }
                 oldParent.children = sortedOld
                 oldParent.version += 1
+                oldParent.editedAt = now
             }
 
             // 2. Add to new parent's children
@@ -152,11 +163,14 @@ class MoveManager {
             for (index, item) in sortedNew.enumerated() {
                 item.order = index
                 item.version += 1
+                item.editedAt = now
             }
             folder2.children = sortedNew
             
             folder1.version += 1
+            folder1.editedAt = now
             folder2.version += 1
+            folder2.editedAt = now
             
             try modelContext.save()
         } catch {
@@ -170,10 +184,12 @@ class MoveManager {
             FetchDescriptor<YabaCollection>()
         ) else { return }
         
+        let now = Date.now
+        
         // 1) Handle folders: find root folders (parent == nil) and assign 0..n-1
         let allFolders = allCollections.filter { $0.collectionType == .folder }
         let rootFolders = allFolders.filter { $0.parent == nil }
-        assignPerGroupOrders(rootFolders)
+        assignPerGroupOrders(rootFolders, timestamp: now)
         
         // 2) Handle tags (flat list) - assign 0..tags.count-1
         let tags = allCollections.filter { $0.collectionType == .tag }
@@ -181,6 +197,7 @@ class MoveManager {
         for (index, tag) in sortedTags.enumerated() {
             tag.order = index
             tag.version += 1
+            tag.editedAt = now
         }
         
         // 3) Save context
@@ -192,14 +209,15 @@ class MoveManager {
     }
     
     // Recursively assign per-sibling-group orders starting from 0 inside each group
-    private func assignPerGroupOrders(_ siblings: [YabaCollection]) {
+    private func assignPerGroupOrders(_ siblings: [YabaCollection], timestamp: Date) {
         let sorted = sortSiblings(siblings)
         for (index, item) in sorted.enumerated() {
             item.order = index
             item.version += 1
+            item.editedAt = timestamp
             // If this item is a folder, recurse into its children (they get their own 0..n-1)
             if item.collectionType == .folder {
-                assignPerGroupOrders(item.children)
+                assignPerGroupOrders(item.children, timestamp: timestamp)
             }
         }
     }
@@ -306,9 +324,11 @@ class MoveManager {
         newOrder.insert(draggedCollection, at: insertIndex)
 
         // Update orders
+        let now = Date.now
         for (index, tag) in newOrder.enumerated() {
             tag.order = index
             tag.version += 1
+            tag.editedAt = now
         }
 
         do {
@@ -323,6 +343,8 @@ class MoveManager {
         targetCollection: YabaCollection,
         zone: DropZone
     ) {
+        let now = Date.now
+        
         // Determine the target parent
         let targetParent = targetCollection.parent
 
@@ -338,17 +360,21 @@ class MoveManager {
                 for (index, item) in sortedOld.enumerated() {
                     item.order = index
                     item.version += 1
+                    item.editedAt = now
                 }
                 oldParent.children = sortedOld
                 oldParent.version += 1
+                oldParent.editedAt = now
             }
 
             // Add to new parent
             draggedCollection.parent = targetParent
             draggedCollection.version += 1
+            draggedCollection.editedAt = now
             if let newParent = targetParent {
                 newParent.children.append(draggedCollection)
                 newParent.version += 1
+                newParent.editedAt = now
             }
         }
 
@@ -392,12 +418,14 @@ class MoveManager {
         for (index, sibling) in newOrder.enumerated() {
             sibling.order = index
             sibling.version += 1
+            sibling.editedAt = now
         }
 
         // Update the parent's children array to match the new order
         if let targetParent = targetParent {
             targetParent.children = newOrder
             targetParent.version += 1
+            targetParent.editedAt = now
         } else {
             // For root level, we can't directly reorder the fetched array,
             // but the order properties are updated which should be used for sorting

@@ -24,9 +24,7 @@ internal struct WelcomePage: View {
     
     var body: some View {
         VStack {
-            Image(.appIcon)
-                .resizable()
-                .scaledToFill()
+            YabaIconView(bundleKey: "bookmark-02")
                 .frame(
                     width: UIDevice.current.userInterfaceIdiom == .pad
                     ? 300

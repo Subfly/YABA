@@ -72,7 +72,7 @@ struct SyncView: View {
                     }
                 }
                 
-                Button("Reject", role: .destructive) {
+                Button("Reject", role: .cancel) {
                     Task {
                         if let request = currentSyncRequest {
                             do {

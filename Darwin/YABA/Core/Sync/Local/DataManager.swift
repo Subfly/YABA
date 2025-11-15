@@ -877,6 +877,14 @@ class DataManager {
         )
         let collections = try modelContext.fetch(collectionsDescriptor)
         
+        // Explicitly access relationships to ensure SwiftData loads them
+        // This forces SwiftData to fault in the parent and children relationships
+        for collection in collections {
+            _ = collection.parent?.collectionId
+            _ = collection.children.map { $0.collectionId }
+            _ = collection.bookmarks?.map { $0.bookmarkId }
+        }
+        
         // Convert collections to codable format
         let codableCollections = collections.map { $0.mapToCodable() }
         
@@ -1033,6 +1041,9 @@ class DataManager {
             localBookmarkDeletionIds = Set(allLocalDeletionLogs.filter { $0.entityType == .bookmark }.map { $0.entityId })
         }
         
+        // Keep track of collections that require relationship refresh (either new or overwritten metadata)
+        var collectionsRequiringRelationshipUpdate: Set<String> = []
+        
         // STEP 1: Create and insert all collections first (following SwiftData best practices)
         for incomingCollection in request.collections {
             let collectionId = incomingCollection.collectionId
@@ -1059,6 +1070,9 @@ class DataManager {
                     // Update existing collection metadata only (no relationships yet)
                     updateCollectionMetadataFromCodable(existingCollection, from: incomingCollection)
                     mergedCollections += 1
+                    
+                    // Mark for relationship refresh in Step 3
+                    collectionsRequiringRelationshipUpdate.insert(collectionId)
                 }
             } else {
                 // New collection - create and insert it (no relationships yet)
@@ -1066,6 +1080,7 @@ class DataManager {
                 // Clear any relationships that might have been set during mapping
                 newCollection.bookmarks?.removeAll()
                 modelContext.insert(newCollection)
+                collectionsRequiringRelationshipUpdate.insert(collectionId)
                 mergedCollections += 1
             }
         }
@@ -1122,15 +1137,10 @@ class DataManager {
             
             if let localCollection = try? modelContext.fetch(collectionDescriptor).first {
                 // Check if incoming collection should set up relationships
-                // This includes both "new" collections and collections that should overwrite local ones
-                let shouldSetupRelationships = shouldOverwrite(
-                    localVersion: localCollection.version,
-                    localEditedAt: localCollection.editedAt,
-                    incomingVersion: incomingCollection.version,
-                    incomingEditedAt: parseDate(incomingCollection.editedAt)
-                ) || localCollection.bookmarks?.isEmpty == true // Also set up if local has no bookmarks
+                // We should update relationships if incoming data is newer
+                let shouldUpdateRelationships = collectionsRequiringRelationshipUpdate.contains(collectionId)
                 
-                if shouldSetupRelationships {
+                if shouldUpdateRelationships {
                     // Clear existing relationships
                     localCollection.bookmarks?.removeAll()
                     localCollection.children.removeAll()
@@ -1144,7 +1154,10 @@ class DataManager {
                             }
                         )
                         if let bookmark = try? modelContext.fetch(bookmarkDescriptor).first {
-                            localCollection.bookmarks?.append(bookmark)
+                            // Check if bookmark already exists in collection to avoid duplicates
+                            if !(localCollection.bookmarks?.contains(where: { $0.bookmarkId == bookmark.bookmarkId }) ?? false) {
+                                localCollection.bookmarks?.append(bookmark)
+                            }
                         }
                     }
 
@@ -1168,7 +1181,10 @@ class DataManager {
                             }
                         )
                         if let childCollection = try? modelContext.fetch(childDescriptor).first {
-                            localCollection.children.append(childCollection)
+                            // Check if child already exists to avoid duplicates
+                            if !localCollection.children.contains(where: { $0.collectionId == childCollection.collectionId }) {
+                                localCollection.children.append(childCollection)
+                            }
                         }
                     }
                 }
