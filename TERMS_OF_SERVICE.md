@@ -1,7 +1,7 @@
 # Terms of Service
 
-**Last Updated:** September 2025
-**Effective Date:** September 15, 2025
+**Last Updated:** November 2025
+**Effective Date:** November 15, 2025
 
 ## 1. Acceptance of Terms
 
@@ -14,22 +14,24 @@ YABA is an open-source bookmark management application that allows users to:
 - Import and export bookmark data
 - Use the application offline
 - Synchronize data using server-less peer-to-peer communication
-- Access the source code under MIT License
+- Access the source code under the AGPL-3 license
 
 ## 3. Open Source Nature
 
-### 3.1 MIT License
-This Service is released under the MIT License. You have the right to:
+### 3.1 AGPL-3 License
+This Service is released under the GNU Affero General Public License v3.0 ("AGPL-3"). Subject to the terms of the AGPL-3, you have the right to:
 - Use the Service for any purpose
 - Modify the source code
 - Distribute the Service
 - Distribute modified versions
 - Use the Service commercially
 
+When you distribute the Service (or modified versions), or make it available for use over a network, you must comply with the AGPL-3 requirements, including providing the complete corresponding source code to users.
+
 ### 3.2 Source Code
 - The source code is publicly available on GitHub
-- You may fork, modify, and distribute the code
-- You are responsible for any modifications you make
+- You may fork, modify, and distribute the code under the terms of the AGPL-3
+- You are responsible for any modifications you make and for complying with the AGPL-3 when you distribute or host modified versions
 - The original developer is not responsible for modified versions
 
 ## 4. User Responsibilities
@@ -186,7 +188,7 @@ Upon termination:
 - You remain responsible for your data
 - You remain responsible for your sync data
 - Your data remains on your devices
-- The MIT License continues to apply to source code
+- The AGPL-3 license continues to apply to source code
 - You may continue using any copies you have made
 - The developer is not responsible for data accessibility after termination
 
@@ -228,7 +230,7 @@ If any provision of these Terms is found to be unenforceable, the remaining prov
 
 ## 14. Entire Agreement
 
-These Terms, together with the MIT License and Privacy Policy, constitute the entire agreement between you and the developer regarding the Service.
+These Terms, together with the AGPL-3 license and Privacy Policy, constitute the entire agreement between you and the developer regarding the Service.
 
 ## 15. Contact Information
 
@@ -239,6 +241,7 @@ For questions about these Terms, please contact:
 ---
 
 **Previous versions of these Terms of Service are available:**
+- [Previous Terms of Service (MIT License)](https://github.com/Subfly/YABA/blob/09aa84ec5b938c4a3b367b39af6ea6d22e67ea52/TERMS_OF_SERVICE.md)
 - [Previous Terms of Service (with CloudKit/iCloud sync)](https://github.com/Subfly/YABA/blob/5bf540dc/TERMS_OF_SERVICE.md)
 
 **By using YABA, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service. You further acknowledge that you use the Service entirely at your own risk and that the developer bears no responsibility for any damages, losses, or consequences arising from your use of the Service.** 

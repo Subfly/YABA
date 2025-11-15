@@ -1,7 +1,7 @@
 # End User License Agreement (EULA)
 
-**Last Updated:** September 2025
-**Effective Date:** September 15, 2025
+**Last Updated:** November 2025
+**Effective Date:** November 15, 2025
 
 ## 1. Acceptance of Terms
 
@@ -9,18 +9,18 @@ By downloading, installing, or using YABA ("the Software"), you agree to be boun
 
 ## 2. License Grant
 
-Subject to the terms of this EULA, Subfly Dev. ("Licensor") grants you a limited, non-exclusive, non-transferable license to use the Software for personal or commercial purposes.
+Subject to the terms of this EULA and the applicable open-source license, Subfly Dev. ("Licensor") grants you a limited, non-exclusive, non-transferable license to use the Software for personal or commercial purposes.
 
 ## 3. Open Source Components
 
-This Software is released under the MIT License. You may:
+This Software is released under the GNU Affero General Public License v3.0 ("AGPL-3"). You may, under the terms of the AGPL-3:
 - Use the Software for any purpose
 - Modify the Software
 - Distribute the Software
 - Distribute modified versions
 - Use the Software commercially
 
-Subject to the MIT License terms, which are incorporated herein by reference.
+Subject to the AGPL-3 license terms, which are incorporated herein by reference.
 
 ## 4. User Responsibilities
 
@@ -141,7 +141,7 @@ The Licensor may terminate this license if you fail to comply with any term of t
 
 ### 8.3 Effect of Termination
 Upon termination, your right to use the Software ceases immediately. However:
-- The MIT License terms continue to apply to any copies you have made
+- The AGPL-3 license terms continue to apply to any copies you have made
 - Your data remains on your devices and may persist
 - You are responsible for managing your data after termination
 - The Licensor is not responsible for data accessibility after termination
@@ -169,7 +169,7 @@ If any provision of this EULA is found to be unenforceable or invalid, that prov
 
 ## 11. Entire Agreement
 
-This EULA, together with the MIT License, constitutes the entire agreement between you and the Licensor regarding the Software.
+This EULA, together with the AGPL-3 license, constitutes the entire agreement between you and the Licensor regarding the Software.
 
 ## 12. Contact Information
 
@@ -180,6 +180,7 @@ For questions about this EULA, please contact:
 ---
 
 **Previous versions of this EULA are available:**
+- [Previous EULA (MIT License)](https://github.com/Subfly/YABA/blob/09aa84ec5b938c4a3b367b39af6ea6d22e67ea52/EULA.md)
 - [Previous EULA (with CloudKit/iCloud sync)](https://github.com/Subfly/YABA/blob/5bf540dc/EULA.md)
 
 **By using YABA, you acknowledge that you have read, understood, and agree to be bound by this EULA. You further acknowledge that you use the Software entirely at your own risk and that the Licensor bears no responsibility for any damages, losses, or consequences arising from your use of the Software.** 
