@@ -136,7 +136,9 @@ internal class ReaderState: NSObject {
 
     private func injectReadabilityAndExtract() {
         guard let readabilityPath = Bundle.main.path(forResource: "Readability", ofType: "js") else {
-            print("❌ Readability.js not found")
+            #if DEBUG
+            print("Readability.js not found")
+            #endif
             return
         }
 
@@ -155,7 +157,9 @@ internal class ReaderState: NSObject {
                 """
             webView?.evaluateJavaScript(js)
         } catch {
-            print("❌ Failed to load Readability.js: \(error)")
+            #if DEBUG
+            print("Failed to load Readability.js: \(error)")
+            #endif
         }
     }
 }

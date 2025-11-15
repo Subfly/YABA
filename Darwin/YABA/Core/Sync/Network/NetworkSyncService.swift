@@ -210,29 +210,27 @@ final class SimpleNetworkService: NSObject {
         guard let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
               let messageTypeString = json["messageType"] as? String,
               let messageType = SyncMessageType(rawValue: messageTypeString) else {
-            print("Failed to decode message type from incoming data")
-            
-            // Debug: Print what we actually received
-            if let debugString = String(data: data, encoding: .utf8) {
-                print("Raw data received: \(debugString)")
-            }
-            if let json = try? JSONSerialization.jsonObject(with: data, options: []) {
-                print("JSON parsed as: \(json)")
-            }
             
             // Fallback: Try to decode using the old sequential method
-            print("Attempting fallback decoding...")
             if let syncRequest = try? JSONDecoder().decode(SyncRequestMessage.self, from: data) {
+                #if DEBUG
                 print("Successfully decoded as SyncRequestMessage")
+                #endif
                 syncRequestsPublisher.send(syncRequest)
             } else if let syncResponse = try? JSONDecoder().decode(SyncRequestResponse.self, from: data) {
+                #if DEBUG
                 print("Successfully decoded as SyncRequestResponse")
+                #endif
                 syncResponsesPublisher.send(syncResponse)
             } else if let syncData = try? JSONDecoder().decode(SyncDataMessage.self, from: data) {
+                #if DEBUG
                 print("Successfully decoded as SyncDataMessage")
+                #endif
                 syncDataPublisher.send(syncData)
             } else {
+                #if DEBUG
                 print("Failed to decode with fallback method as well")
+                #endif
             }
             return
         }

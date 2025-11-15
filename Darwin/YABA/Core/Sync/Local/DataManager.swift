@@ -475,8 +475,6 @@ class DataManager {
         do {
             try modelContext.save()
         } catch {
-            print("LELE")
-            print(error.localizedDescription)
             throw error
         }
     }

@@ -109,7 +109,9 @@ internal struct CollectionEntityQuery: EntityQuery {
             collections.append(contentsOf: folderEntities)
             collections.append(contentsOf: tagEntities)
         } catch {
+            #if DEBUG
             print("Error fetching collections for widget configuration: \(error)")
+            #endif
         }
         
         return collections
@@ -232,7 +234,9 @@ internal struct CategoryCollectionEntityQuery: EntityQuery {
             collections.append(contentsOf: folderEntities)
             collections.append(contentsOf: tagEntities)
         } catch {
+            #if DEBUG
             print("Error fetching collections for category widget configuration: \(error)")
+            #endif
         }
         
         return collections

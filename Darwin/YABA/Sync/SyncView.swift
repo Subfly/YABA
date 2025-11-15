@@ -65,7 +65,9 @@ struct SyncView: View {
                             do {
                                 try await state.acceptSyncRequest(request, using: modelContext)
                             } catch {
+                                #if DEBUG
                                 print("Failed to accept sync request: \(error)")
+                                #endif
                             }
                         }
                         currentSyncRequest = nil
@@ -78,7 +80,9 @@ struct SyncView: View {
                             do {
                                 try await state.rejectSyncRequest(request)
                             } catch {
+                                #if DEBUG
                                 print("Failed to reject sync request: \(error)")
+                                #endif
                             }
                         }
                         currentSyncRequest = nil
@@ -108,7 +112,9 @@ struct SyncView: View {
                         do {
                             try await state.sendOurDataIfNeeded(using: modelContext)
                         } catch {
+                            #if DEBUG
                             print("Failed to send our data: \(error)")
+                            #endif
                         }
                     }
                 }
@@ -119,7 +125,9 @@ struct SyncView: View {
                         do {
                             try await state.completeSyncWithIncomingData(syncData, using: modelContext)
                         } catch {
+                            #if DEBUG
                             print("Failed to complete sync with incoming data: \(error)")
+                            #endif
                         }
                     }
                 }
@@ -167,7 +175,9 @@ struct SyncView: View {
                                 do {
                                     try await state.sendSyncRequest(to: device)
                                 } catch {
+                                    #if DEBUG
                                     print("Failed to send sync request to \(device.name): \(error)")
+                                    #endif
                                 }
                                 sendingRequestToDeviceId = nil
                             }

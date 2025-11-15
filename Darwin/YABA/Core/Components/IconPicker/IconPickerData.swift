@@ -52,13 +52,11 @@ internal class IconPickerData {
     
     private func loadHeaderData() {
         guard let url = Bundle.main.url(forResource: "icon_categories_header", withExtension: "json") else {
-            print("Failed to find icon_categories_header.json")
             return
         }
         
         guard let data = try? Data(contentsOf: url),
               let decoded = try? JSONDecoder().decode(IconHeader.self, from: data) else {
-            print("Failed to decode icon_categories_header.json")
             return
         }
         
@@ -70,12 +68,16 @@ internal class IconPickerData {
         let filename = subcategory.filename.replacingOccurrences(of: ".json", with: "")
         
         guard let url = Bundle.main.url(forResource: filename, withExtension: "json") else {
+            #if DEBUG
             print("Failed to find \(filename).json")
+            #endif
             return
         }
         
         guard let data = try? Data(contentsOf: url) else {
+            #if DEBUG
             print("Failed to load data from \(filename).json")
+            #endif
             return
         }
         
@@ -83,7 +85,9 @@ internal class IconPickerData {
         if let decoded = try? JSONDecoder().decode(SubcategoryIconData.self, from: data) {
             loadedSubcategoryData[subcategory.id] = decoded.icons.sorted { $0.name < $1.name }
         } else {
+            #if DEBUG
             print("Failed to decode \(filename).json")
+            #endif
         }
     }
 }
