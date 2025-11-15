@@ -31611,91 +31611,91 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wir sammeln keine Daten. Deine Lesezeichen werden über CloudKit in iCloud gespeichert und sind nur für dich zugänglich."
+            "value" : "Wir sammeln nichts. Deine Lesezeichen werden auf deinem Gerät gespeichert und sind nur für dich zugänglich."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "We don’t collect anything. Your bookmarks are stored in iCloud via CloudKit, only accessible to you."
+            "value" : "We don't collect anything. Your bookmarks are stored on your device and are only accessible to you."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No recopilamos nada. Tus marcadores se guardan en iCloud mediante CloudKit, accesibles solo para ti."
+            "value" : "No recopilamos nada. Tus marcadores se almacenan en tu dispositivo y solo tú puedes acceder a ellos."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nous ne collectons rien. Tes favoris sont stockés dans iCloud via CloudKit, accessibles uniquement par toi."
+            "value" : "On ne collecte rien. Tes signets sont stockés sur ton appareil et accessibles uniquement par toi."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "हम कोई जानकारी एकत्रित नहीं करते। आपका बुकमार्क iCloud के माध्यम से CloudKit में संग्रहीत होता है, जो केवल आपको ही पहुंच योग्य है।"
+            "value" : "हम कोई भी जानकारी एकत्र नहीं करते। आपके बुकमार्क आपके डिवाइस में ही सुरक्षित रखे जाते हैं और केवल आप ही उन्हें एक्सेस कर सकते हैं।"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Non raccogliamo nulla. I tuoi segnalibri sono archiviati in iCloud tramite CloudKit, accessibile solo a te."
+            "value" : "Non raccogliamo niente. I tuoi segnalibri sono memorizzati sul tuo dispositivo e accessibili solo a te."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "私たちは何も収集しません。ブックマークはCloudKit経由でiCloudに保存され、あなただけがアクセスできます。"
+            "value" : "何も収集しません。ブックマークは端末に保存され、あなただけがアクセスできます。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "우리는 어떠한 정보도 수집하지 않습니다. 북마크는 iCloud의 CloudKit을 통해 저장되며, 오직 사용자님만 접근할 수 있습니다."
+            "value" : "저희는 어떤 정보도 수집하지 않습니다. 북마크는 기기에만 저장되며 본인만 접근할 수 있습니다."
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vi samler ikke inn noe. Bokmerkene dine lagres i iCloud via CloudKit, kun tilgjengelig for deg."
+            "value" : "Vi samler ikke inn noe. Bokmerkene dine lagres på enheten din og er kun tilgjengelige for deg."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "We verzamelen niets. Je bladwijzers worden via CloudKit in iCloud opgeslagen, alleen toegankelijk voor jou."
+            "value" : "We verzamelen niets. Je bladwijzers worden op je apparaat opgeslagen en zijn alleen voor jou toegankelijk."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Não coletamos nada. Seus favoritos são armazenados no iCloud via CloudKit, acessíveis somente a você."
+            "value" : "Não coletamos nada. Seus favoritos são armazenados no seu dispositivo e só podem ser acessados por você."
           }
         },
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nič nezhromažďujeme. Tvoje záložky sú uložené v iCloude cez CloudKit a máš k nim prístup iba ty."
+            "value" : "Nič nezhromažďujeme. Tvoje záložky sú uložené v tvojom zariadení a sú prístupné iba tebe."
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vi samlar inte in något. Dina bokmärken lagras i iCloud via CloudKit, endast tillgängliga för dig."
+            "value" : "Vi samlar inte in någonting. Dina bokmärken lagras på din enhet och är endast åtkomliga för dig."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hiçbir bilgiyi toplamayız. Yer işaretleriniz iCloud üzerinden CloudKit'te sadece sizin erişiminizde saklanır."
+            "value" : "Hiçbir şey toplamayız. Yer imleriniz cihazınızda saklanır; sadece siz erişebilirsiniz."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "我们不收集任何信息。你的书签通过 CloudKit 存储在 iCloud 中，仅你可访问。"
+            "value" : "我们不会收集任何信息。你的书签保存在设备上，只有你可以访问。"
           }
         }
       }
