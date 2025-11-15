@@ -2525,10 +2525,94 @@
       "comment" : "Bookmark selection action cancel label in collection detail",
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auswahl abbrechen"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cancel Selection"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancelar selección"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Annuler la sélection"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "चयन रद्द करें"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Annulla selezione"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選択をキャンセル"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "선택 취소"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avbryt valg"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Annuleer selectie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancelar seleção"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zrušiť výber"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avbryt markering"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seçimi İptal Et"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取消选择"
           }
         }
       }
@@ -2537,10 +2621,94 @@
       "comment" : "Bookmark selection action delete label in collection detail",
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auswahl löschen"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Delete Selection"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminar selección"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer la sélection"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "चयन हटाएँ"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elimina selezione"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選択を削除"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "선택 삭제"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Slett markerte"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verwijder selectie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Excluir seleção"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vymazať výber"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ta bort valda"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seçimi Sil"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除所选"
           }
         }
       }
@@ -2549,10 +2717,94 @@
       "comment" : "Bookmark selection delete selections dialog message ",
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Möchtest du die ausgewählten Lesezeichen wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden!"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Are you sure you want to delete selected bookmarks? This operation can not be undone!"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Seguro que quieres eliminar los marcadores seleccionados? ¡Esta operación no se puede deshacer!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voulez-vous vraiment supprimer les favoris sélectionnés ? Cette opération est irréversible !"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "क्या आप निश्चित रूप से चुने गए बुकमार्क हटाना चाहते हैं? इस क्रिया को पूर्ववत नहीं किया जा सकता!"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sei sicuro di voler eliminare i segnalibri selezionati? Questa operazione non può essere annullata!"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選択したブックマークを削除してもよろしいですか？この操作は取り消せません！"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "선택한 북마크를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다!"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Er du sikker på at du vil slette de valgte bokmerkene? Denne handlingen kan ikke angres!"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weet je zeker dat je de geselecteerde bladwijzers wilt verwijderen? Deze handeling kan niet ongedaan worden gemaakt!"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tem certeza de que deseja excluir os favoritos selecionados? Esta operação não pode ser desfeita!"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Naozaj chcete odstrániť vybrané záložky? Túto operáciu nie je možné vrátiť späť!"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Är du säker på att du vill ta bort de valda bokmärkena? Denna åtgärd kan inte ångras!"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seçili yer imlerini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "确定要删除所选书签吗？此操作无法撤销！"
           }
         }
       }
@@ -2561,10 +2813,94 @@
       "comment" : "Bookmark selection action enable label in collection detail",
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auswählen"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Select"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seleccionar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sélectionner"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "चयन करें"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seleziona"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選択"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "선택"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Velg"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selecteer"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selecionar"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vybrať"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Välj"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seç"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择"
           }
         }
       }
@@ -2573,10 +2909,94 @@
       "comment" : "Bookmark selection action move label in collection detail",
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auswahl verschieben"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Move Selection"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mover selección"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Déplacer la sélection"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "चयन स्थानांतरित करें"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sposta selezione"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選択を移動"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "선택 항목 이동"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flytt markerte"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verplaats selectie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mover seleção"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Presunúť výber"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flytta valda"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seçimi Taşı"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移动所选"
           }
         }
       }
@@ -4986,10 +5406,94 @@
       "comment" : "Message to be shown in the tip of changing bookmark, down under the bookmark preview",
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wechsle das Lesezeichenbild ganz einfach — tippe auf die Vorschau, um die gefundenen Optionen durchzublättern."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Easily switch the bookmark image — just tap the preview to cycle through the fetched options."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cambia la imagen del marcador fácilmente: toca la vista previa para recorrer las opciones encontradas."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change facilement l'image du favori — touche l'aperçu pour parcourir les options récupérées."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "बुकमार्क छवि आसानी से बदलें — पूर्वावलोकन पर छूकर प्राप्त विकल्पों के बीच क्रम में बदलें।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cambia facilmente l'immagine del segnalibro — tocca l'anteprima per scorrere le opzioni recuperate."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ブックマークの画像は簡単に切り替えられます — プレビューをタップすると取得した候補を順に表示します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "북마크 이미지를 쉽게 바꿀 수 있습니다 — 미리보기를 탭하면 가져온 옵션을 순환합니다."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bytt enkelt bokmerkebildet — trykk bare på forhåndsvisningen for å bla gjennom de hentede alternativene."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wijzig eenvoudig de bladwijzerafbeelding — tik op de voorbeeldweergave om door de gevonden opties te bladeren."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Altere facilmente a imagem do favorito — toque na prévia para percorrer as opções encontradas."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jednoducho zmeň obrázok záložky — ťukni na náhľad a prepínaj medzi načítanými možnosťami."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Byt enkelt bokmärkesbild — tryck på förhandsgranskningen för att bläddra bland de hämtade alternativen."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yer imi resmini kolayca değiştirin — önizlemeye dokunarak alınan seçenekler arasında geçiş yapın."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "轻松切换书签图片——只需点击预览即可循环查看抓取到的选项。"
           }
         }
       }
@@ -4998,10 +5502,94 @@
       "comment" : "Title to be shown in the tip of changing bookmark, down under the bookmark preview",
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bild des Lesezeichens ändern"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Change Bookmark Image"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cambiar imagen del marcador"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modifier l'image du favori"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "बुकमार्क छवि बदलें"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cambia immagine del segnalibro"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ブックマーク画像を変更"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "북마크 이미지 변경"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Endre bokmerkebilde"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wijzig bladwijzerafbeelding"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alterar imagem do favorito"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zmeniť obrázok záložky"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Byt bokmärkesbild"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yer İmi Resmini Değiştir"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更换书签图片"
           }
         }
       }
@@ -8844,102 +9432,6 @@
         }
       }
     },
-    "Delete Folder Title" : {
-      "comment" : "Title to show in dialog when a folder is deleting",
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ordner löschen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Delete Folder"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Eliminar carpeta"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Supprimer le dossier"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "फ़ोल्डर हटाएँ"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Elimina cartella"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "フォルダを削除"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "폴더 삭제"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Slett mappe"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Map Verwijderen"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Excluir Pasta"
-          }
-        },
-        "sk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vymazať priečinok"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ta bort mapp"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Klasörü Sil"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "删除文件夹"
-          }
-        }
-      }
-    },
     "Delete Tag Title" : {
       "comment" : "Title to show in dialog when a tag is deleting",
       "extractionState" : "manual",
@@ -10574,10 +11066,94 @@
       "comment" : "Message to show in folder creation to prompt the user to select a parent folder",
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tippe, um einen übergeordneten Ordner auszuwählen"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Click to select a parent folder"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haz clic para seleccionar una carpeta principal"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clique pour sélectionner un dossier parent"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "मूल फ़ोल्डर चुनने के लिए क्लिक करें"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clicca per selezionare una cartella principale"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "親フォルダを選択するにはタップしてください"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "클릭하여 상위 폴더를 선택하세요"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Klikk for å velge en overordnet mappe"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Klik om een bovenliggende map te selecteren"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toque para selecionar uma pasta pai"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ťukni a vyber nadriadenú zložku"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Klicka för att välja en överordnad mapp"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Üst klasörü seçmek için tıklayın"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "点击选择父文件夹"
           }
         }
       }
@@ -24231,8 +24807,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bitte lesen, bevor du fortfährst ✨\n\nWir konnten deine HTML-Datei nicht automatisch einlesen — aber keine Sorge, du bist fast am Ziel! Die meisten Browser wie Chrome, Safari und Firefox exportieren Lesezeichen in einem Standardformat, das von YABA unterstützt wird.\n\nStelle nur sicher, dass du die Datei direkt aus deinem Browser exportiert hast (meist über „Lesezeichen exportieren“ oder „Als HTML exportieren“). YABA erwartet Links in folgendem Format:\n\n    <DT><A HREF=\"https://example.com\">Titel des Lesezeichens</A>\n\nOrdner helfen, deine Lesezeichen zu organisieren — aber beachte: YABA unterstützt keine Ordner innerhalb von Ordnern. Unterordner-Lesezeichen werden automatisch unter ihrem übergeordneten Ordner einsortiert.\n\n📄 Beispiel für ein unterstütztes HTML-Format:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Lesezeichen</TITLE>\n    <H1>Lesezeichen</H1>\n    <DT><H3>Mein Ordner</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Beispielseite</A>\n        <DT><A HREF=\"https://another.com\">Weitere Seite</A>\n    </DL><p>\n\nWenn deine Datei ähnlich aussieht und du trotzdem noch Probleme hast, versuche bitte, die Datei erneut zu exportieren und hochzuladen."
+            "state" : "translated",
+            "value" : "Bitte vor dem Fortfahren lesen ✨\n\nWir konnten deine HTML‑Datei nicht automatisch lesen – aber keine Sorge, du bist fast fertig! Die meisten Browser wie Chrome, Safari und Firefox exportieren Lesezeichen in einem Standardformat, das YABA unterstützt.\n\nStelle nur sicher, dass du die Datei direkt aus deinem Browser exportiert hast (meist über „Lesezeichen exportieren“ oder „Als HTML exportieren“). YABA erwartet Links in folgendem Format:\n\n    <DT><A HREF=\"https://example.com\">Bookmark Title</A>\n\nVergiss nicht, dass Tags und Icons nicht in das HTML‑Dokument exportiert werden!\n\n📄 Beispiel für ein unterstütztes HTML‑Format:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Lesezeichen</TITLE>\n    <H1>Lesezeichen</H1>\n    <DT><H3>Mein Ordner</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Beispielseite</A>\n        <DT><A HREF=\"https://another.com\">Weitere Seite</A>\n    </DL><p>\n\nWenn deine Datei so aussieht und du weiterhin Probleme hast, versuch, sie nochmal zu exportieren und hochzuladen."
           }
         },
         "en" : {
@@ -24243,80 +24819,80 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Lee antes de continuar ✨\n\nNo pudimos leer automáticamente tu archivo HTML — ¡pero no te preocupes, ya casi lo tienes! La mayoría de los navegadores como Chrome, Safari y Firefox exportan los marcadores en un formato estándar que YABA soporta.\n\nSolo asegúrate de haber exportado el archivo directamente desde tu navegador (normalmente a través de \"Exportar marcadores\" o \"Exportar como HTML\"). YABA espera enlaces en este formato:\n\n    <DT><A HREF=\"https://example.com\">Título del marcador</A>\n\nLas carpetas ayudan a organizar tus marcadores — pero ten en cuenta: YABA no soporta carpetas dentro de carpetas. Los marcadores de subcarpetas se colocarán automáticamente bajo su carpeta principal de nivel superior.\n\n📄 Ejemplo de un formato HTML soportado:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Marcadores</TITLE>\n    <H1>Marcadores</H1>\n    <DT><H3>Mi carpeta</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Sitio de ejemplo</A>\n        <DT><A HREF=\"https://another.com\">Otro sitio</A>\n    </DL><p>\n\nSi tu archivo se parece a esto y sigues teniendo problemas, intenta exportarlo y subirlo otra vez."
+            "state" : "translated",
+            "value" : "Leer antes de continuar ✨\n\nNo pudimos leer tu archivo HTML automáticamente — pero no te preocupes, ¡ya casi está! La mayoría de los navegadores como Chrome, Safari y Firefox exportan los marcadores en un formato estándar que YABA admite.\n\nAsegúrate de haber exportado el archivo directamente desde tu navegador (normalmente mediante “Export Bookmarks” o “Export as HTML”). YABA espera enlaces en este formato:\n\n    <DT><A HREF=\"https://example.com\">Bookmark Title</A>\n\nNo olvides que las etiquetas y los iconos no se exportan al documento HTML!.\n\n📄 Ejemplo de un formato HTML compatible:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Bookmarks</TITLE>\n    <H1>Bookmarks</H1>\n    <DT><H3>My Folder</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Example Site</A>\n        <DT><A HREF=\"https://another.com\">Another Site</A>\n    </DL><p>\n\nSi tu archivo se parece a esto y sigues teniendo problemas, intenta volver a exportarlo y subirlo de nuevo."
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "À lire avant de continuer ✨\n\nNous n’avons pas pu lire automatiquement votre fichier HTML — mais ne vous inquiétez pas, vous y êtes presque ! La plupart des navigateurs comme Chrome, Safari et Firefox exportent les favoris dans un format standard que YABA supporte.\n\nAssurez-vous simplement d’avoir exporté le fichier directement depuis votre navigateur (généralement via « Exporter les favoris » ou « Exporter au format HTML »). YABA attend des liens dans ce format :\n\n    <DT><A HREF=\"https://example.com\">Titre du Favori</A>\n\nLes dossiers aident à organiser vos favoris — mais gardez à l’esprit : YABA ne prend pas en charge les dossiers imbriqués. Les favoris dans des sous-dossiers seront automatiquement placés sous leur dossier parent de premier niveau.\n\n📄 Exemple d’un format HTML supporté :\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Favoris</TITLE>\n    <H1>Favoris</H1>\n    <DT><H3>Mon Dossier</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Site Exemple</A>\n        <DT><A HREF=\"https://another.com\">Un Autre Site</A>\n    </DL><p>\n\nSi votre fichier ressemble à ceci et que vous rencontrez toujours des problèmes, essayez de l’exporter à nouveau puis de le télécharger."
+            "state" : "translated",
+            "value" : "Lire avant de continuer ✨\n\nNous n’avons pas pu lire automatiquement ton fichier HTML — mais ne t’inquiète pas, tu y es presque ! La plupart des navigateurs comme Chrome, Safari et Firefox exportent les favoris dans un format standard pris en charge par YABA.\n\nAssure-toi simplement d’avoir exporté le fichier directement depuis ton navigateur (généralement via “Exporter les favoris” ou “Exporter en HTML”). YABA s’attend à des liens au format suivant :\n\n    <DT><A HREF=\"https://example.com\">Bookmark Title</A>\n\nN’oublie pas que les tags et les icônes ne sont pas exportés dans le document HTML!.\n\n📄 Exemple d’un format HTML pris en charge :\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Bookmarks</TITLE>\n    <H1>Bookmarks</H1>\n    <DT><H3>My Folder</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Example Site</A>\n        <DT><A HREF=\"https://another.com\">Another Site</A>\n    </DL><p>\n\nSi ton fichier ressemble à ceci et que tu rencontres toujours des problèmes, essaie de réexporter puis de téléverser à nouveau."
           }
         },
         "hi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "आगे बढ़ने से पहले पढ़ें ✨\n\nहम आपके HTML फ़ाइल को स्वचालित रूप से पढ़ पाने में असमर्थ थे — लेकिन चिंता न करें, आप लगभग वहां पहुंच चुके हैं! अधिकांश ब्राउज़र जैसे क्रोम, सफारी और फ़ायरफॉक्स बुकमार्क्स को एक मानक प्रारूप में एक्सपोर्ट करते हैं जिसे YABA सपोर्ट करता है।\n\nसुनिश्चित करें कि आपने वह फ़ाइल सीधे अपने ब्राउज़र से एक्सपोर्ट की है (आमतौर पर “Export Bookmarks” या “Export as HTML” के द्वारा)। YABA इस प्रारूप में लिंक EXPECT करता है:\n\n    <DT><A HREF=\"https://example.com\">बुकमार्क शीर्षक</A>\n\nफ़ोल्डर आपके बुकमार्क्स को व्यवस्थित करने में मदद करते हैं — लेकिन ध्यान रखें: YABA फोल्डर के अंदर फोल्डर को सपोर्ट नहीं करता। सबफ़ोल्डर बुकमार्क्स अपने शीर्ष-स्तरीय पैरेंट के अंतर्गत अपने आप रख दिए जाएंगे।\n\n📄 समर्थित HTML प्रारूप का उदाहरण:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>बुकमार्क्स</TITLE>\n    <H1>बुकमार्क्स</H1>\n    <DT><H3>मेरा फ़ोल्डर</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">उदाहरण साइट</A>\n        <DT><A HREF=\"https://another.com\">एक और साइट</A>\n    </DL><p>\n\nअगर आपकी फ़ाइल इससे मिलती-जुलती दिखती है और फिर भी समस्या आ रही है, तो कृपया फिर से एक्सपोर्ट करके अपलोड करने का प्रयास करें।"
+            "state" : "translated",
+            "value" : "आगे बढ़ने से पहले पढ़ें ✨\n\nहम आपकी HTML फ़ाइल को स्वतः पढ़ नहीं पाए — लेकिन चिंता न करें, आप लगभग तैयार हैं! अधिकतर ब्राउज़र जैसे Chrome, Safari, और Firefox बुकमार्क को एक मानक फ़ॉर्मैट में निर्यात करते हैं जिसे YABA सपोर्ट करता है।\n\nबस सुनिश्चित करें कि आपने फ़ाइल सीधे अपने ब्राउज़र से निर्यात की है (आम तौर पर “Export Bookmarks” या “Export as HTML” के माध्यम से)। YABA निम्नलिखित फ़ॉर्मैट में लिंक की अपेक्षा करता है:\n\n    <DT><A HREF=\"https://example.com\">Bookmark Title</A>\n\nध्यान रखें कि टैग और आइकन HTML दस्तावेज़ में निर्यात नहीं होते हैं!.\n\n📄 समर्थित HTML फ़ॉर्मैट का उदाहरण:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>बुकमार्क</TITLE>\n    <H1>बुकमार्क</H1>\n    <DT><H3>मेरा फ़ोल्डर</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">उदाहरण साइट</A>\n        <DT><A HREF=\"https://another.com\">एक और साइट</A>\n    </DL><p>\n\nयदि आपकी फ़ाइल इस तरह दिखती है और फिर भी समस्या आ रही है, तो पुनः निर्यात करके फिर से अपलोड करने का प्रयास करें."
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Leggi prima di procedere ✨\n\nNon siamo riusciti a leggere automaticamente il tuo file HTML — ma non preoccuparti, sei quasi arrivato! La maggior parte dei browser come Chrome, Safari e Firefox esportano i segnalibri in un formato standard supportato da YABA.\n\nAssicurati solo di aver esportato il file direttamente dal tuo browser (di solito tramite “Esporta segnalibri” o “Esporta come HTML”). YABA si aspetta link in questo formato:\n\n    <DT><A HREF=\"https://example.com\">Titolo del Segnalibro</A>\n\nLe cartelle aiutano a organizzare i tuoi segnalibri — ma tieni presente: YABA non supporta cartelle dentro altre cartelle. I segnalibri nelle sottocartelle verranno posizionati automaticamente sotto la loro cartella principale di primo livello.\n\n📄 Esempio di un formato HTML supportato:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Segnalibri</TITLE>\n    <H1>Segnalibri</H1>\n    <DT><H3>La mia cartella</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Sito di esempio</A>\n        <DT><A HREF=\"https://another.com\">Altro sito</A>\n    </DL><p>\n\nSe il tuo file è simile a questo e hai ancora problemi, prova a esportare di nuovo e a caricare ancora."
+            "state" : "translated",
+            "value" : "Leggi prima di procedere ✨\n\nNon siamo riusciti a leggere automaticamente il tuo file HTML — ma non preoccuparti, sei quasi arrivato! La maggior parte dei browser come Chrome, Safari e Firefox esportano i segnalibri in un formato standard supportato da YABA.\n\nAssicurati solo di aver esportato il file direttamente dal tuo browser (di solito tramite “Esporta segnalibri” o “Esporta come HTML”). YABA si aspetta link in questo formato:\n\n    <DT><A HREF=\"https://example.com\">Bookmark Title</A>\n\nNon dimenticare che tag e icone non vengono esportati nel documento HTML!. \n\n📄 Esempio di un formato HTML supportato:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Bookmarks</TITLE>\n    <H1>Bookmarks</H1>\n    <DT><H3>My Folder</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Example Site</A>\n        <DT><A HREF=\"https://another.com\">Another Site</A>\n    </DL><p>\n\nSe il tuo file è simile a questo e continui a vedere problemi, prova a riesportarlo e caricarlo di nuovo."
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "進行する前にお読みください ✨\n\nお使いのHTMLファイルを自動で読み取ることができませんでしたが、ご安心ください、もう少しで完了です！Chrome、Safari、Firefoxなどの多くのブラウザは、YABAが対応している標準フォーマットでブックマークをエクスポートします。\n\nファイルは必ずブラウザの\"ブックマークをエクスポート\"や\"HTMLとしてエクスポート\"などの機能で直接エクスポートしてください。YABAは以下の形式のリンクを期待しています：\n\n    <DT><A HREF=\"https://example.com\">ブックマークタイトル</A>\n\nフォルダはブックマークを整理するのに便利ですが、YABAはフォルダ内のフォルダ（サブフォルダ）には対応していません。サブフォルダのブックマークは自動的に最上位の親フォルダに配置されます。\n\n📄 対応しているHTML形式の例：\n\n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>ブックマーク</TITLE>\n    <H1>ブックマーク</H1>\n    <DT><H3>マイフォルダ</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">例のサイト</A>\n        <DT><A HREF=\"https://another.com\">別のサイト</A>\n    </DL><p>\n\nファイルがこのような形式に似ているのに問題が続く場合は、再度エクスポートしてアップロードし直してください。"
+            "state" : "translated",
+            "value" : "進める前にお読みください ✨\n\nHTML ファイルを自動で読み取れませんでした — でも心配いりません、もうすぐ完了です！Chrome、Safari、Firefox などのほとんどのブラウザは、YABA が対応している標準形式でブックマークをエクスポートします。\n\nブラウザから直接ファイルをエクスポートしたことを確認してください（通常は「ブックマークをエクスポート」や「HTML としてエクスポート」など）。YABA は次の形式のリンクを想定しています：\n\n    <DT><A HREF=\"https://example.jp\">Bookmark Title</A>\n\nタグやアイコンは HTML ドキュメントにエクスポートされないことをお忘れなく。\n\n📄 対応している HTML 形式の例：\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Bookmarks</TITLE>\n    <H1>Bookmarks</H1>\n    <DT><H3>My Folder</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.jp\">Example Site</A>\n        <DT><A HREF=\"https://another.jp\">Another Site</A>\n    </DL><p>\n\nファイルがこの例と似ているのに問題が続く場合は、再度エクスポートしてアップロードし直してみてください。"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "계속하기 전에 읽어주세요 ✨\n\nHTML 파일을 자동으로 읽을 수 없었습니다 — 걱정 마세요, 거의 완료되었습니다! 크롬, 사파리, 파이어폭스와 같은 대부분의 브라우저는 YABA가 지원하는 표준 형식으로 북마크를 내보냅니다.\n\n파일을 브라우저에서 직접 \"북마크 내보내기\" 또는 \"HTML로 내보내기\" 등을 통해 내보냈는지 확인하세요. YABA는 다음 형식의 링크를 기대합니다:\n\n    <DT><A HREF=\"https://example.com\">북마크 제목</A>\n\n폴더는 북마크를 정리하는 데 도움이 되지만, YABA는 폴더 안의 폴더를 지원하지 않는 점에 유의하세요. 하위 폴더의 북마크는 자동으로 최상위 상위 폴더 아래에 배치됩니다.\n\n📄 지원되는 HTML 형식 예시:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>북마크</TITLE>\n    <H1>북마크</H1>\n    <DT><H3>내 폴더</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">예시 사이트</A>\n        <DT><A HREF=\"https://another.com\">다른 사이트</A>\n    </DL><p>\n\n파일이 위와 비슷한데도 문제가 계속된다면, 다시 내보내기 후 업로드해 보세요."
+            "state" : "translated",
+            "value" : "계속하기 전에 읽어보세요 ✨\n\nHTML 파일을 자동으로 읽을 수 없었습니다 — 걱정하지 마세요, 거의 완료되었습니다! 대부분의 브라우저(예: Chrome, Safari, Firefox)는 YABA가 지원하는 표준 형식으로 북마크를 내보냅니다.\n\n브라우저에서 직접 파일을 내보냈는지(보통 “북마크 내보내기” 또는 “HTML로 내보내기”를 통해) 확인하세요. YABA는 다음과 같은 형식의 링크를 기대합니다:\n\n    <DT><A HREF=\"https://example.kr\">Bookmark Title</A>\n\n태그와 아이콘은 HTML 문서로 내보내지지 않는다는 점을 잊지 마세요!\n\n📄 지원되는 HTML 형식의 예:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Bookmarks</TITLE>\n    <H1>Bookmarks</H1>\n    <DT><H3>내 폴더</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.kr\">예시 사이트</A>\n        <DT><A HREF=\"https://another.kr\">다른 사이트</A>\n    </DL><p>\n\n파일이 이와 비슷한데도 문제가 계속 발생하면, 다시 내보내기하여 업로드해 보세요."
           }
         },
         "nb" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Les før du fortsetter ✨\n\nVi klarte ikke å lese HTML-filen din automatisk — men ikke bekymre deg, du er nesten i mål! De fleste nettlesere som Chrome, Safari og Firefox eksporterer bokmerker i et standardformat som YABA støtter.\n\nBare sørg for at du eksporterte filen direkte fra nettleseren din (vanligvis via «Eksporter bokmerker» eller «Eksporter som HTML»). YABA forventer lenker i dette formatet:\n\n    <DT><A HREF=\"https://example.com\">Bokmerketittel</A>\n\nMapper hjelper deg å organisere bokmerkene — men husk: YABA støtter ikke mapper i mapper. Bokmerker i undermapper vil automatisk plasseres under overordnede mappen.\n\n📄 Eksempel på støttet HTML-format:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Bokmerker</TITLE>\n    <H1>Bokmerker</H1>\n    <DT><H3>Min mappe</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Eksempelside</A>\n        <DT><A HREF=\"https://another.com\">En annen side</A>\n    </DL><p>\n\nSer filen din slik ut, men du opplever fortsatt problemer? Prøv å eksportere på nytt og last opp igjen."
+            "state" : "translated",
+            "value" : "Les før du fortsetter ✨\n\nVi klarte ikke å lese HTML-filen din automatisk — men ikke bekymre deg, du er nesten i mål! De fleste nettlesere som Chrome, Safari og Firefox eksporterer bokmerker i et standardformat som YABA støtter.\n\nSørg bare for at du eksporterte filen direkte fra nettleseren din (vanligvis via “Export Bookmarks” eller “Export as HTML”). YABA forventer lenker i dette formatet:\n\n    <DT><A HREF=\"https://example.com\">Bookmark Title</A>\n\nIkke glem at tags og ikoner ikke eksporteres til HTML-dokumentet!.\n\n📄 Eksempel på et støttet HTML-format:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Bookmarks</TITLE>\n    <H1>Bookmarks</H1>\n    <DT><H3>My Folder</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Example Site</A>\n        <DT><A HREF=\"https://another.com\">Another Site</A>\n    </DL><p>\n\nHvis filen din ligner dette og du fortsatt får problemer, prøv å eksportere på nytt og laste opp igjen."
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Lees dit voordat je verdergaat ✨\n\nWe konden je HTML-bestand niet automatisch lezen — maar maak je geen zorgen, je bent er bijna! De meeste browsers zoals Chrome, Safari en Firefox exporteren bladwijzers in een standaardformaat dat YABA ondersteunt.\n\nZorg er gewoon voor dat je het bestand rechtstreeks vanuit je browser hebt geëxporteerd (meestal via \"Bladwijzers exporteren\" of \"Exporteren als HTML\"). YABA verwacht links in dit formaat:\n\n    <DT><A HREF=\"https://example.com\">Titel bladwijzer</A>\n\nMappen helpen je bladwijzers te ordenen — maar houd er rekening mee: YABA ondersteunt geen mappen binnen mappen. Submap-bladwijzers worden automatisch onder hun bovenliggende map geplaatst.\n\n📄 Voorbeeld van een ondersteund HTML-formaat:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Bladwijzers</TITLE>\n    <H1>Bladwijzers</H1>\n    <DT><H3>Mijn map</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Voorbeeldsite</A>\n        <DT><A HREF=\"https://another.com\">Andere site</A>\n    </DL><p>\n\nAls je bestand er ongeveer zo uitziet en je nog steeds problemen hebt, probeer dan opnieuw te exporteren en het opnieuw te uploaden."
+            "state" : "translated",
+            "value" : "Lees dit voordat je doorgaat ✨\n\nWe konden je HTML-bestand niet automatisch lezen — geen zorgen, je bent er bijna! De meeste browsers, zoals Chrome, Safari en Firefox, exporteren bladwijzers in een standaardformaat dat YABA ondersteunt.\n\nZorg er gewoon voor dat je het bestand direct vanuit je browser hebt geëxporteerd (meestal via “Bladwijzers exporteren” of “Exporteren als HTML”). YABA verwacht links in dit formaat:\n\n    <DT><A HREF=\"https://example.com\">Bookmark Title</A>\n\nVergeet niet dat tags en pictogrammen niet naar het HTML-document worden geëxporteerd!.\n\n📄 Voorbeeld van een ondersteund HTML-formaat:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Bookmarks</TITLE>\n    <H1>Bookmarks</H1>\n    <DT><H3>My Folder</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Example Site</A>\n        <DT><A HREF=\"https://another.com\">Another Site</A>\n    </DL><p>\n\nAls je bestand er ongeveer zo uitziet en je nog steeds problemen ziet, probeer het dan opnieuw te exporteren en opnieuw te uploaden."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Leia antes de continuar ✨\n\nNão conseguimos ler seu arquivo HTML automaticamente — mas não se preocupe, você está quase lá! A maioria dos navegadores, como Chrome, Safari e Firefox, exporta favoritos em um formato padrão que o YABA suporta.\n\nCertifique-se de ter exportado o arquivo diretamente do seu navegador (normalmente via “Exportar favoritos” ou “Exportar como HTML”). O YABA espera links nesse formato:\n\n    <DT><A HREF=\"https://example.com\">Título do Favorito</A>\n\nPastas ajudam a organizar seus favoritos — mas lembre-se: o YABA não suporta pastas dentro de pastas. Favoritos em subpastas serão colocados automaticamente sob a pasta pai de nível superior.\n\n📄 Exemplo de um formato HTML suportado:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Favoritos</TITLE>\n    <H1>Favoritos</H1>\n    <DT><H3>Minha Pasta</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Site Exemplo</A>\n        <DT><A HREF=\"https://another.com\">Outro Site</A>\n    </DL><p>\n\nSe seu arquivo parecer similar a este e ainda assim você estiver enfrentando problemas, tente exportar e carregar novamente."
+            "state" : "translated",
+            "value" : "Leia antes de continuar ✨\n\nNão foi possível ler automaticamente o seu arquivo HTML — mas não se preocupe, você está quase lá! A maioria dos navegadores, como Chrome, Safari e Firefox, exporta favoritos em um formato padrão que o YABA suporta.\n\nApenas verifique se você exportou o arquivo diretamente do seu navegador (normalmente via “Exportar favoritos” ou “Exportar como HTML”). O YABA espera links neste formato:\n\n    <DT><A HREF=\"https://example.com\">Título do favorito</A>\n\nNão esqueça que tags e ícones não são exportados para o documento HTML!.\n\n📄 Exemplo de um formato HTML compatível:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Favoritos</TITLE>\n    <H1>Favoritos</H1>\n    <DT><H3>Minha Pasta</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Site de Exemplo</A>\n        <DT><A HREF=\"https://another.com\">Outro Site</A>\n    </DL><p>\n\nSe o seu arquivo se parece com este e você ainda está enfrentando problemas, tente exportar novamente e fazer o upload de novo."
           }
         },
         "sk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Prečítaj si pred pokračovaním ✨\n\nNepodarilo sa nám automaticky načítať tvoj HTML súbor — ale neboj sa, si takmer pri cieli! Väčšina prehliadačov ako Chrome, Safari a Firefox exportuje záložky vo formáte, ktorý YABA podporuje.\n\nIba sa uisti, že si súbor exportoval priamo z prehliadača (zvyčajne cez „Exportovať záložky“ alebo „Exportovať ako HTML“). YABA očakáva odkazy v tomto formáte:\n\n    <DT><A HREF=\"https://example.com\">Názov záložky</A>\n\nZložky pomáhajú organizovať tvoje záložky — ale maj na pamäti: YABA nepodporuje zložky vo vnútri zložiek. Záložky v podzložkách sa automaticky umiestnia pod ich najvyššiu nadradenú zložku.\n\n📄 Príklad podporovaného formátu HTML:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Záložky</TITLE>\n    <H1>Záložky</H1>\n    <DT><H3>Moja zložka</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Príklad stránky</A>\n        <DT><A HREF=\"https://another.com\">Iná stránka</A>\n    </DL><p>\n\nAk tvoj súbor vyzerá podobne a stále sa vyskytujú problémy, skúšaj exportovať a nahrávať ho znova."
+            "state" : "translated",
+            "value" : "Prečítaj si pred pokračovaním ✨\n\nNepodarilo sa nám automaticky načítať tvoj HTML súbor — ale neboj, si takmer hotový! Väčšina prehliadačov ako Chrome, Safari a Firefox exportuje záložky v štandardnom formáte, ktorý YABA podporuje.\n\nIba sa uisti, že si súbor exportoval priamo z prehliadača (zvyčajne cez „Export Bookmarks“ alebo „Export as HTML“). YABA očakáva odkazy v tomto formáte:\n\n    <DT><A HREF=\"https://example.com\">Bookmark Title</A>\n\nNezabudni, že štítky a ikony sa do HTML dokumentu neexportujú!.\n\n📄 Príklad podporovaného HTML formátu:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Záložky</TITLE>\n    <H1>Záložky</H1>\n    <DT><H3>Môj priečinok</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Príklad stránka</A>\n        <DT><A HREF=\"https://another.com\">Iná stránka</A>\n    </DL><p>\n\nAk tvoj súbor vyzerá podobne a stále sa vyskytujú problémy, skúšaj ho znova exportovať a nahrať."
           }
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Läs innan du fortsätter ✨\n\nVi kunde inte automatiskt läsa din HTML-fil — men oroa dig inte, du är nästan klar! De flesta webbläsare som Chrome, Safari och Firefox exporterar bokmärken i ett standardformat som YABA stödjer.\n\nSe bara till att du exporterade filen direkt från din webbläsare (vanligtvis via “Exportera bokmärken” eller “Exportera som HTML”). YABA förväntar sig länkar i detta format:\n\n    <DT><A HREF=\"https://example.com\">Bokmärkestitel</A>\n\nMappar hjälper till att organisera dina bokmärken — men tänk på att YABA inte stödjer mappar inuti mappar. Bokmärken i undermappar placeras automatiskt under deras överordnade nivå.\n\n📄 Exempel på ett stödformat för HTML:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Bokmärken</TITLE>\n    <H1>Bokmärken</H1>\n    <DT><H3>Min mapp</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Exempelsida</A>\n        <DT><A HREF=\"https://another.com\">En annan sida</A>\n    </DL><p>\n\nOm din fil ser liknande ut och du fortfarande har problem, försök att exportera och ladda upp igen."
+            "state" : "translated",
+            "value" : "Läs innan du fortsätter ✨\n\nVi kunde inte automatiskt läsa din HTML-fil — men oroa dig inte, du är nästan klar! De flesta webbläsare som Chrome, Safari och Firefox exporterar bokmärken i ett standardformat som YABA stödjer.\n\nSe bara till att du exporterade filen direkt från din webbläsare (vanligtvis via “Exportera bokmärken” eller “Exportera som HTML”). YABA förväntar sig länkar i det här formatet:\n\n    <DT><A HREF=\"https://example.com\">Bookmark Title</A>\n\nGlöm inte att taggar och ikoner inte exporteras till HTML-dokumentet!.\n\n📄 Exempel på ett stödjat HTML-format:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Bookmarks</TITLE>\n    <H1>Bookmarks</H1>\n    <DT><H3>My Folder</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Example Site</A>\n        <DT><A HREF=\"https://another.com\">Another Site</A>\n    </DL><p>\n\nOm din fil liknar detta och du fortfarande får problem, försök att exportera om och ladda upp igen."
           }
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Devam etmeden önce oku ✨\n\nHTML dosyanızı otomatik olarak okuyamadık — ama merak etme, neredeyse oradasın! Chrome, Safari ve Firefox gibi çoğu tarayıcı, YABA'nın desteklediği standart bir formatta yer işaretleri (bookmark) dışa aktarır.\n\nDosyayı doğrudan tarayıcından dışa aktardığından emin ol (genellikle “Yer İşaretlerini Dışa Aktar” veya “HTML olarak Dışa Aktar” ile). YABA, bağlantıları şu formatta bekler:\n\n    <DT><A HREF=\"https://example.com\">Yer İşareti Başlığı</A>\n\nKlasörler, yer işaretlerini düzenlemeye yardımcı olur — ancak şunu unutma: YABA, klasör içinde klasörleri desteklemez. Alt klasörlerin yer işaretleri otomatik olarak en üst düzey klasörün altına yerleştirilir.\n\n📄 Desteklenen HTML formatına örnek:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Yer İşaretleri</TITLE>\n    <H1>Yer İşaretleri</H1>\n    <DT><H3>Klasörüm</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Örnek Site</A>\n        <DT><A HREF=\"https://another.com\">Başka Bir Site</A>\n    </DL><p>\n\nDosyan benzer görünüyorsa ve hâlâ sorunlar varsa, tekrar dışa aktar ve dosyayı tekrar yüklemeyi dene."
+            "state" : "translated",
+            "value" : "Devam etmeden önce oku ✨\n\nHTML dosyanı otomatik olarak okuyamadık — ama merak etme, neredeyse bitirdin! Chrome, Safari ve Firefox gibi çoğu tarayıcı, YABA’nın desteklediği standart bir formatta yer imlerini dışa aktarır.\n\nDosyayı tarayıcından doğrudan dışa aktardığından emin ol (genellikle “Yer İmlerini Dışa Aktar” veya “HTML olarak Dışa Aktar” aracılığıyla). YABA şu formatta bağlantılar bekler:\n\n    <DT><A HREF=\"https://example.com\">Bookmark Title</A>\n\nEtiketlerin ve simgelerin HTML belgesine aktarılmadığını unutma!.\n\n📄 Desteklenen bir HTML formatı örneği:\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Bookmarks</TITLE>\n    <H1>Bookmarks</H1>\n    <DT><H3>My Folder</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Example Site</A>\n        <DT><A HREF=\"https://another.com\">Another Site</A>\n    </DL><p>\n\nDosyan bu örneğe benziyorsa ve hâlâ sorun yaşıyorsan, yeniden dışa aktarım yapıp tekrar yüklemeyi dene."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "请在继续之前阅读 ✨\n\n我们无法自动读取你的 HTML 文件 —— 但别担心，马上就完成了！大多数浏览器如 Chrome、Safari 和 Firefox 都以 YABA 支持的标准格式导出书签。\n\n只要确保你是直接从浏览器导出的文件（通常通过“导出书签”或“导出为 HTML”）。YABA 期望链接格式如下：\n\n    <DT><A HREF=\"https://example.com\">书签标题</A>\n\n文件夹帮助你组织书签 —— 但请注意：YABA 不支持文件夹内嵌套文件夹。子文件夹中的书签会自动放置在其顶层父文件夹下。\n\n📄 支持的 HTML 格式示例如下：\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>书签</TITLE>\n    <H1>书签</H1>\n    <DT><H3>我的文件夹</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">示例网站</A>\n        <DT><A HREF=\"https://another.com\">另一个网站</A>\n    </DL><p>\n\n如果你的文件格式类似但仍遇到问题，请尝试重新导出并再次上传。"
+            "state" : "translated",
+            "value" : "在继续之前请阅读 ✨\n\n我们无法自动读取你的 HTML 文件——别担心，你快完成了！大多数浏览器（如 Chrome、Safari 和 Firefox）以 YABA 支持的标准格式导出书签。\n\n只需确保你是直接从浏览器导出的文件（通常通过“导出书签”或“导出为 HTML”）。YABA 期待链接为以下格式：\n\n    <DT><A HREF=\"https://example.com\">Bookmark Title</A>\n\n别忘了标签和图标不会被导出到 HTML 文档中！.\n\n📄 支持的 HTML 示例格式：\n    \n    <!DOCTYPE NETSCAPE-Bookmark-file-1>\n    <HTML>\n    <TITLE>Bookmarks</TITLE>\n    <H1>Bookmarks</H1>\n    <DT><H3>My Folder</H3>\n    <DL><p>\n        <DT><A HREF=\"https://example.com\">Example Site</A>\n        <DT><A HREF=\"https://another.com\">Another Site</A>\n    </DL><p>\n\n如果你的文件看起来类似但仍然出现问题，试着重新导出然后再次上传。"
           }
         }
       }
@@ -24816,10 +25392,94 @@
       "comment" : "Label of open in browser button",
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Im Browser öffnen"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Open in Browser"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir en el navegador"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvrir dans le navigateur"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ब्राउज़र में खोलें"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apri nel browser"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ブラウザで開く"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "브라우저에서 열기"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Åpne i nettleser"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Openen in browser"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir no navegador"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Otvoriť v prehliadači"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öppna i webbläsaren"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tarayıcıda Aç"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在浏览器中打开"
           }
         }
       }
@@ -24828,10 +25488,94 @@
       "comment" : "Label of open in YABA button",
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In YABA öffnen"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Open in YABA"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir en YABA"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvrir dans YABA"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YABA में खोलें"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apri in YABA"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YABAで開く"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YABA에서 열기"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Åpne i YABA"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Openen in YABA"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir no YABA"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Otvoriť v YABA"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öppna i YABA"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YABA'da Aç"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 YABA 中打开"
           }
         }
       }
@@ -34706,10 +35450,94 @@
       "comment" : "Label of move to root in folder selection sheet",
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ins Stammverzeichnis verschieben"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Move to root"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mover a la raíz"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Déplacer vers la racine"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "रूट पर ले जाएँ"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sposta nella cartella principale"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ルートに移動"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "루트로 이동"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flytt til rotmappen"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verplaats naar hoofdmap"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mover para a raiz"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Presunúť do koreňa"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flytta till rot"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kök dizine taşı"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移动到根目录"
           }
         }
       }
@@ -35293,10 +36121,94 @@
       "comment" : "Message to show in content unavailable view of image selection sheet during creating/editing a bookmark",
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In dem Link wurden keine weiteren Bilder gefunden, die passen."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "There are no more images found in the link that can fit."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se han encontrado más imágenes en el enlace que se puedan ajustar."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune image trouvée dans le lien ne convient."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "लिंक में फिट होने योग्य और ऐसे और कोई चित्र नहीं मिले।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non ci sono altre immagini nel link che possano adattarsi."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "リンク内に利用可能で適した画像はこれ以上見つかりません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "링크에서 맞는 이미지를 더 이상 찾을 수 없습니다."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Det ble ikke funnet flere bilder i lenken som passer."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Er zijn geen afbeeldingen gevonden in de link die passen."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foram encontradas mais imagens no link que se encaixem."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "V odkaze neboli nájdené žiadne ďalšie obrázky, ktoré by sa hodili."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Det finns inga fler bilder i länken som passar."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bağlantıda uygun başka resim bulunamadı."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "链接中未找到更多适合的图片。"
           }
         }
       }
@@ -35305,10 +36217,94 @@
       "comment" : "Title to show in content unavailable view of image selection sheet during creating/editing a bookmark",
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Bilder gefunden"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "No Images Found"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se encontraron imágenes"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune image trouvée"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "कोई चित्र नहीं मिला"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nessuna immagine trovata"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画像が見つかりません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이미지를 찾을 수 없음"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingen bilder funnet"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geen afbeeldingen gevonden"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhuma imagem encontrada"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenašli sa žiadne obrázky"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inga bilder hittades"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resim Bulunamadı"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未找到图片"
           }
         }
       }
@@ -35317,10 +36313,94 @@
       "comment" : "Title to show when image picker is open",
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bild auswählen"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Select an Image"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seleccionar una imagen"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisir une image"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "एक चित्र चुनें"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seleziona un'immagine"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画像を選択"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이미지 선택"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Velg et bilde"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selecteer een afbeelding"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selecionar uma imagem"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vybrať obrázok"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Välj en bild"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bir Resim Seç"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择图片"
           }
         }
       }
@@ -36769,10 +37849,94 @@
       "comment" : "Title of bookmark sorting option in settings",
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lesezeichen sortieren"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sort Bookmarks"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ordenar marcadores"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trier les favoris"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "बुकमार्क छाँटें"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ordina segnalibri"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ブックマークを並べ替え"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "북마크 정렬"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sorter bokmerker"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bladwijzers sorteren"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ordenar favoritos"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zoradiť záložky"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sortera bokmärken"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yer İmlerini Sırala"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "书签排序"
           }
         }
       }
@@ -36783,8 +37947,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Inhalt sortieren"
+            "state" : "translated",
+            "value" : "Sammlungen sortieren"
           }
         },
         "en" : {
@@ -36795,80 +37959,80 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ordenar contenido"
+            "state" : "translated",
+            "value" : "Ordenar colecciones"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Trier le contenu"
+            "state" : "translated",
+            "value" : "Trier les collections"
           }
         },
         "hi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "सामग्री क्रमबद्ध करें"
+            "state" : "translated",
+            "value" : "संग्रहों को छाँटें"
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ordina Contenuti"
+            "state" : "translated",
+            "value" : "Ordina collezioni"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "コンテンツを並べ替え"
+            "state" : "translated",
+            "value" : "コレクションの並べ替え"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "콘텐츠 정렬"
+            "state" : "translated",
+            "value" : "컬렉션 정렬"
           }
         },
         "nb" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Sorter innhold"
+            "state" : "translated",
+            "value" : "Sorter samlinger"
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Inhoud sorteren"
+            "state" : "translated",
+            "value" : "Collecties sorteren"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ordenar Conteúdo"
+            "state" : "translated",
+            "value" : "Ordenar coleções"
           }
         },
         "sk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Zoradiť obsah"
+            "state" : "translated",
+            "value" : "Zoradiť kolekcie"
           }
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Sortera innehåll"
+            "state" : "translated",
+            "value" : "Sortera samlingar"
           }
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "İçeriği Sırala"
+            "state" : "translated",
+            "value" : "Koleksiyonları Sırala"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "内容排序"
+            "state" : "translated",
+            "value" : "收藏夹排序"
           }
         }
       }
@@ -37357,10 +38521,94 @@
       "comment" : "Background animation toggle setting title",
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hintergrundanimation deaktivieren"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Disable Background Animation"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desactivar animación de fondo"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Désactiver l'animation d'arrière-plan"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "पृष्ठभूमि एनिमेशन अक्षम करें"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disattiva animazione di sfondo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背景アニメーションを無効にする"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "배경 애니메이션 끄기"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deaktiver bakgrunnsanimasjon"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Achtergrondanimatie uitschakelen"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desativar animação de fundo"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vypnúť animáciu pozadia"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inaktivera bakgrundsanimering"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arka Plan Animasyonunu Devre Dışı Bırak"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭背景动画"
           }
         }
       }
@@ -41207,10 +42455,94 @@
       "comment" : "Name of custom sorting type",
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Benutzerdefiniert"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Custom"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Personalizado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Personnalisé"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "अनुकूलित"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Personalizzato"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "カスタム"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사용자 설정"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tilpasset"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aangepast"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Personalizado"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vlastné"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anpassad"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Özel"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自定义"
           }
         }
       }
