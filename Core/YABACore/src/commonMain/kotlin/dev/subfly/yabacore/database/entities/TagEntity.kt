@@ -3,7 +3,7 @@ package dev.subfly.yabacore.database.entities
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import dev.subfly.yabacore.model.YabaColor
+import dev.subfly.yabacore.model.utils.YabaColor
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi

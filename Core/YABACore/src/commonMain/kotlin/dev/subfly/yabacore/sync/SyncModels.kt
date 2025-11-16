@@ -1,6 +1,6 @@
 package dev.subfly.yabacore.sync
 
-import dev.subfly.yabacore.operations.Operation
+import dev.subfly.yabacore.database.operations.Operation
 
 data class SyncRequest(
     val deviceId: String,

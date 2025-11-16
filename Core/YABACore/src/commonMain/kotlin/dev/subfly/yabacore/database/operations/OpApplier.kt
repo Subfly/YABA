@@ -1,4 +1,4 @@
-package dev.subfly.yabacore.operations
+package dev.subfly.yabacore.database.operations
 
 import androidx.room.Transactor
 import androidx.room.useWriterConnection
@@ -18,9 +18,9 @@ import dev.subfly.yabacore.database.entities.TagBookmarkCrossRef
 import dev.subfly.yabacore.database.entities.TagEntity
 import dev.subfly.yabacore.database.entities.oplog.EntityClockEntity
 import dev.subfly.yabacore.database.entities.oplog.ReplicaInfoEntity
-import dev.subfly.yabacore.model.BookmarkKind
-import dev.subfly.yabacore.model.LinkType
-import dev.subfly.yabacore.model.YabaColor
+import dev.subfly.yabacore.model.utils.BookmarkKind
+import dev.subfly.yabacore.model.utils.LinkType
+import dev.subfly.yabacore.model.utils.YabaColor
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
@@ -55,8 +55,7 @@ class OpApplier(
                         kind = draft.kind,
                         happenedAt = draft.happenedAt,
                         payload = draft.payload,
-                    )
-                        .also { applyOperation(it) }
+                    ).also { applyOperation(it) }
                 }
             replicaInfoDao.upsert(replicaInfo.copy(nextOriginSeq = nextSeq))
             opLogDao.insertAll(operations.map { it.toEntity() })

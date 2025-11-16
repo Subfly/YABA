@@ -1,4 +1,4 @@
-package dev.subfly.yabacore.model
+package dev.subfly.yabacore.model.utils
 
 enum class DropZone {
     TOP,

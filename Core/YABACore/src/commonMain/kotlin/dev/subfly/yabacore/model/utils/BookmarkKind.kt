@@ -1,4 +1,4 @@
-package dev.subfly.yabacore.model
+package dev.subfly.yabacore.model.utils
 
 /** Logical kind of a bookmark. Each kind is backed by its own subtype/table pair in Room. */
 enum class BookmarkKind(val code: Int) {

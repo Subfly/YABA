@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
 
-package dev.subfly.yabacore.migration
+package dev.subfly.yabacore.database.migration
 
 import kotlin.uuid.Uuid
 import kotlin.time.ExperimentalTime

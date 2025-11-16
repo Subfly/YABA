@@ -5,8 +5,8 @@ import dev.subfly.yabacore.database.dao.ReplicaCursorDao
 import dev.subfly.yabacore.database.dao.ReplicaInfoDao
 import dev.subfly.yabacore.database.entities.oplog.ReplicaCursorEntity
 import dev.subfly.yabacore.database.entities.oplog.ReplicaInfoEntity
-import dev.subfly.yabacore.operations.OpApplier
-import dev.subfly.yabacore.operations.toOperation
+import dev.subfly.yabacore.database.operations.OpApplier
+import dev.subfly.yabacore.database.operations.toOperation
 
 class SyncEngine(
     private val opLogDao: OpLogDao,
@@ -17,7 +17,9 @@ class SyncEngine(
 ) {
     suspend fun prepareSyncRequest(): SyncRequest {
         val localInfo = ensureReplicaInfo()
-        val cursors = replicaCursorDao.getAll().associate { it.remoteDeviceId to it.lastSeqSeen }
+        val cursors = replicaCursorDao.getAll().associate {
+            it.remoteDeviceId to it.lastSeqSeen
+        }
         return SyncRequest(
             deviceId = localInfo.deviceId,
             cursors = cursors,
@@ -27,8 +29,10 @@ class SyncEngine(
     suspend fun prepareSyncResponse(request: SyncRequest): SyncResponse {
         val localInfo = ensureReplicaInfo()
         val lastSeqSeen = request.cursors[localInfo.deviceId] ?: -1
-        val operations =
-            opLogDao.getOpsAfter(localInfo.deviceId, lastSeqSeen).map { it.toOperation() }
+        val operations = opLogDao.getOpsAfter(
+            localInfo.deviceId,
+            lastSeqSeen
+        ).map { it.toOperation() }
         return SyncResponse(
             deviceId = localInfo.deviceId,
             operations = operations,

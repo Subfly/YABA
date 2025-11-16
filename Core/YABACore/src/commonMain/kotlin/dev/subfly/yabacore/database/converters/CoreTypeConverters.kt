@@ -1,9 +1,9 @@
 package dev.subfly.yabacore.database.converters
 
 import androidx.room.TypeConverter
-import dev.subfly.yabacore.model.BookmarkKind
-import dev.subfly.yabacore.model.LinkType
-import dev.subfly.yabacore.model.YabaColor
+import dev.subfly.yabacore.model.utils.BookmarkKind
+import dev.subfly.yabacore.model.utils.LinkType
+import dev.subfly.yabacore.model.utils.YabaColor
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi

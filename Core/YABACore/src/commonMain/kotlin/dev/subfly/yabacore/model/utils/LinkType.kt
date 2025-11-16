@@ -1,4 +1,4 @@
-package dev.subfly.yabacore.model
+package dev.subfly.yabacore.model.utils
 
 /** User-facing categorization for link bookmarks. Mirrors Darwin's BookmarkType. */
 enum class LinkType(val code: Int) {

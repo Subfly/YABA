@@ -7,14 +7,14 @@ import dev.subfly.yabacore.database.entities.FolderEntity
 import dev.subfly.yabacore.database.entities.LinkBookmarkEntity
 import dev.subfly.yabacore.database.entities.TagEntity
 import dev.subfly.yabacore.database.models.LinkBookmarkWithRelations
-import dev.subfly.yabacore.model.Folder
-import dev.subfly.yabacore.model.LinkBookmark
-import dev.subfly.yabacore.model.Tag
+import dev.subfly.yabacore.database.domain.FolderDomainModel
+import dev.subfly.yabacore.database.domain.LinkBookmarkDomainModel
+import dev.subfly.yabacore.database.domain.TagDomainModel
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
 
-fun FolderEntity.toModel(): Folder =
-    Folder(
+internal fun FolderEntity.toModel(): FolderDomainModel =
+    FolderDomainModel(
         id = id,
         parentId = parentId,
         label = label,
@@ -26,8 +26,8 @@ fun FolderEntity.toModel(): Folder =
         order = order,
     )
 
-fun TagEntity.toModel(): Tag =
-    Tag(
+internal fun TagEntity.toModel(): TagDomainModel =
+    TagDomainModel(
         id = id,
         label = label,
         icon = icon,
@@ -37,10 +37,10 @@ fun TagEntity.toModel(): Tag =
         order = order,
     )
 
-fun LinkBookmarkWithRelations.toModel(): LinkBookmark = bookmark.toModel(link)
+internal fun LinkBookmarkWithRelations.toModel(): LinkBookmarkDomainModel = bookmark.toModel(link)
 
-fun BookmarkEntity.toModel(linkEntity: LinkBookmarkEntity): LinkBookmark =
-    LinkBookmark(
+internal fun BookmarkEntity.toModel(linkEntity: LinkBookmarkEntity): LinkBookmarkDomainModel =
+    LinkBookmarkDomainModel(
         id = id,
         folderId = folderId,
         kind = kind,
@@ -56,7 +56,7 @@ fun BookmarkEntity.toModel(linkEntity: LinkBookmarkEntity): LinkBookmark =
         videoUrl = linkEntity.videoUrl,
     )
 
-fun Folder.toEntity(): FolderEntity =
+internal fun FolderDomainModel.toEntity(): FolderEntity =
     FolderEntity(
         id = id,
         parentId = parentId,
@@ -69,7 +69,7 @@ fun Folder.toEntity(): FolderEntity =
         editedAt = editedAt,
     )
 
-fun Tag.toEntity(): TagEntity =
+internal fun TagDomainModel.toEntity(): TagEntity =
     TagEntity(
         id = id,
         label = label,

@@ -1,19 +1,19 @@
 @file:OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
 
-package dev.subfly.yabacore.migration
+package dev.subfly.yabacore.database.migration
 
-import dev.subfly.yabacore.model.BookmarkKind
-import dev.subfly.yabacore.model.Folder
-import dev.subfly.yabacore.model.LinkBookmark
-import dev.subfly.yabacore.model.LinkType
-import dev.subfly.yabacore.model.Tag
-import dev.subfly.yabacore.model.YabaColor
-import dev.subfly.yabacore.operations.OpApplier
-import dev.subfly.yabacore.operations.OperationDraft
-import dev.subfly.yabacore.operations.OperationEntityType
-import dev.subfly.yabacore.operations.OperationKind
-import dev.subfly.yabacore.operations.TagLinkPayload
-import dev.subfly.yabacore.operations.toOperationDraft
+import dev.subfly.yabacore.model.utils.BookmarkKind
+import dev.subfly.yabacore.database.domain.FolderDomainModel
+import dev.subfly.yabacore.database.domain.LinkBookmarkDomainModel
+import dev.subfly.yabacore.model.utils.LinkType
+import dev.subfly.yabacore.database.domain.TagDomainModel
+import dev.subfly.yabacore.model.utils.YabaColor
+import dev.subfly.yabacore.database.operations.OpApplier
+import dev.subfly.yabacore.database.operations.OperationDraft
+import dev.subfly.yabacore.database.operations.OperationEntityType
+import dev.subfly.yabacore.database.operations.OperationKind
+import dev.subfly.yabacore.database.operations.TagLinkPayload
+import dev.subfly.yabacore.database.operations.toOperationDraft
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
@@ -72,8 +72,8 @@ class MigrationManager(
         }
     }
 
-    private fun LegacyFolder.toFolder(): Folder =
-        Folder(
+    private fun LegacyFolder.toFolder(): FolderDomainModel =
+        FolderDomainModel(
             id = id,
             parentId = parentId,
             label = label,
@@ -85,8 +85,8 @@ class MigrationManager(
             order = order,
         )
 
-    private fun LegacyTag.toTag(): Tag =
-        Tag(
+    private fun LegacyTag.toTag(): TagDomainModel =
+        TagDomainModel(
             id = id,
             label = label,
             icon = icon,
@@ -96,8 +96,8 @@ class MigrationManager(
             order = order,
         )
 
-    private fun LegacyBookmark.toBookmark(): LinkBookmark =
-        LinkBookmark(
+    private fun LegacyBookmark.toBookmark(): LinkBookmarkDomainModel =
+        LinkBookmarkDomainModel(
             id = id,
             folderId = folderId,
             kind = BookmarkKind.LINK,

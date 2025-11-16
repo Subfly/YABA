@@ -2,17 +2,16 @@ package dev.subfly.yabacore.managers
 
 import dev.subfly.yabacore.database.dao.TagDao
 import dev.subfly.yabacore.database.mappers.toModel
-import dev.subfly.yabacore.model.DropZone
-import dev.subfly.yabacore.model.SortOrderType
-import dev.subfly.yabacore.model.SortType
-import dev.subfly.yabacore.model.Tag
-import dev.subfly.yabacore.model.YabaColor
-import dev.subfly.yabacore.operations.OpApplier
-import dev.subfly.yabacore.operations.OperationDraft
-import dev.subfly.yabacore.operations.OperationEntityType
-import dev.subfly.yabacore.operations.OperationKind
-import dev.subfly.yabacore.operations.TagLinkPayload
-import dev.subfly.yabacore.operations.toOperationDraft
+import dev.subfly.yabacore.database.operations.OpApplier
+import dev.subfly.yabacore.database.operations.OperationKind
+import dev.subfly.yabacore.database.operations.tagLinkOperationDraft
+import dev.subfly.yabacore.database.operations.toOperationDraft
+import dev.subfly.yabacore.model.utils.DropZone
+import dev.subfly.yabacore.model.utils.SortOrderType
+import dev.subfly.yabacore.model.utils.SortType
+import dev.subfly.yabacore.database.domain.TagDomainModel
+import dev.subfly.yabacore.model.ui.TagUiModel
+import dev.subfly.yabacore.database.mappers.toUiModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlin.time.Clock
@@ -30,157 +29,131 @@ class TagManager(
     fun observeTags(
         sortType: SortType = SortType.CUSTOM,
         sortOrder: SortOrderType = SortOrderType.ASCENDING,
-    ): Flow<List<Tag>> =
-        tagDao.observeAll().map { entities ->
-            entities.map { it.toModel() }.sortTags(sortType, sortOrder)
-        }
+    ): Flow<List<TagUiModel>> =
+        tagDao
+            .observeTagsWithBookmarkCounts(sortType.name, sortOrder.name)
+            .map { rows -> rows.map { it.toUiModel() } }
 
     fun observeTagsForBookmark(
         bookmarkId: Uuid,
         sortType: SortType = SortType.CUSTOM,
         sortOrder: SortOrderType = SortOrderType.ASCENDING,
-    ): Flow<List<Tag>> =
-        tagDao.observeTagsForBookmark(bookmarkId).map { entities ->
-            entities.map { it.toModel() }.sortTags(sortType, sortOrder)
-        }
+    ): Flow<List<TagUiModel>> =
+        tagDao
+            .observeTagsForBookmarkWithCounts(bookmarkId, sortType.name, sortOrder.name)
+            .map { rows -> rows.map { it.toUiModel() } }
 
-    suspend fun createTag(
-        label: String,
-        icon: String,
-        color: YabaColor,
-    ): Tag {
+    suspend fun getTag(tagId: Uuid): TagUiModel? =
+        tagDao.getTagWithBookmarkCount(tagId)?.toUiModel()
+
+    suspend fun createTag(tag: TagUiModel): TagUiModel {
         val now = clock.now()
         val tags = tagDao.getAll().map { it.toModel() }
-        val tag =
-            Tag(
-                id = Uuid.random(),
-                label = label,
-                icon = icon,
-                color = color,
+        val newTag =
+            TagDomainModel(
+                id = tag.id,
+                label = tag.label,
+                icon = tag.icon,
+                color = tag.color,
                 createdAt = now,
                 editedAt = now,
                 order = tags.size,
             )
-        opApplier.applyLocal(listOf(tag.toOperationDraft(OperationKind.CREATE)))
-        return tag
+        opApplier.applyLocal(listOf(newTag.toOperationDraft(OperationKind.CREATE)))
+        return newTag.toUiModel()
     }
 
-    suspend fun renameTag(tagId: Uuid, label: String) {
-        val tag = tagDao.getById(tagId)?.toModel() ?: return
-        val updated = tag.copy(label = label, editedAt = clock.now())
+    suspend fun updateTag(tag: TagUiModel): TagUiModel? {
+        val existing = tagDao.getById(tag.id)?.toModel() ?: return null
+        val now = clock.now()
+        val updated =
+            existing.copy(
+                label = tag.label,
+                icon = tag.icon,
+                color = tag.color,
+                editedAt = now,
+            )
         opApplier.applyLocal(listOf(updated.toOperationDraft(OperationKind.UPDATE)))
-    }
-
-    suspend fun changeTagAppearance(
-        tagId: Uuid,
-        icon: String,
-        color: YabaColor,
-    ) {
-        val tag = tagDao.getById(tagId)?.toModel() ?: return
-        val updated = tag.copy(icon = icon, color = color, editedAt = clock.now())
-        opApplier.applyLocal(listOf(updated.toOperationDraft(OperationKind.UPDATE)))
+        return tagDao.getTagWithBookmarkCount(tag.id)?.toUiModel()
     }
 
     suspend fun reorderTag(
-        draggedId: Uuid,
-        targetId: Uuid,
+        dragged: TagUiModel,
+        target: TagUiModel,
         zone: DropZone,
     ) {
         if (zone == DropZone.NONE || zone == DropZone.MIDDLE) {
             return
         }
         val tags = tagDao.getAll().map { it.toModel() }
-        val ordered = reorder(tags, draggedId, targetId, zone)
+        val ordered = reorder(tags, dragged.id, target.id, zone)
         val now = clock.now()
         val drafts =
             ordered
                 .sortedBy { it.order }
                 .mapIndexedNotNull { index, tag ->
-                    if (tag.order == index) null else tag.copy(order = index, editedAt = now)
-                        .toOperationDraft(OperationKind.REORDER)
+                    if (tag.order == index) {
+                        null
+                    } else {
+                        tag.copy(order = index, editedAt = now)
+                            .toOperationDraft(OperationKind.REORDER)
+                    }
                 }
         if (drafts.isNotEmpty()) {
             opApplier.applyLocal(drafts)
         }
     }
 
-    suspend fun deleteTag(tagId: Uuid) {
-        val tag = tagDao.getById(tagId)?.toModel() ?: return
+    suspend fun deleteTag(tag: TagUiModel) {
+        val target = tagDao.getById(tag.id)?.toModel() ?: return
         val now = clock.now()
-        val remaining = tagDao.getAll().map { it.toModel() }.filterNot { it.id == tagId }
-        val drafts = mutableListOf(tag.copy(editedAt = now).toOperationDraft(OperationKind.DELETE))
+        val remaining = tagDao.getAll().map { it.toModel() }.filterNot { it.id == tag.id }
+        val drafts =
+            mutableListOf(target.copy(editedAt = now).toOperationDraft(OperationKind.DELETE))
         drafts +=
             remaining
                 .sortedBy { it.order }
-                .mapIndexedNotNull { index, tag ->
-                    if (tag.order == index) null else tag.copy(order = index, editedAt = now)
-                        .toOperationDraft(OperationKind.REORDER)
+                .mapIndexedNotNull { index, item ->
+                    if (item.order == index) {
+                        null
+                    } else {
+                        item.copy(order = index, editedAt = now)
+                            .toOperationDraft(OperationKind.REORDER)
+                    }
                 }
         opApplier.applyLocal(drafts)
     }
 
-    suspend fun addTagToBookmark(tagId: Uuid, bookmarkId: Uuid) {
+    suspend fun addTagToBookmark(tag: TagUiModel, bookmarkId: Uuid) {
         val now = clock.now()
-        val draft = tagLinkDraft(tagId, bookmarkId, OperationKind.TAG_ADD, now)
+        val draft = tagLinkOperationDraft(tag.id, bookmarkId, OperationKind.TAG_ADD, now)
         opApplier.applyLocal(listOf(draft))
     }
 
-    suspend fun removeTagFromBookmark(tagId: Uuid, bookmarkId: Uuid) {
+    suspend fun removeTagFromBookmark(tag: TagUiModel, bookmarkId: Uuid) {
         val now = clock.now()
-        val draft = tagLinkDraft(tagId, bookmarkId, OperationKind.TAG_REMOVE, now)
+        val draft = tagLinkOperationDraft(tag.id, bookmarkId, OperationKind.TAG_REMOVE, now)
         opApplier.applyLocal(listOf(draft))
-    }
-
-    private fun List<Tag>.sortTags(sortType: SortType, sortOrder: SortOrderType): List<Tag> {
-        val comparator =
-            when (sortType) {
-                SortType.CUSTOM -> compareBy<Tag> { it.order }
-                SortType.CREATED_AT -> compareBy { it.createdAt }
-                SortType.EDITED_AT -> compareBy { it.editedAt }
-                SortType.LABEL -> compareBy { it.label.lowercase() }
-            }
-        val sorted = this.sortedWith(comparator)
-        return if (sortOrder == SortOrderType.DESCENDING && sortType != SortType.CUSTOM) {
-            sorted.reversed()
-        } else {
-            sorted
-        }
     }
 
     private fun reorder(
-        tags: List<Tag>,
+        tags: List<TagDomainModel>,
         draggedId: Uuid,
         targetId: Uuid,
         zone: DropZone,
-    ): List<Tag> {
+    ): List<TagDomainModel> {
         val sorted = tags.sortedBy { it.order }.toMutableList()
         val dragged = sorted.firstOrNull { it.id == draggedId } ?: return tags
         val targetIndex = sorted.indexOfFirst { it.id == targetId }
         if (targetIndex == -1) return tags
         sorted.remove(dragged)
-        val insertIndex = when (zone) {
-            DropZone.TOP -> targetIndex.coerceAtLeast(0)
-            DropZone.BOTTOM -> (targetIndex + 1).coerceAtMost(sorted.size)
-            else -> -1
-        }
+        val insertIndex =
+            when (zone) {
+                DropZone.TOP -> targetIndex.coerceAtLeast(0)
+                DropZone.BOTTOM -> (targetIndex + 1).coerceAtMost(sorted.size)
+                else -> -1
+            }
         sorted.add(insertIndex, dragged)
         return sorted.mapIndexed { index, tag -> tag.copy(order = index) }
     }
-
-    private fun tagLinkDraft(
-        tagId: Uuid,
-        bookmarkId: Uuid,
-        kind: OperationKind,
-        happenedAt: kotlinx.datetime.Instant,
-    ): OperationDraft =
-        OperationDraft(
-            entityType = OperationEntityType.TAG_LINK,
-            entityId = "${tagId}|${bookmarkId}",
-            kind = kind,
-            happenedAt = happenedAt,
-            payload = TagLinkPayload(
-                tagId = tagId.toString(),
-                bookmarkId = bookmarkId.toString(),
-            ),
-        )
 }

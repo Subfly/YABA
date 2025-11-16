@@ -1,4 +1,4 @@
-package dev.subfly.yabacore.model
+package dev.subfly.yabacore.model.utils
 
 /**
  * Mirrors Darwin's YabaColor mapping for cross-platform consistency. Persisted as an Int in

@@ -4,27 +4,25 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import dev.subfly.yabacore.model.LinkType
+import dev.subfly.yabacore.model.utils.LinkType
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
 @Entity(
     tableName = "link_bookmarks",
-    foreignKeys =
-        [
-            ForeignKey(
-                entity = BookmarkEntity::class,
-                parentColumns = ["id"],
-                childColumns = ["bookmarkId"],
-                onDelete = ForeignKey.CASCADE,
-            ),
-        ],
-    indices =
-        [
-            Index(value = ["bookmarkId"], unique = true),
-            Index(value = ["linkType"]),
-        ],
+    foreignKeys = [
+        ForeignKey(
+            entity = BookmarkEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["bookmarkId"],
+            onDelete = ForeignKey.CASCADE,
+        ),
+    ],
+    indices = [
+        Index(value = ["bookmarkId"], unique = true),
+        Index(value = ["linkType"]),
+    ],
 )
 data class LinkBookmarkEntity(
     @PrimaryKey val bookmarkId: Uuid,

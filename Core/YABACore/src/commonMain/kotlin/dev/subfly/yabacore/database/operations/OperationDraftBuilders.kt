@@ -1,14 +1,16 @@
 @file:OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
 
-package dev.subfly.yabacore.operations
+package dev.subfly.yabacore.database.operations
 
-import dev.subfly.yabacore.model.Folder
-import dev.subfly.yabacore.model.LinkBookmark
-import dev.subfly.yabacore.model.Tag
+import dev.subfly.yabacore.database.domain.FolderDomainModel
+import dev.subfly.yabacore.database.domain.LinkBookmarkDomainModel
+import dev.subfly.yabacore.database.domain.TagDomainModel
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
-fun Folder.toOperationDraft(kind: OperationKind): OperationDraft =
+internal fun FolderDomainModel.toOperationDraft(kind: OperationKind): OperationDraft =
     OperationDraft(
         entityType = OperationEntityType.FOLDER,
         entityId = id.toString(),
@@ -26,7 +28,7 @@ fun Folder.toOperationDraft(kind: OperationKind): OperationDraft =
         ),
     )
 
-fun Tag.toOperationDraft(kind: OperationKind): OperationDraft =
+internal fun TagDomainModel.toOperationDraft(kind: OperationKind): OperationDraft =
     OperationDraft(
         entityType = OperationEntityType.TAG,
         entityId = id.toString(),
@@ -42,7 +44,7 @@ fun Tag.toOperationDraft(kind: OperationKind): OperationDraft =
         ),
     )
 
-fun LinkBookmark.toOperationDraft(kind: OperationKind): OperationDraft =
+internal fun LinkBookmarkDomainModel.toOperationDraft(kind: OperationKind): OperationDraft =
     OperationDraft(
         entityType = OperationEntityType.BOOKMARK,
         entityId = id.toString(),
@@ -65,4 +67,22 @@ fun LinkBookmark.toOperationDraft(kind: OperationKind): OperationDraft =
                     videoUrl = videoUrl,
                 ),
         ),
+    )
+
+fun tagLinkOperationDraft(
+    tagId: Uuid,
+    bookmarkId: Uuid,
+    kind: OperationKind,
+    happenedAt: Instant,
+): OperationDraft =
+    OperationDraft(
+        entityType = OperationEntityType.TAG_LINK,
+        entityId = "${tagId}|${bookmarkId}",
+        kind = kind,
+        happenedAt = happenedAt,
+        payload =
+            TagLinkPayload(
+                tagId = tagId.toString(),
+                bookmarkId = bookmarkId.toString(),
+            ),
     )

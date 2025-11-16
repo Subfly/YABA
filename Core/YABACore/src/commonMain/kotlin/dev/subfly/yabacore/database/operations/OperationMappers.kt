@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
 
-package dev.subfly.yabacore.operations
+package dev.subfly.yabacore.database.operations
 
 import dev.subfly.yabacore.database.entities.oplog.OpLogEntryEntity
 import kotlin.time.ExperimentalTime
