@@ -1,150 +1,169 @@
 package dev.subfly.yabacore.managers
 
-import dev.subfly.yabacore.common.CoreConstants
 import dev.subfly.yabacore.database.dao.BookmarkDao
-import dev.subfly.yabacore.database.dao.BookmarkTagDao
-import dev.subfly.yabacore.database.dao.FolderDao
-import dev.subfly.yabacore.database.dao.TombstoneDao
-import dev.subfly.yabacore.database.entities.BookmarkEntity
-import dev.subfly.yabacore.database.entities.TombstoneEntity
+import dev.subfly.yabacore.database.mappers.toModel
+import dev.subfly.yabacore.model.BookmarkKind
+import dev.subfly.yabacore.model.BookmarkSearchFilters
+import dev.subfly.yabacore.model.LinkBookmark
+import dev.subfly.yabacore.model.LinkType
+import dev.subfly.yabacore.model.SortOrderType
+import dev.subfly.yabacore.model.SortType
+import dev.subfly.yabacore.operations.OpApplier
+import dev.subfly.yabacore.operations.OperationKind
+import dev.subfly.yabacore.operations.toOperationDraft
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
-import kotlinx.coroutines.flow.Flow
-import kotlinx.datetime.Clock
 
-@OptIn(ExperimentalUuidApi::class)
+
+@OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
 class BookmarkManager(
-        private val bookmarkDao: BookmarkDao,
-        private val bookmarkTagDao: BookmarkTagDao,
-        private val folderDao: FolderDao,
-        private val tombstoneDao: TombstoneDao,
+    private val bookmarkDao: BookmarkDao,
+    private val opApplier: OpApplier,
 ) {
+    private val clock = Clock.System
 
-    data class BookmarkUpdate(
-            val title: String? = null,
-            val description: String? = null,
-            val url: String? = null,
-            val iconName: String? = null,
-            val color: Int? = null,
-            val folderId: String? = null,
-            val tagIds: List<String>? = null,
-    )
+    fun observeFolderBookmarks(
+        folderId: Uuid,
+        sortType: SortType = SortType.EDITED_AT,
+        sortOrder: SortOrderType = SortOrderType.DESCENDING,
+    ): Flow<List<LinkBookmark>> =
+        bookmarkDao
+            .observeLinkBookmarksForFolder(folderId)
+            .map { rows ->
+                rows.map { it.toModel() }.sortBookmarks(sortType, sortOrder)
+            }
 
-    fun getBookmarksFlow(query: String?): Flow<List<BookmarkEntity>> =
-            if (query.isNullOrBlank()) bookmarkDao.getAllFlow() else bookmarkDao.searchFlow(query)
+    fun observeTagBookmarks(
+        tagId: Uuid,
+        sortType: SortType = SortType.EDITED_AT,
+        sortOrder: SortOrderType = SortOrderType.DESCENDING,
+    ): Flow<List<LinkBookmark>> =
+        bookmarkDao
+            .observeLinkBookmarksForTag(tagId)
+            .map { rows ->
+                rows.map { it.toModel() }.sortBookmarks(sortType, sortOrder)
+            }
 
-    suspend fun addBookmark(
-            url: String,
-            title: String,
-            description: String = "",
-            iconName: String = "bookmark-02",
-            color: Int = 0,
-            folderId: String? = null,
-            tagIds: List<String> = emptyList(),
-    ): BookmarkEntity {
-        val now = Clock.System.now()
+    fun searchBookmarksFlow(
+        query: String,
+        filters: BookmarkSearchFilters = BookmarkSearchFilters(),
+        sortType: SortType = SortType.EDITED_AT,
+        sortOrder: SortOrderType = SortOrderType.DESCENDING,
+    ): Flow<List<LinkBookmark>> =
+        bookmarkDao
+            .observeLinkBookmarksSearch(query)
+            .map { rows ->
+                rows
+                    .map { it.toModel() }
+                    .filterBy(filters)
+                    .sortBookmarks(sortType, sortOrder)
+            }
 
-        val ensuredFolderId = folderId ?: ensureDefaultFolder()
+    suspend fun createLinkBookmark(
+        folderId: Uuid,
+        url: String,
+        label: String?,
+        description: String?,
+        linkType: LinkType,
+    ): LinkBookmark {
+        val now = clock.now()
+        val bookmark =
+            LinkBookmark(
+                id = Uuid.random(),
+                folderId = folderId,
+                label = label?.takeIf { it.isNotBlank() } ?: url,
+                description = description,
+                createdAt = now,
+                editedAt = now,
+                url = url,
+                domain = extractDomain(url),
+                linkType = linkType,
+                previewImageUrl = null,
+                previewIconUrl = null,
+                videoUrl = null,
+                kind = BookmarkKind.LINK,
+            )
+        opApplier.applyLocal(listOf(bookmark.toOperationDraft(OperationKind.CREATE)))
+        return bookmark
+    }
 
-        val entity =
-                BookmarkEntity(
-                        id = Uuid.random().toString(),
-                        title = title,
-                        description = description,
-                        url = url,
-                        iconName = iconName,
-                        color = color,
-                        folderId = ensuredFolderId,
-                        createdAt = now,
-                        editedAt = now,
-                        version = 1,
-                )
+    suspend fun updateBookmarkMeta(
+        bookmarkId: Uuid,
+        label: String?,
+        description: String?,
+    ) {
+        val existing = bookmarkDao.getLinkBookmarkById(bookmarkId)?.toModel() ?: return
+        val updated =
+            existing.copy(
+                label = label ?: existing.label,
+                description = description ?: existing.description,
+                editedAt = clock.now(),
+            )
+        opApplier.applyLocal(listOf(updated.toOperationDraft(OperationKind.UPDATE)))
+    }
 
-        bookmarkDao.insert(entity)
-        if (tagIds.isNotEmpty()) {
-            bookmarkTagDao.replaceTagsForBookmark(entity.id, tagIds)
+    suspend fun moveBookmarksToFolder(
+        bookmarkIds: List<Uuid>,
+        targetFolderId: Uuid,
+    ) {
+        if (bookmarkIds.isEmpty()) return
+        val now = clock.now()
+        val drafts =
+            bookmarkIds.mapNotNull { id ->
+                bookmarkDao.getLinkBookmarkById(id)?.toModel()?.copy(
+                    folderId = targetFolderId,
+                    editedAt = now,
+                )?.toOperationDraft(OperationKind.MOVE)
+            }
+        if (drafts.isNotEmpty()) {
+            opApplier.applyLocal(drafts)
         }
-        return entity
     }
 
-    suspend fun updateBookmark(id: String, updates: BookmarkUpdate) {
-        val existing = bookmarkDao.getById(id) ?: return
-        val now = Clock.System.now()
-
-        val newFolderId = updates.folderId ?: existing.folderId
-        val updated =
-                existing.copy(
-                        title = updates.title ?: existing.title,
-                        description = updates.description ?: existing.description,
-                        url = updates.url ?: existing.url,
-                        iconName = updates.iconName ?: existing.iconName,
-                        color = updates.color ?: existing.color,
-                        folderId = newFolderId,
-                        editedAt = now,
-                        version = existing.version + 1,
-                )
-
-        bookmarkDao.update(updated)
-        updates.tagIds?.let { bookmarkTagDao.replaceTagsForBookmark(id, it) }
+    suspend fun deleteBookmarks(ids: List<Uuid>) {
+        if (ids.isEmpty()) return
+        val now = clock.now()
+        val drafts =
+            ids.mapNotNull { id ->
+                bookmarkDao.getLinkBookmarkById(id)?.toModel()?.copy(editedAt = now)
+                    ?.toOperationDraft(OperationKind.DELETE)
+            }
+        if (drafts.isNotEmpty()) {
+            opApplier.applyLocal(drafts)
+        }
     }
 
-    suspend fun moveBookmark(id: String, folderId: String) {
-        val existing = bookmarkDao.getById(id) ?: return
-        val now = Clock.System.now()
-        val updated =
-                existing.copy(
-                        folderId = folderId,
-                        editedAt = now,
-                        version = existing.version + 1,
-                )
-        bookmarkDao.update(updated)
+    private fun List<LinkBookmark>.filterBy(filters: BookmarkSearchFilters): List<LinkBookmark> =
+        this
+            .filter { bookmark ->
+                filters.folderIds?.let { bookmark.folderId in it } ?: true
+            }
+            .filter { bookmark ->
+                filters.kinds?.let { bookmark.kind in it } ?: true
+            }
+
+    private fun List<LinkBookmark>.sortBookmarks(
+        sortType: SortType,
+        sortOrder: SortOrderType,
+    ): List<LinkBookmark> {
+        val comparator =
+            when (sortType) {
+                SortType.CREATED_AT -> compareBy<LinkBookmark> { it.createdAt }
+                SortType.EDITED_AT -> compareBy { it.editedAt }
+                SortType.LABEL -> compareBy { it.label.lowercase() }
+                SortType.CUSTOM -> compareBy { it.editedAt }
+            }
+        val sorted = sortedWith(comparator)
+        return if (sortOrder == SortOrderType.DESCENDING) sorted.reversed() else sorted
     }
 
-    suspend fun setTagsForBookmark(id: String, tagIds: List<String>) {
-        bookmarkTagDao.replaceTagsForBookmark(id, tagIds)
-        // Not incrementing bookmark version for tag-only change keeps metadata consistent
-        // If you prefer, uncomment below to count tag associations as an edit:
-        // val existing = bookmarkDao.getById(id) ?: return
-        // bookmarkDao.update(existing.copy(editedAt = Clock.System.now(), version =
-        // existing.version + 1))
-    }
-
-    suspend fun deleteBookmark(id: String, deviceId: String? = null) {
-        val existing = bookmarkDao.getById(id) ?: return
-        // Create tombstone first
-        val tombstone =
-                TombstoneEntity(
-                        tombstoneId = Uuid.random().toString(),
-                        entityType = "bookmark",
-                        entityId = id,
-                        timestamp = Clock.System.now(),
-                        deviceId = deviceId,
-                )
-        tombstoneDao.insert(tombstone)
-
-        // Remove associations then the entity
-        bookmarkTagDao.deleteAllForBookmark(id)
-        bookmarkDao.delete(existing)
-    }
-
-    private suspend fun ensureDefaultFolder(): String {
-        val existing = folderDao.getById(CoreConstants.UNCATEGORIZED_FOLDER_ID)
-        if (existing != null) return existing.id
-
-        val now = Clock.System.now()
-        val defaultFolder =
-                dev.subfly.yabacore.database.entities.FolderEntity(
-                        id = CoreConstants.UNCATEGORIZED_FOLDER_ID,
-                        label = CoreConstants.UNCATEGORIZED_FOLDER_NAME,
-                        iconName = CoreConstants.UNCATEGORIZED_FOLDER_ICON,
-                        color = 0,
-                        parentId = null,
-                        order = 0,
-                        createdAt = now,
-                        editedAt = now,
-                        version = 1,
-                )
-        folderDao.insert(defaultFolder)
-        return defaultFolder.id
+    private fun extractDomain(url: String): String {
+        val withoutProtocol = url.substringAfter("://", url)
+        val candidate = withoutProtocol.substringBefore("/")
+        return candidate.substringBefore("?").substringBefore("#")
     }
 }

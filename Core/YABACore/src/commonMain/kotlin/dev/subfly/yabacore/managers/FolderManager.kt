@@ -1,197 +1,226 @@
 package dev.subfly.yabacore.managers
 
-import dev.subfly.yabacore.common.CoreConstants
-import dev.subfly.yabacore.database.dao.BookmarkDao
-import dev.subfly.yabacore.database.dao.BookmarkTagDao
 import dev.subfly.yabacore.database.dao.FolderDao
-import dev.subfly.yabacore.database.dao.TombstoneDao
-import dev.subfly.yabacore.database.entities.FolderEntity
-import dev.subfly.yabacore.database.entities.TombstoneEntity
-import dev.subfly.yabacore.database.models.FolderWithCount
-import kotlinx.coroutines.flow.Flow
-import kotlinx.datetime.Clock
+import dev.subfly.yabacore.database.mappers.toModel
+import dev.subfly.yabacore.model.DropZone
+import dev.subfly.yabacore.model.Folder
+import dev.subfly.yabacore.model.SortOrderType
+import dev.subfly.yabacore.model.SortType
+import dev.subfly.yabacore.model.YabaColor
+import dev.subfly.yabacore.operations.OpApplier
+import dev.subfly.yabacore.operations.OperationDraft
+import dev.subfly.yabacore.operations.OperationKind
+import dev.subfly.yabacore.operations.toOperationDraft
+import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlin.time.Clock
 
-@OptIn(ExperimentalUuidApi::class)
+@OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
 class FolderManager(
     private val folderDao: FolderDao,
-    private val bookmarkDao: BookmarkDao,
-    private val bookmarkTagDao: BookmarkTagDao,
-    private val tombstoneDao: TombstoneDao,
+    private val opApplier: OpApplier,
 ) {
+    private val clock = Clock.System
 
-    data class FolderUpdate(
-        val label: String? = null,
-        val iconName: String? = null,
-        val color: Int? = null,
-        val parentId: String? = null,
-        val order: Int? = null,
-    )
-
-    fun getFoldersFlow(): Flow<List<FolderEntity>> = folderDao.getAllFlow()
-    fun getFoldersWithBookmarkCountFlow(): Flow<List<FolderWithCount>> = folderDao.getFoldersWithBookmarkCountFlow()
-
-    suspend fun ensureDefaultFolderExists(): String {
-        val existing = folderDao.getById(CoreConstants.UNCATEGORIZED_FOLDER_ID)
-        if (existing != null) return existing.id
-        val now = Clock.System.now()
-        val folder = FolderEntity(
-            id = CoreConstants.UNCATEGORIZED_FOLDER_ID,
-            label = CoreConstants.UNCATEGORIZED_FOLDER_NAME,
-            iconName = CoreConstants.UNCATEGORIZED_FOLDER_ICON,
-            color = 0,
-            parentId = null,
-            order = 0,
-            createdAt = now,
-            editedAt = now,
-            version = 1,
-        )
-        folderDao.insert(folder)
-        return folder.id
+    fun observeFolders(
+        parentId: Uuid?,
+        sortType: SortType = SortType.CUSTOM,
+        sortOrder: SortOrderType = SortOrderType.ASCENDING,
+    ): Flow<List<Folder>> {
+        val baseFlow =
+            if (parentId == null) {
+                folderDao.observeRoot()
+            } else {
+                folderDao.observeChildren(parentId)
+            }
+        return baseFlow.map { entities ->
+            entities.map { it.toModel() }.sortFolders(sortType, sortOrder)
+        }
     }
+
+    suspend fun getFolder(folderId: Uuid): Folder? = folderDao.getById(folderId)?.toModel()
 
     suspend fun createFolder(
         label: String,
-        iconName: String,
-        color: Int,
-        parentId: String?,
-    ): FolderEntity {
-        if (label == CoreConstants.UNCATEGORIZED_FOLDER_NAME) {
-            // Prevent duplicating reserved folder name
-            ensureDefaultFolderExists()
-        }
-
-        val now = Clock.System.now()
-        val order = if (parentId == null) {
-            (folderDao.getMaxOrderForRoot() ?: -1) + 1
-        } else {
-            (folderDao.getMaxOrderForParent(parentId) ?: -1) + 1
-        }
-
-        val entity = FolderEntity(
-            id = Uuid.random().toString(),
-            label = label,
-            iconName = iconName,
-            color = color,
-            parentId = parentId,
-            order = order,
-            createdAt = now,
-            editedAt = now,
-            version = 1,
-        )
-        folderDao.insert(entity)
-        return entity
-    }
-
-    suspend fun updateFolder(id: String, updates: FolderUpdate) {
-        val existing = folderDao.getById(id) ?: return
-        if (existing.id == CoreConstants.UNCATEGORIZED_FOLDER_ID) {
-            // The reserved folder cannot be renamed or moved
-            val now = Clock.System.now()
-            val updated = existing.copy(
-                editedAt = now,
-                version = existing.version + 1,
-            )
-            folderDao.update(updated)
-            return
-        }
-
-        val now = Clock.System.now()
-        val updated = existing.copy(
-            label = updates.label ?: existing.label,
-            iconName = updates.iconName ?: existing.iconName,
-            color = updates.color ?: existing.color,
-            parentId = updates.parentId ?: existing.parentId,
-            order = updates.order ?: existing.order,
-            editedAt = now,
-            version = existing.version + 1,
-        )
-        folderDao.update(updated)
-    }
-
-    suspend fun moveFolder(id: String, newParentId: String?, newOrder: Int? = null) {
-        val existing = folderDao.getById(id) ?: return
-        if (existing.id == CoreConstants.UNCATEGORIZED_FOLDER_ID) return
-
-        val now = Clock.System.now()
-        val targetOrder = newOrder ?: if (newParentId == null) {
-            (folderDao.getMaxOrderForRoot() ?: -1) + 1
-        } else {
-            (folderDao.getMaxOrderForParent(newParentId) ?: -1) + 1
-        }
-        val updated = existing.copy(
-            parentId = newParentId,
-            order = targetOrder,
-            editedAt = now,
-            version = existing.version + 1,
-        )
-        folderDao.update(updated)
-    }
-
-    suspend fun deleteFolderRecursive(id: String, deviceId: String? = null) {
-        if (id == CoreConstants.UNCATEGORIZED_FOLDER_ID) return
-        val stack = ArrayDeque<String>()
-        stack.add(id)
-
-        val foldersToDelete = mutableListOf<FolderEntity>()
-        val bookmarksToDeleteIds = mutableListOf<String>()
-
-        while (stack.isNotEmpty()) {
-            val currentId = stack.removeLast()
-            val folder = folderDao.getById(currentId) ?: continue
-            foldersToDelete.add(folder)
-
-            // Collect bookmarks in this folder
-            val folderBookmarks = bookmarkDao.getForFolderList(currentId)
-            folderBookmarks.forEach { bookmarksToDeleteIds.add(it.id) }
-
-            // Push children
-            folderDao.getChildrenList(currentId).forEach { child ->
-                stack.add(child.id)
+        icon: String,
+        color: YabaColor,
+        parentId: Uuid?,
+        description: String? = null,
+    ): Folder {
+        val now = clock.now()
+        val siblings =
+            if (parentId == null) {
+                folderDao.getRoot()
+            } else {
+                folderDao.getChildren(parentId)
             }
-        }
-
-        // Tombstones for bookmarks
-        val now = Clock.System.now()
-        bookmarksToDeleteIds.forEach { bookmarkId ->
-            tombstoneDao.insert(
-                TombstoneEntity(
-                    tombstoneId = Uuid.random().toString(),
-                    entityType = "bookmark",
-                    entityId = bookmarkId,
-                    timestamp = now,
-                    deviceId = deviceId,
-                )
+                .map { it.toModel() }
+        val folder =
+            Folder(
+                id = Uuid.random(),
+                parentId = parentId,
+                label = label,
+                description = description,
+                icon = icon,
+                color = color,
+                createdAt = now,
+                editedAt = now,
+                order = siblings.size,
             )
-        }
-
-        // Remove associations and delete bookmarks
-        bookmarksToDeleteIds.forEach { bookmarkId ->
-            bookmarkTagDao.deleteAllForBookmark(bookmarkId)
-        }
-        // Efficient delete via DAO deleteAll requires loading entities; we already loaded
-        val bookmarkEntities = bookmarksToDeleteIds.mapNotNull { bookmarkDao.getById(it) }
-        if (bookmarkEntities.isNotEmpty()) {
-            bookmarkDao.deleteAll(bookmarkEntities)
-        }
-
-        // Tombstones for folders (bottom-up)
-        foldersToDelete.forEach { folder ->
-            tombstoneDao.insert(
-                TombstoneEntity(
-                    tombstoneId = Uuid.random().toString(),
-                    entityType = "folder",
-                    entityId = folder.id,
-                    timestamp = now,
-                    deviceId = deviceId,
-                )
-            )
-        }
-
-        // Delete folders bottom-up
-        foldersToDelete.asReversed().forEach { folderDao.delete(it) }
+        opApplier.applyLocal(listOf(folder.toOperationDraft(OperationKind.CREATE)))
+        return folder
     }
+
+    suspend fun renameFolder(
+        folderId: Uuid,
+        label: String,
+        description: String?,
+    ) {
+        val folder = getFolder(folderId) ?: return
+        val now = clock.now()
+        val updated = folder.copy(label = label, description = description, editedAt = now)
+        opApplier.applyLocal(listOf(updated.toOperationDraft(OperationKind.UPDATE)))
+    }
+
+    suspend fun moveFolder(
+        folderId: Uuid,
+        targetParentId: Uuid?,
+    ) {
+        val folder = getFolder(folderId) ?: return
+        val now = clock.now()
+        val targetSiblings =
+            if (targetParentId == null) {
+                folderDao.getRoot()
+            } else {
+                folderDao.getChildren(targetParentId)
+            }
+                .map { it.toModel() }
+                .filterNot { it.id == folderId }
+        val moved =
+            folder.copy(
+                parentId = targetParentId,
+                order = targetSiblings.size,
+                editedAt = now,
+            )
+        val drafts = mutableListOf(moved.toOperationDraft(OperationKind.MOVE))
+        drafts += normalizeFolderOrders(targetParentId, targetSiblings + moved, now)
+        val oldParentId = folder.parentId
+        if (oldParentId != targetParentId) {
+            val oldSiblings =
+                if (oldParentId == null) {
+                    folderDao.getRoot()
+                } else {
+                    folderDao.getChildren(oldParentId)
+                }
+                    .map { it.toModel() }
+                    .filterNot { it.id == folderId }
+            drafts += normalizeFolderOrders(oldParentId, oldSiblings, now)
+        }
+        opApplier.applyLocal(drafts)
+    }
+
+    suspend fun reorderFolder(
+        draggedId: Uuid,
+        targetId: Uuid,
+        zone: DropZone,
+    ) {
+        when (zone) {
+            DropZone.NONE -> return
+            DropZone.MIDDLE -> {
+                moveFolder(draggedId, targetId)
+                return
+            }
+
+            else -> Unit
+        }
+        val dragged = getFolder(draggedId) ?: return
+        val parentId = dragged.parentId
+        val siblings =
+            if (parentId == null) {
+                folderDao.getRoot()
+            } else {
+                folderDao.getChildren(parentId)
+            }
+                .map { it.toModel() }
+        val ordered = reorderSiblings(siblings, draggedId, targetId, zone)
+        val now = clock.now()
+        val drafts = normalizeFolderOrders(parentId, ordered, now)
+        opApplier.applyLocal(drafts)
+    }
+
+    suspend fun deleteFolder(folderId: Uuid) {
+        val folder = getFolder(folderId) ?: return
+        val now = clock.now()
+        val drafts =
+            mutableListOf(folder.copy(editedAt = now).toOperationDraft(OperationKind.DELETE))
+        val siblings =
+            if (folder.parentId == null) {
+                folderDao.getRoot()
+            } else {
+                folderDao.getChildren(folder.parentId!!)
+            }
+                .map { it.toModel() }
+                .filterNot { it.id == folderId }
+        drafts += normalizeFolderOrders(folder.parentId, siblings, now)
+        opApplier.applyLocal(drafts)
+    }
+
+    private fun List<Folder>.sortFolders(
+        sortType: SortType,
+        sortOrder: SortOrderType,
+    ): List<Folder> {
+        val comparator =
+            when (sortType) {
+                SortType.CUSTOM -> compareBy<Folder> { it.order }
+                SortType.CREATED_AT -> compareBy { it.createdAt }
+                SortType.EDITED_AT -> compareBy { it.editedAt }
+                SortType.LABEL -> compareBy { it.label.lowercase() }
+            }
+        val sorted = this.sortedWith(comparator)
+        return if (sortOrder == SortOrderType.DESCENDING && sortType != SortType.CUSTOM) {
+            sorted.reversed()
+        } else {
+            sorted
+        }
+    }
+
+    private fun reorderSiblings(
+        siblings: List<Folder>,
+        draggedId: Uuid,
+        targetId: Uuid,
+        zone: DropZone,
+    ): List<Folder> {
+        val sorted = siblings.sortedBy { it.order }.toMutableList()
+        val dragged = sorted.firstOrNull { it.id == draggedId } ?: return siblings
+        val targetIndex = sorted.indexOfFirst { it.id == targetId }
+        if (targetIndex == -1) return siblings
+        sorted.remove(dragged)
+        val insertIndex = when (zone) {
+            DropZone.TOP -> targetIndex.coerceAtLeast(0)
+            DropZone.BOTTOM -> (targetIndex + 1).coerceAtMost(sorted.size)
+            else -> -1
+        }
+        sorted.add(insertIndex, dragged)
+        return sorted.mapIndexed { index, folder -> folder.copy(order = index) }
+    }
+
+    private fun normalizeFolderOrders(
+        parentId: Uuid?,
+        folders: List<Folder>,
+        timestamp: kotlinx.datetime.Instant,
+    ): List<OperationDraft> =
+        folders
+            .sortedBy { it.order }
+            .mapIndexed { index, folder ->
+                if (folder.order == index && folder.parentId == parentId) {
+                    null
+                } else {
+                    folder.copy(order = index, parentId = parentId, editedAt = timestamp)
+                        .toOperationDraft(OperationKind.REORDER)
+                }
+            }
+            .filterNotNull()
 }
-
-

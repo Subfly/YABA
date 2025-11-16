@@ -2,64 +2,91 @@ package dev.subfly.yabacore.database.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import androidx.room.Update
+import androidx.room.Upsert
 import dev.subfly.yabacore.database.entities.BookmarkEntity
+import dev.subfly.yabacore.database.models.LinkBookmarkWithRelations
+import dev.subfly.yabacore.model.BookmarkKind
 import kotlinx.coroutines.flow.Flow
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 @Dao
 interface BookmarkDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(entity: BookmarkEntity)
+    @Upsert
+    suspend fun upsert(entity: BookmarkEntity)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(entities: List<BookmarkEntity>)
-
-    @Update
-    suspend fun update(entity: BookmarkEntity)
-
-    @Update
-    suspend fun updateAll(entities: List<BookmarkEntity>)
+    @Upsert
+    suspend fun upsertAll(entities: List<BookmarkEntity>)
 
     @Delete
     suspend fun delete(entity: BookmarkEntity)
 
-    @Delete
-    suspend fun deleteAll(entities: List<BookmarkEntity>)
+    @Query("DELETE FROM bookmarks WHERE id IN (:ids)")
+    suspend fun deleteByIds(ids: List<Uuid>)
 
     @Query("SELECT * FROM bookmarks WHERE id = :id LIMIT 1")
-    suspend fun getById(id: String): BookmarkEntity?
-
-    @Query("SELECT * FROM bookmarks ORDER BY editedAt DESC")
-    fun getAllFlow(): Flow<List<BookmarkEntity>>
-
-    @Query("SELECT * FROM bookmarks WHERE folderId = :folderId ORDER BY editedAt DESC")
-    fun getForFolderFlow(folderId: String): Flow<List<BookmarkEntity>>
-
-    @Query("SELECT * FROM bookmarks WHERE folderId = :folderId ORDER BY editedAt DESC")
-    suspend fun getForFolderList(folderId: String): List<BookmarkEntity>
-
-    @Query(
-        "SELECT b.* FROM bookmarks b " +
-                "INNER JOIN bookmark_tag_cross_ref r ON r.bookmarkId = b.id " +
-                "WHERE r.tagId = :tagId ORDER BY b.editedAt DESC"
-    )
-    fun getForTagFlow(tagId: String): Flow<List<BookmarkEntity>>
-
-    @Query(
-        "SELECT * FROM bookmarks WHERE " +
-                "title LIKE '%' || :query || '%' OR description LIKE '%' || :query || '%' " +
-                "ORDER BY editedAt DESC"
-    )
-    fun searchFlow(query: String): Flow<List<BookmarkEntity>>
+    suspend fun getById(id: Uuid): BookmarkEntity?
 
     @Transaction
-    suspend fun replaceAllForFolder(folderId: String, entities: List<BookmarkEntity>) {
-        // Note: call-site should handle consistency; included here for convenience.
-        // This method clears nothing by itself, it's just a batch insert/update path.
-        insertAll(entities)
-    }
+    @Query("SELECT * FROM bookmarks WHERE id = :id LIMIT 1")
+    suspend fun getLinkBookmarkById(id: Uuid): LinkBookmarkWithRelations?
+
+    @Query("SELECT * FROM bookmarks")
+    suspend fun getAll(): List<BookmarkEntity>
+
+    @Transaction
+    @Query(
+            """
+        SELECT * FROM bookmarks
+        WHERE folderId = :folderId AND kind = :kind
+        """
+    )
+    fun observeLinkBookmarksForFolder(
+            folderId: Uuid,
+            kind: BookmarkKind = BookmarkKind.LINK,
+    ): Flow<List<LinkBookmarkWithRelations>>
+
+    @Transaction
+    @Query(
+            """
+        SELECT * FROM bookmarks
+        WHERE kind = :kind
+        AND id IN (
+            SELECT bookmarkId FROM tag_bookmarks WHERE tagId = :tagId
+        )
+        """
+    )
+    fun observeLinkBookmarksForTag(
+            tagId: Uuid,
+            kind: BookmarkKind = BookmarkKind.LINK,
+    ): Flow<List<LinkBookmarkWithRelations>>
+
+    @Transaction
+    @Query(
+            """
+        SELECT * FROM bookmarks
+        WHERE kind = :kind
+        ORDER BY editedAt DESC
+        """
+    )
+    fun observeAllLinkBookmarks(
+            kind: BookmarkKind = BookmarkKind.LINK
+    ): Flow<List<LinkBookmarkWithRelations>>
+
+    @Transaction
+    @Query(
+            """
+        SELECT * FROM bookmarks
+        WHERE kind = :kind AND (
+            label LIKE '%' || :query || '%'
+        )
+        """
+    )
+    fun observeLinkBookmarksSearch(
+            query: String,
+            kind: BookmarkKind = BookmarkKind.LINK,
+    ): Flow<List<LinkBookmarkWithRelations>>
 }

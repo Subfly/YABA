@@ -2,65 +2,49 @@ package dev.subfly.yabacore.database.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Update
+import androidx.room.Upsert
 import dev.subfly.yabacore.database.entities.FolderEntity
-import dev.subfly.yabacore.database.models.FolderWithCount
 import kotlinx.coroutines.flow.Flow
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 @Dao
 interface FolderDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(entity: FolderEntity)
+    @Upsert
+    suspend fun upsert(entity: FolderEntity)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(entities: List<FolderEntity>)
-
-    @Update
-    suspend fun update(entity: FolderEntity)
-
-    @Update
-    suspend fun updateAll(entities: List<FolderEntity>)
+    @Upsert
+    suspend fun upsertAll(entities: List<FolderEntity>)
 
     @Delete
     suspend fun delete(entity: FolderEntity)
 
-    @Delete
-    suspend fun deleteAll(entities: List<FolderEntity>)
+    @Query("DELETE FROM folders WHERE id = :id")
+    suspend fun deleteById(id: Uuid)
 
     @Query("SELECT * FROM folders WHERE id = :id LIMIT 1")
-    suspend fun getById(id: String): FolderEntity?
+    suspend fun getById(id: Uuid): FolderEntity?
+
+    @Query("SELECT * FROM folders")
+    suspend fun getAll(): List<FolderEntity>
+
+    @Query("SELECT * FROM folders WHERE id = :id LIMIT 1")
+    fun observeById(id: Uuid): Flow<FolderEntity?>
 
     @Query("SELECT * FROM folders ORDER BY `order` ASC")
-    fun getAllFlow(): Flow<List<FolderEntity>>
+    fun observeAll(): Flow<List<FolderEntity>>
 
     @Query("SELECT * FROM folders WHERE parentId IS NULL ORDER BY `order` ASC")
-    fun getRootFoldersFlow(): Flow<List<FolderEntity>>
+    fun observeRoot(): Flow<List<FolderEntity>>
 
     @Query("SELECT * FROM folders WHERE parentId = :parentId ORDER BY `order` ASC")
-    fun getChildrenFlow(parentId: String): Flow<List<FolderEntity>>
+    fun observeChildren(parentId: Uuid): Flow<List<FolderEntity>>
 
     @Query("SELECT * FROM folders WHERE parentId = :parentId ORDER BY `order` ASC")
-    suspend fun getChildrenList(parentId: String): List<FolderEntity>
+    suspend fun getChildren(parentId: Uuid): List<FolderEntity>
 
     @Query("SELECT * FROM folders WHERE parentId IS NULL ORDER BY `order` ASC")
-    suspend fun getRootList(): List<FolderEntity>
-
-    @Query("SELECT COALESCE(MAX(`order`), -1) FROM folders WHERE parentId IS NULL")
-    suspend fun getMaxOrderForRoot(): Int?
-
-    @Query("SELECT COALESCE(MAX(`order`), -1) FROM folders WHERE parentId = :parentId")
-    suspend fun getMaxOrderForParent(parentId: String): Int?
-
-    @Query(
-        "SELECT f.id, f.label, f.iconName, f.color, f.parentId, f.`order`, f.version, " +
-                "COUNT(b.id) AS bookmarkCount " +
-                "FROM folders f " +
-                "LEFT JOIN bookmarks b ON b.folderId = f.id " +
-                "GROUP BY f.id " +
-                "ORDER BY f.`order` ASC"
-    )
-    fun getFoldersWithBookmarkCountFlow(): Flow<List<FolderWithCount>>
+    suspend fun getRoot(): List<FolderEntity>
 }

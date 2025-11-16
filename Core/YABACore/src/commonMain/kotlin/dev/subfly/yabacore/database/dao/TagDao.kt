@@ -6,43 +6,46 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import androidx.room.Upsert
 import dev.subfly.yabacore.database.entities.TagEntity
-import dev.subfly.yabacore.database.models.TagWithCount
 import kotlinx.coroutines.flow.Flow
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 @Dao
 interface TagDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(entity: TagEntity)
+    @Upsert
+    suspend fun upsert(entity: TagEntity)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(entities: List<TagEntity>)
-
-    @Update
-    suspend fun update(entity: TagEntity)
-
-    @Update
-    suspend fun updateAll(entities: List<TagEntity>)
+    @Upsert
+    suspend fun upsertAll(entities: List<TagEntity>)
 
     @Delete
     suspend fun delete(entity: TagEntity)
 
-    @Delete
-    suspend fun deleteAll(entities: List<TagEntity>)
+    @Query("DELETE FROM tags WHERE id = :id")
+    suspend fun deleteById(id: Uuid)
 
     @Query("SELECT * FROM tags WHERE id = :id LIMIT 1")
-    suspend fun getById(id: String): TagEntity?
+    suspend fun getById(id: Uuid): TagEntity?
 
-    @Query("SELECT * FROM tags ORDER BY editedAt DESC")
-    fun getAllFlow(): Flow<List<TagEntity>>
+    @Query("SELECT * FROM tags")
+    suspend fun getAll(): List<TagEntity>
+
+    @Query("SELECT * FROM tags WHERE id = :id LIMIT 1")
+    fun observeById(id: Uuid): Flow<TagEntity?>
+
+    @Query("SELECT * FROM tags ORDER BY `order` ASC")
+    fun observeAll(): Flow<List<TagEntity>>
 
     @Query(
-        "SELECT t.id, t.label, t.iconName, t.color, t.version, " +
-                "COUNT(r.bookmarkId) AS bookmarkCount " +
-                "FROM tags t " +
-                "LEFT JOIN bookmark_tag_cross_ref r ON r.tagId = t.id " +
-                "GROUP BY t.id " +
-                "ORDER BY t.editedAt DESC"
+        """
+        SELECT tags.* FROM tags
+        INNER JOIN tag_bookmarks ON tags.id = tag_bookmarks.tagId
+        WHERE tag_bookmarks.bookmarkId = :bookmarkId
+        ORDER BY tags.`order` ASC
+        """
     )
-    fun getTagsWithBookmarkCountFlow(): Flow<List<TagWithCount>>
+    fun observeTagsForBookmark(bookmarkId: Uuid): Flow<List<TagEntity>>
 }
