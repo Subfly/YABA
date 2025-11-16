@@ -56,16 +56,18 @@ internal fun LinkBookmarkDomainModel.toOperationDraft(kind: OperationKind): Oper
             kindCode = this.kind.code,
             createdAtEpochMillis = createdAt.toEpochMilliseconds(),
             editedAtEpochMillis = editedAt.toEpochMilliseconds(),
-            link =
-                LinkBookmarkPayload(
-                    description = description,
-                    url = url,
-                    domain = domain,
-                    linkTypeCode = linkType.code,
-                    previewImageUrl = previewImageUrl,
-                    previewIconUrl = previewIconUrl,
-                    videoUrl = videoUrl,
-                ),
+            viewCount = viewCount,
+            isPrivate = isPrivate,
+            isPinned = isPinned,
+            link = LinkBookmarkPayload(
+                description = description,
+                url = url,
+                domain = domain,
+                linkTypeCode = linkType.code,
+                previewImageUrl = previewImageUrl,
+                previewIconUrl = previewIconUrl,
+                videoUrl = videoUrl,
+            ),
         ),
     )
 
@@ -74,15 +76,13 @@ fun tagLinkOperationDraft(
     bookmarkId: Uuid,
     kind: OperationKind,
     happenedAt: Instant,
-): OperationDraft =
-    OperationDraft(
-        entityType = OperationEntityType.TAG_LINK,
-        entityId = "${tagId}|${bookmarkId}",
-        kind = kind,
-        happenedAt = happenedAt,
-        payload =
-            TagLinkPayload(
-                tagId = tagId.toString(),
-                bookmarkId = bookmarkId.toString(),
-            ),
-    )
+): OperationDraft = OperationDraft(
+    entityType = OperationEntityType.TAG_LINK,
+    entityId = "${tagId}|${bookmarkId}",
+    kind = kind,
+    happenedAt = happenedAt,
+    payload = TagLinkPayload(
+        tagId = tagId.toString(),
+        bookmarkId = bookmarkId.toString(),
+    ),
+)

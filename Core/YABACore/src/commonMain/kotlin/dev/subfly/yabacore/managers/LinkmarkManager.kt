@@ -74,22 +74,24 @@ class LinkmarkManager(
 
     suspend fun createLinkmark(linkmark: LinkmarkUiModel): LinkmarkUiModel {
         val now = clock.now()
-        val domain =
-            LinkBookmarkDomainModel(
-                id = linkmark.id,
-                folderId = linkmark.folderId,
-                kind = BookmarkKind.LINK,
-                label = linkmark.label.takeIf { it.isNotBlank() } ?: linkmark.url,
-                createdAt = now,
-                editedAt = now,
-                description = linkmark.description,
-                url = linkmark.url,
-                domain = extractDomain(linkmark.url),
-                linkType = linkmark.linkType,
-                previewImageUrl = linkmark.previewImageUrl,
-                previewIconUrl = linkmark.previewIconUrl,
-                videoUrl = linkmark.videoUrl,
-            )
+        val domain = LinkBookmarkDomainModel(
+            id = linkmark.id,
+            folderId = linkmark.folderId,
+            kind = BookmarkKind.LINK,
+            label = linkmark.label.takeIf { it.isNotBlank() } ?: linkmark.url,
+            createdAt = now,
+            editedAt = now,
+            viewCount = linkmark.viewCount,
+            isPrivate = linkmark.isPrivate,
+            isPinned = linkmark.isPinned,
+            description = linkmark.description,
+            url = linkmark.url,
+            domain = extractDomain(linkmark.url),
+            linkType = linkmark.linkType,
+            previewImageUrl = linkmark.previewImageUrl,
+            previewIconUrl = linkmark.previewIconUrl,
+            videoUrl = linkmark.videoUrl,
+        )
         opApplier.applyLocal(listOf(domain.toOperationDraft(OperationKind.CREATE)))
         return domain.toUiModel()
     }
@@ -109,6 +111,9 @@ class LinkmarkManager(
                 previewIconUrl = linkmark.previewIconUrl,
                 videoUrl = linkmark.videoUrl,
                 editedAt = now,
+                viewCount = linkmark.viewCount,
+                isPrivate = linkmark.isPrivate,
+                isPinned = linkmark.isPinned,
             )
         opApplier.applyLocal(listOf(updated.toOperationDraft(OperationKind.UPDATE)))
         return updated.toUiModel()

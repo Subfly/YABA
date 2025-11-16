@@ -23,7 +23,7 @@ import dev.subfly.yabacore.database.entities.oplog.OpLogEntryEntity
 import dev.subfly.yabacore.database.entities.oplog.ReplicaCursorEntity
 import dev.subfly.yabacore.database.entities.oplog.ReplicaInfoEntity
 
-const val YABA_DATABASE_VERSION = 2
+const val YABA_DATABASE_VERSION = 1
 const val YABA_DATABASE_FILE_NAME = "yaba.db"
 
 @Database(

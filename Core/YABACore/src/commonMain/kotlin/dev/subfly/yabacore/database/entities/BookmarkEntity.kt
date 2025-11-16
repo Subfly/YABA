@@ -13,22 +13,20 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
 @Entity(
     tableName = "bookmarks",
-    foreignKeys =
-        [
-            ForeignKey(
-                entity = FolderEntity::class,
-                parentColumns = ["id"],
-                childColumns = ["folderId"],
-                onDelete = ForeignKey.CASCADE,
-            ),
-        ],
-    indices =
-        [
-            Index(value = ["folderId"]),
-            Index(value = ["kind"]),
-            Index(value = ["label"]),
-            Index(value = ["editedAt"]),
-        ],
+    foreignKeys = [
+        ForeignKey(
+            entity = FolderEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["folderId"],
+            onDelete = ForeignKey.CASCADE,
+        ),
+    ],
+    indices = [
+        Index(value = ["folderId"]),
+        Index(value = ["kind"]),
+        Index(value = ["label"]),
+        Index(value = ["editedAt"]),
+    ],
 )
 data class BookmarkEntity(
     @PrimaryKey val id: Uuid,
@@ -37,4 +35,7 @@ data class BookmarkEntity(
     val label: String,
     val createdAt: Instant,
     val editedAt: Instant,
+    val viewCount: Long = 0,
+    val isPrivate: Boolean = false,
+    val isPinned: Boolean = false,
 )

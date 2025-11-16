@@ -14,9 +14,11 @@ sealed interface BookmarkUiModel {
     val folderId: Uuid
     val kind: BookmarkKind
     val label: String
-    val description: String?
     val createdAt: Instant
     val editedAt: Instant
+    val viewCount: Long
+    val isPrivate: Boolean
+    val isPinned: Boolean
     val parentFolder: FolderUiModel?
     val tags: List<TagUiModel>
 }
@@ -26,9 +28,12 @@ data class LinkmarkUiModel(
     override val folderId: Uuid,
     override val kind: BookmarkKind = BookmarkKind.LINK,
     override val label: String,
-    override val description: String?,
     override val createdAt: Instant,
     override val editedAt: Instant,
+    override val viewCount: Long = 0,
+    override val isPrivate: Boolean = false,
+    override val isPinned: Boolean = false,
+    val description: String?,
     val url: String,
     val domain: String,
     val linkType: LinkType,
@@ -38,4 +43,3 @@ data class LinkmarkUiModel(
     override val parentFolder: FolderUiModel?,
     override val tags: List<TagUiModel> = emptyList(),
 ) : BookmarkUiModel
-

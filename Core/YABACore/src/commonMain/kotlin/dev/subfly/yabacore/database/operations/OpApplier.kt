@@ -44,19 +44,18 @@ class OpApplier(
         return database.runWriterTransaction {
             val replicaInfo = ensureReplicaInfo()
             var nextSeq = replicaInfo.nextOriginSeq
-            val operations =
-                drafts.map { draft ->
-                    Operation(
-                        opId = Uuid.random(),
-                        originDeviceId = replicaInfo.deviceId,
-                        originSeq = nextSeq++,
-                        entityType = draft.entityType,
-                        entityId = draft.entityId,
-                        kind = draft.kind,
-                        happenedAt = draft.happenedAt,
-                        payload = draft.payload,
-                    ).also { applyOperation(it) }
-                }
+            val operations = drafts.map { draft ->
+                Operation(
+                    opId = Uuid.random(),
+                    originDeviceId = replicaInfo.deviceId,
+                    originSeq = nextSeq++,
+                    entityType = draft.entityType,
+                    entityId = draft.entityId,
+                    kind = draft.kind,
+                    happenedAt = draft.happenedAt,
+                    payload = draft.payload,
+                ).also { applyOperation(it) }
+            }
             replicaInfoDao.upsert(replicaInfo.copy(nextOriginSeq = nextSeq))
             opLogDao.insertAll(operations.map { it.toEntity() })
             operations
@@ -161,28 +160,29 @@ class OpApplier(
                 bookmarkDao.deleteByIds(listOf(bookmarkId))
 
             else -> {
-                val entity =
-                    BookmarkEntity(
-                        id = bookmarkId,
-                        folderId = payload.folderId.toUuidOrNull() ?: return,
-                        kind = BookmarkKind.fromCode(payload.kindCode),
-                        label = payload.label,
-                        createdAt = payload.createdAtEpochMillis.toInstant(),
-                        editedAt = payload.editedAtEpochMillis.toInstant(),
-                    )
+                val entity = BookmarkEntity(
+                    id = bookmarkId,
+                    folderId = payload.folderId.toUuidOrNull() ?: return,
+                    kind = BookmarkKind.fromCode(payload.kindCode),
+                    label = payload.label,
+                    createdAt = payload.createdAtEpochMillis.toInstant(),
+                    editedAt = payload.editedAtEpochMillis.toInstant(),
+                    viewCount = payload.viewCount,
+                    isPrivate = payload.isPrivate,
+                    isPinned = payload.isPinned,
+                )
                 bookmarkDao.upsert(entity)
                 payload.link?.let { linkPayload ->
-                    val linkEntity =
-                        LinkBookmarkEntity(
-                            bookmarkId = bookmarkId,
-                            description = linkPayload.description,
-                            url = linkPayload.url,
-                            domain = linkPayload.domain,
-                            linkType = LinkType.fromCode(linkPayload.linkTypeCode),
-                            previewImageUrl = linkPayload.previewImageUrl,
-                            previewIconUrl = linkPayload.previewIconUrl,
-                            videoUrl = linkPayload.videoUrl,
-                        )
+                    val linkEntity = LinkBookmarkEntity(
+                        bookmarkId = bookmarkId,
+                        description = linkPayload.description,
+                        url = linkPayload.url,
+                        domain = linkPayload.domain,
+                        linkType = LinkType.fromCode(linkPayload.linkTypeCode),
+                        previewImageUrl = linkPayload.previewImageUrl,
+                        previewIconUrl = linkPayload.previewIconUrl,
+                        videoUrl = linkPayload.videoUrl,
+                    )
                     linkBookmarkDao.upsert(linkEntity)
                 }
             }

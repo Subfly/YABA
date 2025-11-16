@@ -16,6 +16,9 @@ internal sealed interface BookmarkDomainModel {
     val label: String
     val createdAt: Instant
     val editedAt: Instant
+    val viewCount: Long
+    val isPrivate: Boolean
+    val isPinned: Boolean
 }
 
 internal data class LinkBookmarkDomainModel(
@@ -25,6 +28,9 @@ internal data class LinkBookmarkDomainModel(
     override val label: String,
     override val createdAt: Instant,
     override val editedAt: Instant,
+    override val viewCount: Long = 0,
+    override val isPrivate: Boolean = false,
+    override val isPinned: Boolean = false,
     val description: String?,
     val url: String,
     val domain: String,
@@ -33,4 +39,3 @@ internal data class LinkBookmarkDomainModel(
     val previewIconUrl: String?,
     val videoUrl: String?,
 ) : BookmarkDomainModel
-

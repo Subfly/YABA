@@ -82,6 +82,9 @@ data class BookmarkPayload(
     val kindCode: Int,
     val createdAtEpochMillis: Long,
     val editedAtEpochMillis: Long,
+    val viewCount: Long = 0,
+    val isPrivate: Boolean = false,
+    val isPinned: Boolean = false,
     val link: LinkBookmarkPayload? = null,
 ) : OperationPayload
 
