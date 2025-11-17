@@ -35,17 +35,20 @@ class FolderManager(
         sortType: SortType = SortType.CUSTOM,
         sortOrder: SortOrderType = SortOrderType.ASCENDING,
     ): Flow<List<FolderUiModel>> =
-        folderDao.observeFoldersWithBookmarkCounts(parentId, sortType.name, sortOrder.name)
-            .map { rows -> rows.map { it.toUiModel() } }
+        folderDao.observeFoldersWithBookmarkCounts(
+            parentId,
+            sortType.name,
+            sortOrder.name
+        ).map { rows -> rows.map { it.toUiModel() } }
 
     fun observeFolderTree(
         sortType: SortType = SortType.CUSTOM,
         sortOrder: SortOrderType = SortOrderType.ASCENDING,
     ): Flow<List<FolderUiModel>> =
-        folderDao.observeAllFoldersWithBookmarkCounts(sortType.name, sortOrder.name).map { rows
-            ->
-            buildFolderTree(rows)
-        }
+        folderDao.observeAllFoldersWithBookmarkCounts(
+            sortType.name,
+            sortOrder.name
+        ).map { rows -> buildFolderTree(rows) }
 
     suspend fun getFolder(folderId: Uuid): FolderUiModel? =
         folderDao.getFolderWithBookmarkCount(folderId)?.toUiModel()
@@ -61,7 +64,7 @@ class FolderManager(
                 id = uncategorizedFolderId,
                 parentId = null,
                 label = CoreConstants.Folder.Uncategorized.NAME,
-                description = null,
+                description = CoreConstants.Folder.Uncategorized.DESCRIPTION,
                 icon = CoreConstants.Folder.Uncategorized.ICON,
                 color = YabaColor.NONE,
                 createdAt = now,
