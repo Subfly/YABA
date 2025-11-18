@@ -1,3 +1,5 @@
+![Cover](Assets/cover.png)
+
 # YABA - Yet Another Bookmark App
 
 A modern, cross-platform bookmark manager designed to provide a seamless bookmarking experience across ecosystems with complete privacy and offline-first approach.
