@@ -96,6 +96,7 @@ class OpApplier(
             OperationEntityType.TAG -> applyTagOperation(operation)
             OperationEntityType.BOOKMARK -> applyBookmarkOperation(operation)
             OperationEntityType.TAG_LINK -> applyTagLinkOperation(operation)
+            OperationEntityType.FILE -> applyFileOperation(operation)
         }
 
         clockDao.upsert(
@@ -204,6 +205,12 @@ class OpApplier(
 
             else -> {}
         }
+    }
+
+    private fun applyFileOperation(operation: Operation) {
+        // Placeholder: file payloads are tracked in the op log for
+        // transport layers to act on. No direct database mutation.
+        if (operation.payload !is FilePayload) return
     }
 
     private fun isIncomingNewer(operation: Operation, clock: EntityClockEntity): Boolean =

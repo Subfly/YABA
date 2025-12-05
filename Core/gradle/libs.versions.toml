@@ -3,16 +3,18 @@
 kotlin = "2.2.21"
 ksp = "2.3.0"
 agp = "8.12.3"
-maven-publish = "0.34.0"
+maven-publish = "0.35.0"
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.9.0"
 kotlinx-datetime = "0.7.1"
 kermit = "2.0.8"
-ktor = "3.3.1"
-compose = "1.9.2"
-androidx-activityCompose = "1.11.0"
-room = "2.8.3"
-sqlite = "2.6.1"
+ktor = "3.3.3"
+compose = "1.9.3"
+androidx-activityCompose = "1.12.0"
+room = "2.8.4"
+sqlite = "2.6.2"
+datastore = "1.2.0"
+filekit = "0.12.0"
 
 [libraries]
 
@@ -34,6 +36,10 @@ androidx-activityCompose = { module = "androidx.activity:activity-compose", vers
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+filekit-core = { module = "io.github.vinceglb:filekit-core", version.ref = "filekit" }
 
 [plugins]
 

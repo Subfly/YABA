@@ -5,6 +5,7 @@ package dev.subfly.yabacore.database.operations
 import dev.subfly.yabacore.database.domain.FolderDomainModel
 import dev.subfly.yabacore.database.domain.LinkBookmarkDomainModel
 import dev.subfly.yabacore.database.domain.TagDomainModel
+import dev.subfly.yabacore.filesystem.model.BookmarkFileAssetKind
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
@@ -84,5 +85,30 @@ fun tagLinkOperationDraft(
     payload = TagLinkPayload(
         tagId = tagId.toString(),
         bookmarkId = bookmarkId.toString(),
+    ),
+)
+
+data class FileOperationChange(
+    val bookmarkId: Uuid,
+    val relativePath: String,
+    val assetKind: BookmarkFileAssetKind,
+    val sizeBytes: Long,
+    val checksum: String,
+)
+
+fun FileOperationChange.toOperationDraft(
+    kind: OperationKind,
+    happenedAt: Instant
+): OperationDraft = OperationDraft(
+    entityType = OperationEntityType.FILE,
+    entityId = "${bookmarkId}|${relativePath}",
+    kind = kind,
+    happenedAt = happenedAt,
+    payload = FilePayload(
+        bookmarkId = bookmarkId.toString(),
+        relativePath = relativePath,
+        assetKindCode = assetKind.code,
+        sizeBytes = sizeBytes,
+        checksum = checksum,
     ),
 )

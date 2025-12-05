@@ -2,22 +2,25 @@
 
 package dev.subfly.yabacore.managers
 
+import dev.subfly.yabacore.database.domain.LinkBookmarkDomainModel
+import dev.subfly.yabacore.database.mappers.toDomain
 import dev.subfly.yabacore.database.operations.OpApplier
 import dev.subfly.yabacore.database.operations.OperationKind
 import dev.subfly.yabacore.database.operations.tagLinkOperationDraft
 import dev.subfly.yabacore.database.operations.toOperationDraft
-import dev.subfly.yabacore.database.domain.LinkBookmarkDomainModel
+import dev.subfly.yabacore.filesystem.BookmarkFileManager
 import dev.subfly.yabacore.model.ui.BookmarkUiModel
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.ui.LinkmarkUiModel
 import dev.subfly.yabacore.model.ui.TagUiModel
-import dev.subfly.yabacore.database.mappers.toDomain
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
 
 class AllBookmarksManager(
     private val opApplier: OpApplier,
+    private val bookmarkFileManager: BookmarkFileManager =
+        BookmarkFileManager(opApplier = opApplier),
 ) {
     private val clock = Clock.System
 
@@ -33,9 +36,8 @@ class AllBookmarksManager(
                     ?.copy(folderId = targetFolder.id, editedAt = now)
                     ?.toOperationDraft(OperationKind.MOVE)
             }
-        if (drafts.isNotEmpty()) {
-            opApplier.applyLocal(drafts)
-        }
+        if (drafts.isEmpty()) return
+        opApplier.applyLocal(drafts)
     }
 
     suspend fun deleteBookmarks(bookmarks: List<BookmarkUiModel>) {
@@ -43,11 +45,14 @@ class AllBookmarksManager(
         val now = clock.now()
         val drafts =
             bookmarks.mapNotNull { bookmark ->
-                bookmark.toDomainBookmark()?.copy(editedAt = now)
+                bookmark.toDomainBookmark()
+                    ?.copy(editedAt = now)
                     ?.toOperationDraft(OperationKind.DELETE)
             }
-        if (drafts.isNotEmpty()) {
-            opApplier.applyLocal(drafts)
+        if (drafts.isEmpty()) return
+        opApplier.applyLocal(drafts)
+        bookmarks.forEach {
+            bookmark -> bookmarkFileManager.deleteBookmarkTree(bookmark.id)
         }
     }
 
@@ -76,4 +81,3 @@ class AllBookmarksManager(
             is LinkmarkUiModel -> this.toDomain()
         }
 }
-

@@ -14,6 +14,7 @@ enum class OperationEntityType {
     TAG,
     BOOKMARK,
     TAG_LINK,
+    FILE,
 }
 
 enum class OperationKind {
@@ -105,4 +106,14 @@ data class LinkBookmarkPayload(
 data class TagLinkPayload(
     val tagId: String,
     val bookmarkId: String,
+) : OperationPayload
+
+@Serializable
+@SerialName("file_asset")
+data class FilePayload(
+    val bookmarkId: String,
+    val relativePath: String,
+    val assetKindCode: Int,
+    val sizeBytes: Long,
+    val checksum: String,
 ) : OperationPayload

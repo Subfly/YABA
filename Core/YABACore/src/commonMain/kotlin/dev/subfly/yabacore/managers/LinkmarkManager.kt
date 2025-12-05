@@ -5,30 +5,35 @@ package dev.subfly.yabacore.managers
 import dev.subfly.yabacore.database.dao.BookmarkDao
 import dev.subfly.yabacore.database.dao.FolderDao
 import dev.subfly.yabacore.database.dao.TagDao
+import dev.subfly.yabacore.database.domain.LinkBookmarkDomainModel
 import dev.subfly.yabacore.database.mappers.toModel
+import dev.subfly.yabacore.database.mappers.toUiModel
 import dev.subfly.yabacore.database.models.LinkBookmarkWithRelations
 import dev.subfly.yabacore.database.operations.OpApplier
 import dev.subfly.yabacore.database.operations.OperationKind
 import dev.subfly.yabacore.database.operations.toOperationDraft
+import dev.subfly.yabacore.filesystem.BookmarkFileManager
+import dev.subfly.yabacore.filesystem.LinkmarkFileManager
+import dev.subfly.yabacore.model.ui.LinkmarkUiModel
 import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.BookmarkSearchFilters
-import dev.subfly.yabacore.database.domain.LinkBookmarkDomainModel
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
-import dev.subfly.yabacore.model.ui.LinkmarkUiModel
-import dev.subfly.yabacore.database.mappers.toUiModel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import io.github.vinceglb.filekit.PlatformFile
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class LinkmarkManager(
     private val bookmarkDao: BookmarkDao,
     private val folderDao: FolderDao,
     private val tagDao: TagDao,
     private val opApplier: OpApplier,
+    private val linkmarkFileManager: LinkmarkFileManager =
+        LinkmarkFileManager(BookmarkFileManager(opApplier = opApplier)),
 ) {
     private val clock = Clock.System
 
@@ -37,8 +42,7 @@ class LinkmarkManager(
         sortType: SortType = SortType.EDITED_AT,
         sortOrder: SortOrderType = SortOrderType.DESCENDING,
     ): Flow<List<LinkmarkUiModel>> =
-        bookmarkDao
-            .observeLinkBookmarksForFolder(folderId, sortType.name, sortOrder.name)
+        bookmarkDao.observeLinkBookmarksForFolder(folderId, sortType.name, sortOrder.name)
             .map { rows -> rows.map { it.toLinkmarkUi() } }
 
     fun observeTagLinkmarks(
@@ -46,9 +50,10 @@ class LinkmarkManager(
         sortType: SortType = SortType.EDITED_AT,
         sortOrder: SortOrderType = SortOrderType.DESCENDING,
     ): Flow<List<LinkmarkUiModel>> =
-        bookmarkDao
-            .observeLinkBookmarksForTag(tagId, sortType.name, sortOrder.name)
-            .map { rows -> rows.map { it.toLinkmarkUi() } }
+        bookmarkDao.observeLinkBookmarksForTag(tagId, sortType.name, sortOrder.name).map { rows
+            ->
+            rows.map { it.toLinkmarkUi() }
+        }
 
     fun searchLinkmarksFlow(
         query: String,
@@ -57,41 +62,41 @@ class LinkmarkManager(
         sortOrder: SortOrderType = SortOrderType.DESCENDING,
     ): Flow<List<LinkmarkUiModel>> {
         val params = filters.toQueryParams()
-        return bookmarkDao
-            .observeLinkBookmarksSearch(
-                query = query,
-                kinds = params.kinds,
-                applyKindFilter = params.applyKindFilter,
-                folderIds = params.folderIds,
-                applyFolderFilter = params.applyFolderFilter,
-                tagIds = params.tagIds,
-                applyTagFilter = params.applyTagFilter,
-                sortType = sortType.name,
-                sortOrder = sortOrder.name,
-            )
+        return bookmarkDao.observeLinkBookmarksSearch(
+            query = query,
+            kinds = params.kinds,
+            applyKindFilter = params.applyKindFilter,
+            folderIds = params.folderIds,
+            applyFolderFilter = params.applyFolderFilter,
+            tagIds = params.tagIds,
+            applyTagFilter = params.applyTagFilter,
+            sortType = sortType.name,
+            sortOrder = sortOrder.name,
+        )
             .map { rows -> rows.map { it.toLinkmarkUi() } }
     }
 
     suspend fun createLinkmark(linkmark: LinkmarkUiModel): LinkmarkUiModel {
         val now = clock.now()
-        val domain = LinkBookmarkDomainModel(
-            id = linkmark.id,
-            folderId = linkmark.folderId,
-            kind = BookmarkKind.LINK,
-            label = linkmark.label.takeIf { it.isNotBlank() } ?: linkmark.url,
-            createdAt = now,
-            editedAt = now,
-            viewCount = linkmark.viewCount,
-            isPrivate = linkmark.isPrivate,
-            isPinned = linkmark.isPinned,
-            description = linkmark.description,
-            url = linkmark.url,
-            domain = extractDomain(linkmark.url),
-            linkType = linkmark.linkType,
-            previewImageUrl = linkmark.previewImageUrl,
-            previewIconUrl = linkmark.previewIconUrl,
-            videoUrl = linkmark.videoUrl,
-        )
+        val domain =
+            LinkBookmarkDomainModel(
+                id = linkmark.id,
+                folderId = linkmark.folderId,
+                kind = BookmarkKind.LINK,
+                label = linkmark.label.takeIf { it.isNotBlank() } ?: linkmark.url,
+                createdAt = now,
+                editedAt = now,
+                viewCount = linkmark.viewCount,
+                isPrivate = linkmark.isPrivate,
+                isPinned = linkmark.isPinned,
+                description = linkmark.description,
+                url = linkmark.url,
+                domain = extractDomain(linkmark.url),
+                linkType = linkmark.linkType,
+                previewImageUrl = linkmark.previewImageUrl,
+                previewIconUrl = linkmark.previewIconUrl,
+                videoUrl = linkmark.videoUrl,
+            )
         opApplier.applyLocal(listOf(domain.toOperationDraft(OperationKind.CREATE)))
         return domain.toUiModel()
     }
@@ -126,8 +131,38 @@ class LinkmarkManager(
         return linkBookmark.toUiModel(folder = folder, tags = tags)
     }
 
-    private fun LinkBookmarkWithRelations.toLinkmarkUi(): LinkmarkUiModel =
-        toModel().toUiModel()
+    private fun LinkBookmarkWithRelations.toLinkmarkUi(): LinkmarkUiModel = toModel().toUiModel()
+
+    suspend fun saveLinkImage(
+        bookmarkId: Uuid,
+        bytes: ByteArray,
+        extension: String = "jpeg",
+    ): PlatformFile = linkmarkFileManager.saveLinkImageBytes(bookmarkId, bytes, extension)
+
+    suspend fun importLinkImageFromFile(
+        bookmarkId: Uuid,
+        source: PlatformFile,
+    ): PlatformFile = linkmarkFileManager.importLinkImageFromFile(bookmarkId, source)
+
+    suspend fun getLinkImageFile(bookmarkId: Uuid): PlatformFile? =
+        linkmarkFileManager.getLinkImageFile(bookmarkId)
+
+    suspend fun saveDomainIcon(
+        bookmarkId: Uuid,
+        bytes: ByteArray,
+    ): PlatformFile = linkmarkFileManager.saveDomainIconBytes(bookmarkId, bytes)
+
+    suspend fun importDomainIconFromFile(
+        bookmarkId: Uuid,
+        source: PlatformFile,
+    ): PlatformFile = linkmarkFileManager.importDomainIconFromFile(bookmarkId, source)
+
+    suspend fun getDomainIconFile(bookmarkId: Uuid): PlatformFile? =
+        linkmarkFileManager.getDomainIconFile(bookmarkId)
+
+    suspend fun clearLinkmarkFiles(bookmarkId: Uuid) {
+        linkmarkFileManager.purgeLinkmarkFolder(bookmarkId)
+    }
 
     private fun extractDomain(url: String): String {
         val withoutProtocol = url.substringAfter("://", url)
@@ -158,4 +193,3 @@ class LinkmarkManager(
         )
     }
 }
-

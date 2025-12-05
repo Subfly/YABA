@@ -6,6 +6,7 @@ import dev.subfly.yabacore.database.dao.ReplicaInfoDao
 import dev.subfly.yabacore.database.entities.oplog.ReplicaCursorEntity
 import dev.subfly.yabacore.database.entities.oplog.ReplicaInfoEntity
 import dev.subfly.yabacore.database.operations.OpApplier
+import dev.subfly.yabacore.database.operations.Operation
 import dev.subfly.yabacore.database.operations.toOperation
 
 class SyncEngine(
@@ -55,6 +56,9 @@ class SyncEngine(
             )
         }
     }
+
+    fun extractFileChanges(operations: List<Operation>): List<FileSyncDescriptor> =
+        operations.mapNotNull { it.toFileSyncDescriptor() }
 
     private suspend fun ensureReplicaInfo(): ReplicaInfoEntity {
         val info = replicaInfoDao.get()

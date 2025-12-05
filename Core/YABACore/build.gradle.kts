@@ -30,6 +30,9 @@ kotlin {
             implementation(libs.ktor.client.logging)
             implementation(libs.room.runtime)
             implementation(libs.sqlite.bundled)
+            implementation(libs.androidx.datastore)
+            implementation(libs.androidx.datastore.preferences)
+            implementation(libs.filekit.core)
         }
 
         commonTest.dependencies {
