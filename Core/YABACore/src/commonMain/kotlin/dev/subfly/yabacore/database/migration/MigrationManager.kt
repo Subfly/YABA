@@ -2,25 +2,26 @@
 
 package dev.subfly.yabacore.database.migration
 
-import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.database.domain.FolderDomainModel
 import dev.subfly.yabacore.database.domain.LinkBookmarkDomainModel
-import dev.subfly.yabacore.model.utils.LinkType
 import dev.subfly.yabacore.database.domain.TagDomainModel
-import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.database.operations.OpApplier
 import dev.subfly.yabacore.database.operations.OperationDraft
 import dev.subfly.yabacore.database.operations.OperationEntityType
 import dev.subfly.yabacore.database.operations.OperationKind
 import dev.subfly.yabacore.database.operations.TagLinkPayload
 import dev.subfly.yabacore.database.operations.toOperationDraft
+import dev.subfly.yabacore.model.utils.BookmarkKind
+import dev.subfly.yabacore.model.utils.LinkType
+import dev.subfly.yabacore.model.utils.YabaColor
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
 
-class MigrationManager(
-    private val opApplier: OpApplier,
-) {
+object MigrationManager {
+    private val opApplier
+        get() = OpApplier
+
     suspend fun migrate(snapshot: LegacySnapshot) {
         applyDrafts(buildFolderDrafts(snapshot))
         applyDrafts(buildTagDrafts(snapshot))
@@ -35,25 +36,19 @@ class MigrationManager(
     }
 
     private fun buildFolderDrafts(snapshot: LegacySnapshot): List<OperationDraft> =
-        snapshot.folders
-            .sortedBy { it.order }
-            .map { legacy ->
-                legacy.toFolder().toOperationDraft(OperationKind.CREATE)
-            }
+        snapshot.folders.sortedBy { it.order }.map { legacy ->
+            legacy.toFolder().toOperationDraft(OperationKind.CREATE)
+        }
 
     private fun buildTagDrafts(snapshot: LegacySnapshot): List<OperationDraft> =
-        snapshot.tags
-            .sortedBy { it.order }
-            .map { legacy ->
-                legacy.toTag().toOperationDraft(OperationKind.CREATE)
-            }
+        snapshot.tags.sortedBy { it.order }.map { legacy ->
+            legacy.toTag().toOperationDraft(OperationKind.CREATE)
+        }
 
     private fun buildBookmarkDrafts(snapshot: LegacySnapshot): List<OperationDraft> =
-        snapshot.bookmarks
-            .sortedBy { it.createdAt }
-            .map { legacy ->
-                legacy.toBookmark().toOperationDraft(OperationKind.CREATE)
-            }
+        snapshot.bookmarks.sortedBy { it.createdAt }.map { legacy ->
+            legacy.toBookmark().toOperationDraft(OperationKind.CREATE)
+        }
 
     private fun buildTagLinkDrafts(snapshot: LegacySnapshot): List<OperationDraft> {
         val now = Clock.System.now()
@@ -63,11 +58,10 @@ class MigrationManager(
                 entityId = "${link.tagId}|${link.bookmarkId}",
                 kind = OperationKind.TAG_ADD,
                 happenedAt = now,
-                payload =
-                    TagLinkPayload(
-                        tagId = link.tagId.toString(),
-                        bookmarkId = link.bookmarkId.toString(),
-                    ),
+                payload = TagLinkPayload(
+                    tagId = link.tagId.toString(),
+                    bookmarkId = link.bookmarkId.toString(),
+                ),
             )
         }
     }
@@ -113,4 +107,3 @@ class MigrationManager(
             videoUrl = videoUrl,
         )
 }
-

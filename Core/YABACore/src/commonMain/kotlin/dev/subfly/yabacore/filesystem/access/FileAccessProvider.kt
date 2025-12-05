@@ -1,16 +1,11 @@
 package dev.subfly.yabacore.filesystem.access
 
-import dev.subfly.yabacore.filesystem.settings.FileSystemSettings
-import dev.subfly.yabacore.filesystem.settings.FileSystemSettingsStore
 import io.github.vinceglb.filekit.PlatformFile
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
-expect class FileAccessProvider
-internal constructor(
-    settingsStore: FileSystemSettingsStore,
-) {
+expect object FileAccessProvider {
     suspend fun currentRoot(): PlatformFile
 
     suspend fun bookmarkDirectory(
@@ -31,6 +26,4 @@ internal constructor(
     suspend fun deleteBookmarkDirectory(bookmarkId: Uuid)
 }
 
-fun createFileAccessProvider(
-    settingsStore: FileSystemSettingsStore = FileSystemSettings.store,
-): FileAccessProvider = FileAccessProvider(settingsStore)
+fun createFileAccessProvider(): FileAccessProvider = FileAccessProvider

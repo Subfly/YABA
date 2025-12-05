@@ -1,16 +1,12 @@
 package dev.subfly.yabacore.filesystem.access
 
-import dev.subfly.yabacore.filesystem.settings.FileSystemSettingsStore
 import io.github.vinceglb.filekit.PlatformFile
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
-actual class FileAccessProvider
-actual constructor(
-    settingsStore: FileSystemSettingsStore,
-) {
-    private val delegate = CommonFileAccessProvider(settingsStore = settingsStore)
+actual object FileAccessProvider {
+    private val delegate = CommonFileAccessProvider
 
     actual suspend fun currentRoot(): PlatformFile = delegate.currentRoot()
 

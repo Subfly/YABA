@@ -2,15 +2,9 @@ package dev.subfly.yabacore.database.operations
 
 import androidx.room.Transactor
 import androidx.room.useWriterConnection
+import dev.subfly.yabacore.database.DatabaseProvider
+import dev.subfly.yabacore.database.DeviceIdProvider
 import dev.subfly.yabacore.database.YabaDatabase
-import dev.subfly.yabacore.database.dao.BookmarkDao
-import dev.subfly.yabacore.database.dao.EntityClockDao
-import dev.subfly.yabacore.database.dao.FolderDao
-import dev.subfly.yabacore.database.dao.LinkBookmarkDao
-import dev.subfly.yabacore.database.dao.OpLogDao
-import dev.subfly.yabacore.database.dao.ReplicaInfoDao
-import dev.subfly.yabacore.database.dao.TagBookmarkDao
-import dev.subfly.yabacore.database.dao.TagDao
 import dev.subfly.yabacore.database.entities.BookmarkEntity
 import dev.subfly.yabacore.database.entities.FolderEntity
 import dev.subfly.yabacore.database.entities.LinkBookmarkEntity
@@ -27,18 +21,17 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
-class OpApplier(
-    private val database: YabaDatabase,
-    private val folderDao: FolderDao = database.folderDao(),
-    private val tagDao: TagDao = database.tagDao(),
-    private val bookmarkDao: BookmarkDao = database.bookmarkDao(),
-    private val linkBookmarkDao: LinkBookmarkDao = database.linkBookmarkDao(),
-    private val tagBookmarkDao: TagBookmarkDao = database.tagBookmarkDao(),
-    private val opLogDao: OpLogDao = database.opLogDao(),
-    private val clockDao: EntityClockDao = database.entityClockDao(),
-    private val replicaInfoDao: ReplicaInfoDao = database.replicaInfoDao(),
-    private val deviceIdProvider: suspend () -> String,
-) {
+object OpApplier {
+    private val database get() = DatabaseProvider.database
+    private val folderDao get() = DatabaseProvider.folderDao
+    private val tagDao get() = DatabaseProvider.tagDao
+    private val bookmarkDao get() = DatabaseProvider.bookmarkDao
+    private val linkBookmarkDao get() = DatabaseProvider.linkBookmarkDao
+    private val tagBookmarkDao get() = DatabaseProvider.tagBookmarkDao
+    private val opLogDao get() = DatabaseProvider.opLogDao
+    private val clockDao get() = DatabaseProvider.entityClockDao
+    private val replicaInfoDao get() = DatabaseProvider.replicaInfoDao
+
     suspend fun applyLocal(drafts: List<OperationDraft>): List<Operation> {
         if (drafts.isEmpty()) return emptyList()
         return database.runWriterTransaction {
@@ -75,11 +68,10 @@ class OpApplier(
     private suspend fun ensureReplicaInfo(): ReplicaInfoEntity {
         val current = replicaInfoDao.get()
         if (current != null) return current
-        val newInfo =
-            ReplicaInfoEntity(
-                deviceId = deviceIdProvider(),
-                nextOriginSeq = 0,
-            )
+        val newInfo = ReplicaInfoEntity(
+            deviceId = DeviceIdProvider.get(),
+            nextOriginSeq = 0,
+        )
         replicaInfoDao.upsert(newInfo)
         return newInfo
     }
@@ -115,18 +107,17 @@ class OpApplier(
         when (operation.kind) {
             OperationKind.DELETE, OperationKind.BULK_DELETE -> folderDao.deleteById(folderId)
             else -> {
-                val entity =
-                    FolderEntity(
-                        id = folderId,
-                        parentId = payload.parentId?.toUuidOrNull(),
-                        label = payload.label,
-                        description = payload.description,
-                        icon = payload.icon,
-                        color = YabaColor.fromCode(payload.colorCode),
-                        order = payload.order,
-                        createdAt = payload.createdAtEpochMillis.toInstant(),
-                        editedAt = payload.editedAtEpochMillis.toInstant(),
-                    )
+                val entity = FolderEntity(
+                    id = folderId,
+                    parentId = payload.parentId?.toUuidOrNull(),
+                    label = payload.label,
+                    description = payload.description,
+                    icon = payload.icon,
+                    color = YabaColor.fromCode(payload.colorCode),
+                    order = payload.order,
+                    createdAt = payload.createdAtEpochMillis.toInstant(),
+                    editedAt = payload.editedAtEpochMillis.toInstant(),
+                )
                 folderDao.upsert(entity)
             }
         }
@@ -138,16 +129,15 @@ class OpApplier(
         when (operation.kind) {
             OperationKind.DELETE, OperationKind.BULK_DELETE -> tagDao.deleteById(tagId)
             else -> {
-                val entity =
-                    TagEntity(
-                        id = tagId,
-                        label = payload.label,
-                        icon = payload.icon,
-                        color = YabaColor.fromCode(payload.colorCode),
-                        order = payload.order,
-                        createdAt = payload.createdAtEpochMillis.toInstant(),
-                        editedAt = payload.editedAtEpochMillis.toInstant(),
-                    )
+                val entity = TagEntity(
+                    id = tagId,
+                    label = payload.label,
+                    icon = payload.icon,
+                    color = YabaColor.fromCode(payload.colorCode),
+                    order = payload.order,
+                    createdAt = payload.createdAtEpochMillis.toInstant(),
+                    editedAt = payload.editedAtEpochMillis.toInstant(),
+                )
                 tagDao.upsert(entity)
             }
         }

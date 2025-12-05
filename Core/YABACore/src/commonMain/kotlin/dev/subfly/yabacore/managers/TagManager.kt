@@ -1,7 +1,7 @@
 package dev.subfly.yabacore.managers
 
 import dev.subfly.yabacore.common.CoreConstants
-import dev.subfly.yabacore.database.dao.TagDao
+import dev.subfly.yabacore.database.DatabaseProvider
 import dev.subfly.yabacore.database.domain.TagDomainModel
 import dev.subfly.yabacore.database.mappers.toModel
 import dev.subfly.yabacore.database.mappers.toUiModel
@@ -22,10 +22,9 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
-class TagManager(
-    private val tagDao: TagDao,
-    private val opApplier: OpApplier,
-) {
+object TagManager {
+    private val tagDao get() = DatabaseProvider.tagDao
+    private val opApplier get() = OpApplier
     private val clock = Clock.System
     private val pinnedTagId = Uuid.parse(CoreConstants.Tag.Pinned.ID)
     private val privateTagId = Uuid.parse(CoreConstants.Tag.Private.ID)
@@ -109,8 +108,10 @@ class TagManager(
         val target = tagDao.getById(tag.id)?.toModel() ?: return
         val now = clock.now()
         val remaining = tagDao.getAll().map { it.toModel() }.filterNot { it.id == tag.id }
-        val drafts =
-            mutableListOf(target.copy(editedAt = now).toOperationDraft(OperationKind.DELETE))
+        val drafts = mutableListOf(
+            target.copy(editedAt = now)
+                .toOperationDraft(OperationKind.DELETE)
+        )
         drafts += remaining
             .sortedBy { it.order }
             .mapIndexedNotNull { index, item ->
@@ -126,13 +127,23 @@ class TagManager(
 
     suspend fun addTagToBookmark(tag: TagUiModel, bookmarkId: Uuid) {
         val now = clock.now()
-        val draft = tagLinkOperationDraft(tag.id, bookmarkId, OperationKind.TAG_ADD, now)
+        val draft = tagLinkOperationDraft(
+            tag.id,
+            bookmarkId,
+            OperationKind.TAG_ADD,
+            now
+        )
         opApplier.applyLocal(listOf(draft))
     }
 
     suspend fun removeTagFromBookmark(tag: TagUiModel, bookmarkId: Uuid) {
         val now = clock.now()
-        val draft = tagLinkOperationDraft(tag.id, bookmarkId, OperationKind.TAG_REMOVE, now)
+        val draft = tagLinkOperationDraft(
+            tag.id,
+            bookmarkId,
+            OperationKind.TAG_REMOVE,
+            now
+        )
         opApplier.applyLocal(listOf(draft))
     }
 

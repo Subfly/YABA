@@ -17,11 +17,11 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
 
-class AllBookmarksManager(
-    private val opApplier: OpApplier,
-    private val bookmarkFileManager: BookmarkFileManager =
-        BookmarkFileManager(opApplier = opApplier),
-) {
+object AllBookmarksManager {
+    private val opApplier
+        get() = OpApplier
+    private val bookmarkFileManager
+        get() = BookmarkFileManager
     private val clock = Clock.System
 
     suspend fun moveBookmarksToFolder(
@@ -30,12 +30,11 @@ class AllBookmarksManager(
     ) {
         if (bookmarks.isEmpty()) return
         val now = clock.now()
-        val drafts =
-            bookmarks.mapNotNull { bookmark ->
-                bookmark.toDomainBookmark()
-                    ?.copy(folderId = targetFolder.id, editedAt = now)
-                    ?.toOperationDraft(OperationKind.MOVE)
-            }
+        val drafts = bookmarks.mapNotNull { bookmark ->
+            bookmark.toDomainBookmark()
+                ?.copy(folderId = targetFolder.id, editedAt = now)
+                ?.toOperationDraft(OperationKind.MOVE)
+        }
         if (drafts.isEmpty()) return
         opApplier.applyLocal(drafts)
     }
@@ -43,16 +42,15 @@ class AllBookmarksManager(
     suspend fun deleteBookmarks(bookmarks: List<BookmarkUiModel>) {
         if (bookmarks.isEmpty()) return
         val now = clock.now()
-        val drafts =
-            bookmarks.mapNotNull { bookmark ->
-                bookmark.toDomainBookmark()
-                    ?.copy(editedAt = now)
-                    ?.toOperationDraft(OperationKind.DELETE)
-            }
+        val drafts = bookmarks.mapNotNull { bookmark ->
+            bookmark.toDomainBookmark()
+                ?.copy(editedAt = now)
+                ?.toOperationDraft(OperationKind.DELETE)
+        }
         if (drafts.isEmpty()) return
         opApplier.applyLocal(drafts)
-        bookmarks.forEach {
-            bookmark -> bookmarkFileManager.deleteBookmarkTree(bookmark.id)
+        bookmarks.forEach { bookmark ->
+            bookmarkFileManager.deleteBookmarkTree(bookmark.id)
         }
     }
 

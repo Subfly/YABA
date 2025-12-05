@@ -8,7 +8,6 @@ import dev.subfly.yabacore.database.operations.OpApplier
 import dev.subfly.yabacore.database.operations.OperationKind
 import dev.subfly.yabacore.database.operations.toOperationDraft
 import dev.subfly.yabacore.filesystem.access.FileAccessProvider
-import dev.subfly.yabacore.filesystem.access.createFileAccessProvider
 import dev.subfly.yabacore.filesystem.crypto.computeSha256Hex
 import dev.subfly.yabacore.filesystem.model.BookmarkFileAssetKind
 import io.github.vinceglb.filekit.PlatformFile
@@ -20,16 +19,12 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 
-class BookmarkFileManager(
-    private val accessProvider: FileAccessProvider = createFileAccessProvider(),
-    private val opApplier: OpApplier? = null,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
-) {
+object BookmarkFileManager {
+    private val accessProvider = FileAccessProvider
     private val clock: Clock = Clock.System
 
     suspend fun ensureBookmarkFolder(
@@ -59,11 +54,9 @@ class BookmarkFileManager(
     ) {
         val existing = find(relativePath)
         accessProvider.delete(relativePath)
-        val sizeBytes =
-            existing?.takeUnless { it.isDirectory() }?.let {
-                withContext(ioDispatcher) { it.size() }
-            }
-                ?: -1
+        val sizeBytes = existing?.takeUnless {
+            it.isDirectory()
+        }?.size() ?: -1
         logFileChange(
             kind = OperationKind.DELETE,
             relativePath = relativePath,
@@ -106,7 +99,7 @@ class BookmarkFileManager(
         if (!overwrite && find(destinationRelativePath) != null) {
             return
         }
-        val bytes = withContext(ioDispatcher) { source.readBytes() }
+        val bytes = withContext(Dispatchers.IO) { source.readBytes() }
         writeBytes(destinationRelativePath, bytes, assetKind)
     }
 
@@ -117,16 +110,13 @@ class BookmarkFileManager(
         sizeBytes: Long,
         checksum: String,
     ) {
-        val applier = opApplier ?: return
-        val change =
-            createFileOperationChange(
-                relativePath = relativePath,
-                assetKind = assetKind,
-                sizeBytes = sizeBytes,
-                checksum = checksum,
-            )
-                ?: return
-        applier.applyLocal(listOf(change.toOperationDraft(kind, clock.now())))
+        val change = createFileOperationChange(
+            relativePath = relativePath,
+            assetKind = assetKind,
+            sizeBytes = sizeBytes,
+            checksum = checksum,
+        ) ?: return
+        OpApplier.applyLocal(listOf(change.toOperationDraft(kind, clock.now())))
     }
 
     private fun createFileOperationChange(
