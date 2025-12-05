@@ -1,13 +1,17 @@
 package dev.subfly.yabacore.preferences
 
+import dev.subfly.yabacore.model.utils.CardImageSizing
+import dev.subfly.yabacore.model.utils.ContentAppearance
+import dev.subfly.yabacore.model.utils.FabPosition
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
+import dev.subfly.yabacore.model.utils.ThemePreference
 
 /**
  * Canonical representation of user-facing preferences that used to live in Darwin AppStorage.
  *
- * We store enum values as strings (their [name]) to remain forward-compatible while still
- * accepting legacy integer raw values during migration.
+ * We store enum values as strings (their [name]) to remain forward-compatible while still accepting
+ * legacy integer raw values during migration.
  */
 data class UserPreferences(
     val hasPassedOnboarding: Boolean = false,
@@ -38,28 +42,6 @@ data class UserPreferences(
     val announcementsLegalsUpdate2: Boolean = true,
     val migrationCompleted: Boolean = false,
 )
-
-enum class ThemePreference {
-    LIGHT,
-    DARK,
-    SYSTEM,
-}
-
-enum class ContentAppearance {
-    LIST,
-    CARD,
-}
-
-enum class CardImageSizing {
-    BIG,
-    SMALL,
-}
-
-enum class FabPosition {
-    LEFT,
-    RIGHT,
-    CENTER,
-}
 
 internal inline fun <reified T : Enum<T>> enumFromOrdinal(
     raw: Int,
