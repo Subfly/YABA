@@ -27,6 +27,9 @@ interface BookmarkDao {
     @Query("DELETE FROM bookmarks WHERE id IN (:ids)")
     suspend fun deleteByIds(ids: List<Uuid>)
 
+    @Query("DELETE FROM bookmarks")
+    suspend fun deleteAll()
+
     @Query("SELECT * FROM bookmarks WHERE id = :id LIMIT 1")
     suspend fun getById(id: Uuid): BookmarkEntity?
 

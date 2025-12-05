@@ -28,6 +28,9 @@ interface TagDao {
     @Query("DELETE FROM tags WHERE id = :id")
     suspend fun deleteById(id: Uuid)
 
+    @Query("DELETE FROM tags")
+    suspend fun deleteAll()
+
     @Query("SELECT * FROM tags WHERE id = :id LIMIT 1")
     suspend fun getById(id: Uuid): TagEntity?
 

@@ -15,6 +15,7 @@ enum class OperationEntityType {
     BOOKMARK,
     TAG_LINK,
     FILE,
+    ALL,
 }
 
 enum class OperationKind {
@@ -117,3 +118,7 @@ data class FilePayload(
     val sizeBytes: Long,
     val checksum: String,
 ) : OperationPayload
+
+@Serializable
+@SerialName("delete_all")
+object DeleteAllPayload : OperationPayload

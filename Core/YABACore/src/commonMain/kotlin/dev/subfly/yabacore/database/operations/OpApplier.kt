@@ -2,6 +2,7 @@ package dev.subfly.yabacore.database.operations
 
 import androidx.room.Transactor
 import androidx.room.useWriterConnection
+import dev.subfly.yabacore.common.CoreConstants
 import dev.subfly.yabacore.database.DatabaseProvider
 import dev.subfly.yabacore.database.DeviceIdProvider
 import dev.subfly.yabacore.database.YabaDatabase
@@ -12,6 +13,8 @@ import dev.subfly.yabacore.database.entities.TagBookmarkCrossRef
 import dev.subfly.yabacore.database.entities.TagEntity
 import dev.subfly.yabacore.database.entities.oplog.EntityClockEntity
 import dev.subfly.yabacore.database.entities.oplog.ReplicaInfoEntity
+import dev.subfly.yabacore.filesystem.BookmarkFileManager
+import dev.subfly.yabacore.filesystem.model.BookmarkFileAssetKind
 import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.LinkType
 import dev.subfly.yabacore.model.utils.YabaColor
@@ -22,15 +25,24 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
 object OpApplier {
-    private val database get() = DatabaseProvider.database
-    private val folderDao get() = DatabaseProvider.folderDao
-    private val tagDao get() = DatabaseProvider.tagDao
-    private val bookmarkDao get() = DatabaseProvider.bookmarkDao
-    private val linkBookmarkDao get() = DatabaseProvider.linkBookmarkDao
-    private val tagBookmarkDao get() = DatabaseProvider.tagBookmarkDao
-    private val opLogDao get() = DatabaseProvider.opLogDao
-    private val clockDao get() = DatabaseProvider.entityClockDao
-    private val replicaInfoDao get() = DatabaseProvider.replicaInfoDao
+    private val database
+        get() = DatabaseProvider.database
+    private val folderDao
+        get() = DatabaseProvider.folderDao
+    private val tagDao
+        get() = DatabaseProvider.tagDao
+    private val bookmarkDao
+        get() = DatabaseProvider.bookmarkDao
+    private val linkBookmarkDao
+        get() = DatabaseProvider.linkBookmarkDao
+    private val tagBookmarkDao
+        get() = DatabaseProvider.tagBookmarkDao
+    private val opLogDao
+        get() = DatabaseProvider.opLogDao
+    private val clockDao
+        get() = DatabaseProvider.entityClockDao
+    private val replicaInfoDao
+        get() = DatabaseProvider.replicaInfoDao
 
     suspend fun applyLocal(drafts: List<OperationDraft>): List<Operation> {
         if (drafts.isEmpty()) return emptyList()
@@ -89,6 +101,7 @@ object OpApplier {
             OperationEntityType.BOOKMARK -> applyBookmarkOperation(operation)
             OperationEntityType.TAG_LINK -> applyTagLinkOperation(operation)
             OperationEntityType.FILE -> applyFileOperation(operation)
+            OperationEntityType.ALL -> applyDeleteAllOperation()
         }
 
         clockDao.upsert(
@@ -201,6 +214,24 @@ object OpApplier {
         // Placeholder: file payloads are tracked in the op log for
         // transport layers to act on. No direct database mutation.
         if (operation.payload !is FilePayload) return
+    }
+
+    private suspend fun applyDeleteAllOperation() {
+        // Clear bookmark assets on disk in one shot (delete the bookmarks root)
+        BookmarkFileManager.deleteRelativePath(
+            relativePath = CoreConstants.FileSystem.BOOKMARKS_DIR,
+            assetKind = BookmarkFileAssetKind.UNKNOWN,
+        )
+
+        // Bulk delete tables
+        tagBookmarkDao.deleteAll()
+        linkBookmarkDao.deleteAll()
+        bookmarkDao.deleteAll()
+        tagDao.deleteAll()
+        folderDao.deleteAll()
+
+        // Recreate replica info so we can continue syncing after wipe
+        ensureReplicaInfo()
     }
 
     private fun isIncomingNewer(operation: Operation, clock: EntityClockEntity): Boolean =

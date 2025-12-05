@@ -6,6 +6,8 @@ import dev.subfly.yabacore.database.entities.oplog.ReplicaCursorEntity
 import dev.subfly.yabacore.database.entities.oplog.ReplicaInfoEntity
 import dev.subfly.yabacore.database.operations.OpApplier
 import dev.subfly.yabacore.database.operations.Operation
+import dev.subfly.yabacore.database.operations.OperationEntityType
+import dev.subfly.yabacore.database.operations.OperationKind
 import dev.subfly.yabacore.database.operations.toOperation
 
 object SyncEngine {
@@ -56,6 +58,11 @@ object SyncEngine {
 
     fun extractFileChanges(operations: List<Operation>): List<FileSyncDescriptor> =
             operations.mapNotNull { it.toFileSyncDescriptor() }
+
+    fun containsDeleteAll(operations: List<Operation>): Boolean =
+            operations.any {
+                it.entityType == OperationEntityType.ALL && it.kind == OperationKind.BULK_DELETE
+            }
 
     private suspend fun ensureReplicaInfo(): ReplicaInfoEntity {
         val info = replicaInfoDao.get()

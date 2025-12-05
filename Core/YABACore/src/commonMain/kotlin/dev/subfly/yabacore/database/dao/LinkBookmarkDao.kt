@@ -20,6 +20,9 @@ interface LinkBookmarkDao {
     @Delete
     suspend fun delete(entity: LinkBookmarkEntity)
 
+    @Query("DELETE FROM link_bookmarks")
+    suspend fun deleteAll()
+
     @Query("SELECT * FROM link_bookmarks WHERE bookmarkId = :bookmarkId LIMIT 1")
     suspend fun getByBookmarkId(bookmarkId: Uuid): LinkBookmarkEntity?
 }
