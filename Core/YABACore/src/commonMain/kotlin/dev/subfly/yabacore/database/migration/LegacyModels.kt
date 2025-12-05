@@ -2,10 +2,10 @@
 
 package dev.subfly.yabacore.database.migration
 
-import kotlin.uuid.Uuid
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 data class LegacyFolder(
     val id: Uuid,
@@ -42,6 +42,9 @@ data class LegacyBookmark(
     val previewImageUrl: String? = null,
     val previewIconUrl: String? = null,
     val videoUrl: String? = null,
+    // Raw assets migrated from SwiftData; optional to keep snapshot size reasonable.
+    val previewImageData: ByteArray? = null,
+    val previewIconData: ByteArray? = null,
 )
 
 data class LegacyTagLink(

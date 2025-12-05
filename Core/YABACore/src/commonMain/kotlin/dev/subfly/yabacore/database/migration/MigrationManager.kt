@@ -11,9 +11,11 @@ import dev.subfly.yabacore.database.operations.OperationEntityType
 import dev.subfly.yabacore.database.operations.OperationKind
 import dev.subfly.yabacore.database.operations.TagLinkPayload
 import dev.subfly.yabacore.database.operations.toOperationDraft
+import dev.subfly.yabacore.filesystem.LinkmarkFileManager
 import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.LinkType
 import dev.subfly.yabacore.model.utils.YabaColor
+import dev.subfly.yabacore.preferences.PreferencesMigration
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
@@ -22,7 +24,22 @@ object MigrationManager {
     private val opApplier
         get() = OpApplier
 
-    suspend fun migrate(snapshot: LegacySnapshot) {
+    /**
+     * Migrate everything from legacy Darwin storage into the Kotlin stack.
+     *
+     * - Settings/AppStorage/UserDefaults -> DataStore (handled per-platform)
+     * - SwiftData snapshot (if provided) -> Room via op drafts
+     */
+    suspend fun migrate(snapshot: LegacySnapshot? = null) {
+        PreferencesMigration.migrateIfNeeded()
+
+        snapshot?.let {
+            migrateDatabaseSnapshot(it)
+            migrateBookmarkAssets(it)
+        }
+    }
+
+    private suspend fun migrateDatabaseSnapshot(snapshot: LegacySnapshot) {
         applyDrafts(buildFolderDrafts(snapshot))
         applyDrafts(buildTagDrafts(snapshot))
         applyDrafts(buildBookmarkDrafts(snapshot))
@@ -63,6 +80,23 @@ object MigrationManager {
                     bookmarkId = link.bookmarkId.toString(),
                 ),
             )
+        }
+    }
+
+    private suspend fun migrateBookmarkAssets(snapshot: LegacySnapshot) {
+        snapshot.bookmarks.forEach { legacy ->
+            legacy.previewImageData?.let { data ->
+                LinkmarkFileManager.saveLinkImageBytes(
+                    bookmarkId = legacy.id,
+                    bytes = data,
+                )
+            }
+            legacy.previewIconData?.let { data ->
+                LinkmarkFileManager.saveDomainIconBytes(
+                    bookmarkId = legacy.id,
+                    bytes = data,
+                )
+            }
         }
     }
 
