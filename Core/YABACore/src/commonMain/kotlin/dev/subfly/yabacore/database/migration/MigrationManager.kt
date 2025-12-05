@@ -34,8 +34,9 @@ object MigrationManager {
         PreferencesMigration.migrateIfNeeded()
 
         snapshot?.let {
-            migrateDatabaseSnapshot(it)
-            migrateBookmarkAssets(it)
+            val sanitized = sanitizeSnapshot(it)
+            migrateDatabaseSnapshot(sanitized)
+            migrateBookmarkAssets(sanitized)
         }
     }
 
@@ -81,6 +82,41 @@ object MigrationManager {
                 ),
             )
         }
+    }
+
+    /**
+     * Defensive normalization: if a folder has an invalid order (<0) or references a missing
+     * parent, move it to root and append order. For tags with invalid order, append to the end.
+     */
+    private fun sanitizeSnapshot(snapshot: LegacySnapshot): LegacySnapshot {
+        val folderIds = snapshot.folders.map { it.id }.toSet()
+
+        var nextRootOrder = (snapshot.folders.filter {
+            it.parentId == null
+        }.maxOfOrNull { it.order } ?: -1) + 1
+
+        val fixedFolders = snapshot.folders.map { folder ->
+            val parentExists = folder.parentId?.let { folderIds.contains(it) } ?: true
+            val hasValidOrder = folder.order >= 0
+            if (!parentExists || !hasValidOrder) {
+                folder.copy(parentId = null, order = nextRootOrder++)
+            } else {
+                folder
+            }
+        }
+
+        var nextTagOrder = (snapshot.tags.maxOfOrNull { it.order } ?: -1) + 1
+
+        val fixedTags = snapshot.tags.map { tag ->
+            if (tag.order < 0) {
+                tag.copy(order = nextTagOrder++)
+            } else tag
+        }
+
+        return snapshot.copy(
+            folders = fixedFolders,
+            tags = fixedTags,
+        )
     }
 
     private suspend fun migrateBookmarkAssets(snapshot: LegacySnapshot) {
