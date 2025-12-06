@@ -33,6 +33,7 @@ kotlin {
             implementation(libs.androidx.datastore)
             implementation(libs.androidx.datastore.preferences)
             implementation(libs.filekit.core)
+            implementation(libs.okio)
         }
 
         commonTest.dependencies {

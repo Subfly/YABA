@@ -1,0 +1,205 @@
+{
+  "folders": [
+    {
+      "id": "c2f81df4-2123-48b5-a33d-d6b08b123f9b",
+      "label": "Instagram",
+      "icon": "instagram",
+      "color": 6
+    },
+    {
+      "id": "f41504a7-16a7-4985-9b17-282a4bb17c35",
+      "label": "X (Twitter)",
+      "icon": "new-twitter-rectangle",
+      "color": 1
+    },
+    {
+      "id": "2d162b56-3a1c-4a17-bcf5-4079a7725e8d",
+      "label": "YouTube",
+      "icon": "youtube",
+      "color": 11
+    },
+    {
+      "id": "960a1ab1-bf77-42e2-b85d-3d7ef6fcbf3e",
+      "label": "Facebook",
+      "icon": "facebook-01",
+      "color": 1
+    },
+    {
+      "id": "f0b321ad-22dc-4c14-bb37-3c89ff014d2e",
+      "label": "Reddit",
+      "icon": "reddit",
+      "color": 8
+    },
+    {
+      "id": "af775856-5ad5-4081-bdf2-53597800b020",
+      "label": "LinkedIn",
+      "icon": "linkedin-01",
+      "color": 3
+    },
+    {
+      "id": "f8de97f4-c8cc-49dc-8d58-2a946a86e92d",
+      "label": "Medium",
+      "icon": "medium-square",
+      "color": 2
+    },
+    {
+      "id": "c8c878c1-756f-4b31-9620-71fcb6c9302e",
+      "label": "TikTok",
+      "icon": "tiktok",
+      "color": 9
+    },
+    {
+      "id": "64a6c4e3-5a86-4e5d-a4d5-9f34b51c0893",
+      "label": "Pinterest",
+      "icon": "pinterest",
+      "color": 10
+    },
+    {
+      "id": "d5cde58a-14a2-4224-914d-abe5e4c1954a",
+      "label": "Amazon",
+      "icon": "amazon",
+      "color": 12
+    },
+    {
+      "id": "60d2348a-71f1-48e4-b768-f2b7a9dbf417",
+      "label": "AliExpress",
+      "icon": "shopping-bag-01",
+      "color": 13
+    },
+    {
+      "id": "16f5240e-fdbf-46aa-9109-79d11442421f",
+      "label": "Locations",
+      "icon": "location-03",
+      "color": 5
+    },
+    {
+      "id": "f45a2b82-33a1-4c0f-85e3-cff61637b4f8",
+      "label": "Web",
+      "icon": "internet",
+      "color": 3
+    }
+  ],
+  "tags": [
+    {
+      "id": "16a0321d-f7c5-4a37-9705-7fbd49b64817",
+      "label": "Read Later",
+      "icon": "bookmark-01",
+      "color": 4
+    },
+    {
+      "id": "2f64e7b1-f4f0-4897-8a5e-f2ff351a8998",
+      "label": "Favorites",
+      "icon": "favourite",
+      "color": 13
+    },
+    {
+      "id": "90e64d25-18e7-4de0-9691-520d6d1d538d",
+      "label": "Tech",
+      "icon": "computer-phone-sync",
+      "color": 3
+    },
+    {
+      "id": "1c4e22f5-48a3-4a56-9b44-8969f98ad4cd",
+      "label": "Design",
+      "icon": "brush",
+      "color": 6
+    },
+    {
+      "id": "e314b2c2-84a0-4b23-9ef6-0152b2c60b26",
+      "label": "Ideas",
+      "icon": "bulb",
+      "color": 7
+    },
+    {
+      "id": "1c08a6e6-6508-465d-9e17-017b3ab43d80",
+      "label": "Inspo",
+      "icon": "falling-star",
+      "color": 8
+    },
+    {
+      "id": "7e3f7b4b-1a27-4419-a42d-8e5a3025dbd5",
+      "label": "News",
+      "icon": "news",
+      "color": 1
+    },
+    {
+      "id": "5d8e0b42-7484-4995-8f52-1096e8c91cd3",
+      "label": "Opinions",
+      "icon": "bubble-chat",
+      "color": 3
+    },
+    {
+      "id": "d24ce9e8-7502-46e0-bf2a-9f68d0e46411",
+      "label": "Shopping",
+      "icon": "shopping-cart-01",
+      "color": 12
+    },
+    {
+      "id": "7c1f93ab-35a4-4b2a-891d-13dd9a05f97e",
+      "label": "Work",
+      "icon": "work",
+      "color": 5
+    },
+    {
+      "id": "28b0372a-b697-48a3-96c2-9e3f5d6fcb3b",
+      "label": "Career",
+      "icon": "student-card",
+      "color": 1
+    },
+    {
+      "id": "f5d22938-39f5-485f-baa6-c30d01480b47",
+      "label": "Travel",
+      "icon": "airplane-01",
+      "color": 5
+    },
+    {
+      "id": "d44ad68f-c47d-4b77-bdd7-57a0c5b7ad29",
+      "label": "Food",
+      "icon": "serving-food",
+      "color": 8
+    },
+    {
+      "id": "7d3d3f9a-574f-4f12-9a2b-b60e5083ad06",
+      "label": "Videos",
+      "icon": "video-01",
+      "color": 11
+    },
+    {
+      "id": "5f1b2a86-86a7-4905-a775-8afeb1a9e81f",
+      "label": "Podcasts",
+      "icon": "podcast",
+      "color": 6
+    },
+    {
+      "id": "78cbf1c1-1058-44c8-b142-6f4444ccde32",
+      "label": "Learning",
+      "icon": "books-02",
+      "color": 10
+    },
+    {
+      "id": "9c02bcb1-61e7-4037-b00f-d46a53e3066d",
+      "label": "DIY",
+      "icon": "paint-brush-02",
+      "color": 9
+    },
+    {
+      "id": "62021b38-0c74-4e3d-aba2-8de47cbd00a2",
+      "label": "Memes",
+      "icon": "laughing",
+      "color": 13
+    },
+    {
+      "id": "929dc174-32a0-45ec-b6a5-93417e329f2f",
+      "label": "Threads",
+      "icon": "thread",
+      "color": 3
+    },
+    {
+      "id": "6d8b5f56-5f82-43ef-9a8a-5f8fbbf3aa6f",
+      "label": "Projects",
+      "icon": "package",
+      "color": 2
+    }
+  ]
+}
+
