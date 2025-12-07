@@ -1,0 +1,552 @@
+{
+  "metadata": {
+    "id": "navigation_arrows",
+    "name": "Navigation & Arrows",
+    "description": "Navigation elements and directional arrows",
+    "main_category": "navigation_actions",
+    "icon_count": 108,
+    "version": "1.0"
+  },
+  "icons": [
+    {
+      "name": "arrow-all-direction",
+      "tags": "arrow-all-direction, Minimize-Arrow, Expand-Arrow, Directional-Arrow, Resize-Arrow, Universal-Arrow, Shrinkage-Indicator, Multi-Direction-Arrow, Compact-Arrow, big screen, full screen",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-data-transfer-diagonal",
+      "tags": "arrow-data-transfer-diagonal",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-data-transfer-horizontal",
+      "tags": "Arrow-data-transfer-horizontal, Transfer, Horizontal data transfer arrow, Data exchange arrow, Transfer data Icon, Horizontal transfer arrow, Data flow arrow, Data link arrow, Horizontal data sync icon, File transfer arrow, Data transmission arrow, Horizontal data mover icon, Information transfer arrow, Data share arrow, Horizontal file exchange icon",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-data-transfer-vertical",
+      "tags": "arrow-data-transfer-vertical",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-diagonal",
+      "tags": "big screen, full screen, expand, enlarge",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-down-01",
+      "tags": "down-arrow, arrow, down, decrease arrow, drop arrow, drop down, drop down arrow, chevron,",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-down-02",
+      "tags": "downward arrow, arrow pointing down, lower arrow, decrease arrow",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-down-03",
+      "tags": "return to bottom, arrow to descend, go backward, navigate downward",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-down-04",
+      "tags": "arrow-down-04",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-down-05",
+      "tags": "arrow-down-05",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-down-double",
+      "tags": "Arrow-down-double, Double-arrow-down, Downward-double-arrow, Dual-arrow-down, Twin-arrow-down, Dual-chevron-down, Double-pointing-down, chevron,",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-down-left-01",
+      "tags": "down-left arrow, diagonal down arrow, southwestern arrow, lower-left pointing arrow, descending left arrow",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-down-left-02",
+      "tags": "arrow-down-left-02",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-down-right-01",
+      "tags": "lower right direction arrow, Diagonal descent arrow",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-down-right-02",
+      "tags": "arrow-down-right-02",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-expand",
+      "tags": "shrink-arrow, minimize-icon, compress-arrow, reduce-symbol, collapse-indicator, condense-arrow,\nexpand-arrow, maximize-icon, enlarge, unfold-arrow, big screen, full screen",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-expand-01",
+      "tags": "big screen, full screen, expand, enlarge",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-expand-02",
+      "tags": "big screen, full screen, expand, enlarge",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-expand-diagonal-01",
+      "tags": "enlarge, big, expand screen",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-expand-diagonal-02",
+      "tags": "enlarge, big, expand screen",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-horizontal",
+      "tags": "big screen, full screen, expand, enlarge",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-left-01",
+      "tags": "left-arrow, back-arrow, arrow, leftward indicator, go back, back navigation, chevron,",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-left-02",
+      "tags": "left arrow, back arrow, previous arrow, navigate left, return arrow, backward arrow",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-left-03",
+      "tags": "arrow-to-left, leftward arrow, back arrow, navigate left",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-left-04",
+      "tags": "arrow-left-04",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-left-05",
+      "tags": "arrow-left-05",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-left-double",
+      "tags": "Arrow-left-double, Double-left-arrow, Backward-arrow, Reverse-arrow, Leftward-arrow, Undo-arrow, Previous-arrow, Retreat-arrow, Dual-left-arrow, Recede-arrow, Backtrack-arrow, Double-back-arrow, chevron,",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-left-right",
+      "tags": "arrow-left-right",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-move-down-left",
+      "tags": "arrow-move-down-left",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-move-down-right",
+      "tags": "arrow-move-down-right",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-move-left-down",
+      "tags": "arrow-move-left-down",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-move-right-down",
+      "tags": "arrow-move-right-down",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-move-up-left",
+      "tags": "Move-diagonal-arrow, Data-transfer-arrow, Diagonal-up-arrow, Horizontal-transfer-arrow, Transfer-arrow-up-left, Data-arrow-diagonal, Up-left-move-icon, Horizontal-data-arrow, Diagonal-transfer-arrow, Left-upward-arrow.",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-move-up-right",
+      "tags": "Arrow-move-up-right, Upward-diagonal-arrow, Diagonal-transfer-arrow, Northeast-arrow,\nHorizontal-data-transfer, Data-exchange-arrow, Side-to-side-arrow.",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-reload-horizontal",
+      "tags": "Refresh-arrow, Sync-arrow, Update-arrow, Circular-arrow, Loop-arrow, Reload-circle, Transfer-arrow-horizontal, Data-sync-arrow, Horizontal-transfer, Data-exchange-arrow, Data-refresh-arrow, Circular-data-transfer, Swap-arrow-horizontal, Sync-data-arrow, Cyclic-arrow, Exchange-arrow, Loop-data-arrow, Refresh, Arrow reload",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-reload-vertical",
+      "tags": "refresh-arrow, sync-arrow, update-arrow, circular-arrow, loop-arrow, reload-circle, transfer-arrow-horizontal, data-sync-arrow, horizontal-transfer, data-exchange-arrow, data-refresh-arrow, circular-data-transfer, swap-arrow-horizontal, sync-data-arrow, cyclic-arrow, exchange-arrow, loop-data-arrow.Refresh, arrow reload",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-right-01",
+      "tags": "right-arrow, next-arrow, navigate-right, move-forward, right-direction, chevron,",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-right-02",
+      "tags": "arrow, next-arrow, move-right, navigate-right, right-direction",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-right-03",
+      "tags": "Arrow-to-right, Right direction, Next, Navigate right, Move right, Advance, Right arrow, Progress, Go forward, Forward arrow, Right shift, Right move, Right-way, Arrow forward, Forward motion, Right glide, Right path, Right journey, Right route, Right trail, Right trek, Right course, Right advance, Right march, Right step,",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-right-04",
+      "tags": "arrow-right-04",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-right-05",
+      "tags": "arrow-right-05",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-right-double",
+      "tags": "Arrow-right-double, Double-right-arrow, Forward-double-arrow, Right-arrow-twin, Dual-arrow-right, Paired-arrow-forward, Twin-arrow-right, Double-forward-arrow, Double-arrow-to-right, Arrow-right-pair, chevron,",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-shrink",
+      "tags": "arrow-shrink, reduce-arrow, transfer-arrow, minimize-arrow, data-move-arrow, compress-arrow, share-arrow-horizontal, condense-arrow, exchange-arrow-horizontal, collapse-arrow, convey-arrow-horizontal",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-shrink-01",
+      "tags": "collapse, minimize screen",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-shrink-02",
+      "tags": "collapse, minimize screen",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-turn-backward",
+      "tags": "Arrow-turn-backward, Rewind-arrow, Reverse-arrow, Back-arrow, U-turn-arrow, Left-turn-arrow, Retro-arrow, Revert-arrow, Backward-pointing-arrow, Return-arrow",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-turn-down",
+      "tags": "Arrow-turn-down, Arrow-point-down, Downward-arrow, Descend-arrow, Downturn-arrow, Drop-arrow, Fall-arrow, Lower-arrow, Descend-indicator, Move-down-arrow, Go-down-arrow, Downward-pointing-arrow",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-turn-forward",
+      "tags": "Arrow-turn-forward, Forward-arrow, Next-arrow, Proceed-arrow, Advance-arrow, Navigate-arrow, Move-forward, Progress-arrow, Step-forward, Continue-arrow, Onward-arrow, Shift-ahead, Propel-arrow, Go-forward",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-turn-up",
+      "tags": "Arrow-turn-up,Turn up, Upward-arrow, Direction-change-up, Flip-arrow-up, Ascend-arrow, Vertical-turn-arrow, Elevate-arrow, Northward-arrow, Climb-arrow, Rise-arrow, Shift-up-arrow",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-up-01",
+      "tags": "drop up-arrow, up arrow, arrow, upper direction arrow, increase arrow, chevron,",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-up-02",
+      "tags": "upward arrow, directional up, navigate up, up-arrow",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-up-03",
+      "tags": "back to top, up arrow, scroll up, up arrow, return to top, top scroll, back top",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-up-04",
+      "tags": "arrow-up-04",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-up-05",
+      "tags": "arrow-up-05",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-up-double",
+      "tags": "Double-arrow-up, Up-arrow-pair, Dual-up-arrow, Vertical-twin-arrows, Paired-upward-arrows, Ascent-duo, Double-upward-chevron, chevron,",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-up-down",
+      "tags": "arrow-up-down",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-up-left-01",
+      "tags": "diagonal-arrow-up-left, upper-left-arrow, leftward-up-arrow, diagonal-up-left-arrow",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-up-left-02",
+      "tags": "arrow-up-left-02",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-up-right-01",
+      "tags": "up right arrow, upward diagonal arrow, diagonal up arrow, upper right direction arrow",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-up-right-02",
+      "tags": "arrow-up-right-02",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-up-right-03",
+      "tags": "arrow-up-right-03",
+      "category": "arrows"
+    },
+    {
+      "name": "arrow-vertical",
+      "tags": "big screen, full screen, expand, enlarge",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-data-transfer-diagonal",
+      "tags": "circle-arrow-data-transfer-diagonal",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-data-transfer-horizontal",
+      "tags": "circle-arrow-data-transfer-horizontal",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-data-transfer-vertical",
+      "tags": "circle-arrow-data-transfer-vertical",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-diagonal-01",
+      "tags": "big screen, full screen circle, expand, enlarge circle",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-diagonal-02",
+      "tags": "big screen, full screen circle, expand, enlarge circle",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-down-01",
+      "tags": "circle-arrow-down, shrink-arrow, down-arrow-circle, minimize-arrow, collapse-circle, reduce-arrow, downward-circle, compress-arrow, contract-circle, condense-arrow, descend-circle, chevron,",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-down-02",
+      "tags": "circle-arrow-down-02",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-down-03",
+      "tags": "circle-arrow-down-03",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-down-double",
+      "tags": "chevron,",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-down-left",
+      "tags": "circle-arrow-down-left",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-down-right",
+      "tags": "circle-arrow-down-right",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-expand-01",
+      "tags": "big screen, full screen, expand, enlarge circle",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-expand-02",
+      "tags": "big screen, full screen circle, expand, enlarge circle",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-horizontal",
+      "tags": "big screen, full screen circle, expand, enlarge circle",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-left-01",
+      "tags": "Arrow-left, Left-Arrow, Back-Arrow, Arrow, Leftward Indicator, Go Back, Back Navigation Symbol, Circle arrow left, chevron,",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-left-02",
+      "tags": "circle-arrow-left-02",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-left-03",
+      "tags": "circle-arrow-left-03",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-left-double",
+      "tags": "chevron,",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-left-right",
+      "tags": "big screen, full screen circle, expand, enlarge circle",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-move-down-left",
+      "tags": "circle-arrow-move-down-left",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-move-down-right",
+      "tags": "circle-arrow-move-down-right",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-move-left-down",
+      "tags": "circle-arrow-move-left-down",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-move-right-down",
+      "tags": "circle-arrow-move-right-down",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-move-up-left",
+      "tags": "circle-arrow-move-up-left",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-move-up-right",
+      "tags": "circle-arrow-move-up-right",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-reload-01",
+      "tags": "circle-arrow-reload-01",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-reload-02",
+      "tags": "circle-arrow-reload-02",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-right-01",
+      "tags": "Arrow-right, Right-arrow,Next-arrow, Go-ahead-arrow, Navigate-right, Move-forward, Right-direction, Circle arrow, chevron,",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-right-02",
+      "tags": "circle-arrow-right-02",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-right-03",
+      "tags": "circle-arrow-right-03",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-right-double",
+      "tags": "chevron,",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-shrink-01",
+      "tags": "big screen, full screen circle, expand, enlarge circle",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-shrink-02",
+      "tags": "big screen, full screen circle, expand, enlarge circle",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-up-01",
+      "tags": "Reduce-Arrow, Upward-Circle-Arrow, Minimize-Arrow, Expand-Circle, Shrink-Direction, Ascend-Arrow, Downsize-Circle, chevron,",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-up-02",
+      "tags": "circle-arrow-up-02",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-up-03",
+      "tags": "circle-arrow-up-03",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-up-double",
+      "tags": "chevron,",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-up-down",
+      "tags": "big screen, full screen circle, expand, enlarge circle",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-up-left",
+      "tags": "circle-arrow-up-left",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-up-right",
+      "tags": "circle-arrow-up-right",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-up-right-02",
+      "tags": "circle-arrow-up-right-02",
+      "category": "arrows"
+    },
+    {
+      "name": "circle-arrow-vertical",
+      "tags": "big screen, full screen circle, expand, enlarge circle",
+      "category": "arrows"
+    },
+    {
+      "name": "curvy-left-direction",
+      "tags": "curvy-left-direction",
+      "category": "arrows"
+    },
+    {
+      "name": "curvy-left-right-direction",
+      "tags": "curvy-left-right-direction",
+      "category": "arrows"
+    },
+    {
+      "name": "curvy-right-direction",
+      "tags": "curvy-right-direction",
+      "category": "arrows"
+    },
+    {
+      "name": "curvy-up-down-direction",
+      "tags": "curvy-up-down-direction",
+      "category": "arrows"
+    }
+  ]
+}

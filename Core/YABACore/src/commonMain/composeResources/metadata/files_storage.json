@@ -1,0 +1,757 @@
+{
+  "metadata": {
+    "id": "files_storage",
+    "name": "Files & Storage",
+    "description": "File and folder management",
+    "main_category": "system_files",
+    "icon_count": 149,
+    "version": "1.0"
+  },
+  "icons": [
+    {
+      "name": "7z-01",
+      "tags": "7z-01",
+      "category": "files-folders"
+    },
+    {
+      "name": "7z-02",
+      "tags": "7z-02",
+      "category": "files-folders"
+    },
+    {
+      "name": "archive-01",
+      "tags": "archive-01",
+      "category": "files-folders"
+    },
+    {
+      "name": "archive-02",
+      "tags": "archive-02",
+      "category": "files-folders"
+    },
+    {
+      "name": "archive-03",
+      "tags": "archive-03",
+      "category": "files-folders"
+    },
+    {
+      "name": "catalogue",
+      "tags": "catalogue",
+      "category": "files-folders"
+    },
+    {
+      "name": "copy-link",
+      "tags": "copy-link",
+      "category": "files-folders"
+    },
+    {
+      "name": "course",
+      "tags": "course",
+      "category": "files-folders"
+    },
+    {
+      "name": "css-file-01",
+      "tags": "css-file-01",
+      "category": "files-folders"
+    },
+    {
+      "name": "css-file-02",
+      "tags": "css-file-02",
+      "category": "files-folders"
+    },
+    {
+      "name": "csv-01",
+      "tags": "csv-01",
+      "category": "files-folders"
+    },
+    {
+      "name": "csv-02",
+      "tags": "csv-02",
+      "category": "files-folders"
+    },
+    {
+      "name": "doc-01",
+      "tags": "doc-01",
+      "category": "files-folders"
+    },
+    {
+      "name": "doc-02",
+      "tags": "doc-02",
+      "category": "files-folders"
+    },
+    {
+      "name": "document-attachment",
+      "tags": "docs,",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-01",
+      "tags": "page, doc,",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-02",
+      "tags": "page, doc,",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-add",
+      "tags": "file-add",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-attachment",
+      "tags": "file-attachment",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-audio",
+      "tags": "file-audio",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-block",
+      "tags": "file-block",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-bookmark",
+      "tags": "file-bookmark",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-cloud",
+      "tags": "file-cloud",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-corrupt",
+      "tags": "file-corrupt",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-download",
+      "tags": "file-download",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-edit",
+      "tags": "file-edit",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-empty-01",
+      "tags": "file-empty-01",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-empty-02",
+      "tags": "file-empty-02",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-export",
+      "tags": "file-export",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-favourite",
+      "tags": "file-favourite",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-import",
+      "tags": "file-import",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-link",
+      "tags": "file-link",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-locked",
+      "tags": "file-locked",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-management",
+      "tags": "file-management",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-minus",
+      "tags": "file-minus",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-music",
+      "tags": "file-music",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-not-found",
+      "tags": "file-not-found",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-paste",
+      "tags": "file-paste",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-pin",
+      "tags": "file-pin",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-remove",
+      "tags": "file-remove",
+      "category": "files-folders"
+    },
+    {
+      "name": "files-01",
+      "tags": "files-01",
+      "category": "files-folders"
+    },
+    {
+      "name": "files-02",
+      "tags": "files-02",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-script",
+      "tags": "file-script",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-search",
+      "tags": "file-search",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-security",
+      "tags": "file-security",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-shredder",
+      "tags": "file-shredder",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-star",
+      "tags": "file-star",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-sync",
+      "tags": "file-sync",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-unknown",
+      "tags": "file-unknown",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-unlocked",
+      "tags": "file-unlocked",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-upload",
+      "tags": "file-upload",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-verified",
+      "tags": "file-verified",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-video",
+      "tags": "file-video",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-view",
+      "tags": "file-view",
+      "category": "files-folders"
+    },
+    {
+      "name": "file-zip",
+      "tags": "file-zip",
+      "category": "files-folders"
+    },
+    {
+      "name": "floor-plan",
+      "tags": "floor-plan",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-01",
+      "tags": "folder-01",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-02",
+      "tags": "folder-02",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-03",
+      "tags": "folder-03",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-add",
+      "tags": "folder-add",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-attachment",
+      "tags": "folder-attachment",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-audio",
+      "tags": "folder-audio",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-block",
+      "tags": "folder-block",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-check",
+      "tags": "folder-check",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-cloud",
+      "tags": "folder-cloud",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-details",
+      "tags": "folder-details",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-details-reference",
+      "tags": "folder-details-reference",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-download",
+      "tags": "folder-download",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-edit",
+      "tags": "folder-edit",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-export",
+      "tags": "folder-export",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-favourite",
+      "tags": "folder-favourite",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-file-storage",
+      "tags": "folder-file-storage",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-import",
+      "tags": "folder-import",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-library",
+      "tags": "folder-library",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-links",
+      "tags": "folder-links",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-locked",
+      "tags": "folder-locked",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-management",
+      "tags": "folder-management",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-minus",
+      "tags": "folder-minus",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-music",
+      "tags": "folder-music",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-off",
+      "tags": "folder-off",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-open",
+      "tags": "folder-open",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-pin",
+      "tags": "folder-pin",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-remove",
+      "tags": "folder-remove",
+      "category": "files-folders"
+    },
+    {
+      "name": "folders",
+      "tags": "folders",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-search",
+      "tags": "folder-search",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-security",
+      "tags": "folder-security",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-shared-01",
+      "tags": "folder-shared-01",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-shared-02",
+      "tags": "folder-shared-02",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-shared-03",
+      "tags": "folder-shared-03",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-sync",
+      "tags": "folder-sync",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-transfer",
+      "tags": "folder-transfer",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-unknown",
+      "tags": "folder-unknown",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-unlocked",
+      "tags": "folder-unlocked",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-upload",
+      "tags": "folder-upload",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-video",
+      "tags": "folder-video",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-view",
+      "tags": "folder-view",
+      "category": "files-folders"
+    },
+    {
+      "name": "folder-zip",
+      "tags": "folder-zip",
+      "category": "files-folders"
+    },
+    {
+      "name": "gif-01",
+      "tags": "gif-01",
+      "category": "files-folders"
+    },
+    {
+      "name": "gif-02",
+      "tags": "gif-02",
+      "category": "files-folders"
+    },
+    {
+      "name": "hdr-01",
+      "tags": "hdr-01",
+      "category": "files-folders"
+    },
+    {
+      "name": "hdr-02",
+      "tags": "hdr-02",
+      "category": "files-folders"
+    },
+    {
+      "name": "html-file-01",
+      "tags": "html-file-01",
+      "category": "files-folders"
+    },
+    {
+      "name": "html-file-02",
+      "tags": "html-file-02",
+      "category": "files-folders"
+    },
+    {
+      "name": "jpg-01",
+      "tags": "jpg-01",
+      "category": "files-folders"
+    },
+    {
+      "name": "jpg-02",
+      "tags": "jpg-02",
+      "category": "files-folders"
+    },
+    {
+      "name": "jsx-02",
+      "tags": "jsx-02",
+      "category": "files-folders"
+    },
+    {
+      "name": "jsx-03",
+      "tags": "jsx-03",
+      "category": "files-folders"
+    },
+    {
+      "name": "license",
+      "tags": "blog, article, news paper",
+      "category": "files-folders"
+    },
+    {
+      "name": "license-draft",
+      "tags": "blog, article, news paper, agreement",
+      "category": "files-folders"
+    },
+    {
+      "name": "license-maintenance",
+      "tags": "license-maintenance",
+      "category": "files-folders"
+    },
+    {
+      "name": "license-no",
+      "tags": "license-no",
+      "category": "files-folders"
+    },
+    {
+      "name": "license-pin",
+      "tags": "license-pin",
+      "category": "files-folders"
+    },
+    {
+      "name": "license-third-party",
+      "tags": "license-third-party",
+      "category": "files-folders"
+    },
+    {
+      "name": "mp3-01",
+      "tags": "mp3-01",
+      "category": "files-folders"
+    },
+    {
+      "name": "mp-3-02",
+      "tags": "mp-3-02",
+      "category": "files-folders"
+    },
+    {
+      "name": "mp-4-01",
+      "tags": "mp-4-01",
+      "category": "files-folders"
+    },
+    {
+      "name": "mp-4-02",
+      "tags": "mp-4-02",
+      "category": "files-folders"
+    },
+    {
+      "name": "news-01",
+      "tags": "blog, article, news paper",
+      "category": "files-folders"
+    },
+    {
+      "name": "pdf-01",
+      "tags": "pdf-01",
+      "category": "files-folders"
+    },
+    {
+      "name": "pdf-02",
+      "tags": "pdf-02",
+      "category": "files-folders"
+    },
+    {
+      "name": "png-01",
+      "tags": "png-01",
+      "category": "files-folders"
+    },
+    {
+      "name": "png-02",
+      "tags": "png-02",
+      "category": "files-folders"
+    },
+    {
+      "name": "policy",
+      "tags": "policy",
+      "category": "files-folders"
+    },
+    {
+      "name": "ppt-01",
+      "tags": "ppt-01",
+      "category": "files-folders"
+    },
+    {
+      "name": "ppt-02",
+      "tags": "ppt-02",
+      "category": "files-folders"
+    },
+    {
+      "name": "rar-01",
+      "tags": "rar-01",
+      "category": "files-folders"
+    },
+    {
+      "name": "rar-02",
+      "tags": "rar-02",
+      "category": "files-folders"
+    },
+    {
+      "name": "raw-01",
+      "tags": "raw-01",
+      "category": "files-folders"
+    },
+    {
+      "name": "raw-02",
+      "tags": "raw-02",
+      "category": "files-folders"
+    },
+    {
+      "name": "scroll",
+      "tags": "scroll",
+      "category": "files-folders"
+    },
+    {
+      "name": "svg-01",
+      "tags": "svg-01",
+      "category": "files-folders"
+    },
+    {
+      "name": "svg-02",
+      "tags": "svg-02",
+      "category": "files-folders"
+    },
+    {
+      "name": "tiff-01",
+      "tags": "tiff-01",
+      "category": "files-folders"
+    },
+    {
+      "name": "tiff-02",
+      "tags": "tiff-02",
+      "category": "files-folders"
+    },
+    {
+      "name": "txt-01",
+      "tags": "txt-01",
+      "category": "files-folders"
+    },
+    {
+      "name": "txt-02",
+      "tags": "txt-02",
+      "category": "files-folders"
+    },
+    {
+      "name": "typescript-02",
+      "tags": "typescript-02",
+      "category": "files-folders"
+    },
+    {
+      "name": "typescript-03",
+      "tags": "typescript-03",
+      "category": "files-folders"
+    },
+    {
+      "name": "unarchive-03",
+      "tags": "unarchive-03",
+      "category": "files-folders"
+    },
+    {
+      "name": "wav-01",
+      "tags": "wav-01",
+      "category": "files-folders"
+    },
+    {
+      "name": "wav-02",
+      "tags": "wav-02",
+      "category": "files-folders"
+    },
+    {
+      "name": "xls-01",
+      "tags": "xls-01",
+      "category": "files-folders"
+    },
+    {
+      "name": "xls-02",
+      "tags": "xls-02",
+      "category": "files-folders"
+    },
+    {
+      "name": "xml-01",
+      "tags": "xml-01",
+      "category": "files-folders"
+    },
+    {
+      "name": "xml-02",
+      "tags": "xml-02",
+      "category": "files-folders"
+    },
+    {
+      "name": "xsl-01",
+      "tags": "xsl-01",
+      "category": "files-folders"
+    },
+    {
+      "name": "xsl-02",
+      "tags": "xsl-02",
+      "category": "files-folders"
+    },
+    {
+      "name": "zip-01",
+      "tags": "zip-01",
+      "category": "files-folders"
+    },
+    {
+      "name": "zip-02",
+      "tags": "zip-02",
+      "category": "files-folders"
+    }
+  ]
+}

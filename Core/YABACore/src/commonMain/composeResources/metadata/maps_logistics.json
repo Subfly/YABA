@@ -1,0 +1,752 @@
+{
+  "metadata": {
+    "id": "maps_logistics",
+    "name": "Maps & Logistics",
+    "description": "Location and transportation services",
+    "main_category": "navigation_actions",
+    "icon_count": 148,
+    "version": "1.0"
+  },
+  "icons": [
+    {
+      "name": "compass",
+      "tags": "Compass, Direction, Destination",
+      "category": "maps"
+    },
+    {
+      "name": "direction-left-01",
+      "tags": "Direction, Destination",
+      "category": "maps"
+    },
+    {
+      "name": "direction-left-02",
+      "tags": "Direction, Destination",
+      "category": "maps"
+    },
+    {
+      "name": "direction-right-01",
+      "tags": "Direction, Destination",
+      "category": "maps"
+    },
+    {
+      "name": "direction-right-02",
+      "tags": "Direction, Destination",
+      "category": "maps"
+    },
+    {
+      "name": "directions-01",
+      "tags": "Direction, Destination",
+      "category": "maps"
+    },
+    {
+      "name": "directions-02",
+      "tags": "Direction, Destination",
+      "category": "maps"
+    },
+    {
+      "name": "entering-geo-fence",
+      "tags": "Location boundary, Zone-egress-alert, Zone-egress-alert, Area, Arrival Alert, Zone Entry",
+      "category": "maps"
+    },
+    {
+      "name": "flag-01",
+      "tags": "Flag",
+      "category": "maps"
+    },
+    {
+      "name": "flag-02",
+      "tags": "Flag",
+      "category": "maps"
+    },
+    {
+      "name": "flag-03",
+      "tags": "Flag",
+      "category": "maps"
+    },
+    {
+      "name": "global",
+      "tags": "Global, Earth",
+      "category": "maps"
+    },
+    {
+      "name": "global-editing",
+      "tags": "Earth Editing, Global Editing",
+      "category": "maps"
+    },
+    {
+      "name": "global-refresh",
+      "tags": "Location Reload, Global Refresh, Earth Refresh",
+      "category": "maps"
+    },
+    {
+      "name": "global-search",
+      "tags": "Global, Earth, Global Search, Magnifying Glass, Map Explore, Look Up",
+      "category": "maps"
+    },
+    {
+      "name": "gps-01",
+      "tags": "Direction, GPS",
+      "category": "maps"
+    },
+    {
+      "name": "gps-02",
+      "tags": "Direction, GPS",
+      "category": "maps"
+    },
+    {
+      "name": "latitude",
+      "tags": "Global positioning, map grid, position pin, earth coordinates, navigation point, latitude",
+      "category": "maps"
+    },
+    {
+      "name": "location-01",
+      "tags": "Map, Location",
+      "category": "maps"
+    },
+    {
+      "name": "location-02",
+      "tags": "Map, Location",
+      "category": "maps"
+    },
+    {
+      "name": "location-03",
+      "tags": "Map, Location, Pin,",
+      "category": "maps"
+    },
+    {
+      "name": "location-04",
+      "tags": "Map, Location, Pin,",
+      "category": "maps"
+    },
+    {
+      "name": "location-05",
+      "tags": "Map, Location, Pin,",
+      "category": "maps"
+    },
+    {
+      "name": "location-06",
+      "tags": "Map, Location, Destination",
+      "category": "maps"
+    },
+    {
+      "name": "location-08",
+      "tags": "Map, Location, Destination",
+      "category": "maps"
+    },
+    {
+      "name": "location-09",
+      "tags": "Map, Location, Destination",
+      "category": "maps"
+    },
+    {
+      "name": "location-10",
+      "tags": "Map, Location, Destination",
+      "category": "maps"
+    },
+    {
+      "name": "location-check-01",
+      "tags": "Map Check, Location Check",
+      "category": "maps"
+    },
+    {
+      "name": "location-check-02",
+      "tags": "Map Check, Location Check",
+      "category": "maps"
+    },
+    {
+      "name": "location-favourite-01",
+      "tags": "Map Favourite, Location Favourite",
+      "category": "maps"
+    },
+    {
+      "name": "location-favourite-02",
+      "tags": "Map Favourite, Location Favourite",
+      "category": "maps"
+    },
+    {
+      "name": "location-star-01",
+      "tags": "Map Star, Location Start, save map",
+      "category": "maps"
+    },
+    {
+      "name": "location-star-02",
+      "tags": "Map Star, Location Star",
+      "category": "maps"
+    },
+    {
+      "name": "location-user-01",
+      "tags": "Map, Location, GPS, Location Update, Location User",
+      "category": "maps"
+    },
+    {
+      "name": "location-user-02",
+      "tags": "Map, Location, GPS, Location Update, Location User",
+      "category": "maps"
+    },
+    {
+      "name": "location-user-03",
+      "tags": "Map, Location, GPS, Location Update, Location User",
+      "category": "maps"
+    },
+    {
+      "name": "location-user-04",
+      "tags": "Map, Location, GPS, Location Update, Location User",
+      "category": "maps"
+    },
+    {
+      "name": "maping",
+      "tags": "Map, Location, Navigate",
+      "category": "maps"
+    },
+    {
+      "name": "map-pin",
+      "tags": "Map, Location, GPS, Destination, Pin",
+      "category": "maps"
+    },
+    {
+      "name": "map-pinpoint-01",
+      "tags": "Map, Location, GPS, Navigate, Destination, Pinpoint, Pin, Position Tracker",
+      "category": "maps"
+    },
+    {
+      "name": "map-pinpoint-02",
+      "tags": "Map, Location, GPS, Navigate, Destination, Pinpoint, Pin, Position Tracker",
+      "category": "maps"
+    },
+    {
+      "name": "maps",
+      "tags": "Map, Location, Navigate, Pin",
+      "category": "maps"
+    },
+    {
+      "name": "maps-circle-01",
+      "tags": "Map, Location, Circle Map",
+      "category": "maps"
+    },
+    {
+      "name": "maps-circle-02",
+      "tags": "Map, Location, Circle Map",
+      "category": "maps"
+    },
+    {
+      "name": "maps-global-01",
+      "tags": "Global Map",
+      "category": "maps"
+    },
+    {
+      "name": "maps-global-02",
+      "tags": "Global Map",
+      "category": "maps"
+    },
+    {
+      "name": "maps-square-01",
+      "tags": "Map, Location, Square Map",
+      "category": "maps"
+    },
+    {
+      "name": "maps-square-02",
+      "tags": "Map, Location, Square Map",
+      "category": "maps"
+    },
+    {
+      "name": "mobile-navigator-01",
+      "tags": "Map, Location, GPS, Pin, Mobile Navigator Map",
+      "category": "maps"
+    },
+    {
+      "name": "mobile-navigator-02",
+      "tags": "Map, Location, GPS, Pin, Mobile Navigator Map",
+      "category": "maps"
+    },
+    {
+      "name": "navigation-03",
+      "tags": "Map, Location, Mobile Navigator Map, Send, Share,",
+      "category": "maps"
+    },
+    {
+      "name": "navigation-04",
+      "tags": "Compass, Direction, Map, Location, GPS, Navigate, Navigator",
+      "category": "maps"
+    },
+    {
+      "name": "navigation-05",
+      "tags": "navigation-05",
+      "category": "maps"
+    },
+    {
+      "name": "navigation-06",
+      "tags": "navigation-06",
+      "category": "maps"
+    },
+    {
+      "name": "pin",
+      "tags": "Pin",
+      "category": "maps"
+    },
+    {
+      "name": "pin-location-01",
+      "tags": "Destination, Pin",
+      "category": "maps"
+    },
+    {
+      "name": "pin-location-02",
+      "tags": "Destination, Pin",
+      "category": "maps"
+    },
+    {
+      "name": "pin-location-03",
+      "tags": "Destination, Pin",
+      "category": "maps"
+    },
+    {
+      "name": "radar-01",
+      "tags": "Direction, Position Tracker, Radar, Target Locator",
+      "category": "maps"
+    },
+    {
+      "name": "radar-02",
+      "tags": "Direction, Position Tracker, Radar, Target Locator",
+      "category": "maps"
+    },
+    {
+      "name": "road-location-01",
+      "tags": "Map, Location, Destination, Pin, Position Tracker, Road, Path",
+      "category": "maps"
+    },
+    {
+      "name": "road-location-02",
+      "tags": "Map, Location, Destination, Pin, Position Tracker, Road, Path",
+      "category": "maps"
+    },
+    {
+      "name": "road-wayside",
+      "tags": "Road, Path, Road Wayside, Highway",
+      "category": "maps"
+    },
+    {
+      "name": "route-01",
+      "tags": "Map, Location, GPS, Navigate, Destination, Route Planner, Position Tracker, Road, Path",
+      "category": "maps"
+    },
+    {
+      "name": "route-02",
+      "tags": "Map, Location, GPS, Navigate, Destination, Route Planner, Position Tracker, Road, Path",
+      "category": "maps"
+    },
+    {
+      "name": "route-03",
+      "tags": "Map, Location, GPS, Navigate, Destination, Route Planner, Position Tracker, Road, Path",
+      "category": "maps"
+    },
+    {
+      "name": "accident",
+      "tags": "accident icon, mishap, emergency, incident, calamity, misfortune, mishandling",
+      "category": "logistics"
+    },
+    {
+      "name": "airplane-01",
+      "tags": "airplane icon, jet, aircraft, flying machine, air shuttle, sky cruiser, aviation symbol, plane, aerial transport",
+      "category": "logistics"
+    },
+    {
+      "name": "airplane-02",
+      "tags": "airplane icon, jet, aircraft, flying machine, air shuttle, sky cruiser, aviation symbol, plane, aerial transport",
+      "category": "logistics"
+    },
+    {
+      "name": "airplane-landing-01",
+      "tags": "airplane-landing icon, landing-plane, arrival-plane, touchdown-aircraft, lander-jet, descent-flight, approach-aircraft, landfall-plane, touch-down jet, final-descent, touchdown-jet, landing-aircraft, arrival-jet",
+      "category": "logistics"
+    },
+    {
+      "name": "airplane-landing-02",
+      "tags": "airplane-landing icon, landing-plane, arrival-plane, touchdown-aircraft, lander-jet, descent-flight, approach-aircraft, landfall-plane, touch-down jet, final-descent, touchdown-jet, landing-aircraft, arrival-jet",
+      "category": "logistics"
+    },
+    {
+      "name": "airplane-seat",
+      "tags": "airplane-seat",
+      "category": "logistics"
+    },
+    {
+      "name": "airplane-seat-02",
+      "tags": "airplane-seat-02",
+      "category": "logistics"
+    },
+    {
+      "name": "airplane-take-off-01",
+      "tags": "airplane-take-off icon, flight-departure, jet-launch, aircraft-takeoff, flying-start, departure-plane, lift-off, soaring-jet, air-travel-begin, departure-flight",
+      "category": "logistics"
+    },
+    {
+      "name": "airplane-take-off-02",
+      "tags": "airplane-take-off icon, flight-departure, jet-launch, aircraft-takeoff, flying-start, departure-plane, lift-off, soaring-jet, air-travel-begin, departure-flight",
+      "category": "logistics"
+    },
+    {
+      "name": "airport",
+      "tags": "airport",
+      "category": "logistics"
+    },
+    {
+      "name": "ambulance",
+      "tags": "ambulance icon, emergency vehicle, medical transport, rescue car, paramedic van, lifesaving transport, EMT vehicle, hospital ambulance, emergency response vehicle, medical ambulance, ambulance transport",
+      "category": "logistics"
+    },
+    {
+      "name": "anchor",
+      "tags": "anchor",
+      "category": "logistics"
+    },
+    {
+      "name": "bicycle-01",
+      "tags": "bicycle icon, bike, cycle, two-wheeler, pedal bike, velocipede, wheeled transport, pedal-powered vehicle, riding machine, pushbike, pedaler, two-wheel motion",
+      "category": "logistics"
+    },
+    {
+      "name": "boat",
+      "tags": "boat icon, watercraft, vessel, ship, yacht, ferry, cruiser, sailboat, maritime transport, nautical craft, seafaring icon",
+      "category": "logistics"
+    },
+    {
+      "name": "bus-01",
+      "tags": "bus icon, transit, coach, transport, shuttle, public transport, vehicle, commuter, ride, transportation",
+      "category": "logistics"
+    },
+    {
+      "name": "bus-02",
+      "tags": "bus icon, transit, coach, transport, shuttle, public transport, vehicle, commuter, ride, transportation",
+      "category": "logistics"
+    },
+    {
+      "name": "bus-03",
+      "tags": "bus icon, transit, coach, transport, shuttle, public transport, vehicle, commuter, ride, transportation",
+      "category": "logistics"
+    },
+    {
+      "name": "cable-car",
+      "tags": "cable-car icon, aerial tramway, gondola lift, ropeway, sky tram, cableway",
+      "category": "logistics"
+    },
+    {
+      "name": "camper",
+      "tags": "camper icon, RV, Trailblazer, Wanderer, Explorer, Nomad, Adventure Van, Roamer, Journeyer, Camping Wagon, Outdoor Cruiser, Traveler's Shelter, Mobile Retreat",
+      "category": "logistics"
+    },
+    {
+      "name": "car-01",
+      "tags": "car icon, automobile, vehicle, transport, sedan, coupe, ride, motor, wheels, auto, carriage, roadster, machine",
+      "category": "logistics"
+    },
+    {
+      "name": "car-02",
+      "tags": "car icon, automobile, vehicle, transport, sedan, coupe, ride, motor, wheels, auto, carriage, roadster, machine",
+      "category": "logistics"
+    },
+    {
+      "name": "car-03",
+      "tags": "car icon, automobile, vehicle, transport, sedan, coupe, ride, motor, wheels, auto, carriage, roadster, machine",
+      "category": "logistics"
+    },
+    {
+      "name": "car-04",
+      "tags": "car icon, automobile, vehicle, transport, sedan, coupe, ride, motor, wheels, auto, carriage, roadster, machine",
+      "category": "logistics"
+    },
+    {
+      "name": "car-05",
+      "tags": "car-05",
+      "category": "logistics"
+    },
+    {
+      "name": "car-alert",
+      "tags": "car-alert",
+      "category": "logistics"
+    },
+    {
+      "name": "caravan",
+      "tags": "caravan, camper, RV, trailer, travel van, wheeled shelter, adventure wagon, nomad's nest",
+      "category": "logistics"
+    },
+    {
+      "name": "car-parking-01",
+      "tags": "car-parking icon, auto-parking, vehicle-parking, car-spot, parking-lot, automobile-park, car-space",
+      "category": "logistics"
+    },
+    {
+      "name": "car-parking-02",
+      "tags": "car-parking icon, auto-parking, vehicle-parking, car-spot, parking-lot, automobile-park, car-space",
+      "category": "logistics"
+    },
+    {
+      "name": "car-signal",
+      "tags": "car-signal",
+      "category": "logistics"
+    },
+    {
+      "name": "car-time",
+      "tags": "car-time",
+      "category": "logistics"
+    },
+    {
+      "name": "container-truck",
+      "tags": "container-truck icon, cargo-hauler, freight-carrier, shipping-truck, transport-container, delivery-rig, load-carrier, haulage-vehicle, freighter-truck, goods-transporter, logistics-truck",
+      "category": "logistics"
+    },
+    {
+      "name": "crane",
+      "tags": "crane, lifter, hoister, elevator, pulley, derrick, winch, jib, dolly, gantry, boom",
+      "category": "logistics"
+    },
+    {
+      "name": "drone",
+      "tags": "drone icon, aerial vehicle, quadcopter, flying robot, UAV, Unmanned Aerial Vehicle, sky cam, remote aircraft, airborne device, hovering machine, flight gadget, copter",
+      "category": "logistics"
+    },
+    {
+      "name": "ferry-boat",
+      "tags": "ferry-boat icon, water taxi, nautical vessel, marine transport, ship shuttle, seafaring craft, harbor cruiser, passenger boat, aquatic transit",
+      "category": "logistics"
+    },
+    {
+      "name": "fuel-station",
+      "tags": "fuel-station icon, gas station, petrol station, refueling point, service station, energy depot, filling station, fuel hub, gas pump, refuel stop, diesel stop",
+      "category": "logistics"
+    },
+    {
+      "name": "garbage-truck",
+      "tags": "garbage-truck icon, trash-collector, waste-disposal, rubbish-wagon, bin-mobile, junk-hauler, recycling-van, dumpster-truck, refuse-vehicle, litter-picker, disposal-unit",
+      "category": "logistics"
+    },
+    {
+      "name": "golf-cart",
+      "tags": "golf-cart icon, golf buggy, golf vehicle, course transporter, fairway cruiser, links cart, green transport",
+      "category": "logistics"
+    },
+    {
+      "name": "helicopter",
+      "tags": "chopper, copter, whirlybird, air taxi, sky whirl, rotorcraft, flying machine, copper craft, helo, airscrew, bird's eye, hovercraft, blade runner, flight-bird, sky spinner",
+      "category": "logistics"
+    },
+    {
+      "name": "hot-air-balloon",
+      "tags": "hot-air-balloon icon, airship, sky orb, floating basket, lofty balloon, aerial sphere, high-flying globe, sky cruiser, lofty transport, cloud hopper",
+      "category": "logistics"
+    },
+    {
+      "name": "lift-truck",
+      "tags": "lift-truck icon, forklift, warehouse mover, pallet jack, lifting machine, cargo lifter, material handler, industrial truck, load lifter, fork hoist, lifting vehicle, pallet lifter, lifting gear, stacker truck, goods transporter, lifting equipment",
+      "category": "logistics"
+    },
+    {
+      "name": "metro",
+      "tags": "metro icon, subway, rapid transit, underground, urban rail, city train, transit system",
+      "category": "logistics"
+    },
+    {
+      "name": "motorbike-01",
+      "tags": "motorbike icon, bike, motorcycle, two-wheeler, cycle, motor, chopper, hog, cruiser, ride, two-wheel-drive, motorized bicycle",
+      "category": "logistics"
+    },
+    {
+      "name": "motorbike-02",
+      "tags": "motorbike icon, bike, motorcycle, two-wheeler, cycle, motor, chopper, hog, cruiser, ride, two-wheel-drive, motorized bicycle",
+      "category": "logistics"
+    },
+    {
+      "name": "parking-area-circle",
+      "tags": "parking-area-circle icon, parking-circle, vehicle-spot-circle, car-space-round, auto-zone-circle, parking-lot-circle, car-park-circle, vehicle-area-round, automobile-space-circle",
+      "category": "logistics"
+    },
+    {
+      "name": "parking-area-square",
+      "tags": "parking-area-square icon, parking-square, vehicle-park, parking-spot-square, car-space, square-parking, auto-zone, parking-lot-square, car-park, square-lot, automobile-area",
+      "category": "logistics"
+    },
+    {
+      "name": "petrol-pump",
+      "tags": "petrol-pump",
+      "category": "logistics"
+    },
+    {
+      "name": "pickup-01",
+      "tags": "pickup icon, grab, collect, acquire, retrieve, select, gather, snatch, procure, obtain, harvest",
+      "category": "logistics"
+    },
+    {
+      "name": "pickup-02",
+      "tags": "pickup icon, grab, collect, acquire, retrieve, select, gather, snatch, procure, obtain, harvest",
+      "category": "logistics"
+    },
+    {
+      "name": "plane",
+      "tags": "plane icon, aircraft, jet, airplane, flying machine, air shuttle, sky cruiser, aerial vehicle, winged transport, aviation craft, air travel symbol",
+      "category": "logistics"
+    },
+    {
+      "name": "police-car",
+      "tags": "cop-car, law-enforcement-vehicle, patrol-car, cruiser, squad-car, lawman-auto, copmobile, enforcement-vehicle",
+      "category": "logistics"
+    },
+    {
+      "name": "road",
+      "tags": "road icon path, highway, route, street, thoroughfare, avenue, boulevard, freeway, expressway, roadway, lane, way",
+      "category": "logistics"
+    },
+    {
+      "name": "rocket",
+      "tags": "rocket icon boost, soar, jet, propel, shuttle, launch, spacecraft, zoom, blast, fly",
+      "category": "logistics"
+    },
+    {
+      "name": "school-bus",
+      "tags": "school-bus icon bus-school, education-bus, yellow-bus, learning-transport, student-shuttle, academic-bus, kids-bus, classroom-transport, scholar-bus, education-shuttle",
+      "category": "logistics"
+    },
+    {
+      "name": "scooter-01",
+      "tags": "scooter icon, kickboard, two-wheeler, motorized board, ride-on, push scooter, wheeled glide, urban mover, roll board, sidewalk cruiser, electric kick, swift glide",
+      "category": "logistics"
+    },
+    {
+      "name": "scooter-02",
+      "tags": "scooter icon, kickboard, two-wheeler, motorized board, ride-on, push scooter, wheeled glide, urban mover, roll board, sidewalk cruiser, electric kick, swift glide",
+      "category": "logistics"
+    },
+    {
+      "name": "scooter-03",
+      "tags": "scooter icon, kickboard, two-wheeler, motorized board, ride-on, push scooter, wheeled glide, urban mover, roll board, sidewalk cruiser, electric kick, swift glide",
+      "category": "logistics"
+    },
+    {
+      "name": "scooter-04",
+      "tags": "scooter icon, kickboard, two-wheeler, motorized board, ride-on, push scooter, wheeled glide, urban mover, roll board, sidewalk cruiser, electric kick, swift glide",
+      "category": "logistics"
+    },
+    {
+      "name": "scooter-electric",
+      "tags": "scooter-electric icon, e-scooter, electric scooter, motorized scooter, battery scooter, eco-scooter, electric ride, powered scooter, electronic scooter, plug-in scooter, electric-powered ride",
+      "category": "logistics"
+    },
+    {
+      "name": "seat-selector",
+      "tags": "seat-selector",
+      "category": "logistics"
+    },
+    {
+      "name": "speed-train-01",
+      "tags": "speed-train icon, rapid-rail, swift-express, fast-track, velocity-locomotive, quick-transit, high-speed-rail, turbo-train, accelerated-commute",
+      "category": "logistics"
+    },
+    {
+      "name": "speed-train-02",
+      "tags": "speed-train icon, rapid-rail, swift-express, fast-track, velocity-locomotive, quick-transit, high-speed-rail, turbo-train, accelerated-commute",
+      "category": "logistics"
+    },
+    {
+      "name": "submarine",
+      "tags": "submarine icon, undersea vessel, sea explorer, ocean diver, aquatic craft, depth explorer, underwater ship, marine voyager, submersible, below-surface vessel, underwater explorer",
+      "category": "logistics"
+    },
+    {
+      "name": "tanker-truck",
+      "tags": "tanker-truck",
+      "category": "logistics"
+    },
+    {
+      "name": "taxi",
+      "tags": "taxi icon, cab, car service, ride-hail, transportation, shuttle, cabby, yellow cab, car hire, taxi-cab, chauffeur, taxicab, transit, city ride",
+      "category": "logistics"
+    },
+    {
+      "name": "taxi-02",
+      "tags": "taxi-02",
+      "category": "logistics"
+    },
+    {
+      "name": "tow-truck",
+      "tags": "tow-truck icon, towing vehicle, rescue truck, hauler, wrecker, tow rig, recovery van, tow transporter, roadside assistance, breakdown truck",
+      "category": "logistics"
+    },
+    {
+      "name": "toy-train",
+      "tags": "toy-train icon, choo-choo, play locomotive, kiddie express, miniature rail, tiny railcar, fun choo-choo, child's locomotion, playful rail, mini-rail, train",
+      "category": "logistics"
+    },
+    {
+      "name": "tractor",
+      "tags": "tractor icon, farm machine, plower, agri-vehicle, rural mover, field master, harvester, land rover, cultivator, agro-truck, tiller",
+      "category": "logistics"
+    },
+    {
+      "name": "traffic-incident",
+      "tags": "accident-alert, road-trouble, congestion-event, collision-warning, traffic-trouble",
+      "category": "logistics"
+    },
+    {
+      "name": "traffic-jam-01",
+      "tags": "traffic-jam-01",
+      "category": "logistics"
+    },
+    {
+      "name": "traffic-jam-02",
+      "tags": "traffic-jam-02",
+      "category": "logistics"
+    },
+    {
+      "name": "traffic-light",
+      "tags": "signal, stoplight, semaphore, intersection-light, road-light, crossroad-signal, traffic-signal",
+      "category": "logistics"
+    },
+    {
+      "name": "train-01",
+      "tags": "train icon, locomotive, railway, transit, express, railcar, choo-choo, metro, subway, tram, bullet train",
+      "category": "logistics"
+    },
+    {
+      "name": "train-02",
+      "tags": "train icon, locomotive, railway, transit, express, railcar, choo-choo, metro, subway, tram, bullet train",
+      "category": "logistics"
+    },
+    {
+      "name": "tram",
+      "tags": "tram icon, streetcar, trolley, light rail, cable car, tramcar, transit car, railway car, people mover, urban rail, electric tram",
+      "category": "logistics"
+    },
+    {
+      "name": "truck",
+      "tags": "delivery vehicle, transport, lorry, freighter, cargo carrier, moving van, hauler, goods transporter, box truck, logistics vehicle",
+      "category": "logistics"
+    },
+    {
+      "name": "truck-delivery",
+      "tags": "truck-delivery icon, delivery-truck, shipping-vehicle, transport-delivery, cargo-truck, logistics-icon, shipment-truck, freight-delivery, haulage-truck, dispatch-vehicle, distribution-truck",
+      "category": "logistics"
+    },
+    {
+      "name": "truck-monster",
+      "tags": "beastly-hauler, monster-truck, roaring-rig, colossal-hauler, fierce-mover, titan-transport, mega-monster, savage-hauler, giant-truck, monstrous-mover",
+      "category": "logistics"
+    },
+    {
+      "name": "truck-return",
+      "tags": "Return Truck, truck back, revert transport, vehicle return, return delivery, transport reversal, truck reversal, backtrack vehicle, reverse shipping, return cargo, revert haulage, bring back truck, recall transport, retrieve Truck",
+      "category": "logistics"
+    },
+    {
+      "name": "ufo",
+      "tags": "ufo icon, alien ship, flying saucer, extraterrestrial craft, space vessel, unidentified flying object, celestial shuttle, intergalactic pod, otherworldly cruiser, cosmic disc, galactic transport",
+      "category": "logistics"
+    },
+    {
+      "name": "van",
+      "tags": "van, transporter, delivery, cargo, minibus, shuttle, moving, commute, caravan, hauler, camper, wheels",
+      "category": "logistics"
+    },
+    {
+      "name": "zeppelin",
+      "tags": "zeppelin, airship, blimp, dirigible, skyship, aerial cruiser, floating balloon, gasbag, cloud rider, helium craft, flying vessel",
+      "category": "logistics"
+    }
+  ]
+}

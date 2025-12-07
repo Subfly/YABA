@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
+    alias(libs.plugins.compose)
+    alias(libs.plugins.compose.compiler)
 }
 
 kotlin {
@@ -34,6 +36,12 @@ kotlin {
             implementation(libs.androidx.datastore.preferences)
             implementation(libs.filekit.core)
             implementation(libs.okio)
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.material3)
+            implementation(compose.components.resources)
+            implementation(libs.coil.compose)
+            implementation(libs.coil.svg)
         }
 
         commonTest.dependencies {

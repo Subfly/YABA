@@ -18,3 +18,16 @@ internal actual fun readResourceText(resourcePath: String): String {
         buffered.close()
     }
 }
+
+internal actual fun readResourceBytesOrNull(resourcePath: String): ByteArray? {
+    val resourceName = resourcePath.substringBeforeLast(".")
+    val resourceExtension = resourcePath.substringAfterLast(".")
+    val path = NSBundle.mainBundle.pathForResource(resourceName, resourceExtension) ?: return null
+    val source = FileSystem.SYSTEM.source(path.toPath())
+    val buffered = source.buffer()
+    try {
+        return buffered.readByteArray()
+    } finally {
+        buffered.close()
+    }
+}

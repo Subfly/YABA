@@ -1,0 +1,292 @@
+{
+  "metadata": {
+    "id": "data_operations",
+    "name": "Data Operations",
+    "description": "Data handling and file operations",
+    "main_category": "navigation_actions",
+    "icon_count": 56,
+    "version": "1.0"
+  },
+  "icons": [
+    {
+      "name": "filter",
+      "tags": "filter, purifier, refine",
+      "category": "filter-sorting"
+    },
+    {
+      "name": "filter-add",
+      "tags": "filter add, purifier add, refine add",
+      "category": "filter-sorting"
+    },
+    {
+      "name": "filter-edit",
+      "tags": "filter edit, purifier edit, refine edit",
+      "category": "filter-sorting"
+    },
+    {
+      "name": "filter-horizontal",
+      "tags": "filter horizontal, filter, purifier, refine",
+      "category": "filter-sorting"
+    },
+    {
+      "name": "filter-mail-circle",
+      "tags": "filter, purifier, refine, filter round",
+      "category": "filter-sorting"
+    },
+    {
+      "name": "filter-mail-square",
+      "tags": "filter, purifier, refine, filter square",
+      "category": "filter-sorting"
+    },
+    {
+      "name": "filter-remove",
+      "tags": "filter remove, purifier remove, refine remove",
+      "category": "filter-sorting"
+    },
+    {
+      "name": "filter-reset",
+      "tags": "filter reset, purifier reset, refine reset",
+      "category": "filter-sorting"
+    },
+    {
+      "name": "filter-vertical",
+      "tags": "filter vertical, filter, purifier, refine",
+      "category": "filter-sorting"
+    },
+    {
+      "name": "preference-horizontal",
+      "tags": "filter horizontal, filter, purifier, refine",
+      "category": "filter-sorting"
+    },
+    {
+      "name": "preference-vertical",
+      "tags": "preference vertical",
+      "category": "filter-sorting"
+    },
+    {
+      "name": "sort-by-down-01",
+      "tags": "sort, sort by, sort by down",
+      "category": "filter-sorting"
+    },
+    {
+      "name": "sort-by-down-02",
+      "tags": "sort, sort by, sort by down",
+      "category": "filter-sorting"
+    },
+    {
+      "name": "sort-by-up-01",
+      "tags": "sort, sort by, sort by up",
+      "category": "filter-sorting"
+    },
+    {
+      "name": "sort-by-up-02",
+      "tags": "sort, sort by, sort by up",
+      "category": "filter-sorting"
+    },
+    {
+      "name": "sorting-01",
+      "tags": "sort, sort by, sorting",
+      "category": "filter-sorting"
+    },
+    {
+      "name": "sorting-02",
+      "tags": "sort, sort by, sorting",
+      "category": "filter-sorting"
+    },
+    {
+      "name": "sorting-03",
+      "tags": "sort, sort by, sorting",
+      "category": "filter-sorting"
+    },
+    {
+      "name": "sorting-04",
+      "tags": "sort, sort by, sorting",
+      "category": "filter-sorting"
+    },
+    {
+      "name": "sorting-05",
+      "tags": "sort, sort by, sorting",
+      "category": "filter-sorting"
+    },
+    {
+      "name": "sorting-1-9",
+      "tags": "sort, sort by, sorting, 1 to 9 sorting, sorting 1 9",
+      "category": "filter-sorting"
+    },
+    {
+      "name": "sorting-9-1",
+      "tags": "sort, sort by, sorting, 9 to 1 sorting",
+      "category": "filter-sorting"
+    },
+    {
+      "name": "sorting-a-z-01",
+      "tags": "sort, sort by, sorting, a to z sorting, sorting a z",
+      "category": "filter-sorting"
+    },
+    {
+      "name": "sorting-a-z-02",
+      "tags": "sort, sort by, sorting, a to z sorting, sorting a z",
+      "category": "filter-sorting"
+    },
+    {
+      "name": "sorting-down",
+      "tags": "sort, sort by, sorting down",
+      "category": "filter-sorting"
+    },
+    {
+      "name": "sorting-up",
+      "tags": "sort, sort by, sorting",
+      "category": "filter-sorting"
+    },
+    {
+      "name": "sorting-z-a-01",
+      "tags": "sort, sort by, sorting, a to z sorting, sorting az",
+      "category": "filter-sorting"
+    },
+    {
+      "name": "cloud-download",
+      "tags": "download, cloud, cloud save, import, cloud down, transfer,",
+      "category": "download-upload"
+    },
+    {
+      "name": "cloud-upload",
+      "tags": "upload cloud, cloud storage, cloud transfer, upload cloud, send to cloud, cloud backup, cloud up, uploader, upload",
+      "category": "download-upload"
+    },
+    {
+      "name": "download-01",
+      "tags": "Save, Get, Fetch, Export, Store, Receive, Transfer, Downlink, Downloaded, Download, Downloader",
+      "category": "download-upload"
+    },
+    {
+      "name": "download-02",
+      "tags": "Save, Get, Fetch, Export, Store, Receive, Transfer, Downlink, Downloaded, Download, Downloader",
+      "category": "download-upload"
+    },
+    {
+      "name": "download-03",
+      "tags": "Save, Get, Fetch, Export, Store, Receive, Transfer, Downlink, Downloaded, Download, Downloader",
+      "category": "download-upload"
+    },
+    {
+      "name": "download-04",
+      "tags": "Save, Get, Fetch, Export, Store, Receive, Transfer, Downlink, Downloaded, Download, Downloader",
+      "category": "download-upload"
+    },
+    {
+      "name": "download-05",
+      "tags": "Save, Get, Fetch, Export, Store, Receive, Transfer, Downlink, Downloaded, Download, Downloader",
+      "category": "download-upload"
+    },
+    {
+      "name": "download-circle-01",
+      "tags": "Save, Get, Fetch, Export, Store, Receive, Transfer, Downlink, Downloaded, Download, Downloader, Download Circle, Circle Download",
+      "category": "download-upload"
+    },
+    {
+      "name": "download-circle-02",
+      "tags": "Save, Get, Fetch, Export, Store, Receive, Transfer, Downlink, Downloaded, Download, Downloader, Download Circle, Circle Download",
+      "category": "download-upload"
+    },
+    {
+      "name": "download-square-01",
+      "tags": "Save, Get, Fetch, Export, Store, Receive, Transfer, Downlink, Downloaded, Download, Downloader, Download Square, Square Download",
+      "category": "download-upload"
+    },
+    {
+      "name": "download-square-02",
+      "tags": "Save, Get, Fetch, Export, Store, Receive, Transfer, Downlink, Downloaded, Download, Downloader, Download Square, Square Download",
+      "category": "download-upload"
+    },
+    {
+      "name": "link-01",
+      "tags": "link-icon, connection, web, hyperlink, chain, join, URL, anchor, tie, bridge, attach",
+      "category": "link-unlink"
+    },
+    {
+      "name": "link-02",
+      "tags": "link-icon, connection, web, hyperlink, chain, join, URL, anchor, tie, bridge, attach",
+      "category": "link-unlink"
+    },
+    {
+      "name": "link-03",
+      "tags": "link-icon, connection, web, hyperlink, chain, join, URL, anchor, tie, bridge, attach",
+      "category": "link-unlink"
+    },
+    {
+      "name": "link-04",
+      "tags": "link-icon, connection, web, hyperlink, chain, join, URL, anchor, tie, bridge, attach",
+      "category": "link-unlink"
+    },
+    {
+      "name": "link-05",
+      "tags": "link-icon, connection, web, hyperlink, chain, join, URL, anchor, tie, bridge, attach",
+      "category": "link-unlink"
+    },
+    {
+      "name": "link-06",
+      "tags": "link-icon, connection, web, hyperlink, chain, join, URL, anchor, tie, bridge, attach",
+      "category": "link-unlink"
+    },
+    {
+      "name": "share-03",
+      "tags": "share-icon, send, distribute, spread, forward, circulate, pass-on, transmit, exchange, propagate, disseminate, broadcast, convey, hand-over, impart, allocate",
+      "category": "link-unlink"
+    },
+    {
+      "name": "share-08",
+      "tags": "share-icon, send, distribute, spread, forward, circulate, pass-on, transmit, exchange, propagate, disseminate, broadcast, convey, hand-over, impart, allocate",
+      "category": "link-unlink"
+    },
+    {
+      "name": "search-01",
+      "tags": "Find, Explore, Lookup, Hunt, Scan, Seek, Scour, Quest, Hunt Down, Discover, Probe, Investigate, Peruse, search",
+      "category": "search"
+    },
+    {
+      "name": "search-02",
+      "tags": "Find, Explore, Lookup, Hunt, Scan, Seek, Scour, Quest, Hunt Down, Discover, Probe, Investigate, Peruse",
+      "category": "search"
+    },
+    {
+      "name": "search-square",
+      "tags": "find-box, query-block, locate-frame, seek-square, explore-cell, lookup-corner, scan-box, hunt-panel",
+      "category": "search"
+    },
+    {
+      "name": "menu-square",
+      "tags": "menu, square",
+      "category": "menu"
+    },
+    {
+      "name": "more-horizontal",
+      "tags": "horizontal, more",
+      "category": "menu"
+    },
+    {
+      "name": "more-horizontal-circle-02",
+      "tags": "horizontal, more, circle",
+      "category": "menu"
+    },
+    {
+      "name": "more-horizontal-square-02",
+      "tags": "horizontal, more, square",
+      "category": "menu"
+    },
+    {
+      "name": "more-vertical",
+      "tags": "vertical, more",
+      "category": "menu"
+    },
+    {
+      "name": "more-vertical-circle-02",
+      "tags": "more-vertical-circle icon, vertical-options-circle, expand-menu-circle, additional-choices-circle, extra-vertical-circle, extended-settings-circle, supplementary-vertical-circle, menu-expand-circle, added-vertical-circle, more-options-circle",
+      "category": "menu"
+    },
+    {
+      "name": "more-vertical-square-02",
+      "tags": "vertical, more, square",
+      "category": "menu"
+    }
+  ]
+}

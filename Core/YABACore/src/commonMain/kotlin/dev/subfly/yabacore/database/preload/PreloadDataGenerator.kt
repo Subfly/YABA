@@ -26,7 +26,7 @@ import kotlinx.serialization.json.Json
  * user-created ordering.
  */
 object PreloadDataGenerator {
-    private const val RESOURCE_NAME = "preload_data.json"
+    private const val RESOURCE_NAME = "metadata/preload_data.json"
     private val json = Json { ignoreUnknownKeys = true }
     private val clock = Clock.System
     private val folderDao

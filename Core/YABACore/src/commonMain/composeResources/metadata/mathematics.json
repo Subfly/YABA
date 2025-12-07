@@ -1,0 +1,637 @@
+{
+  "metadata": {
+    "id": "mathematics",
+    "name": "Mathematics",
+    "description": "Mathematical symbols and calculations",
+    "main_category": "education_learning",
+    "icon_count": 125,
+    "version": "1.0"
+  },
+  "icons": [
+    {
+      "name": "abacus",
+      "tags": "abacus",
+      "category": "mathematics"
+    },
+    {
+      "name": "absolute",
+      "tags": "absolute, ultimate, perfect, paramount",
+      "category": "mathematics"
+    },
+    {
+      "name": "acute",
+      "tags": "acute, sharp, angular",
+      "category": "mathematics"
+    },
+    {
+      "name": "alpha",
+      "tags": "alpha",
+      "category": "mathematics"
+    },
+    {
+      "name": "alpha-circle",
+      "tags": "alpha-circle",
+      "category": "mathematics"
+    },
+    {
+      "name": "alpha-square",
+      "tags": "alpha-square",
+      "category": "mathematics"
+    },
+    {
+      "name": "angle",
+      "tags": "arrowhead, angle, Angular, Arrow",
+      "category": "mathematics"
+    },
+    {
+      "name": "angle-01",
+      "tags": "arrowhead, angle, Angular, Arrow",
+      "category": "mathematics"
+    },
+    {
+      "name": "approximately-equal",
+      "tags": "approximately-equal",
+      "category": "mathematics"
+    },
+    {
+      "name": "approximately-equal-circle",
+      "tags": "approximately-equal-circle",
+      "category": "mathematics"
+    },
+    {
+      "name": "approximately-equal-square",
+      "tags": "approximately-equal-square",
+      "category": "mathematics"
+    },
+    {
+      "name": "beta",
+      "tags": "beta",
+      "category": "mathematics"
+    },
+    {
+      "name": "calculator",
+      "tags": "calculator, math",
+      "category": "mathematics"
+    },
+    {
+      "name": "compass-01",
+      "tags": "navigation, compass, direction, heading indicator, cardinal",
+      "category": "mathematics"
+    },
+    {
+      "name": "cone-01",
+      "tags": "cone-01",
+      "category": "mathematics"
+    },
+    {
+      "name": "cone-02",
+      "tags": "cone-02",
+      "category": "mathematics"
+    },
+    {
+      "name": "congruent-to",
+      "tags": "congruent-to",
+      "category": "mathematics"
+    },
+    {
+      "name": "congruent-to-circle",
+      "tags": "congruent-to-circle",
+      "category": "mathematics"
+    },
+    {
+      "name": "congruent-to-square",
+      "tags": "congruent-to-square",
+      "category": "mathematics"
+    },
+    {
+      "name": "coordinate-01",
+      "tags": "coordinate, location",
+      "category": "mathematics"
+    },
+    {
+      "name": "coordinate-02",
+      "tags": "coordinate, location",
+      "category": "mathematics"
+    },
+    {
+      "name": "cos",
+      "tags": "cos",
+      "category": "mathematics"
+    },
+    {
+      "name": "cosine-01",
+      "tags": "cosine-01",
+      "category": "mathematics"
+    },
+    {
+      "name": "cosine-02",
+      "tags": "cosine-02",
+      "category": "mathematics"
+    },
+    {
+      "name": "cube",
+      "tags": "cube",
+      "category": "mathematics"
+    },
+    {
+      "name": "cylinder-01",
+      "tags": "cylinder-01",
+      "category": "mathematics"
+    },
+    {
+      "name": "cylinder-02",
+      "tags": "cylinder-02",
+      "category": "mathematics"
+    },
+    {
+      "name": "cylinder-03",
+      "tags": "cylinder-03",
+      "category": "mathematics"
+    },
+    {
+      "name": "cylinder-04",
+      "tags": "cylinder-04",
+      "category": "mathematics"
+    },
+    {
+      "name": "divide-sign",
+      "tags": "split, division, segmentation, fraction, divider",
+      "category": "mathematics"
+    },
+    {
+      "name": "divide-sign-circle",
+      "tags": "divide-sign-circle",
+      "category": "mathematics"
+    },
+    {
+      "name": "divide-sign-square",
+      "tags": "divide-sign-square",
+      "category": "mathematics"
+    },
+    {
+      "name": "equal-sign",
+      "tags": "twin, matching, equal, equality",
+      "category": "mathematics"
+    },
+    {
+      "name": "equal-sign-circle",
+      "tags": "equal-sign-circle",
+      "category": "mathematics"
+    },
+    {
+      "name": "equal-sign-square",
+      "tags": "equal-sign-square",
+      "category": "mathematics"
+    },
+    {
+      "name": "function",
+      "tags": "function",
+      "category": "mathematics"
+    },
+    {
+      "name": "function-circle",
+      "tags": "function-circle",
+      "category": "mathematics"
+    },
+    {
+      "name": "function-of-x",
+      "tags": "function-of-x",
+      "category": "mathematics"
+    },
+    {
+      "name": "function-square",
+      "tags": "function-square",
+      "category": "mathematics"
+    },
+    {
+      "name": "greater-than",
+      "tags": "greater than, Forward, Go Forward",
+      "category": "mathematics"
+    },
+    {
+      "name": "greater-than-circle",
+      "tags": "greater-than-circle",
+      "category": "mathematics"
+    },
+    {
+      "name": "greater-than-square",
+      "tags": "greater-than-square",
+      "category": "mathematics"
+    },
+    {
+      "name": "hexagon-01",
+      "tags": "hexagon-01",
+      "category": "mathematics"
+    },
+    {
+      "name": "hyperbole",
+      "tags": "amplify, hyperbole, Intensify, Augment",
+      "category": "mathematics"
+    },
+    {
+      "name": "infinity-01",
+      "tags": "infinity-01",
+      "category": "mathematics"
+    },
+    {
+      "name": "infinity-02",
+      "tags": "infinity, endless, eternal",
+      "category": "mathematics"
+    },
+    {
+      "name": "infinity-circle",
+      "tags": "infinity-circle",
+      "category": "mathematics"
+    },
+    {
+      "name": "infinity-square",
+      "tags": "infinity-square",
+      "category": "mathematics"
+    },
+    {
+      "name": "left-angle",
+      "tags": "arrowhead, angle, Angular, Arrow",
+      "category": "mathematics"
+    },
+    {
+      "name": "left-triangle",
+      "tags": "triangle, trigon",
+      "category": "mathematics"
+    },
+    {
+      "name": "less-than",
+      "tags": "not greater than, less than",
+      "category": "mathematics"
+    },
+    {
+      "name": "less-than-circle",
+      "tags": "less-than-circle",
+      "category": "mathematics"
+    },
+    {
+      "name": "less-than-square",
+      "tags": "less-than-square",
+      "category": "mathematics"
+    },
+    {
+      "name": "matrix",
+      "tags": "binary weave, code lattice, matrix",
+      "category": "mathematics"
+    },
+    {
+      "name": "minus-plus-01",
+      "tags": "minus plus",
+      "category": "mathematics"
+    },
+    {
+      "name": "minus-plus-02",
+      "tags": "minus plus",
+      "category": "mathematics"
+    },
+    {
+      "name": "minus-plus-circle-01",
+      "tags": "minus-plus-circle-01",
+      "category": "mathematics"
+    },
+    {
+      "name": "minus-plus-circle-02",
+      "tags": "minus-plus-circle-02",
+      "category": "mathematics"
+    },
+    {
+      "name": "minus-plus-square-01",
+      "tags": "minus-plus-square-01",
+      "category": "mathematics"
+    },
+    {
+      "name": "minus-plus-square-02",
+      "tags": "minus-plus-square-02",
+      "category": "mathematics"
+    },
+    {
+      "name": "minus-sign",
+      "tags": "minus",
+      "category": "mathematics"
+    },
+    {
+      "name": "minus-sign-circle",
+      "tags": "minus-sign-circle",
+      "category": "mathematics"
+    },
+    {
+      "name": "minus-sign-square",
+      "tags": "minus-sign-square",
+      "category": "mathematics"
+    },
+    {
+      "name": "more-or-less",
+      "tags": "more-or-less",
+      "category": "mathematics"
+    },
+    {
+      "name": "more-or-less-circle",
+      "tags": "more-or-less-circle",
+      "category": "mathematics"
+    },
+    {
+      "name": "more-or-less-square",
+      "tags": "more-or-less-square",
+      "category": "mathematics"
+    },
+    {
+      "name": "multiplication-sign",
+      "tags": "cross, multiplication, math, X",
+      "category": "mathematics"
+    },
+    {
+      "name": "multiplication-sign-circle",
+      "tags": "multiplication-sign-circle",
+      "category": "mathematics"
+    },
+    {
+      "name": "multiplication-sign-square",
+      "tags": "multiplication-sign-square",
+      "category": "mathematics"
+    },
+    {
+      "name": "not-equal-sign",
+      "tags": "not twin, not matching, not equal, not equality",
+      "category": "mathematics"
+    },
+    {
+      "name": "not-equal-sign-circle",
+      "tags": "not-equal-sign-circle",
+      "category": "mathematics"
+    },
+    {
+      "name": "not-equal-sign-square",
+      "tags": "not-equal-sign-square",
+      "category": "mathematics"
+    },
+    {
+      "name": "n-th-root",
+      "tags": "n-th-root",
+      "category": "mathematics"
+    },
+    {
+      "name": "n-th-root-circle",
+      "tags": "n-th-root-circle",
+      "category": "mathematics"
+    },
+    {
+      "name": "n-th-root-square",
+      "tags": "n-th-root-square",
+      "category": "mathematics"
+    },
+    {
+      "name": "obtuse",
+      "tags": "wide, obtuse,",
+      "category": "mathematics"
+    },
+    {
+      "name": "octagon",
+      "tags": "octagon",
+      "category": "mathematics"
+    },
+    {
+      "name": "parabola-01",
+      "tags": "curve, parabola, arc, mathematical, geometric",
+      "category": "mathematics"
+    },
+    {
+      "name": "parabola-02",
+      "tags": "curve, parabola, arc, mathematical, geometric",
+      "category": "mathematics"
+    },
+    {
+      "name": "parabola-03",
+      "tags": "curve, parabola, arc, mathematical, geometric",
+      "category": "mathematics"
+    },
+    {
+      "name": "parallelogram",
+      "tags": "parallelogram",
+      "category": "mathematics"
+    },
+    {
+      "name": "pentagon-01",
+      "tags": "pentagon-01",
+      "category": "mathematics"
+    },
+    {
+      "name": "percent",
+      "tags": "numeric, proportion, ratio, fraction, relative value, share, percent",
+      "category": "mathematics"
+    },
+    {
+      "name": "percent-circle",
+      "tags": "percent-circle",
+      "category": "mathematics"
+    },
+    {
+      "name": "percent-square",
+      "tags": "percent-square",
+      "category": "mathematics"
+    },
+    {
+      "name": "pi",
+      "tags": "pi",
+      "category": "mathematics"
+    },
+    {
+      "name": "pi-circle",
+      "tags": "pi-circle",
+      "category": "mathematics"
+    },
+    {
+      "name": "pi-square",
+      "tags": "pi-square",
+      "category": "mathematics"
+    },
+    {
+      "name": "plus-minus-01",
+      "tags": "plus minus",
+      "category": "mathematics"
+    },
+    {
+      "name": "plus-minus-02",
+      "tags": "plus minus",
+      "category": "mathematics"
+    },
+    {
+      "name": "plus-minus-circle-01",
+      "tags": "plus-minus-circle-01",
+      "category": "mathematics"
+    },
+    {
+      "name": "plus-minus-circle-02",
+      "tags": "plus-minus-circle-02",
+      "category": "mathematics"
+    },
+    {
+      "name": "plus-minus-square-01",
+      "tags": "plus-minus-square-01",
+      "category": "mathematics"
+    },
+    {
+      "name": "plus-minus-square-02",
+      "tags": "plus-minus-square-02",
+      "category": "mathematics"
+    },
+    {
+      "name": "plus-sign",
+      "tags": "add, plus",
+      "category": "mathematics"
+    },
+    {
+      "name": "plus-sign-circle",
+      "tags": "plus-sign-circle",
+      "category": "mathematics"
+    },
+    {
+      "name": "plus-sign-square",
+      "tags": "plus-sign-square",
+      "category": "mathematics"
+    },
+    {
+      "name": "prism",
+      "tags": "prism",
+      "category": "mathematics"
+    },
+    {
+      "name": "pyramid",
+      "tags": "pyramid",
+      "category": "mathematics"
+    },
+    {
+      "name": "radius",
+      "tags": "radius",
+      "category": "mathematics"
+    },
+    {
+      "name": "rectangular-01",
+      "tags": "rectangular-01",
+      "category": "mathematics"
+    },
+    {
+      "name": "rhombus-01",
+      "tags": "rhombus-01",
+      "category": "mathematics"
+    },
+    {
+      "name": "right-angle",
+      "tags": "arrowhead, angle, Angular, Arrow",
+      "category": "mathematics"
+    },
+    {
+      "name": "right-triangle",
+      "tags": "triangle, trigon",
+      "category": "mathematics"
+    },
+    {
+      "name": "root-01",
+      "tags": "root-01",
+      "category": "mathematics"
+    },
+    {
+      "name": "root-02",
+      "tags": "root-02",
+      "category": "mathematics"
+    },
+    {
+      "name": "root-1st-bracket",
+      "tags": "root-1st-bracket",
+      "category": "mathematics"
+    },
+    {
+      "name": "root-2nd-bracket",
+      "tags": "root-2nd-bracket",
+      "category": "mathematics"
+    },
+    {
+      "name": "root-3rd-bracket",
+      "tags": "root-3rd-bracket",
+      "category": "mathematics"
+    },
+    {
+      "name": "root-circle",
+      "tags": "root-circle",
+      "category": "mathematics"
+    },
+    {
+      "name": "sin",
+      "tags": "sin",
+      "category": "mathematics"
+    },
+    {
+      "name": "sine-01",
+      "tags": "sine-01",
+      "category": "mathematics"
+    },
+    {
+      "name": "sine-02",
+      "tags": "sine-02",
+      "category": "mathematics"
+    },
+    {
+      "name": "sphere",
+      "tags": "sphere",
+      "category": "mathematics"
+    },
+    {
+      "name": "square-01",
+      "tags": "square-01",
+      "category": "mathematics"
+    },
+    {
+      "name": "summation-01",
+      "tags": "summation-01",
+      "category": "mathematics"
+    },
+    {
+      "name": "summation-02",
+      "tags": "summation-02",
+      "category": "mathematics"
+    },
+    {
+      "name": "summation-circle",
+      "tags": "summation-circle",
+      "category": "mathematics"
+    },
+    {
+      "name": "summation-square",
+      "tags": "summation-square",
+      "category": "mathematics"
+    },
+    {
+      "name": "tan",
+      "tags": "tan",
+      "category": "mathematics"
+    },
+    {
+      "name": "triangle-01",
+      "tags": "pyramid, triangle, trigon",
+      "category": "mathematics"
+    },
+    {
+      "name": "triangle-02",
+      "tags": "pyramid, triangle, trigon",
+      "category": "mathematics"
+    },
+    {
+      "name": "x-variable",
+      "tags": "x-variable",
+      "category": "mathematics"
+    },
+    {
+      "name": "x-variable-circle",
+      "tags": "x-variable-circle",
+      "category": "mathematics"
+    },
+    {
+      "name": "x-variable-square",
+      "tags": "x-variable-square",
+      "category": "mathematics"
+    }
+  ]
+}

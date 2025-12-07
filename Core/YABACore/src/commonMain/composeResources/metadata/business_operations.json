@@ -1,0 +1,1197 @@
+{
+  "metadata": {
+    "id": "business_operations",
+    "name": "Business Operations",
+    "description": "Business activities and operations",
+    "main_category": "business_finance",
+    "icon_count": 237,
+    "version": "1.0"
+  },
+  "icons": [
+    {
+      "name": "activity-01",
+      "tags": "activity-01",
+      "category": "business"
+    },
+    {
+      "name": "activity-02",
+      "tags": "activity-02",
+      "category": "business"
+    },
+    {
+      "name": "activity-03",
+      "tags": "activity-03",
+      "category": "business"
+    },
+    {
+      "name": "activity-04",
+      "tags": "activity-04",
+      "category": "business"
+    },
+    {
+      "name": "add-invoice",
+      "tags": "add-invoice",
+      "category": "business"
+    },
+    {
+      "name": "add-money-circle",
+      "tags": "add-money-circle",
+      "category": "business"
+    },
+    {
+      "name": "address-book",
+      "tags": "address-book",
+      "category": "business"
+    },
+    {
+      "name": "advertisiment",
+      "tags": "ad, promote,",
+      "category": "business"
+    },
+    {
+      "name": "analysis-text-link",
+      "tags": "report, overview",
+      "category": "business"
+    },
+    {
+      "name": "analytics-01",
+      "tags": "report, overview, dashboard, bar, graph, chart,",
+      "category": "business"
+    },
+    {
+      "name": "analytics-02",
+      "tags": "report, overview, dashboard, bar, graph, chart,",
+      "category": "business"
+    },
+    {
+      "name": "analytics-03",
+      "tags": "analytics-03",
+      "category": "business"
+    },
+    {
+      "name": "analytics-down",
+      "tags": "report, overview, dashboard, bar, graph, chart,",
+      "category": "business"
+    },
+    {
+      "name": "analytics-up",
+      "tags": "report, overview, dashboard, bar, graph, chart,",
+      "category": "business"
+    },
+    {
+      "name": "archive",
+      "tags": "archive",
+      "category": "business"
+    },
+    {
+      "name": "at",
+      "tags": "at",
+      "category": "business"
+    },
+    {
+      "name": "atm-01",
+      "tags": "atm-01",
+      "category": "business"
+    },
+    {
+      "name": "atm-02",
+      "tags": "atm-02",
+      "category": "business"
+    },
+    {
+      "name": "attachment",
+      "tags": "attachment, file, attach",
+      "category": "business"
+    },
+    {
+      "name": "auto-conversations",
+      "tags": "up, price high, trade up, level,",
+      "category": "business"
+    },
+    {
+      "name": "balance-scale",
+      "tags": "balance-scale",
+      "category": "business"
+    },
+    {
+      "name": "balloons",
+      "tags": "balloons",
+      "category": "business"
+    },
+    {
+      "name": "bank",
+      "tags": "business,",
+      "category": "business"
+    },
+    {
+      "name": "bar-chart",
+      "tags": "bar-chart",
+      "category": "business"
+    },
+    {
+      "name": "bar-chart-horizontal",
+      "tags": "bar-chart-horizontal",
+      "category": "business"
+    },
+    {
+      "name": "bitcoin",
+      "tags": "bitcoin",
+      "category": "business"
+    },
+    {
+      "name": "bitcoin-circle",
+      "tags": "bitcoin-circle",
+      "category": "business"
+    },
+    {
+      "name": "bitcoin-receive",
+      "tags": "bitcoin-receive",
+      "category": "business"
+    },
+    {
+      "name": "bitcoin-send",
+      "tags": "bitcoin-send",
+      "category": "business"
+    },
+    {
+      "name": "bitcoin-square",
+      "tags": "bitcoin-square",
+      "category": "business"
+    },
+    {
+      "name": "brain-03",
+      "tags": "brain-03",
+      "category": "business"
+    },
+    {
+      "name": "briefcase-01",
+      "tags": "luggage, business,",
+      "category": "business"
+    },
+    {
+      "name": "briefcase-02",
+      "tags": "luggage, business,",
+      "category": "business"
+    },
+    {
+      "name": "briefcase-03",
+      "tags": "luggage, business,",
+      "category": "business"
+    },
+    {
+      "name": "briefcase-04",
+      "tags": "luggage, business,",
+      "category": "business"
+    },
+    {
+      "name": "briefcase-05",
+      "tags": "luggage, business,",
+      "category": "business"
+    },
+    {
+      "name": "briefcase-06",
+      "tags": "luggage, business,",
+      "category": "business"
+    },
+    {
+      "name": "briefcase-07",
+      "tags": "luggage, business,",
+      "category": "business"
+    },
+    {
+      "name": "briefcase-08",
+      "tags": "luggage",
+      "category": "business"
+    },
+    {
+      "name": "briefcase-09",
+      "tags": "luggage, business,",
+      "category": "business"
+    },
+    {
+      "name": "briefcase-dollar",
+      "tags": "luggage, business,",
+      "category": "business"
+    },
+    {
+      "name": "brochure",
+      "tags": "brochure",
+      "category": "business"
+    },
+    {
+      "name": "cafe",
+      "tags": "cafe",
+      "category": "business"
+    },
+    {
+      "name": "calculate",
+      "tags": "calculate",
+      "category": "business"
+    },
+    {
+      "name": "calculator-01",
+      "tags": "calculator-01",
+      "category": "business"
+    },
+    {
+      "name": "card-exchange-01",
+      "tags": "card-exchange-01",
+      "category": "business"
+    },
+    {
+      "name": "card-exchange-02",
+      "tags": "card-exchange-02",
+      "category": "business"
+    },
+    {
+      "name": "cash-01",
+      "tags": "cash-01",
+      "category": "business"
+    },
+    {
+      "name": "cash-02",
+      "tags": "cash-02",
+      "category": "business"
+    },
+    {
+      "name": "cashback",
+      "tags": "cashback",
+      "category": "business"
+    },
+    {
+      "name": "cashback-bitcoin",
+      "tags": "cashback-bitcoin",
+      "category": "business"
+    },
+    {
+      "name": "cashback-euro",
+      "tags": "cashback-euro",
+      "category": "business"
+    },
+    {
+      "name": "cashback-pound",
+      "tags": "cashback-pound",
+      "category": "business"
+    },
+    {
+      "name": "cashback-yen",
+      "tags": "cashback-yen",
+      "category": "business"
+    },
+    {
+      "name": "cashier",
+      "tags": "cashier",
+      "category": "business"
+    },
+    {
+      "name": "cashier-02",
+      "tags": "cashier-02",
+      "category": "business"
+    },
+    {
+      "name": "chart",
+      "tags": "chart",
+      "category": "business"
+    },
+    {
+      "name": "chart-01",
+      "tags": "kanban,",
+      "category": "business"
+    },
+    {
+      "name": "chart-02",
+      "tags": "chart-02",
+      "category": "business"
+    },
+    {
+      "name": "chart-03",
+      "tags": "chart-03",
+      "category": "business"
+    },
+    {
+      "name": "chart-average",
+      "tags": "report, overview, dashboard, bar, graph, chart",
+      "category": "business"
+    },
+    {
+      "name": "chart-bar-line",
+      "tags": "report, overview, chart, bar,",
+      "category": "business"
+    },
+    {
+      "name": "chart-breakout-circle",
+      "tags": "chart-breakout-circle",
+      "category": "business"
+    },
+    {
+      "name": "chart-breakout-square",
+      "tags": "chart-breakout-square",
+      "category": "business"
+    },
+    {
+      "name": "chart-bubble-01",
+      "tags": "chart-bubble-01",
+      "category": "business"
+    },
+    {
+      "name": "chart-bubble-02",
+      "tags": "report, overview, dashboard",
+      "category": "business"
+    },
+    {
+      "name": "chart-column",
+      "tags": "report, overview, dashboard, bar, graph, chart,",
+      "category": "business"
+    },
+    {
+      "name": "chart-decrease",
+      "tags": "report, overview, dashboard, bar, graph, chart,",
+      "category": "business"
+    },
+    {
+      "name": "chart-down",
+      "tags": "chart-down",
+      "category": "business"
+    },
+    {
+      "name": "chart-evaluation",
+      "tags": "chart-evaluation",
+      "category": "business"
+    },
+    {
+      "name": "chart-high-low",
+      "tags": "report, overview, dashboard, bar, graph, chart,",
+      "category": "business"
+    },
+    {
+      "name": "chart-histogram",
+      "tags": "report, overview, dashboard, bar, graph, chart,",
+      "category": "business"
+    },
+    {
+      "name": "chart-increase",
+      "tags": "chart-increase",
+      "category": "business"
+    },
+    {
+      "name": "chart-line-data-01",
+      "tags": "chart-line-data-01",
+      "category": "business"
+    },
+    {
+      "name": "chart-line-data-02",
+      "tags": "chart-line-data-02",
+      "category": "business"
+    },
+    {
+      "name": "chart-line-data-03",
+      "tags": "chart-line-data-03",
+      "category": "business"
+    },
+    {
+      "name": "chart-maximum",
+      "tags": "chart-maximum",
+      "category": "business"
+    },
+    {
+      "name": "chart-medium",
+      "tags": "chart-medium",
+      "category": "business"
+    },
+    {
+      "name": "chart-minimum",
+      "tags": "chart-minimum",
+      "category": "business"
+    },
+    {
+      "name": "chart-radar",
+      "tags": "report, overview, dashboard",
+      "category": "business"
+    },
+    {
+      "name": "chart-relationship",
+      "tags": "report, overview, dashboard, connection,",
+      "category": "business"
+    },
+    {
+      "name": "chart-ring",
+      "tags": "chart-ring",
+      "category": "business"
+    },
+    {
+      "name": "chart-rose",
+      "tags": "report, overview, dashboard",
+      "category": "business"
+    },
+    {
+      "name": "chart-scatter",
+      "tags": "report, overview, dashboard, bar, graph, chart",
+      "category": "business"
+    },
+    {
+      "name": "chart-up",
+      "tags": "chart-up",
+      "category": "business"
+    },
+    {
+      "name": "coins-01",
+      "tags": "report, overview, dashboard, bar, graph, chart, earn cash, funding, earn money,",
+      "category": "business"
+    },
+    {
+      "name": "coins-02",
+      "tags": "earn cash, funding, earn money,",
+      "category": "business"
+    },
+    {
+      "name": "coins-bitcoin",
+      "tags": "bitcoin,",
+      "category": "business"
+    },
+    {
+      "name": "coins-dollar",
+      "tags": "earn dollar,",
+      "category": "business"
+    },
+    {
+      "name": "coins-euro",
+      "tags": "earn euro,",
+      "category": "business"
+    },
+    {
+      "name": "coins-pound",
+      "tags": "coins-pound",
+      "category": "business"
+    },
+    {
+      "name": "coins-swap",
+      "tags": "coins-swap",
+      "category": "business"
+    },
+    {
+      "name": "coins-yen",
+      "tags": "earn yen,",
+      "category": "business"
+    },
+    {
+      "name": "complaint",
+      "tags": "report,",
+      "category": "business"
+    },
+    {
+      "name": "computer-dollar",
+      "tags": "earn online, earn money, funding,",
+      "category": "business"
+    },
+    {
+      "name": "conference",
+      "tags": "conference",
+      "category": "business"
+    },
+    {
+      "name": "contact",
+      "tags": "contact",
+      "category": "business"
+    },
+    {
+      "name": "contact-book",
+      "tags": "contact-book",
+      "category": "business"
+    },
+    {
+      "name": "content-writing",
+      "tags": "content-writing",
+      "category": "business"
+    },
+    {
+      "name": "corporate",
+      "tags": "corporate",
+      "category": "business"
+    },
+    {
+      "name": "covariate",
+      "tags": "covariate",
+      "category": "business"
+    },
+    {
+      "name": "credit-card",
+      "tags": "master card, pay with card,",
+      "category": "business"
+    },
+    {
+      "name": "credit-card-pos",
+      "tags": "save money, card, payment,",
+      "category": "business"
+    },
+    {
+      "name": "crowdfunding",
+      "tags": "crowdfunding",
+      "category": "business"
+    },
+    {
+      "name": "customer-service-01",
+      "tags": "support, help",
+      "category": "business"
+    },
+    {
+      "name": "customer-service-02",
+      "tags": "support, help",
+      "category": "business"
+    },
+    {
+      "name": "custom-field",
+      "tags": "custom-field",
+      "category": "business"
+    },
+    {
+      "name": "departement",
+      "tags": "departement",
+      "category": "business"
+    },
+    {
+      "name": "diamond-02",
+      "tags": "diamond-02",
+      "category": "business"
+    },
+    {
+      "name": "discount-01",
+      "tags": "discount-01",
+      "category": "business"
+    },
+    {
+      "name": "dollar-01",
+      "tags": "payment,",
+      "category": "business"
+    },
+    {
+      "name": "dollar-02",
+      "tags": "payment,",
+      "category": "business"
+    },
+    {
+      "name": "dollar-circle",
+      "tags": "dollar-circle",
+      "category": "business"
+    },
+    {
+      "name": "dollar-square",
+      "tags": "dollar-square",
+      "category": "business"
+    },
+    {
+      "name": "estimate-01",
+      "tags": "estimate-01",
+      "category": "business"
+    },
+    {
+      "name": "estimate-02",
+      "tags": "estimate-02",
+      "category": "business"
+    },
+    {
+      "name": "euro",
+      "tags": "euro",
+      "category": "business"
+    },
+    {
+      "name": "euro-circle",
+      "tags": "euro-circle",
+      "category": "business"
+    },
+    {
+      "name": "euro-square",
+      "tags": "euro-square",
+      "category": "business"
+    },
+    {
+      "name": "file-bitcoin",
+      "tags": "file-bitcoin",
+      "category": "business"
+    },
+    {
+      "name": "file-dollar",
+      "tags": "file-dollar",
+      "category": "business"
+    },
+    {
+      "name": "file-euro",
+      "tags": "file-euro",
+      "category": "business"
+    },
+    {
+      "name": "file-pound",
+      "tags": "file-pound",
+      "category": "business"
+    },
+    {
+      "name": "file-yen",
+      "tags": "file-yen",
+      "category": "business"
+    },
+    {
+      "name": "fireworks",
+      "tags": "fireworks",
+      "category": "business"
+    },
+    {
+      "name": "garlands",
+      "tags": "garlands",
+      "category": "business"
+    },
+    {
+      "name": "gift-card-02",
+      "tags": "gift-card-02",
+      "category": "business"
+    },
+    {
+      "name": "gold",
+      "tags": "gold",
+      "category": "business"
+    },
+    {
+      "name": "gold-ingots",
+      "tags": "gold-ingots",
+      "category": "business"
+    },
+    {
+      "name": "hotel-bell",
+      "tags": "hotel-bell",
+      "category": "business"
+    },
+    {
+      "name": "idea",
+      "tags": "bulb, light,",
+      "category": "business"
+    },
+    {
+      "name": "important-book",
+      "tags": "important-book",
+      "category": "business"
+    },
+    {
+      "name": "invoice",
+      "tags": "bill,",
+      "category": "business"
+    },
+    {
+      "name": "job-link",
+      "tags": "job-link",
+      "category": "business"
+    },
+    {
+      "name": "job-search",
+      "tags": "find job, job searching,",
+      "category": "business"
+    },
+    {
+      "name": "kanban",
+      "tags": "kanban",
+      "category": "business"
+    },
+    {
+      "name": "labor",
+      "tags": "worker,",
+      "category": "business"
+    },
+    {
+      "name": "lifebuoy",
+      "tags": "lifebuoy",
+      "category": "business"
+    },
+    {
+      "name": "limitation",
+      "tags": "limitation",
+      "category": "business"
+    },
+    {
+      "name": "luggage-01",
+      "tags": "luggage-01",
+      "category": "business"
+    },
+    {
+      "name": "luggage-02",
+      "tags": "luggage-02",
+      "category": "business"
+    },
+    {
+      "name": "manager",
+      "tags": "admin, boss,",
+      "category": "business"
+    },
+    {
+      "name": "master-card",
+      "tags": "master-card",
+      "category": "business"
+    },
+    {
+      "name": "meeting-room",
+      "tags": "meeting-room",
+      "category": "business"
+    },
+    {
+      "name": "megaphone-03",
+      "tags": "megaphone-03",
+      "category": "business"
+    },
+    {
+      "name": "menu-restaurant",
+      "tags": "menu-restaurant",
+      "category": "business"
+    },
+    {
+      "name": "microscope",
+      "tags": "microscope",
+      "category": "business"
+    },
+    {
+      "name": "money-01",
+      "tags": "money-01",
+      "category": "business"
+    },
+    {
+      "name": "money-02",
+      "tags": "money-02",
+      "category": "business"
+    },
+    {
+      "name": "money-03",
+      "tags": "money-03",
+      "category": "business"
+    },
+    {
+      "name": "money-04",
+      "tags": "money-04",
+      "category": "business"
+    },
+    {
+      "name": "money-bag-01",
+      "tags": "Fund, funding,",
+      "category": "business"
+    },
+    {
+      "name": "money-bag-02",
+      "tags": "Fund, funding, safe money,",
+      "category": "business"
+    },
+    {
+      "name": "money-safe",
+      "tags": "money-safe",
+      "category": "business"
+    },
+    {
+      "name": "money-saving-jar",
+      "tags": "money-saving-jar",
+      "category": "business"
+    },
+    {
+      "name": "money-security",
+      "tags": "safe money,",
+      "category": "business"
+    },
+    {
+      "name": "new-job",
+      "tags": "find job,",
+      "category": "business"
+    },
+    {
+      "name": "new-office",
+      "tags": "new-office",
+      "category": "business"
+    },
+    {
+      "name": "news",
+      "tags": "blog, article, journal, news paper",
+      "category": "business"
+    },
+    {
+      "name": "office",
+      "tags": "office",
+      "category": "business"
+    },
+    {
+      "name": "party",
+      "tags": "party",
+      "category": "business"
+    },
+    {
+      "name": "passport",
+      "tags": "ID,",
+      "category": "business"
+    },
+    {
+      "name": "payment-01",
+      "tags": "payment-01",
+      "category": "business"
+    },
+    {
+      "name": "payment-02",
+      "tags": "payment-02",
+      "category": "business"
+    },
+    {
+      "name": "permanent-job",
+      "tags": "full time job, in house job,",
+      "category": "business"
+    },
+    {
+      "name": "pie-chart",
+      "tags": "pie-chart",
+      "category": "business"
+    },
+    {
+      "name": "pie-chart-01",
+      "tags": "pie-chart-01",
+      "category": "business"
+    },
+    {
+      "name": "pie-chart-02",
+      "tags": "pie-chart-02",
+      "category": "business"
+    },
+    {
+      "name": "pie-chart-03",
+      "tags": "pie-chart-03",
+      "category": "business"
+    },
+    {
+      "name": "pie-chart-04",
+      "tags": "pie-chart-04",
+      "category": "business"
+    },
+    {
+      "name": "pie-chart-05",
+      "tags": "pie-chart-05",
+      "category": "business"
+    },
+    {
+      "name": "pie-chart-06",
+      "tags": "pie-chart-06",
+      "category": "business"
+    },
+    {
+      "name": "pie-chart-07",
+      "tags": "pie-chart-07",
+      "category": "business"
+    },
+    {
+      "name": "pie-chart-08",
+      "tags": "pie-chart-08",
+      "category": "business"
+    },
+    {
+      "name": "pie-chart-09",
+      "tags": "pie-chart-09",
+      "category": "business"
+    },
+    {
+      "name": "pie-chart-square",
+      "tags": "pie-chart-square",
+      "category": "business"
+    },
+    {
+      "name": "piggy-bank",
+      "tags": "piggy-bank",
+      "category": "business"
+    },
+    {
+      "name": "pin-02",
+      "tags": "pin-02",
+      "category": "business"
+    },
+    {
+      "name": "podcast",
+      "tags": "podcast",
+      "category": "business"
+    },
+    {
+      "name": "pound",
+      "tags": "pound",
+      "category": "business"
+    },
+    {
+      "name": "pound-circle",
+      "tags": "pound-circle",
+      "category": "business"
+    },
+    {
+      "name": "pound-square",
+      "tags": "pound-square",
+      "category": "business"
+    },
+    {
+      "name": "profile-02",
+      "tags": "profile-02",
+      "category": "business"
+    },
+    {
+      "name": "projector",
+      "tags": "projector",
+      "category": "business"
+    },
+    {
+      "name": "qq-plot",
+      "tags": "qq-plot",
+      "category": "business"
+    },
+    {
+      "name": "qr-code-01",
+      "tags": "qr-code-01",
+      "category": "business"
+    },
+    {
+      "name": "question",
+      "tags": "support,",
+      "category": "business"
+    },
+    {
+      "name": "radial",
+      "tags": "radial",
+      "category": "business"
+    },
+    {
+      "name": "registered",
+      "tags": "registered",
+      "category": "business"
+    },
+    {
+      "name": "restaurant",
+      "tags": "restaurant",
+      "category": "business"
+    },
+    {
+      "name": "restaurant-01",
+      "tags": "restaurant-01",
+      "category": "business"
+    },
+    {
+      "name": "restaurant-02",
+      "tags": "restaurant-02",
+      "category": "business"
+    },
+    {
+      "name": "restaurant-03",
+      "tags": "restaurant-03",
+      "category": "business"
+    },
+    {
+      "name": "restaurant-table",
+      "tags": "restaurant-table",
+      "category": "business"
+    },
+    {
+      "name": "riyal",
+      "tags": "riyal",
+      "category": "business"
+    },
+    {
+      "name": "riyal-rectangle",
+      "tags": "riyal-rectangle",
+      "category": "business"
+    },
+    {
+      "name": "savings",
+      "tags": "savings",
+      "category": "business"
+    },
+    {
+      "name": "scratch-card",
+      "tags": "scratch-card",
+      "category": "business"
+    },
+    {
+      "name": "self-transfer",
+      "tags": "self-transfer",
+      "category": "business"
+    },
+    {
+      "name": "seo",
+      "tags": "marketing,",
+      "category": "business"
+    },
+    {
+      "name": "service",
+      "tags": "service",
+      "category": "business"
+    },
+    {
+      "name": "spoon-and-fork",
+      "tags": "spoon-and-fork",
+      "category": "business"
+    },
+    {
+      "name": "spoon-and-knife",
+      "tags": "spoon-and-knife",
+      "category": "business"
+    },
+    {
+      "name": "stamp",
+      "tags": "stamp",
+      "category": "business"
+    },
+    {
+      "name": "start-up-01",
+      "tags": "speed,",
+      "category": "business"
+    },
+    {
+      "name": "start-up-02",
+      "tags": "start-up-02",
+      "category": "business"
+    },
+    {
+      "name": "strategy",
+      "tags": "strategy",
+      "category": "business"
+    },
+    {
+      "name": "target-01",
+      "tags": "target-01",
+      "category": "business"
+    },
+    {
+      "name": "target-02",
+      "tags": "marketing,",
+      "category": "business"
+    },
+    {
+      "name": "target-03",
+      "tags": "target-03",
+      "category": "business"
+    },
+    {
+      "name": "target-dollar",
+      "tags": "target-dollar",
+      "category": "business"
+    },
+    {
+      "name": "taxes",
+      "tags": "taxes",
+      "category": "business"
+    },
+    {
+      "name": "tie",
+      "tags": "tie",
+      "category": "business"
+    },
+    {
+      "name": "tips",
+      "tags": "tips",
+      "category": "business"
+    },
+    {
+      "name": "trade-down",
+      "tags": "price decrease, price down, down, level",
+      "category": "business"
+    },
+    {
+      "name": "trademark",
+      "tags": "trademark",
+      "category": "business"
+    },
+    {
+      "name": "trade-up",
+      "tags": "price increase, price up, high, level",
+      "category": "business"
+    },
+    {
+      "name": "travel-bag",
+      "tags": "travel-bag",
+      "category": "business"
+    },
+    {
+      "name": "umbrella",
+      "tags": "umbrella",
+      "category": "business"
+    },
+    {
+      "name": "umbrella-dollar",
+      "tags": "umbrella-dollar",
+      "category": "business"
+    },
+    {
+      "name": "waiter",
+      "tags": "waiter",
+      "category": "business"
+    },
+    {
+      "name": "waiters",
+      "tags": "waiters",
+      "category": "business"
+    },
+    {
+      "name": "wallet-01",
+      "tags": "earning cash, earn,",
+      "category": "business"
+    },
+    {
+      "name": "wallet-02",
+      "tags": "fund wallet, funding money, earning cash, earn,",
+      "category": "business"
+    },
+    {
+      "name": "wallet-03",
+      "tags": "money bag, earning cash,",
+      "category": "business"
+    },
+    {
+      "name": "wallet-04",
+      "tags": "wallet-04",
+      "category": "business"
+    },
+    {
+      "name": "wallet-05",
+      "tags": "wallet-05",
+      "category": "business"
+    },
+    {
+      "name": "waterfall-down-01",
+      "tags": "report, overview, dashboard, bar, graph, chart",
+      "category": "business"
+    },
+    {
+      "name": "waterfall-down-03",
+      "tags": "waterfall-down-03",
+      "category": "business"
+    },
+    {
+      "name": "waterfall-up-01",
+      "tags": "report, overview, dashboard, bar, graph, chart",
+      "category": "business"
+    },
+    {
+      "name": "waterfall-up-02",
+      "tags": "report, overview, dashboard, bar, graph, chart",
+      "category": "business"
+    },
+    {
+      "name": "wedding",
+      "tags": "wedding",
+      "category": "business"
+    },
+    {
+      "name": "whiteboard",
+      "tags": "whiteboard",
+      "category": "business"
+    },
+    {
+      "name": "work",
+      "tags": "work",
+      "category": "business"
+    },
+    {
+      "name": "yen",
+      "tags": "yen",
+      "category": "business"
+    },
+    {
+      "name": "yen-circle",
+      "tags": "yen-circle",
+      "category": "business"
+    },
+    {
+      "name": "yen-square",
+      "tags": "yen-square",
+      "category": "business"
+    }
+  ]
+}

@@ -1,0 +1,477 @@
+{
+  "metadata": {
+    "id": "academic_education",
+    "name": "Academic & Education",
+    "description": "Schools and educational institutions",
+    "main_category": "education_learning",
+    "icon_count": 93,
+    "version": "1.0"
+  },
+  "icons": [
+    {
+      "name": "assignments",
+      "tags": "assignments",
+      "category": "education"
+    },
+    {
+      "name": "audio-book-01",
+      "tags": "Listen Now, Narration, Read Aloud, Voice Text, Audio Read, Sound Book, Listen & Read, Spoken Word, Tale Talk, Story Sound, Auditory Book, Audio Readings, Listen Pages, Vocal Story, Audio Book, Book, Sound Book",
+      "category": "education"
+    },
+    {
+      "name": "audio-book-02",
+      "tags": "Listen Now, Narration, Read Aloud, Voice Text, Audio Read, Sound Book, Listen & Read, Spoken Word, Tale Talk, Story Sound, Auditory Book, Audio Readings, Listen Pages, Vocal Story, Audio Book, Book, Sound Book, Music Book",
+      "category": "education"
+    },
+    {
+      "name": "audio-book-03",
+      "tags": "Listen Now, Narration, Read Aloud, Voice Text, Audio Read, Sound Book, Listen & Read, Spoken Word, Tale Talk, Story Sound, Auditory Book, Audio Readings, Listen Pages, Vocal Story, Audio Book, Book, Sound Book, Music Book, media, media book",
+      "category": "education"
+    },
+    {
+      "name": "audio-book-04",
+      "tags": "Listen Now, Narration, Read Aloud, Voice Text, Audio Read, Sound Book, Listen & Read, Spoken Word, Tale Talk, Story Sound, Auditory Book, Audio Readings, Listen Pages, Vocal Story, Audio Book, Book, Sound Book, Music Book, media, media book, head set book, headphone",
+      "category": "education"
+    },
+    {
+      "name": "backpack-01",
+      "tags": "knapsack, rucksack, pack, schoolbag, book bag, carryall, daypack, haversack, travel pack, kitbag, school bag, bag, education, tour",
+      "category": "education"
+    },
+    {
+      "name": "backpack-02",
+      "tags": "knapsack, rucksack, pack, schoolbag, book bag, carryall, daypack, haversack, travel pack, kitbag, school bag, bag, education, tour",
+      "category": "education"
+    },
+    {
+      "name": "backpack-03",
+      "tags": "knapsack, rucksack, pack, schoolbag, book bag, carryall, daypack, haversack, travel pack, kitbag, school bag, bag, education, tour",
+      "category": "education"
+    },
+    {
+      "name": "binoculars",
+      "tags": "binoculars",
+      "category": "education"
+    },
+    {
+      "name": "board-math",
+      "tags": "board-math",
+      "category": "education"
+    },
+    {
+      "name": "book-01",
+      "tags": "Reading Material, Encyclopedia, Notebook, Literature, Textbook, Manuscript, Storybook, Paperback, Hardcover, Novel, Almanac, Reference, Anthology, Folio, Tome, Libro, Codex, Compendium, Journal, Chronicle, Book, Read, Reading Book",
+      "category": "education"
+    },
+    {
+      "name": "book-02",
+      "tags": "Reading Material, Encyclopedia, Notebook, Literature, Textbook, Manuscript, Storybook, Paperback, Hardcover, Novel, Almanac, Reference, Anthology, Folio, Tome, Libro, Codex, Compendium, Journal, Chronicle, Book, Read, Reading Book",
+      "category": "education"
+    },
+    {
+      "name": "book-03",
+      "tags": "Reading Material, Encyclopedia, Notebook, Literature, Textbook, Manuscript, Storybook, Paperback, Hardcover, Novel, Almanac, Reference, Anthology, Folio, Tome, Libro, Codex, Compendium, Journal, Chronicle, Book, Read, Reading Book",
+      "category": "education"
+    },
+    {
+      "name": "book-04",
+      "tags": "Reading Material, Encyclopedia, Notebook, Literature, Textbook, Manuscript, Storybook, Paperback, Hardcover, Novel, Almanac, Reference, Anthology, Folio, Tome, Libro, Codex, Compendium, Journal, Chronicle, Book, Read, Reading Book",
+      "category": "education"
+    },
+    {
+      "name": "book-bookmark-01",
+      "tags": "book-bookmark-01",
+      "category": "education"
+    },
+    {
+      "name": "book-bookmark-02",
+      "tags": "book-bookmark-02",
+      "category": "education"
+    },
+    {
+      "name": "book-download",
+      "tags": "book-download",
+      "category": "education"
+    },
+    {
+      "name": "book-edit",
+      "tags": "book-edit",
+      "category": "education"
+    },
+    {
+      "name": "book-open-01",
+      "tags": "book-open-01",
+      "category": "education"
+    },
+    {
+      "name": "book-open-02",
+      "tags": "book-open-02",
+      "category": "education"
+    },
+    {
+      "name": "books-01",
+      "tags": "books-01",
+      "category": "education"
+    },
+    {
+      "name": "books-02",
+      "tags": "books-02",
+      "category": "education"
+    },
+    {
+      "name": "book-upload",
+      "tags": "book-upload",
+      "category": "education"
+    },
+    {
+      "name": "brain",
+      "tags": "brain",
+      "category": "education"
+    },
+    {
+      "name": "browser",
+      "tags": "internet, web, surfing tool, navigator, search engine, web explorer, online finder, web viewer, browsing tool, web portal, web access, browsing app, net viewer, web searcher, online explorer, Browser, Brows",
+      "category": "education"
+    },
+    {
+      "name": "canvas",
+      "tags": "drawing board, art pad, painters panel, sketch space, design slate, creative surface, illustration area, visual canvas, artwork platform, graphical stage, image board, picture space, draft surface, canvas",
+      "category": "education"
+    },
+    {
+      "name": "certificate-02",
+      "tags": "certificate-02",
+      "category": "education"
+    },
+    {
+      "name": "chemistry-01",
+      "tags": "chemistry-01",
+      "category": "education"
+    },
+    {
+      "name": "chemistry-02",
+      "tags": "chemistry-02",
+      "category": "education"
+    },
+    {
+      "name": "chemistry-03",
+      "tags": "chemistry-03",
+      "category": "education"
+    },
+    {
+      "name": "clip",
+      "tags": "clip",
+      "category": "education"
+    },
+    {
+      "name": "cliparts",
+      "tags": "cliparts",
+      "category": "education"
+    },
+    {
+      "name": "clipboard",
+      "tags": "Document Holder, Copy Tool, Note Saver, Text Keeper, Paper Clip, Writing Pad, Clipboard Symbol, Data Collector, Information Board, File Manager, Clipboard",
+      "category": "education"
+    },
+    {
+      "name": "computer-video-call",
+      "tags": "computer-video-call",
+      "category": "education"
+    },
+    {
+      "name": "conversation",
+      "tags": "conversation",
+      "category": "education"
+    },
+    {
+      "name": "desk",
+      "tags": "desk",
+      "category": "education"
+    },
+    {
+      "name": "diploma",
+      "tags": "certificate,",
+      "category": "education"
+    },
+    {
+      "name": "dna",
+      "tags": "dna",
+      "category": "education"
+    },
+    {
+      "name": "drawing-compass",
+      "tags": "drawing-compass",
+      "category": "education"
+    },
+    {
+      "name": "elearning-exchange",
+      "tags": "elearning-exchange",
+      "category": "education"
+    },
+    {
+      "name": "frameworks",
+      "tags": "frameworks",
+      "category": "education"
+    },
+    {
+      "name": "geology-crust",
+      "tags": "geology-crust",
+      "category": "education"
+    },
+    {
+      "name": "gift",
+      "tags": "present, surprise, reward, token, package, souvenir, offering, bounty, prize, donation, souvenir, bonus, gratuity, keepsake, memento, gift",
+      "category": "education"
+    },
+    {
+      "name": "glasses",
+      "tags": "glasses",
+      "category": "education"
+    },
+    {
+      "name": "global-education",
+      "tags": "global-education",
+      "category": "education"
+    },
+    {
+      "name": "globe",
+      "tags": "Earth, World, Planet, Global, Map, Sphere, Orb, Continents, Atlas, Geography, Terra, International, Celestial, Hemisphere, Navigation, Cartography, Terra firma, Global View, Glove",
+      "category": "education"
+    },
+    {
+      "name": "globe-02",
+      "tags": "globe-02",
+      "category": "education"
+    },
+    {
+      "name": "graduation-scroll",
+      "tags": "graduation-scroll",
+      "category": "education"
+    },
+    {
+      "name": "idea-01",
+      "tags": "lightbulb, brainstorm, innovation, creativity, insight, eureka, thought bubble, concept, imagination, revelation, spark, ingenious, inventive, visionary, intellect, genius, idea",
+      "category": "education"
+    },
+    {
+      "name": "knowledge-01",
+      "tags": "knowledge-01",
+      "category": "education"
+    },
+    {
+      "name": "knowledge-02",
+      "tags": "knowledge-02",
+      "category": "education"
+    },
+    {
+      "name": "libraries",
+      "tags": "libraries",
+      "category": "education"
+    },
+    {
+      "name": "library",
+      "tags": "Bookshelf, Reading Room, Knowledge Center, Archives, Literary Hub, Reference, Information Hub, Repository, Book Haven, Resource Center, Study Corner, Media Library, Learning Hub, Book Collection, Literary Archive, Library",
+      "category": "education"
+    },
+    {
+      "name": "locker",
+      "tags": "locker",
+      "category": "education"
+    },
+    {
+      "name": "math",
+      "tags": "calculation, numbers, arithmetic, calculations, mathematics, numeric, figures, computations, numerical, algebraic, math",
+      "category": "education"
+    },
+    {
+      "name": "mentor",
+      "tags": "mentor, instructor, professor, academic, coach, facilitator, career, business career, teacher,",
+      "category": "education"
+    },
+    {
+      "name": "mentoring",
+      "tags": "mentoring, guide, advisor, teacher, coach, guru, expert, counselor, instructor, leader, role model, helper, supporter, consultant, mentorship, mentor",
+      "category": "education"
+    },
+    {
+      "name": "moon-01",
+      "tags": "recognizable: Luna, Celestial Orb, Nighttime Symbol, Lunar Sphere, Crescent, Night Light, Sky Emblem, Astral Globe, Lunar Icon, Moonbeam, Moon",
+      "category": "education"
+    },
+    {
+      "name": "mortarboard-01",
+      "tags": "student, mentor, graduate,",
+      "category": "education"
+    },
+    {
+      "name": "mortarboard-02",
+      "tags": "student, mentor, graduate,",
+      "category": "education"
+    },
+    {
+      "name": "note",
+      "tags": "note",
+      "category": "education"
+    },
+    {
+      "name": "notebook-01",
+      "tags": "notebook-01",
+      "category": "education"
+    },
+    {
+      "name": "notebook-02",
+      "tags": "journal, diary, notepad, jotter, logbook, sketchbook, pad, memo book, record book, writing pad, notebooklet, scribble pad, composition book, exercise book, planner, notebook, note book, note, book",
+      "category": "education"
+    },
+    {
+      "name": "online-learning-01",
+      "tags": "online-learning-01",
+      "category": "education"
+    },
+    {
+      "name": "online-learning-02",
+      "tags": "online-learning-02",
+      "category": "education"
+    },
+    {
+      "name": "online-learning-03",
+      "tags": "online-learning-03",
+      "category": "education"
+    },
+    {
+      "name": "online-learning-04",
+      "tags": "online-learning-04",
+      "category": "education"
+    },
+    {
+      "name": "paint-board",
+      "tags": "Color Canvas, Art Palette, Drawing Surface, Sketch Pad, Creative Board, Paint Palette, Design Canvas, Artistic Panel, Visual Board, Drawing Board, Paint Board, Colors",
+      "category": "education"
+    },
+    {
+      "name": "pencil",
+      "tags": "pencil",
+      "category": "education"
+    },
+    {
+      "name": "physics",
+      "tags": "physics",
+      "category": "education"
+    },
+    {
+      "name": "quiz-01",
+      "tags": "quiz-01",
+      "category": "education"
+    },
+    {
+      "name": "quiz-02",
+      "tags": "quiz-02",
+      "category": "education"
+    },
+    {
+      "name": "quiz-03",
+      "tags": "quiz-03",
+      "category": "education"
+    },
+    {
+      "name": "quiz-04",
+      "tags": "quiz-04",
+      "category": "education"
+    },
+    {
+      "name": "quiz-05",
+      "tags": "quiz-05",
+      "category": "education"
+    },
+    {
+      "name": "saturn",
+      "tags": "Ringed Planet, Celestial Ring, Cosmic Hoop, Galactic Loop, Planetary Halo, Stellar Orbit, Space Circlet, Astral Ring, Universe Wheel, Nebula Band, Starry Loop, Orbital Halo, Infinity Ring, Saturn",
+      "category": "education"
+    },
+    {
+      "name": "school",
+      "tags": "school",
+      "category": "education"
+    },
+    {
+      "name": "school-bell-01",
+      "tags": "school-bell-01",
+      "category": "education"
+    },
+    {
+      "name": "school-bell-02",
+      "tags": "school-bell-02",
+      "category": "education"
+    },
+    {
+      "name": "school-report-card",
+      "tags": "school-report-card",
+      "category": "education"
+    },
+    {
+      "name": "school-tie",
+      "tags": "mentor, instructor, professor, academic, coach, facilitator, career, business career, teacher,",
+      "category": "education"
+    },
+    {
+      "name": "stationery",
+      "tags": "stationery",
+      "category": "education"
+    },
+    {
+      "name": "student",
+      "tags": "student",
+      "category": "education"
+    },
+    {
+      "name": "student-card",
+      "tags": "mentor, instructor, professor, academic, coach, facilitator, career, business career, teacher,",
+      "category": "education"
+    },
+    {
+      "name": "students",
+      "tags": "students",
+      "category": "education"
+    },
+    {
+      "name": "study-lamp",
+      "tags": "study-lamp",
+      "category": "education"
+    },
+    {
+      "name": "teacher",
+      "tags": "mentor, instructor, professor, academic, coach, facilitator, career, business career, teacher,",
+      "category": "education"
+    },
+    {
+      "name": "teaching",
+      "tags": "mentor, instructor, professor, academic, coach, facilitator, career, business career, teacher,",
+      "category": "education"
+    },
+    {
+      "name": "telescope-01",
+      "tags": "telescope-01",
+      "category": "education"
+    },
+    {
+      "name": "telescope-02",
+      "tags": "telescope-02",
+      "category": "education"
+    },
+    {
+      "name": "test-tube-01",
+      "tags": "Chemical Vial, Science Flask, Lab Cylinder, Research Beaker, Experiment Tube, Solution Container, Biology Vessel, Chemistry Pipette, Medical Ampoule, Test Tube",
+      "category": "education"
+    },
+    {
+      "name": "test-tube-02",
+      "tags": "Chemical Vial, Science Flask, Lab Cylinder, Research Beaker, Experiment Tube, Solution Container, Biology Vessel, Chemistry Pipette, Medical Ampoule, Test Tube",
+      "category": "education"
+    },
+    {
+      "name": "test-tube-03",
+      "tags": "Chemical Vial, Science Flask, Lab Cylinder, Research Beaker, Experiment Tube, Solution Container, Biology Vessel, Chemistry Pipette, Medical Ampoule, Test Tube",
+      "category": "education"
+    }
+  ]
+}

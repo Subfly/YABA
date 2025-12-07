@@ -1,0 +1,772 @@
+{
+  "metadata": {
+    "id": "home_living",
+    "name": "Home & Living",
+    "description": "Home, furniture, and personal items",
+    "main_category": "lifestyle_personal",
+    "icon_count": 152,
+    "version": "1.0"
+  },
+  "icons": [
+    {
+      "name": "baby-bed-01",
+      "tags": "baby-bed-01",
+      "category": "furnitures"
+    },
+    {
+      "name": "baby-bed-02",
+      "tags": "baby-bed-02",
+      "category": "furnitures"
+    },
+    {
+      "name": "bathtub-01",
+      "tags": "bathtub-01",
+      "category": "furnitures"
+    },
+    {
+      "name": "bathtub-02",
+      "tags": "bathtub-02",
+      "category": "furnitures"
+    },
+    {
+      "name": "bed",
+      "tags": "bed",
+      "category": "furnitures"
+    },
+    {
+      "name": "bed-bunk",
+      "tags": "bed-bunk",
+      "category": "furnitures"
+    },
+    {
+      "name": "bed-double",
+      "tags": "bed-double",
+      "category": "furnitures"
+    },
+    {
+      "name": "bed-single-01",
+      "tags": "bed-single-01",
+      "category": "furnitures"
+    },
+    {
+      "name": "bed-single-02",
+      "tags": "bed-single-02",
+      "category": "furnitures"
+    },
+    {
+      "name": "bookshelf-01",
+      "tags": "bookshelf-01",
+      "category": "furnitures"
+    },
+    {
+      "name": "bookshelf-02",
+      "tags": "bookshelf-02",
+      "category": "furnitures"
+    },
+    {
+      "name": "bookshelf-03",
+      "tags": "bookshelf-03",
+      "category": "furnitures"
+    },
+    {
+      "name": "cabinet-01",
+      "tags": "cabinet-01",
+      "category": "furnitures"
+    },
+    {
+      "name": "cabinet-02",
+      "tags": "cabinet-02",
+      "category": "furnitures"
+    },
+    {
+      "name": "cabinet-03",
+      "tags": "cabinet-03",
+      "category": "furnitures"
+    },
+    {
+      "name": "cabinet-04",
+      "tags": "cabinet-04",
+      "category": "furnitures"
+    },
+    {
+      "name": "cactus",
+      "tags": "cactus",
+      "category": "furnitures"
+    },
+    {
+      "name": "candelier-01",
+      "tags": "candelier-01",
+      "category": "furnitures"
+    },
+    {
+      "name": "candelier-02",
+      "tags": "candelier-02",
+      "category": "furnitures"
+    },
+    {
+      "name": "chair-01",
+      "tags": "chair-01",
+      "category": "furnitures"
+    },
+    {
+      "name": "chair-02",
+      "tags": "chair-02",
+      "category": "furnitures"
+    },
+    {
+      "name": "chair-03",
+      "tags": "chair-03",
+      "category": "furnitures"
+    },
+    {
+      "name": "chair-04",
+      "tags": "chair-04",
+      "category": "furnitures"
+    },
+    {
+      "name": "chair-05",
+      "tags": "chair-05",
+      "category": "furnitures"
+    },
+    {
+      "name": "chair-barber",
+      "tags": "chair-barber",
+      "category": "furnitures"
+    },
+    {
+      "name": "cleaning-bucket",
+      "tags": "cleaning-bucket",
+      "category": "furnitures"
+    },
+    {
+      "name": "computer-desk-01",
+      "tags": "computer-desk-01",
+      "category": "furnitures"
+    },
+    {
+      "name": "computer-desk-02",
+      "tags": "computer-desk-02",
+      "category": "furnitures"
+    },
+    {
+      "name": "computer-desk-03",
+      "tags": "computer-desk-03",
+      "category": "furnitures"
+    },
+    {
+      "name": "curtains",
+      "tags": "curtains",
+      "category": "furnitures"
+    },
+    {
+      "name": "desk-01",
+      "tags": "desk-01",
+      "category": "furnitures"
+    },
+    {
+      "name": "desk-02",
+      "tags": "desk-02",
+      "category": "furnitures"
+    },
+    {
+      "name": "dining-table",
+      "tags": "dining-table",
+      "category": "furnitures"
+    },
+    {
+      "name": "door",
+      "tags": "door",
+      "category": "furnitures"
+    },
+    {
+      "name": "dressing-table-01",
+      "tags": "dressing-table-01",
+      "category": "furnitures"
+    },
+    {
+      "name": "dressing-table-02",
+      "tags": "dressing-table-02",
+      "category": "furnitures"
+    },
+    {
+      "name": "dressing-table-03",
+      "tags": "dressing-table-03",
+      "category": "furnitures"
+    },
+    {
+      "name": "flower-pot",
+      "tags": "flower-pot",
+      "category": "furnitures"
+    },
+    {
+      "name": "garage",
+      "tags": "garage",
+      "category": "furnitures"
+    },
+    {
+      "name": "hanging-clock",
+      "tags": "hanging-clock",
+      "category": "furnitures"
+    },
+    {
+      "name": "hot-tube",
+      "tags": "hot-tube",
+      "category": "furnitures"
+    },
+    {
+      "name": "lamp-01",
+      "tags": "lamp-01",
+      "category": "furnitures"
+    },
+    {
+      "name": "lamp-02",
+      "tags": "lamp-02",
+      "category": "furnitures"
+    },
+    {
+      "name": "lamp-03",
+      "tags": "lamp-03",
+      "category": "furnitures"
+    },
+    {
+      "name": "lamp-04",
+      "tags": "lamp-04",
+      "category": "furnitures"
+    },
+    {
+      "name": "lamp-05",
+      "tags": "lamp-05",
+      "category": "furnitures"
+    },
+    {
+      "name": "mirror",
+      "tags": "mirror",
+      "category": "furnitures"
+    },
+    {
+      "name": "office-chair",
+      "tags": "office-chair",
+      "category": "furnitures"
+    },
+    {
+      "name": "rocking-chair",
+      "tags": "rocking-chair",
+      "category": "furnitures"
+    },
+    {
+      "name": "sink-01",
+      "tags": "sink-01",
+      "category": "furnitures"
+    },
+    {
+      "name": "sink-02",
+      "tags": "sink-02",
+      "category": "furnitures"
+    },
+    {
+      "name": "sofa-01",
+      "tags": "sofa-01",
+      "category": "furnitures"
+    },
+    {
+      "name": "sofa-02",
+      "tags": "sofa-02",
+      "category": "furnitures"
+    },
+    {
+      "name": "sofa-03",
+      "tags": "sofa-03",
+      "category": "furnitures"
+    },
+    {
+      "name": "sofa-single",
+      "tags": "sofa-single",
+      "category": "furnitures"
+    },
+    {
+      "name": "study-desk",
+      "tags": "study-desk",
+      "category": "furnitures"
+    },
+    {
+      "name": "table-01",
+      "tags": "table-01",
+      "category": "furnitures"
+    },
+    {
+      "name": "table-02",
+      "tags": "table-02",
+      "category": "furnitures"
+    },
+    {
+      "name": "table-03",
+      "tags": "table-03",
+      "category": "furnitures"
+    },
+    {
+      "name": "table-lamp-01",
+      "tags": "table-lamp-01",
+      "category": "furnitures"
+    },
+    {
+      "name": "table-lamp-02",
+      "tags": "table-lamp-02",
+      "category": "furnitures"
+    },
+    {
+      "name": "table-round",
+      "tags": "table-round",
+      "category": "furnitures"
+    },
+    {
+      "name": "television-table",
+      "tags": "television-table",
+      "category": "furnitures"
+    },
+    {
+      "name": "terrace",
+      "tags": "terrace",
+      "category": "furnitures"
+    },
+    {
+      "name": "toilet-01",
+      "tags": "toilet-01",
+      "category": "furnitures"
+    },
+    {
+      "name": "toilet-02",
+      "tags": "toilet-02",
+      "category": "furnitures"
+    },
+    {
+      "name": "vacuum-cleaner",
+      "tags": "vacuum-cleaner",
+      "category": "furnitures"
+    },
+    {
+      "name": "vintage-clock",
+      "tags": "vintage-clock",
+      "category": "furnitures"
+    },
+    {
+      "name": "wall-lamp",
+      "tags": "wall-lamp",
+      "category": "furnitures"
+    },
+    {
+      "name": "wardrobe-01",
+      "tags": "wardrobe-01",
+      "category": "furnitures"
+    },
+    {
+      "name": "wardrobe-02",
+      "tags": "wardrobe-02",
+      "category": "furnitures"
+    },
+    {
+      "name": "wardrobe-03",
+      "tags": "wardrobe-03",
+      "category": "furnitures"
+    },
+    {
+      "name": "wardrobe-04",
+      "tags": "wardrobe-04",
+      "category": "furnitures"
+    },
+    {
+      "name": "door-01",
+      "tags": "ntrance, gateway, portal, access point, doorway, passage, threshold, egress, exit",
+      "category": "home"
+    },
+    {
+      "name": "door-02",
+      "tags": "ntrance, gateway, portal, access point, doorway, passage, threshold, egress, exit",
+      "category": "home"
+    },
+    {
+      "name": "home-01",
+      "tags": "house, main, hub, base, central, welling, residence, primary, abode, nexus, core, foundation, origin, launchpad, homestead",
+      "category": "home"
+    },
+    {
+      "name": "home-02",
+      "tags": "house, main, hub, base, central, welling, residence, primary, abode, nexus, core, foundation, origin, launchpad, homestead",
+      "category": "home"
+    },
+    {
+      "name": "home-03",
+      "tags": "house, main, hub, base, central, welling, residence, primary, abode, nexus, core, foundation, origin, launchpad, homestead",
+      "category": "home"
+    },
+    {
+      "name": "home-04",
+      "tags": "house, main, hub, base, central, welling, residence, primary, abode, nexus, core, foundation, origin, launchpad, homestead",
+      "category": "home"
+    },
+    {
+      "name": "home-05",
+      "tags": "house, main, hub, base, central, welling, residence, primary, abode, nexus, core, foundation, origin, launchpad, homestead",
+      "category": "home"
+    },
+    {
+      "name": "home-06",
+      "tags": "house, main, hub, base, central, welling, residence, primary, abode, nexus, core, foundation, origin, launchpad, homestead",
+      "category": "home"
+    },
+    {
+      "name": "home-07",
+      "tags": "house, main, hub, base, central, welling, residence, primary, abode, nexus, core, foundation, origin, launchpad, homestead",
+      "category": "home"
+    },
+    {
+      "name": "home-08",
+      "tags": "house, main, hub, base, central, welling, residence, primary, abode, nexus, core, foundation, origin, launchpad, homestead",
+      "category": "home"
+    },
+    {
+      "name": "home-09",
+      "tags": "house, main, hub, base, central, welling, residence, primary, abode, nexus, core, foundation, origin, launchpad, homestead",
+      "category": "home"
+    },
+    {
+      "name": "home-10",
+      "tags": "house, main, hub, base, central, welling, residence, primary, abode, nexus, core, foundation, origin, launchpad, homestead",
+      "category": "home"
+    },
+    {
+      "name": "home-11",
+      "tags": "house, main, hub, base, central, welling, residence, primary, abode, nexus, core, foundation, origin, launchpad, homestead",
+      "category": "home"
+    },
+    {
+      "name": "home-12",
+      "tags": "house, main, hub, base, central, welling, residence, primary, abode, nexus, core, foundation, origin, launchpad, homestead",
+      "category": "home"
+    },
+    {
+      "name": "home-13",
+      "tags": "house, main, hub, base, central, welling, residence, primary, abode, nexus, core, foundation, origin, launchpad, homestead",
+      "category": "home"
+    },
+    {
+      "name": "baby-01",
+      "tags": "baby-01",
+      "category": "clothing"
+    },
+    {
+      "name": "baby-02",
+      "tags": "baby-02",
+      "category": "clothing"
+    },
+    {
+      "name": "baby-bottle",
+      "tags": "baby-bottle",
+      "category": "clothing"
+    },
+    {
+      "name": "baby-boy-dress",
+      "tags": "baby-boy-dress",
+      "category": "clothing"
+    },
+    {
+      "name": "baby-girl-dress",
+      "tags": "baby-girl-dress",
+      "category": "clothing"
+    },
+    {
+      "name": "belt",
+      "tags": "belt",
+      "category": "clothing"
+    },
+    {
+      "name": "blush-brush-01",
+      "tags": "blush-brush-01",
+      "category": "clothing"
+    },
+    {
+      "name": "blush-brush-02",
+      "tags": "blush-brush-02",
+      "category": "clothing"
+    },
+    {
+      "name": "body-soap",
+      "tags": "body-soap",
+      "category": "clothing"
+    },
+    {
+      "name": "bow-tie",
+      "tags": "bow-tie",
+      "category": "clothing"
+    },
+    {
+      "name": "boxer",
+      "tags": "boxer",
+      "category": "clothing"
+    },
+    {
+      "name": "breast-pump",
+      "tags": "breast-pump",
+      "category": "clothing"
+    },
+    {
+      "name": "cap",
+      "tags": "cap",
+      "category": "clothing"
+    },
+    {
+      "name": "cardigan",
+      "tags": "cardigan",
+      "category": "clothing"
+    },
+    {
+      "name": "child",
+      "tags": "child",
+      "category": "clothing"
+    },
+    {
+      "name": "cowboy-hat",
+      "tags": "cowboy-hat",
+      "category": "clothing"
+    },
+    {
+      "name": "detergent",
+      "tags": "detergent",
+      "category": "clothing"
+    },
+    {
+      "name": "diaper",
+      "tags": "diaper",
+      "category": "clothing"
+    },
+    {
+      "name": "dress-01",
+      "tags": "dress-01",
+      "category": "clothing"
+    },
+    {
+      "name": "dress-02",
+      "tags": "dress-02",
+      "category": "clothing"
+    },
+    {
+      "name": "dress-03",
+      "tags": "dress-03",
+      "category": "clothing"
+    },
+    {
+      "name": "dress-04",
+      "tags": "dress-04",
+      "category": "clothing"
+    },
+    {
+      "name": "dress-05",
+      "tags": "dress-05",
+      "category": "clothing"
+    },
+    {
+      "name": "dress-06",
+      "tags": "dress-06",
+      "category": "clothing"
+    },
+    {
+      "name": "dress-07",
+      "tags": "dress-07",
+      "category": "clothing"
+    },
+    {
+      "name": "ear-rings-01",
+      "tags": "ear-rings-01",
+      "category": "clothing"
+    },
+    {
+      "name": "ear-rings-02",
+      "tags": "ear-rings-02",
+      "category": "clothing"
+    },
+    {
+      "name": "ear-rings-03",
+      "tags": "ear-rings-03",
+      "category": "clothing"
+    },
+    {
+      "name": "hair-clips",
+      "tags": "hair-clips",
+      "category": "clothing"
+    },
+    {
+      "name": "hair-dryer",
+      "tags": "hair-dryer",
+      "category": "clothing"
+    },
+    {
+      "name": "hand-bag-01",
+      "tags": "hand-bag-01",
+      "category": "clothing"
+    },
+    {
+      "name": "hand-bag-02",
+      "tags": "hand-bag-02",
+      "category": "clothing"
+    },
+    {
+      "name": "hanger",
+      "tags": "hanger",
+      "category": "clothing"
+    },
+    {
+      "name": "hat",
+      "tags": "hat",
+      "category": "clothing"
+    },
+    {
+      "name": "high-heels-01",
+      "tags": "high-heels-01",
+      "category": "clothing"
+    },
+    {
+      "name": "high-heels-02",
+      "tags": "high-heels-02",
+      "category": "clothing"
+    },
+    {
+      "name": "hoodie",
+      "tags": "hoodie",
+      "category": "clothing"
+    },
+    {
+      "name": "infant",
+      "tags": "infant",
+      "category": "clothing"
+    },
+    {
+      "name": "jogger-pants",
+      "tags": "jogger-pants",
+      "category": "clothing"
+    },
+    {
+      "name": "jumpers",
+      "tags": "jumpers",
+      "category": "clothing"
+    },
+    {
+      "name": "kurta",
+      "tags": "kurta",
+      "category": "clothing"
+    },
+    {
+      "name": "long-sleeve-shirt",
+      "tags": "long-sleeve-shirt",
+      "category": "clothing"
+    },
+    {
+      "name": "monocle",
+      "tags": "monocle",
+      "category": "clothing"
+    },
+    {
+      "name": "necklace",
+      "tags": "necklace",
+      "category": "clothing"
+    },
+    {
+      "name": "perfume",
+      "tags": "perfume",
+      "category": "clothing"
+    },
+    {
+      "name": "poop",
+      "tags": "poop",
+      "category": "clothing"
+    },
+    {
+      "name": "purse-01",
+      "tags": "purse-01",
+      "category": "clothing"
+    },
+    {
+      "name": "safety-pin-01",
+      "tags": "safety-pin-01",
+      "category": "clothing"
+    },
+    {
+      "name": "safety-pin-02",
+      "tags": "safety-pin-02",
+      "category": "clothing"
+    },
+    {
+      "name": "sandals",
+      "tags": "sandals",
+      "category": "clothing"
+    },
+    {
+      "name": "shampoo",
+      "tags": "shampoo",
+      "category": "clothing"
+    },
+    {
+      "name": "shirt-01",
+      "tags": "shirt-01",
+      "category": "clothing"
+    },
+    {
+      "name": "shorts-pants",
+      "tags": "shorts-pants",
+      "category": "clothing"
+    },
+    {
+      "name": "sleeveless",
+      "tags": "sleeveless",
+      "category": "clothing"
+    },
+    {
+      "name": "socks",
+      "tags": "socks",
+      "category": "clothing"
+    },
+    {
+      "name": "suit-01",
+      "tags": "suit-01",
+      "category": "clothing"
+    },
+    {
+      "name": "suit-02",
+      "tags": "suit-02",
+      "category": "clothing"
+    },
+    {
+      "name": "tank-top",
+      "tags": "tank-top",
+      "category": "clothing"
+    },
+    {
+      "name": "t-shirt",
+      "tags": "t-shirt",
+      "category": "clothing"
+    },
+    {
+      "name": "turtle-neck",
+      "tags": "turtle-neck",
+      "category": "clothing"
+    },
+    {
+      "name": "underpants-01",
+      "tags": "underpants-01",
+      "category": "clothing"
+    },
+    {
+      "name": "underpants-02",
+      "tags": "underpants-02",
+      "category": "clothing"
+    },
+    {
+      "name": "underpants-03",
+      "tags": "underpants-03",
+      "category": "clothing"
+    },
+    {
+      "name": "vest",
+      "tags": "vest",
+      "category": "clothing"
+    }
+  ]
+}

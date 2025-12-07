@@ -1,0 +1,847 @@
+{
+  "metadata": {
+    "id": "programming_ai",
+    "name": "Programming & AI",
+    "description": "Software development and AI",
+    "main_category": "technology_computing",
+    "icon_count": 167,
+    "version": "1.0"
+  },
+  "icons": [
+    {
+      "name": "api",
+      "tags": "api",
+      "category": "programming"
+    },
+    {
+      "name": "bash",
+      "tags": "bash",
+      "category": "programming"
+    },
+    {
+      "name": "binary-code",
+      "tags": "binary-code",
+      "category": "programming"
+    },
+    {
+      "name": "bug-01",
+      "tags": "bug-01",
+      "category": "programming"
+    },
+    {
+      "name": "bug-02",
+      "tags": "bug-02",
+      "category": "programming"
+    },
+    {
+      "name": "c++",
+      "tags": "c++",
+      "category": "programming"
+    },
+    {
+      "name": "code",
+      "tags": "code",
+      "category": "programming"
+    },
+    {
+      "name": "code-circle",
+      "tags": "code-circle",
+      "category": "programming"
+    },
+    {
+      "name": "code-folder",
+      "tags": "code-folder",
+      "category": "programming"
+    },
+    {
+      "name": "code-square",
+      "tags": "code-square",
+      "category": "programming"
+    },
+    {
+      "name": "command-line",
+      "tags": "command-line",
+      "category": "programming"
+    },
+    {
+      "name": "computer-programming-01",
+      "tags": "computer-programming-01",
+      "category": "programming"
+    },
+    {
+      "name": "computer-programming-02",
+      "tags": "computer-programming-02",
+      "category": "programming"
+    },
+    {
+      "name": "computer-terminal-01",
+      "tags": "computer-terminal-01",
+      "category": "programming"
+    },
+    {
+      "name": "computer-terminal-02",
+      "tags": "computer-terminal-02",
+      "category": "programming"
+    },
+    {
+      "name": "console",
+      "tags": "console",
+      "category": "programming"
+    },
+    {
+      "name": "cpp",
+      "tags": "cpp",
+      "category": "programming"
+    },
+    {
+      "name": "c-programming",
+      "tags": "c-programming",
+      "category": "programming"
+    },
+    {
+      "name": "danger",
+      "tags": "danger",
+      "category": "programming"
+    },
+    {
+      "name": "database",
+      "tags": "data stack, data center,",
+      "category": "programming"
+    },
+    {
+      "name": "database-export",
+      "tags": "data stack, data center,",
+      "category": "programming"
+    },
+    {
+      "name": "database-import",
+      "tags": "data stack, data center,",
+      "category": "programming"
+    },
+    {
+      "name": "database-sync-01",
+      "tags": "data stack, data center,",
+      "category": "programming"
+    },
+    {
+      "name": "developer",
+      "tags": "developer",
+      "category": "programming"
+    },
+    {
+      "name": "document-code",
+      "tags": "document-code",
+      "category": "programming"
+    },
+    {
+      "name": "incognito",
+      "tags": "incognito",
+      "category": "programming"
+    },
+    {
+      "name": "java",
+      "tags": "java",
+      "category": "programming"
+    },
+    {
+      "name": "java-script",
+      "tags": "java-script",
+      "category": "programming"
+    },
+    {
+      "name": "language-skill",
+      "tags": "language-skill",
+      "category": "programming"
+    },
+    {
+      "name": "laptop-programming",
+      "tags": "laptop-programming",
+      "category": "programming"
+    },
+    {
+      "name": "mobile-programming-01",
+      "tags": "mobile-programming-01",
+      "category": "programming"
+    },
+    {
+      "name": "mobile-programming-02",
+      "tags": "mobile-programming-02",
+      "category": "programming"
+    },
+    {
+      "name": "php",
+      "tags": "php",
+      "category": "programming"
+    },
+    {
+      "name": "pin-code",
+      "tags": "pin-code",
+      "category": "programming"
+    },
+    {
+      "name": "programming-flag",
+      "tags": "programming-flag",
+      "category": "programming"
+    },
+    {
+      "name": "re",
+      "tags": "re",
+      "category": "programming"
+    },
+    {
+      "name": "re-colon",
+      "tags": "re:",
+      "category": "programming"
+    },
+    {
+      "name": "repository",
+      "tags": "repository",
+      "category": "programming"
+    },
+    {
+      "name": "server-stack-01",
+      "tags": "server-stack-01",
+      "category": "programming"
+    },
+    {
+      "name": "server-stack-02",
+      "tags": "server-stack-02",
+      "category": "programming"
+    },
+    {
+      "name": "server-stack-03",
+      "tags": "server-stack-03",
+      "category": "programming"
+    },
+    {
+      "name": "software",
+      "tags": "software",
+      "category": "programming"
+    },
+    {
+      "name": "software-license",
+      "tags": "software-license",
+      "category": "programming"
+    },
+    {
+      "name": "source-code",
+      "tags": "source-code",
+      "category": "programming"
+    },
+    {
+      "name": "source-code-circle",
+      "tags": "source-code-circle",
+      "category": "programming"
+    },
+    {
+      "name": "source-code-square",
+      "tags": "source-code-square",
+      "category": "programming"
+    },
+    {
+      "name": "sql",
+      "tags": "sql",
+      "category": "programming"
+    },
+    {
+      "name": "translate",
+      "tags": "translate",
+      "category": "programming"
+    },
+    {
+      "name": "translation",
+      "tags": "translation",
+      "category": "programming"
+    },
+    {
+      "name": "variable",
+      "tags": "variable",
+      "category": "programming"
+    },
+    {
+      "name": "web-design-01",
+      "tags": "web-design-01",
+      "category": "programming"
+    },
+    {
+      "name": "web-design-02",
+      "tags": "web-design-02",
+      "category": "programming"
+    },
+    {
+      "name": "web-programming",
+      "tags": "web-programming",
+      "category": "programming"
+    },
+    {
+      "name": "zsh",
+      "tags": "zsh",
+      "category": "programming"
+    },
+    {
+      "name": "ai-audio",
+      "tags": "ai-audio",
+      "category": "ai"
+    },
+    {
+      "name": "ai-beautify",
+      "tags": "ai-beautify",
+      "category": "ai"
+    },
+    {
+      "name": "ai-book",
+      "tags": "ai-book",
+      "category": "ai"
+    },
+    {
+      "name": "ai-brain-01",
+      "tags": "ai-brain-01",
+      "category": "ai"
+    },
+    {
+      "name": "ai-brain-02",
+      "tags": "ai-brain-02",
+      "category": "ai"
+    },
+    {
+      "name": "ai-brain-03",
+      "tags": "ai-brain-03",
+      "category": "ai"
+    },
+    {
+      "name": "ai-brain-04",
+      "tags": "ai-brain-04",
+      "category": "ai"
+    },
+    {
+      "name": "ai-brain-05",
+      "tags": "ai-brain-05",
+      "category": "ai"
+    },
+    {
+      "name": "ai-browser",
+      "tags": "ai-browser",
+      "category": "ai"
+    },
+    {
+      "name": "ai-chat-01",
+      "tags": "ai-chat-01",
+      "category": "ai"
+    },
+    {
+      "name": "ai-chat-02",
+      "tags": "ai-chat-02",
+      "category": "ai"
+    },
+    {
+      "name": "ai-chemistry-01",
+      "tags": "ai-chemistry-01",
+      "category": "ai"
+    },
+    {
+      "name": "ai-chemistry-02",
+      "tags": "ai-chemistry-02",
+      "category": "ai"
+    },
+    {
+      "name": "ai-chemistry-03",
+      "tags": "ai-chemistry-03",
+      "category": "ai"
+    },
+    {
+      "name": "ai-chip",
+      "tags": "ai-chip",
+      "category": "ai"
+    },
+    {
+      "name": "ai-cloud",
+      "tags": "ai-cloud",
+      "category": "ai"
+    },
+    {
+      "name": "ai-cloud-01",
+      "tags": "ai-cloud-01",
+      "category": "ai"
+    },
+    {
+      "name": "ai-cloud-02",
+      "tags": "ai-cloud-02",
+      "category": "ai"
+    },
+    {
+      "name": "ai-computer",
+      "tags": "ai-computer",
+      "category": "ai"
+    },
+    {
+      "name": "ai-content-generator-01",
+      "tags": "ai-content-generator-01",
+      "category": "ai"
+    },
+    {
+      "name": "ai-content-generator-02",
+      "tags": "ai-content-generator-02",
+      "category": "ai"
+    },
+    {
+      "name": "ai-dna",
+      "tags": "ai-dna",
+      "category": "ai"
+    },
+    {
+      "name": "ai-editing",
+      "tags": "ai-editing",
+      "category": "ai"
+    },
+    {
+      "name": "ai-eraser",
+      "tags": "ai-eraser",
+      "category": "ai"
+    },
+    {
+      "name": "ai-file",
+      "tags": "ai-file",
+      "category": "ai"
+    },
+    {
+      "name": "ai-folder-01",
+      "tags": "ai-folder-01",
+      "category": "ai"
+    },
+    {
+      "name": "ai-folder-02",
+      "tags": "ai-folder-02",
+      "category": "ai"
+    },
+    {
+      "name": "ai-game",
+      "tags": "ai-game",
+      "category": "ai"
+    },
+    {
+      "name": "ai-generative",
+      "tags": "ai-generative",
+      "category": "ai"
+    },
+    {
+      "name": "ai-idea",
+      "tags": "ai-idea",
+      "category": "ai"
+    },
+    {
+      "name": "ai-image",
+      "tags": "ai-image",
+      "category": "ai"
+    },
+    {
+      "name": "ai-innovation-01",
+      "tags": "ai-innovation-01",
+      "category": "ai"
+    },
+    {
+      "name": "ai-innovation-02",
+      "tags": "ai-innovation-02",
+      "category": "ai"
+    },
+    {
+      "name": "ai-innovation-03",
+      "tags": "ai-innovation-03",
+      "category": "ai"
+    },
+    {
+      "name": "ai-laptop",
+      "tags": "ai-laptop",
+      "category": "ai"
+    },
+    {
+      "name": "ai-learning",
+      "tags": "ai-learning",
+      "category": "ai"
+    },
+    {
+      "name": "ai-lock",
+      "tags": "ai-lock",
+      "category": "ai"
+    },
+    {
+      "name": "ai-magic",
+      "tags": "ai-magic",
+      "category": "ai"
+    },
+    {
+      "name": "ai-mail",
+      "tags": "ai-mail",
+      "category": "ai"
+    },
+    {
+      "name": "ai-mail-01",
+      "tags": "ai-mail-01",
+      "category": "ai"
+    },
+    {
+      "name": "ai-mail-02",
+      "tags": "ai-mail-02",
+      "category": "ai"
+    },
+    {
+      "name": "ai-mic",
+      "tags": "ai-mic",
+      "category": "ai"
+    },
+    {
+      "name": "ai-network",
+      "tags": "ai-network",
+      "category": "ai"
+    },
+    {
+      "name": "ai-phone-01",
+      "tags": "ai-phone-01",
+      "category": "ai"
+    },
+    {
+      "name": "ai-phone-02",
+      "tags": "ai-phone-02",
+      "category": "ai"
+    },
+    {
+      "name": "ai-programming",
+      "tags": "ai-programming",
+      "category": "ai"
+    },
+    {
+      "name": "ai-scan",
+      "tags": "ai-scan",
+      "category": "ai"
+    },
+    {
+      "name": "ai-scheduling",
+      "tags": "ai-scheduling",
+      "category": "ai"
+    },
+    {
+      "name": "ai-search",
+      "tags": "ai-search",
+      "category": "ai"
+    },
+    {
+      "name": "ai-search-02",
+      "tags": "ai-search-02",
+      "category": "ai"
+    },
+    {
+      "name": "ai-security-01",
+      "tags": "ai-security-01",
+      "category": "ai"
+    },
+    {
+      "name": "ai-security-02",
+      "tags": "ai-security-02",
+      "category": "ai"
+    },
+    {
+      "name": "ai-security-03",
+      "tags": "ai-security-03",
+      "category": "ai"
+    },
+    {
+      "name": "ai-setting",
+      "tags": "ai-setting",
+      "category": "ai"
+    },
+    {
+      "name": "ai-sheets",
+      "tags": "ai-sheets",
+      "category": "ai"
+    },
+    {
+      "name": "ai-smartwatch",
+      "tags": "ai-smartwatch",
+      "category": "ai"
+    },
+    {
+      "name": "ai-user",
+      "tags": "ai-user",
+      "category": "ai"
+    },
+    {
+      "name": "ai-video",
+      "tags": "ai-video",
+      "category": "ai"
+    },
+    {
+      "name": "ai-view",
+      "tags": "ai-view",
+      "category": "ai"
+    },
+    {
+      "name": "ai-vision-recognition",
+      "tags": "ai-vision-recognition",
+      "category": "ai"
+    },
+    {
+      "name": "ai-voice",
+      "tags": "ai-voice",
+      "category": "ai"
+    },
+    {
+      "name": "ai-voice-generator",
+      "tags": "ai-voice-generator",
+      "category": "ai"
+    },
+    {
+      "name": "ai-web-browsing",
+      "tags": "ai-web-browsing",
+      "category": "ai"
+    },
+    {
+      "name": "algorithm",
+      "tags": "algorithm",
+      "category": "ai"
+    },
+    {
+      "name": "apple-intelligence",
+      "tags": "apple-intelligence",
+      "category": "ai"
+    },
+    {
+      "name": "artificial-intelligence-01",
+      "tags": "artificial-intelligence-01",
+      "category": "ai"
+    },
+    {
+      "name": "artificial-intelligence-02",
+      "tags": "artificial-intelligence, ai",
+      "category": "ai"
+    },
+    {
+      "name": "artificial-intelligence-03",
+      "tags": "Ai,",
+      "category": "ai"
+    },
+    {
+      "name": "artificial-intelligence-04",
+      "tags": "artificial-intelligence, ai",
+      "category": "ai"
+    },
+    {
+      "name": "artificial-intelligence-05",
+      "tags": "artificial-intelligence, ai",
+      "category": "ai"
+    },
+    {
+      "name": "artificial-intelligence-06",
+      "tags": "artificial-intelligence, ai",
+      "category": "ai"
+    },
+    {
+      "name": "artificial-intelligence-07",
+      "tags": "artificial-intelligence-07",
+      "category": "ai"
+    },
+    {
+      "name": "artificial-intelligence-08",
+      "tags": "artificial-intelligence-08",
+      "category": "ai"
+    },
+    {
+      "name": "chat-bot",
+      "tags": "chat-bot",
+      "category": "ai"
+    },
+    {
+      "name": "chip",
+      "tags": "chip",
+      "category": "ai"
+    },
+    {
+      "name": "cloud-server",
+      "tags": "cloud-server",
+      "category": "ai"
+    },
+    {
+      "name": "hologram",
+      "tags": "hologram",
+      "category": "ai"
+    },
+    {
+      "name": "machine-robot",
+      "tags": "machine-robot",
+      "category": "ai"
+    },
+    {
+      "name": "magic-wand-04",
+      "tags": "magic-wand-04",
+      "category": "ai"
+    },
+    {
+      "name": "magic-wand-05",
+      "tags": "magic-wand-05",
+      "category": "ai"
+    },
+    {
+      "name": "neural-network",
+      "tags": "neural-network",
+      "category": "ai"
+    },
+    {
+      "name": "perplexity-ai",
+      "tags": "perplexity-ai",
+      "category": "ai"
+    },
+    {
+      "name": "robot-01",
+      "tags": "robot-01",
+      "category": "ai"
+    },
+    {
+      "name": "robot-02",
+      "tags": "robot-02",
+      "category": "ai"
+    },
+    {
+      "name": "robotic",
+      "tags": "robotic",
+      "category": "ai"
+    },
+    {
+      "name": "siri-new",
+      "tags": "siri-new",
+      "category": "ai"
+    },
+    {
+      "name": "token-circle",
+      "tags": "token-circle",
+      "category": "ai"
+    },
+    {
+      "name": "token-square",
+      "tags": "token-square",
+      "category": "ai"
+    },
+    {
+      "name": "video-ai",
+      "tags": "video-ai",
+      "category": "ai"
+    },
+    {
+      "name": "video-camera-ai",
+      "tags": "video-camera-ai",
+      "category": "ai"
+    },
+    {
+      "name": "github",
+      "tags": "github",
+      "category": "git"
+    },
+    {
+      "name": "gitlab",
+      "tags": "gitlab",
+      "category": "git"
+    },
+    {
+      "name": "acceleration",
+      "tags": "Speed Boost Symbol, Rapid Motion Icon, Quickening Emoji, Velocity Symbol, Fast Track Emblem, Swift Movement Sign, Hastening Icon, Turbo Charge Emoji, Speedy Motion Symbol, Accelerated Pace Symbol",
+      "category": "science-technology"
+    },
+    {
+      "name": "atom-01",
+      "tags": "Atomic Symbol, Molecular Icon, Particle Emblem, Nuclear Glyph, Electron Symbol, Chemistry Emoji, Proton Emblem, Neutron Icon, Atomic Model, Molecular Structure",
+      "category": "science-technology"
+    },
+    {
+      "name": "atom-02",
+      "tags": "Atomic Symbol, Molecular Icon, Particle Emblem, Nuclear Glyph, Electron Symbol, Chemistry Emoji, Proton Emblem, Neutron Icon, Atomic Model, Molecular Structure",
+      "category": "science-technology"
+    },
+    {
+      "name": "bacteria",
+      "tags": "microbe symbol, germ icon, tiny organism, microbial emoticon, pathogen symbol, microscopic creature, bacterial emblem, virus icon, minuscule bug, contagion symbol, tiny pathogen, microbial sign, infectious symbol, tiny germ",
+      "category": "science-technology"
+    },
+    {
+      "name": "black-hole-01",
+      "tags": "Void Vortex, Cosmic Funnel, Abyssal Pit, Dark Whirlpool, Singularity Sphere, Infinite Chasm, Eclipse Center, Event Horizon, Shadowy Vacuum, Deep Abyss",
+      "category": "science-technology"
+    },
+    {
+      "name": "bot",
+      "tags": "virtual assistant, chat companion, AI helper, digital buddy, conversation bot, automated helper, friendly bot, interactive guide, messaging assistant, online companion, talkbot, chat facilitator, conversational AI",
+      "category": "science-technology"
+    },
+    {
+      "name": "cells",
+      "tags": "grid, blocks, units, compartments, squares, partitions, segments, modules, elements, divisions, sections, parcels, panels, zones, areas, parcels",
+      "category": "science-technology"
+    },
+    {
+      "name": "gravity",
+      "tags": "gravitation, pull, attractor, force, magnetism, allure, tug, attraction, weight, draw, centripetal",
+      "category": "science-technology"
+    },
+    {
+      "name": "magnet",
+      "tags": "attraction, puller, magnetic pull, attractor, magnetizer, magnetic force, magnetic field, magnetism, magnetic pull, magnetize, magnetism symbol, magnetic attraction",
+      "category": "science-technology"
+    },
+    {
+      "name": "molecules",
+      "tags": "Tiny Elements, Atomic Fusion, Molecular Mix, Nano Structures, Particle Ensemble, Micro Units, Chemical Bonds, Elemental Fusion, Molecular Array, Atom Matrix",
+      "category": "science-technology"
+    },
+    {
+      "name": "nano-technology",
+      "tags": "Nano Tech, Molecular Innovation, Microscopic Advancement, Tiny World, Smart Materials, Nano Wonders, Molecular Engineering, Microscale Marvel, Nano Innovations, Subatomic Breakthrough.",
+      "category": "science-technology"
+    },
+    {
+      "name": "pendulum",
+      "tags": "swing, oscillator, swayer, rhythmic motion, bob, timekeeper, metronome, back-and-forth, sway, tictoc, arc-motion, balance-swing, pendular movement",
+      "category": "science-technology"
+    },
+    {
+      "name": "prism-01",
+      "tags": "colorbeam, spectrumflare, lightsplit, chromalens, rainbowray, huebeam, spectrumfocus, prismalight",
+      "category": "science-technology"
+    },
+    {
+      "name": "pulley",
+      "tags": "rope wheel, lifting gear, hoist wheel, cable roller, elevation wheel, traction disc, draw wheel, tension wheel, guiding reel, lifting pulley",
+      "category": "science-technology"
+    },
+    {
+      "name": "siri",
+      "tags": "VoiceAssist, TalkMate, AudioGuide, SpeakUp, SoundHelper, VocalBuddy, ChatterBot, AudioWizard, TalkBack, VoiceAid, SpeakEasy, AudioCompanion",
+      "category": "science-technology"
+    },
+    {
+      "name": "solar-system-01",
+      "tags": "star-map, cosmic-orbit, sun-and-planets, celestial-chart, galaxy-view, astral-layout, planetary-array, space-constellation, stellar-diagram, universe-display",
+      "category": "science-technology"
+    },
+    {
+      "name": "submerge",
+      "tags": "immerse, plunge, dip, submerse, soak, saturate, dunk, douse, engulf, submergence",
+      "category": "science-technology"
+    },
+    {
+      "name": "test-tube",
+      "tags": "Chemistry Flask, Science Vial, Lab Beaker, Research Tube, Experiment Flask, Biochemistry Vessel, Analysis Vial, Chemical Test Tube, Lab Experiment Tube, Science Sample Vial",
+      "category": "science-technology"
+    },
+    {
+      "name": "triangle-03",
+      "tags": "Three-Sided Shape, Delta, Triangular Symbol, Pyramid, Triad Marker, Trigon, Triquetra, Trihedral Glyph, Triangular Sign, Tri-Point Emblem, Three-Cornered Icon",
+      "category": "science-technology"
+    },
+    {
+      "name": "ufo-01",
+      "tags": "flying saucer, alien craft, extraterrestrial ship, spaceship, unidentified flying object, celestial vessel, interstellar object, cosmic shuttle, otherworldly craft, galactic saucer",
+      "category": "science-technology"
+    },
+    {
+      "name": "wind-turbine",
+      "tags": "wind-turbine\" icon: windmill, renewable energy, wind generator, breezy spin, eco turbine, air-powered, gusty wheel, sustainable spin, wind energy, airy propeller",
+      "category": "science-technology"
+    }
+  ]
+}

@@ -8,3 +8,10 @@ internal actual fun readResourceText(resourcePath: String): String {
     val source = FileSystem.RESOURCES.source(resourcePath.toPath())
     return source.buffer().use { it.readUtf8() }
 }
+
+internal actual fun readResourceBytesOrNull(resourcePath: String): ByteArray? {
+    val path = resourcePath.toPath()
+    if (!FileSystem.RESOURCES.exists(path)) return null
+    val source = FileSystem.RESOURCES.source(path)
+    return source.buffer().use { it.readByteArray() }
+}
