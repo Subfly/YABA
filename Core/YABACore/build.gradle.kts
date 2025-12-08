@@ -35,6 +35,7 @@ kotlin {
             implementation(libs.androidx.datastore)
             implementation(libs.androidx.datastore.preferences)
             implementation(libs.filekit.core)
+            implementation(libs.filekit.coil)
             implementation(libs.okio)
             implementation(compose.runtime)
             implementation(compose.foundation)
