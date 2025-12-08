@@ -48,6 +48,11 @@ DEFAULT_OUTPUT_ROOT = (
 # Patterns for transforming iOS format specifiers and legal Android resource names.
 PLACEHOLDER_PATTERN = re.compile(r"(?<!%)%(?:(\d+)\$)?(@|lld|ld|d|f|s)")
 INVALID_NAME_PATTERN = re.compile(r"[^a-z0-9_]+")
+# Fallback regions for script-only locales that Android qualifiers don't support.
+SCRIPT_REGION_FALLBACKS = {
+    "hans": "CN",  # Simplified Chinese
+    "hant": "TW",  # Traditional Chinese
+}
 
 
 def parse_args() -> argparse.Namespace:
@@ -219,10 +224,36 @@ def locale_to_dir(locale: str, source_language: str) -> str:
         return "values"
 
     lang = parts[0].lower()
-    qualifiers = [f"r{part}" for part in parts[1:]]
-    if lang == (source_language or "").lower() and not qualifiers:
+    script: str | None = None
+    region: str | None = None
+
+    for part in parts[1:]:
+        if script is None and len(part) == 4 and part.isalpha():
+            # BCP-47 script subtag (e.g., Hans, Hant, Latn)
+            script = part.title()
+            continue
+        if region is None and (
+            (len(part) == 2 and part.isalpha()) or (len(part) == 3 and part.isdigit())
+        ):
+            # Region subtag (e.g., CN, US, 419)
+            region = part.upper()
+            continue
+
+    if script and not region:
+        # Compose's resource accessor generation does not recognize the newer
+        # "b+<lang>+<Script>" Android qualifier. Map common scripts to a region
+        # so we can keep a valid "-r<REGION>" qualifier instead.
+        region = SCRIPT_REGION_FALLBACKS.get(script.lower())
+
+    if region:
+        suffix = f"{lang}-r{region}"
+    else:
+        suffix = lang
+
+    # Preserve default "values" directory for the source language without qualifiers.
+    if suffix == lang and lang == (source_language or "").lower():
         return "values"
-    suffix = "-".join([lang] + qualifiers) if qualifiers else lang
+
     return f"values-{suffix}"
 
 
