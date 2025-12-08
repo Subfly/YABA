@@ -1,4 +1,4 @@
-package dev.subfly.yabacore.icons.compose
+package dev.subfly.yabacore.ui.icon
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
