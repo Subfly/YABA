@@ -9,5 +9,3 @@ CORE_DIR="$ROOT/Core"
 echo "Publishing YABACore from: $CORE_DIR"
 cd "$CORE_DIR"
 ./gradlew :YABACore:publishToMavenLocal "$@"
-
-

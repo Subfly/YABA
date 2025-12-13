@@ -28,6 +28,7 @@ import dev.subfly.yabacore.database.entities.oplog.ReplicaInfoEntity
 const val YABA_DATABASE_VERSION = 1
 const val YABA_DATABASE_FILE_NAME = "yaba.db"
 
+@Suppress("KotlinNoActualForExpect")
 internal expect object YabaDatabaseCtor : RoomDatabaseConstructor<YabaDatabase> {
     override fun initialize(): YabaDatabase
 }

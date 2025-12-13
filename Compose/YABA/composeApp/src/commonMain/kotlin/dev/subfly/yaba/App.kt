@@ -12,6 +12,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import dev.subfly.yabacore.model.utils.YabaColor
+import dev.subfly.yabacore.ui.icon.YabaIcon
 import org.jetbrains.compose.resources.painterResource
 
 import yaba.composeapp.generated.resources.Res
@@ -37,6 +39,7 @@ fun App() {
                     Text("Compose: $greeting")
                 }
             }
+            YabaIcon("bookmark-02", color = YabaColor.RED)
         }
     }
 }

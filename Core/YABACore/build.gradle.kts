@@ -26,19 +26,7 @@ kotlin {
 
     androidTarget { publishLibraryVariants("release") }
     jvm()
-    iosX64 {
-        binaries.framework {
-            baseName = xcfName
-            isStatic = true
-        }
-    }
     iosArm64 {
-        binaries.framework {
-            baseName = xcfName
-            isStatic = true
-        }
-    }
-    iosSimulatorArm64 {
         binaries.framework {
             baseName = xcfName
             isStatic = true
@@ -118,7 +106,18 @@ android {
 }
 
 dependencies {
-    ksp(libs.room.compiler)
+    // Android
+    add("kspAndroid", libs.room.compiler)
+    // JVM (Desktop)
+    add("kspJvm", libs.room.compiler)
+    // Linux
+    // add("kspLinuxX64", libs.room.compiler)
+    // add("kspLinuxArm64", libs.room.compiler)
+    // Mac
+    // add("kspMacosX64", libs.room.compiler)
+    // add("kspMacosArm64", libs.room.compiler)
+    // iOS
+    add("kspIosArm64", libs.room.compiler)
 }
 
 room {
