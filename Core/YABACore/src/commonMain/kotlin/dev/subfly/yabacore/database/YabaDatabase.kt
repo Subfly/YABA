@@ -1,7 +1,9 @@
 package dev.subfly.yabacore.database
 
+import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.RoomDatabaseConstructor
 import androidx.room.TypeConverters
 import dev.subfly.yabacore.database.converters.CoreTypeConverters
 import dev.subfly.yabacore.database.dao.BookmarkDao
@@ -26,6 +28,10 @@ import dev.subfly.yabacore.database.entities.oplog.ReplicaInfoEntity
 const val YABA_DATABASE_VERSION = 1
 const val YABA_DATABASE_FILE_NAME = "yaba.db"
 
+internal expect object YabaDatabaseCtor : RoomDatabaseConstructor<YabaDatabase> {
+    override fun initialize(): YabaDatabase
+}
+
 @Database(
     entities =
         [
@@ -42,6 +48,7 @@ const val YABA_DATABASE_FILE_NAME = "yaba.db"
     version = YABA_DATABASE_VERSION,
     exportSchema = true,
 )
+@ConstructedBy(YabaDatabaseCtor::class)
 @TypeConverters(CoreTypeConverters::class)
 abstract class YabaDatabase : RoomDatabase() {
     abstract fun folderDao(): FolderDao

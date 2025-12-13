@@ -9,10 +9,6 @@ import dev.subfly.yabacore.database.entities.BookmarkEntity
 import dev.subfly.yabacore.database.models.LinkBookmarkWithRelations
 import dev.subfly.yabacore.model.utils.BookmarkKind
 import kotlinx.coroutines.flow.Flow
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
-
-@OptIn(ExperimentalUuidApi::class)
 @Dao
 interface BookmarkDao {
     @Upsert
@@ -25,17 +21,17 @@ interface BookmarkDao {
     suspend fun delete(entity: BookmarkEntity)
 
     @Query("DELETE FROM bookmarks WHERE id IN (:ids)")
-    suspend fun deleteByIds(ids: List<Uuid>)
+    suspend fun deleteByIds(ids: List<String>)
 
     @Query("DELETE FROM bookmarks")
     suspend fun deleteAll()
 
     @Query("SELECT * FROM bookmarks WHERE id = :id LIMIT 1")
-    suspend fun getById(id: Uuid): BookmarkEntity?
+    suspend fun getById(id: String): BookmarkEntity?
 
     @Transaction
     @Query("SELECT * FROM bookmarks WHERE id = :id LIMIT 1")
-    suspend fun getLinkBookmarkById(id: Uuid): LinkBookmarkWithRelations?
+    suspend fun getLinkBookmarkById(id: String): LinkBookmarkWithRelations?
 
     @Query("SELECT * FROM bookmarks")
     suspend fun getAll(): List<BookmarkEntity>
@@ -57,7 +53,7 @@ interface BookmarkDao {
         """
     )
     fun observeLinkBookmarksForFolder(
-        folderId: Uuid,
+        folderId: String,
         sortType: String,
         sortOrder: String,
         kind: BookmarkKind = BookmarkKind.LINK,
@@ -83,7 +79,7 @@ interface BookmarkDao {
         """
     )
     fun observeLinkBookmarksForTag(
-        tagId: Uuid,
+        tagId: String,
         sortType: String,
         sortOrder: String,
         kind: BookmarkKind = BookmarkKind.LINK,
@@ -144,9 +140,9 @@ interface BookmarkDao {
         query: String?,
         kinds: List<BookmarkKind>,
         applyKindFilter: Boolean,
-        folderIds: List<Uuid>,
+        folderIds: List<String>,
         applyFolderFilter: Boolean,
-        tagIds: List<Uuid>,
+        tagIds: List<String>,
         applyTagFilter: Boolean,
         sortType: String,
         sortOrder: String,

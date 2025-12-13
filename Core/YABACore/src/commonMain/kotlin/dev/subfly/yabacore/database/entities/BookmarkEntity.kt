@@ -5,12 +5,6 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import dev.subfly.yabacore.model.utils.BookmarkKind
-import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
-
-@OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
 @Entity(
     tableName = "bookmarks",
     foreignKeys = [
@@ -29,12 +23,12 @@ import kotlin.uuid.Uuid
     ],
 )
 data class BookmarkEntity(
-    @PrimaryKey val id: Uuid,
-    val folderId: Uuid,
+    @PrimaryKey val id: String,
+    val folderId: String,
     val kind: BookmarkKind,
     val label: String,
-    val createdAt: Instant,
-    val editedAt: Instant,
+    val createdAt: Long,
+    val editedAt: Long,
     val viewCount: Long = 0,
     val isPrivate: Boolean = false,
     val isPinned: Boolean = false,

@@ -43,11 +43,11 @@ object TagManager {
         sortOrder: SortOrderType = SortOrderType.ASCENDING,
     ): Flow<List<TagUiModel>> =
         tagDao
-            .observeTagsForBookmarkWithCounts(bookmarkId, sortType.name, sortOrder.name)
+            .observeTagsForBookmarkWithCounts(bookmarkId.asString(), sortType.name, sortOrder.name)
             .map { rows -> rows.map { it.toUiModel() } }
 
     suspend fun getTag(tagId: Uuid): TagUiModel? =
-        tagDao.getTagWithBookmarkCount(tagId)?.toUiModel()
+        tagDao.getTagWithBookmarkCount(tagId.asString())?.toUiModel()
 
     suspend fun createTag(tag: TagUiModel): TagUiModel {
         val now = clock.now()
@@ -66,7 +66,7 @@ object TagManager {
     }
 
     suspend fun updateTag(tag: TagUiModel): TagUiModel? {
-        val existing = tagDao.getById(tag.id)?.toModel() ?: return null
+        val existing = tagDao.getById(tag.id.asString())?.toModel() ?: return null
         val now = clock.now()
         val updated = existing.copy(
             label = tag.label,
@@ -75,7 +75,7 @@ object TagManager {
             editedAt = now,
         )
         opApplier.applyLocal(listOf(updated.toOperationDraft(OperationKind.UPDATE)))
-        return tagDao.getTagWithBookmarkCount(tag.id)?.toUiModel()
+        return tagDao.getTagWithBookmarkCount(tag.id.asString())?.toUiModel()
     }
 
     suspend fun reorderTag(
@@ -105,7 +105,7 @@ object TagManager {
     }
 
     suspend fun deleteTag(tag: TagUiModel) {
-        val target = tagDao.getById(tag.id)?.toModel() ?: return
+        val target = tagDao.getById(tag.id.asString())?.toModel() ?: return
         val now = clock.now()
         val remaining = tagDao.getAll().map { it.toModel() }.filterNot { it.id == tag.id }
         val drafts = mutableListOf(
@@ -148,7 +148,7 @@ object TagManager {
     }
 
     suspend fun ensurePinnedTag(): TagUiModel {
-        tagDao.getTagWithBookmarkCount(pinnedTagId)?.let {
+        tagDao.getTagWithBookmarkCount(pinnedTagId.asString())?.let {
             return it.toUiModel()
         }
         val now = clock.now()
@@ -167,7 +167,7 @@ object TagManager {
     }
 
     suspend fun ensurePrivateTag(): TagUiModel {
-        tagDao.getTagWithBookmarkCount(privateTagId)?.let {
+        tagDao.getTagWithBookmarkCount(privateTagId.asString())?.let {
             return it.toUiModel()
         }
         val now = clock.now()
@@ -205,4 +205,6 @@ object TagManager {
         sorted.add(insertIndex, dragged)
         return sorted.mapIndexed { index, tag -> tag.copy(order = index) }
     }
+
+    private fun Uuid.asString(): String = toString()
 }

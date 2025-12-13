@@ -9,16 +9,48 @@ plugins {
     alias(libs.plugins.compose.compiler)
 }
 
+group = "dev.subfly.yabacore"
+version = "0.1.0-SNAPSHOT"
+val xcfName = "YabaCore"
+
+mavenPublishing {
+    coordinates(
+        groupId = "dev.subfly.yabacore",
+        artifactId = "yabacore",
+        version = version.toString()
+    )
+}
+
 kotlin {
     jvmToolchain(17)
 
     androidTarget { publishLibraryVariants("release") }
     jvm()
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
+    iosX64 {
+        binaries.framework {
+            baseName = xcfName
+            isStatic = true
+        }
+    }
+    iosArm64 {
+        binaries.framework {
+            baseName = xcfName
+            isStatic = true
+        }
+    }
+    iosSimulatorArm64 {
+        binaries.framework {
+            baseName = xcfName
+            isStatic = true
+        }
+    }
 
     sourceSets {
+        all {
+            languageSettings.optIn("kotlinx.cinterop.ExperimentalForeignApi")
+            languageSettings.optIn("kotlin.uuid.ExperimentalUuidApi")
+            languageSettings.optIn("kotlinx.time.ExperimentalTime")
+        }
         commonMain.dependencies {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.coroutines.test)
@@ -81,18 +113,12 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        minSdk = 21
+        minSdk = 23
     }
 }
 
 dependencies {
     ksp(libs.room.compiler)
-    add("kspCommonMainMetadata", libs.room.compiler)
-    add("kspAndroid", libs.room.compiler)
-    add("kspIosX64", libs.room.compiler)
-    add("kspIosArm64", libs.room.compiler)
-    add("kspIosSimulatorArm64", libs.room.compiler)
-    add("kspJvm", libs.room.compiler)
 }
 
 room {

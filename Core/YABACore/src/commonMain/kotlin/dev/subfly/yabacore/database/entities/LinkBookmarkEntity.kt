@@ -5,10 +5,6 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import dev.subfly.yabacore.model.utils.LinkType
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
-
-@OptIn(ExperimentalUuidApi::class)
 @Entity(
     tableName = "link_bookmarks",
     foreignKeys = [
@@ -25,7 +21,7 @@ import kotlin.uuid.Uuid
     ],
 )
 data class LinkBookmarkEntity(
-    @PrimaryKey val bookmarkId: Uuid,
+    @PrimaryKey val bookmarkId: String,
     val description: String?,
     val url: String,
     val domain: String,

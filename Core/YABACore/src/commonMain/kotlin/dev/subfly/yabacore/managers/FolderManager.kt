@@ -35,7 +35,7 @@ object FolderManager {
         sortOrder: SortOrderType = SortOrderType.ASCENDING,
     ): Flow<List<FolderUiModel>> =
         folderDao.observeFoldersWithBookmarkCounts(
-            parentId,
+            parentId?.asString(),
             sortType.name,
             sortOrder.name
         ).map { rows -> rows.map { it.toUiModel() } }
@@ -50,10 +50,10 @@ object FolderManager {
         ).map { rows -> buildFolderTree(rows) }
 
     suspend fun getFolder(folderId: Uuid): FolderUiModel? =
-        folderDao.getFolderWithBookmarkCount(folderId)?.toUiModel()
+        folderDao.getFolderWithBookmarkCount(folderId.asString())?.toUiModel()
 
     suspend fun ensureUncategorizedFolder(): FolderUiModel {
-        folderDao.getFolderWithBookmarkCount(uncategorizedFolderId)?.let {
+        folderDao.getFolderWithBookmarkCount(uncategorizedFolderId.asString())?.let {
             return it.toUiModel()
         }
         val now = clock.now()
@@ -94,7 +94,7 @@ object FolderManager {
     }
 
     suspend fun updateFolder(folder: FolderUiModel): FolderUiModel? {
-        val existing = folderDao.getById(folder.id)?.toModel() ?: return null
+        val existing = folderDao.getById(folder.id.asString())?.toModel() ?: return null
         val now = clock.now()
         val updated = existing.copy(
             label = folder.label,
@@ -104,14 +104,14 @@ object FolderManager {
             editedAt = now,
         )
         opApplier.applyLocal(listOf(updated.toOperationDraft(OperationKind.UPDATE)))
-        return folderDao.getFolderWithBookmarkCount(folder.id)?.toUiModel()
+        return folderDao.getFolderWithBookmarkCount(folder.id.asString())?.toUiModel()
     }
 
     suspend fun moveFolder(
         folder: FolderUiModel,
         targetParent: FolderUiModel?,
     ) {
-        val current = folderDao.getById(folder.id)?.toModel() ?: return
+        val current = folderDao.getById(folder.id.asString())?.toModel() ?: return
         val targetParentId = targetParent?.id
         val now = clock.now()
         val targetSiblings = loadSiblings(targetParentId).filterNot { it.id == folder.id }
@@ -144,7 +144,7 @@ object FolderManager {
 
             else -> Unit
         }
-        val draggedFolder = folderDao.getById(dragged.id)?.toModel() ?: return
+        val draggedFolder = folderDao.getById(dragged.id.asString())?.toModel() ?: return
         val parentId = draggedFolder.parentId
         val siblings = loadSiblings(parentId)
         val ordered = reorderSiblings(siblings, dragged.id, target.id, zone)
@@ -154,7 +154,7 @@ object FolderManager {
     }
 
     suspend fun deleteFolder(folder: FolderUiModel) {
-        val target = folderDao.getById(folder.id)?.toModel() ?: return
+        val target = folderDao.getById(folder.id.asString())?.toModel() ?: return
         val now = clock.now()
         val drafts = mutableListOf(
             target.copy(editedAt = now)
@@ -182,7 +182,7 @@ object FolderManager {
             )
         } else {
             folderDao.getMovableFoldersExcluding(
-                excluded.toList(),
+                excluded.map { it.asString() }.toList(),
                 sortType.name,
                 sortOrder.name
             )
@@ -194,14 +194,15 @@ object FolderManager {
         if (parentId == null) {
             folderDao.getRoot()
         } else {
-            folderDao.getChildren(parentId)
+            folderDao.getChildren(parentId.asString())
         }.map { it.toModel() }
 
     private fun buildFolderTree(rows: List<FolderWithBookmarkCount>): List<FolderUiModel> {
-        val grouped = rows.groupBy { it.folder.parentId }
+        val uiRows = rows.map { it.toUiModel() }
+        val grouped = uiRows.groupBy { it.parentId }
         fun build(parentId: Uuid?): List<FolderUiModel> =
             grouped[parentId]?.map { entry ->
-                entry.toUiModel(children = build(entry.folder.id))
+                entry.copy(children = build(entry.id))
             } ?: emptyList()
         return build(null)
     }
@@ -210,12 +211,12 @@ object FolderManager {
         val rows = folderDao.getAllFoldersWithBookmarkCounts(
             SortType.CUSTOM.name,
             SortOrderType.ASCENDING.name
-        )
-        val grouped = rows.groupBy { it.folder.parentId }
+        ).map { it.toUiModel() }
+        val grouped = rows.groupBy { it.parentId }
         val visited = mutableSetOf<Uuid>()
         fun traverse(parentId: Uuid) {
             grouped[parentId]?.forEach { child ->
-                val childId = child.folder.id
+                val childId = child.id
                 if (visited.add(childId)) {
                     traverse(childId)
                 }
@@ -261,4 +262,6 @@ object FolderManager {
                 }
             }
             .filterNotNull()
+
+    private fun Uuid.asString(): String = toString()
 }

@@ -11,29 +11,31 @@ import dev.subfly.yabacore.database.domain.FolderDomainModel
 import dev.subfly.yabacore.database.domain.LinkBookmarkDomainModel
 import dev.subfly.yabacore.database.domain.TagDomainModel
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 internal fun FolderEntity.toModel(): FolderDomainModel =
     FolderDomainModel(
-        id = id,
-        parentId = parentId,
+        id = id.toUuid(),
+        parentId = parentId.toUuidOrNull(),
         label = label,
         description = description,
         icon = icon,
         color = color,
-        createdAt = createdAt,
-        editedAt = editedAt,
+        createdAt = createdAt.toInstant(),
+        editedAt = editedAt.toInstant(),
         order = order,
     )
 
 internal fun TagEntity.toModel(): TagDomainModel =
     TagDomainModel(
-        id = id,
+        id = id.toUuid(),
         label = label,
         icon = icon,
         color = color,
-        createdAt = createdAt,
-        editedAt = editedAt,
+        createdAt = createdAt.toInstant(),
+        editedAt = editedAt.toInstant(),
         order = order,
     )
 
@@ -41,12 +43,12 @@ internal fun LinkBookmarkWithRelations.toModel(): LinkBookmarkDomainModel = book
 
 internal fun BookmarkEntity.toModel(linkEntity: LinkBookmarkEntity): LinkBookmarkDomainModel =
     LinkBookmarkDomainModel(
-        id = id,
-        folderId = folderId,
+        id = id.toUuid(),
+        folderId = folderId.toUuid(),
         kind = kind,
         label = label,
-        createdAt = createdAt,
-        editedAt = editedAt,
+        createdAt = createdAt.toInstant(),
+        editedAt = editedAt.toInstant(),
         viewCount = viewCount,
         isPrivate = isPrivate,
         isPinned = isPinned,
@@ -61,24 +63,30 @@ internal fun BookmarkEntity.toModel(linkEntity: LinkBookmarkEntity): LinkBookmar
 
 internal fun FolderDomainModel.toEntity(): FolderEntity =
     FolderEntity(
-        id = id,
-        parentId = parentId,
+        id = id.asString(),
+        parentId = parentId?.asString(),
         label = label,
         description = description,
         icon = icon,
         color = color,
         order = order,
-        createdAt = createdAt,
-        editedAt = editedAt,
+        createdAt = createdAt.toEpochMillis(),
+        editedAt = editedAt.toEpochMillis(),
     )
 
 internal fun TagDomainModel.toEntity(): TagEntity =
     TagEntity(
-        id = id,
+        id = id.asString(),
         label = label,
         icon = icon,
         color = color,
         order = order,
-        createdAt = createdAt,
-        editedAt = editedAt,
+        createdAt = createdAt.toEpochMillis(),
+        editedAt = editedAt.toEpochMillis(),
     )
+
+private fun String.toUuid(): Uuid = Uuid.parse(this)
+private fun String?.toUuidOrNull(): Uuid? = this?.let { runCatching { Uuid.parse(it) }.getOrNull() }
+private fun Uuid.asString(): String = toString()
+private fun Instant.toEpochMillis(): Long = toEpochMilliseconds()
+private fun Long.toInstant(): Instant = Instant.fromEpochMilliseconds(this)

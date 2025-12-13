@@ -26,7 +26,7 @@ import kotlinx.serialization.json.Json
  * user-created ordering.
  */
 object PreloadDataGenerator {
-    private const val RESOURCE_NAME = "metadata/preload_data.json"
+    private const val RESOURCE_NAME = "files/metadata/preload_data.json"
     private val json = Json { ignoreUnknownKeys = true }
     private val clock = Clock.System
     private val folderDao
@@ -48,7 +48,7 @@ object PreloadDataGenerator {
             preloadData
                 .folders
                 .map { it.toFolderDomain(now) }
-                .filterNot { existingFolderIds.contains(it.id) }
+                .filterNot { existingFolderIds.contains(it.id.toString()) }
                 .sortedBy { it.label.lowercase() }
                 .mapIndexed { index, entity ->
                     entity.copy(order = folderOrderStart + index)
@@ -61,7 +61,7 @@ object PreloadDataGenerator {
             preloadData
                 .tags
                 .map { it.toTagDomain(now) }
-                .filterNot { existingTagIds.contains(it.id) }
+                .filterNot { existingTagIds.contains(it.id.toString()) }
                 .sortedBy { it.label.lowercase() }
                 .mapIndexed { index, entity -> entity.copy(order = tagOrderStart + index) }
 

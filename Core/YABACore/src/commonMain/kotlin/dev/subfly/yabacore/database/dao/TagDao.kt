@@ -10,10 +10,6 @@ import androidx.room.Upsert
 import dev.subfly.yabacore.database.entities.TagEntity
 import dev.subfly.yabacore.database.models.TagWithBookmarkCount
 import kotlinx.coroutines.flow.Flow
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
-
-@OptIn(ExperimentalUuidApi::class)
 @Dao
 interface TagDao {
     @Upsert
@@ -26,19 +22,19 @@ interface TagDao {
     suspend fun delete(entity: TagEntity)
 
     @Query("DELETE FROM tags WHERE id = :id")
-    suspend fun deleteById(id: Uuid)
+    suspend fun deleteById(id: String)
 
     @Query("DELETE FROM tags")
     suspend fun deleteAll()
 
     @Query("SELECT * FROM tags WHERE id = :id LIMIT 1")
-    suspend fun getById(id: Uuid): TagEntity?
+    suspend fun getById(id: String): TagEntity?
 
     @Query("SELECT * FROM tags")
     suspend fun getAll(): List<TagEntity>
 
     @Query("SELECT * FROM tags WHERE id = :id LIMIT 1")
-    fun observeById(id: Uuid): Flow<TagEntity?>
+    fun observeById(id: String): Flow<TagEntity?>
 
     @Query("SELECT * FROM tags ORDER BY `order` ASC")
     fun observeAll(): Flow<List<TagEntity>>
@@ -51,7 +47,7 @@ interface TagDao {
         ORDER BY tags.`order` ASC
         """
     )
-    fun observeTagsForBookmark(bookmarkId: Uuid): Flow<List<TagEntity>>
+    fun observeTagsForBookmark(bookmarkId: String): Flow<List<TagEntity>>
 
     @Query(
         """
@@ -120,7 +116,7 @@ interface TagDao {
         """
     )
     fun observeTagsForBookmarkWithCounts(
-        bookmarkId: Uuid,
+        bookmarkId: String,
         sortType: String,
         sortOrder: String,
     ): Flow<List<TagWithBookmarkCount>>
@@ -136,7 +132,7 @@ interface TagDao {
         LIMIT 1
         """
     )
-    suspend fun getTagWithBookmarkCount(id: Uuid): TagWithBookmarkCount?
+    suspend fun getTagWithBookmarkCount(id: String): TagWithBookmarkCount?
 
     @Query(
         """
@@ -151,6 +147,6 @@ interface TagDao {
         """
     )
     suspend fun getTagsForBookmarkWithCounts(
-        bookmarkId: Uuid,
+        bookmarkId: String,
     ): List<TagWithBookmarkCount>
 }

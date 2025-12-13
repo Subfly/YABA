@@ -4,8 +4,8 @@ import dev.subfly.yabacore.database.preload.readResourceText
 import kotlinx.serialization.json.Json
 
 internal object IconCatalog {
-    private const val HEADER_PATH = "metadata/icon_categories_header.json"
-    private const val METADATA_DIR = "metadata"
+    private const val HEADER_PATH = "files/metadata/icon_categories_header.json"
+    private const val METADATA_DIR = "files/metadata"
 
     private val json = Json { ignoreUnknownKeys = true }
 

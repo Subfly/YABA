@@ -7,10 +7,6 @@ import androidx.room.Upsert
 import dev.subfly.yabacore.database.entities.FolderEntity
 import dev.subfly.yabacore.database.models.FolderWithBookmarkCount
 import kotlinx.coroutines.flow.Flow
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
-
-@OptIn(ExperimentalUuidApi::class)
 @Dao
 interface FolderDao {
     @Upsert
@@ -23,19 +19,19 @@ interface FolderDao {
     suspend fun delete(entity: FolderEntity)
 
     @Query("DELETE FROM folders WHERE id = :id")
-    suspend fun deleteById(id: Uuid)
+    suspend fun deleteById(id: String)
 
     @Query("DELETE FROM folders")
     suspend fun deleteAll()
 
     @Query("SELECT * FROM folders WHERE id = :id LIMIT 1")
-    suspend fun getById(id: Uuid): FolderEntity?
+    suspend fun getById(id: String): FolderEntity?
 
     @Query("SELECT * FROM folders")
     suspend fun getAll(): List<FolderEntity>
 
     @Query("SELECT * FROM folders WHERE id = :id LIMIT 1")
-    fun observeById(id: Uuid): Flow<FolderEntity?>
+    fun observeById(id: String): Flow<FolderEntity?>
 
     @Query("SELECT * FROM folders ORDER BY `order` ASC")
     fun observeAll(): Flow<List<FolderEntity>>
@@ -44,10 +40,10 @@ interface FolderDao {
     fun observeRoot(): Flow<List<FolderEntity>>
 
     @Query("SELECT * FROM folders WHERE parentId = :parentId ORDER BY `order` ASC")
-    fun observeChildren(parentId: Uuid): Flow<List<FolderEntity>>
+    fun observeChildren(parentId: String): Flow<List<FolderEntity>>
 
     @Query("SELECT * FROM folders WHERE parentId = :parentId ORDER BY `order` ASC")
-    suspend fun getChildren(parentId: Uuid): List<FolderEntity>
+    suspend fun getChildren(parentId: String): List<FolderEntity>
 
     @Query("SELECT * FROM folders WHERE parentId IS NULL ORDER BY `order` ASC")
     suspend fun getRoot(): List<FolderEntity>
@@ -76,7 +72,7 @@ interface FolderDao {
         """
     )
     fun observeFoldersWithBookmarkCounts(
-        parentId: Uuid?,
+        parentId: String?,
         sortType: String,
         sortOrder: String,
     ): Flow<List<FolderWithBookmarkCount>>
@@ -105,7 +101,7 @@ interface FolderDao {
         """
     )
     suspend fun getFoldersWithBookmarkCounts(
-        parentId: Uuid?,
+        parentId: String?,
         sortType: String,
         sortOrder: String,
     ): List<FolderWithBookmarkCount>
@@ -167,7 +163,7 @@ interface FolderDao {
         LIMIT 1
         """
     )
-    suspend fun getFolderWithBookmarkCount(id: Uuid): FolderWithBookmarkCount?
+    suspend fun getFolderWithBookmarkCount(id: String): FolderWithBookmarkCount?
 
     @Query(
         """
@@ -189,7 +185,7 @@ interface FolderDao {
         """
     )
     suspend fun getMovableFoldersExcluding(
-        excludedIds: List<Uuid>,
+        excludedIds: List<String>,
         sortType: String,
         sortOrder: String,
     ): List<FolderWithBookmarkCount>

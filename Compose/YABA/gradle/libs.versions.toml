@@ -10,6 +10,7 @@ composeMultiplatform = "1.10.0-rc01"
 kotlin = "2.2.21"
 kotlinx-coroutines = "1.10.2"
 androidx-core-splashscreen = "1.2.0"
+yabacore = "0.1.0-SNAPSHOT"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -18,6 +19,7 @@ androidx-lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:life
 androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "androidx-core-splashscreen" }
+yabacore = { module = "dev.subfly.yabacore:yabacore", version.ref = "yabacore" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

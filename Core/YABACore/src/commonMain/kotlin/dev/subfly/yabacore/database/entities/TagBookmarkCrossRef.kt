@@ -3,10 +3,6 @@ package dev.subfly.yabacore.database.entities
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
-
-@OptIn(ExperimentalUuidApi::class)
 @Entity(
     tableName = "tag_bookmarks",
     primaryKeys = ["tagId", "bookmarkId"],
@@ -30,7 +26,7 @@ import kotlin.uuid.Uuid
     ],
 )
 data class TagBookmarkCrossRef(
-    val tagId: Uuid,
-    val bookmarkId: Uuid,
+    val tagId: String,
+    val bookmarkId: String,
 )
 

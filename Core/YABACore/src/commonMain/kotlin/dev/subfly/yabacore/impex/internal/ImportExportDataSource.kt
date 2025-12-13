@@ -39,9 +39,9 @@ internal object ImportExportDataSource {
 
     suspend fun existingIds(): ExistingIds {
         val allFolders = folderDao.getAll()
-        val folderIds = allFolders.map { it.id }.toSet()
-        val tagIds = tagDao.getAll().map { it.id }.toSet()
-        val bookmarkIds = bookmarkDao.getAll().map { it.id }.toSet()
+        val folderIds = allFolders.mapNotNull { it.id.toUuidOrNull() }.toSet()
+        val tagIds = tagDao.getAll().mapNotNull { it.id.toUuidOrNull() }.toSet()
+        val bookmarkIds = bookmarkDao.getAll().mapNotNull { it.id.toUuidOrNull() }.toSet()
         val rootMaxOrder = allFolders
             .filter { it.parentId == null }
             .maxOfOrNull { it.order } ?: -1
@@ -68,8 +68,8 @@ internal object ImportExportDataSource {
 
         val tagLinks =
             bookmarks.flatMap { bookmark ->
-                tagDao.getTagsForBookmarkWithCounts(bookmark.id).map {
-                    TagLink(tagId = it.tag.id, bookmarkId = bookmark.id)
+                tagDao.getTagsForBookmarkWithCounts(bookmark.id.toString()).map {
+                    TagLink(tagId = it.tag.toModel().id, bookmarkId = bookmark.id)
                 }
             }
 
@@ -81,3 +81,5 @@ internal object ImportExportDataSource {
         )
     }
 }
+
+private fun String.toUuidOrNull(): Uuid? = runCatching { Uuid.parse(this) }.getOrNull()

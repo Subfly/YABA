@@ -4,12 +4,6 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import dev.subfly.yabacore.model.utils.YabaColor
-import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
-
-@OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
 @Entity(
     tableName = "folders",
     indices = [
@@ -20,13 +14,13 @@ import kotlin.uuid.Uuid
     ],
 )
 data class FolderEntity(
-    @PrimaryKey val id: Uuid,
-    val parentId: Uuid?,
+    @PrimaryKey val id: String,
+    val parentId: String?,
     val label: String,
     val description: String?,
     val icon: String,
     val color: YabaColor,
     val order: Int,
-    val createdAt: Instant,
-    val editedAt: Instant,
+    val createdAt: Long,
+    val editedAt: Long,
 )

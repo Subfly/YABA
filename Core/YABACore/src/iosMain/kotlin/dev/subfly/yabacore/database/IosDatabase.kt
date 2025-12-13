@@ -3,6 +3,8 @@ package dev.subfly.yabacore.database
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSUserDomainMask
@@ -12,7 +14,10 @@ fun createYabaDatabase(
 ): YabaDatabase {
     val dbFile = documentDirectory() + "/$databaseName"
 
-    return Room.databaseBuilder<YabaDatabase>(dbFile).setDriver(BundledSQLiteDriver()).build()
+    return Room.databaseBuilder<YabaDatabase>(dbFile)
+        .setDriver(BundledSQLiteDriver())
+        .setQueryCoroutineContext(Dispatchers.IO)
+        .build()
 }
 
 @OptIn(ExperimentalForeignApi::class)

@@ -19,7 +19,6 @@ import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.LinkType
 import dev.subfly.yabacore.model.utils.YabaColor
 import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -49,18 +48,20 @@ object OpApplier {
         return database.runWriterTransaction {
             val replicaInfo = ensureReplicaInfo()
             var nextSeq = replicaInfo.nextOriginSeq
-            val operations = drafts.map { draft ->
-                Operation(
-                    opId = Uuid.random(),
-                    originDeviceId = replicaInfo.deviceId,
-                    originSeq = nextSeq++,
-                    entityType = draft.entityType,
-                    entityId = draft.entityId,
-                    kind = draft.kind,
-                    happenedAt = draft.happenedAt,
-                    payload = draft.payload,
-                ).also { applyOperation(it) }
-            }
+            val operations =
+                drafts.map { draft ->
+                    Operation(
+                        opId = Uuid.random(),
+                        originDeviceId = replicaInfo.deviceId,
+                        originSeq = nextSeq++,
+                        entityType = draft.entityType,
+                        entityId = draft.entityId,
+                        kind = draft.kind,
+                        happenedAt = draft.happenedAt,
+                        payload = draft.payload,
+                    )
+                        .also { applyOperation(it) }
+                }
             replicaInfoDao.upsert(replicaInfo.copy(nextOriginSeq = nextSeq))
             opLogDao.insertAll(operations.map { it.toEntity() })
             operations
@@ -80,10 +81,11 @@ object OpApplier {
     private suspend fun ensureReplicaInfo(): ReplicaInfoEntity {
         val current = replicaInfoDao.get()
         if (current != null) return current
-        val newInfo = ReplicaInfoEntity(
-            deviceId = DeviceIdProvider.get(),
-            nextOriginSeq = 0,
-        )
+        val newInfo =
+            ReplicaInfoEntity(
+                deviceId = DeviceIdProvider.get(),
+                nextOriginSeq = 0,
+            )
         replicaInfoDao.upsert(newInfo)
         return newInfo
     }
@@ -118,18 +120,20 @@ object OpApplier {
         val payload = operation.payload as? FolderPayload ?: return
         val folderId = operation.entityId.toUuidOrNull() ?: return
         when (operation.kind) {
-            OperationKind.DELETE, OperationKind.BULK_DELETE -> folderDao.deleteById(folderId)
+            OperationKind.DELETE, OperationKind.BULK_DELETE ->
+                folderDao.deleteById(folderId.asString())
+
             else -> {
                 val entity = FolderEntity(
-                    id = folderId,
-                    parentId = payload.parentId?.toUuidOrNull(),
+                    id = folderId.asString(),
+                    parentId = payload.parentId,
                     label = payload.label,
                     description = payload.description,
                     icon = payload.icon,
                     color = YabaColor.fromCode(payload.colorCode),
                     order = payload.order,
-                    createdAt = payload.createdAtEpochMillis.toInstant(),
-                    editedAt = payload.editedAtEpochMillis.toInstant(),
+                    createdAt = payload.createdAtEpochMillis,
+                    editedAt = payload.editedAtEpochMillis,
                 )
                 folderDao.upsert(entity)
             }
@@ -140,16 +144,16 @@ object OpApplier {
         val payload = operation.payload as? TagPayload ?: return
         val tagId = operation.entityId.toUuidOrNull() ?: return
         when (operation.kind) {
-            OperationKind.DELETE, OperationKind.BULK_DELETE -> tagDao.deleteById(tagId)
+            OperationKind.DELETE, OperationKind.BULK_DELETE -> tagDao.deleteById(tagId.asString())
             else -> {
                 val entity = TagEntity(
-                    id = tagId,
+                    id = tagId.asString(),
                     label = payload.label,
                     icon = payload.icon,
                     color = YabaColor.fromCode(payload.colorCode),
                     order = payload.order,
-                    createdAt = payload.createdAtEpochMillis.toInstant(),
-                    editedAt = payload.editedAtEpochMillis.toInstant(),
+                    createdAt = payload.createdAtEpochMillis,
+                    editedAt = payload.editedAtEpochMillis,
                 )
                 tagDao.upsert(entity)
             }
@@ -161,16 +165,17 @@ object OpApplier {
         val bookmarkId = operation.entityId.toUuidOrNull() ?: return
         when (operation.kind) {
             OperationKind.DELETE, OperationKind.BULK_DELETE ->
-                bookmarkDao.deleteByIds(listOf(bookmarkId))
+                bookmarkDao.deleteByIds(listOf(bookmarkId.asString()))
 
             else -> {
+                val folderId = payload.folderId.toUuidOrNull() ?: return
                 val entity = BookmarkEntity(
-                    id = bookmarkId,
-                    folderId = payload.folderId.toUuidOrNull() ?: return,
+                    id = bookmarkId.asString(),
+                    folderId = folderId.asString(),
                     kind = BookmarkKind.fromCode(payload.kindCode),
                     label = payload.label,
-                    createdAt = payload.createdAtEpochMillis.toInstant(),
-                    editedAt = payload.editedAtEpochMillis.toInstant(),
+                    createdAt = payload.createdAtEpochMillis,
+                    editedAt = payload.editedAtEpochMillis,
                     viewCount = payload.viewCount,
                     isPrivate = payload.isPrivate,
                     isPinned = payload.isPinned,
@@ -178,7 +183,7 @@ object OpApplier {
                 bookmarkDao.upsert(entity)
                 payload.link?.let { linkPayload ->
                     val linkEntity = LinkBookmarkEntity(
-                        bookmarkId = bookmarkId,
+                        bookmarkId = bookmarkId.asString(),
                         description = linkPayload.description,
                         url = linkPayload.url,
                         domain = linkPayload.domain,
@@ -200,11 +205,17 @@ object OpApplier {
         when (operation.kind) {
             OperationKind.TAG_ADD ->
                 tagBookmarkDao.insert(
-                    TagBookmarkCrossRef(tagId = tagId, bookmarkId = bookmarkId)
+                    TagBookmarkCrossRef(
+                        tagId = tagId.asString(),
+                        bookmarkId = bookmarkId.asString()
+                    )
                 )
 
             OperationKind.TAG_REMOVE ->
-                tagBookmarkDao.delete(bookmarkId = bookmarkId, tagId = tagId)
+                tagBookmarkDao.delete(
+                    bookmarkId = bookmarkId.asString(),
+                    tagId = tagId.asString()
+                )
 
             else -> {}
         }
@@ -242,8 +253,7 @@ object OpApplier {
         }
 
     private fun String.toUuidOrNull(): Uuid? = runCatching { Uuid.parse(this) }.getOrNull()
-
-    private fun Long.toInstant(): Instant = Instant.fromEpochMilliseconds(this)
+    private fun Uuid.asString(): String = toString()
 }
 
 private suspend fun <R> YabaDatabase.runWriterTransaction(

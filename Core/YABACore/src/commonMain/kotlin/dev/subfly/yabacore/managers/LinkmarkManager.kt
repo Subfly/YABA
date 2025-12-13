@@ -43,7 +43,7 @@ object LinkmarkManager {
         sortOrder: SortOrderType = SortOrderType.DESCENDING,
     ): Flow<List<LinkmarkUiModel>> =
         bookmarkDao.observeLinkBookmarksForFolder(
-            folderId,
+            folderId.toString(),
             sortType.name,
             sortOrder.name
         ).map { rows -> rows.map { it.toLinkmarkUi() } }
@@ -54,7 +54,7 @@ object LinkmarkManager {
         sortOrder: SortOrderType = SortOrderType.DESCENDING,
     ): Flow<List<LinkmarkUiModel>> =
         bookmarkDao.observeLinkBookmarksForTag(
-            tagId,
+            tagId.toString(),
             sortType.name,
             sortOrder.name
         ).map { rows ->
@@ -106,7 +106,7 @@ object LinkmarkManager {
     }
 
     suspend fun updateLinkmark(linkmark: LinkmarkUiModel): LinkmarkUiModel? {
-        val existing = bookmarkDao.getLinkBookmarkById(linkmark.id)?.toModel() ?: return null
+        val existing = bookmarkDao.getLinkBookmarkById(linkmark.id.toString())?.toModel() ?: return null
         val now = clock.now()
         val updated = existing.copy(
             folderId = linkmark.folderId,
@@ -128,9 +128,9 @@ object LinkmarkManager {
     }
 
     suspend fun getLinkmarkDetail(bookmarkId: Uuid): LinkmarkUiModel? {
-        val linkBookmark = bookmarkDao.getLinkBookmarkById(bookmarkId)?.toModel() ?: return null
-        val folder = folderDao.getFolderWithBookmarkCount(linkBookmark.folderId)?.toUiModel()
-        val tags = tagDao.getTagsForBookmarkWithCounts(bookmarkId).map { it.toUiModel() }
+        val linkBookmark = bookmarkDao.getLinkBookmarkById(bookmarkId.toString())?.toModel() ?: return null
+        val folder = folderDao.getFolderWithBookmarkCount(linkBookmark.folderId.toString())?.toUiModel()
+        val tags = tagDao.getTagsForBookmarkWithCounts(bookmarkId.toString()).map { it.toUiModel() }
         return linkBookmark.toUiModel(folder = folder, tags = tags)
     }
 
@@ -176,9 +176,9 @@ object LinkmarkManager {
     private data class BookmarkQueryParams(
         val kinds: List<BookmarkKind>,
         val applyKindFilter: Boolean,
-        val folderIds: List<Uuid>,
+        val folderIds: List<String>,
         val applyFolderFilter: Boolean,
-        val tagIds: List<Uuid>,
+        val tagIds: List<String>,
         val applyTagFilter: Boolean,
     )
 
@@ -189,9 +189,9 @@ object LinkmarkManager {
         return BookmarkQueryParams(
             kinds = kindSet?.toList() ?: listOf(BookmarkKind.LINK),
             applyKindFilter = kindSet != null,
-            folderIds = folderSet?.toList() ?: listOf(Uuid.NIL),
+            folderIds = folderSet?.map { it.toString() } ?: listOf(Uuid.NIL.toString()),
             applyFolderFilter = folderSet != null,
-            tagIds = tagSet?.toList() ?: listOf(Uuid.NIL),
+            tagIds = tagSet?.map { it.toString() } ?: listOf(Uuid.NIL.toString()),
             applyTagFilter = tagSet != null,
         )
     }

@@ -5,10 +5,6 @@ import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
 import dev.subfly.yabacore.database.entities.LinkBookmarkEntity
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
-
-@OptIn(ExperimentalUuidApi::class)
 @Dao
 interface LinkBookmarkDao {
     @Upsert
@@ -24,6 +20,6 @@ interface LinkBookmarkDao {
     suspend fun deleteAll()
 
     @Query("SELECT * FROM link_bookmarks WHERE bookmarkId = :bookmarkId LIMIT 1")
-    suspend fun getByBookmarkId(bookmarkId: Uuid): LinkBookmarkEntity?
+    suspend fun getByBookmarkId(bookmarkId: String): LinkBookmarkEntity?
 }
 
