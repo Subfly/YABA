@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalTime::class, ExperimentalUuidApi::class)
+@file:OptIn(ExperimentalUuidApi::class)
 
 package dev.subfly.yabacore.impex.internal
 
@@ -8,7 +8,6 @@ import dev.subfly.yabacore.impex.model.ImportExportError
 import dev.subfly.yabacore.impex.model.TagLink
 import dev.subfly.yabacore.model.utils.YabaColor
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid

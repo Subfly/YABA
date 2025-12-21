@@ -1,12 +1,11 @@
 package dev.subfly.yabacore.database.domain
 
 import dev.subfly.yabacore.model.utils.YabaColor
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
+@OptIn(ExperimentalUuidApi::class)
 internal data class TagDomainModel(
     val id: Uuid,
     val label: String,

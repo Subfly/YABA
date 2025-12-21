@@ -37,7 +37,6 @@ kotlin {
         all {
             languageSettings.optIn("kotlinx.cinterop.ExperimentalForeignApi")
             languageSettings.optIn("kotlin.uuid.ExperimentalUuidApi")
-            languageSettings.optIn("kotlinx.time.ExperimentalTime")
         }
         commonMain.dependencies {
             implementation(libs.kotlinx.coroutines.core)

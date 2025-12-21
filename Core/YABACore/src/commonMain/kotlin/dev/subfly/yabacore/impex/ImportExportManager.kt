@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalTime::class, ExperimentalUuidApi::class)
+@file:OptIn(ExperimentalUuidApi::class)
 
 package dev.subfly.yabacore.impex
 
@@ -15,7 +15,6 @@ import dev.subfly.yabacore.impex.internal.toOperationDrafts
 import dev.subfly.yabacore.impex.model.ExportFormat
 import dev.subfly.yabacore.impex.model.ImportSummary
 import dev.subfly.yabacore.impex.model.MappableCsvHeader
-import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

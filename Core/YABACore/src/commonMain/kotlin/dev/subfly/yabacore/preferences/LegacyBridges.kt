@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
+@file:OptIn(ExperimentalUuidApi::class)
 
 package dev.subfly.yabacore.preferences
 
@@ -7,7 +7,6 @@ import dev.subfly.yabacore.database.migration.LegacyFolder
 import dev.subfly.yabacore.database.migration.LegacySnapshot
 import dev.subfly.yabacore.database.migration.LegacyTag
 import dev.subfly.yabacore.database.migration.LegacyTagLink
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid

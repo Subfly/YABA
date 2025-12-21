@@ -17,11 +17,10 @@ import dev.subfly.yabacore.model.utils.YabaColor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
+@OptIn(ExperimentalUuidApi::class)
 object TagManager {
     private val tagDao get() = DatabaseProvider.tagDao
     private val opApplier get() = OpApplier

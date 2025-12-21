@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
+@file:OptIn(ExperimentalUuidApi::class)
 
 package dev.subfly.yabacore.database.preload
 
@@ -12,7 +12,6 @@ import dev.subfly.yabacore.database.operations.OperationKind
 import dev.subfly.yabacore.database.operations.toOperationDraft
 import dev.subfly.yabacore.database.preload.model.PreloadData
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
 import kotlinx.serialization.json.Json
 

@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalTime::class, ExperimentalUuidApi::class)
+@file:OptIn(ExperimentalUuidApi::class)
 
 package dev.subfly.yabacore.managers
 
@@ -8,7 +8,6 @@ import dev.subfly.yabacore.database.operations.OperationDraft
 import dev.subfly.yabacore.database.operations.OperationEntityType
 import dev.subfly.yabacore.database.operations.OperationKind
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
 
 /**

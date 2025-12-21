@@ -1,11 +1,10 @@
-@file:OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
+@file:OptIn(ExperimentalUuidApi::class)
 
 package dev.subfly.yabacore.sync
 
 import dev.subfly.yabacore.database.operations.FilePayload
 import dev.subfly.yabacore.database.operations.Operation
 import dev.subfly.yabacore.filesystem.model.BookmarkFileAssetKind
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
