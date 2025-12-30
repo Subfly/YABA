@@ -13,3 +13,15 @@ enum class LinkType(val code: Int) {
         fun fromCode(code: Int): LinkType = entries.firstOrNull { it.code == code } ?: NONE
     }
 }
+
+fun LinkType.uiIconName(): String =
+    when (this) {
+        LinkType.NONE -> "bookmark-02"
+        LinkType.WEB_LINK -> "safari"
+        LinkType.VIDEO -> "video-01"
+        LinkType.IMAGE -> "image-03"
+        LinkType.AUDIO -> "headphones"
+        LinkType.MUSIC -> "music-note-01"
+    }
+
+expect fun LinkType.uiTitle(): String

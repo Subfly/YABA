@@ -20,6 +20,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlin.time.Instant
 
 @OptIn(ExperimentalUuidApi::class)
 object FolderManager {
@@ -248,7 +249,7 @@ object FolderManager {
     private fun normalizeFolderOrders(
         parentId: Uuid?,
         folders: List<FolderDomainModel>,
-        timestamp: kotlinx.datetime.Instant,
+        timestamp: Instant,
     ): List<OperationDraft> =
         folders
             .sortedBy { it.order }

@@ -33,7 +33,6 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(compose.runtime)
             implementation(compose.foundation)
-            implementation(compose.material3)
             implementation(compose.material3AdaptiveNavigationSuite)
             implementation(compose.ui)
             implementation(compose.components.resources)
@@ -41,8 +40,11 @@ kotlin {
             implementation(libs.yabacore)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtimeCompose)
-            implementation(libs.navigation.runtime)
-            implementation(libs.navigation.ui)
+            implementation(libs.material3.adaptive)
+            implementation(libs.material3.adaptive.layout)
+            implementation(libs.material3.adaptive.nav3)
+            implementation(libs.jetbrains.navigation3.ui)
+            implementation(libs.compose.material3)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
