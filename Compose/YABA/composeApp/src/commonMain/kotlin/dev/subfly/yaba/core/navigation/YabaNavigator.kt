@@ -13,6 +13,7 @@ import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaf
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.navigation3.runtime.NavKey
 import dev.subfly.yaba.ui.home.HomeView
 
 @OptIn(
@@ -22,6 +23,7 @@ import dev.subfly.yaba.ui.home.HomeView
 @Composable
 fun YabaNavigator(
     modifier: Modifier = Modifier,
+    onShowSheet: (NavKey) -> Unit,
 ) {
     val listDetailNavigator = rememberListDetailPaneScaffoldNavigator()
     val paneExpansionState = rememberPaneExpansionState()
@@ -30,12 +32,8 @@ fun YabaNavigator(
         modifier = modifier.fillMaxSize(),
         directive = listDetailNavigator.scaffoldDirective,
         value = listDetailNavigator.scaffoldValue,
-        listPane = {
-            HomeView()
-        },
-        detailPane = {
-            Text("Detail")
-        },
+        listPane = { HomeView(onShowSheet = onShowSheet) },
+        detailPane = { Text("Detail") },
         paneExpansionDragHandle = { dragState ->
             val interactionSource = remember { MutableInteractionSource() }
             VerticalDragHandle(
