@@ -3,7 +3,7 @@ package dev.subfly.yabacore.icons
 import dev.subfly.yabacore.database.preload.readResourceText
 import kotlinx.serialization.json.Json
 
-internal object IconCatalog {
+object IconCatalog {
     private const val HEADER_PATH = "files/metadata/icon_categories_header.json"
     private const val METADATA_DIR = "files/metadata"
 

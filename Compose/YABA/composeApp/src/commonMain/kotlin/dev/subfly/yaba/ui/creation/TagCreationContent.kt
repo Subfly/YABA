@@ -1,5 +1,6 @@
 package dev.subfly.yaba.ui.creation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -57,7 +58,7 @@ import kotlin.uuid.Uuid
 @Composable
 fun TagCreationContent(
     isStartingFlow: Boolean,
-    onOpenIconSelection: () -> Unit,
+    onOpenIconSelection: (String) -> Unit,
     onOpenColorSelection: (YabaColor) -> Unit,
     onDismiss: () -> Unit,
     tagId: Uuid? = null,
@@ -65,8 +66,13 @@ fun TagCreationContent(
     val resultStore = LocalResultStore.current
 
     var tag by rememberSaveable { mutableStateOf<TagUiModel?>(null) }
+    var selectedColor by rememberSaveable(tag) {
+        mutableStateOf(tag?.color ?: YabaColor.BLUE)
+    }
+    var selectedIcon by rememberSaveable(tag) {
+        mutableStateOf(tag?.icon ?: "tag-01")
+    }
     val tagTitleState = rememberTextFieldState(initialText = tag?.label ?: "")
-    var selectedColor by rememberSaveable { mutableStateOf(tag?.color ?: YabaColor.BLUE) }
 
     LaunchedEffect(tagId) {
         tagId?.let { nonNullId ->
@@ -81,7 +87,18 @@ fun TagCreationContent(
         }
     }
 
-    Column(modifier = Modifier.fillMaxWidth()) {
+    LaunchedEffect(resultStore.getResult(ResultStoreKeys.SELECTED_ICON)) {
+        resultStore.getResult<String>(ResultStoreKeys.SELECTED_ICON)?.let { newIcon ->
+            selectedIcon = newIcon
+            resultStore.removeResult(ResultStoreKeys.SELECTED_ICON)
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = MaterialTheme.colorScheme.surfaceContainerLow)
+    ) {
         TopBar(
             modifier = Modifier.padding(horizontal = 8.dp),
             isStartingFlow = isStartingFlow,
@@ -92,8 +109,11 @@ fun TagCreationContent(
         Spacer(modifier = Modifier.height(12.dp))
         CreationContent(
             tagTitleState = tagTitleState,
+            selectedIcon = selectedIcon,
             selectedColor = selectedColor,
-            onOpenIconSelection = onOpenIconSelection,
+            onOpenIconSelection = {
+                onOpenIconSelection(selectedIcon)
+            },
             onOpenColorSelection = {
                 onOpenColorSelection(selectedColor)
             },
@@ -163,6 +183,7 @@ private fun TopBar(
 private fun CreationContent(
     tagTitleState: TextFieldState,
     selectedColor: YabaColor,
+    selectedIcon: String,
     onOpenIconSelection: () -> Unit,
     onOpenColorSelection: () -> Unit,
 ) {
@@ -182,7 +203,7 @@ private fun CreationContent(
             onClick = onOpenIconSelection,
         ) {
             YabaIcon(
-                name = "tag-01",
+                name = selectedIcon,
                 color = selectedColor,
             )
         }

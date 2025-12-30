@@ -19,7 +19,7 @@ internal data class IconHeaderFile(
 )
 
 @Serializable
-internal data class IconCategory(
+data class IconCategory(
     val id: String,
     val name: String,
     val description: String,
@@ -31,7 +31,7 @@ internal data class IconCategory(
 )
 
 @Serializable
-internal data class IconSubcategory(
+data class IconSubcategory(
     val id: String,
     val name: String,
     val description: String,
@@ -58,7 +58,7 @@ internal data class IconSubcategoryFile(
 )
 
 @Serializable
-internal data class IconItem(
+data class IconItem(
     val name: String,
     val tags: String,
     val category: String,

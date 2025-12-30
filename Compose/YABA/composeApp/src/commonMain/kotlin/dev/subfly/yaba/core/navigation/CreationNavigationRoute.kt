@@ -39,7 +39,7 @@ data class BookmarkCreationRoute(val bookmarkId: Uuid?): NavKey
 data object FolderSelectionRoute: NavKey
 
 @Serializable
-data object IconCategorySelectionRoute: NavKey
+data class IconCategorySelectionRoute(val selectedIcon: String): NavKey
 
 @Serializable
 data object IconSelectionRoute: NavKey

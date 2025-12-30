@@ -1,5 +1,9 @@
-package dev.subfly.yaba.ui.creation
+package dev.subfly.yaba.core.navigation
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -13,11 +17,9 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import dev.subfly.yaba.core.components.AnimatedBottomSheet
-import dev.subfly.yaba.core.navigation.ColorSelectionRoute
-import dev.subfly.yaba.core.navigation.EmptyRoute
-import dev.subfly.yaba.core.navigation.TagCreationRoute
-import dev.subfly.yaba.core.navigation.creationNavigationConfig
+import dev.subfly.yaba.ui.creation.TagCreationContent
 import dev.subfly.yaba.ui.selection.ColorSelectionContent
+import dev.subfly.yaba.ui.selection.IconCategorySelectionContent
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalUuidApi::class)
@@ -52,7 +54,17 @@ fun CreationSheet(
         onDismissRequest = onDismiss,
     ) {
         NavDisplay(
+            modifier = Modifier.animateContentSize(),
             backStack = stack,
+            transitionSpec = {
+                EnterTransition.None togetherWith ExitTransition.None
+            },
+            popTransitionSpec = {
+                EnterTransition.None togetherWith ExitTransition.None
+            },
+            predictivePopTransitionSpec = {
+                EnterTransition.None togetherWith ExitTransition.None
+            },
             onBack = {
                 if (stack.size <= 2) {
                     onDismiss()
@@ -64,7 +76,9 @@ fun CreationSheet(
                     TagCreationContent(
                         tagId = key.tagId,
                         isStartingFlow = stack.size <= 2,
-                        onOpenIconSelection = { },
+                        onOpenIconSelection = { currentSelectedIcon ->
+                            stack.add(IconCategorySelectionRoute(currentSelectedIcon))
+                        },
                         onOpenColorSelection = { currentSelectedColor ->
                             stack.add(ColorSelectionRoute(currentSelectedColor))
                         },
@@ -79,7 +93,13 @@ fun CreationSheet(
                 entry<ColorSelectionRoute> { key ->
                     ColorSelectionContent(
                         currentSelectedColor = key.color,
-                        onDismiss = stack::removeLastOrNull
+                        onDismiss = stack::removeLastOrNull,
+                    )
+                }
+                entry<IconCategorySelectionRoute> { key ->
+                    IconCategorySelectionContent(
+                        currentSelectedIcon = key.selectedIcon,
+                        onDismiss = stack::removeLastOrNull,
                     )
                 }
                 entry<EmptyRoute> {
