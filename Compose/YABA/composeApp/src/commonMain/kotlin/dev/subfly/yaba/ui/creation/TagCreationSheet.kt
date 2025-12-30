@@ -1,20 +1,12 @@
 package dev.subfly.yaba.ui.creation
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Button
@@ -22,16 +14,9 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.IconButtonShapes
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SplitButtonDefaults
-import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -69,7 +54,6 @@ fun TagCreationSheet(
     onDismiss: () -> Unit,
     tag: TagUiModel? = null,
 ) {
-    val splitButtonsSize = SplitButtonDefaults.MediumContainerHeight
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState()
 
@@ -94,13 +78,6 @@ fun TagCreationSheet(
             }
         )
         Spacer(modifier = Modifier.height(12.dp))
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
-            state = tagTitleState,
-            lineLimits = TextFieldLineLimits.SingleLine,
-            placeholder = { Text(text = stringResource(Res.string.create_tag_placeholder)) }
-        )
-        Spacer(modifier = Modifier.height(12.dp))
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -109,7 +86,7 @@ fun TagCreationSheet(
             Button(
                 modifier = Modifier
                     .weight(1F)
-                    .height(56.dp),
+                    .height(60.dp),
                 colors = ButtonDefaults.buttonColors().copy(
                     containerColor = Color(selectedColor.iconTintArgb()).copy(alpha = 0.2F)
                 ),
@@ -123,10 +100,17 @@ fun TagCreationSheet(
                     color = selectedColor,
                 )
             }
+            OutlinedTextField(
+                modifier = Modifier.weight(4F).fillMaxWidth(),
+                state = tagTitleState,
+                lineLimits = TextFieldLineLimits.SingleLine,
+                shape = RoundedCornerShape(24.dp),
+                placeholder = { Text(text = stringResource(Res.string.create_tag_placeholder)) },
+            )
             Button(
                 modifier = Modifier
                     .weight(1F)
-                    .height(56.dp),
+                    .height(60.dp),
                 colors = ButtonDefaults.buttonColors().copy(
                     containerColor = Color(selectedColor.iconTintArgb()).copy(alpha = 0.2F)
                 ),
@@ -141,7 +125,7 @@ fun TagCreationSheet(
                 )
             }
         }
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(36.dp))
     }
 }
 
