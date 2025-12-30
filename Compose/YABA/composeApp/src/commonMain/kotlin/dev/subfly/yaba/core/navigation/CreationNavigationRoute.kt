@@ -4,6 +4,7 @@ package dev.subfly.yaba.core.navigation
 
 import androidx.navigation3.runtime.NavKey
 import androidx.savedstate.serialization.SavedStateConfiguration
+import dev.subfly.yabacore.model.utils.YabaColor
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
@@ -19,6 +20,7 @@ val creationNavigationConfig = SavedStateConfiguration {
             subclass(FolderSelectionRoute::class, FolderSelectionRoute.serializer())
             subclass(IconCategorySelectionRoute::class, IconCategorySelectionRoute.serializer())
             subclass(IconSelectionRoute::class, IconSelectionRoute.serializer())
+            subclass(ColorSelectionRoute::class, ColorSelectionRoute.serializer())
             subclass(EmptyRoute::class, EmptyRoute.serializer())
         }
     }
@@ -41,6 +43,9 @@ data object IconCategorySelectionRoute: NavKey
 
 @Serializable
 data object IconSelectionRoute: NavKey
+
+@Serializable
+data class ColorSelectionRoute(val color: YabaColor): NavKey
 
 @Serializable
 data object EmptyRoute: NavKey

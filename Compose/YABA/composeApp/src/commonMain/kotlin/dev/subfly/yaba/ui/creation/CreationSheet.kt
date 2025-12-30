@@ -13,9 +13,11 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import dev.subfly.yaba.core.components.AnimatedBottomSheet
+import dev.subfly.yaba.core.navigation.ColorSelectionRoute
 import dev.subfly.yaba.core.navigation.EmptyRoute
 import dev.subfly.yaba.core.navigation.TagCreationRoute
 import dev.subfly.yaba.core.navigation.creationNavigationConfig
+import dev.subfly.yaba.ui.selection.ColorSelectionContent
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalUuidApi::class)
@@ -62,12 +64,22 @@ fun CreationSheet(
                     TagCreationContent(
                         tagId = key.tagId,
                         isStartingFlow = stack.size <= 2,
+                        onOpenIconSelection = { },
+                        onOpenColorSelection = { currentSelectedColor ->
+                            stack.add(ColorSelectionRoute(currentSelectedColor))
+                        },
                         onDismiss = {
                             if (stack.size <= 2) {
                                 onDismiss()
                             }
                             stack.removeLastOrNull()
                         }
+                    )
+                }
+                entry<ColorSelectionRoute> { key ->
+                    ColorSelectionContent(
+                        currentSelectedColor = key.color,
+                        onDismiss = stack::removeLastOrNull
                     )
                 }
                 entry<EmptyRoute> {

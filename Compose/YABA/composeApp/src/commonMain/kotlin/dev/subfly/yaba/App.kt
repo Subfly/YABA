@@ -10,9 +10,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.navigation3.runtime.NavKey
 import dev.subfly.yaba.core.navigation.YabaNavigator
+import dev.subfly.yaba.core.navigation.rememberResultStore
 import dev.subfly.yaba.core.theme.YabaTheme
 import dev.subfly.yaba.ui.creation.CreationSheet
 import dev.subfly.yaba.ui.creation.TagCreationContent
+import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.LocalUserPreferences
 import dev.subfly.yabacore.filesystem.settings.FileSystemSettings
 import dev.subfly.yabacore.preferences.SettingsStores
@@ -24,12 +26,14 @@ fun App() {
     val userPreferences by SettingsStores.userPreferences.preferencesFlow.collectAsState(
         UserPreferences()
     )
+    val navigationResultStore = rememberResultStore()
 
     var shouldShowCreationSheet by rememberSaveable { mutableStateOf(false) }
     var sheetFlowStartRoute by rememberSaveable { mutableStateOf<NavKey?>(null) }
 
     CompositionLocalProvider(
         LocalUserPreferences provides userPreferences,
+        LocalResultStore provides navigationResultStore,
     ) {
         YabaTheme {
             YabaNavigator(

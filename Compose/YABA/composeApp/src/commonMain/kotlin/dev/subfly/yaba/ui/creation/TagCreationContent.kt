@@ -18,7 +18,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -27,13 +26,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import dev.subfly.yaba.core.navigation.ResultStoreKeys
+import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yabacore.managers.TagManager
 import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.model.utils.YabaColor
@@ -57,9 +57,13 @@ import kotlin.uuid.Uuid
 @Composable
 fun TagCreationContent(
     isStartingFlow: Boolean,
+    onOpenIconSelection: () -> Unit,
+    onOpenColorSelection: (YabaColor) -> Unit,
     onDismiss: () -> Unit,
     tagId: Uuid? = null,
 ) {
+    val resultStore = LocalResultStore.current
+
     var tag by rememberSaveable { mutableStateOf<TagUiModel?>(null) }
     val tagTitleState = rememberTextFieldState(initialText = tag?.label ?: "")
     var selectedColor by rememberSaveable { mutableStateOf(tag?.color ?: YabaColor.BLUE) }
@@ -67,6 +71,13 @@ fun TagCreationContent(
     LaunchedEffect(tagId) {
         tagId?.let { nonNullId ->
             tag = TagManager.getTag(nonNullId)
+        }
+    }
+
+    LaunchedEffect(resultStore.getResult(ResultStoreKeys.SELECTED_COLOR)) {
+        resultStore.getResult<YabaColor>(ResultStoreKeys.SELECTED_COLOR)?.let { newColor ->
+            selectedColor = newColor
+            resultStore.removeResult(ResultStoreKeys.SELECTED_COLOR)
         }
     }
 
@@ -82,6 +93,10 @@ fun TagCreationContent(
         CreationContent(
             tagTitleState = tagTitleState,
             selectedColor = selectedColor,
+            onOpenIconSelection = onOpenIconSelection,
+            onOpenColorSelection = {
+                onOpenColorSelection(selectedColor)
+            },
         )
         Spacer(modifier = Modifier.height(36.dp))
     }
@@ -148,6 +163,8 @@ private fun TopBar(
 private fun CreationContent(
     tagTitleState: TextFieldState,
     selectedColor: YabaColor,
+    onOpenIconSelection: () -> Unit,
+    onOpenColorSelection: () -> Unit,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
@@ -162,9 +179,7 @@ private fun CreationContent(
                 containerColor = Color(selectedColor.iconTintArgb()).copy(alpha = 0.2F)
             ),
             shapes = ButtonDefaults.shapes(),
-            onClick = {
-                // TODO: OPEN ICON PICKER
-            },
+            onClick = onOpenIconSelection,
         ) {
             YabaIcon(
                 name = "tag-01",
@@ -186,9 +201,7 @@ private fun CreationContent(
                 containerColor = Color(selectedColor.iconTintArgb()).copy(alpha = 0.2F)
             ),
             shapes = ButtonDefaults.shapes(),
-            onClick = {
-                // TODO: OPEN COLOR PICKER
-            },
+            onClick = onOpenColorSelection,
         ) {
             YabaIcon(
                 name = "paint-board",
