@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-internal data class IconHeaderMetadata(
+data class IconHeaderMetadata(
     @SerialName("total_categories") val totalCategories: Int? = null,
     @SerialName("total_subcategories") val totalSubcategories: Int? = null,
     @SerialName("total_icons") val totalIcons: Int? = null,
@@ -13,7 +13,7 @@ internal data class IconHeaderMetadata(
 )
 
 @Serializable
-internal data class IconHeaderFile(
+data class IconHeaderFile(
     val metadata: IconHeaderMetadata,
     val categories: List<IconCategory>,
 )

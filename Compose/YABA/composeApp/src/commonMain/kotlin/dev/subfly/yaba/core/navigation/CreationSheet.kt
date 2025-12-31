@@ -20,6 +20,7 @@ import dev.subfly.yaba.core.components.AnimatedBottomSheet
 import dev.subfly.yaba.ui.creation.TagCreationContent
 import dev.subfly.yaba.ui.selection.ColorSelectionContent
 import dev.subfly.yaba.ui.selection.IconCategorySelectionContent
+import dev.subfly.yaba.ui.selection.IconSelectionContent
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalUuidApi::class)
@@ -99,7 +100,21 @@ fun CreationSheet(
                 entry<IconCategorySelectionRoute> { key ->
                     IconCategorySelectionContent(
                         currentSelectedIcon = key.selectedIcon,
+                        onSelectedSubcategory = { icon, category ->
+                            stack.add(IconSelectionRoute(icon, category))
+                        },
                         onDismiss = stack::removeLastOrNull,
+                    )
+                }
+                entry<IconSelectionRoute> { key ->
+                    IconSelectionContent(
+                        currentSelectedIcon = key.selectedIcon,
+                        selectedSubcategory = key.selectedSubcategory,
+                        onDismiss = {
+                            // Remove both the icon selection and icon subcategory selection
+                            stack.removeLastOrNull()
+                            stack.removeLastOrNull()
+                        }
                     )
                 }
                 entry<EmptyRoute> {
