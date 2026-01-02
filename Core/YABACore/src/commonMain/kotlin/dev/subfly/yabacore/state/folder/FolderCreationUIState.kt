@@ -8,6 +8,6 @@ data class FolderCreationUIState(
     val description: String = "",
     val selectedColor: YabaColor = YabaColor.BLUE,
     val selectedIcon: String = "folder-01",
-    val selectedParentId: String? = null,
+    val selectedParent: FolderUiModel? = null,
     val editingFolder: FolderUiModel? = null,
 )

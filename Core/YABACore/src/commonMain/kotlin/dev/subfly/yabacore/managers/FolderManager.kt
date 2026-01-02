@@ -52,6 +52,11 @@ object FolderManager {
     suspend fun getFolder(folderId: Uuid): FolderUiModel? =
         folderDao.getFolderWithBookmarkCount(folderId.asString())?.toUiModel()
 
+    fun observeFolder(folderId: Uuid): Flow<FolderUiModel?> =
+        folderDao.observeById(folderId.asString()).map { entity ->
+            entity?.toModel()?.toUiModel()
+        }
+
     suspend fun ensureUncategorizedFolder(): FolderUiModel {
         folderDao.getFolderWithBookmarkCount(uncategorizedFolderId.asString())?.let {
             return it.toUiModel()

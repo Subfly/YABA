@@ -1,17 +1,19 @@
 package dev.subfly.yabacore.state.folder
 
-
 import dev.subfly.yabacore.managers.FolderManager
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.state.base.BaseStateMachine
 import kotlin.time.Clock
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
+import kotlinx.coroutines.Job
 
 @OptIn(ExperimentalUuidApi::class)
-class FolderCreationStateMachine : BaseStateMachine<FolderCreationUIState, FolderCreationEvent>(
-    initialState = FolderCreationUIState()
-) {
+class FolderCreationStateMachine :
+    BaseStateMachine<FolderCreationUIState, FolderCreationEvent>(
+        initialState = FolderCreationUIState()
+    ) {
+    private var parentFolderSubscriptionJob: Job? = null
     override fun onEvent(event: FolderCreationEvent) {
         when (event) {
             is FolderCreationEvent.OnInitWithFolder -> onInitWithFolder(event)
@@ -35,9 +37,12 @@ class FolderCreationStateMachine : BaseStateMachine<FolderCreationUIState, Folde
                             description = nonNullFolder.description ?: "",
                             selectedColor = nonNullFolder.color,
                             selectedIcon = nonNullFolder.icon,
-                            selectedParentId = nonNullFolder.parentId?.toString(),
                             editingFolder = nonNullFolder,
                         )
+                    }
+                    // Start observing the parent folder if it exists
+                    nonNullFolder.parentId?.let { parentId ->
+                        onEvent(FolderCreationEvent.OnSelectNewParent(parentId.toString()))
                     }
                 }
             }
@@ -45,10 +50,20 @@ class FolderCreationStateMachine : BaseStateMachine<FolderCreationUIState, Folde
     }
 
     private fun onSelectNewParent(event: FolderCreationEvent.OnSelectNewParent) {
-        updateState {
-            it.copy(
-                selectedParentId = event.newParentId,
-            )
+        // Cancel any existing parent folder subscription
+        parentFolderSubscriptionJob?.cancel()
+        parentFolderSubscriptionJob = null
+
+        if (event.newParentId == null) {
+            updateState { it.copy(selectedParent = null) }
+            return
+        }
+
+        val folderId = Uuid.parse(event.newParentId)
+        parentFolderSubscriptionJob = launch {
+            FolderManager.observeFolder(folderId).collect { folder ->
+                updateState { it.copy(selectedParent = folder) }
+            }
         }
     }
 
@@ -63,7 +78,7 @@ class FolderCreationStateMachine : BaseStateMachine<FolderCreationUIState, Folde
     private fun onChangeDescription(event: FolderCreationEvent.OnChangeDescription) {
         updateState {
             it.copy(
-                label = event.newDescription,
+                description = event.newDescription,
             )
         }
     }
@@ -88,18 +103,13 @@ class FolderCreationStateMachine : BaseStateMachine<FolderCreationUIState, Folde
         val currentState = currentState()
         launch {
             if (currentState.editingFolder == null) {
-                val newParentId = if (currentState.selectedParentId != null) {
-                    Uuid.parse(currentState.selectedParentId)
-                } else {
-                    null
-                }
                 FolderManager.createFolder(
                     FolderUiModel(
                         id = Uuid.generateV7(),
                         label = currentState.label,
                         icon = currentState.selectedIcon,
                         color = currentState.selectedColor,
-                        parentId = newParentId,
+                        parentId = currentState.selectedParent?.id,
                         description = currentState.description,
                         createdAt = Clock.System.now(),
                         editedAt = Clock.System.now(),
@@ -110,34 +120,47 @@ class FolderCreationStateMachine : BaseStateMachine<FolderCreationUIState, Folde
                 val editingFolder = currentState.editingFolder
                 FolderManager.updateFolder(
                     editingFolder.copy(
-                        label = if (editingFolder.label != currentState.label) {
-                            currentState.label
-                        } else {
-                            editingFolder.label
-                        },
-                        description = if (editingFolder.description != currentState.description) {
-                            currentState.description
-                        } else {
-                            editingFolder.description
-                        },
-                        icon = if (editingFolder.icon != currentState.selectedIcon) {
-                            currentState.selectedIcon
-                        } else {
-                            editingFolder.icon
-                        },
-                        color = if (editingFolder.color != currentState.selectedColor) {
-                            currentState.selectedColor
-                        } else {
-                            editingFolder.color
-                        },
-                        parentId = if (editingFolder.parentId?.toString() != currentState.selectedParentId) {
-                            currentState.selectedParentId?.let { Uuid.parse(it) }
-                        } else {
-                            editingFolder.parentId
-                        },
+                        label =
+                            if (editingFolder.label != currentState.label) {
+                                currentState.label
+                            } else {
+                                editingFolder.label
+                            },
+                        description =
+                            if (editingFolder.description != currentState.description) {
+                                currentState.description
+                            } else {
+                                editingFolder.description
+                            },
+                        icon =
+                            if (editingFolder.icon != currentState.selectedIcon) {
+                                currentState.selectedIcon
+                            } else {
+                                editingFolder.icon
+                            },
+                        color =
+                            if (editingFolder.color != currentState.selectedColor) {
+                                currentState.selectedColor
+                            } else {
+                                editingFolder.color
+                            },
+                        parentId =
+                            if (editingFolder.parentId !=
+                                currentState.selectedParent?.id
+                            ) {
+                                currentState.selectedParent?.id
+                            } else {
+                                editingFolder.parentId
+                            },
                     )
                 )
             }
         }
+    }
+
+    override fun clear() {
+        parentFolderSubscriptionJob?.cancel()
+        parentFolderSubscriptionJob = null
+        super.clear()
     }
 }
