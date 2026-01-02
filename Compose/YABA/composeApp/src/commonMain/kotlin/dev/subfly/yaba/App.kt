@@ -8,11 +8,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.rememberNavBackStack
+import dev.subfly.yaba.core.navigation.CreationSheet
 import dev.subfly.yaba.core.navigation.YabaNavigator
+import dev.subfly.yaba.core.navigation.creationNavigationConfig
 import dev.subfly.yaba.core.navigation.rememberResultStore
 import dev.subfly.yaba.core.theme.YabaTheme
-import dev.subfly.yaba.core.navigation.CreationSheet
+import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.LocalUserPreferences
 import dev.subfly.yabacore.preferences.SettingsStores
@@ -25,28 +27,24 @@ fun App() {
         UserPreferences()
     )
     val navigationResultStore = rememberResultStore()
+    val creationNavigator = rememberNavBackStack(
+        configuration = creationNavigationConfig
+    )
 
     var shouldShowCreationSheet by rememberSaveable { mutableStateOf(false) }
-    var sheetFlowStartRoute by rememberSaveable { mutableStateOf<NavKey?>(null) }
 
     CompositionLocalProvider(
         LocalUserPreferences provides userPreferences,
         LocalResultStore provides navigationResultStore,
+        LocalCreationContentNavigator provides creationNavigator,
     ) {
         YabaTheme {
             YabaNavigator(
-                onShowSheet = { startRoute ->
-                    sheetFlowStartRoute = startRoute
-                    shouldShowCreationSheet = true
-                }
+                onShowSheet = { shouldShowCreationSheet = true }
             )
             CreationSheet(
                 shouldShow = shouldShowCreationSheet,
-                flowStartRoute = sheetFlowStartRoute,
-                onDismiss = {
-                    shouldShowCreationSheet = false
-                    sheetFlowStartRoute = null
-                }
+                onDismiss = { shouldShowCreationSheet = false }
             )
         }
     }

@@ -1,4 +1,4 @@
-package dev.subfly.yabacore.state
+package dev.subfly.yabacore.state.base
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

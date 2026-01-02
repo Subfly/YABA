@@ -39,6 +39,7 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.yabacore)
             implementation(libs.androidx.lifecycle.viewmodel)
+            implementation(libs.androidx.lifecycle.viewmodel.nav3)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.material3.adaptive)
             implementation(libs.material3.adaptive.layout)

@@ -17,6 +17,7 @@ import androidx.navigation3.runtime.NavKey
 import dev.subfly.yaba.core.navigation.BookmarkCreationRoute
 import dev.subfly.yaba.core.navigation.FolderCreationRoute
 import dev.subfly.yaba.core.navigation.TagCreationRoute
+import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalUserPreferences
 import dev.subfly.yabacore.model.utils.FabPosition
 import dev.subfly.yabacore.ui.icon.YabaIcon
@@ -26,9 +27,10 @@ import kotlin.uuid.ExperimentalUuidApi
 @Composable
 internal fun HomeFab(
     modifier: Modifier = Modifier,
-    showSheetWithRoute: (NavKey) -> Unit,
+    onShowSheet: () -> Unit,
 ) {
     val userPreferences = LocalUserPreferences.current
+    val creationNavigator = LocalCreationContentNavigator.current
 
     var isFabExpanded by rememberSaveable {
         mutableStateOf(false)
@@ -59,24 +61,30 @@ internal fun HomeFab(
         content = {
             FloatingActionButtonMenuItem(
                 onClick = {
+                    creationNavigator.clear()
+                    creationNavigator.add(BookmarkCreationRoute(bookmarkId = null))
                     isFabExpanded = false
-                    showSheetWithRoute(BookmarkCreationRoute(bookmarkId = null))
+                    onShowSheet()
                 },
                 text = {},
                 icon = { YabaIcon(name = "bookmark-02") }
             )
             FloatingActionButtonMenuItem(
                 onClick = {
+                    creationNavigator.clear()
+                    creationNavigator.add(FolderCreationRoute(folderId = null))
                     isFabExpanded = false
-                    showSheetWithRoute(FolderCreationRoute(folderId = null))
+                    onShowSheet()
                 },
                 text = {},
                 icon = { YabaIcon(name = "folder-01") }
             )
             FloatingActionButtonMenuItem(
                 onClick = {
+                    creationNavigator.clear()
+                    creationNavigator.add(TagCreationRoute(tagId = null))
                     isFabExpanded = false
-                    showSheetWithRoute(TagCreationRoute(tagId = null))
+                    onShowSheet()
                 },
                 text = {},
                 icon = { YabaIcon(name = "tag-01") }

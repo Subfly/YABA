@@ -1,4 +1,4 @@
-package dev.subfly.yabacore.state
+package dev.subfly.yabacore.state.base
 
 /**
  * Minimal contract for cross-platform state holders.

@@ -24,14 +24,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.retain.retain
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import dev.subfly.yaba.core.navigation.ColorSelectionRoute
+import dev.subfly.yaba.core.navigation.IconCategorySelectionRoute
 import dev.subfly.yaba.core.navigation.ResultStoreKeys
+import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yabacore.model.utils.YabaColor
+import dev.subfly.yabacore.state.tag.TagCreationEvent
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.icon.iconTintArgb
 import org.jetbrains.compose.resources.stringResource
@@ -48,44 +54,42 @@ import yaba.composeapp.generated.resources.edit_tag_title
 )
 @Composable
 fun TagCreationContent(
-    isStartingFlow: Boolean,
-    onOpenIconSelection: (String) -> Unit,
-    onOpenColorSelection: (YabaColor) -> Unit,
-    onDismiss: () -> Unit,
     tagId: String? = null,
+    onDismiss: () -> Unit,
 ) {
+    val creationNavigator = LocalCreationContentNavigator.current
     val resultStore = LocalResultStore.current
-    val stateMachine = retain { TagCreationStateMachine() }
-    val state by stateMachine.stateFlow.collectAsState()
+    val vm = viewModel<TagCreationVM>()
+    val state by vm.state
 
     LaunchedEffect(tagId) {
         tagId?.let { nonNullId ->
-            stateMachine.onEvent(event = TagCreationEvent.OnInitWithTag(tagIdString = nonNullId))
+            vm.onEvent(event = TagCreationEvent.OnInitWithTag(tagIdString = nonNullId))
         }
     }
 
     LaunchedEffect(resultStore.getResult(ResultStoreKeys.SELECTED_COLOR)) {
         resultStore.getResult<YabaColor>(ResultStoreKeys.SELECTED_COLOR)?.let { newColor ->
-            stateMachine.onEvent(TagCreationEvent.OnSelectNewColor(newColor = newColor))
+            vm.onEvent(TagCreationEvent.OnSelectNewColor(newColor = newColor))
             resultStore.removeResult(ResultStoreKeys.SELECTED_COLOR)
         }
     }
 
     LaunchedEffect(resultStore.getResult(ResultStoreKeys.SELECTED_ICON)) {
         resultStore.getResult<String>(ResultStoreKeys.SELECTED_ICON)?.let { newIcon ->
-            stateMachine.onEvent(TagCreationEvent.OnSelectNewIcon(newIcon = newIcon))
+            vm.onEvent(TagCreationEvent.OnSelectNewIcon(newIcon = newIcon))
             resultStore.removeResult(ResultStoreKeys.SELECTED_ICON)
         }
     }
 
     Column(
-        modifier =
-            Modifier.fillMaxWidth()
-                .background(color = MaterialTheme.colorScheme.surfaceContainerLow)
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = MaterialTheme.colorScheme.surfaceContainerLow)
     ) {
         TopBar(
             modifier = Modifier.padding(horizontal = 8.dp),
-            isStartingFlow = isStartingFlow,
+            isStartingFlow = creationNavigator.size <= 2,
             canPerformDone = state.label.isNotBlank(),
             isEditing = state.editingTag != null,
             onDismiss = onDismiss,
@@ -96,12 +100,16 @@ fun TagCreationContent(
             selectedIcon = state.selectedIcon,
             selectedColor = state.selectedColor,
             onChangeLabel = { newLabel ->
-                stateMachine.onEvent(
+                vm.onEvent(
                     event = TagCreationEvent.OnChangeLabel(newLabel = newLabel)
                 )
             },
-            onOpenIconSelection = { onOpenIconSelection(state.selectedIcon) },
-            onOpenColorSelection = { onOpenColorSelection(state.selectedColor) },
+            onOpenIconSelection = {
+                creationNavigator.add(IconCategorySelectionRoute(state.selectedIcon))
+            },
+            onOpenColorSelection = {
+                creationNavigator.add(ColorSelectionRoute(state.selectedColor))
+            },
         )
         Spacer(modifier = Modifier.height(36.dp))
     }

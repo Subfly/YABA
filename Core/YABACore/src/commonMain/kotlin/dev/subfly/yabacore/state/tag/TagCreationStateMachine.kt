@@ -1,25 +1,9 @@
-package dev.subfly.yaba.ui.creation.tag
+package dev.subfly.yabacore.state.tag
 
 import dev.subfly.yabacore.managers.TagManager
-import dev.subfly.yabacore.model.ui.TagUiModel
-import dev.subfly.yabacore.model.utils.YabaColor
-import dev.subfly.yabacore.state.BaseStateMachine
+import dev.subfly.yabacore.state.base.BaseStateMachine
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
-
-data class TagCreationUIState(
-    val selectedColor: YabaColor = YabaColor.BLUE,
-    val selectedIcon: String = "tag-01",
-    val label: String = "",
-    val editingTag: TagUiModel? = null,
-)
-
-sealed class TagCreationEvent {
-    data class OnInitWithTag(val tagIdString: String?): TagCreationEvent()
-    data class OnSelectNewColor(val newColor: YabaColor): TagCreationEvent()
-    data class OnSelectNewIcon(val newIcon: String): TagCreationEvent()
-    data class OnChangeLabel(val newLabel: String): TagCreationEvent()
-}
 
 @OptIn(ExperimentalUuidApi::class)
 class TagCreationStateMachine : BaseStateMachine<TagCreationUIState, TagCreationEvent>(

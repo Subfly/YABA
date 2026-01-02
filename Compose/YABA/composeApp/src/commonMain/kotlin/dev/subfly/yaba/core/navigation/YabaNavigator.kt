@@ -23,7 +23,7 @@ import dev.subfly.yaba.ui.home.HomeView
 @Composable
 fun YabaNavigator(
     modifier: Modifier = Modifier,
-    onShowSheet: (NavKey) -> Unit,
+    onShowSheet: () -> Unit,
 ) {
     val listDetailNavigator = rememberListDetailPaneScaffoldNavigator()
     val paneExpansionState = rememberPaneExpansionState()

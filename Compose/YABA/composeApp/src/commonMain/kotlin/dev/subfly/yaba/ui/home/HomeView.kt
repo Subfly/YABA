@@ -24,7 +24,7 @@ import dev.subfly.yabacore.ui.layout.YabaContentLayout
 @Composable
 fun HomeView(
     modifier: Modifier = Modifier,
-    onShowSheet: (NavKey) -> Unit,
+    onShowSheet: () -> Unit,
 ) {
     val userPreferences = LocalUserPreferences.current
 
@@ -45,7 +45,7 @@ fun HomeView(
             FabPosition.RIGHT -> androidx.compose.material3.FabPosition.End
             FabPosition.CENTER -> androidx.compose.material3.FabPosition.Center
         },
-        floatingActionButton = { HomeFab(showSheetWithRoute = onShowSheet) }
+        floatingActionButton = { HomeFab(onShowSheet = onShowSheet) }
     ) { paddings ->
         YabaContentLayout(
             appearance = userPreferences.preferredContentAppearance,
