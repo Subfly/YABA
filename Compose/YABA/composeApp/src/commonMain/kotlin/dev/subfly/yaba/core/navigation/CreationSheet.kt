@@ -17,7 +17,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import dev.subfly.yaba.core.components.AnimatedBottomSheet
-import dev.subfly.yaba.ui.creation.TagCreationContent
+import dev.subfly.yaba.ui.creation.tag.TagCreationContent
 import dev.subfly.yaba.ui.selection.ColorSelectionContent
 import dev.subfly.yaba.ui.selection.IconCategorySelectionContent
 import dev.subfly.yaba.ui.selection.IconSelectionContent

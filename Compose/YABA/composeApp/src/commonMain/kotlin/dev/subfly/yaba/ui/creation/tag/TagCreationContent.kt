@@ -1,4 +1,4 @@
-package dev.subfly.yaba.ui.creation
+package dev.subfly.yaba.ui.creation.tag
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -9,9 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.input.TextFieldLineLimits
-import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -25,18 +22,15 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.retain.retain
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.navigation.ResultStoreKeys
 import dev.subfly.yaba.util.LocalResultStore
-import dev.subfly.yabacore.managers.TagManager
-import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.icon.iconTintArgb
@@ -47,13 +41,10 @@ import yaba.composeapp.generated.resources.create_tag_placeholder
 import yaba.composeapp.generated.resources.create_tag_title
 import yaba.composeapp.generated.resources.done
 import yaba.composeapp.generated.resources.edit_tag_title
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 @OptIn(
     ExperimentalMaterial3Api::class,
     ExperimentalMaterial3ExpressiveApi::class,
-    ExperimentalUuidApi::class
 )
 @Composable
 fun TagCreationContent(
@@ -61,71 +52,62 @@ fun TagCreationContent(
     onOpenIconSelection: (String) -> Unit,
     onOpenColorSelection: (YabaColor) -> Unit,
     onDismiss: () -> Unit,
-    tagId: Uuid? = null,
+    tagId: String? = null,
 ) {
     val resultStore = LocalResultStore.current
-
-    var tag by rememberSaveable { mutableStateOf<TagUiModel?>(null) }
-    var selectedColor by rememberSaveable(tag) {
-        mutableStateOf(tag?.color ?: YabaColor.BLUE)
-    }
-    var selectedIcon by rememberSaveable(tag) {
-        mutableStateOf(tag?.icon ?: "tag-01")
-    }
-    val tagTitleState = rememberTextFieldState(initialText = tag?.label ?: "")
+    val stateMachine = retain { TagCreationStateMachine() }
+    val state by stateMachine.stateFlow.collectAsState()
 
     LaunchedEffect(tagId) {
         tagId?.let { nonNullId ->
-            tag = TagManager.getTag(nonNullId)
+            stateMachine.onEvent(event = TagCreationEvent.OnInitWithTag(tagIdString = nonNullId))
         }
     }
 
     LaunchedEffect(resultStore.getResult(ResultStoreKeys.SELECTED_COLOR)) {
         resultStore.getResult<YabaColor>(ResultStoreKeys.SELECTED_COLOR)?.let { newColor ->
-            selectedColor = newColor
+            stateMachine.onEvent(TagCreationEvent.OnSelectNewColor(newColor = newColor))
             resultStore.removeResult(ResultStoreKeys.SELECTED_COLOR)
         }
     }
 
     LaunchedEffect(resultStore.getResult(ResultStoreKeys.SELECTED_ICON)) {
         resultStore.getResult<String>(ResultStoreKeys.SELECTED_ICON)?.let { newIcon ->
-            selectedIcon = newIcon
+            stateMachine.onEvent(TagCreationEvent.OnSelectNewIcon(newIcon = newIcon))
             resultStore.removeResult(ResultStoreKeys.SELECTED_ICON)
         }
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(color = MaterialTheme.colorScheme.surfaceContainerLow)
+        modifier =
+            Modifier.fillMaxWidth()
+                .background(color = MaterialTheme.colorScheme.surfaceContainerLow)
     ) {
         TopBar(
             modifier = Modifier.padding(horizontal = 8.dp),
             isStartingFlow = isStartingFlow,
-            canPerformDone = tagTitleState.text.isNotBlank(),
-            isEditing = tag != null,
+            canPerformDone = state.label.isNotBlank(),
+            isEditing = state.editingTag != null,
             onDismiss = onDismiss,
         )
         Spacer(modifier = Modifier.height(12.dp))
         CreationContent(
-            tagTitleState = tagTitleState,
-            selectedIcon = selectedIcon,
-            selectedColor = selectedColor,
-            onOpenIconSelection = {
-                onOpenIconSelection(selectedIcon)
+            tagLabel = state.label,
+            selectedIcon = state.selectedIcon,
+            selectedColor = state.selectedColor,
+            onChangeLabel = { newLabel ->
+                stateMachine.onEvent(
+                    event = TagCreationEvent.OnChangeLabel(newLabel = newLabel)
+                )
             },
-            onOpenColorSelection = {
-                onOpenColorSelection(selectedColor)
-            },
+            onOpenIconSelection = { onOpenIconSelection(state.selectedIcon) },
+            onOpenColorSelection = { onOpenColorSelection(state.selectedColor) },
         )
         Spacer(modifier = Modifier.height(36.dp))
     }
 }
 
-@OptIn(
-    ExperimentalMaterial3ExpressiveApi::class,
-    ExperimentalMaterial3Api::class
-)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun TopBar(
     modifier: Modifier = Modifier,
@@ -136,18 +118,22 @@ private fun TopBar(
 ) {
     CenterAlignedTopAppBar(
         modifier = modifier,
-        colors = TopAppBarDefaults.topAppBarColors().copy(
-            containerColor = Color.Transparent,
-        ),
+        colors =
+            TopAppBarDefaults.topAppBarColors()
+                .copy(
+                    containerColor = Color.Transparent,
+                ),
         title = {
             Text(
-                text = stringResource(
-                    resource = if (isEditing) {
-                        Res.string.edit_tag_title
-                    } else {
-                        Res.string.create_tag_title
-                    }
-                ),
+                text =
+                    stringResource(
+                        resource =
+                            if (isEditing) {
+                                Res.string.edit_tag_title
+                            } else {
+                                Res.string.create_tag_title
+                            }
+                    ),
             )
         },
         navigationIcon = {
@@ -155,14 +141,14 @@ private fun TopBar(
                 TextButton(
                     shapes = ButtonDefaults.shapes(),
                     onClick = onDismiss,
-                    colors = ButtonDefaults.textButtonColors().copy(
-                        contentColor = MaterialTheme.colorScheme.error,
-                    )
+                    colors =
+                        ButtonDefaults.textButtonColors()
+                            .copy(
+                                contentColor = MaterialTheme.colorScheme.error,
+                            )
                 ) { Text(text = stringResource(Res.string.cancel)) }
             } else {
-                IconButton(onClick = onDismiss) {
-                    YabaIcon(name = "arrow-left-01")
-                }
+                IconButton(onClick = onDismiss) { YabaIcon(name = "arrow-left-01") }
             }
         },
         actions = {
@@ -181,9 +167,10 @@ private fun TopBar(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun CreationContent(
-    tagTitleState: TextFieldState,
+    tagLabel: String,
     selectedColor: YabaColor,
     selectedIcon: String,
+    onChangeLabel: (String) -> Unit,
     onOpenIconSelection: () -> Unit,
     onOpenColorSelection: () -> Unit,
 ) {
@@ -193,12 +180,14 @@ private fun CreationContent(
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Button(
-            modifier = Modifier
-                .weight(1F)
-                .height(60.dp),
-            colors = ButtonDefaults.buttonColors().copy(
-                containerColor = Color(selectedColor.iconTintArgb()).copy(alpha = 0.2F)
-            ),
+            modifier = Modifier.weight(1F).height(60.dp),
+            colors =
+                ButtonDefaults.buttonColors()
+                    .copy(
+                        containerColor =
+                            Color(selectedColor.iconTintArgb())
+                                .copy(alpha = 0.2F)
+                    ),
             shapes = ButtonDefaults.shapes(),
             onClick = onOpenIconSelection,
         ) {
@@ -209,18 +198,21 @@ private fun CreationContent(
         }
         OutlinedTextField(
             modifier = Modifier.weight(4F).fillMaxWidth(),
-            state = tagTitleState,
-            lineLimits = TextFieldLineLimits.SingleLine,
+            value = tagLabel,
+            onValueChange = onChangeLabel,
+            maxLines = 1,
             shape = RoundedCornerShape(24.dp),
             placeholder = { Text(text = stringResource(Res.string.create_tag_placeholder)) },
         )
         Button(
-            modifier = Modifier
-                .weight(1F)
-                .height(60.dp),
-            colors = ButtonDefaults.buttonColors().copy(
-                containerColor = Color(selectedColor.iconTintArgb()).copy(alpha = 0.2F)
-            ),
+            modifier = Modifier.weight(1F).height(60.dp),
+            colors =
+                ButtonDefaults.buttonColors()
+                    .copy(
+                        containerColor =
+                            Color(selectedColor.iconTintArgb())
+                                .copy(alpha = 0.2F)
+                    ),
             shapes = ButtonDefaults.shapes(),
             onClick = onOpenColorSelection,
         ) {

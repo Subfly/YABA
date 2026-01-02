@@ -28,13 +28,13 @@ val creationNavigationConfig = SavedStateConfiguration {
 }
 
 @Serializable
-data class TagCreationRoute(val tagId: Uuid?): NavKey
+data class TagCreationRoute(val tagId: String?): NavKey
 
 @Serializable
-data class FolderCreationRoute(val folderId: Uuid?): NavKey
+data class FolderCreationRoute(val folderId: String?): NavKey
 
 @Serializable
-data class BookmarkCreationRoute(val bookmarkId: Uuid?): NavKey
+data class BookmarkCreationRoute(val bookmarkId: String?): NavKey
 
 @Serializable
 data object FolderSelectionRoute: NavKey
