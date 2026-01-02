@@ -92,6 +92,7 @@ fun TagCreationContent(
             isStartingFlow = creationNavigator.size <= 2,
             canPerformDone = state.label.isNotBlank(),
             isEditing = state.editingTag != null,
+            onDone = { vm.onEvent(TagCreationEvent.OnSave) },
             onDismiss = onDismiss,
         )
         Spacer(modifier = Modifier.height(12.dp))
@@ -122,6 +123,7 @@ private fun TopBar(
     isStartingFlow: Boolean,
     isEditing: Boolean,
     canPerformDone: Boolean,
+    onDone: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     CenterAlignedTopAppBar(
@@ -164,7 +166,7 @@ private fun TopBar(
                 shapes = ButtonDefaults.shapes(),
                 enabled = canPerformDone,
                 onClick = {
-                    // TODO: SAVE TAG
+                    onDone()
                     onDismiss()
                 }
             ) { Text(text = stringResource(Res.string.done)) }

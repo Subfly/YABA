@@ -10,6 +10,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.navigation3.runtime.rememberNavBackStack
 import dev.subfly.yaba.core.navigation.CreationSheet
+import dev.subfly.yaba.core.navigation.EmptyRoute
 import dev.subfly.yaba.core.navigation.YabaNavigator
 import dev.subfly.yaba.core.navigation.creationNavigationConfig
 import dev.subfly.yaba.core.navigation.rememberResultStore
@@ -17,6 +18,7 @@ import dev.subfly.yaba.core.theme.YabaTheme
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.LocalUserPreferences
+import dev.subfly.yabacore.database.DatabaseProvider
 import dev.subfly.yabacore.preferences.SettingsStores
 import dev.subfly.yabacore.preferences.UserPreferences
 
@@ -28,7 +30,8 @@ fun App() {
     )
     val navigationResultStore = rememberResultStore()
     val creationNavigator = rememberNavBackStack(
-        configuration = creationNavigationConfig
+        configuration = creationNavigationConfig,
+        EmptyRoute
     )
 
     var shouldShowCreationSheet by rememberSaveable { mutableStateOf(false) }

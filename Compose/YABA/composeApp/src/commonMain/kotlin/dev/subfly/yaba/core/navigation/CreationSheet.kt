@@ -4,10 +4,15 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
@@ -29,6 +34,12 @@ fun CreationSheet(
     val creationNavigator = LocalCreationContentNavigator.current
     val sheetState = rememberModalBottomSheetState()
 
+    LaunchedEffect(sheetState.isVisible) {
+        if (sheetState.isVisible.not()) {
+            creationNavigator.removeIf { it !is EmptyRoute }
+        }
+    }
+
     AnimatedBottomSheet(
         modifier = modifier,
         isVisible = shouldShow,
@@ -39,6 +50,10 @@ fun CreationSheet(
         NavDisplay(
             modifier = Modifier.animateContentSize(),
             backStack = creationNavigator,
+            entryDecorators = listOf(
+                rememberSaveableStateHolderNavEntryDecorator(),
+                rememberViewModelStoreNavEntryDecorator(),
+            ),
             transitionSpec = {
                 EnterTransition.None togetherWith ExitTransition.None
             },
@@ -49,7 +64,9 @@ fun CreationSheet(
                 EnterTransition.None togetherWith ExitTransition.None
             },
             onBack = {
-                if (creationNavigator.size == 1) {
+                // Means next pop up destination is Empty Route,
+                // so dismiss first, then remove the last item
+                if (creationNavigator.size == 2) {
                     onDismiss()
                 }
                 creationNavigator.removeLastOrNull()
@@ -59,7 +76,9 @@ fun CreationSheet(
                     TagCreationContent(
                         tagId = key.tagId,
                         onDismiss = {
-                            if (creationNavigator.size == 1) {
+                            // Means next pop up destination is Empty Route,
+                            // so dismiss first, then remove the last item
+                            if (creationNavigator.size == 2) {
                                 onDismiss()
                             }
                             creationNavigator.removeLastOrNull()
@@ -91,6 +110,10 @@ fun CreationSheet(
                             creationNavigator.removeLastOrNull()
                         }
                     )
+                }
+                entry<EmptyRoute> {
+                    // Only old Compose users will remember why we had to put 1.dp boxes in sheets...
+                    Box(modifier = Modifier.size((0.1).dp))
                 }
             }
         )

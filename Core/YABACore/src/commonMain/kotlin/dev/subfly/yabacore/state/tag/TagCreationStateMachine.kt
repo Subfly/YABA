@@ -1,7 +1,10 @@
 package dev.subfly.yabacore.state.tag
 
 import dev.subfly.yabacore.managers.TagManager
+import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.state.base.BaseStateMachine
+import kotlin.time.Clock
+import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -15,6 +18,7 @@ class TagCreationStateMachine : BaseStateMachine<TagCreationUIState, TagCreation
             is TagCreationEvent.OnChangeLabel -> onChangeLabel(event)
             is TagCreationEvent.OnSelectNewColor -> onSelectNewColor(event)
             is TagCreationEvent.OnSelectNewIcon -> onSelectNewIcon(event)
+            TagCreationEvent.OnSave -> onSave()
         }
     }
 
@@ -57,6 +61,46 @@ class TagCreationStateMachine : BaseStateMachine<TagCreationUIState, TagCreation
             it.copy(
                 selectedIcon = event.newIcon,
             )
+        }
+    }
+
+    private fun onSave() {
+        val currentState = currentState()
+        launch {
+            if (currentState.editingTag == null) {
+                TagManager.createTag(
+                    TagUiModel(
+                        id = Uuid.generateV7(),
+                        label = currentState.label,
+                        icon = currentState.selectedIcon,
+                        color = currentState.selectedColor,
+                        createdAt = Clock.System.now(),
+                        editedAt = Clock.System.now(),
+                        order = -1,
+                    )
+                )
+            } else {
+                val editingTag = currentState.editingTag
+                TagManager.updateTag(
+                    editingTag.copy(
+                        label = if (editingTag.label != currentState.label) {
+                            currentState.label
+                        } else {
+                            editingTag.label
+                        },
+                        icon = if (editingTag.icon != currentState.selectedIcon) {
+                            currentState.selectedIcon
+                        } else {
+                            editingTag.icon
+                        },
+                        color = if (editingTag.color != currentState.selectedColor) {
+                            currentState.selectedColor
+                        } else {
+                            editingTag.color
+                        },
+                    )
+                )
+            }
         }
     }
 }

@@ -61,7 +61,6 @@ internal fun HomeFab(
         content = {
             FloatingActionButtonMenuItem(
                 onClick = {
-                    creationNavigator.clear()
                     creationNavigator.add(BookmarkCreationRoute(bookmarkId = null))
                     isFabExpanded = false
                     onShowSheet()
@@ -71,7 +70,6 @@ internal fun HomeFab(
             )
             FloatingActionButtonMenuItem(
                 onClick = {
-                    creationNavigator.clear()
                     creationNavigator.add(FolderCreationRoute(folderId = null))
                     isFabExpanded = false
                     onShowSheet()
@@ -81,7 +79,6 @@ internal fun HomeFab(
             )
             FloatingActionButtonMenuItem(
                 onClick = {
-                    creationNavigator.clear()
                     creationNavigator.add(TagCreationRoute(tagId = null))
                     isFabExpanded = false
                     onShowSheet()
