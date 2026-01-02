@@ -17,6 +17,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import dev.subfly.yaba.core.components.AnimatedBottomSheet
+import dev.subfly.yaba.ui.creation.folder.FolderCreationContent
 import dev.subfly.yaba.ui.creation.tag.TagCreationContent
 import dev.subfly.yaba.ui.selection.ColorSelectionContent
 import dev.subfly.yaba.ui.selection.IconCategorySelectionContent
@@ -75,6 +76,19 @@ fun CreationSheet(
                 entry<TagCreationRoute> { key ->
                     TagCreationContent(
                         tagId = key.tagId,
+                        onDismiss = {
+                            // Means next pop up destination is Empty Route,
+                            // so dismiss first, then remove the last item
+                            if (creationNavigator.size == 2) {
+                                onDismiss()
+                            }
+                            creationNavigator.removeLastOrNull()
+                        }
+                    )
+                }
+                entry<FolderCreationRoute> { key ->
+                    FolderCreationContent(
+                        folderId = key.folderId,
                         onDismiss = {
                             // Means next pop up destination is Empty Route,
                             // so dismiss first, then remove the last item

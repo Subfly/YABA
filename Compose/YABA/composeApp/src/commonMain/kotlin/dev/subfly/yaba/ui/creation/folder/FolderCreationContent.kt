@@ -1,4 +1,4 @@
-package dev.subfly.yaba.ui.creation.tag
+package dev.subfly.yaba.ui.creation.folder
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -34,47 +34,47 @@ import dev.subfly.yaba.core.navigation.ResultStoreKeys
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yabacore.model.utils.YabaColor
-import dev.subfly.yabacore.state.tag.TagCreationEvent
+import dev.subfly.yabacore.state.folder.FolderCreationEvent
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.icon.iconTintArgb
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.cancel
-import yaba.composeapp.generated.resources.create_tag_placeholder
-import yaba.composeapp.generated.resources.create_tag_title
+import yaba.composeapp.generated.resources.create_folder_placeholder
+import yaba.composeapp.generated.resources.create_folder_title
 import yaba.composeapp.generated.resources.done
-import yaba.composeapp.generated.resources.edit_tag_title
+import yaba.composeapp.generated.resources.edit_folder_title
 
 @OptIn(
     ExperimentalMaterial3Api::class,
     ExperimentalMaterial3ExpressiveApi::class,
 )
 @Composable
-fun TagCreationContent(
-    tagId: String? = null,
+fun FolderCreationContent(
+    folderId: String? = null,
     onDismiss: () -> Unit,
 ) {
     val creationNavigator = LocalCreationContentNavigator.current
     val resultStore = LocalResultStore.current
-    val vm = viewModel<TagCreationVM>()
+    val vm = viewModel<FolderCreationVM>()
     val state by vm.state
 
-    LaunchedEffect(tagId) {
-        tagId?.let { nonNullId ->
-            vm.onEvent(event = TagCreationEvent.OnInitWithTag(tagIdString = nonNullId))
+    LaunchedEffect(folderId) {
+        folderId?.let { nonNullId ->
+            vm.onEvent(event = FolderCreationEvent.OnInitWithFolder(folderIdString = nonNullId))
         }
     }
 
     LaunchedEffect(resultStore.getResult(ResultStoreKeys.SELECTED_COLOR)) {
         resultStore.getResult<YabaColor>(ResultStoreKeys.SELECTED_COLOR)?.let { newColor ->
-            vm.onEvent(TagCreationEvent.OnSelectNewColor(newColor = newColor))
+            vm.onEvent(FolderCreationEvent.OnSelectNewColor(newColor = newColor))
             resultStore.removeResult(ResultStoreKeys.SELECTED_COLOR)
         }
     }
 
     LaunchedEffect(resultStore.getResult(ResultStoreKeys.SELECTED_ICON)) {
         resultStore.getResult<String>(ResultStoreKeys.SELECTED_ICON)?.let { newIcon ->
-            vm.onEvent(TagCreationEvent.OnSelectNewIcon(newIcon = newIcon))
+            vm.onEvent(FolderCreationEvent.OnSelectNewIcon(newIcon = newIcon))
             resultStore.removeResult(ResultStoreKeys.SELECTED_ICON)
         }
     }
@@ -88,8 +88,8 @@ fun TagCreationContent(
             modifier = Modifier.padding(horizontal = 8.dp),
             isStartingFlow = creationNavigator.size <= 2,
             canPerformDone = state.label.isNotBlank(),
-            isEditing = state.editingTag != null,
-            onDone = { vm.onEvent(TagCreationEvent.OnSave) },
+            isEditing = state.editingFolder != null,
+            onDone = { vm.onEvent(FolderCreationEvent.OnSave) },
             onDismiss = onDismiss,
         )
         Spacer(modifier = Modifier.height(12.dp))
@@ -99,7 +99,7 @@ fun TagCreationContent(
             selectedColor = state.selectedColor,
             onChangeLabel = { newLabel ->
                 vm.onEvent(
-                    event = TagCreationEvent.OnChangeLabel(newLabel = newLabel)
+                    event = FolderCreationEvent.OnChangeLabel(newLabel = newLabel)
                 )
             },
             onOpenIconSelection = {
@@ -136,9 +136,9 @@ private fun TopBar(
                     stringResource(
                         resource =
                             if (isEditing) {
-                                Res.string.edit_tag_title
+                                Res.string.edit_folder_title
                             } else {
-                                Res.string.create_tag_title
+                                Res.string.create_folder_title
                             }
                     ),
             )
@@ -209,7 +209,7 @@ private fun CreationContent(
             onValueChange = onChangeLabel,
             maxLines = 1,
             shape = RoundedCornerShape(24.dp),
-            placeholder = { Text(text = stringResource(Res.string.create_tag_placeholder)) },
+            placeholder = { Text(text = stringResource(Res.string.create_folder_placeholder)) },
         )
         Button(
             modifier = Modifier.weight(1F).height(60.dp),
