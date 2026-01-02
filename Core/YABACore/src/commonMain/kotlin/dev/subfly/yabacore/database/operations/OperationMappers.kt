@@ -8,9 +8,26 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.modules.subclass
 
 private val payloadSerializer = PolymorphicSerializer(OperationPayload::class)
+
+private val payloadModule = SerializersModule {
+    polymorphic(OperationPayload::class) {
+        subclass(FolderPayload::class)
+        subclass(TagPayload::class)
+        subclass(BookmarkPayload::class)
+        subclass(LinkBookmarkPayload::class)
+        subclass(TagLinkPayload::class)
+        subclass(FilePayload::class)
+        subclass(DeleteAllPayload::class)
+    }
+}
+
 private val operationJson = Json {
+    serializersModule = payloadModule
     encodeDefaults = true
     ignoreUnknownKeys = true
 }
