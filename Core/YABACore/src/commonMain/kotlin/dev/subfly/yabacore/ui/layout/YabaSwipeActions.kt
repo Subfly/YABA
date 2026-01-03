@@ -70,17 +70,20 @@ fun YabaSwipeActions(
     val left = leftActions.take(MAX_ACTIONS).also { require(leftActions.size <= MAX_ACTIONS) }
     val right = rightActions.take(MAX_ACTIONS).also { require(rightActions.size <= MAX_ACTIONS) }
 
-    val leftWidth = remember(left, actionWidth, actionSpacing) {
-        combinedWidth(left.size, actionWidth, actionSpacing)
-    }
-    val rightWidth = remember(right, actionWidth, actionSpacing) {
-        combinedWidth(right.size, actionWidth, actionSpacing)
-    }
+    val leftWidth =
+        remember(left, actionWidth, actionSpacing) {
+            combinedWidth(left.size, actionWidth, actionSpacing)
+        }
+    val rightWidth =
+        remember(right, actionWidth, actionSpacing) {
+            combinedWidth(right.size, actionWidth, actionSpacing)
+        }
 
     val density = LocalDensity.current
-    val anchors = remember(leftWidth, rightWidth, density) {
-        buildAnchors(leftWidth, rightWidth, density)
-    }
+    val anchors =
+        remember(leftWidth, rightWidth, density) {
+            buildAnchors(leftWidth, rightWidth, density)
+        }
 
     LaunchedEffect(anchors) { state.updateAnchors(anchors) }
 
@@ -124,9 +127,10 @@ private fun SwipeActionsBackground(
     Box(modifier = Modifier.fillMaxSize()) {
         if (leftActions.isNotEmpty()) {
             Row(
-                modifier = Modifier.align(Alignment.CenterStart)
-                    .fillMaxHeight()
-                    .width(leftTotalWidth),
+                modifier =
+                    Modifier.align(Alignment.CenterStart)
+                        .fillMaxHeight()
+                        .width(leftTotalWidth),
                 horizontalArrangement = Arrangement.spacedBy(actionSpacing),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -140,9 +144,10 @@ private fun SwipeActionsBackground(
         }
         if (rightActions.isNotEmpty()) {
             Row(
-                modifier = Modifier.align(Alignment.CenterEnd)
-                    .fillMaxHeight()
-                    .width(rightTotalWidth),
+                modifier =
+                    Modifier.align(Alignment.CenterEnd)
+                        .fillMaxHeight()
+                        .width(rightTotalWidth),
                 horizontalArrangement = Arrangement.spacedBy(actionSpacing),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -167,42 +172,44 @@ private fun ActionClickOverlay(
     leftTotalWidth: Dp,
     rightTotalWidth: Dp,
 ) {
-    // Hit targets that sit above background to let actions be clickable.
+    // Invisible hit targets that sit above background to let actions be clickable.
     Box(modifier = Modifier.fillMaxSize()) {
-        val offsetPx = state.offset
-
         if (leftActions.isNotEmpty()) {
             Row(
-                modifier = Modifier.align(Alignment.CenterStart)
-                    .fillMaxHeight()
-                    .width(leftTotalWidth)
-                    .graphicsLayer { translationX = offsetPx.coerceAtLeast(0f) },
+                modifier =
+                    Modifier.align(Alignment.CenterStart)
+                        .fillMaxHeight()
+                        .width(leftTotalWidth),
                 horizontalArrangement = Arrangement.spacedBy(actionSpacing),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 leftActions.forEach { action ->
                     Box(
-                        modifier = Modifier.width(actionWidth).swipeActionClick(action, state),
-                        contentAlignment = Alignment.Center,
-                    ) { action.content() }
+                        modifier =
+                            Modifier.width(actionWidth)
+                                .fillMaxHeight()
+                                .swipeActionClick(action, state),
+                    )
                 }
             }
         }
 
         if (rightActions.isNotEmpty()) {
             Row(
-                modifier = Modifier.align(Alignment.CenterEnd)
-                    .fillMaxHeight()
-                    .width(rightTotalWidth)
-                    .graphicsLayer { translationX = offsetPx.coerceAtMost(0f) },
+                modifier =
+                    Modifier.align(Alignment.CenterEnd)
+                        .fillMaxHeight()
+                        .width(rightTotalWidth),
                 horizontalArrangement = Arrangement.spacedBy(actionSpacing),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 rightActions.forEach { action ->
                     Box(
-                        modifier = Modifier.width(actionWidth).swipeActionClick(action, state),
-                        contentAlignment = Alignment.Center,
-                    ) { action.content() }
+                        modifier =
+                            Modifier.width(actionWidth)
+                                .fillMaxHeight()
+                                .swipeActionClick(action, state),
+                    )
                 }
             }
         }

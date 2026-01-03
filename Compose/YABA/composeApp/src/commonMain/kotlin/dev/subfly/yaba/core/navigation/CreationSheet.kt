@@ -101,7 +101,7 @@ fun CreationSheet(
                 }
                 entry<ColorSelectionRoute> { key ->
                     ColorSelectionContent(
-                        currentSelectedColor = key.color,
+                        currentSelectedColor = key.selectedColor,
                         onDismiss = creationNavigator::removeLastOrNull,
                     )
                 }
@@ -109,7 +109,12 @@ fun CreationSheet(
                     IconCategorySelectionContent(
                         currentSelectedIcon = key.selectedIcon,
                         onSelectedSubcategory = { icon, category ->
-                            creationNavigator.add(IconSelectionRoute(icon, category))
+                            creationNavigator.add(
+                                IconSelectionRoute(
+                                    selectedIcon = icon,
+                                    selectedSubcategory = category
+                                )
+                            )
                         },
                         onDismiss = creationNavigator::removeLastOrNull,
                     )

@@ -30,6 +30,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
+import dev.subfly.yaba.util.localizedDescriptionRes
+import dev.subfly.yaba.util.localizedNameRes
 import dev.subfly.yabacore.icons.IconCatalog
 import dev.subfly.yabacore.icons.IconSubcategory
 import dev.subfly.yabacore.model.utils.YabaColor
@@ -46,10 +48,10 @@ fun IconCategorySelectionContent(
     onDismiss: () -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(0.9F)
-            .background(color = MaterialTheme.colorScheme.surfaceContainerLow)
+        modifier =
+            Modifier.fillMaxWidth()
+                .fillMaxHeight(0.9F)
+                .background(color = MaterialTheme.colorScheme.surfaceContainerLow)
     ) {
         TopBar(
             modifier = Modifier.padding(horizontal = 8.dp),
@@ -65,10 +67,7 @@ fun IconCategorySelectionContent(
     }
 }
 
-@OptIn(
-    ExperimentalMaterial3ExpressiveApi::class,
-    ExperimentalMaterial3Api::class
-)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun TopBar(
     modifier: Modifier = Modifier,
@@ -76,14 +75,14 @@ private fun TopBar(
 ) {
     CenterAlignedTopAppBar(
         modifier = modifier,
-        colors = TopAppBarDefaults.topAppBarColors().copy(
-            containerColor = Color.Transparent,
-        ),
+        colors =
+            TopAppBarDefaults.topAppBarColors()
+                .copy(
+                    containerColor = Color.Transparent,
+                ),
         title = { Text(text = stringResource(Res.string.pick_icon_category_title)) },
         navigationIcon = {
-            IconButton(onClick = onDismiss) {
-                YabaIcon(name = "arrow-left-01")
-            }
+            IconButton(onClick = onDismiss) { YabaIcon(name = "arrow-left-01") }
         },
     )
 }
@@ -97,7 +96,7 @@ private fun SelectionContent(
 
     LazyColumn(
         modifier = Modifier.padding(horizontal = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(32.dp),
     ) {
         items(
             items = categories,
@@ -108,7 +107,7 @@ private fun SelectionContent(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Row(
-                    modifier = Modifier.padding(bottom = 4.dp),
+                    modifier = Modifier.padding(bottom = 4.dp).padding(horizontal = 12.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
@@ -118,20 +117,20 @@ private fun SelectionContent(
                         color = color,
                     )
                     Text(
-                        text = category.name,
+                        text = stringResource(category.localizedNameRes()),
                         style = MaterialTheme.typography.bodyLargeEmphasized,
                         color = Color(color.iconTintArgb()),
                     )
                 }
                 category.subcategories.fastForEach { subcategory ->
                     ListItem(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(8.dp))
-                            .clickable(
-                                onClick = { onSelectedSubcategory(subcategory) }
-                            ),
+                        modifier =
+                            Modifier.clip(RoundedCornerShape(8.dp))
+                                .clickable(
+                                    onClick = { onSelectedSubcategory(subcategory) }
+                                ),
                         headlineContent = {
-                            Text(subcategory.name)
+                            Text(stringResource(subcategory.localizedNameRes()))
                         },
                         leadingContent = {
                             YabaIcon(
@@ -150,6 +149,11 @@ private fun SelectionContent(
                         },
                     )
                 }
+                Text(
+                    modifier = Modifier.padding(top = 4.dp).padding(horizontal = 12.dp),
+                    text = stringResource(category.localizedDescriptionRes()),
+                    style = MaterialTheme.typography.bodySmallEmphasized,
+                )
             }
         }
     }

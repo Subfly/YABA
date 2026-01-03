@@ -28,28 +28,46 @@ val creationNavigationConfig = SavedStateConfiguration {
 }
 
 @Serializable
-data class TagCreationRoute(val tagId: String?): NavKey
+data class TagCreationRoute(
+    val routeId: String = Uuid.generateV4().toString(),
+    val tagId: String?,
+): NavKey
 
 @Serializable
-data class FolderCreationRoute(val folderId: String?): NavKey
+data class FolderCreationRoute(
+    val routeId: String = Uuid.generateV4().toString(),
+    val folderId: String?,
+): NavKey
 
 @Serializable
-data class BookmarkCreationRoute(val bookmarkId: String?): NavKey
+data class BookmarkCreationRoute(
+    val routeId: String = Uuid.generateV4().toString(),
+    val bookmarkId: String?,
+): NavKey
 
 @Serializable
-data object FolderSelectionRoute: NavKey
+data class FolderSelectionRoute(
+    val routeId: String = Uuid.generateV4().toString(),
+): NavKey
 
 @Serializable
-data class IconCategorySelectionRoute(val selectedIcon: String): NavKey
+data class IconCategorySelectionRoute(
+    val routeId: String = Uuid.generateV4().toString(),
+    val selectedIcon: String,
+): NavKey
 
 @Serializable
 data class IconSelectionRoute(
+    val routeId: String = Uuid.generateV4().toString(),
     val selectedIcon: String,
     val selectedSubcategory: IconSubcategory,
 ): NavKey
 
 @Serializable
-data class ColorSelectionRoute(val color: YabaColor): NavKey
+data class ColorSelectionRoute(
+    val routeId: String = Uuid.generateV4().toString(),
+    val selectedColor: YabaColor,
+): NavKey
 
 @Serializable
 data object EmptyRoute: NavKey

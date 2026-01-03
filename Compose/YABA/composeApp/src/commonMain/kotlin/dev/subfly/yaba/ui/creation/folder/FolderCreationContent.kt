@@ -29,18 +29,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import dev.subfly.yaba.core.components.item.PresentableParentFolderItem
 import dev.subfly.yaba.core.navigation.ColorSelectionRoute
 import dev.subfly.yaba.core.navigation.IconCategorySelectionRoute
 import dev.subfly.yaba.core.navigation.ResultStoreKeys
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
-import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.folder.FolderCreationEvent
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.icon.iconTintArgb
-import dev.subfly.yabacore.ui.layout.SwipeAction
-import dev.subfly.yabacore.ui.layout.YabaSwipeActions
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.cancel
@@ -107,18 +105,19 @@ fun FolderCreationContent(
                 )
             },
             onOpenIconSelection = {
-                creationNavigator.add(IconCategorySelectionRoute(state.selectedIcon))
+                creationNavigator.add(
+                    IconCategorySelectionRoute(
+                        selectedIcon = state.selectedIcon,
+                    )
+                )
             },
             onOpenColorSelection = {
-                creationNavigator.add(ColorSelectionRoute(state.selectedColor))
+                creationNavigator.add(
+                    ColorSelectionRoute(
+                        selectedColor = state.selectedColor,
+                    )
+                )
             },
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-        ParentSelectionContent(
-            selectedParent = state.selectedParent,
-            onOpenParentSelection = {
-                // TODO: NAVIGATE TO PARENT SELECTION
-            }
         )
         Spacer(modifier = Modifier.height(12.dp))
         DescriptionContent(
@@ -127,6 +126,19 @@ fun FolderCreationContent(
                 vm.onEvent(
                     event = FolderCreationEvent.OnChangeDescription(newDescription = newDescription)
                 )
+            },
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        PresentableParentFolderItem(
+            modifier = Modifier
+                .height(60.dp)
+                .padding(horizontal = 12.dp),
+            model = state.selectedParent,
+            onPressed = {
+                // TODO: NAVIGATE TO PARENT SELECTION
+            },
+            onNavigateToEdit = {
+                // TODO: NAVIGATE TO EDIT FOLDER
             },
         )
         Spacer(modifier = Modifier.height(36.dp))
@@ -251,69 +263,6 @@ private fun CreationContent(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-private fun ParentSelectionContent(
-    selectedParent: FolderUiModel?,
-    onOpenParentSelection: () -> Unit,
-) {
-    YabaSwipeActions(
-        modifier = Modifier.height(60.dp),
-        leftActions = listOf(
-            SwipeAction(
-                key = "DELETE",
-                onClick = {
-
-                },
-                content = {
-                    Text("LELE")
-                }
-            )
-        )
-    ) {
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp)
-                .padding(horizontal = 12.dp),
-            colors =
-                ButtonDefaults.buttonColors()
-                    .copy(
-                        containerColor = Color(
-                            selectedParent?.color?.iconTintArgb() ?: YabaColor.BLUE.iconTintArgb()
-                        ).copy(alpha = 0.2F)
-                    ),
-            shapes = ButtonDefaults.shapes(),
-            onClick = onOpenParentSelection,
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    YabaIcon(
-                        name = "folder-01",
-                        color = selectedParent?.color ?: YabaColor.BLUE,
-                    )
-                    Text(
-                        selectedParent?.label ?: "PLACEHOLDER FOLDER NAME"
-                    )
-                }
-                YabaIcon(
-                    name = "arrow-right-01",
-                    color = selectedParent?.color ?: YabaColor.BLUE,
-                )
-            }
-        }
-    }
-}
-
 @Composable
 private fun DescriptionContent(
     folderDescription: String,
@@ -328,5 +277,6 @@ private fun DescriptionContent(
         onValueChange = onChangeDescription,
         shape = RoundedCornerShape(24.dp),
         placeholder = { Text(text = "TODO: ADD A PLACEHOLDER FOR DESCRIPTION IN HERE") },
+        leadingIcon = { YabaIcon(name = "paragraph") }
     )
 }

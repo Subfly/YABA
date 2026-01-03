@@ -103,10 +103,18 @@ fun TagCreationContent(
                 )
             },
             onOpenIconSelection = {
-                creationNavigator.add(IconCategorySelectionRoute(state.selectedIcon))
+                creationNavigator.add(
+                    IconCategorySelectionRoute(
+                        selectedIcon = state.selectedIcon
+                    )
+                )
             },
             onOpenColorSelection = {
-                creationNavigator.add(ColorSelectionRoute(state.selectedColor))
+                creationNavigator.add(
+                    ColorSelectionRoute(
+                        selectedColor = state.selectedColor
+                    )
+                )
             },
         )
         Spacer(modifier = Modifier.height(36.dp))

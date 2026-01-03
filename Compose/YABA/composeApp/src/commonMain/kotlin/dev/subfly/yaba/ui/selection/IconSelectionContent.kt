@@ -34,13 +34,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.navigation.ResultStoreKeys
 import dev.subfly.yaba.util.LocalResultStore
+import dev.subfly.yaba.util.localizedNameRes
 import dev.subfly.yabacore.icons.IconCatalog
 import dev.subfly.yabacore.icons.IconSubcategory
 import dev.subfly.yabacore.ui.icon.YabaIcon
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.done
-import yaba.composeapp.generated.resources.select_color_title
 
 @Composable
 fun IconSelectionContent(
@@ -61,7 +62,7 @@ fun IconSelectionContent(
     ) {
         TopBar(
             modifier = Modifier.padding(horizontal = 8.dp),
-            title = selectedSubcategory.name,
+            titleRes = selectedSubcategory.localizedNameRes(),
             onDone = {
                 resultStore.setResult(
                     key = ResultStoreKeys.SELECTED_ICON,
@@ -89,7 +90,7 @@ fun IconSelectionContent(
 @Composable
 private fun TopBar(
     modifier: Modifier = Modifier,
-    title: String,
+    titleRes: StringResource,
     onDone: () -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -98,7 +99,7 @@ private fun TopBar(
         colors = TopAppBarDefaults.topAppBarColors().copy(
             containerColor = Color.Transparent,
         ),
-        title = { Text(text = title) },
+        title = { Text(text = stringResource(titleRes)) },
         navigationIcon = {
             IconButton(onClick = onDismiss) {
                 YabaIcon(name = "arrow-left-01")
@@ -118,7 +119,7 @@ private fun SelectionContent(
     selectedSubcategory: IconSubcategory,
     selectedIcon: String,
     onSelectIcon: (String) -> Unit,
-){
+) {
     val icons by IconCatalog.iconsFlow.collectAsState()
 
     LaunchedEffect(Unit) {
