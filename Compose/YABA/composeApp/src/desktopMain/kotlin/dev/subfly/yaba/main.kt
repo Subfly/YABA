@@ -30,7 +30,10 @@ fun main() = application {
         transparent = true,
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            YabaWindowControlBar()
+            YabaWindowControlBar(
+                state = windowState,
+                onClose = ::exitApplication,
+            )
             App()
         }
     }
