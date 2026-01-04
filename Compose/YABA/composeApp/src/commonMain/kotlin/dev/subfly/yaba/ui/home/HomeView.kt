@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.scrollIndicator
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -52,7 +53,7 @@ import kotlin.uuid.ExperimentalUuidApi
 fun HomeView(modifier: Modifier = Modifier) {
     val userPreferences = LocalUserPreferences.current
 
-    val vm = viewModel<HomeVM>()
+    val vm = viewModel { HomeVM() }
     val state by vm.state
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()

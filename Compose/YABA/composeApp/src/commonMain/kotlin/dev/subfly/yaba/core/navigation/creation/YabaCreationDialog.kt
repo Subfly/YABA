@@ -1,36 +1,39 @@
 package dev.subfly.yaba.core.navigation.creation
 
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import dev.subfly.yaba.core.components.AnimatedBottomSheet
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
-import kotlin.uuid.ExperimentalUuidApi
+import kotlinx.coroutines.delay
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalUuidApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun YabaCreationSheet(modifier: Modifier = Modifier) {
+fun YabaCreationDialog() {
     val creationNavigator = LocalCreationContentNavigator.current
     val appStateManager = LocalAppStateManager.current
-    val sheetState = rememberModalBottomSheetState()
+
     val appState by appStateManager.state.collectAsState()
 
-    LaunchedEffect(sheetState.isVisible) {
-        if (sheetState.isVisible.not()) {
+    LaunchedEffect(appState.showCreationContent) {
+        if (appState.showCreationContent.not()) {
+            // Just in case, some delay
+            delay(100)
             creationNavigator.removeIf { it !is EmptyRoute }
         }
     }
 
-    AnimatedBottomSheet(
-        modifier = modifier,
-        isVisible = appState.showCreationContent,
-        sheetState = sheetState,
-        showDragHandle = true,
-        onDismissRequest = appStateManager::onHideCreationContent,
-    ) { YabaCreationNavigationView() }
+    if (appState.showCreationContent) {
+        BasicAlertDialog(
+            modifier = Modifier.clip(RoundedCornerShape(16.dp)),
+            onDismissRequest = appStateManager::onShowCreationContent
+        ){ YabaCreationNavigationView() }
+    }
 }

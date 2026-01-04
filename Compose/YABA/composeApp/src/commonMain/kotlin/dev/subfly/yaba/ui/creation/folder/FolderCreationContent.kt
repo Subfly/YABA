@@ -59,7 +59,7 @@ fun FolderCreationContent(folderId: String? = null) {
     val appStateManager = LocalAppStateManager.current
     val resultStore = LocalResultStore.current
 
-    val vm = viewModel<FolderCreationVM>()
+    val vm = viewModel { FolderCreationVM() }
     val state by vm.state
 
     LaunchedEffect(folderId) {

@@ -3,9 +3,8 @@
 package dev.subfly.yaba.core.components.item.base
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import dev.subfly.yaba.util.yabaClickable
 import dev.subfly.yabacore.model.utils.ContentAppearance
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.ui.icon.YabaIcon
@@ -133,7 +133,7 @@ fun BaseCollectionItemView(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalFoundationApi::class)
 @Composable
 private fun ListCollectionItemView(
     modifier: Modifier,
@@ -209,9 +209,9 @@ private fun ListCollectionItemView(
                 ListItem(
                     modifier = Modifier
                         .clip(RoundedCornerShape(12.dp))
-                        .combinedClickable(
+                        .yabaClickable(
                             onLongClick = { isOptionsExpanded = true },
-                            onClick = onClick
+                            onClick = onClick,
                         ),
                     colors = ListItemDefaults.colors().copy(
                         containerColor = MaterialTheme.colorScheme.surfaceContainer,
@@ -235,7 +235,7 @@ private fun ListCollectionItemView(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalFoundationApi::class)
 @Composable
 private fun GridCollectionItemView(
     modifier: Modifier,
@@ -256,9 +256,9 @@ private fun GridCollectionItemView(
         Surface(
             modifier = Modifier
                 .clip(RoundedCornerShape(12.dp))
-                .combinedClickable(
+                .yabaClickable(
                     onLongClick = { isOptionsExpanded = true },
-                    onClick = onClick
+                    onClick = onClick,
                 ),
             shape = RoundedCornerShape(12.dp),
             color = MaterialTheme.colorScheme.surfaceContainer,

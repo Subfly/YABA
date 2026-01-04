@@ -57,7 +57,7 @@ fun TagCreationContent(tagId: String? = null) {
     val appStateManager = LocalAppStateManager.current
     val resultStore = LocalResultStore.current
 
-    val vm = viewModel<TagCreationVM>()
+    val vm = viewModel { TagCreationVM() }
     val state by vm.state
 
     LaunchedEffect(tagId) {

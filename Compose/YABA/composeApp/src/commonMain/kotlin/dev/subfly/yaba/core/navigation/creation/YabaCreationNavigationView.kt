@@ -23,12 +23,14 @@ import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 
 @Composable
-fun YabaCreationNavigationView() {
+fun YabaCreationNavigationView(
+    modifier: Modifier = Modifier,
+) {
     val creationNavigator = LocalCreationContentNavigator.current
     val appStateManager = LocalAppStateManager.current
 
     NavDisplay(
-        modifier = Modifier.animateContentSize(),
+        modifier = modifier.animateContentSize(),
         backStack = creationNavigator,
         entryDecorators = listOf(
             rememberSaveableStateHolderNavEntryDecorator(),

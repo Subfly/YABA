@@ -10,11 +10,11 @@ class AppVM: ViewModel() {
     val state = _state.asStateFlow()
 
     fun onShowCreationContent() {
-        _state.update { it.copy(showCreationSheet = true) }
+        _state.update { it.copy(showCreationContent = true) }
     }
 
     fun onHideCreationContent() {
-        _state.update { it.copy(showCreationSheet = false) }
+        _state.update { it.copy(showCreationContent = false) }
     }
 
     fun onShowDeletionDialog() {
