@@ -1,4 +1,4 @@
-package dev.subfly.yaba.core.navigation
+package dev.subfly.yaba.core.navigation.creation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable

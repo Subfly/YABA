@@ -21,10 +21,7 @@ import dev.subfly.yaba.ui.home.HomeView
     ExperimentalMaterial3ExpressiveApi::class
 )
 @Composable
-fun YabaNavigator(
-    modifier: Modifier = Modifier,
-    onShowSheet: () -> Unit,
-) {
+fun YabaNavigator(modifier: Modifier = Modifier) {
     val listDetailNavigator = rememberListDetailPaneScaffoldNavigator()
     val paneExpansionState = rememberPaneExpansionState()
 
@@ -32,7 +29,7 @@ fun YabaNavigator(
         modifier = modifier.fillMaxSize(),
         directive = listDetailNavigator.scaffoldDirective,
         value = listDetailNavigator.scaffoldValue,
-        listPane = { HomeView(onShowSheet = onShowSheet) },
+        listPane = { HomeView() },
         detailPane = { Text("Detail") },
         paneExpansionDragHandle = { dragState ->
             val interactionSource = remember { MutableInteractionSource() }

@@ -14,7 +14,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import dev.subfly.yabacore.model.utils.CardImageSizing
+import dev.subfly.yabacore.model.utils.ContentAppearance
+import dev.subfly.yabacore.model.utils.SortType
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
@@ -25,7 +27,10 @@ import yaba.composeapp.generated.resources.yaba
 internal fun HomeTopBar(
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior,
-    onOptionsClicked: () -> Unit,
+    onSearchClicked: () -> Unit,
+    onAppearanceChanged: (ContentAppearance) -> Unit,
+    onSizingChanged: (CardImageSizing) -> Unit,
+    onSortingChanged: (SortType) -> Unit,
 ) {
     var isMenuExpanded by rememberSaveable {
         mutableStateOf(false)
@@ -38,7 +43,7 @@ internal fun HomeTopBar(
             Text(text = stringResource(Res.string.yaba))
         },
         actions = {
-            IconButton(onClick = onOptionsClicked) {
+            IconButton(onClick = onSearchClicked) {
                 YabaIcon(name = "search-01")
             }
             Box(
@@ -50,6 +55,9 @@ internal fun HomeTopBar(
                 HomeDropdownMenu(
                     isExpanded = isMenuExpanded,
                     onDismissRequest = { isMenuExpanded = false },
+                    onAppearanceChanged = onAppearanceChanged,
+                    onSizingChanged = onSizingChanged,
+                    onSortingChanged = onSortingChanged,
                     onSettingsClicked = {
                         // TODO: NAVIGATE TO SETTINGS
                     }

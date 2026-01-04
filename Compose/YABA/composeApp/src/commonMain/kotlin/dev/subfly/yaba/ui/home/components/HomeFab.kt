@@ -13,10 +13,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.navigation3.runtime.NavKey
-import dev.subfly.yaba.core.navigation.BookmarkCreationRoute
-import dev.subfly.yaba.core.navigation.FolderCreationRoute
-import dev.subfly.yaba.core.navigation.TagCreationRoute
+import dev.subfly.yaba.core.navigation.creation.BookmarkCreationRoute
+import dev.subfly.yaba.core.navigation.creation.FolderCreationRoute
+import dev.subfly.yaba.core.navigation.creation.TagCreationRoute
+import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalUserPreferences
 import dev.subfly.yabacore.model.utils.FabPosition
@@ -25,12 +25,10 @@ import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalUuidApi::class)
 @Composable
-internal fun HomeFab(
-    modifier: Modifier = Modifier,
-    onShowSheet: () -> Unit,
-) {
+internal fun HomeFab(modifier: Modifier = Modifier) {
     val userPreferences = LocalUserPreferences.current
     val creationNavigator = LocalCreationContentNavigator.current
+    val appStateManager = LocalAppStateManager.current
 
     var isFabExpanded by rememberSaveable {
         mutableStateOf(false)
@@ -63,7 +61,7 @@ internal fun HomeFab(
                 onClick = {
                     creationNavigator.add(BookmarkCreationRoute(bookmarkId = null))
                     isFabExpanded = false
-                    onShowSheet()
+                    appStateManager.onShowSheet()
                 },
                 text = {},
                 icon = { YabaIcon(name = "bookmark-02") }
@@ -72,7 +70,7 @@ internal fun HomeFab(
                 onClick = {
                     creationNavigator.add(FolderCreationRoute(folderId = null))
                     isFabExpanded = false
-                    onShowSheet()
+                    appStateManager.onShowSheet()
                 },
                 text = {},
                 icon = { YabaIcon(name = "folder-01") }
@@ -81,7 +79,7 @@ internal fun HomeFab(
                 onClick = {
                     creationNavigator.add(TagCreationRoute(tagId = null))
                     isFabExpanded = false
-                    onShowSheet()
+                    appStateManager.onShowSheet()
                 },
                 text = {},
                 icon = { YabaIcon(name = "tag-01") }

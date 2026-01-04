@@ -35,6 +35,9 @@ internal fun HomeDropdownMenu(
     modifier: Modifier = Modifier,
     isExpanded: Boolean,
     onDismissRequest: () -> Unit,
+    onAppearanceChanged: (ContentAppearance) -> Unit,
+    onSizingChanged: (CardImageSizing) -> Unit,
+    onSortingChanged: (SortType) -> Unit,
     onSettingsClicked: () -> Unit,
 ) {
     var isAppearanceExpanded by remember { mutableStateOf(false) }
@@ -56,11 +59,11 @@ internal fun HomeDropdownMenu(
                 onPressedSection = { isAppearanceExpanded = !isAppearanceExpanded },
                 onDismissSubmenu = { isAppearanceExpanded = false },
                 onAppearanceSelection = { appearance ->
-                    // TODO: SET APPEARANCE
+                    onAppearanceChanged(appearance)
                     onDismissRequest()
                 },
                 onSizingSelection = { sizing ->
-                    // TODO: SET CARD IMAGE SIZING
+                    onSizingChanged(sizing)
                     onDismissRequest()
                 }
             )
@@ -69,7 +72,7 @@ internal fun HomeDropdownMenu(
                 onPressedSection = { isSortingExpanded = !isSortingExpanded },
                 onDismissSubmenu = { isSortingExpanded = false },
                 onSortingSelection = { sorting ->
-                    // TODO: SET SORTING
+                    onSortingChanged(sorting)
                     onDismissRequest()
                 }
             )

@@ -1,4 +1,4 @@
-package dev.subfly.yaba.core.navigation
+package dev.subfly.yaba.core.navigation.creation
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -10,6 +10,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -22,18 +24,17 @@ import dev.subfly.yaba.ui.creation.tag.TagCreationContent
 import dev.subfly.yaba.ui.selection.ColorSelectionContent
 import dev.subfly.yaba.ui.selection.IconCategorySelectionContent
 import dev.subfly.yaba.ui.selection.IconSelectionContent
+import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalUuidApi::class)
 @Composable
-fun CreationSheet(
-    modifier: Modifier = Modifier,
-    shouldShow: Boolean,
-    onDismiss: () -> Unit,
-) {
+fun YabaCreationSheet(modifier: Modifier = Modifier) {
     val creationNavigator = LocalCreationContentNavigator.current
+    val appStateManager = LocalAppStateManager.current
     val sheetState = rememberModalBottomSheetState()
+    val appState by appStateManager.state.collectAsState()
 
     LaunchedEffect(sheetState.isVisible) {
         if (sheetState.isVisible.not()) {
@@ -43,10 +44,10 @@ fun CreationSheet(
 
     AnimatedBottomSheet(
         modifier = modifier,
-        isVisible = shouldShow,
+        isVisible = appState.showCreationSheet,
         sheetState = sheetState,
         showDragHandle = true,
-        onDismissRequest = onDismiss,
+        onDismissRequest = appStateManager::onHideSheet,
     ) {
         NavDisplay(
             modifier = Modifier.animateContentSize(),
@@ -68,7 +69,7 @@ fun CreationSheet(
                 // Means next pop up destination is Empty Route,
                 // so dismiss first, then remove the last item
                 if (creationNavigator.size == 2) {
-                    onDismiss()
+                    appStateManager.onHideSheet()
                 }
                 creationNavigator.removeLastOrNull()
             },
@@ -80,7 +81,7 @@ fun CreationSheet(
                             // Means next pop up destination is Empty Route,
                             // so dismiss first, then remove the last item
                             if (creationNavigator.size == 2) {
-                                onDismiss()
+                                appStateManager.onHideSheet()
                             }
                             creationNavigator.removeLastOrNull()
                         }
@@ -93,7 +94,7 @@ fun CreationSheet(
                             // Means next pop up destination is Empty Route,
                             // so dismiss first, then remove the last item
                             if (creationNavigator.size == 2) {
-                                onDismiss()
+                                appStateManager.onHideSheet()
                             }
                             creationNavigator.removeLastOrNull()
                         }

@@ -32,7 +32,7 @@ import dev.subfly.yabacore.model.utils.ContentAppearance
  *
  * ```
  * YabaContentLayout(
- *   appearance = ContentAppearance.LIST,
+ *   layoutConfig = ContentLayoutConfig(appearance = ContentAppearance.LIST),
  *   modifier = Modifier.fillMaxSize(),
  * ) {
  *   // Section header (spans full width in grid)
@@ -109,7 +109,7 @@ import dev.subfly.yabacore.model.utils.ContentAppearance
  *   }
  * }
  *
- * YabaContentLayout(appearance = appearance) {
+ * YabaContentLayout(layoutConfig = layoutConfig) {
  *   // Folders with drag/drop
  *   items(folders, key = { it.id }) { folder, appearance ->
  *     val payload = remember(folder.id) { DragFolderPayload(folder) }
@@ -154,7 +154,7 @@ import dev.subfly.yabacore.model.utils.ContentAppearance
  * for CARD or GRID appearances (use long-press context menus instead).
  *
  * ```
- * YabaContentLayout(appearance = ContentAppearance.LIST) {
+ * YabaContentLayout(layoutConfig = ContentLayoutConfig(appearance = ContentAppearance.LIST)) {
  *   items(bookmarks, key = { it.id }) { bookmark, appearance ->
  *     if (appearance == ContentAppearance.LIST) {
  *       YabaSwipeActions(
@@ -186,20 +186,19 @@ import dev.subfly.yabacore.model.utils.ContentAppearance
  */
 @Composable
 fun YabaContentLayout(
-    appearance: ContentAppearance,
+    layoutConfig: ContentLayoutConfig,
     modifier: Modifier = Modifier,
-    layoutConfig: ContentLayoutConfig = ContentLayoutConfig(appearance = appearance),
     contentPadding: PaddingValues = PaddingValues(0.dp),
     content: YabaContentLayoutScope.() -> Unit,
 ) {
     val entries = buildList { YabaContentLayoutScopeImpl(this).content() }
 
-    when (appearance) {
+    when (layoutConfig.appearance) {
         ContentAppearance.LIST, ContentAppearance.CARD -> LazyColumn(
             modifier = modifier,
             contentPadding = contentPadding,
             verticalArrangement = Arrangement.spacedBy(layoutConfig.list.itemSpacing),
-        ) { renderAsLazyList(entries, appearance) }
+        ) { renderAsLazyList(entries, layoutConfig.appearance) }
 
         ContentAppearance.GRID -> LazyVerticalStaggeredGrid(
             modifier = modifier,
@@ -208,7 +207,7 @@ fun YabaContentLayout(
             verticalItemSpacing = layoutConfig.grid.verticalSpacing,
             horizontalArrangement =
                 Arrangement.spacedBy(layoutConfig.grid.horizontalSpacing),
-        ) { renderAsStaggeredGrid(entries, appearance) }
+        ) { renderAsStaggeredGrid(entries, layoutConfig.appearance) }
     }
 }
 

@@ -1,4 +1,4 @@
-package dev.subfly.yaba.core.components.item
+package dev.subfly.yaba.core.components.item.folder
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -54,6 +54,7 @@ fun PresentableParentFolderItem(
     contentHeight: Dp = 60.dp,
 ) {
     var isOptionsExpanded by remember { mutableStateOf(false) }
+
     YabaSwipeActions(
         modifier = modifier,
         rightActions = if (model != null) {

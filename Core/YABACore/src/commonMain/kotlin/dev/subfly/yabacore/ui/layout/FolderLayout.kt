@@ -23,11 +23,10 @@ import kotlin.uuid.ExperimentalUuidApi
 @Composable
 fun YabaFolderLayout(
     folders: List<FolderUiModel>,
-    appearance: ContentAppearance,
+    layoutConfig: ContentLayoutConfig,
     onDrop: (YabaDropResult) -> Unit,
     modifier: Modifier = Modifier,
     dragDropState: YabaDragDropState = rememberYabaDragDropState(onDrop),
-    layoutConfig: ContentLayoutConfig = ContentLayoutConfig(appearance = appearance),
     contentPadding: PaddingValues = PaddingValues(0.dp),
     itemContent: @Composable (
         folder: FolderUiModel,
@@ -36,9 +35,9 @@ fun YabaFolderLayout(
     ) -> Unit,
 ) {
     val resolvedAppearance =
-        when (appearance) {
+        when (layoutConfig.appearance) {
             ContentAppearance.CARD -> ContentAppearance.LIST
-            else -> appearance
+            else -> layoutConfig.appearance
         }
     when (resolvedAppearance) {
         ContentAppearance.LIST, ContentAppearance.CARD ->

@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import dev.subfly.yaba.core.app.App
 import dev.subfly.yabacore.database.DatabaseProvider
 
 class MainActivity : ComponentActivity() {

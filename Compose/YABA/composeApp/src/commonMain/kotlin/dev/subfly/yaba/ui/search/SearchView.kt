@@ -11,6 +11,7 @@ import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import dev.subfly.yaba.util.LocalUserPreferences
+import dev.subfly.yabacore.ui.layout.ContentLayoutConfig
 import dev.subfly.yabacore.ui.layout.YabaBookmarkLayout
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,7 +49,10 @@ fun SearchView(modifier: Modifier = Modifier) {
         YabaBookmarkLayout(
             modifier = Modifier.padding(paddings),
             bookmarks = emptyList(),
-            appearance = userPreferences.preferredContentAppearance,
+            layoutConfig = ContentLayoutConfig(
+                appearance = userPreferences.preferredContentAppearance,
+                cardImageSizing = userPreferences.preferredCardImageSizing,
+            ),
             onDrop = {
 
             },

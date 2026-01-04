@@ -1,24 +1,25 @@
-package dev.subfly.yaba
+package dev.subfly.yaba.core.app
 
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.rememberNavBackStack
-import dev.subfly.yaba.core.navigation.CreationSheet
-import dev.subfly.yaba.core.navigation.EmptyRoute
+import dev.subfly.yaba.core.navigation.creation.YabaCreationSheet
+import dev.subfly.yaba.core.navigation.creation.EmptyRoute
 import dev.subfly.yaba.core.navigation.YabaNavigator
-import dev.subfly.yaba.core.navigation.creationNavigationConfig
-import dev.subfly.yaba.core.navigation.rememberResultStore
+import dev.subfly.yaba.core.navigation.alert.DeletionVM
+import dev.subfly.yaba.core.navigation.alert.YabaDeletionDialog
+import dev.subfly.yaba.core.navigation.creation.creationNavigationConfig
+import dev.subfly.yaba.core.navigation.creation.rememberResultStore
 import dev.subfly.yaba.core.theme.YabaTheme
+import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
+import dev.subfly.yaba.util.LocalDeletionDialogManager
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.LocalUserPreferences
-import dev.subfly.yabacore.database.DatabaseProvider
 import dev.subfly.yabacore.preferences.SettingsStores
 import dev.subfly.yabacore.preferences.UserPreferences
 
@@ -28,27 +29,27 @@ fun App() {
     val userPreferences by SettingsStores.userPreferences.preferencesFlow.collectAsState(
         UserPreferences()
     )
+
+    val appVM = viewModel<AppVM>()
+    val deletionVM = viewModel<DeletionVM>()
+
     val navigationResultStore = rememberResultStore()
     val creationNavigator = rememberNavBackStack(
         configuration = creationNavigationConfig,
         EmptyRoute
     )
 
-    var shouldShowCreationSheet by rememberSaveable { mutableStateOf(false) }
-
     CompositionLocalProvider(
         LocalUserPreferences provides userPreferences,
         LocalResultStore provides navigationResultStore,
         LocalCreationContentNavigator provides creationNavigator,
+        LocalAppStateManager provides appVM,
+        LocalDeletionDialogManager provides deletionVM,
     ) {
         YabaTheme {
-            YabaNavigator(
-                onShowSheet = { shouldShowCreationSheet = true }
-            )
-            CreationSheet(
-                shouldShow = shouldShowCreationSheet,
-                onDismiss = { shouldShowCreationSheet = false }
-            )
+            YabaNavigator()
+            YabaCreationSheet()
+            YabaDeletionDialog()
         }
     }
 }

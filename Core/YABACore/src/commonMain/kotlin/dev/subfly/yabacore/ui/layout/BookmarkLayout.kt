@@ -23,94 +23,94 @@ import kotlin.uuid.ExperimentalUuidApi
 
 @Composable
 fun YabaBookmarkLayout(
-        bookmarks: List<BookmarkUiModel>,
+    bookmarks: List<BookmarkUiModel>,
+    layoutConfig: ContentLayoutConfig,
+    onDrop: (YabaDropResult) -> Unit,
+    modifier: Modifier = Modifier,
+    dragDropState: YabaDragDropState = rememberYabaDragDropState(onDrop),
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    itemContent:
+    @Composable
+        (
+        bookmark: BookmarkUiModel,
+        isDragging: Boolean,
         appearance: ContentAppearance,
-        onDrop: (YabaDropResult) -> Unit,
-        modifier: Modifier = Modifier,
-        dragDropState: YabaDragDropState = rememberYabaDragDropState(onDrop),
-        layoutConfig: ContentLayoutConfig = ContentLayoutConfig(appearance = appearance),
-        contentPadding: PaddingValues = PaddingValues(0.dp),
-        itemContent:
-                @Composable
-                (
-                        bookmark: BookmarkUiModel,
-                        isDragging: Boolean,
-                        appearance: ContentAppearance,
-                        cardImageSizing: CardImageSizing,
-                ) -> Unit,
+        cardImageSizing: CardImageSizing,
+    ) -> Unit,
 ) {
-    when (appearance) {
+    when (layoutConfig.appearance) {
         ContentAppearance.LIST, ContentAppearance.CARD ->
-                LazyColumn(
-                        modifier = modifier,
-                        verticalArrangement = Arrangement.spacedBy(layoutConfig.list.itemSpacing),
-                        contentPadding = contentPadding,
-                ) {
-                    items(
-                            items = bookmarks,
-                            key = { "${it.id} ${it.label}" },
-                    ) { bookmark ->
-                        BookmarkItem(
-                                bookmark = bookmark,
-                                appearance = appearance,
-                                cardImageSizing = layoutConfig.cardImageSizing,
-                                state = dragDropState,
-                                orientation = Orientation.Vertical,
-                                modifier = Modifier.animateItem(),
-                                itemContent = itemContent,
-                        )
-                    }
+            LazyColumn(
+                modifier = modifier,
+                verticalArrangement = Arrangement.spacedBy(layoutConfig.list.itemSpacing),
+                contentPadding = contentPadding,
+            ) {
+                items(
+                    items = bookmarks,
+                    key = { "${it.id} ${it.label}" },
+                ) { bookmark ->
+                    BookmarkItem(
+                        bookmark = bookmark,
+                        appearance = layoutConfig.appearance,
+                        cardImageSizing = layoutConfig.cardImageSizing,
+                        state = dragDropState,
+                        orientation = Orientation.Vertical,
+                        modifier = Modifier.animateItem(),
+                        itemContent = itemContent,
+                    )
                 }
+            }
+
         ContentAppearance.GRID ->
-                LazyVerticalStaggeredGrid(
-                        modifier = modifier,
-                        columns = StaggeredGridCells.Adaptive(layoutConfig.grid.minCellWidth),
-                        verticalItemSpacing = layoutConfig.grid.verticalSpacing,
-                        horizontalArrangement =
-                                Arrangement.spacedBy(layoutConfig.grid.horizontalSpacing),
-                        contentPadding = contentPadding,
-                ) {
-                    items(
-                            items = bookmarks,
-                            key = { "${it.id} ${it.label}" },
-                    ) { bookmark ->
-                        BookmarkItem(
-                                bookmark = bookmark,
-                                appearance = appearance,
-                                cardImageSizing = layoutConfig.cardImageSizing,
-                                state = dragDropState,
-                                orientation = Orientation.Vertical,
-                                modifier = Modifier.animateItem(),
-                                itemContent = itemContent,
-                        )
-                    }
+            LazyVerticalStaggeredGrid(
+                modifier = modifier,
+                columns = StaggeredGridCells.Adaptive(layoutConfig.grid.minCellWidth),
+                verticalItemSpacing = layoutConfig.grid.verticalSpacing,
+                horizontalArrangement =
+                    Arrangement.spacedBy(layoutConfig.grid.horizontalSpacing),
+                contentPadding = contentPadding,
+            ) {
+                items(
+                    items = bookmarks,
+                    key = { "${it.id} ${it.label}" },
+                ) { bookmark ->
+                    BookmarkItem(
+                        bookmark = bookmark,
+                        appearance = layoutConfig.appearance,
+                        cardImageSizing = layoutConfig.cardImageSizing,
+                        state = dragDropState,
+                        orientation = Orientation.Vertical,
+                        modifier = Modifier.animateItem(),
+                        itemContent = itemContent,
+                    )
                 }
+            }
     }
 }
 
 @Composable
 private fun BookmarkItem(
+    bookmark: BookmarkUiModel,
+    appearance: ContentAppearance,
+    cardImageSizing: CardImageSizing,
+    state: YabaDragDropState,
+    orientation: Orientation,
+    modifier: Modifier = Modifier,
+    itemContent:
+    @Composable
+        (
         bookmark: BookmarkUiModel,
+        isDragging: Boolean,
         appearance: ContentAppearance,
         cardImageSizing: CardImageSizing,
-        state: YabaDragDropState,
-        orientation: Orientation,
-        modifier: Modifier = Modifier,
-        itemContent:
-                @Composable
-                (
-                        bookmark: BookmarkUiModel,
-                        isDragging: Boolean,
-                        appearance: ContentAppearance,
-                        cardImageSizing: CardImageSizing,
-                ) -> Unit,
+    ) -> Unit,
 ) {
     val payload = remember(bookmark.id) { DragBookmarkPayload(bookmark) }
     val isDragging = state.isDragging(payload)
 
     Box(
-            modifier =
-                    modifier.yabaDropTarget(state, payload, orientation)
-                            .yabaDragSource(state, payload),
+        modifier =
+            modifier.yabaDropTarget(state, payload, orientation)
+                .yabaDragSource(state, payload),
     ) { itemContent(bookmark, isDragging, appearance, cardImageSizing) }
 }
