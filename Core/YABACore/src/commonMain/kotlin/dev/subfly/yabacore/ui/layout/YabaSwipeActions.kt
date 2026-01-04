@@ -11,14 +11,16 @@ import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.gestures.animateTo
 import androidx.compose.foundation.gestures.snapTo
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
@@ -27,12 +29,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 /**
  * Compose-side wrapper similar to SwiftUI's `swipeActions`.
@@ -61,8 +65,8 @@ fun YabaSwipeActions(
     modifier: Modifier = Modifier,
     leftActions: List<SwipeAction> = emptyList(),
     rightActions: List<SwipeAction> = emptyList(),
-    actionWidth: Dp = 72.dp,
-    actionSpacing: Dp = 6.dp,
+    actionWidth: Dp = 64.dp,
+    actionSpacing: Dp = 0.dp,
     closeOnAction: Boolean = true,
     state: YabaSwipeState = rememberYabaSwipeState(),
     content: @Composable () -> Unit,
@@ -87,161 +91,102 @@ fun YabaSwipeActions(
 
     LaunchedEffect(anchors) { state.updateAnchors(anchors) }
 
-    Box(modifier = modifier.fillMaxWidth()) {
+    Box(modifier = modifier.fillMaxWidth().wrapContentHeight()) {
+        // Background at the bottom - revealed when content slides away
+        // Action buttons are directly clickable here
         SwipeActionsBackground(
+            state = state,
             leftActions = left,
             rightActions = right,
             actionWidth = actionWidth,
             actionSpacing = actionSpacing,
-            leftTotalWidth = leftWidth,
-            rightTotalWidth = rightWidth,
+            closeOnAction = closeOnAction,
         )
 
+        // Content on top of background - slides to reveal actions
         Box(
-            modifier = Modifier.fillMaxSize().swipeableContent(state),
+            modifier = Modifier.fillMaxWidth().swipeableContent(state),
         ) { content() }
-
-        if (closeOnAction) {
-            ActionClickOverlay(
-                state = state,
-                leftActions = left,
-                rightActions = right,
-                actionWidth = actionWidth,
-                actionSpacing = actionSpacing,
-                leftTotalWidth = leftWidth,
-                rightTotalWidth = rightWidth,
-            )
-        }
     }
 }
 
 @Composable
-private fun SwipeActionsBackground(
-    leftActions: List<SwipeAction>,
-    rightActions: List<SwipeAction>,
-    actionWidth: Dp,
-    actionSpacing: Dp,
-    leftTotalWidth: Dp,
-    rightTotalWidth: Dp,
-) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        if (leftActions.isNotEmpty()) {
-            Row(
-                modifier =
-                    Modifier.align(Alignment.CenterStart)
-                        .fillMaxHeight()
-                        .width(leftTotalWidth),
-                horizontalArrangement = Arrangement.spacedBy(actionSpacing),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                leftActions.forEach { action ->
-                    Box(
-                        modifier = Modifier.width(actionWidth),
-                        contentAlignment = Alignment.Center,
-                    ) { action.content() }
-                }
-            }
-        }
-        if (rightActions.isNotEmpty()) {
-            Row(
-                modifier =
-                    Modifier.align(Alignment.CenterEnd)
-                        .fillMaxHeight()
-                        .width(rightTotalWidth),
-                horizontalArrangement = Arrangement.spacedBy(actionSpacing),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                rightActions.forEach { action ->
-                    Box(
-                        modifier = Modifier.width(actionWidth),
-                        contentAlignment = Alignment.Center,
-                    ) { action.content() }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun ActionClickOverlay(
+private fun BoxScope.SwipeActionsBackground(
     state: YabaSwipeState,
     leftActions: List<SwipeAction>,
     rightActions: List<SwipeAction>,
     actionWidth: Dp,
     actionSpacing: Dp,
-    leftTotalWidth: Dp,
-    rightTotalWidth: Dp,
+    closeOnAction: Boolean,
 ) {
-    // Invisible hit targets that sit above background to let actions be clickable.
-    Box(modifier = Modifier.fillMaxSize()) {
-        if (leftActions.isNotEmpty()) {
-            Row(
-                modifier =
-                    Modifier.align(Alignment.CenterStart)
-                        .fillMaxHeight()
-                        .width(leftTotalWidth),
-                horizontalArrangement = Arrangement.spacedBy(actionSpacing),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                leftActions.forEach { action ->
-                    Box(
-                        modifier =
-                            Modifier.width(actionWidth)
-                                .fillMaxHeight()
-                                .swipeActionClick(action, state),
-                    )
-                }
+    val scope = rememberCoroutineScope()
+
+    if (leftActions.isNotEmpty()) {
+        Row(
+            modifier = Modifier.align(Alignment.CenterStart).height(actionWidth),
+            horizontalArrangement =
+                if (actionSpacing > 0.dp) {
+                    Arrangement.spacedBy(actionSpacing)
+                } else {
+                    Arrangement.Start
+                },
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            leftActions.forEach { action ->
+                Box(
+                    modifier =
+                        Modifier.width(actionWidth)
+                            .height(actionWidth)
+                            .clip(CircleShape)
+                            .clickable {
+                                action.onClick?.invoke()
+                                if (closeOnAction) {
+                                    scope.launch { state.close() }
+                                }
+                            },
+                    contentAlignment = Alignment.Center,
+                ) { action.content() }
             }
         }
-
-        if (rightActions.isNotEmpty()) {
-            Row(
-                modifier =
-                    Modifier.align(Alignment.CenterEnd)
-                        .fillMaxHeight()
-                        .width(rightTotalWidth),
-                horizontalArrangement = Arrangement.spacedBy(actionSpacing),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                rightActions.forEach { action ->
-                    Box(
-                        modifier =
-                            Modifier.width(actionWidth)
-                                .fillMaxHeight()
-                                .swipeActionClick(action, state),
-                    )
-                }
+    }
+    if (rightActions.isNotEmpty()) {
+        Row(
+            modifier = Modifier.align(Alignment.CenterEnd).height(actionWidth),
+            horizontalArrangement =
+                if (actionSpacing > 0.dp) {
+                    Arrangement.spacedBy(actionSpacing)
+                } else {
+                    Arrangement.Start
+                },
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            rightActions.forEach { action ->
+                Box(
+                    modifier =
+                        Modifier.width(actionWidth)
+                            .height(actionWidth)
+                            .clip(CircleShape)
+                            .clickable {
+                                action.onClick?.invoke()
+                                if (closeOnAction) {
+                                    scope.launch { state.close() }
+                                }
+                            },
+                    contentAlignment = Alignment.Center,
+                ) { action.content() }
             }
         }
     }
 }
 
 private fun Modifier.swipeableContent(state: YabaSwipeState): Modifier = composed {
-    this.graphicsLayer { translationX = state.offset }
+    this.offset { IntOffset(state.offset.roundToInt(), 0) }
         .anchoredDraggable(
             state = state.draggableState,
             orientation = Orientation.Horizontal,
             flingBehavior = AnchoredDraggableDefaults.flingBehavior(state.draggableState),
         )
 }
-
-private fun Modifier.swipeActionClick(
-    action: SwipeAction,
-    state: YabaSwipeState,
-): Modifier =
-    this.then(
-        composed {
-            val scope = rememberCoroutineScope()
-            val interaction = remember { MutableInteractionSource() }
-            this.clickable(
-                interactionSource = interaction,
-                indication = null,
-            ) {
-                action.onClick?.invoke()
-                scope.launch { state.close() }
-            }
-        }
-    )
 
 @Stable
 class YabaSwipeState

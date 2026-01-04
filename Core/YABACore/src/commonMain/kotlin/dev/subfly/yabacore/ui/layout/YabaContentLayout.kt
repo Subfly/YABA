@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import dev.subfly.yabacore.model.utils.ContentAppearance
 
@@ -202,7 +203,16 @@ fun YabaContentLayout(
 
         ContentAppearance.GRID -> LazyVerticalStaggeredGrid(
             modifier = modifier,
-            contentPadding = contentPadding,
+            contentPadding = PaddingValues(
+                start = contentPadding.calculateLeftPadding(LayoutDirection.Ltr) +
+                    layoutConfig.grid.outerPadding.calculateLeftPadding(LayoutDirection.Ltr),
+                end = contentPadding.calculateRightPadding(LayoutDirection.Ltr) +
+                    layoutConfig.grid.outerPadding.calculateRightPadding(LayoutDirection.Ltr),
+                top = contentPadding.calculateTopPadding() +
+                    layoutConfig.grid.outerPadding.calculateTopPadding(),
+                bottom = contentPadding.calculateBottomPadding() +
+                    layoutConfig.grid.outerPadding.calculateBottomPadding(),
+            ),
             columns = StaggeredGridCells.Adaptive(layoutConfig.grid.minCellWidth),
             verticalItemSpacing = layoutConfig.grid.verticalSpacing,
             horizontalArrangement =

@@ -5,27 +5,14 @@ package dev.subfly.yaba.core.components.item.folder
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DropdownMenuGroup
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.DropdownMenuPopup
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,11 +21,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEachIndexed
+import dev.subfly.yaba.core.components.item.base.BaseCollectionItemView
+import dev.subfly.yaba.core.components.item.base.CollectionMenuAction
+import dev.subfly.yaba.core.components.item.base.CollectionSwipeAction
 import dev.subfly.yaba.core.navigation.alert.DeletionState
 import dev.subfly.yaba.core.navigation.alert.DeletionType
 import dev.subfly.yaba.core.navigation.creation.BookmarkCreationRoute
@@ -51,8 +39,6 @@ import dev.subfly.yabacore.model.utils.ContentAppearance
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.icon.iconTintArgb
-import dev.subfly.yabacore.ui.layout.SwipeAction
-import dev.subfly.yabacore.ui.layout.YabaSwipeActions
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.delete
@@ -68,276 +54,145 @@ fun FolderItemView(
     appearance: ContentAppearance,
     onDeleteFolder: (FolderUiModel) -> Unit,
 ) {
-    when (appearance) {
-        ContentAppearance.LIST, ContentAppearance.CARD -> {
-            ListFolderItemView(modifier, model, onDeleteFolder)
-        }
-        ContentAppearance.GRID -> {
-            GridFolderItemView(modifier, model, onDeleteFolder)
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-private fun ListFolderItemView(
-    modifier: Modifier = Modifier,
-    model: FolderUiModel,
-    onDeleteFolder: (FolderUiModel) -> Unit,
-) {
     val creationNavigator = LocalCreationContentNavigator.current
     val deletionDialogManager = LocalDeletionDialogManager.current
     val appStateManager = LocalAppStateManager.current
 
-    var isExpanded by remember { mutableStateOf(false) }
-    var isOptionsExpanded by remember { mutableStateOf(false) }
-    val expandedIconRotation by animateFloatAsState(
-        targetValue = if (isExpanded) 90F else 0f,
-    )
-    val color by remember(model) {
-        mutableStateOf(Color(model.color.iconTintArgb()))
-    }
+    // Localized strings for menu items
+    val newBookmarkText = stringResource(Res.string.new_bookmark)
+    val editText = stringResource(Res.string.edit)
+    val moveText = stringResource(Res.string.move)
+    val deleteText = stringResource(Res.string.delete)
 
-    Box {
-        Column(
-            modifier = modifier
-                .fillMaxWidth()
-                .animateContentSize(),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            YabaSwipeActions(
-                modifier = Modifier.padding(horizontal = 12.dp),
-                actionSpacing = 0.dp,
-                leftActions = listOf(
-                    SwipeAction(
-                        key = "MOVE",
-                        onClick = {
-                            // TODO: OPEN MOVE SHEET WITH THIS SHIT
-                            println("LELE: MOVE")
-                        },
-                        content = {
-                            Surface(
-                                modifier = Modifier.size(48.dp),
-                                shape = CircleShape,
-                                color = Color(YabaColor.TEAL.iconTintArgb())
-                            ) {
-                                YabaIcon(
-                                    modifier = Modifier.padding(12.dp),
-                                    name = "arrow-move-up-right",
-                                    color = Color.White,
-                                )
-                            }
-                        }
-                    ),
-                    SwipeAction(
-                        key = "NEW",
-                        onClick = {
-                            creationNavigator.add(BookmarkCreationRoute(bookmarkId = null))
-                            appStateManager.onShowSheet()
-                        },
-                    ) {
-                        Surface(
-                            modifier = Modifier.size(48.dp),
-                            shape = CircleShape,
-                            color = Color(YabaColor.BLUE.iconTintArgb())
-                        ) {
-                            YabaIcon(
-                                modifier = Modifier.padding(12.dp),
-                                name = "bookmark-add-02",
-                                color = Color.White,
-                            )
-                        }
-                    }
-                ),
-                rightActions = listOf(
-                    SwipeAction(
-                        key = "EDIT",
-                        onClick = {
-                            creationNavigator.add(
-                                FolderCreationRoute(folderId = model.id.toString())
-                            )
-                            appStateManager.onShowSheet()
-                        },
-                        content = {
-                            Surface(
-                                modifier = Modifier.size(48.dp),
-                                shape = CircleShape,
-                                color = Color(YabaColor.ORANGE.iconTintArgb())
-                            ) {
-                                YabaIcon(
-                                    modifier = Modifier.padding(12.dp),
-                                    name = "edit-02",
-                                    color = Color.White,
-                                )
-                            }
-                        }
-                    ),
-                    SwipeAction(
-                        key = "DELETE",
-                        onClick = {
-                            deletionDialogManager.send(
-                                DeletionState(
-                                    deletionType = DeletionType.FOLDER,
-                                    folderToBeDeleted = model,
-                                    onConfirm = { onDeleteFolder(model) },
-                                )
-                            )
-                        },
-                    ) {
-                        Surface(
-                            modifier = Modifier.size(48.dp),
-                            shape = CircleShape,
-                            color = Color(YabaColor.RED.iconTintArgb())
-                        ) {
-                            YabaIcon(
-                                modifier = Modifier.padding(12.dp),
-                                name = "delete-02",
-                                color = Color.White,
-                            )
-                        }
-                    }
-                )
-            ) {
-                Box(
-                    modifier = Modifier
-                        .wrapContentSize()
-                        .background(
-                            color = MaterialTheme.colorScheme.background,
-                            shape = RoundedCornerShape(12.dp)
-                        )
-                ) {
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
-                            .combinedClickable(
-                                onLongClick = { isOptionsExpanded = true },
-                                onClick = {
-                                    // TODO: NAVIGATE FOLDER DETAIL
-                                }
-                            ),
-                        shape = RoundedCornerShape(12.dp),
-                        color = color.copy(alpha = 0.1F)
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(
-                                    horizontal = 24.dp,
-                                    vertical = 18.dp,
-                                ),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            ) {
-                                YabaIcon(
-                                    name = model.icon,
-                                    color = color,
-                                )
-                                Text(model.label)
-                            }
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            ) {
-                                Text(model.bookmarkCount.toString())
-                                if (model.children.isNotEmpty()) {
-                                    YabaIcon(
-                                        modifier = Modifier.rotate(expandedIconRotation),
-                                        name = "arrow-right-01",
-                                        color = color,
-                                    )
-                                }
-                            }
-                        }
-                    }
+    val menuActions = remember(model, newBookmarkText, editText, moveText, deleteText) {
+        listOf(
+            CollectionMenuAction(
+                key = "new_bookmark",
+                icon = "bookmark-add-02",
+                text = newBookmarkText,
+                color = YabaColor.CYAN,
+                onClick = {
+                    creationNavigator.add(BookmarkCreationRoute(bookmarkId = null))
+                    appStateManager.onShowSheet()
                 }
-            }
-
-            if (model.children.isNotEmpty() && isExpanded) {
-                model.children.fastForEachIndexed { _, childModel ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .width(4.dp)
-                                .height(40.dp)
-                                .background(
-                                    color = color,
-                                    shape = RoundedCornerShape(2.dp)
-                                )
-                        )
-                        ListFolderItemView(
-                            model = childModel,
-                            onDeleteFolder = { onDeleteFolder(childModel) },
-                        )
-                    }
+            ),
+            CollectionMenuAction(
+                key = "edit",
+                icon = "edit-02",
+                text = editText,
+                color = YabaColor.ORANGE,
+                onClick = {
+                    creationNavigator.add(FolderCreationRoute(folderId = model.id.toString()))
+                    appStateManager.onShowSheet()
                 }
-            }
-        }
-        OptionsContent(
-            model = model,
-            isOptionsExpanded = isOptionsExpanded,
-            onDismissRequest = { isOptionsExpanded = false },
-            onDeleteFolder = onDeleteFolder,
+            ),
+            CollectionMenuAction(
+                key = "move",
+                icon = "arrow-move-up-right",
+                text = moveText,
+                color = YabaColor.TEAL,
+                onClick = {
+                    // TODO: SHOW MOVE DIALOG
+                }
+            ),
+            CollectionMenuAction(
+                key = "delete",
+                icon = "delete-02",
+                text = deleteText,
+                color = YabaColor.RED,
+                isDangerous = true,
+                onClick = {
+                    deletionDialogManager.send(
+                        DeletionState(
+                            deletionType = DeletionType.FOLDER,
+                            folderToBeDeleted = model,
+                            onConfirm = { onDeleteFolder(model) },
+                        )
+                    )
+                }
+            ),
         )
     }
-}
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-private fun GridFolderItemView(
-    modifier: Modifier = Modifier,
-    model: FolderUiModel,
-    onDeleteFolder: (FolderUiModel) -> Unit,
-) {
-    var isOptionsExpanded by remember { mutableStateOf(false) }
-    val color by remember(model) {
-        mutableStateOf(Color(model.color.iconTintArgb()))
+    val leftSwipeActions = remember(model) {
+        listOf(
+            CollectionSwipeAction(
+                key = "MOVE",
+                icon = "arrow-move-up-right",
+                color = YabaColor.TEAL,
+                onClick = {
+                    // TODO: OPEN MOVE SHEET
+                }
+            ),
+            CollectionSwipeAction(
+                key = "NEW",
+                icon = "bookmark-add-02",
+                color = YabaColor.BLUE,
+                onClick = {
+                    creationNavigator.add(BookmarkCreationRoute(bookmarkId = null))
+                    appStateManager.onShowSheet()
+                }
+            ),
+        )
     }
 
-    Box(modifier = modifier) {
-        Surface(
-            modifier = Modifier
-                .clip(RoundedCornerShape(12.dp))
-                .combinedClickable(
-                    onLongClick = { isOptionsExpanded = true },
-                    onClick = {
-                        // TODO: NAVIGATE FOLDER DETAIL
-                    }
-                ),
-            shape = RoundedCornerShape(12.dp),
-            color = color.copy(alpha = 0.1F)
-        ) {
-            Column(
-                modifier = Modifier.padding(18.dp),
-                horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.SpaceBetween,
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(64.dp)
-                            .background(
-                                color = color.copy(alpha = 0.3F),
-                                shape = CircleShape,
-                            ),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        YabaIcon(
-                            name = model.icon,
-                            color = color,
+    val rightSwipeActions = remember(model) {
+        listOf(
+            CollectionSwipeAction(
+                key = "EDIT",
+                icon = "edit-02",
+                color = YabaColor.ORANGE,
+                onClick = {
+                    creationNavigator.add(FolderCreationRoute(folderId = model.id.toString()))
+                    appStateManager.onShowSheet()
+                }
+            ),
+            CollectionSwipeAction(
+                key = "DELETE",
+                icon = "delete-02",
+                color = YabaColor.RED,
+                onClick = {
+                    deletionDialogManager.send(
+                        DeletionState(
+                            deletionType = DeletionType.FOLDER,
+                            folderToBeDeleted = model,
+                            onConfirm = { onDeleteFolder(model) },
                         )
-                    }
+                    )
+                }
+            ),
+        )
+    }
+
+    when (appearance) {
+        ContentAppearance.LIST, ContentAppearance.CARD -> {
+            FolderListItemView(
+                modifier = modifier,
+                model = model,
+                menuActions = menuActions,
+                leftSwipeActions = leftSwipeActions,
+                rightSwipeActions = rightSwipeActions,
+                onDeleteFolder = onDeleteFolder,
+            )
+        }
+
+        ContentAppearance.GRID -> {
+            val color by remember(model) {
+                mutableStateOf(Color(model.color.iconTintArgb()))
+            }
+
+            BaseCollectionItemView(
+                modifier = modifier,
+                label = model.label,
+                description = model.description,
+                icon = model.icon,
+                color = model.color,
+                appearance = appearance,
+                menuActions = menuActions,
+                onClick = {
+                    // TODO: NAVIGATE FOLDER DETAIL
+                },
+                gridTrailingContent = {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -349,129 +204,95 @@ private fun GridFolderItemView(
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(18.dp))
-                Text(
-                    text = model.label,
-                    style = MaterialTheme.typography.titleMediumEmphasized,
-                )
-            }
+            )
         }
-
-        OptionsContent(
-            model = model,
-            isOptionsExpanded = isOptionsExpanded,
-            onDismissRequest = { isOptionsExpanded = false },
-            onDeleteFolder = onDeleteFolder,
-        )
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+/**
+ * List view for folders with support for expandable children.
+ */
 @Composable
-private fun OptionsContent(
+private fun FolderListItemView(
+    modifier: Modifier = Modifier,
     model: FolderUiModel,
-    isOptionsExpanded: Boolean,
-    onDismissRequest: () -> Unit,
+    menuActions: List<CollectionMenuAction>,
+    leftSwipeActions: List<CollectionSwipeAction>,
+    rightSwipeActions: List<CollectionSwipeAction>,
     onDeleteFolder: (FolderUiModel) -> Unit,
 ) {
-    val creationNavigator = LocalCreationContentNavigator.current
-    val deletionDialogManager = LocalDeletionDialogManager.current
-    val appStateManager = LocalAppStateManager.current
+    var isExpanded by remember { mutableStateOf(false) }
+    val expandedIconRotation by animateFloatAsState(
+        targetValue = if (isExpanded) 90F else 0f,
+    )
+    val color by remember(model) {
+        mutableStateOf(Color(model.color.iconTintArgb()))
+    }
 
-    DropdownMenuPopup(
-        modifier = Modifier,
-        expanded = isOptionsExpanded,
-        onDismissRequest = onDismissRequest,
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .animateContentSize(),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        DropdownMenuGroup(
-            shapes = MenuDefaults.groupShape(
-                index = 0,
-                count = 3
-            )
-        ) {
-            DropdownMenuItem(
-                shapes = MenuDefaults.itemShape(0, 3),
-                checked = false,
-                onCheckedChange = { _ ->
-                    onDismissRequest()
-                    creationNavigator.add(BookmarkCreationRoute(bookmarkId = null))
-                    appStateManager.onShowSheet()
-                },
-                leadingIcon = {
-                    YabaIcon(
-                        name = "bookmark-add-02",
-                        color = YabaColor.CYAN,
-                    )
-                },
-                text = { Text(text = stringResource(Res.string.new_bookmark)) }
-            )
-            DropdownMenuItem(
-                shapes = MenuDefaults.itemShape(1, 3),
-                checked = false,
-                onCheckedChange = { _ ->
-                    onDismissRequest()
-                    creationNavigator.add(
-                        FolderCreationRoute(folderId = model.id.toString())
-                    )
-                    appStateManager.onShowSheet()
-                },
-                leadingIcon = {
-                    YabaIcon(
-                        name = "edit-02",
-                        color = YabaColor.ORANGE,
-                    )
-                },
-                text = { Text(text = stringResource(Res.string.edit)) }
-            )
-            DropdownMenuItem(
-                shapes = MenuDefaults.itemShape(2, 3),
-                checked = false,
-                onCheckedChange = { _ ->
-                    onDismissRequest()
-                    // TODO: SHOW MOVE DIALOG
-                },
-                leadingIcon = {
-                    YabaIcon(
-                        name = "arrow-move-up-right",
-                        color = YabaColor.TEAL,
-                    )
-                },
-                text = { Text(text = stringResource(Res.string.move)) }
-            )
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        DropdownMenuGroup(
-            shapes = MenuDefaults.groupShape(
-                index = 0,
-                count = 1
-            )
-        ) {
-            DropdownMenuItem(
-                shapes = MenuDefaults.itemShape(0, 1),
-                checked = false,
-                onCheckedChange = { _ ->
-                    onDismissRequest()
-                    deletionDialogManager.send(
-                        DeletionState(
-                            deletionType = DeletionType.FOLDER,
-                            folderToBeDeleted = model,
-                            onConfirm = { onDeleteFolder(model) },
+        BaseCollectionItemView(
+            label = model.label,
+            description = model.description,
+            icon = model.icon,
+            color = model.color,
+            appearance = ContentAppearance.LIST,
+            menuActions = menuActions,
+            leftSwipeActions = leftSwipeActions,
+            rightSwipeActions = rightSwipeActions,
+            onClick = {
+                if (model.children.isNotEmpty()) {
+                    isExpanded = !isExpanded
+                } else {
+                    // TODO: NAVIGATE FOLDER DETAIL
+                }
+            },
+            listTrailingContent = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Text(model.bookmarkCount.toString())
+                    if (model.children.isNotEmpty()) {
+                        YabaIcon(
+                            modifier = Modifier.rotate(expandedIconRotation),
+                            name = "arrow-right-01",
+                            color = color,
                         )
+                    }
+                }
+            }
+        )
+
+        // Render children if expanded
+        if (model.children.isNotEmpty() && isExpanded) {
+            model.children.forEach { childModel ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .width(4.dp)
+                            .height(40.dp)
+                            .background(
+                                color = color,
+                                shape = RoundedCornerShape(2.dp)
+                            )
                     )
-                },
-                leadingIcon = {
-                    YabaIcon(
-                        name = "delete-02",
-                        color = YabaColor.RED,
-                    )
-                },
-                text = {
-                    Text(
-                        text = stringResource(Res.string.delete),
-                        color = Color(YabaColor.RED.iconTintArgb())
+                    FolderListItemView(
+                        model = childModel,
+                        menuActions = menuActions,
+                        leftSwipeActions = leftSwipeActions,
+                        rightSwipeActions = rightSwipeActions,
+                        onDeleteFolder = { onDeleteFolder(childModel) },
                     )
                 }
-            )
+            }
         }
     }
 }
