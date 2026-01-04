@@ -47,6 +47,7 @@ import yaba.composeapp.generated.resources.folder_creation_select_folder_message
 fun PresentableParentFolderItem(
     modifier: Modifier = Modifier,
     model: FolderUiModel?,
+    nullModelPresentableColor: YabaColor,
     onPressed: () -> Unit,
     onNavigateToEdit: () -> Unit,
     camoColor: Color = MaterialTheme.colorScheme.surfaceContainerLow,
@@ -102,7 +103,7 @@ fun PresentableParentFolderItem(
                 shape = RoundedCornerShape(cornerSize),
                 color = Color(
                     model?.color?.iconTintArgb()
-                        ?: YabaColor.BLUE.iconTintArgb()
+                        ?: nullModelPresentableColor.iconTintArgb()
                 ).copy(alpha = 0.2F),
             ) {
                 Row(
@@ -118,7 +119,7 @@ fun PresentableParentFolderItem(
                     ) {
                         YabaIcon(
                             name = "folder-01",
-                            color = model?.color ?: YabaColor.BLUE,
+                            color = model?.color ?: nullModelPresentableColor,
                         )
                         Text(
                             model?.label ?: stringResource(Res.string.folder_creation_select_folder_message)
@@ -126,7 +127,7 @@ fun PresentableParentFolderItem(
                     }
                     YabaIcon(
                         name = "arrow-right-01",
-                        color = model?.color ?: YabaColor.BLUE,
+                        color = model?.color ?: nullModelPresentableColor,
                     )
                 }
             }

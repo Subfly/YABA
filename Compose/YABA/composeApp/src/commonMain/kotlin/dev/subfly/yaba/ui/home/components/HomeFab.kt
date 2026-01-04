@@ -59,9 +59,9 @@ internal fun HomeFab(modifier: Modifier = Modifier) {
         content = {
             FloatingActionButtonMenuItem(
                 onClick = {
-                    creationNavigator.add(BookmarkCreationRoute(bookmarkId = null))
+                    creationNavigator.add(BookmarkCreationRoute())
                     isFabExpanded = false
-                    appStateManager.onShowSheet()
+                    appStateManager.onShowCreationContent()
                 },
                 text = {},
                 icon = { YabaIcon(name = "bookmark-02") }
@@ -70,7 +70,7 @@ internal fun HomeFab(modifier: Modifier = Modifier) {
                 onClick = {
                     creationNavigator.add(FolderCreationRoute(folderId = null))
                     isFabExpanded = false
-                    appStateManager.onShowSheet()
+                    appStateManager.onShowCreationContent()
                 },
                 text = {},
                 icon = { YabaIcon(name = "folder-01") }
@@ -79,7 +79,7 @@ internal fun HomeFab(modifier: Modifier = Modifier) {
                 onClick = {
                     creationNavigator.add(TagCreationRoute(tagId = null))
                     isFabExpanded = false
-                    appStateManager.onShowSheet()
+                    appStateManager.onShowCreationContent()
                 },
                 text = {},
                 icon = { YabaIcon(name = "tag-01") }

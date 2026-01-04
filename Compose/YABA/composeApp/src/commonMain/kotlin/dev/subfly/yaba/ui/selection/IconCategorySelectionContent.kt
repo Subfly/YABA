@@ -30,6 +30,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
+import dev.subfly.yaba.core.navigation.creation.IconSelectionRoute
+import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.localizedDescriptionRes
 import dev.subfly.yaba.util.localizedNameRes
 import dev.subfly.yabacore.icons.IconCatalog
@@ -42,11 +44,9 @@ import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.pick_icon_category_title
 
 @Composable
-fun IconCategorySelectionContent(
-    currentSelectedIcon: String,
-    onSelectedSubcategory: (String, IconSubcategory) -> Unit,
-    onDismiss: () -> Unit,
-) {
+fun IconCategorySelectionContent(currentSelectedIcon: String) {
+    val creationNavigator = LocalCreationContentNavigator.current
+
     Column(
         modifier =
             Modifier.fillMaxWidth()
@@ -55,12 +55,17 @@ fun IconCategorySelectionContent(
     ) {
         TopBar(
             modifier = Modifier.padding(horizontal = 8.dp),
-            onDismiss = onDismiss,
+            onDismiss = creationNavigator::removeLastOrNull,
         )
         Spacer(modifier = Modifier.height(12.dp))
         SelectionContent(
             onSelectedSubcategory = { selectedSubcategory ->
-                onSelectedSubcategory(currentSelectedIcon, selectedSubcategory)
+                creationNavigator.add(
+                    IconSelectionRoute(
+                        selectedIcon = currentSelectedIcon,
+                        selectedSubcategory = selectedSubcategory
+                    )
+                )
             }
         )
         Spacer(modifier = Modifier.height(36.dp))

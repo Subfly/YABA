@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import dev.subfly.yaba.core.navigation.creation.ResultStoreKeys
+import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.ui.icon.YabaIcon
@@ -44,11 +45,10 @@ import yaba.composeapp.generated.resources.done
 import yaba.composeapp.generated.resources.select_color_title
 
 @Composable
-fun ColorSelectionContent(
-    currentSelectedColor: YabaColor?,
-    onDismiss: () -> Unit
-) {
+fun ColorSelectionContent(currentSelectedColor: YabaColor?) {
+    val creationNavigator = LocalCreationContentNavigator.current
     val resultStore = LocalResultStore.current
+
     var selectedColor by rememberSaveable(currentSelectedColor) {
         mutableStateOf(currentSelectedColor ?: YabaColor.NONE)
     }
@@ -65,9 +65,9 @@ fun ColorSelectionContent(
                     key = ResultStoreKeys.SELECTED_COLOR,
                     value = selectedColor,
                 )
-                onDismiss()
+                creationNavigator.removeLastOrNull()
             },
-            onDismiss = onDismiss,
+            onDismiss = creationNavigator::removeLastOrNull,
         )
         Spacer(modifier = Modifier.height(12.dp))
         SelectionContent(

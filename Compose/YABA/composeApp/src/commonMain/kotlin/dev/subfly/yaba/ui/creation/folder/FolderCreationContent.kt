@@ -18,6 +18,7 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
@@ -33,6 +34,7 @@ import dev.subfly.yaba.core.components.item.folder.PresentableParentFolderItem
 import dev.subfly.yaba.core.navigation.creation.ColorSelectionRoute
 import dev.subfly.yaba.core.navigation.creation.IconCategorySelectionRoute
 import dev.subfly.yaba.core.navigation.creation.ResultStoreKeys
+import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yabacore.model.utils.YabaColor
@@ -52,12 +54,11 @@ import yaba.composeapp.generated.resources.edit_folder_title
     ExperimentalMaterial3ExpressiveApi::class,
 )
 @Composable
-fun FolderCreationContent(
-    folderId: String? = null,
-    onDismiss: () -> Unit,
-) {
+fun FolderCreationContent(folderId: String? = null) {
     val creationNavigator = LocalCreationContentNavigator.current
+    val appStateManager = LocalAppStateManager.current
     val resultStore = LocalResultStore.current
+
     val vm = viewModel<FolderCreationVM>()
     val state by vm.state
 
@@ -92,7 +93,14 @@ fun FolderCreationContent(
             canPerformDone = state.label.isNotBlank(),
             isEditing = state.editingFolder != null,
             onDone = { vm.onEvent(FolderCreationEvent.OnSave) },
-            onDismiss = onDismiss,
+            onDismiss = {
+                // Means next pop up destination is Empty Route,
+                // so dismiss first, then remove the last item
+                if (creationNavigator.size == 2) {
+                    appStateManager.onHideCreationContent()
+                }
+                creationNavigator.removeLastOrNull()
+            },
         )
         Spacer(modifier = Modifier.height(12.dp))
         CreationContent(
@@ -122,6 +130,7 @@ fun FolderCreationContent(
         Spacer(modifier = Modifier.height(12.dp))
         DescriptionContent(
             folderDescription = state.description,
+            selectedColor = state.selectedColor,
             onChangeDescription = { newDescription ->
                 vm.onEvent(
                     event = FolderCreationEvent.OnChangeDescription(newDescription = newDescription)
@@ -134,6 +143,7 @@ fun FolderCreationContent(
                 .height(60.dp)
                 .padding(horizontal = 12.dp),
             model = state.selectedParent,
+            nullModelPresentableColor = state.selectedColor,
             onPressed = {
                 // TODO: NAVIGATE TO PARENT SELECTION
             },
@@ -237,6 +247,10 @@ private fun CreationContent(
         }
         OutlinedTextField(
             modifier = Modifier.weight(4F).fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(selectedColor.iconTintArgb()),
+                unfocusedBorderColor = Color(selectedColor.iconTintArgb()).copy(alpha = 0.5F),
+            ),
             value = folderLabel,
             onValueChange = onChangeLabel,
             maxLines = 1,
@@ -266,17 +280,23 @@ private fun CreationContent(
 @Composable
 private fun DescriptionContent(
     folderDescription: String,
+    selectedColor: YabaColor,
     onChangeDescription: (String) -> Unit,
 ) {
+    // TODO: ADD PLACEHOLDER TO LOCALIZATIONS
     OutlinedTextField(
         modifier = Modifier
-            .heightIn(min = 60.dp, max = 120.dp)
+            .heightIn(max = 120.dp)
             .fillMaxWidth()
             .padding(horizontal = 12.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = Color(selectedColor.iconTintArgb()),
+            unfocusedBorderColor = Color(selectedColor.iconTintArgb()).copy(alpha = 0.5F),
+        ),
         value = folderDescription,
         onValueChange = onChangeDescription,
         shape = RoundedCornerShape(24.dp),
-        placeholder = { Text(text = "TODO: ADD A PLACEHOLDER FOR DESCRIPTION IN HERE") },
+        placeholder = { Text(text = "Folder description...") },
         leadingIcon = { YabaIcon(name = "paragraph") }
     )
 }

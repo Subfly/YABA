@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.navigation.creation.ResultStoreKeys
+import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.localizedNameRes
 import dev.subfly.yabacore.icons.IconCatalog
@@ -47,9 +48,10 @@ import yaba.composeapp.generated.resources.done
 fun IconSelectionContent(
     currentSelectedIcon: String,
     selectedSubcategory: IconSubcategory,
-    onDismiss: () -> Unit,
 ) {
+    val creationNavigator = LocalCreationContentNavigator.current
     val resultStore = LocalResultStore.current
+
     var selectedIcon by rememberSaveable(currentSelectedIcon) {
         mutableStateOf(currentSelectedIcon)
     }
@@ -68,10 +70,12 @@ fun IconSelectionContent(
                     key = ResultStoreKeys.SELECTED_ICON,
                     value = selectedIcon,
                 )
-                onDismiss()
+                // Remove both the icon selection and icon subcategory selection
+                creationNavigator.removeLastOrNull()
+                creationNavigator.removeLastOrNull()
                 IconCatalog.resetIcons()
             },
-            onDismiss = onDismiss,
+            onDismiss = creationNavigator::removeLastOrNull,
         )
         Spacer(modifier = Modifier.height(12.dp))
         SelectionContent(

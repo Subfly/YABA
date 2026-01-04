@@ -34,14 +34,14 @@ fun YabaDeletionDialog(
         AlertDialog(
             modifier = modifier,
             onDismissRequest = {
-                appStateManager.onHideDialog()
+                appStateManager.onHideDeletionDialog()
                 deletionManager.clear()
             },
             confirmButton = {
                 TextButton(
                     onClick = {
                         state.onConfirm()
-                        appStateManager.onHideDialog()
+                        appStateManager.onHideDeletionDialog()
                         deletionManager.clear()
                     },
                     shapes = ButtonDefaults.shapes(),
@@ -51,7 +51,7 @@ fun YabaDeletionDialog(
                 TextButton(
                     onClick = {
                         state.onCancel()
-                        appStateManager.onHideDialog()
+                        appStateManager.onHideDeletionDialog()
                         deletionManager.clear()
                     },
                     shapes = ButtonDefaults.shapes(),

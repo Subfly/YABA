@@ -9,19 +9,19 @@ class AppVM: ViewModel() {
     private val _state = MutableStateFlow(AppState())
     val state = _state.asStateFlow()
 
-    fun onShowSheet() {
+    fun onShowCreationContent() {
         _state.update { it.copy(showCreationSheet = true) }
     }
 
-    fun onHideSheet() {
+    fun onHideCreationContent() {
         _state.update { it.copy(showCreationSheet = false) }
     }
 
-    fun onShowDialog() {
+    fun onShowDeletionDialog() {
         _state.update { it.copy(showDeletionDialog = true) }
     }
 
-    fun onHideDialog() {
+    fun onHideDeletionDialog() {
         _state.update { it.copy(showDeletionDialog = false) }
     }
 }

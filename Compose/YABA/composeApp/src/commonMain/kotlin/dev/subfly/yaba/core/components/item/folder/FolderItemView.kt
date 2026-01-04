@@ -72,8 +72,8 @@ fun FolderItemView(
                 text = newBookmarkText,
                 color = YabaColor.CYAN,
                 onClick = {
-                    creationNavigator.add(BookmarkCreationRoute(bookmarkId = null))
-                    appStateManager.onShowSheet()
+                    creationNavigator.add(BookmarkCreationRoute())
+                    appStateManager.onShowCreationContent()
                 }
             ),
             CollectionMenuAction(
@@ -83,7 +83,7 @@ fun FolderItemView(
                 color = YabaColor.ORANGE,
                 onClick = {
                     creationNavigator.add(FolderCreationRoute(folderId = model.id.toString()))
-                    appStateManager.onShowSheet()
+                    appStateManager.onShowCreationContent()
                 }
             ),
             CollectionMenuAction(
@@ -129,8 +129,8 @@ fun FolderItemView(
                 icon = "bookmark-add-02",
                 color = YabaColor.BLUE,
                 onClick = {
-                    creationNavigator.add(BookmarkCreationRoute(bookmarkId = null))
-                    appStateManager.onShowSheet()
+                    creationNavigator.add(BookmarkCreationRoute())
+                    appStateManager.onShowCreationContent()
                 }
             ),
         )
@@ -144,7 +144,7 @@ fun FolderItemView(
                 color = YabaColor.ORANGE,
                 onClick = {
                     creationNavigator.add(FolderCreationRoute(folderId = model.id.toString()))
-                    appStateManager.onShowSheet()
+                    appStateManager.onShowCreationContent()
                 }
             ),
             CollectionSwipeAction(
@@ -233,7 +233,7 @@ private fun FolderListItemView(
         modifier = modifier
             .fillMaxWidth()
             .animateContentSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         BaseCollectionItemView(
             label = model.label,

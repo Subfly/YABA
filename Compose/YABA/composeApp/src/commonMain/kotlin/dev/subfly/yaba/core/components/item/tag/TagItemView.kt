@@ -72,8 +72,8 @@ fun TagItemView(
                 color = YabaColor.CYAN,
                 onClick = {
                     // TODO: ADD FUNCTIONALITY TO HAVE BASE CONTEXT
-                    creationNavigator.add(BookmarkCreationRoute(bookmarkId = null))
-                    appStateManager.onShowSheet()
+                    creationNavigator.add(BookmarkCreationRoute())
+                    appStateManager.onShowCreationContent()
                 }
             ),
             CollectionMenuAction(
@@ -83,7 +83,7 @@ fun TagItemView(
                 color = YabaColor.ORANGE,
                 onClick = {
                     creationNavigator.add(TagCreationRoute(tagId = model.id.toString()))
-                    appStateManager.onShowSheet()
+                    appStateManager.onShowCreationContent()
                 }
             ),
             CollectionMenuAction(
@@ -112,8 +112,8 @@ fun TagItemView(
                 icon = "bookmark-add-02",
                 color = YabaColor.BLUE,
                 onClick = {
-                    creationNavigator.add(BookmarkCreationRoute(bookmarkId = null))
-                    appStateManager.onShowSheet()
+                    creationNavigator.add(BookmarkCreationRoute())
+                    appStateManager.onShowCreationContent()
                 }
             ),
         )
@@ -127,7 +127,7 @@ fun TagItemView(
                 color = YabaColor.ORANGE,
                 onClick = {
                     creationNavigator.add(TagCreationRoute(tagId = model.id.toString()))
-                    appStateManager.onShowSheet()
+                    appStateManager.onShowCreationContent()
                 }
             ),
             CollectionSwipeAction(

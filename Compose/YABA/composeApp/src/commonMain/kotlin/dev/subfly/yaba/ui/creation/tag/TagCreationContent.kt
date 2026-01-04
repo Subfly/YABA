@@ -17,6 +17,7 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
@@ -31,6 +32,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.core.navigation.creation.ColorSelectionRoute
 import dev.subfly.yaba.core.navigation.creation.IconCategorySelectionRoute
 import dev.subfly.yaba.core.navigation.creation.ResultStoreKeys
+import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yabacore.model.utils.YabaColor
@@ -50,12 +52,11 @@ import yaba.composeapp.generated.resources.edit_tag_title
     ExperimentalMaterial3ExpressiveApi::class,
 )
 @Composable
-fun TagCreationContent(
-    tagId: String? = null,
-    onDismiss: () -> Unit,
-) {
+fun TagCreationContent(tagId: String? = null) {
     val creationNavigator = LocalCreationContentNavigator.current
+    val appStateManager = LocalAppStateManager.current
     val resultStore = LocalResultStore.current
+
     val vm = viewModel<TagCreationVM>()
     val state by vm.state
 
@@ -90,7 +91,14 @@ fun TagCreationContent(
             canPerformDone = state.label.isNotBlank(),
             isEditing = state.editingTag != null,
             onDone = { vm.onEvent(TagCreationEvent.OnSave) },
-            onDismiss = onDismiss,
+            onDismiss = {
+                // Means next pop up destination is Empty Route,
+                // so dismiss first, then remove the last item
+                if (creationNavigator.size == 2) {
+                    appStateManager.onHideCreationContent()
+                }
+                creationNavigator.removeLastOrNull()
+            },
         )
         Spacer(modifier = Modifier.height(12.dp))
         CreationContent(
@@ -213,6 +221,10 @@ private fun CreationContent(
         }
         OutlinedTextField(
             modifier = Modifier.weight(4F).fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(selectedColor.iconTintArgb()),
+                unfocusedBorderColor = Color(selectedColor.iconTintArgb()).copy(alpha = 0.5F),
+            ),
             value = tagLabel,
             onValueChange = onChangeLabel,
             maxLines = 1,

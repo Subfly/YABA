@@ -4,6 +4,7 @@ package dev.subfly.yaba.core.components.item.base
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,6 +21,8 @@ import androidx.compose.material3.DropdownMenuGroup
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.DropdownMenuPopup
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Surface
@@ -155,7 +158,7 @@ private fun ListCollectionItemView(
                 onClick = action.onClick,
             ) {
                 Surface(
-                    modifier = Modifier.size(48.dp),
+                    modifier = Modifier.size(44.dp),
                     shape = CircleShape,
                     color = Color(action.color.iconTintArgb())
                 ) {
@@ -176,7 +179,7 @@ private fun ListCollectionItemView(
                 onClick = action.onClick,
             ) {
                 Surface(
-                    modifier = Modifier.size(48.dp),
+                    modifier = Modifier.size(44.dp),
                     shape = CircleShape,
                     color = Color(action.color.iconTintArgb())
                 ) {
@@ -199,53 +202,28 @@ private fun ListCollectionItemView(
         ) {
             YabaSwipeActions(
                 modifier = Modifier.padding(horizontal = 12.dp),
+                actionWidth = 54.dp,
                 leftActions = swipeLeftActions,
                 rightActions = swipeRightActions,
             ) {
-                Box(
+                ListItem(
                     modifier = Modifier
-                        .background(
-                            color = MaterialTheme.colorScheme.background,
-                            shape = RoundedCornerShape(12.dp)
-                        )
-                ) {
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
-                            .combinedClickable(
-                                onLongClick = { isOptionsExpanded = true },
-                                onClick = onClick
-                            ),
-                        shape = RoundedCornerShape(12.dp),
-                        color = itemColor.copy(alpha = 0.1F)
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(
-                                    horizontal = 24.dp,
-                                    vertical = 18.dp,
-                                ),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            ) {
-                                YabaIcon(
-                                    name = icon,
-                                    color = itemColor,
-                                )
-                                Text(label)
-                            }
-                            if (trailingContent != null) {
-                                trailingContent()
-                            }
+                        .clip(RoundedCornerShape(12.dp))
+                        .combinedClickable(
+                            onLongClick = { isOptionsExpanded = true },
+                            onClick = onClick
+                        ),
+                    colors = ListItemDefaults.colors().copy(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                    ),
+                    headlineContent = { Text(label) },
+                    leadingContent = { YabaIcon(name = icon, color = itemColor) },
+                    trailingContent = {
+                        if (trailingContent != null) {
+                            trailingContent()
                         }
                     }
-                }
+                )
             }
         }
 
@@ -283,7 +261,7 @@ private fun GridCollectionItemView(
                     onClick = onClick
                 ),
             shape = RoundedCornerShape(12.dp),
-            color = itemColor.copy(alpha = 0.1F)
+            color = MaterialTheme.colorScheme.surfaceContainer,
         ) {
             Column(
                 modifier = Modifier.padding(18.dp),

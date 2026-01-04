@@ -61,182 +61,184 @@ fun HomeView(modifier: Modifier = Modifier) {
         vm.onEvent(HomeEvent.OnInit)
     }
 
-    Scaffold(
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            HomeTopBar(
-                scrollBehavior = scrollBehavior,
-                onAppearanceChanged = { newAppearance ->
-                    vm.onEvent(HomeEvent.OnChangeContentAppearance(newAppearance))
-                },
-                onSortingChanged = { newSortType ->
-                    vm.onEvent(HomeEvent.OnChangeCollectionSorting(newSortType))
-                },
-                onSizingChanged = { newSizing ->
-                    // TODO: FIX ON VM
-                    // vm.onEvent(HomeEvent.OnChan)
-                },
-                onSearchClicked = {
-                    // TODO: NAVIGATE TO SEARCH
-                }
-            )
-        },
-        floatingActionButtonPosition = when (userPreferences.preferredFabPosition) {
-            FabPosition.LEFT -> androidx.compose.material3.FabPosition.Start
-            FabPosition.RIGHT -> androidx.compose.material3.FabPosition.End
-            FabPosition.CENTER -> androidx.compose.material3.FabPosition.Center
-        },
-        floatingActionButton = { HomeFab() }
-    ) { paddings ->
-        YabaContentLayout(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = paddings,
-            layoutConfig = ContentLayoutConfig(
-                appearance = userPreferences.preferredContentAppearance,
-                cardImageSizing = userPreferences.preferredCardImageSizing,
-                grid = GridLayoutConfig(
-                    minCellWidth = 180.dp,
-                    outerPadding = PaddingValues(horizontal = 12.dp),
+    Box(modifier = modifier.fillMaxSize()) {
+        Scaffold(
+            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+            topBar = {
+                HomeTopBar(
+                    scrollBehavior = scrollBehavior,
+                    onAppearanceChanged = { newAppearance ->
+                        vm.onEvent(HomeEvent.OnChangeContentAppearance(newAppearance))
+                    },
+                    onSortingChanged = { newSortType ->
+                        vm.onEvent(HomeEvent.OnChangeCollectionSorting(newSortType))
+                    },
+                    onSizingChanged = { newSizing ->
+                        // TODO: FIX ON VM
+                        // vm.onEvent(HomeEvent.OnChan)
+                    },
+                    onSearchClicked = {
+                        // TODO: NAVIGATE TO SEARCH
+                    }
                 )
-            ),
-            content = {
-                if (state.recentBookmarks.isNotEmpty()) {
+            },
+            floatingActionButtonPosition = when (userPreferences.preferredFabPosition) {
+                FabPosition.LEFT -> androidx.compose.material3.FabPosition.Start
+                FabPosition.RIGHT -> androidx.compose.material3.FabPosition.End
+                FabPosition.CENTER -> androidx.compose.material3.FabPosition.Center
+            },
+            floatingActionButton = { HomeFab() }
+        ) { paddings ->
+            YabaContentLayout(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = paddings,
+                layoutConfig = ContentLayoutConfig(
+                    appearance = userPreferences.preferredContentAppearance,
+                    cardImageSizing = userPreferences.preferredCardImageSizing,
+                    grid = GridLayoutConfig(
+                        minCellWidth = 180.dp,
+                        outerPadding = PaddingValues(horizontal = 12.dp),
+                    )
+                ),
+                content = {
+                    if (state.recentBookmarks.isNotEmpty()) {
+                        item(
+                            key = "RECENTS_HEADER",
+                            span = YabaContentSpan.FullLine,
+                        ) {
+                            HomeTitleContent(
+                                title = Res.string.home_recents_label,
+                                iconName = "clock-01"
+                            )
+                        }
+
+                        items(
+                            items = state.recentBookmarks,
+                            key = { it.id },
+                        ) { bookmarkModel, appearance ->
+
+                        }
+                    }
+
                     item(
-                        key = "RECENTS_HEADER",
+                        key = "FOLDERS_HEADER",
                         span = YabaContentSpan.FullLine,
                     ) {
                         HomeTitleContent(
-                            title = Res.string.home_recents_label,
-                            iconName = "clock-01"
+                            title = Res.string.folders_title,
+                            iconName = "folder-01"
                         )
                     }
 
-                    items(
-                        items = state.recentBookmarks,
-                        key = { it.id },
-                    ) { bookmarkModel, appearance ->
+                    when {
+                        state.isLoading -> {
+                            item(
+                                key = "FOLDERS_LOADING",
+                                span = YabaContentSpan.FullLine,
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(300.dp),
+                                    contentAlignment = Alignment.Center,
+                                ) { CircularWavyProgressIndicator() }
+                            }
+                        }
 
-                    }
-                }
+                        state.folders.isEmpty() -> {
+                            item(
+                                key = "NO_FOLDERS",
+                                span = YabaContentSpan.FullLine,
+                            ) {
+                                NoContentView(
+                                    iconName = "folder-01",
+                                    // TODO: SEE WHY TITLE IS NOT TRANSLATED IN XML
+                                    labelRes = Res.string.no_folders_message,
+                                    messageRes = Res.string.no_folders_message,
+                                )
+                            }
+                        }
 
-                item(
-                    key = "FOLDERS_HEADER",
-                    span = YabaContentSpan.FullLine,
-                ) {
-                    HomeTitleContent(
-                        title = Res.string.folders_title,
-                        iconName = "folder-01"
-                    )
-                }
-
-                when {
-                    state.isLoading -> {
-                        item(
-                            key = "FOLDERS_LOADING",
-                            span = YabaContentSpan.FullLine,
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(300.dp),
-                                contentAlignment = Alignment.Center,
-                            ) { CircularWavyProgressIndicator() }
+                        else -> {
+                            items(
+                                items = state.folders,
+                                key = { it.id },
+                            ) { folderModel, appearance ->
+                                FolderItemView(
+                                    model = folderModel,
+                                    appearance = appearance,
+                                    onDeleteFolder = { folderToBeDeleted ->
+                                        vm.onEvent(HomeEvent.OnDeleteFolder(folderToBeDeleted))
+                                    }
+                                )
+                            }
                         }
                     }
 
-                    state.folders.isEmpty() -> {
-                        item(
-                            key = "NO_FOLDERS",
-                            span = YabaContentSpan.FullLine,
-                        ) {
-                            NoContentView(
-                                iconName = "folder-01",
-                                // TODO: SEE WHY TITLE IS NOT TRANSLATED IN XML
-                                labelRes = Res.string.no_folders_message,
-                                messageRes = Res.string.no_folders_message,
-                            )
+                    item(
+                        key = "TAGS_HEADER",
+                        span = YabaContentSpan.FullLine,
+                    ) {
+                        HomeTitleContent(
+                            modifier = Modifier.padding(top = 6.dp),
+                            title = Res.string.tags_title,
+                            iconName = "tag-01"
+                        )
+                    }
+
+                    when {
+                        state.isLoading -> {
+                            item(
+                                key = "TAGS_LOADING",
+                                span = YabaContentSpan.FullLine,
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(300.dp),
+                                    contentAlignment = Alignment.Center,
+                                ) { CircularWavyProgressIndicator() }
+                            }
+                        }
+
+                        state.tags.isEmpty() -> {
+                            item(
+                                key = "NO_TAGS",
+                                span = YabaContentSpan.FullLine,
+                            ) {
+                                NoContentView(
+                                    iconName = "folder-01",
+                                    // TODO: SEE WHY TITLE IS NOT TRANSLATED IN XML
+                                    labelRes = Res.string.no_tags_message,
+                                    messageRes = Res.string.no_tags_message,
+                                )
+                            }
+                        }
+
+                        else -> {
+                            items(
+                                items = state.tags,
+                                key = { it.id },
+                            ) { tagModel, appearance ->
+                                TagItemView(
+                                    model = tagModel,
+                                    appearance = appearance,
+                                    onDeleteTag = { tagToBeDeleted ->
+                                        vm.onEvent(HomeEvent.OnDeleteTag(tagToBeDeleted))
+                                    }
+                                )
+                            }
                         }
                     }
 
-                    else -> {
-                        items(
-                            items = state.folders,
-                            key = { it.id },
-                        ) { folderModel, appearance ->
-                            FolderItemView(
-                                model = folderModel,
-                                appearance = appearance,
-                                onDeleteFolder = { folderToBeDeleted ->
-                                    vm.onEvent(HomeEvent.OnDeleteFolder(folderToBeDeleted))
-                                }
-                            )
-                        }
+                    item(
+                        key = "EMPTY_SPACER_FOR_FAB",
+                        span = YabaContentSpan.FullLine,
+                    ) {
+                        Spacer(modifier = Modifier.height(100.dp))
                     }
-                }
-
-                item(
-                    key = "TAGS_HEADER",
-                    span = YabaContentSpan.FullLine,
-                ) {
-                    HomeTitleContent(
-                        modifier = Modifier.padding(top = 6.dp),
-                        title = Res.string.tags_title,
-                        iconName = "tag-01"
-                    )
-                }
-
-                when {
-                    state.isLoading -> {
-                        item(
-                            key = "TAGS_LOADING",
-                            span = YabaContentSpan.FullLine,
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(300.dp),
-                                contentAlignment = Alignment.Center,
-                            ) { CircularWavyProgressIndicator() }
-                        }
-                    }
-
-                    state.tags.isEmpty() -> {
-                        item(
-                            key = "NO_TAGS",
-                            span = YabaContentSpan.FullLine,
-                        ) {
-                            NoContentView(
-                                iconName = "folder-01",
-                                // TODO: SEE WHY TITLE IS NOT TRANSLATED IN XML
-                                labelRes = Res.string.no_tags_message,
-                                messageRes = Res.string.no_tags_message,
-                            )
-                        }
-                    }
-
-                    else -> {
-                        items(
-                            items = state.tags,
-                            key = { it.id },
-                        ) { tagModel, appearance ->
-                            TagItemView(
-                                model = tagModel,
-                                appearance = appearance,
-                                onDeleteTag = { tagToBeDeleted ->
-                                    vm.onEvent(HomeEvent.OnDeleteTag(tagToBeDeleted))
-                                }
-                            )
-                        }
-                    }
-                }
-
-                item(
-                    key = "EMPTY_SPACER_FOR_FAB",
-                    span = YabaContentSpan.FullLine,
-                ) {
-                    Spacer(modifier = Modifier.height(100.dp))
-                }
-            },
-        )
+                },
+            )
+        }
     }
 }

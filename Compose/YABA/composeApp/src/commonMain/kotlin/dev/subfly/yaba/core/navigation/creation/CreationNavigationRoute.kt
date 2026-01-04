@@ -18,6 +18,10 @@ val creationNavigationConfig = SavedStateConfiguration {
             subclass(TagCreationRoute::class, TagCreationRoute.serializer())
             subclass(FolderCreationRoute::class, FolderCreationRoute.serializer())
             subclass(BookmarkCreationRoute::class, BookmarkCreationRoute.serializer())
+            subclass(LinkmarkCreationRoute::class, LinkmarkCreationRoute.serializer())
+            subclass(NotemarkCreationRoute::class, NotemarkCreationRoute.serializer())
+            subclass(DocmarkCreationRoute::class, DocmarkCreationRoute.serializer())
+            subclass(ImagemarkCreationRoute::class, ImagemarkCreationRoute.serializer())
             subclass(FolderSelectionRoute::class, FolderSelectionRoute.serializer())
             subclass(IconCategorySelectionRoute::class, IconCategorySelectionRoute.serializer())
             subclass(IconSelectionRoute::class, IconSelectionRoute.serializer())
@@ -41,6 +45,29 @@ data class FolderCreationRoute(
 
 @Serializable
 data class BookmarkCreationRoute(
+    val routeId: String = Uuid.generateV4().toString(),
+): NavKey
+
+@Serializable
+data class LinkmarkCreationRoute(
+    val routeId: String = Uuid.generateV4().toString(),
+    val bookmarkId: String?,
+): NavKey
+
+@Serializable
+data class NotemarkCreationRoute(
+    val routeId: String = Uuid.generateV4().toString(),
+    val bookmarkId: String?,
+): NavKey
+
+@Serializable
+data class ImagemarkCreationRoute(
+    val routeId: String = Uuid.generateV4().toString(),
+    val bookmarkId: String?,
+): NavKey
+
+@Serializable
+data class DocmarkCreationRoute(
     val routeId: String = Uuid.generateV4().toString(),
     val bookmarkId: String?,
 ): NavKey
