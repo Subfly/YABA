@@ -34,16 +34,7 @@ fun YabaNavigator(modifier: Modifier = Modifier) {
         modifier = modifier.fillMaxSize(),
         directive = listDetailNavigator.scaffoldDirective,
         value = listDetailNavigator.scaffoldValue,
-        listPane = {
-            HomeView(
-                modifier = Modifier.clip(
-                    shape = when (Platform) {
-                        YabaPlatform.JVM -> RoundedCornerShape(16.dp)
-                        YabaPlatform.ANDROID -> RoundedCornerShape(0.dp)
-                    }
-                )
-            )
-        },
+        listPane = { HomeView() },
         detailPane = { Text("Detail") },
         paneExpansionDragHandle = { dragState ->
             val interactionSource = remember { MutableInteractionSource() }
