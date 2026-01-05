@@ -2,6 +2,7 @@ package dev.subfly.yaba.ui.home.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MediumTopAppBar
@@ -14,6 +15,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import dev.subfly.yaba.util.Platform
+import dev.subfly.yaba.util.YabaPlatform
 import dev.subfly.yabacore.model.utils.CardImageSizing
 import dev.subfly.yabacore.model.utils.ContentAppearance
 import dev.subfly.yabacore.model.utils.SortType
@@ -36,33 +39,64 @@ internal fun HomeTopBar(
         mutableStateOf(false)
     }
 
-    MediumTopAppBar(
-        modifier = modifier,
-        scrollBehavior = scrollBehavior,
-        title = {
-            Text(text = stringResource(Res.string.yaba))
-        },
-        actions = {
-            IconButton(onClick = onSearchClicked) {
-                YabaIcon(name = "search-01")
-            }
-            Box(
-                modifier = Modifier.wrapContentSize(Alignment.TopStart)
-            ) {
-                IconButton(onClick = { isMenuExpanded = !isMenuExpanded }) {
-                    YabaIcon(name = "more-horizontal-circle-02")
+    if (Platform == YabaPlatform.ANDROID) {
+        MediumTopAppBar(
+            modifier = modifier,
+            scrollBehavior = scrollBehavior,
+            title = {
+                Text(text = stringResource(Res.string.yaba))
+            },
+            actions = {
+                IconButton(onClick = onSearchClicked) {
+                    YabaIcon(name = "search-01")
                 }
-                HomeDropdownMenu(
-                    isExpanded = isMenuExpanded,
-                    onDismissRequest = { isMenuExpanded = false },
-                    onAppearanceChanged = onAppearanceChanged,
-                    onSizingChanged = onSizingChanged,
-                    onSortingChanged = onSortingChanged,
-                    onSettingsClicked = {
-                        // TODO: NAVIGATE TO SETTINGS
+                Box(
+                    modifier = Modifier.wrapContentSize(Alignment.TopStart)
+                ) {
+                    IconButton(onClick = { isMenuExpanded = !isMenuExpanded }) {
+                        YabaIcon(name = "more-horizontal-circle-02")
                     }
-                )
+                    HomeDropdownMenu(
+                        isExpanded = isMenuExpanded,
+                        onDismissRequest = { isMenuExpanded = false },
+                        onAppearanceChanged = onAppearanceChanged,
+                        onSizingChanged = onSizingChanged,
+                        onSortingChanged = onSortingChanged,
+                        onSettingsClicked = {
+                            // TODO: NAVIGATE TO SETTINGS
+                        }
+                    )
+                }
             }
-        }
-    )
+        )
+    } else {
+        CenterAlignedTopAppBar(
+            modifier = modifier,
+            title = {
+                Text(text = stringResource(Res.string.yaba))
+            },
+            actions = {
+                IconButton(onClick = onSearchClicked) {
+                    YabaIcon(name = "search-01")
+                }
+                Box(
+                    modifier = Modifier.wrapContentSize(Alignment.TopStart)
+                ) {
+                    IconButton(onClick = { isMenuExpanded = !isMenuExpanded }) {
+                        YabaIcon(name = "more-horizontal-circle-02")
+                    }
+                    HomeDropdownMenu(
+                        isExpanded = isMenuExpanded,
+                        onDismissRequest = { isMenuExpanded = false },
+                        onAppearanceChanged = onAppearanceChanged,
+                        onSizingChanged = onSizingChanged,
+                        onSortingChanged = onSortingChanged,
+                        onSettingsClicked = {
+                            // TODO: NAVIGATE TO SETTINGS
+                        }
+                    )
+                }
+            }
+        )
+    }
 }

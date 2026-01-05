@@ -29,6 +29,8 @@ import dev.subfly.yaba.ui.home.components.HomeFab
 import dev.subfly.yaba.ui.home.components.HomeTitleContent
 import dev.subfly.yaba.ui.home.components.HomeTopBar
 import dev.subfly.yaba.util.LocalUserPreferences
+import dev.subfly.yaba.util.Platform
+import dev.subfly.yaba.util.YabaPlatform
 import dev.subfly.yabacore.model.utils.FabPosition
 import dev.subfly.yabacore.state.home.HomeEvent
 import dev.subfly.yabacore.ui.layout.ContentLayoutConfig
@@ -64,7 +66,9 @@ fun HomeView(modifier: Modifier = Modifier) {
 
     Box(modifier = modifier.fillMaxSize()) {
         Scaffold(
-            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+            modifier = if (Platform == YabaPlatform.ANDROID) {
+                Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+            } else Modifier,
             topBar = {
                 HomeTopBar(
                     scrollBehavior = scrollBehavior,
