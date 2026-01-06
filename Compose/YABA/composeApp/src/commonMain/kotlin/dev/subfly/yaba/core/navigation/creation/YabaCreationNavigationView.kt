@@ -31,7 +31,7 @@ fun YabaCreationNavigationView(
     val appStateManager = LocalAppStateManager.current
 
     NavDisplay(
-        modifier = modifier.animateContentSize(),
+        modifier = modifier,
         backStack = creationNavigator,
         entryDecorators = listOf(
             rememberSaveableStateHolderNavEntryDecorator(),

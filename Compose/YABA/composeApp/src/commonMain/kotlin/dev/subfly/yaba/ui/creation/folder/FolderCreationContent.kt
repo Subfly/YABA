@@ -30,8 +30,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import dev.subfly.yaba.core.components.item.folder.PresentableParentFolderItem
+import dev.subfly.yaba.core.components.item.folder.PresentableFolderItemView
 import dev.subfly.yaba.core.navigation.creation.ColorSelectionRoute
+import dev.subfly.yaba.core.navigation.creation.FolderCreationRoute
 import dev.subfly.yaba.core.navigation.creation.IconCategorySelectionRoute
 import dev.subfly.yaba.core.navigation.creation.ResultStoreKeys
 import dev.subfly.yaba.util.LocalAppStateManager
@@ -48,10 +49,12 @@ import yaba.composeapp.generated.resources.create_folder_placeholder
 import yaba.composeapp.generated.resources.create_folder_title
 import yaba.composeapp.generated.resources.done
 import yaba.composeapp.generated.resources.edit_folder_title
+import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(
     ExperimentalMaterial3Api::class,
     ExperimentalMaterial3ExpressiveApi::class,
+    ExperimentalUuidApi::class,
 )
 @Composable
 fun FolderCreationContent(folderId: String? = null) {
@@ -138,17 +141,20 @@ fun FolderCreationContent(folderId: String? = null) {
             },
         )
         Spacer(modifier = Modifier.height(12.dp))
-        PresentableParentFolderItem(
-            modifier = Modifier
-                .height(60.dp)
-                .padding(horizontal = 12.dp),
+        PresentableFolderItemView(
+            modifier = Modifier.padding(horizontal = 12.dp),
             model = state.selectedParent,
             nullModelPresentableColor = state.selectedColor,
             onPressed = {
                 // TODO: NAVIGATE TO PARENT SELECTION
             },
             onNavigateToEdit = {
-                // TODO: NAVIGATE TO EDIT FOLDER
+                state.selectedParent?.let { nonNullParent ->
+                    creationNavigator.add(
+                        FolderCreationRoute(folderId = nonNullParent.id.toString())
+                    )
+                    appStateManager.onShowCreationContent()
+                }
             },
         )
         Spacer(modifier = Modifier.height(36.dp))
@@ -297,6 +303,11 @@ private fun DescriptionContent(
         onValueChange = onChangeDescription,
         shape = RoundedCornerShape(24.dp),
         placeholder = { Text(text = "Folder description...") },
-        leadingIcon = { YabaIcon(name = "paragraph") }
+        leadingIcon = {
+            YabaIcon(
+                name = "paragraph",
+                color = selectedColor,
+            )
+        }
     )
 }

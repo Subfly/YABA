@@ -1,43 +1,28 @@
 package dev.subfly.yaba.ui.creation.bookmark.linkmark
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkLabel
+import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkFolderSelectionContent
+import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkInfoContent
+import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkLinkContent
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkPreviewContent
+import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkTagSelectionContent
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkTopBar
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
-import dev.subfly.yabacore.model.utils.ContentAppearance
-import dev.subfly.yabacore.model.utils.uiIconName
-import dev.subfly.yabacore.model.utils.uiTitle
 import dev.subfly.yabacore.state.linkmark.LinkmarkCreationEvent
-import dev.subfly.yabacore.ui.icon.YabaIcon
-import org.jetbrains.compose.resources.stringResource
-import yaba.composeapp.generated.resources.Res
-import yaba.composeapp.generated.resources.create_bookmark_add_tags
-import yaba.composeapp.generated.resources.create_bookmark_edit_tags
-import yaba.composeapp.generated.resources.folder
-import yaba.composeapp.generated.resources.info
-import yaba.composeapp.generated.resources.link
-import yaba.composeapp.generated.resources.preview
-import yaba.composeapp.generated.resources.tags_title
 
 @Composable
 fun LinkmarkCreationContent(bookmarkId: String?) {
@@ -70,63 +55,52 @@ fun LinkmarkCreationContent(bookmarkId: String?) {
                 creationNavigator.removeLastOrNull()
             },
         )
-        LinkmarkPreviewContent(
-            state = state,
-            onChangePreviewType = {
-                vm.onEvent(LinkmarkCreationEvent.OnCyclePreviewAppearance)
-            },
-            onOpenImageSelector = {},
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-        LinkmarkLabel(
-            label = stringResource(Res.string.link),
-            iconName = "link-04"
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-        LinkmarkLabel(
-            label = stringResource(Res.string.info),
-            iconName = "information-circle"
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-        LinkmarkLabel(
-            label = stringResource(Res.string.folder),
-            iconName = "folder-01"
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-        LinkmarkLabel(
-            label = stringResource(Res.string.tags_title),
-            iconName = "tag-01",
-            extraContent = {
-                TextButton(
-                    onClick = {
-                        // TODO: NAVIGATE TO TAG SELECTION
-                    }
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        YabaIcon(
-                            name = if (state.selectedTags.isEmpty()) {
-                                "plus-sign"
-                            } else {
-                                "edit-02"
-                            },
-                            color = ButtonDefaults.textButtonColors().contentColor,
-                        )
-                        Text(
-                            text = stringResource(
-                                resource = if (state.selectedTags.isEmpty()) {
-                                    Res.string.create_bookmark_add_tags
-                                } else {
-                                    Res.string.create_bookmark_edit_tags
-                                }
-                            )
-                        )
-                    }
-                }
+        LazyColumn {
+            item {
+                LinkmarkPreviewContent(
+                    state = state,
+                    onChangePreviewType = {
+                        vm.onEvent(LinkmarkCreationEvent.OnCyclePreviewAppearance)
+                    },
+                    onOpenImageSelector = {},
+                )
             }
-        )
-        Spacer(modifier = Modifier.height(36.dp))
+            item {
+                LinkmarkLinkContent(
+                    state = state,
+                    onChangeUrl = { newUrl ->
+                        vm.onEvent(LinkmarkCreationEvent.OnChangeUrl(newUrl = newUrl))
+                    }
+                )
+            }
+            item {
+                LinkmarkInfoContent(
+                    state = state,
+                    onChangeLabel = { newLabel ->
+                        vm.onEvent(LinkmarkCreationEvent.OnChangeLabel(newLabel = newLabel))
+                    },
+                    onClearLabel = {
+                        vm.onEvent(LinkmarkCreationEvent.OnClearLabel)
+                    },
+                    onChangeDescription = { newDescription ->
+                        vm.onEvent(
+                            LinkmarkCreationEvent.OnChangeDescription(newDescription = newDescription)
+                        )
+                    },
+                    onChangeType = { newType ->
+                        vm.onEvent(LinkmarkCreationEvent.OnChangeLinkType(linkType = newType))
+                    }
+                )
+            }
+            item {
+                LinkmarkFolderSelectionContent(state = state)
+            }
+            item {
+                LinkmarkTagSelectionContent(state = state)
+            }
+            item {
+                Spacer(modifier = Modifier.height(36.dp))
+            }
+        }
     }
 }

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -28,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import dev.subfly.yabacore.model.utils.CardImageSizing
@@ -46,6 +48,7 @@ import yaba.composeapp.generated.resources.bookmark_no_tags_added_title
 import yaba.composeapp.generated.resources.bookmark_title_placeholder
 import yaba.composeapp.generated.resources.preview
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun LinkmarkPreviewContent(
     state: LinkmarkCreationUIState,
@@ -61,7 +64,10 @@ internal fun LinkmarkPreviewContent(
         label = stringResource(Res.string.preview),
         iconName = "image-03",
         extraContent = {
-            TextButton(onClick = onChangePreviewType) {
+            TextButton(
+                shapes = ButtonDefaults.shapes(),
+                onClick = onChangePreviewType,
+            ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -163,6 +169,7 @@ private fun ListPreview(
                 },
                 style = MaterialTheme.typography.bodyLargeEmphasized,
                 maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
         },
         supportingContent = {
@@ -172,6 +179,7 @@ private fun ListPreview(
                 },
                 maxLines = 2,
                 style = MaterialTheme.typography.bodyMedium,
+                overflow = TextOverflow.Ellipsis,
             )
         },
         leadingContent = {
@@ -248,6 +256,7 @@ private fun CardBigImagePreview(
                 },
                 maxLines = 2,
                 style = MaterialTheme.typography.bodyLargeEmphasized,
+                overflow = TextOverflow.Ellipsis,
             )
             Text(
                 text = state.description.ifBlank {
@@ -255,6 +264,7 @@ private fun CardBigImagePreview(
                 },
                 maxLines = 3,
                 style = MaterialTheme.typography.bodyMedium,
+                overflow = TextOverflow.Ellipsis,
             )
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -339,6 +349,7 @@ private fun CardSmallImagePreview(
                     },
                     maxLines = 2,
                     style = MaterialTheme.typography.bodyLargeEmphasized,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
             Text(
@@ -347,6 +358,7 @@ private fun CardSmallImagePreview(
                 },
                 maxLines = 3,
                 style = MaterialTheme.typography.bodyMedium,
+                overflow = TextOverflow.Ellipsis,
             )
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -433,6 +445,7 @@ private fun GridPreview(
                     },
                     maxLines = 2,
                     style = MaterialTheme.typography.bodyLargeEmphasized,
+                    overflow = TextOverflow.Ellipsis,
                 )
                 Text(
                     text = state.description.ifBlank {
@@ -440,6 +453,7 @@ private fun GridPreview(
                     },
                     maxLines = 3,
                     style = MaterialTheme.typography.bodyMedium,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
         }
