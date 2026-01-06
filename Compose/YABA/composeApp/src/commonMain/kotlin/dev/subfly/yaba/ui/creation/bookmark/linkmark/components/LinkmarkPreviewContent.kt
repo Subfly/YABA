@@ -1,5 +1,10 @@
 package dev.subfly.yaba.ui.creation.bookmark.linkmark.components
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -47,6 +52,24 @@ import yaba.composeapp.generated.resources.bookmark_description_placeholder
 import yaba.composeapp.generated.resources.bookmark_no_tags_added_title
 import yaba.composeapp.generated.resources.bookmark_title_placeholder
 import yaba.composeapp.generated.resources.preview
+
+/**
+ * Shared element keys for smooth transitions between preview types
+ */
+private enum class PreviewSharedElementKey {
+    Image,
+    Title,
+    Description,
+    TagsRow
+}
+
+/**
+ * Composite key for AnimatedContent to track both appearance and card sizing changes
+ */
+private data class PreviewAnimationKey(
+    val appearance: ContentAppearance,
+    val cardSizing: CardImageSizing,
+)
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -102,6 +125,7 @@ internal fun LinkmarkPreviewContent(
     )
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun PreviewContent(
     state: LinkmarkCreationUIState,
@@ -111,301 +135,160 @@ private fun PreviewContent(
         mutableStateOf(state.selectedFolder?.color ?: YabaColor.BLUE)
     }
 
-    when (state.contentAppearance) {
-        ContentAppearance.LIST -> {
-            ListPreview(
-                state = state,
-                color = color,
-                onClick = onClick,
-            )
-        }
-
-        ContentAppearance.CARD -> {
-            when (state.cardImageSizing) {
-                CardImageSizing.BIG -> {
-                    CardBigImagePreview(
+    SharedTransitionLayout {
+        AnimatedContent(
+            targetState = PreviewAnimationKey(
+                appearance = state.contentAppearance,
+                cardSizing = state.cardImageSizing,
+            ),
+        ) { target ->
+            when (target.appearance) {
+                ContentAppearance.LIST -> {
+                    ListPreview(
                         state = state,
                         color = color,
                         onClick = onClick,
+                        sharedTransitionScope = this@SharedTransitionLayout,
+                        animatedContentScope = this@AnimatedContent,
                     )
                 }
 
-                CardImageSizing.SMALL -> {
-                    CardSmallImagePreview(
+                ContentAppearance.CARD -> {
+                    when (target.cardSizing) {
+                        CardImageSizing.BIG -> {
+                            CardBigImagePreview(
+                                state = state,
+                                color = color,
+                                onClick = onClick,
+                                sharedTransitionScope = this@SharedTransitionLayout,
+                                animatedContentScope = this@AnimatedContent,
+                            )
+                        }
+
+                        CardImageSizing.SMALL -> {
+                            CardSmallImagePreview(
+                                state = state,
+                                color = color,
+                                onClick = onClick,
+                                sharedTransitionScope = this@SharedTransitionLayout,
+                                animatedContentScope = this@AnimatedContent,
+                            )
+                        }
+                    }
+                }
+
+                ContentAppearance.GRID -> {
+                    GridPreview(
                         state = state,
                         color = color,
                         onClick = onClick,
+                        sharedTransitionScope = this@SharedTransitionLayout,
+                        animatedContentScope = this@AnimatedContent,
                     )
                 }
             }
         }
-
-        ContentAppearance.GRID -> {
-            GridPreview(
-                state = state,
-                color = color,
-                onClick = onClick,
-            )
-        }
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
 private fun ListPreview(
     state: LinkmarkCreationUIState,
     color: YabaColor,
     onClick: () -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
 ) {
-    ListItem(
-        modifier = Modifier
-            .padding(horizontal = 12.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .clickable(onClick = onClick),
-        headlineContent = {
-            Text(
-                text = state.label.ifBlank {
-                    stringResource(Res.string.bookmark_title_placeholder)
-                },
-                style = MaterialTheme.typography.bodyLargeEmphasized,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        },
-        supportingContent = {
-            Text(
-                text = state.description.ifBlank {
-                    stringResource(Res.string.bookmark_description_placeholder)
-                },
-                maxLines = 2,
-                style = MaterialTheme.typography.bodyMedium,
-                overflow = TextOverflow.Ellipsis,
-            )
-        },
-        leadingContent = {
-            if (state.imageData == null) {
-                Surface(
-                    modifier = Modifier.size(64.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    color = Color(color.iconTintArgb()).copy(alpha = 0.3F),
-                ) {
-                    YabaIcon(
-                        modifier = Modifier.padding(16.dp),
-                        name = state.selectedLinkType.uiIconName(),
-                        color = color,
-                    )
-                }
-            } else {
-                YabaImage(
+    with(sharedTransitionScope) {
+        ListItem(
+            modifier = Modifier
+                .padding(horizontal = 12.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .clickable(onClick = onClick),
+            headlineContent = {
+                Text(
                     modifier = Modifier
-                        .size(64.dp)
-                        .clip(RoundedCornerShape(12.dp)),
-                    bytes = state.imageData,
+                        .sharedBounds(
+                            sharedContentState = rememberSharedContentState(
+                                key = PreviewSharedElementKey.Title
+                            ),
+                            animatedVisibilityScope = animatedContentScope,
+                        ),
+                    text = state.label.ifBlank {
+                        stringResource(Res.string.bookmark_title_placeholder)
+                    },
+                    style = MaterialTheme.typography.bodyLargeEmphasized,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
-            }
-        },
-    )
+            },
+            supportingContent = {
+                Text(
+                    modifier = Modifier
+                        .sharedBounds(
+                            sharedContentState = rememberSharedContentState(
+                                key = PreviewSharedElementKey.Description
+                            ),
+                            animatedVisibilityScope = animatedContentScope,
+                        ),
+                    text = state.description.ifBlank {
+                        stringResource(Res.string.bookmark_description_placeholder)
+                    },
+                    maxLines = 2,
+                    style = MaterialTheme.typography.bodyMedium,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            },
+            leadingContent = {
+                Box(
+                    modifier = Modifier
+                        .sharedElement(
+                            sharedContentState = rememberSharedContentState(
+                                key = PreviewSharedElementKey.Image
+                            ),
+                            animatedVisibilityScope = animatedContentScope,
+                        )
+                ) {
+                    if (state.imageData == null) {
+                        Surface(
+                            modifier = Modifier.size(64.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            color = Color(color.iconTintArgb()).copy(alpha = 0.3F),
+                        ) {
+                            YabaIcon(
+                                modifier = Modifier.padding(16.dp),
+                                name = state.selectedLinkType.uiIconName(),
+                                color = color,
+                            )
+                        }
+                    } else {
+                        YabaImage(
+                            modifier = Modifier
+                                .size(64.dp)
+                                .clip(RoundedCornerShape(12.dp)),
+                            bytes = state.imageData,
+                        )
+                    }
+                }
+            },
+        )
+    }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
 private fun CardBigImagePreview(
     state: LinkmarkCreationUIState,
     color: YabaColor,
     onClick: () -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
 ) {
-    Surface(
-        modifier = Modifier
-            .padding(horizontal = 12.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.surface,
-    ) {
-        Column(
-            modifier = Modifier.padding(12.dp),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            if (state.imageData == null) {
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(128.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    color = Color(color.iconTintArgb()).copy(alpha = 0.3F),
-                ) {
-                    YabaIcon(
-                        modifier = Modifier.padding(32.dp),
-                        name = state.selectedLinkType.uiIconName(),
-                        color = color,
-                    )
-                }
-            } else {
-                YabaImage(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(128.dp)
-                        .clip(RoundedCornerShape(12.dp)),
-                    bytes = state.imageData,
-                )
-            }
-            Text(
-                text = state.label.ifBlank {
-                    stringResource(Res.string.bookmark_title_placeholder)
-                },
-                maxLines = 2,
-                style = MaterialTheme.typography.bodyLargeEmphasized,
-                overflow = TextOverflow.Ellipsis,
-            )
-            Text(
-                text = state.description.ifBlank {
-                    stringResource(Res.string.bookmark_description_placeholder)
-                },
-                maxLines = 3,
-                style = MaterialTheme.typography.bodyMedium,
-                overflow = TextOverflow.Ellipsis,
-            )
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-                if (state.selectedTags.isEmpty()) {
-                    Surface(
-                        modifier = Modifier.size(24.dp),
-                        shape = RoundedCornerShape(4.dp),
-                        color = Color(color.iconTintArgb()).copy(alpha = 0.3F),
-                    ) {
-                        YabaIcon(
-                            modifier = Modifier.padding(4.dp),
-                            name = "tags",
-                            color = color,
-                        )
-                    }
-                    Text(
-                        text = stringResource(Res.string.bookmark_no_tags_added_title),
-                        fontStyle = FontStyle.Italic,
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                } else {
-                    state.selectedTags.fastForEach {
-
-                    }
-                }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-private fun CardSmallImagePreview(
-    state: LinkmarkCreationUIState,
-    color: YabaColor,
-    onClick: () -> Unit,
-) {
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 12.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.surface,
-    ) {
-        Column(
-            modifier = Modifier.padding(12.dp),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                if (state.imageData == null) {
-                    Surface(
-                        modifier = Modifier.size(64.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        color = Color(color.iconTintArgb()).copy(alpha = 0.3F),
-                    ) {
-                        YabaIcon(
-                            modifier = Modifier.padding(16.dp),
-                            name = state.selectedLinkType.uiIconName(),
-                            color = color,
-                        )
-                    }
-                } else {
-                    YabaImage(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(128.dp)
-                            .clip(RoundedCornerShape(12.dp)),
-                        bytes = state.imageData,
-                    )
-                }
-                Text(
-                    text = state.label.ifBlank {
-                        stringResource(Res.string.bookmark_title_placeholder)
-                    },
-                    maxLines = 2,
-                    style = MaterialTheme.typography.bodyLargeEmphasized,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-            Text(
-                text = state.description.ifBlank {
-                    stringResource(Res.string.bookmark_description_placeholder)
-                },
-                maxLines = 3,
-                style = MaterialTheme.typography.bodyMedium,
-                overflow = TextOverflow.Ellipsis,
-            )
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-                if (state.selectedTags.isEmpty()) {
-                    Surface(
-                        modifier = Modifier.size(24.dp),
-                        shape = RoundedCornerShape(4.dp),
-                        color = Color(color.iconTintArgb()).copy(alpha = 0.3F),
-                    ) {
-                        YabaIcon(
-                            modifier = Modifier.padding(4.dp),
-                            name = "tags",
-                            color = color,
-                        )
-                    }
-                    Text(
-                        text = stringResource(Res.string.bookmark_no_tags_added_title),
-                        fontStyle = FontStyle.Italic,
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                } else {
-                    state.selectedTags.fastForEach {
-
-                    }
-                }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-private fun GridPreview(
-    state: LinkmarkCreationUIState,
-    color: YabaColor,
-    onClick: () -> Unit,
-) {
-    Box(
-        modifier = Modifier.fillMaxWidth(),
-        contentAlignment = Alignment.Center,
-    ) {
+    with(sharedTransitionScope) {
         Surface(
             modifier = Modifier
-                .width(width = 200.dp)
-                .heightIn(min = 200.dp, max = 560.dp)
+                .padding(horizontal = 12.dp)
                 .clip(RoundedCornerShape(12.dp))
                 .clickable(onClick = onClick),
             shape = RoundedCornerShape(12.dp),
@@ -416,30 +299,47 @@ private fun GridPreview(
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                if (state.imageData == null) {
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(160.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        color = Color(color.iconTintArgb()).copy(alpha = 0.3F),
-                    ) {
-                        YabaIcon(
-                            modifier = Modifier.padding(52.dp),
-                            name = state.selectedLinkType.uiIconName(),
-                            color = color,
+                Box(
+                    modifier = Modifier
+                        .sharedElement(
+                            sharedContentState = rememberSharedContentState(
+                                key = PreviewSharedElementKey.Image
+                            ),
+                            animatedVisibilityScope = animatedContentScope,
+                        )
+                ) {
+                    if (state.imageData == null) {
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(128.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            color = Color(color.iconTintArgb()).copy(alpha = 0.3F),
+                        ) {
+                            YabaIcon(
+                                modifier = Modifier.padding(32.dp),
+                                name = state.selectedLinkType.uiIconName(),
+                                color = color,
+                            )
+                        }
+                    } else {
+                        YabaImage(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(128.dp)
+                                .clip(RoundedCornerShape(12.dp)),
+                            bytes = state.imageData,
                         )
                     }
-                } else {
-                    YabaImage(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(128.dp)
-                            .clip(RoundedCornerShape(12.dp)),
-                        bytes = state.imageData,
-                    )
                 }
                 Text(
+                    modifier = Modifier
+                        .sharedBounds(
+                            sharedContentState = rememberSharedContentState(
+                                key = PreviewSharedElementKey.Title
+                            ),
+                            animatedVisibilityScope = animatedContentScope,
+                        ),
                     text = state.label.ifBlank {
                         stringResource(Res.string.bookmark_title_placeholder)
                     },
@@ -448,6 +348,13 @@ private fun GridPreview(
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
+                    modifier = Modifier
+                        .sharedBounds(
+                            sharedContentState = rememberSharedContentState(
+                                key = PreviewSharedElementKey.Description
+                            ),
+                            animatedVisibilityScope = animatedContentScope,
+                        ),
                     text = state.description.ifBlank {
                         stringResource(Res.string.bookmark_description_placeholder)
                     },
@@ -455,6 +362,265 @@ private fun GridPreview(
                     style = MaterialTheme.typography.bodyMedium,
                     overflow = TextOverflow.Ellipsis,
                 )
+                Row(
+                    modifier = Modifier
+                        .sharedBounds(
+                            sharedContentState = rememberSharedContentState(
+                                key = PreviewSharedElementKey.TagsRow
+                            ),
+                            animatedVisibilityScope = animatedContentScope,
+                        ),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    if (state.selectedTags.isEmpty()) {
+                        Surface(
+                            modifier = Modifier.size(24.dp),
+                            shape = RoundedCornerShape(4.dp),
+                            color = Color(color.iconTintArgb()).copy(alpha = 0.3F),
+                        ) {
+                            YabaIcon(
+                                modifier = Modifier.padding(4.dp),
+                                name = "tags",
+                                color = color,
+                            )
+                        }
+                        Text(
+                            text = stringResource(Res.string.bookmark_no_tags_added_title),
+                            fontStyle = FontStyle.Italic,
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    } else {
+                        state.selectedTags.fastForEach {
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalSharedTransitionApi::class)
+@Composable
+private fun CardSmallImagePreview(
+    state: LinkmarkCreationUIState,
+    color: YabaColor,
+    onClick: () -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
+) {
+    with(sharedTransitionScope) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .clickable(onClick = onClick),
+            shape = RoundedCornerShape(12.dp),
+            color = MaterialTheme.colorScheme.surface,
+        ) {
+            Column(
+                modifier = Modifier.padding(12.dp),
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .sharedElement(
+                                sharedContentState = rememberSharedContentState(
+                                    key = PreviewSharedElementKey.Image
+                                ),
+                                animatedVisibilityScope = animatedContentScope,
+                            )
+                    ) {
+                        if (state.imageData == null) {
+                            Surface(
+                                modifier = Modifier.size(64.dp),
+                                shape = RoundedCornerShape(12.dp),
+                                color = Color(color.iconTintArgb()).copy(alpha = 0.3F),
+                            ) {
+                                YabaIcon(
+                                    modifier = Modifier.padding(16.dp),
+                                    name = state.selectedLinkType.uiIconName(),
+                                    color = color,
+                                )
+                            }
+                        } else {
+                            YabaImage(
+                                modifier = Modifier
+                                    .size(64.dp)
+                                    .clip(RoundedCornerShape(12.dp)),
+                                bytes = state.imageData,
+                            )
+                        }
+                    }
+                    Text(
+                        modifier = Modifier
+                            .sharedBounds(
+                                sharedContentState = rememberSharedContentState(
+                                    key = PreviewSharedElementKey.Title
+                                ),
+                                animatedVisibilityScope = animatedContentScope,
+                            ),
+                        text = state.label.ifBlank {
+                            stringResource(Res.string.bookmark_title_placeholder)
+                        },
+                        maxLines = 2,
+                        style = MaterialTheme.typography.bodyLargeEmphasized,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+                Text(
+                    modifier = Modifier
+                        .sharedBounds(
+                            sharedContentState = rememberSharedContentState(
+                                key = PreviewSharedElementKey.Description
+                            ),
+                            animatedVisibilityScope = animatedContentScope,
+                        ),
+                    text = state.description.ifBlank {
+                        stringResource(Res.string.bookmark_description_placeholder)
+                    },
+                    maxLines = 3,
+                    style = MaterialTheme.typography.bodyMedium,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Row(
+                    modifier = Modifier
+                        .sharedBounds(
+                            sharedContentState = rememberSharedContentState(
+                                key = PreviewSharedElementKey.TagsRow
+                            ),
+                            animatedVisibilityScope = animatedContentScope,
+                        ),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    if (state.selectedTags.isEmpty()) {
+                        Surface(
+                            modifier = Modifier.size(24.dp),
+                            shape = RoundedCornerShape(4.dp),
+                            color = Color(color.iconTintArgb()).copy(alpha = 0.3F),
+                        ) {
+                            YabaIcon(
+                                modifier = Modifier.padding(4.dp),
+                                name = "tags",
+                                color = color,
+                            )
+                        }
+                        Text(
+                            text = stringResource(Res.string.bookmark_no_tags_added_title),
+                            fontStyle = FontStyle.Italic,
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    } else {
+                        state.selectedTags.fastForEach {
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalSharedTransitionApi::class)
+@Composable
+private fun GridPreview(
+    state: LinkmarkCreationUIState,
+    color: YabaColor,
+    onClick: () -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
+) {
+    with(sharedTransitionScope) {
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center,
+        ) {
+            Surface(
+                modifier = Modifier
+                    .width(width = 200.dp)
+                    .heightIn(min = 200.dp, max = 560.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .clickable(onClick = onClick),
+                shape = RoundedCornerShape(12.dp),
+                color = MaterialTheme.colorScheme.surface,
+            ) {
+                Column(
+                    modifier = Modifier.padding(12.dp),
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .sharedElement(
+                                sharedContentState = rememberSharedContentState(
+                                    key = PreviewSharedElementKey.Image
+                                ),
+                                animatedVisibilityScope = animatedContentScope,
+                            )
+                    ) {
+                        if (state.imageData == null) {
+                            Surface(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(160.dp),
+                                shape = RoundedCornerShape(12.dp),
+                                color = Color(color.iconTintArgb()).copy(alpha = 0.3F),
+                            ) {
+                                YabaIcon(
+                                    modifier = Modifier.padding(52.dp),
+                                    name = state.selectedLinkType.uiIconName(),
+                                    color = color,
+                                )
+                            }
+                        } else {
+                            YabaImage(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(128.dp)
+                                    .clip(RoundedCornerShape(12.dp)),
+                                bytes = state.imageData,
+                            )
+                        }
+                    }
+                    Text(
+                        modifier = Modifier
+                            .sharedBounds(
+                                sharedContentState = rememberSharedContentState(
+                                    key = PreviewSharedElementKey.Title
+                                ),
+                                animatedVisibilityScope = animatedContentScope,
+                            ),
+                        text = state.label.ifBlank {
+                            stringResource(Res.string.bookmark_title_placeholder)
+                        },
+                        maxLines = 2,
+                        style = MaterialTheme.typography.bodyLargeEmphasized,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    Text(
+                        modifier = Modifier
+                            .sharedBounds(
+                                sharedContentState = rememberSharedContentState(
+                                    key = PreviewSharedElementKey.Description
+                                ),
+                                animatedVisibilityScope = animatedContentScope,
+                            ),
+                        text = state.description.ifBlank {
+                            stringResource(Res.string.bookmark_description_placeholder)
+                        },
+                        maxLines = 3,
+                        style = MaterialTheme.typography.bodyMedium,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
             }
         }
     }
