@@ -14,6 +14,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import dev.subfly.yaba.ui.creation.bookmark.BookmarkCreationRouteSelectionContent
+import dev.subfly.yaba.ui.creation.bookmark.linkmark.LinkmarkCreationContent
 import dev.subfly.yaba.ui.creation.folder.FolderCreationContent
 import dev.subfly.yaba.ui.creation.tag.TagCreationContent
 import dev.subfly.yaba.ui.selection.ColorSelectionContent
@@ -74,6 +75,9 @@ fun YabaCreationNavigationView(
             }
             entry<BookmarkCreationRoute> {
                 BookmarkCreationRouteSelectionContent()
+            }
+            entry<LinkmarkCreationRoute> { key ->
+                LinkmarkCreationContent(bookmarkId = key.bookmarkId)
             }
             entry<EmptyRoute> {
                 // Only old Compose users will remember why we had to put 1.dp boxes in sheets...
