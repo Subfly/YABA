@@ -120,12 +120,19 @@ class LinkmarkCreationStateMachine :
 
             // Ensure a folder is selected (use uncategorized if none)
             if (currentState().selectedFolder == null) {
-                val uncategorizedFolder = FolderManager.ensureUncategorizedFolder()
-                updateState {
-                    it.copy(
-                            selectedFolder = uncategorizedFolder,
-                            uncategorizedFolderCreationRequired = true,
-                    )
+                // First check if uncategorized folder already exists in DB
+                val existingUncategorized = FolderManager.getUncategorizedFolder()
+                if (existingUncategorized != null) {
+                    updateState { it.copy(selectedFolder = existingUncategorized) }
+                } else {
+                    // Create in-memory model only - will be persisted on save
+                    val temporaryUncategorized = FolderManager.createUncategorizedFolderModel()
+                    updateState {
+                        it.copy(
+                                selectedFolder = temporaryUncategorized,
+                                uncategorizedFolderCreationRequired = true,
+                        )
+                    }
                 }
             }
         }
@@ -304,12 +311,17 @@ class LinkmarkCreationStateMachine :
 
     private fun onSave() {
         val state = currentState()
-        val selectedFolder = state.selectedFolder ?: return
+        var selectedFolder = state.selectedFolder ?: return
 
         launch {
             updateState { it.copy(isLoading = true) }
 
             try {
+                // If uncategorized folder needs to be created, persist it now
+                if (state.uncategorizedFolderCreationRequired) {
+                    selectedFolder = FolderManager.ensureUncategorizedFolder()
+                }
+
                 if (state.editingLinkmark != null) {
                     // Update existing linkmark
                     val updated =

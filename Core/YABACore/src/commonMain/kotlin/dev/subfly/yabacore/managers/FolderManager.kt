@@ -70,13 +70,39 @@ object FolderManager {
                 label = CoreConstants.Folder.Uncategorized.NAME,
                 description = CoreConstants.Folder.Uncategorized.DESCRIPTION,
                 icon = CoreConstants.Folder.Uncategorized.ICON,
-                color = YabaColor.NONE,
+                color = YabaColor.BLUE,
                 createdAt = now,
                 editedAt = now,
                 order = rootSiblings.size,
             )
         opApplier.applyLocal(listOf(folder.toOperationDraft(OperationKind.CREATE)))
         return folder.toUiModel(bookmarkCount = 0)
+    }
+
+    /**
+     * Returns the uncategorized folder if it exists, or null if it hasn't been created yet.
+     */
+    suspend fun getUncategorizedFolder(): FolderUiModel? =
+        folderDao.getFolderWithBookmarkCount(uncategorizedFolderId.asString())?.toUiModel()
+
+    /**
+     * Creates an in-memory representation of the uncategorized folder without persisting to DB.
+     * Use this for temporary display purposes before actually saving.
+     */
+    fun createUncategorizedFolderModel(): FolderUiModel {
+        val now = clock.now()
+        return FolderUiModel(
+            id = uncategorizedFolderId,
+            parentId = null,
+            label = CoreConstants.Folder.Uncategorized.NAME,
+            description = CoreConstants.Folder.Uncategorized.DESCRIPTION,
+            icon = CoreConstants.Folder.Uncategorized.ICON,
+            color = YabaColor.BLUE,
+            createdAt = now,
+            editedAt = now,
+            order = -1, // Will be set correctly when actually saved
+            bookmarkCount = 0,
+        )
     }
 
     suspend fun createFolder(folder: FolderUiModel): FolderUiModel {
