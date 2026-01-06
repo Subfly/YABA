@@ -4,16 +4,16 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import dev.subfly.yabacore.ui.icon.YabaIcon
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
+import yaba.composeapp.generated.resources.cancel
 import yaba.composeapp.generated.resources.create_bookmark_title
 import yaba.composeapp.generated.resources.done
 import yaba.composeapp.generated.resources.edit_bookmark_title
@@ -45,7 +45,17 @@ internal fun LinkmarkTopBar(
                     ),
             )
         },
-        navigationIcon = { IconButton(onClick = onDismiss) { YabaIcon(name = "arrow-left-01") } },
+        navigationIcon = {
+            TextButton(
+                shapes = ButtonDefaults.shapes(),
+                onClick = onDismiss,
+                colors =
+                    ButtonDefaults.textButtonColors()
+                        .copy(
+                            contentColor = MaterialTheme.colorScheme.error,
+                        )
+            ) { Text(text = stringResource(Res.string.cancel)) }
+        },
         actions = {
             TextButton(
                 shapes = ButtonDefaults.shapes(),
