@@ -31,11 +31,13 @@ import dev.subfly.yaba.core.navigation.alert.DeletionState
 import dev.subfly.yaba.core.navigation.alert.DeletionType
 import dev.subfly.yaba.core.navigation.creation.BookmarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.FolderCreationRoute
+import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalDeletionDialogManager
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.utils.ContentAppearance
+import dev.subfly.yabacore.model.utils.FolderSelectionMode
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.icon.iconTintArgb
@@ -92,7 +94,13 @@ fun FolderItemView(
                 text = moveText,
                 color = YabaColor.TEAL,
                 onClick = {
-                    // TODO: SHOW MOVE DIALOG
+                    creationNavigator.add(
+                        FolderSelectionRoute(
+                            mode = FolderSelectionMode.PARENT_SELECTION,
+                            contextFolderId = model.id.toString(),
+                        )
+                    )
+                    appStateManager.onShowCreationContent()
                 }
             ),
             CollectionMenuAction(
@@ -121,7 +129,13 @@ fun FolderItemView(
                 icon = "arrow-move-up-right",
                 color = YabaColor.TEAL,
                 onClick = {
-                    // TODO: OPEN MOVE SHEET
+                    creationNavigator.add(
+                        FolderSelectionRoute(
+                            mode = FolderSelectionMode.PARENT_SELECTION,
+                            contextFolderId = model.id.toString(),
+                        )
+                    )
+                    appStateManager.onShowCreationContent()
                 }
             ),
             CollectionSwipeAction(

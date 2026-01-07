@@ -5,6 +5,7 @@ package dev.subfly.yaba.core.navigation.creation
 import androidx.navigation3.runtime.NavKey
 import androidx.savedstate.serialization.SavedStateConfiguration
 import dev.subfly.yabacore.icons.IconSubcategory
+import dev.subfly.yabacore.model.utils.FolderSelectionMode
 import dev.subfly.yabacore.model.utils.YabaColor
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
@@ -75,6 +76,8 @@ data class DocmarkCreationRoute(
 @Serializable
 data class FolderSelectionRoute(
     val routeId: String = Uuid.generateV4().toString(),
+    val mode: FolderSelectionMode,
+    val contextFolderId: String?,
 ): NavKey
 
 @Serializable

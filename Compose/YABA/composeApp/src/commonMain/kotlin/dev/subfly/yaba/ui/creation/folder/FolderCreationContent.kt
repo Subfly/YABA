@@ -33,13 +33,17 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.core.components.item.folder.PresentableFolderItemView
 import dev.subfly.yaba.core.navigation.creation.ColorSelectionRoute
 import dev.subfly.yaba.core.navigation.creation.FolderCreationRoute
+import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
 import dev.subfly.yaba.core.navigation.creation.IconCategorySelectionRoute
 import dev.subfly.yaba.core.navigation.creation.ResultStoreKeys
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
+import dev.subfly.yabacore.model.ui.FolderUiModel
+import dev.subfly.yabacore.model.utils.FolderSelectionMode
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.folder.FolderCreationEvent
+import dev.subfly.yabacore.state.linkmark.LinkmarkCreationEvent
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.icon.iconTintArgb
 import org.jetbrains.compose.resources.stringResource
@@ -82,6 +86,13 @@ fun FolderCreationContent(folderId: String? = null) {
         resultStore.getResult<String>(ResultStoreKeys.SELECTED_ICON)?.let { newIcon ->
             vm.onEvent(FolderCreationEvent.OnSelectNewIcon(newIcon = newIcon))
             resultStore.removeResult(ResultStoreKeys.SELECTED_ICON)
+        }
+    }
+
+    LaunchedEffect(resultStore.getResult(ResultStoreKeys.SELECTED_FOLDER)) {
+        resultStore.getResult<FolderUiModel>(ResultStoreKeys.SELECTED_FOLDER)?.let { newFolder ->
+            vm.onEvent(FolderCreationEvent.OnSelectNewParent(newParentId = newFolder.id.toString()))
+            resultStore.removeResult(ResultStoreKeys.SELECTED_FOLDER)
         }
     }
 
@@ -146,22 +157,24 @@ fun FolderCreationContent(folderId: String? = null) {
             model = state.selectedParent,
             nullModelPresentableColor = state.selectedColor,
             onPressed = {
-                // TODO: NAVIGATE TO PARENT SELECTION
-            },
-            onNavigateToEdit = {
-                state.selectedParent?.let { nonNullParent ->
-                    creationNavigator.add(
-                        FolderCreationRoute(folderId = nonNullParent.id.toString())
+                creationNavigator.add(
+                    FolderSelectionRoute(
+                        mode = FolderSelectionMode.PARENT_SELECTION,
+                        contextFolderId = if (state.editingFolder != null) {
+                            state.editingFolder?.id.toString()
+                        } else null,
                     )
-                    appStateManager.onShowCreationContent()
-                }
+                )
             },
         )
         Spacer(modifier = Modifier.height(36.dp))
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
+@OptIn(
+    ExperimentalMaterial3ExpressiveApi::class,
+    ExperimentalMaterial3Api::class,
+)
 @Composable
 private fun TopBar(
     modifier: Modifier = Modifier,

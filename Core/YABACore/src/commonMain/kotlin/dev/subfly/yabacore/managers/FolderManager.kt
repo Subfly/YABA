@@ -221,6 +221,17 @@ object FolderManager {
         return rows.map { it.toUiModel() }
     }
 
+    /**
+     * Observes all folders as a flat list, sorted by label.
+     * Useful for folder selection screens.
+     */
+    fun observeAllFoldersSorted(
+        sortType: SortType = SortType.LABEL,
+        sortOrder: SortOrderType = SortOrderType.ASCENDING,
+    ): Flow<List<FolderUiModel>> =
+        folderDao.observeAllFoldersWithBookmarkCounts(sortType.name, sortOrder.name)
+            .map { rows -> rows.map { it.toUiModel() } }
+
     private suspend fun loadSiblings(parentId: Uuid?): List<FolderDomainModel> =
         if (parentId == null) {
             folderDao.getRoot()

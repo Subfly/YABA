@@ -14,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import dev.subfly.yaba.core.navigation.creation.ResultStoreKeys
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkFolderSelectionContent
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkInfoContent
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkLinkContent
@@ -22,18 +23,30 @@ import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkTagSelec
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkTopBar
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
+import dev.subfly.yaba.util.LocalResultStore
+import dev.subfly.yabacore.model.ui.FolderUiModel
+import dev.subfly.yabacore.model.utils.YabaColor
+import dev.subfly.yabacore.state.folder.FolderCreationEvent
 import dev.subfly.yabacore.state.linkmark.LinkmarkCreationEvent
 
 @Composable
 fun LinkmarkCreationContent(bookmarkId: String?) {
     val creationNavigator = LocalCreationContentNavigator.current
     val appStateManager = LocalAppStateManager.current
+    val resultStore = LocalResultStore.current
 
     val vm = viewModel { LinkmarkCreationVM() }
     val state by vm.state
 
     LaunchedEffect(bookmarkId) {
         vm.onEvent(LinkmarkCreationEvent.OnInit(linkmarkIdString = bookmarkId))
+    }
+
+    LaunchedEffect(resultStore.getResult(ResultStoreKeys.SELECTED_FOLDER)) {
+        resultStore.getResult<FolderUiModel>(ResultStoreKeys.SELECTED_FOLDER)?.let { newFolder ->
+            vm.onEvent(LinkmarkCreationEvent.OnSelectFolder(folder = newFolder))
+            resultStore.removeResult(ResultStoreKeys.SELECTED_FOLDER)
+        }
     }
 
     Column(

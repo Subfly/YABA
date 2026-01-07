@@ -8,8 +8,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.components.item.folder.PresentableFolderItemView
 import dev.subfly.yaba.core.navigation.creation.FolderCreationRoute
+import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
+import dev.subfly.yaba.ui.selection.FolderSelectionContent
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
+import dev.subfly.yabacore.model.ui.FolderUiModel
+import dev.subfly.yabacore.model.utils.FolderSelectionMode
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.linkmark.LinkmarkCreationUIState
 import org.jetbrains.compose.resources.stringResource
@@ -19,11 +23,8 @@ import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
 @Composable
-internal fun LinkmarkFolderSelectionContent(
-    state: LinkmarkCreationUIState,
-) {
+internal fun LinkmarkFolderSelectionContent(state: LinkmarkCreationUIState) {
     val creationNavigator = LocalCreationContentNavigator.current
-    val appStateManager = LocalAppStateManager.current
 
     Spacer(modifier = Modifier.height(24.dp))
     LinkmarkLabel(
@@ -37,15 +38,12 @@ internal fun LinkmarkFolderSelectionContent(
         nullModelPresentableColor = YabaColor.BLUE,
         cornerSize = 12.dp,
         onPressed = {
-            // TODO: NAVIGATE TO PARENT SELECTION
-        },
-        onNavigateToEdit = {
-            state.selectedFolder?.let { nonNullFolder ->
-                creationNavigator.add(
-                    FolderCreationRoute(folderId = nonNullFolder.id.toString())
+            creationNavigator.add(
+                FolderSelectionRoute(
+                    mode = FolderSelectionMode.FOLDER_SELECTION,
+                    contextFolderId = null,
                 )
-                appStateManager.onShowCreationContent()
-            }
+            )
         },
     )
 }

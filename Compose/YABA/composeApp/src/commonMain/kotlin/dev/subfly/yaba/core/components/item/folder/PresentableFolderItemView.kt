@@ -23,6 +23,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import dev.subfly.yaba.core.navigation.creation.FolderCreationRoute
+import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.yabaClickable
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.utils.YabaColor
@@ -34,17 +36,22 @@ import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.edit
 import yaba.composeapp.generated.resources.folder_creation_select_folder_message
+import kotlin.uuid.ExperimentalUuidApi
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(
+    ExperimentalMaterial3ExpressiveApi::class,
+    ExperimentalUuidApi::class
+)
 @Composable
 fun PresentableFolderItemView(
     modifier: Modifier = Modifier,
     model: FolderUiModel?,
     nullModelPresentableColor: YabaColor,
     onPressed: () -> Unit,
-    onNavigateToEdit: () -> Unit,
     cornerSize: Dp = 24.dp,
 ) {
+    val creationNavigator = LocalCreationContentNavigator.current
+
     var isOptionsExpanded by remember { mutableStateOf(false) }
 
     YabaSwipeActions(
@@ -53,7 +60,11 @@ fun PresentableFolderItemView(
             listOf(
                 SwipeAction(
                     key = "EDIT",
-                    onClick = onNavigateToEdit,
+                    onClick = {
+                        creationNavigator.add(
+                            FolderCreationRoute(folderId = model.id.toString())
+                        )
+                    },
                     content = {
                         Surface(
                             modifier = Modifier.size(44.dp),
@@ -118,7 +129,11 @@ fun PresentableFolderItemView(
                         checked = false,
                         onCheckedChange = { _ ->
                             isOptionsExpanded = false
-                            onNavigateToEdit()
+                            model?.let { nonNullModel ->
+                                creationNavigator.add(
+                                    FolderCreationRoute(folderId = nonNullModel.id.toString())
+                                )
+                            }
                         },
                         leadingIcon = { YabaIcon(name = "edit-02") },
                         text = { Text(text = stringResource(Res.string.edit)) }

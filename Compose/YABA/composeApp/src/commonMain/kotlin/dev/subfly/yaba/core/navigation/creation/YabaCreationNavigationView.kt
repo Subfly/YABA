@@ -18,6 +18,7 @@ import dev.subfly.yaba.ui.creation.bookmark.linkmark.LinkmarkCreationContent
 import dev.subfly.yaba.ui.creation.folder.FolderCreationContent
 import dev.subfly.yaba.ui.creation.tag.TagCreationContent
 import dev.subfly.yaba.ui.selection.ColorSelectionContent
+import dev.subfly.yaba.ui.selection.FolderSelectionContent
 import dev.subfly.yaba.ui.selection.IconCategorySelectionContent
 import dev.subfly.yaba.ui.selection.IconSelectionContent
 import dev.subfly.yaba.util.LocalAppStateManager
@@ -78,6 +79,12 @@ fun YabaCreationNavigationView(
             }
             entry<LinkmarkCreationRoute> { key ->
                 LinkmarkCreationContent(bookmarkId = key.bookmarkId)
+            }
+            entry<FolderSelectionRoute> { key ->
+                FolderSelectionContent(
+                    mode = key.mode,
+                    contextFolderId = key.contextFolderId,
+                )
             }
             entry<EmptyRoute> {
                 // Only old Compose users will remember why we had to put 1.dp boxes in sheets...
