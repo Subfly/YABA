@@ -25,6 +25,7 @@ import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yabacore.model.ui.FolderUiModel
+import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.folder.FolderCreationEvent
 import dev.subfly.yabacore.state.linkmark.LinkmarkCreationEvent
@@ -46,6 +47,13 @@ fun LinkmarkCreationContent(bookmarkId: String?) {
         resultStore.getResult<FolderUiModel>(ResultStoreKeys.SELECTED_FOLDER)?.let { newFolder ->
             vm.onEvent(LinkmarkCreationEvent.OnSelectFolder(folder = newFolder))
             resultStore.removeResult(ResultStoreKeys.SELECTED_FOLDER)
+        }
+    }
+
+    LaunchedEffect(resultStore.getResult(ResultStoreKeys.SELECTED_TAGS)) {
+        resultStore.getResult<List<TagUiModel>>(ResultStoreKeys.SELECTED_TAGS)?.let { newTags ->
+            vm.onEvent(LinkmarkCreationEvent.OnSelectTags(tags = newTags))
+            resultStore.removeResult(ResultStoreKeys.SELECTED_TAGS)
         }
     }
 

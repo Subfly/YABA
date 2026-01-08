@@ -24,6 +24,7 @@ val creationNavigationConfig = SavedStateConfiguration {
             subclass(DocmarkCreationRoute::class, DocmarkCreationRoute.serializer())
             subclass(ImagemarkCreationRoute::class, ImagemarkCreationRoute.serializer())
             subclass(FolderSelectionRoute::class, FolderSelectionRoute.serializer())
+            subclass(TagSelectionRoute::class, TagSelectionRoute.serializer())
             subclass(IconCategorySelectionRoute::class, IconCategorySelectionRoute.serializer())
             subclass(IconSelectionRoute::class, IconSelectionRoute.serializer())
             subclass(ColorSelectionRoute::class, ColorSelectionRoute.serializer())
@@ -79,6 +80,12 @@ data class FolderSelectionRoute(
     val mode: FolderSelectionMode,
     val contextFolderId: String?,
     val contextBookmarkId: String?,
+): NavKey
+
+@Serializable
+data class TagSelectionRoute(
+    val routeId: String = Uuid.generateV4().toString(),
+    val selectedTagIds: List<String>,
 ): NavKey
 
 @Serializable

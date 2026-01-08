@@ -46,7 +46,9 @@ DEFAULT_OUTPUT_ROOT = (
 )
 
 # Patterns for transforming iOS format specifiers and legal Android resource names.
-PLACEHOLDER_PATTERN = re.compile(r"(?<!%)%(?:(\d+)\$)?(@|lld|ld|d|f|s)")
+# Matches iOS format specifiers: %@, %d, %ld, %lld, %f, %lf, %s, %i, %u, %lu, %llu
+# with optional positional argument (e.g., %1$@)
+PLACEHOLDER_PATTERN = re.compile(r"(?<!%)%(?:(\d+)\$)?(@|lld|llu|ld|lu|lf|d|i|u|f|s)")
 INVALID_NAME_PATTERN = re.compile(r"[^a-z0-9_]+")
 # Fallback regions for script-only locales that Android qualifiers don't support.
 SCRIPT_REGION_FALLBACKS = {
@@ -196,13 +198,34 @@ def sanitize_resource_name(key: str, used: MutableMapping[str, str]) -> str:
 
 
 def convert_placeholders(value: str) -> str:
-    """Convert common iOS format tokens to Android-compatible ones."""
+    """Convert iOS format tokens to Compose Multiplatform-compatible ones.
+
+    Compose Multiplatform requires positional arguments with the format %<number>$s
+    or %<number>$d. Only $s and $d suffixes are supported (they are interchangeable).
+
+    See: https://kotlinlang.org/docs/multiplatform/compose-multiplatform-resources-usage.html#strings
+    """
+    # Counter for auto-assigning positions to placeholders without explicit positions
+    counter = [0]  # Use list to allow mutation in nested function
 
     def _repl(match: re.Match[str]) -> str:
         position, token = match.groups()
-        mapped = {"@": "s", "lld": "d", "ld": "d", "d": "d", "f": "f", "s": "s"}[token]
-        pos = f"{position}$" if position else ""
-        return f"%{pos}{mapped}"
+        # Map iOS tokens to Compose MP tokens (only s and d are supported)
+        # String-like tokens -> s, numeric tokens -> d
+        if token in ("@", "s"):
+            mapped = "s"
+        else:
+            # All numeric types (d, i, u, ld, lu, lld, llu, f, lf) map to d
+            mapped = "d"
+
+        if position:
+            pos_num = position
+        else:
+            # Auto-assign position for placeholders without explicit position
+            counter[0] += 1
+            pos_num = str(counter[0])
+
+        return f"%{pos_num}${mapped}"
 
     return PLACEHOLDER_PATTERN.sub(_repl, value)
 

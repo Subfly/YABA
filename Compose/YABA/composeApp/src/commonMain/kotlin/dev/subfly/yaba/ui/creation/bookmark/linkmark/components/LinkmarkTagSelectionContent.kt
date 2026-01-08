@@ -23,6 +23,7 @@ import androidx.compose.ui.util.fastForEach
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.item.tag.PresentableTagItemView
 import dev.subfly.yaba.core.navigation.creation.TagCreationRoute
+import dev.subfly.yaba.core.navigation.creation.TagSelectionRoute
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yabacore.model.utils.YabaColor
@@ -54,7 +55,13 @@ internal fun LinkmarkTagSelectionContent(
             TextButton(
                 shapes = ButtonDefaults.shapes(),
                 onClick = {
-                    // TODO: NAVIGATE TO TAG SELECTION
+                    creationNavigator.add(
+                        TagSelectionRoute(
+                            selectedTagIds = state.selectedTags.map {
+                                it.id.toString()
+                            }
+                        )
+                    )
                 },
                 colors = ButtonDefaults.textButtonColors(
                     contentColor = Color(
@@ -122,7 +129,6 @@ internal fun LinkmarkTagSelectionContent(
                     appStateManager.onShowCreationContent()
                 },
             )
-            Spacer(modifier = Modifier.height(4.dp))
         }
     }
 }

@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.item.folder.MoveToRootFolderItemView
 import dev.subfly.yaba.core.components.item.folder.PresentableFolderItemView
 import dev.subfly.yaba.core.navigation.creation.FolderCreationRoute
@@ -49,6 +50,10 @@ import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.cancel
 import yaba.composeapp.generated.resources.folder_search_prompt
+import yaba.composeapp.generated.resources.select_folder_no_folder_found_in_search_description
+import yaba.composeapp.generated.resources.select_folder_no_folder_found_in_search_title
+import yaba.composeapp.generated.resources.select_folder_no_folders_available_description
+import yaba.composeapp.generated.resources.select_folder_no_folders_available_title
 import yaba.composeapp.generated.resources.select_folder_title
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -57,6 +62,7 @@ import kotlin.uuid.ExperimentalUuidApi
 fun FolderSelectionContent(
     mode: FolderSelectionMode,
     contextFolderId: String?,
+    contextBookmarkId: String?,
 ) {
     val creationNavigator = LocalCreationContentNavigator.current
     val resultStore = LocalResultStore.current
@@ -70,6 +76,7 @@ fun FolderSelectionContent(
             FolderSelectionEvent.OnInit(
                 mode = mode,
                 contextFolderId = contextFolderId,
+                contextBookmarkId = contextBookmarkId,
             )
         )
     }
@@ -79,10 +86,7 @@ fun FolderSelectionContent(
             .fillMaxWidth()
             .background(color = MaterialTheme.colorScheme.surfaceContainerLow)
     ) {
-        TopBar(
-            modifier = Modifier.padding(horizontal = 8.dp),
-            mode = mode,
-        )
+        TopBar(mode = mode)
         SearchBarContent(
             currentQuery = state.searchQuery,
             onQueryChange = { newQuery ->
@@ -242,28 +246,55 @@ private fun SelectionContent(
                 contentAlignment = Alignment.Center,
             ) { CircularWavyProgressIndicator() }
         } else {
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                if (state.canMoveToRoot) {
-                    item {
-                        MoveToRootFolderItemView(
-                            modifier = Modifier
-                                .padding(horizontal = 12.dp)
-                                .padding(bottom = 8.dp),
-                            onClick = onMoveToRootFolder,
+            if (state.folders.isEmpty()) {
+                if (state.searchQuery.isEmpty()) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        NoContentView(
+                            iconName = "folder-01",
+                            labelRes = Res.string.select_folder_no_folders_available_title,
+                            messageRes = Res.string.select_folder_no_folders_available_description
+                        )
+                    }
+                } else {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        NoContentView(
+                            iconName = "search-01",
+                            labelRes = Res.string.select_folder_no_folder_found_in_search_title,
+                            messageRes = Res.string.select_folder_no_folder_found_in_search_description,
+                            messageExtras = listOf(state.searchQuery),
                         )
                     }
                 }
-                items(
-                    items = state.folders,
-                    key = { it.id.toString() },
-                ) { model ->
-                    PresentableFolderItemView(
-                        modifier = Modifier.padding(horizontal = 12.dp),
-                        model = model,
-                        nullModelPresentableColor = YabaColor.BLUE,
-                        onPressed = { onFolderSelected(model) },
-                        cornerSize = 12.dp,
-                    )
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    if (state.canMoveToRoot) {
+                        item {
+                            MoveToRootFolderItemView(
+                                modifier = Modifier
+                                    .padding(horizontal = 12.dp)
+                                    .padding(bottom = 8.dp),
+                                onClick = onMoveToRootFolder,
+                            )
+                        }
+                    }
+                    items(
+                        items = state.folders,
+                        key = { it.id.toString() },
+                    ) { model ->
+                        PresentableFolderItemView(
+                            modifier = Modifier.padding(horizontal = 12.dp),
+                            model = model,
+                            nullModelPresentableColor = YabaColor.BLUE,
+                            onPressed = { onFolderSelected(model) },
+                            cornerSize = 12.dp,
+                        )
+                    }
                 }
             }
         }

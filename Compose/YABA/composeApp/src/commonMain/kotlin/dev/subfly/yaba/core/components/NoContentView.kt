@@ -26,6 +26,8 @@ fun NoContentView(
     iconName: String,
     labelRes: StringResource,
     messageRes: StringResource,
+    labelExtras: List<String> = emptyList(),
+    messageExtras: List<String> = emptyList(),
 ) {
     Column(
         modifier = modifier
@@ -40,14 +42,20 @@ fun NoContentView(
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = stringResource(labelRes),
+            text = stringResource(
+                labelRes,
+                labelExtras,
+            ),
             style = MaterialTheme.typography.titleLargeEmphasized,
             textAlign = TextAlign.Center,
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = stringResource(messageRes),
+            text = stringResource(
+                messageRes,
+                messageExtras,
+            ),
             textAlign = TextAlign.Center,
         )
     }
