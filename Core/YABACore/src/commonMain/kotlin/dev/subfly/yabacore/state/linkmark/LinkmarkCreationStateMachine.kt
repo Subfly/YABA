@@ -32,6 +32,7 @@ class LinkmarkCreationStateMachine :
         BaseStateMachine<LinkmarkCreationUIState, LinkmarkCreationEvent>(
                 initialState = LinkmarkCreationUIState()
         ) {
+    private var isInitialized = false
     private val preferencesStore
         get() = SettingsStores.userPreferences
 
@@ -58,6 +59,9 @@ class LinkmarkCreationStateMachine :
     }
 
     private fun onInit(event: LinkmarkCreationEvent.OnInit) {
+        if (isInitialized) return
+        isInitialized = true
+
         // Start URL debounce listener
         startUrlDebounceListener()
 
@@ -401,6 +405,7 @@ class LinkmarkCreationStateMachine :
     }
 
     override fun clear() {
+        isInitialized = false
         urlDebounceJob?.cancel()
         urlDebounceJob = null
         super.clear()

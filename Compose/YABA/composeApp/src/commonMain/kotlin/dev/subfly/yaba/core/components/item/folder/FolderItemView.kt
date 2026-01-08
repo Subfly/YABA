@@ -4,15 +4,13 @@ package dev.subfly.yaba.core.components.item.folder
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -21,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -49,11 +48,16 @@ import yaba.composeapp.generated.resources.move
 import yaba.composeapp.generated.resources.new_bookmark
 import kotlin.uuid.ExperimentalUuidApi
 
+/**
+ * Entry point for folder item rendering.
+ * For top-level folders, pass an empty parentColors list.
+ */
 @Composable
 fun FolderItemView(
     modifier: Modifier = Modifier,
     model: FolderUiModel,
     appearance: ContentAppearance,
+    parentColors: List<YabaColor> = emptyList(),
     onDeleteFolder: (FolderUiModel) -> Unit,
 ) {
     val creationNavigator = LocalCreationContentNavigator.current
@@ -66,10 +70,11 @@ fun FolderItemView(
     val moveText = stringResource(Res.string.move)
     val deleteText = stringResource(Res.string.delete)
 
-    val menuActions = remember(model, newBookmarkText, editText, moveText, deleteText) {
+    // Create actions specific to THIS folder model
+    val menuActions = remember(model.id, newBookmarkText, editText, moveText, deleteText) {
         listOf(
             CollectionMenuAction(
-                key = "new_bookmark",
+                key = "new_bookmark_${model.id}",
                 icon = "bookmark-add-02",
                 text = newBookmarkText,
                 color = YabaColor.CYAN,
@@ -79,7 +84,7 @@ fun FolderItemView(
                 }
             ),
             CollectionMenuAction(
-                key = "edit",
+                key = "edit_${model.id}",
                 icon = "edit-02",
                 text = editText,
                 color = YabaColor.ORANGE,
@@ -89,7 +94,7 @@ fun FolderItemView(
                 }
             ),
             CollectionMenuAction(
-                key = "move",
+                key = "move_${model.id}",
                 icon = "arrow-move-up-right",
                 text = moveText,
                 color = YabaColor.TEAL,
@@ -105,7 +110,7 @@ fun FolderItemView(
                 }
             ),
             CollectionMenuAction(
-                key = "delete",
+                key = "delete_${model.id}",
                 icon = "delete-02",
                 text = deleteText,
                 color = YabaColor.RED,
@@ -123,10 +128,10 @@ fun FolderItemView(
         )
     }
 
-    val leftSwipeActions = remember(model) {
+    val leftSwipeActions = remember(model.id) {
         listOf(
             CollectionSwipeAction(
-                key = "MOVE",
+                key = "MOVE_${model.id}",
                 icon = "arrow-move-up-right",
                 color = YabaColor.TEAL,
                 onClick = {
@@ -141,7 +146,7 @@ fun FolderItemView(
                 }
             ),
             CollectionSwipeAction(
-                key = "NEW",
+                key = "NEW_${model.id}",
                 icon = "bookmark-add-02",
                 color = YabaColor.BLUE,
                 onClick = {
@@ -152,10 +157,10 @@ fun FolderItemView(
         )
     }
 
-    val rightSwipeActions = remember(model) {
+    val rightSwipeActions = remember(model.id) {
         listOf(
             CollectionSwipeAction(
-                key = "EDIT",
+                key = "EDIT_${model.id}",
                 icon = "edit-02",
                 color = YabaColor.ORANGE,
                 onClick = {
@@ -164,7 +169,7 @@ fun FolderItemView(
                 }
             ),
             CollectionSwipeAction(
-                key = "DELETE",
+                key = "DELETE_${model.id}",
                 icon = "delete-02",
                 color = YabaColor.RED,
                 onClick = {
@@ -185,6 +190,8 @@ fun FolderItemView(
             FolderListItemView(
                 modifier = modifier,
                 model = model,
+                appearance = appearance,
+                parentColors = parentColors,
                 menuActions = menuActions,
                 leftSwipeActions = leftSwipeActions,
                 rightSwipeActions = rightSwipeActions,
@@ -227,11 +234,14 @@ fun FolderItemView(
 
 /**
  * List view for folders with support for expandable children.
+ * Parent color bars are rendered inside BaseCollectionItemView.
  */
 @Composable
 private fun FolderListItemView(
     modifier: Modifier = Modifier,
     model: FolderUiModel,
+    appearance: ContentAppearance,
+    parentColors: List<YabaColor>,
     menuActions: List<CollectionMenuAction>,
     leftSwipeActions: List<CollectionSwipeAction>,
     rightSwipeActions: List<CollectionSwipeAction>,
@@ -239,7 +249,7 @@ private fun FolderListItemView(
 ) {
     var isExpanded by remember { mutableStateOf(false) }
     val expandedIconRotation by animateFloatAsState(
-        targetValue = if (isExpanded) 90F else 0f,
+        targetValue = if (isExpanded) 90f else 0f,
     )
     val color by remember(model) {
         mutableStateOf(Color(model.color.iconTintArgb()))
@@ -251,21 +261,19 @@ private fun FolderListItemView(
             .animateContentSize(),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
+        // Main folder item - parent colors are rendered inside BaseCollectionItemView
         BaseCollectionItemView(
             label = model.label,
             description = model.description,
             icon = model.icon,
             color = model.color,
             appearance = ContentAppearance.LIST,
+            parentColors = parentColors,
             menuActions = menuActions,
             leftSwipeActions = leftSwipeActions,
             rightSwipeActions = rightSwipeActions,
             onClick = {
-                if (model.children.isNotEmpty()) {
-                    isExpanded = !isExpanded
-                } else {
-                    // TODO: NAVIGATE FOLDER DETAIL
-                }
+                // TODO: NAVIGATE TO FOLDER DETAIL
             },
             listTrailingContent = {
                 Row(
@@ -275,7 +283,10 @@ private fun FolderListItemView(
                     Text(model.bookmarkCount.toString())
                     if (model.children.isNotEmpty()) {
                         YabaIcon(
-                            modifier = Modifier.rotate(expandedIconRotation),
+                            modifier = Modifier
+                                .rotate(expandedIconRotation)
+                                .clip(CircleShape)
+                                .clickable(onClick = {isExpanded = !isExpanded }),
                             name = "arrow-right-01",
                             color = color,
                         )
@@ -284,30 +295,16 @@ private fun FolderListItemView(
             }
         )
 
-        // Render children if expanded
+        // Render children if expanded - each child is a full FolderItemView with its own actions
         if (model.children.isNotEmpty() && isExpanded) {
             model.children.forEach { childModel ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .width(4.dp)
-                            .height(40.dp)
-                            .background(
-                                color = color,
-                                shape = RoundedCornerShape(2.dp)
-                            )
-                    )
-                    FolderListItemView(
-                        model = childModel,
-                        menuActions = menuActions,
-                        leftSwipeActions = leftSwipeActions,
-                        rightSwipeActions = rightSwipeActions,
-                        onDeleteFolder = { onDeleteFolder(childModel) },
-                    )
-                }
+                // Pass current folder's color to the child's parent colors
+                FolderItemView(
+                    model = childModel,
+                    appearance = appearance,
+                    parentColors = parentColors + model.color,
+                    onDeleteFolder = onDeleteFolder,
+                )
             }
         }
     }

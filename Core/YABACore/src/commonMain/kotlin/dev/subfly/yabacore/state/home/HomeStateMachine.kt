@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.map
 private const val RECENT_BOOKMARKS_LIMIT = 5
 
 class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState = HomeUIState()) {
+    private var isInitialized = false
     private var dataSubscriptionJob: Job? = null
     private val bookmarkDao
         get() = DatabaseProvider.bookmarkDao
@@ -47,6 +48,9 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun onInit() {
+        if (isInitialized) return
+        isInitialized = true
+
         // Cancel any existing subscription
         dataSubscriptionJob?.cancel()
 
@@ -54,45 +58,45 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
             // First, observe preferences to get sorting parameters
             // When sorting changes, flatMapLatest will cancel old subscriptions and create new ones
             preferencesStore
-                .preferencesFlow
-                .map { prefs ->
-                    SortingParams(prefs.preferredCollectionSorting, prefs.preferredSortOrder)
-                }
-                .distinctUntilChanged()
-                .flatMapLatest { sortingParams ->
-                    // Combine all data sources with the current sorting parameters
-                    combine(
-                        preferencesStore.preferencesFlow,
-                        FolderManager.observeFolderTree(
-                            sortType = sortingParams.sortType,
-                            sortOrder = sortingParams.sortOrder,
-                        ),
-                        TagManager.observeTags(
-                            sortType = sortingParams.sortType,
-                            sortOrder = sortingParams.sortOrder,
-                        ),
-                        bookmarkDao.observeAllLinkBookmarks(
-                            sortType = SortType.EDITED_AT.name,
-                            sortOrder = SortOrderType.DESCENDING.name,
-                        ),
-                    ) { preferences, folders, tags, bookmarks ->
-                        val recentBookmarks: List<BookmarkUiModel> =
-                            bookmarks.take(RECENT_BOOKMARKS_LIMIT).map {
-                                it.toModel().toUiModel()
-                            }
-
-                        HomeUIState(
-                            folders = folders,
-                            tags = tags,
-                            recentBookmarks = recentBookmarks,
-                            contentAppearance = preferences.preferredContentAppearance,
-                            collectionSorting = preferences.preferredCollectionSorting,
-                            sortOrder = preferences.preferredSortOrder,
-                            isLoading = false,
-                        )
+                    .preferencesFlow
+                    .map { prefs ->
+                        SortingParams(prefs.preferredCollectionSorting, prefs.preferredSortOrder)
                     }
-                }
-                .collectLatest { newState -> updateState { newState } }
+                    .distinctUntilChanged()
+                    .flatMapLatest { sortingParams ->
+                        // Combine all data sources with the current sorting parameters
+                        combine(
+                                preferencesStore.preferencesFlow,
+                                FolderManager.observeFolderTree(
+                                        sortType = sortingParams.sortType,
+                                        sortOrder = sortingParams.sortOrder,
+                                ),
+                                TagManager.observeTags(
+                                        sortType = sortingParams.sortType,
+                                        sortOrder = sortingParams.sortOrder,
+                                ),
+                                bookmarkDao.observeAllLinkBookmarks(
+                                        sortType = SortType.EDITED_AT.name,
+                                        sortOrder = SortOrderType.DESCENDING.name,
+                                ),
+                        ) { preferences, folders, tags, bookmarks ->
+                            val recentBookmarks: List<BookmarkUiModel> =
+                                    bookmarks.take(RECENT_BOOKMARKS_LIMIT).map {
+                                        it.toModel().toUiModel()
+                                    }
+
+                            HomeUIState(
+                                    folders = folders,
+                                    tags = tags,
+                                    recentBookmarks = recentBookmarks,
+                                    contentAppearance = preferences.preferredContentAppearance,
+                                    collectionSorting = preferences.preferredCollectionSorting,
+                                    sortOrder = preferences.preferredSortOrder,
+                                    isLoading = false,
+                            )
+                        }
+                    }
+                    .collectLatest { newState -> updateState { newState } }
         }
     }
 
@@ -109,8 +113,8 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
     }
 
     private data class SortingParams(
-        val sortType: SortType,
-        val sortOrder: SortOrderType,
+            val sortType: SortType,
+            val sortOrder: SortOrderType,
     )
 
     // Folder operations - delegated to FolderManager
@@ -143,8 +147,8 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
     private fun onMoveBookmarkToFolder(event: HomeEvent.OnMoveBookmarkToFolder) {
         launch {
             AllBookmarksManager.moveBookmarksToFolder(
-                listOf(event.bookmark),
-                event.targetFolder,
+                    listOf(event.bookmark),
+                    event.targetFolder,
             )
         }
     }
@@ -154,6 +158,7 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
     }
 
     override fun clear() {
+        isInitialized = false
         dataSubscriptionJob?.cancel()
         dataSubscriptionJob = null
         super.clear()

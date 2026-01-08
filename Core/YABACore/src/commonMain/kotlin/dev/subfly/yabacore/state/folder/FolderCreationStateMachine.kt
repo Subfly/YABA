@@ -13,7 +13,9 @@ class FolderCreationStateMachine :
     BaseStateMachine<FolderCreationUIState, FolderCreationEvent>(
         initialState = FolderCreationUIState()
     ) {
+    private var isInitialized = false
     private var parentFolderSubscriptionJob: Job? = null
+
     override fun onEvent(event: FolderCreationEvent) {
         when (event) {
             is FolderCreationEvent.OnInitWithFolder -> onInitWithFolder(event)
@@ -27,6 +29,9 @@ class FolderCreationStateMachine :
     }
 
     private fun onInitWithFolder(event: FolderCreationEvent.OnInitWithFolder) {
+        if (isInitialized) return
+        isInitialized = true
+
         launch {
             event.folderIdString?.let { nonNullIdString ->
                 val folderId = Uuid.parse(nonNullIdString)
@@ -140,6 +145,7 @@ class FolderCreationStateMachine :
     }
 
     override fun clear() {
+        isInitialized = false
         parentFolderSubscriptionJob?.cancel()
         parentFolderSubscriptionJob = null
         super.clear()

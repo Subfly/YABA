@@ -234,7 +234,7 @@ private fun SelectionContent(
     onMoveToRootFolder: () -> Unit,
 ) {
     AnimatedContent(
-        targetState = state.isLoading
+        targetState = state.isLoading,
     ) { isLoading ->
         if (isLoading) {
             Box(
@@ -246,7 +246,9 @@ private fun SelectionContent(
                 if (state.canMoveToRoot) {
                     item {
                         MoveToRootFolderItemView(
-                            modifier = Modifier.padding(horizontal = 12.dp),
+                            modifier = Modifier
+                                .padding(horizontal = 12.dp)
+                                .padding(bottom = 8.dp),
                             onClick = onMoveToRootFolder,
                         )
                     }

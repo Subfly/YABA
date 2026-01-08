@@ -12,6 +12,8 @@ import kotlin.uuid.Uuid
 class TagCreationStateMachine : BaseStateMachine<TagCreationUIState, TagCreationEvent>(
     initialState = TagCreationUIState()
 ) {
+    private var isInitialized = false
+
     override fun onEvent(event: TagCreationEvent) {
         when (event) {
             is TagCreationEvent.OnInitWithTag -> onInitWithTag(event)
@@ -23,6 +25,9 @@ class TagCreationStateMachine : BaseStateMachine<TagCreationUIState, TagCreation
     }
 
     private fun onInitWithTag(event: TagCreationEvent.OnInitWithTag) {
+        if (isInitialized) return
+        isInitialized = true
+
         launch {
             event.tagIdString?.let { nonNullIdString ->
                 val tagId = Uuid.parse(nonNullIdString)
@@ -102,5 +107,10 @@ class TagCreationStateMachine : BaseStateMachine<TagCreationUIState, TagCreation
                 )
             }
         }
+    }
+
+    override fun clear() {
+        isInitialized = false
+        super.clear()
     }
 }

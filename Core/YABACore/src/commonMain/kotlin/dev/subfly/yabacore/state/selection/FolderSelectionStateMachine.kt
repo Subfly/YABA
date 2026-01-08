@@ -19,6 +19,7 @@ class FolderSelectionStateMachine :
         initialState = FolderSelectionUIState()
     ) {
 
+    private var isInitialized = false
     private var folderSubscriptionJob: Job? = null
 
     // Stored context for filtering and move operations
@@ -41,6 +42,9 @@ class FolderSelectionStateMachine :
     }
 
     private fun onInit(event: FolderSelectionEvent.OnInit) {
+        if (isInitialized) return
+        isInitialized = true
+
         mode = event.mode
         contextFolderId = event.contextFolderId?.let { Uuid.parse(it) }
         contextBookmarkId = event.contextBookmarkId?.let { Uuid.parse(it) }
@@ -220,6 +224,7 @@ class FolderSelectionStateMachine :
     }
 
     override fun clear() {
+        isInitialized = false
         folderSubscriptionJob?.cancel()
         folderSubscriptionJob = null
         super.clear()

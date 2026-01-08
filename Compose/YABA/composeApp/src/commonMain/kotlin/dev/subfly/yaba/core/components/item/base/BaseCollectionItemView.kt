@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -81,6 +82,7 @@ data class CollectionSwipeAction(
  * @param icon The icon name to display
  * @param color The color theme for this item
  * @param appearance The display mode (LIST/CARD shows list style, GRID shows grid style)
+ * @param parentColors List of parent colors to show as hierarchy indicators (only in list view)
  * @param menuActions List of menu actions to show in the dropdown menu
  * @param leftSwipeActions Swipe actions revealed when swiping right (only in list view)
  * @param rightSwipeActions Swipe actions revealed when swiping left (only in list view)
@@ -96,6 +98,7 @@ fun BaseCollectionItemView(
     icon: String,
     color: YabaColor,
     appearance: ContentAppearance,
+    parentColors: List<YabaColor> = emptyList(),
     menuActions: List<CollectionMenuAction> = emptyList(),
     leftSwipeActions: List<CollectionSwipeAction> = emptyList(),
     rightSwipeActions: List<CollectionSwipeAction> = emptyList(),
@@ -110,6 +113,7 @@ fun BaseCollectionItemView(
                 label = label,
                 icon = icon,
                 color = color,
+                parentColors = parentColors,
                 menuActions = menuActions,
                 leftSwipeActions = leftSwipeActions,
                 rightSwipeActions = rightSwipeActions,
@@ -140,6 +144,7 @@ private fun ListCollectionItemView(
     label: String,
     icon: String,
     color: YabaColor,
+    parentColors: List<YabaColor>,
     menuActions: List<CollectionMenuAction>,
     leftSwipeActions: List<CollectionSwipeAction>,
     rightSwipeActions: List<CollectionSwipeAction>,
@@ -200,30 +205,51 @@ private fun ListCollectionItemView(
                 .animateContentSize(),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            YabaSwipeActions(
+            // Row: ColorBars (outside swipe) + YabaSwipeActions { ListItem }
+            Row(
                 modifier = Modifier.padding(horizontal = 12.dp),
-                actionWidth = 54.dp,
-                leftActions = swipeLeftActions,
-                rightActions = swipeRightActions,
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                ListItem(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
-                        .yabaClickable(
-                            onLongClick = { isOptionsExpanded = true },
-                            onClick = onClick,
+                // Draw color bars for parent hierarchy (OUTSIDE YabaSwipeActions)
+                parentColors.forEach { parentColor ->
+                    Box(
+                        modifier = Modifier
+                            .width(4.dp)
+                            .height(40.dp)
+                            .background(
+                                color = Color(parentColor.iconTintArgb()),
+                                shape = RoundedCornerShape(2.dp)
+                            )
+                    )
+                }
+
+                // YabaSwipeActions only wraps the ListItem
+                YabaSwipeActions(
+                    modifier = Modifier.weight(1f),
+                    actionWidth = 54.dp,
+                    leftActions = swipeLeftActions,
+                    rightActions = swipeRightActions,
+                ) {
+                    ListItem(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(12.dp))
+                            .yabaClickable(
+                                onLongClick = { isOptionsExpanded = true },
+                                onClick = onClick,
+                            ),
+                        colors = ListItemDefaults.colors().copy(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
                         ),
-                    colors = ListItemDefaults.colors().copy(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                    ),
-                    headlineContent = { Text(label) },
-                    leadingContent = { YabaIcon(name = icon, color = itemColor) },
-                    trailingContent = {
-                        if (trailingContent != null) {
-                            trailingContent()
+                        headlineContent = { Text(label) },
+                        leadingContent = { YabaIcon(name = icon, color = itemColor) },
+                        trailingContent = {
+                            if (trailingContent != null) {
+                                trailingContent()
+                            }
                         }
-                    }
-                )
+                    )
+                }
             }
         }
 
