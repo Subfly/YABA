@@ -1,6 +1,8 @@
 package dev.subfly.yabacore.state.selection
 
+import dev.subfly.yabacore.managers.AllBookmarksManager
 import dev.subfly.yabacore.managers.FolderManager
+import dev.subfly.yabacore.managers.LinkmarkManager
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.utils.FolderSelectionMode
 import dev.subfly.yabacore.model.utils.SortOrderType
@@ -19,9 +21,10 @@ class FolderSelectionStateMachine :
 
     private var folderSubscriptionJob: Job? = null
 
-    // Stored context for filtering
+    // Stored context for filtering and move operations
     private var mode: FolderSelectionMode = FolderSelectionMode.FOLDER_SELECTION
     private var contextFolderId: Uuid? = null
+    private var contextBookmarkId: Uuid? = null
     private var excludedIds: Set<Uuid> = emptySet()
     private var currentParentId: Uuid? = null
 
@@ -32,12 +35,15 @@ class FolderSelectionStateMachine :
         when (event) {
             is FolderSelectionEvent.OnInit -> onInit(event)
             is FolderSelectionEvent.OnSearchQueryChanged -> onSearchQueryChanged(event)
+            is FolderSelectionEvent.OnMoveFolderToSelected -> onMoveFolderToSelected(event)
+            is FolderSelectionEvent.OnMoveBookmarkToSelected -> onMoveBookmarkToSelected(event)
         }
     }
 
     private fun onInit(event: FolderSelectionEvent.OnInit) {
         mode = event.mode
         contextFolderId = event.contextFolderId?.let { Uuid.parse(it) }
+        contextBookmarkId = event.contextBookmarkId?.let { Uuid.parse(it) }
 
         launch {
             updateState { it.copy(isLoading = true) }
@@ -51,11 +57,28 @@ class FolderSelectionStateMachine :
                 }
 
                 FolderSelectionMode.PARENT_SELECTION -> {
-                    // Exclude the folder itself and all its descendants
+                    // Exclude the folder itself, current parent, and all its descendants
                     contextFolderId?.let { folderId ->
                         val folder = FolderManager.getFolder(folderId)
                         if (folder != null) {
-                            // Exclude: self, current parent, and all descendants
+                            val descendants = collectDescendantIds(folderId)
+                            excludedIds = setOf(folderId) + descendants
+                            currentParentId = folder.parentId
+
+                            // Can move to root if folder currently has a parent
+                            updateState { it.copy(canMoveToRoot = folder.parentId != null) }
+                        }
+                    } ?: run {
+                        excludedIds = emptySet()
+                        updateState { it.copy(canMoveToRoot = false) }
+                    }
+                }
+
+                FolderSelectionMode.FOLDER_MOVE -> {
+                    // Same as PARENT_SELECTION: exclude self, descendants, and current parent
+                    contextFolderId?.let { folderId ->
+                        val folder = FolderManager.getFolder(folderId)
+                        if (folder != null) {
                             val descendants = collectDescendantIds(folderId)
                             excludedIds = setOf(folderId) + descendants
                             currentParentId = folder.parentId
@@ -115,6 +138,26 @@ class FolderSelectionStateMachine :
         }
     }
 
+    private fun onMoveFolderToSelected(event: FolderSelectionEvent.OnMoveFolderToSelected) {
+        val folderToMove = contextFolderId ?: return
+
+        launch {
+            val folder = FolderManager.getFolder(folderToMove) ?: return@launch
+            val targetFolder = event.targetFolderId?.let { FolderManager.getFolder(Uuid.parse(it)) }
+            FolderManager.moveFolder(folder, targetFolder)
+        }
+    }
+
+    private fun onMoveBookmarkToSelected(event: FolderSelectionEvent.OnMoveBookmarkToSelected) {
+        val bookmarkToMove = contextBookmarkId ?: return
+
+        launch {
+            val bookmark = LinkmarkManager.getLinkmarkDetail(bookmarkToMove) ?: return@launch
+            val targetFolder = FolderManager.getFolder(Uuid.parse(event.targetFolderId)) ?: return@launch
+            AllBookmarksManager.moveBookmarksToFolder(listOf(bookmark), targetFolder)
+        }
+    }
+
     /**
      * Applies mode-based exclusions (folder itself, descendants, current parent).
      * These exclusions are determined at init and don't change.
@@ -127,8 +170,10 @@ class FolderSelectionStateMachine :
             result = result.filter { folder -> folder.id !in excludedIds }
         }
 
-        // For parent selection, also exclude the current parent (since it's already the parent)
-        if (mode == FolderSelectionMode.PARENT_SELECTION && currentParentId != null) {
+        // For parent/folder selection, also exclude the current parent (since it's already the parent)
+        val excludeCurrentParent = mode == FolderSelectionMode.PARENT_SELECTION ||
+            mode == FolderSelectionMode.FOLDER_MOVE
+        if (excludeCurrentParent && currentParentId != null) {
             result = result.filter { folder -> folder.id != currentParentId }
         }
 

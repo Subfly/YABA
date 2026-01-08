@@ -1,4 +1,4 @@
-package dev.subfly.yaba.ui.selection
+package dev.subfly.yaba.ui.selection.color
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

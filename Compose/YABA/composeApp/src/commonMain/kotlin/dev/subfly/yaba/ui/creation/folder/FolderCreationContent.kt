@@ -163,6 +163,7 @@ fun FolderCreationContent(folderId: String? = null) {
                         contextFolderId = if (state.editingFolder != null) {
                             state.editingFolder?.id.toString()
                         } else null,
+                        contextBookmarkId = null,
                     )
                 )
             },

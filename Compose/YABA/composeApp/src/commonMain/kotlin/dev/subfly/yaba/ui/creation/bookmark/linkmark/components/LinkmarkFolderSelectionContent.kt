@@ -7,12 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.components.item.folder.PresentableFolderItemView
-import dev.subfly.yaba.core.navigation.creation.FolderCreationRoute
 import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
-import dev.subfly.yaba.ui.selection.FolderSelectionContent
-import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
-import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.utils.FolderSelectionMode
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.linkmark.LinkmarkCreationUIState
@@ -42,6 +38,7 @@ internal fun LinkmarkFolderSelectionContent(state: LinkmarkCreationUIState) {
                 FolderSelectionRoute(
                     mode = FolderSelectionMode.FOLDER_SELECTION,
                     contextFolderId = null,
+                    contextBookmarkId = null,
                 )
             )
         },

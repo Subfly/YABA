@@ -78,6 +78,7 @@ data class FolderSelectionRoute(
     val routeId: String = Uuid.generateV4().toString(),
     val mode: FolderSelectionMode,
     val contextFolderId: String?,
+    val contextBookmarkId: String?,
 ): NavKey
 
 @Serializable

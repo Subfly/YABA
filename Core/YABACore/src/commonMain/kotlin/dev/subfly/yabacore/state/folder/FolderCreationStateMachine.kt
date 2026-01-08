@@ -118,40 +118,21 @@ class FolderCreationStateMachine :
                 )
             } else {
                 val editingFolder = currentState.editingFolder
+                val newParentId = currentState.selectedParent?.id
+                val parentChanged = editingFolder.parentId != newParentId
+
+                // If parent changed, move the folder first (handles reordering)
+                if (parentChanged) {
+                    FolderManager.moveFolder(editingFolder, currentState.selectedParent)
+                }
+
+                // Update metadata (label, description, icon, color)
                 FolderManager.updateFolder(
                     editingFolder.copy(
-                        label =
-                            if (editingFolder.label != currentState.label) {
-                                currentState.label
-                            } else {
-                                editingFolder.label
-                            },
-                        description =
-                            if (editingFolder.description != currentState.description) {
-                                currentState.description
-                            } else {
-                                editingFolder.description
-                            },
-                        icon =
-                            if (editingFolder.icon != currentState.selectedIcon) {
-                                currentState.selectedIcon
-                            } else {
-                                editingFolder.icon
-                            },
-                        color =
-                            if (editingFolder.color != currentState.selectedColor) {
-                                currentState.selectedColor
-                            } else {
-                                editingFolder.color
-                            },
-                        parentId =
-                            if (editingFolder.parentId !=
-                                currentState.selectedParent?.id
-                            ) {
-                                currentState.selectedParent?.id
-                            } else {
-                                editingFolder.parentId
-                            },
+                        label = currentState.label,
+                        description = currentState.description,
+                        icon = currentState.selectedIcon,
+                        color = currentState.selectedColor,
                     )
                 )
             }

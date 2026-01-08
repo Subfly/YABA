@@ -1,4 +1,4 @@
-package dev.subfly.yaba.ui.selection
+package dev.subfly.yaba.ui.selection.folder
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -20,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
@@ -30,11 +32,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import dev.subfly.yaba.core.components.item.folder.MoveToRootFolderItemView
 import dev.subfly.yaba.core.components.item.folder.PresentableFolderItemView
 import dev.subfly.yaba.core.navigation.creation.FolderCreationRoute
 import dev.subfly.yaba.core.navigation.creation.ResultStoreKeys
+import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
+import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.utils.FolderSelectionMode
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.selection.FolderSelectionEvent
@@ -42,16 +47,21 @@ import dev.subfly.yabacore.state.selection.FolderSelectionUIState
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
+import yaba.composeapp.generated.resources.cancel
 import yaba.composeapp.generated.resources.folder_search_prompt
 import yaba.composeapp.generated.resources.select_folder_title
 import kotlin.uuid.ExperimentalUuidApi
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalUuidApi::class)
 @Composable
 fun FolderSelectionContent(
     mode: FolderSelectionMode,
     contextFolderId: String?,
 ) {
+    val creationNavigator = LocalCreationContentNavigator.current
+    val resultStore = LocalResultStore.current
+    val appStateManager = LocalAppStateManager.current
+
     val vm = viewModel { FolderSelectionVM() }
     val state by vm.state
 
@@ -69,7 +79,10 @@ fun FolderSelectionContent(
             .fillMaxWidth()
             .background(color = MaterialTheme.colorScheme.surfaceContainerLow)
     ) {
-        TopBar(modifier = Modifier.padding(horizontal = 8.dp))
+        TopBar(
+            modifier = Modifier.padding(horizontal = 8.dp),
+            mode = mode,
+        )
         SearchBarContent(
             currentQuery = state.searchQuery,
             onQueryChange = { newQuery ->
@@ -89,7 +102,45 @@ fun FolderSelectionContent(
             }
         )
         Spacer(modifier = Modifier.height(12.dp))
-        SelectionContent(state = state)
+        SelectionContent(
+            state = state,
+            onMoveToRootFolder = {
+                vm.onEvent(event = FolderSelectionEvent.OnMoveFolderToSelected(targetFolderId = null))
+                appStateManager.onHideCreationContent()
+                creationNavigator.removeLastOrNull()
+            },
+            onFolderSelected = { selectedFolder ->
+                when (mode) {
+                    FolderSelectionMode.FOLDER_SELECTION, FolderSelectionMode.PARENT_SELECTION -> {
+                        resultStore.setResult(
+                            key = ResultStoreKeys.SELECTED_FOLDER,
+                            value = selectedFolder,
+                        )
+                        creationNavigator.removeLastOrNull()
+                    }
+
+                    FolderSelectionMode.BOOKMARK_MOVE -> {
+                        vm.onEvent(
+                            event = FolderSelectionEvent.OnMoveBookmarkToSelected(
+                                targetFolderId = selectedFolder.id.toString()
+                            )
+                        )
+                        appStateManager.onHideCreationContent()
+                        creationNavigator.removeLastOrNull()
+                    }
+
+                    FolderSelectionMode.FOLDER_MOVE -> {
+                        vm.onEvent(
+                            event = FolderSelectionEvent.OnMoveFolderToSelected(
+                                targetFolderId = selectedFolder.id.toString()
+                            )
+                        )
+                        appStateManager.onHideCreationContent()
+                        creationNavigator.removeLastOrNull()
+                    }
+                }
+            }
+        )
         Spacer(modifier = Modifier.height(36.dp))
     }
 }
@@ -101,8 +152,10 @@ fun FolderSelectionContent(
 @Composable
 private fun TopBar(
     modifier: Modifier = Modifier,
+    mode: FolderSelectionMode,
 ) {
     val creationNavigator = LocalCreationContentNavigator.current
+    val appStateManager = LocalAppStateManager.current
 
     CenterAlignedTopAppBar(
         modifier = modifier,
@@ -111,8 +164,27 @@ private fun TopBar(
         ),
         title = { Text(text = stringResource(Res.string.select_folder_title)) },
         navigationIcon = {
-            IconButton(onClick = creationNavigator::removeLastOrNull) {
-                YabaIcon(name = "arrow-left-01")
+            when (mode) {
+                FolderSelectionMode.FOLDER_SELECTION, FolderSelectionMode.PARENT_SELECTION -> {
+                    IconButton(onClick = creationNavigator::removeLastOrNull) {
+                        YabaIcon(name = "arrow-left-01")
+                    }
+                }
+
+                FolderSelectionMode.BOOKMARK_MOVE, FolderSelectionMode.FOLDER_MOVE -> {
+                    TextButton(
+                        shapes = ButtonDefaults.shapes(),
+                        onClick = {
+                            appStateManager.onHideCreationContent()
+                            creationNavigator.removeLastOrNull()
+                        },
+                        colors =
+                            ButtonDefaults.textButtonColors()
+                                .copy(
+                                    contentColor = MaterialTheme.colorScheme.error,
+                                )
+                    ) { Text(text = stringResource(Res.string.cancel)) }
+                }
             }
         },
         actions = {
@@ -156,10 +228,11 @@ private fun SearchBarContent(
     ExperimentalUuidApi::class
 )
 @Composable
-private fun SelectionContent(state: FolderSelectionUIState) {
-    val creationNavigator = LocalCreationContentNavigator.current
-    val resultStore = LocalResultStore.current
-
+private fun SelectionContent(
+    state: FolderSelectionUIState,
+    onFolderSelected: (FolderUiModel) -> Unit,
+    onMoveToRootFolder: () -> Unit,
+) {
     AnimatedContent(
         targetState = state.isLoading
     ) { isLoading ->
@@ -170,6 +243,14 @@ private fun SelectionContent(state: FolderSelectionUIState) {
             ) { CircularWavyProgressIndicator() }
         } else {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
+                if (state.canMoveToRoot) {
+                    item {
+                        MoveToRootFolderItemView(
+                            modifier = Modifier.padding(horizontal = 12.dp),
+                            onClick = onMoveToRootFolder,
+                        )
+                    }
+                }
                 items(
                     items = state.folders,
                     key = { it.id.toString() },
@@ -178,13 +259,7 @@ private fun SelectionContent(state: FolderSelectionUIState) {
                         modifier = Modifier.padding(horizontal = 12.dp),
                         model = model,
                         nullModelPresentableColor = YabaColor.BLUE,
-                        onPressed = {
-                            resultStore.setResult(
-                                key = ResultStoreKeys.SELECTED_FOLDER,
-                                value = model,
-                            )
-                            creationNavigator.removeLastOrNull()
-                        },
+                        onPressed = { onFolderSelected(model) },
                         cornerSize = 12.dp,
                     )
                 }

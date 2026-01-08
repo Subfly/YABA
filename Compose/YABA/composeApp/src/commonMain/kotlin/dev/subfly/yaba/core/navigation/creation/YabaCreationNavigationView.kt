@@ -2,7 +2,6 @@ package dev.subfly.yaba.core.navigation.creation
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -17,10 +16,10 @@ import dev.subfly.yaba.ui.creation.bookmark.BookmarkCreationRouteSelectionConten
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.LinkmarkCreationContent
 import dev.subfly.yaba.ui.creation.folder.FolderCreationContent
 import dev.subfly.yaba.ui.creation.tag.TagCreationContent
-import dev.subfly.yaba.ui.selection.ColorSelectionContent
-import dev.subfly.yaba.ui.selection.FolderSelectionContent
-import dev.subfly.yaba.ui.selection.IconCategorySelectionContent
-import dev.subfly.yaba.ui.selection.IconSelectionContent
+import dev.subfly.yaba.ui.selection.color.ColorSelectionContent
+import dev.subfly.yaba.ui.selection.folder.FolderSelectionContent
+import dev.subfly.yaba.ui.selection.icon.IconCategorySelectionContent
+import dev.subfly.yaba.ui.selection.icon.IconSelectionContent
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 

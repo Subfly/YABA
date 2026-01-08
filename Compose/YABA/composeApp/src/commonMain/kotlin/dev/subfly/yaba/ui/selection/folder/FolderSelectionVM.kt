@@ -1,4 +1,4 @@
-package dev.subfly.yaba.ui.selection
+package dev.subfly.yaba.ui.selection.folder
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel

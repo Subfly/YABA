@@ -1,4 +1,4 @@
-package dev.subfly.yaba.ui.selection
+package dev.subfly.yaba.ui.selection.icon
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

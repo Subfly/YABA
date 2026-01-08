@@ -96,8 +96,9 @@ fun FolderItemView(
                 onClick = {
                     creationNavigator.add(
                         FolderSelectionRoute(
-                            mode = FolderSelectionMode.PARENT_SELECTION,
+                            mode = FolderSelectionMode.FOLDER_MOVE,
                             contextFolderId = model.id.toString(),
+                            contextBookmarkId = null,
                         )
                     )
                     appStateManager.onShowCreationContent()
@@ -131,8 +132,9 @@ fun FolderItemView(
                 onClick = {
                     creationNavigator.add(
                         FolderSelectionRoute(
-                            mode = FolderSelectionMode.PARENT_SELECTION,
+                            mode = FolderSelectionMode.FOLDER_MOVE,
                             contextFolderId = model.id.toString(),
+                            contextBookmarkId = null,
                         )
                     )
                     appStateManager.onShowCreationContent()
