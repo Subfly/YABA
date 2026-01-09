@@ -3,6 +3,7 @@ package dev.subfly.yaba.ui.creation.bookmark.linkmark
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -65,6 +66,7 @@ fun LinkmarkCreationContent(bookmarkId: String?) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .fillMaxHeight(0.9F)
             .background(color = MaterialTheme.colorScheme.surfaceContainerLow)
     ) {
         LinkmarkTopBar(
@@ -115,15 +117,9 @@ fun LinkmarkCreationContent(bookmarkId: String?) {
                     }
                 )
             }
-            item {
-                LinkmarkFolderSelectionContent(state = state)
-            }
-            item {
-                LinkmarkTagSelectionContent(state = state)
-            }
-            item {
-                Spacer(modifier = Modifier.height(36.dp))
-            }
+            item { LinkmarkFolderSelectionContent(state = state) }
+            item { LinkmarkTagSelectionContent(state = state) }
+            item { Spacer(modifier = Modifier.height(36.dp)) }
         }
     }
 }

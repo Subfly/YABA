@@ -75,7 +75,7 @@ internal fun LinkmarkInfoContent(
             focusedBorderColor = Color(color.iconTintArgb()),
             unfocusedBorderColor = Color(color.iconTintArgb()).copy(alpha = 0.5F),
         ),
-        maxLines = 1,
+        enabled = state.isLoading.not(),
         value = state.label,
         onValueChange = onChangeLabel,
         shape = RoundedCornerShape(12.dp),
@@ -109,6 +109,7 @@ internal fun LinkmarkInfoContent(
             focusedBorderColor = Color(color.iconTintArgb()),
             unfocusedBorderColor = Color(color.iconTintArgb()).copy(alpha = 0.5F),
         ),
+        enabled = state.isLoading.not(),
         value = state.description,
         onValueChange = onChangeDescription,
         shape = RoundedCornerShape(12.dp),
@@ -134,7 +135,10 @@ internal fun LinkmarkInfoContent(
                     shape = RoundedCornerShape(12.dp),
                     color = Color(color.iconTintArgb()),
                 )
-                .clickable(onClick = { isTypesExpanded = true }),
+                .clickable(
+                    enabled = state.isLoading.not(),
+                    onClick = { isTypesExpanded = true }
+                ),
         ) {
             Row(
                 modifier = Modifier

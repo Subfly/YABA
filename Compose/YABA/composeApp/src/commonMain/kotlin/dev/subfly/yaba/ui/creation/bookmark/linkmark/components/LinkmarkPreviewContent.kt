@@ -33,10 +33,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEach
+import dev.subfly.yaba.core.components.ShimmerItem
+import dev.subfly.yaba.core.components.TagsRowContent
 import dev.subfly.yaba.core.navigation.creation.ImageSelectionRoute
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.uiTitle
@@ -53,21 +53,19 @@ import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.bookmark_description_placeholder
 import yaba.composeapp.generated.resources.bookmark_no_tags_added_title
 import yaba.composeapp.generated.resources.bookmark_title_placeholder
+import yaba.composeapp.generated.resources.create_bookmark_change_image_tip_message
 import yaba.composeapp.generated.resources.preview
 
-/**
- * Shared element keys for smooth transitions between preview types
- */
+/** Shared element keys for smooth transitions between preview types */
 private enum class PreviewSharedElementKey {
     Image,
     Title,
     Description,
-    TagsRow
+    TagsRow,
+    DomainImage,
 }
 
-/**
- * Composite key for AnimatedContent to track both appearance and card sizing changes
- */
+/** Composite key for AnimatedContent to track both appearance and card sizing changes */
 private data class PreviewAnimationKey(
     val appearance: BookmarkAppearance,
     val cardSizing: CardImageSizing,
@@ -81,7 +79,8 @@ internal fun LinkmarkPreviewContent(
 ) {
     val creationNavigator = LocalCreationContentNavigator.current
 
-    val color by remember(state.selectedFolder) {
+    val color by
+    remember(state.selectedFolder) {
         mutableStateOf(state.selectedFolder?.color ?: YabaColor.BLUE)
     }
 
@@ -133,6 +132,12 @@ internal fun LinkmarkPreviewContent(
             )
         },
     )
+    Spacer(modifier = Modifier.height(8.dp))
+    Text(
+        modifier = Modifier.padding(horizontal = 16.dp),
+        text = stringResource(Res.string.create_bookmark_change_image_tip_message),
+        style = MaterialTheme.typography.bodySmallEmphasized,
+    )
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -141,16 +146,18 @@ private fun PreviewContent(
     state: LinkmarkCreationUIState,
     onClick: () -> Unit,
 ) {
-    val color by remember(state.selectedFolder) {
+    val color by
+    remember(state.selectedFolder) {
         mutableStateOf(state.selectedFolder?.color ?: YabaColor.BLUE)
     }
 
     SharedTransitionLayout {
         AnimatedContent(
-            targetState = PreviewAnimationKey(
-                appearance = state.bookmarkAppearance,
-                cardSizing = state.cardImageSizing,
-            ),
+            targetState =
+                PreviewAnimationKey(
+                    appearance = state.bookmarkAppearance,
+                    cardSizing = state.cardImageSizing,
+                ),
         ) { target ->
             when (target.appearance) {
                 BookmarkAppearance.LIST -> {
@@ -212,73 +219,102 @@ private fun ListPreview(
 ) {
     with(sharedTransitionScope) {
         ListItem(
-            modifier = Modifier
-                .padding(horizontal = 12.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .clickable(onClick = onClick),
+            modifier =
+                Modifier.padding(horizontal = 12.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .clickable(onClick = onClick),
             headlineContent = {
-                Text(
-                    modifier = Modifier
-                        .sharedBounds(
-                            sharedContentState = rememberSharedContentState(
-                                key = PreviewSharedElementKey.Title
-                            ),
+                ShimmerItem(
+                    isLoading = state.isLoading,
+                    modifier =
+                        Modifier.sharedBounds(
+                            sharedContentState =
+                                rememberSharedContentState(
+                                    key = PreviewSharedElementKey.Title
+                                ),
                             animatedVisibilityScope = animatedContentScope,
                         ),
-                    text = state.label.ifBlank {
-                        stringResource(Res.string.bookmark_title_placeholder)
-                    },
-                    style = MaterialTheme.typography.bodyLargeEmphasized,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
+                ) {
+                    Text(
+                        text =
+                            state.label.ifBlank {
+                                stringResource(Res.string.bookmark_title_placeholder)
+                            },
+                        style = MaterialTheme.typography.bodyLargeEmphasized,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
             },
             supportingContent = {
-                Text(
-                    modifier = Modifier
-                        .sharedBounds(
-                            sharedContentState = rememberSharedContentState(
-                                key = PreviewSharedElementKey.Description
-                            ),
+                ShimmerItem(
+                    isLoading = state.isLoading,
+                    modifier =
+                        Modifier.sharedBounds(
+                            sharedContentState =
+                                rememberSharedContentState(
+                                    key =
+                                        PreviewSharedElementKey
+                                            .Description
+                                ),
                             animatedVisibilityScope = animatedContentScope,
                         ),
-                    text = state.description.ifBlank {
-                        stringResource(Res.string.bookmark_description_placeholder)
-                    },
-                    maxLines = 2,
-                    style = MaterialTheme.typography.bodyMedium,
-                    overflow = TextOverflow.Ellipsis,
-                )
+                ) {
+                    Text(
+                        text =
+                            state.description.ifBlank {
+                                stringResource(
+                                    Res.string.bookmark_description_placeholder
+                                )
+                            },
+                        maxLines = 2,
+                        style = MaterialTheme.typography.bodyMedium,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
             },
             leadingContent = {
                 Box(
-                    modifier = Modifier
-                        .sharedElement(
-                            sharedContentState = rememberSharedContentState(
-                                key = PreviewSharedElementKey.Image
-                            ),
+                    modifier =
+                        Modifier.sharedElement(
+                            sharedContentState =
+                                rememberSharedContentState(
+                                    key = PreviewSharedElementKey.Image
+                                ),
                             animatedVisibilityScope = animatedContentScope,
                         )
                 ) {
                     if (state.imageData == null) {
-                        Surface(
+                        ShimmerItem(
+                            isLoading = state.isLoading,
                             modifier = Modifier.size(64.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            color = Color(color.iconTintArgb()).copy(alpha = 0.3F),
+                            cornerRadius = 12.dp,
                         ) {
-                            YabaIcon(
-                                modifier = Modifier.padding(16.dp),
-                                name = state.selectedLinkType.uiIconName(),
-                                color = color,
-                            )
+                            Surface(
+                                modifier = Modifier.size(64.dp),
+                                shape = RoundedCornerShape(12.dp),
+                                color = Color(color.iconTintArgb()).copy(alpha = 0.3F),
+                            ) {
+                                YabaIcon(
+                                    modifier = Modifier.padding(16.dp),
+                                    name = state.selectedLinkType.uiIconName(),
+                                    color = color,
+                                )
+                            }
                         }
                     } else {
-                        YabaImage(
-                            modifier = Modifier
-                                .size(64.dp)
-                                .clip(RoundedCornerShape(12.dp)),
-                            bytes = state.imageData,
-                        )
+                        ShimmerItem(
+                            isLoading = state.isLoading,
+                            modifier = Modifier.size(64.dp).clip(RoundedCornerShape(12.dp)),
+                            cornerRadius = 12.dp,
+                        ) {
+                            YabaImage(
+                                modifier =
+                                    Modifier.size(64.dp)
+                                        .clip(RoundedCornerShape(12.dp)),
+                                bytes = state.imageData,
+                            )
+                        }
                     }
                 }
             },
@@ -297,10 +333,10 @@ private fun CardBigImagePreview(
 ) {
     with(sharedTransitionScope) {
         Surface(
-            modifier = Modifier
-                .padding(horizontal = 12.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .clickable(onClick = onClick),
+            modifier =
+                Modifier.padding(horizontal = 12.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .clickable(onClick = onClick),
             shape = RoundedCornerShape(12.dp),
             color = MaterialTheme.colorScheme.surface,
         ) {
@@ -310,100 +346,126 @@ private fun CardBigImagePreview(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Box(
-                    modifier = Modifier
-                        .sharedElement(
-                            sharedContentState = rememberSharedContentState(
-                                key = PreviewSharedElementKey.Image
-                            ),
+                    modifier =
+                        Modifier.sharedElement(
+                            sharedContentState =
+                                rememberSharedContentState(
+                                    key = PreviewSharedElementKey.Image
+                                ),
                             animatedVisibilityScope = animatedContentScope,
                         )
                 ) {
                     if (state.imageData == null) {
-                        Surface(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(128.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            color = Color(color.iconTintArgb()).copy(alpha = 0.3F),
+                        ShimmerItem(
+                            isLoading = state.isLoading,
+                            modifier = Modifier.fillMaxWidth().height(128.dp),
+                            cornerRadius = 12.dp,
                         ) {
-                            YabaIcon(
-                                modifier = Modifier.padding(32.dp),
-                                name = state.selectedLinkType.uiIconName(),
-                                color = color,
-                            )
+                            Surface(
+                                modifier = Modifier.fillMaxWidth().height(128.dp),
+                                shape = RoundedCornerShape(12.dp),
+                                color = Color(color.iconTintArgb()).copy(alpha = 0.3F),
+                            ) {
+                                YabaIcon(
+                                    modifier = Modifier.padding(32.dp),
+                                    name = state.selectedLinkType.uiIconName(),
+                                    color = color,
+                                )
+                            }
                         }
                     } else {
-                        YabaImage(
-                            modifier = Modifier
-                                .fillMaxWidth()
+                        ShimmerItem(
+                            isLoading = state.isLoading,
+                            modifier = Modifier.fillMaxWidth()
                                 .height(128.dp)
                                 .clip(RoundedCornerShape(12.dp)),
-                            bytes = state.imageData,
-                        )
-                    }
-                }
-                Text(
-                    modifier = Modifier
-                        .sharedBounds(
-                            sharedContentState = rememberSharedContentState(
-                                key = PreviewSharedElementKey.Title
-                            ),
-                            animatedVisibilityScope = animatedContentScope,
-                        ),
-                    text = state.label.ifBlank {
-                        stringResource(Res.string.bookmark_title_placeholder)
-                    },
-                    maxLines = 2,
-                    style = MaterialTheme.typography.bodyLargeEmphasized,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Text(
-                    modifier = Modifier
-                        .sharedBounds(
-                            sharedContentState = rememberSharedContentState(
-                                key = PreviewSharedElementKey.Description
-                            ),
-                            animatedVisibilityScope = animatedContentScope,
-                        ),
-                    text = state.description.ifBlank {
-                        stringResource(Res.string.bookmark_description_placeholder)
-                    },
-                    maxLines = 3,
-                    style = MaterialTheme.typography.bodyMedium,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Row(
-                    modifier = Modifier
-                        .sharedBounds(
-                            sharedContentState = rememberSharedContentState(
-                                key = PreviewSharedElementKey.TagsRow
-                            ),
-                            animatedVisibilityScope = animatedContentScope,
-                        ),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                ) {
-                    if (state.selectedTags.isEmpty()) {
-                        Surface(
-                            modifier = Modifier.size(24.dp),
-                            shape = RoundedCornerShape(4.dp),
-                            color = Color(color.iconTintArgb()).copy(alpha = 0.3F),
+                            cornerRadius = 12.dp,
                         ) {
-                            YabaIcon(
-                                modifier = Modifier.padding(4.dp),
-                                name = "tags",
-                                color = color,
+                            YabaImage(
+                                modifier = Modifier.fillMaxWidth()
+                                    .height(128.dp)
+                                    .clip(RoundedCornerShape(12.dp)),
+                                bytes = state.imageData,
                             )
                         }
-                        Text(
-                            text = stringResource(Res.string.bookmark_no_tags_added_title),
-                            fontStyle = FontStyle.Italic,
-                            style = MaterialTheme.typography.bodySmall,
+                    }
+                }
+                ShimmerItem(
+                    isLoading = state.isLoading,
+                    modifier = Modifier.sharedBounds(
+                        sharedContentState =
+                            rememberSharedContentState(
+                                key = PreviewSharedElementKey.Title
+                            ),
+                        animatedVisibilityScope = animatedContentScope,
+                    ),
+                ) {
+                    Text(
+                        text = state.label.ifBlank {
+                            stringResource(Res.string.bookmark_title_placeholder)
+                        },
+                        maxLines = 2,
+                        style = MaterialTheme.typography.bodyLargeEmphasized,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+                ShimmerItem(
+                    isLoading = state.isLoading,
+                    modifier = Modifier.sharedBounds(
+                        sharedContentState =
+                            rememberSharedContentState(
+                                key = PreviewSharedElementKey.Description
+                            ),
+                        animatedVisibilityScope = animatedContentScope,
+                    ),
+                ) {
+                    Text(
+                        text =
+                            state.description.ifBlank {
+                                stringResource(Res.string.bookmark_description_placeholder)
+                            },
+                        maxLines = 3,
+                        style = MaterialTheme.typography.bodyMedium,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    ShimmerItem(
+                        isLoading = state.isLoading,
+                        modifier = Modifier.sharedBounds(
+                            sharedContentState =
+                                rememberSharedContentState(
+                                    key = PreviewSharedElementKey.TagsRow
+                                ),
+                            animatedVisibilityScope = animatedContentScope,
+                        ),
+                    ) {
+                        TagsRowContent(
+                            tags = state.selectedTags,
+                            emptyStateTextRes = Res.string.bookmark_no_tags_added_title,
+                            emptyStateColor = color,
                         )
-                    } else {
-                        state.selectedTags.fastForEach {
-
-                        }
+                    }
+                    ShimmerItem(
+                        isLoading = state.isLoading,
+                        modifier = Modifier.sharedBounds(
+                            sharedContentState =
+                                rememberSharedContentState(
+                                    key = PreviewSharedElementKey.DomainImage
+                                ),
+                            animatedVisibilityScope = animatedContentScope,
+                        ),
+                    ) {
+                        YabaImage(
+                            modifier = Modifier
+                                .size(20.dp)
+                                .clip(RoundedCornerShape(4.dp)),
+                            bytes = state.imageData,
+                        )
                     }
                 }
             }
@@ -422,11 +484,11 @@ private fun CardSmallImagePreview(
 ) {
     with(sharedTransitionScope) {
         Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .clickable(onClick = onClick),
+            modifier =
+                Modifier.fillMaxWidth()
+                    .padding(horizontal = 12.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .clickable(onClick = onClick),
             shape = RoundedCornerShape(12.dp),
             color = MaterialTheme.colorScheme.surface,
         ) {
@@ -440,98 +502,129 @@ private fun CardSmallImagePreview(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Box(
-                        modifier = Modifier
-                            .sharedElement(
-                                sharedContentState = rememberSharedContentState(
-                                    key = PreviewSharedElementKey.Image
-                                ),
+                        modifier =
+                            Modifier.sharedElement(
+                                sharedContentState =
+                                    rememberSharedContentState(
+                                        key = PreviewSharedElementKey.Image
+                                    ),
                                 animatedVisibilityScope = animatedContentScope,
                             )
                     ) {
                         if (state.imageData == null) {
-                            Surface(
+                            ShimmerItem(
+                                isLoading = state.isLoading,
                                 modifier = Modifier.size(64.dp),
-                                shape = RoundedCornerShape(12.dp),
-                                color = Color(color.iconTintArgb()).copy(alpha = 0.3F),
+                                cornerRadius = 12.dp,
                             ) {
-                                YabaIcon(
-                                    modifier = Modifier.padding(16.dp),
-                                    name = state.selectedLinkType.uiIconName(),
-                                    color = color,
-                                )
+                                Surface(
+                                    modifier = Modifier.size(64.dp),
+                                    shape = RoundedCornerShape(12.dp),
+                                    color = Color(color.iconTintArgb()).copy(alpha = 0.3F),
+                                ) {
+                                    YabaIcon(
+                                        modifier = Modifier.padding(16.dp),
+                                        name = state.selectedLinkType.uiIconName(),
+                                        color = color,
+                                    )
+                                }
                             }
                         } else {
-                            YabaImage(
-                                modifier = Modifier
-                                    .size(64.dp)
-                                    .clip(RoundedCornerShape(12.dp)),
-                                bytes = state.imageData,
-                            )
+                            ShimmerItem(
+                                isLoading = state.isLoading,
+                                modifier = Modifier.size(64.dp).clip(RoundedCornerShape(12.dp)),
+                                cornerRadius = 12.dp,
+                            ) {
+                                YabaImage(
+                                    modifier =
+                                        Modifier.size(64.dp)
+                                            .clip(RoundedCornerShape(12.dp)),
+                                    bytes = state.imageData,
+                                )
+                            }
                         }
                     }
-                    Text(
-                        modifier = Modifier
-                            .sharedBounds(
-                                sharedContentState = rememberSharedContentState(
-                                    key = PreviewSharedElementKey.Title
-                                ),
+                    ShimmerItem(
+                        isLoading = state.isLoading,
+                        modifier =
+                            Modifier.sharedBounds(
+                                sharedContentState =
+                                    rememberSharedContentState(
+                                        key = PreviewSharedElementKey.Title
+                                    ),
                                 animatedVisibilityScope = animatedContentScope,
                             ),
-                        text = state.label.ifBlank {
-                            stringResource(Res.string.bookmark_title_placeholder)
-                        },
-                        maxLines = 2,
-                        style = MaterialTheme.typography.bodyLargeEmphasized,
+                    ) {
+                        Text(
+                            text =
+                                state.label.ifBlank {
+                                    stringResource(Res.string.bookmark_title_placeholder)
+                                },
+                            maxLines = 2,
+                            style = MaterialTheme.typography.bodyLargeEmphasized,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                }
+                ShimmerItem(
+                    isLoading = state.isLoading,
+                    modifier =
+                        Modifier.sharedBounds(
+                            sharedContentState =
+                                rememberSharedContentState(
+                                    key = PreviewSharedElementKey.Description
+                                ),
+                            animatedVisibilityScope = animatedContentScope,
+                        ),
+                ) {
+                    Text(
+                        text =
+                            state.description.ifBlank {
+                                stringResource(Res.string.bookmark_description_placeholder)
+                            },
+                        maxLines = 3,
+                        style = MaterialTheme.typography.bodyMedium,
                         overflow = TextOverflow.Ellipsis,
                     )
                 }
-                Text(
-                    modifier = Modifier
-                        .sharedBounds(
-                            sharedContentState = rememberSharedContentState(
-                                key = PreviewSharedElementKey.Description
-                            ),
-                            animatedVisibilityScope = animatedContentScope,
-                        ),
-                    text = state.description.ifBlank {
-                        stringResource(Res.string.bookmark_description_placeholder)
-                    },
-                    maxLines = 3,
-                    style = MaterialTheme.typography.bodyMedium,
-                    overflow = TextOverflow.Ellipsis,
-                )
                 Row(
-                    modifier = Modifier
-                        .sharedBounds(
-                            sharedContentState = rememberSharedContentState(
-                                key = PreviewSharedElementKey.TagsRow
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    ShimmerItem(
+                        isLoading = state.isLoading,
+                        modifier =
+                            Modifier.sharedBounds(
+                                sharedContentState =
+                                    rememberSharedContentState(
+                                        key = PreviewSharedElementKey.TagsRow
+                                    ),
+                                animatedVisibilityScope = animatedContentScope,
                             ),
+                    ) {
+                        TagsRowContent(
+                            tags = state.selectedTags,
+                            emptyStateTextRes = Res.string.bookmark_no_tags_added_title,
+                            emptyStateColor = color,
+                        )
+                    }
+                    ShimmerItem(
+                        isLoading = state.isLoading,
+                        modifier = Modifier.sharedBounds(
+                            sharedContentState =
+                                rememberSharedContentState(
+                                    key = PreviewSharedElementKey.DomainImage
+                                ),
                             animatedVisibilityScope = animatedContentScope,
                         ),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                ) {
-                    if (state.selectedTags.isEmpty()) {
-                        Surface(
-                            modifier = Modifier.size(24.dp),
-                            shape = RoundedCornerShape(4.dp),
-                            color = Color(color.iconTintArgb()).copy(alpha = 0.3F),
-                        ) {
-                            YabaIcon(
-                                modifier = Modifier.padding(4.dp),
-                                name = "tags",
-                                color = color,
-                            )
-                        }
-                        Text(
-                            text = stringResource(Res.string.bookmark_no_tags_added_title),
-                            fontStyle = FontStyle.Italic,
-                            style = MaterialTheme.typography.bodySmall,
+                    ) {
+                        YabaImage(
+                            modifier = Modifier
+                                .size(20.dp)
+                                .clip(RoundedCornerShape(4.dp)),
+                            bytes = state.imageData,
                         )
-                    } else {
-                        state.selectedTags.fastForEach {
-
-                        }
                     }
                 }
             }
@@ -554,11 +647,11 @@ private fun GridPreview(
             contentAlignment = Alignment.Center,
         ) {
             Surface(
-                modifier = Modifier
-                    .width(width = 200.dp)
-                    .heightIn(min = 200.dp, max = 560.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .clickable(onClick = onClick),
+                modifier =
+                    Modifier.width(width = 200.dp)
+                        .heightIn(min = 200.dp, max = 560.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .clickable(onClick = onClick),
                 shape = RoundedCornerShape(12.dp),
                 color = MaterialTheme.colorScheme.surface,
             ) {
@@ -568,68 +661,98 @@ private fun GridPreview(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Box(
-                        modifier = Modifier
-                            .sharedElement(
-                                sharedContentState = rememberSharedContentState(
-                                    key = PreviewSharedElementKey.Image
-                                ),
+                        modifier =
+                            Modifier.sharedElement(
+                                sharedContentState =
+                                    rememberSharedContentState(
+                                        key = PreviewSharedElementKey.Image
+                                    ),
                                 animatedVisibilityScope = animatedContentScope,
                             )
                     ) {
                         if (state.imageData == null) {
-                            Surface(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(160.dp),
-                                shape = RoundedCornerShape(12.dp),
-                                color = Color(color.iconTintArgb()).copy(alpha = 0.3F),
+                            ShimmerItem(
+                                isLoading = state.isLoading,
+                                modifier = Modifier.fillMaxWidth().height(160.dp),
+                                cornerRadius = 12.dp,
                             ) {
-                                YabaIcon(
-                                    modifier = Modifier.padding(52.dp),
-                                    name = state.selectedLinkType.uiIconName(),
-                                    color = color,
-                                )
+                                Surface(
+                                    modifier = Modifier.fillMaxWidth().height(160.dp),
+                                    shape = RoundedCornerShape(12.dp),
+                                    color = Color(color.iconTintArgb()).copy(alpha = 0.3F),
+                                ) {
+                                    YabaIcon(
+                                        modifier = Modifier.padding(52.dp),
+                                        name = state.selectedLinkType.uiIconName(),
+                                        color = color,
+                                    )
+                                }
                             }
                         } else {
-                            YabaImage(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(128.dp)
-                                    .clip(RoundedCornerShape(12.dp)),
-                                bytes = state.imageData,
-                            )
+                            ShimmerItem(
+                                isLoading = state.isLoading,
+                                modifier =
+                                    Modifier.fillMaxWidth()
+                                        .height(128.dp)
+                                        .clip(RoundedCornerShape(12.dp)),
+                                cornerRadius = 12.dp,
+                            ) {
+                                YabaImage(
+                                    modifier =
+                                        Modifier.fillMaxWidth()
+                                            .height(128.dp)
+                                            .clip(RoundedCornerShape(12.dp)),
+                                    bytes = state.imageData,
+                                )
+                            }
                         }
                     }
-                    Text(
-                        modifier = Modifier
-                            .sharedBounds(
-                                sharedContentState = rememberSharedContentState(
-                                    key = PreviewSharedElementKey.Title
-                                ),
+                    ShimmerItem(
+                        isLoading = state.isLoading,
+                        modifier =
+                            Modifier.sharedBounds(
+                                sharedContentState =
+                                    rememberSharedContentState(
+                                        key = PreviewSharedElementKey.Title
+                                    ),
                                 animatedVisibilityScope = animatedContentScope,
                             ),
-                        text = state.label.ifBlank {
-                            stringResource(Res.string.bookmark_title_placeholder)
-                        },
-                        maxLines = 2,
-                        style = MaterialTheme.typography.bodyLargeEmphasized,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                    Text(
-                        modifier = Modifier
-                            .sharedBounds(
-                                sharedContentState = rememberSharedContentState(
-                                    key = PreviewSharedElementKey.Description
-                                ),
+                    ) {
+                        Text(
+                            text =
+                                state.label.ifBlank {
+                                    stringResource(Res.string.bookmark_title_placeholder)
+                                },
+                            maxLines = 2,
+                            style = MaterialTheme.typography.bodyLargeEmphasized,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                    ShimmerItem(
+                        isLoading = state.isLoading,
+                        modifier =
+                            Modifier.sharedBounds(
+                                sharedContentState =
+                                    rememberSharedContentState(
+                                        key =
+                                            PreviewSharedElementKey
+                                                .Description
+                                    ),
                                 animatedVisibilityScope = animatedContentScope,
                             ),
-                        text = state.description.ifBlank {
-                            stringResource(Res.string.bookmark_description_placeholder)
-                        },
-                        maxLines = 3,
-                        style = MaterialTheme.typography.bodyMedium,
-                        overflow = TextOverflow.Ellipsis,
-                    )
+                    ) {
+                        Text(
+                            text =
+                                state.description.ifBlank {
+                                    stringResource(
+                                        Res.string.bookmark_description_placeholder
+                                    )
+                                },
+                            maxLines = 3,
+                            style = MaterialTheme.typography.bodyMedium,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
                 }
             }
         }
