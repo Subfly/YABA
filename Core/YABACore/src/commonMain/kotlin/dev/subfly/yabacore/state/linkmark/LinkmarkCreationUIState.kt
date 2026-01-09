@@ -15,44 +15,47 @@ import dev.subfly.yabacore.model.utils.LinkType
  */
 @Immutable
 data class LinkmarkCreationUIState(
-    // URL-related state
-    val url: String = "",
-    val cleanedUrl: String = "",
-    val host: String = "",
-    val lastFetchedUrl: String = "",
+        // URL-related state
+        val url: String = "",
+        val cleanedUrl: String = "",
+        val host: String = "",
+        val lastFetchedUrl: String = "",
 
-    // Content metadata
-    val label: String = "",
-    val description: String = "",
-    val iconUrl: String? = null,
-    val imageUrl: String? = null,
-    val videoUrl: String? = null,
-    val readableHtml: String? = null,
+        // Content metadata
+        val label: String = "",
+        val description: String = "",
+        val iconUrl: String? = null,
+        val imageUrl: String? = null,
+        val videoUrl: String? = null,
+        val readableHtml: String? = null,
 
-    // Binary data (in-memory only, not persisted)
-    val imageData: ByteArray? = null,
-    val iconData: ByteArray? = null,
+        // Binary data (in-memory only, not persisted)
+        val imageData: ByteArray? = null,
+        val iconData: ByteArray? = null,
 
-    // Link type classification
-    val selectedLinkType: LinkType = LinkType.NONE,
+        // Selectable images from unfurling (URL -> ByteArray)
+        val selectableImages: Map<String, ByteArray> = emptyMap(),
 
-    // Collection associations
-    val selectedFolder: FolderUiModel? = null,
-    val selectedTags: List<TagUiModel> = emptyList(),
+        // Link type classification
+        val selectedLinkType: LinkType = LinkType.NONE,
 
-    // Loading and error states
-    val isLoading: Boolean = false,
-    val error: LinkmarkCreationError? = null,
+        // Collection associations
+        val selectedFolder: FolderUiModel? = null,
+        val selectedTags: List<TagUiModel> = emptyList(),
 
-    // Preview appearance (initialized from preferences, then user-controlled via cycling)
-    val bookmarkAppearance: BookmarkAppearance = BookmarkAppearance.LIST,
-    val cardImageSizing: CardImageSizing = CardImageSizing.SMALL,
+        // Loading and error states
+        val isLoading: Boolean = false,
+        val error: LinkmarkCreationError? = null,
 
-    // Edit mode
-    val editingLinkmark: LinkmarkUiModel? = null,
+        // Preview appearance (initialized from preferences, then user-controlled via cycling)
+        val bookmarkAppearance: BookmarkAppearance = BookmarkAppearance.LIST,
+        val cardImageSizing: CardImageSizing = CardImageSizing.SMALL,
 
-    // Flag to indicate if uncategorized folder needs to be created
-    val uncategorizedFolderCreationRequired: Boolean = false,
+        // Edit mode
+        val editingLinkmark: LinkmarkUiModel? = null,
+
+        // Flag to indicate if uncategorized folder needs to be created
+        val uncategorizedFolderCreationRequired: Boolean = false,
 ) {
     val isInEditMode: Boolean
         get() = editingLinkmark != null
@@ -62,6 +65,10 @@ data class LinkmarkCreationUIState(
 
     val canSave: Boolean
         get() = cleanedUrl.isNotBlank() && selectedFolder != null && !isLoading
+
+    /** List of selectable image URLs for navigation to image selection screen. */
+    val selectableImageUrls: List<String>
+        get() = selectableImages.keys.toList()
 
     // Override equals/hashCode to handle ByteArray comparison
     override fun equals(other: Any?): Boolean {
@@ -88,6 +95,7 @@ data class LinkmarkCreationUIState(
             if (other.iconData == null) return false
             if (!iconData.contentEquals(other.iconData)) return false
         } else if (other.iconData != null) return false
+        if (!selectableImagesEqual(selectableImages, other.selectableImages)) return false
         if (selectedLinkType != other.selectedLinkType) return false
         if (selectedFolder != other.selectedFolder) return false
         if (selectedTags != other.selectedTags) return false
@@ -97,7 +105,7 @@ data class LinkmarkCreationUIState(
         if (cardImageSizing != other.cardImageSizing) return false
         if (editingLinkmark != other.editingLinkmark) return false
         if (uncategorizedFolderCreationRequired != other.uncategorizedFolderCreationRequired)
-            return false
+                return false
 
         return true
     }
@@ -115,6 +123,7 @@ data class LinkmarkCreationUIState(
         result = 31 * result + (readableHtml?.hashCode() ?: 0)
         result = 31 * result + (imageData?.contentHashCode() ?: 0)
         result = 31 * result + (iconData?.contentHashCode() ?: 0)
+        result = 31 * result + selectableImagesHashCode(selectableImages)
         result = 31 * result + selectedLinkType.hashCode()
         result = 31 * result + (selectedFolder?.hashCode() ?: 0)
         result = 31 * result + selectedTags.hashCode()
@@ -124,6 +133,27 @@ data class LinkmarkCreationUIState(
         result = 31 * result + cardImageSizing.hashCode()
         result = 31 * result + (editingLinkmark?.hashCode() ?: 0)
         result = 31 * result + uncategorizedFolderCreationRequired.hashCode()
+        return result
+    }
+
+    private fun selectableImagesEqual(
+            a: Map<String, ByteArray>,
+            b: Map<String, ByteArray>,
+    ): Boolean {
+        if (a.size != b.size) return false
+        for ((key, value) in a) {
+            val otherValue = b[key] ?: return false
+            if (!value.contentEquals(otherValue)) return false
+        }
+        return true
+    }
+
+    private fun selectableImagesHashCode(map: Map<String, ByteArray>): Int {
+        var result = 0
+        for ((key, value) in map) {
+            result = 31 * result + key.hashCode()
+            result = 31 * result + value.contentHashCode()
+        }
         return result
     }
 }

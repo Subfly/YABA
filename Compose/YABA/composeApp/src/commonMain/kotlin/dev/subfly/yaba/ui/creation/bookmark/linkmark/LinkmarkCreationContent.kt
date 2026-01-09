@@ -26,8 +26,6 @@ import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.ui.TagUiModel
-import dev.subfly.yabacore.model.utils.YabaColor
-import dev.subfly.yabacore.state.folder.FolderCreationEvent
 import dev.subfly.yabacore.state.linkmark.LinkmarkCreationEvent
 
 @Composable
@@ -57,6 +55,13 @@ fun LinkmarkCreationContent(bookmarkId: String?) {
         }
     }
 
+    LaunchedEffect(resultStore.getResult(ResultStoreKeys.SELECTED_IMAGE)) {
+        resultStore.getResult<String>(ResultStoreKeys.SELECTED_IMAGE)?.let { newUrl ->
+            vm.onEvent(LinkmarkCreationEvent.OnSelectImage(imageUrl = newUrl))
+            resultStore.removeResult(ResultStoreKeys.SELECTED_IMAGE)
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -80,10 +85,7 @@ fun LinkmarkCreationContent(bookmarkId: String?) {
             item {
                 LinkmarkPreviewContent(
                     state = state,
-                    onChangePreviewType = {
-                        vm.onEvent(LinkmarkCreationEvent.OnCyclePreviewAppearance)
-                    },
-                    onOpenImageSelector = {},
+                    onChangePreviewType = { vm.onEvent(LinkmarkCreationEvent.OnCyclePreviewAppearance) },
                 )
             }
             item {

@@ -24,14 +24,12 @@ import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.item.tag.PresentableTagItemView
 import dev.subfly.yaba.core.navigation.creation.TagCreationRoute
 import dev.subfly.yaba.core.navigation.creation.TagSelectionRoute
-import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.linkmark.LinkmarkCreationUIState
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.icon.iconTintArgb
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.material3.Text
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.create_bookmark_add_tags
 import yaba.composeapp.generated.resources.create_bookmark_edit_tags
@@ -46,7 +44,6 @@ internal fun LinkmarkTagSelectionContent(
     state: LinkmarkCreationUIState,
 ) {
     val creationNavigator = LocalCreationContentNavigator.current
-    val appStateManager = LocalAppStateManager.current
 
     Spacer(modifier = Modifier.height(4.dp))
     LinkmarkLabel(
@@ -127,7 +124,6 @@ internal fun LinkmarkTagSelectionContent(
                     creationNavigator.add(
                         TagCreationRoute(tagId = tag.id.toString())
                     )
-                    appStateManager.onShowCreationContent()
                 },
             )
         }

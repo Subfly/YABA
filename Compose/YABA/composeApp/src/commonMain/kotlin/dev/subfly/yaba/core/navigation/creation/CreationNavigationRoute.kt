@@ -28,6 +28,7 @@ val creationNavigationConfig = SavedStateConfiguration {
             subclass(IconCategorySelectionRoute::class, IconCategorySelectionRoute.serializer())
             subclass(IconSelectionRoute::class, IconSelectionRoute.serializer())
             subclass(ColorSelectionRoute::class, ColorSelectionRoute.serializer())
+            subclass(ImageSelectionRoute::class, ImageSelectionRoute.serializer())
             subclass(EmptyRoute::class, EmptyRoute.serializer())
         }
     }
@@ -99,6 +100,13 @@ data class IconSelectionRoute(
     val routeId: String = Uuid.generateV4().toString(),
     val selectedIcon: String,
     val selectedSubcategory: IconSubcategory,
+): NavKey
+
+@Serializable
+data class ImageSelectionRoute(
+    val routeId: String = Uuid.generateV4().toString(),
+    val selectedImage: String?,
+    val imageDataMap: Map<String, ByteArray>,
 ): NavKey
 
 @Serializable

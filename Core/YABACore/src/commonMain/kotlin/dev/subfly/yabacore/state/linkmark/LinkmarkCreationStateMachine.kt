@@ -186,6 +186,7 @@ class LinkmarkCreationStateMachine :
                             videoUrl = preview.videoUrl,
                             iconData = preview.iconData,
                             imageData = preview.imageData,
+                            selectableImages = preview.imageOptions,
                             readableHtml = preview.readableHtml,
                             lastFetchedUrl = urlString,
                             isLoading = false,
@@ -262,10 +263,15 @@ class LinkmarkCreationStateMachine :
     }
 
     private fun onSelectImage(event: LinkmarkCreationEvent.OnSelectImage) {
+        val state = currentState()
+        // If imageData is not provided, try to look it up from selectableImages
+        val imageData =
+                event.imageData ?: event.imageUrl?.let { url -> state.selectableImages[url] }
+
         updateState {
             it.copy(
                     imageUrl = event.imageUrl,
-                    imageData = event.imageData,
+                    imageData = imageData,
             )
         }
     }

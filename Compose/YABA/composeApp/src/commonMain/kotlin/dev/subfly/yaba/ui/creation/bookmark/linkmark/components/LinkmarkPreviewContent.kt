@@ -37,6 +37,8 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
+import dev.subfly.yaba.core.navigation.creation.ImageSelectionRoute
+import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.uiTitle
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.CardImageSizing
@@ -76,8 +78,9 @@ private data class PreviewAnimationKey(
 internal fun LinkmarkPreviewContent(
     state: LinkmarkCreationUIState,
     onChangePreviewType: () -> Unit,
-    onOpenImageSelector: () -> Unit,
 ) {
+    val creationNavigator = LocalCreationContentNavigator.current
+
     val color by remember(state.selectedFolder) {
         mutableStateOf(state.selectedFolder?.color ?: YabaColor.BLUE)
     }
@@ -121,7 +124,14 @@ internal fun LinkmarkPreviewContent(
     Spacer(modifier = Modifier.height(12.dp))
     PreviewContent(
         state = state,
-        onClick = onOpenImageSelector,
+        onClick = {
+            creationNavigator.add(
+                ImageSelectionRoute(
+                    selectedImage = state.imageUrl,
+                    imageDataMap = state.selectableImages,
+                )
+            )
+        },
     )
 }
 
