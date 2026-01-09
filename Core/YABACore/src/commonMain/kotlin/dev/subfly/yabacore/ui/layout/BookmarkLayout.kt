@@ -17,8 +17,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.subfly.yabacore.model.ui.BookmarkUiModel
+import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.CardImageSizing
-import dev.subfly.yabacore.model.utils.ContentAppearance
 import kotlin.uuid.ExperimentalUuidApi
 
 @Composable
@@ -34,12 +34,12 @@ fun YabaBookmarkLayout(
         (
         bookmark: BookmarkUiModel,
         isDragging: Boolean,
-        appearance: ContentAppearance,
+        appearance: BookmarkAppearance,
         cardImageSizing: CardImageSizing,
     ) -> Unit,
 ) {
-    when (layoutConfig.appearance) {
-        ContentAppearance.LIST, ContentAppearance.CARD ->
+    when (layoutConfig.bookmarkAppearance) {
+        BookmarkAppearance.LIST, BookmarkAppearance.CARD ->
             LazyColumn(
                 modifier = modifier,
                 verticalArrangement = Arrangement.spacedBy(layoutConfig.list.itemSpacing),
@@ -51,7 +51,7 @@ fun YabaBookmarkLayout(
                 ) { bookmark ->
                     BookmarkItem(
                         bookmark = bookmark,
-                        appearance = layoutConfig.appearance,
+                        appearance = layoutConfig.bookmarkAppearance,
                         cardImageSizing = layoutConfig.cardImageSizing,
                         state = dragDropState,
                         orientation = Orientation.Vertical,
@@ -61,7 +61,7 @@ fun YabaBookmarkLayout(
                 }
             }
 
-        ContentAppearance.GRID ->
+        BookmarkAppearance.GRID ->
             LazyVerticalStaggeredGrid(
                 modifier = modifier,
                 columns = StaggeredGridCells.Adaptive(layoutConfig.grid.minCellWidth),
@@ -76,7 +76,7 @@ fun YabaBookmarkLayout(
                 ) { bookmark ->
                     BookmarkItem(
                         bookmark = bookmark,
-                        appearance = layoutConfig.appearance,
+                        appearance = layoutConfig.bookmarkAppearance,
                         cardImageSizing = layoutConfig.cardImageSizing,
                         state = dragDropState,
                         orientation = Orientation.Vertical,
@@ -91,7 +91,7 @@ fun YabaBookmarkLayout(
 @Composable
 private fun BookmarkItem(
     bookmark: BookmarkUiModel,
-    appearance: ContentAppearance,
+    appearance: BookmarkAppearance,
     cardImageSizing: CardImageSizing,
     state: YabaDragDropState,
     orientation: Orientation,
@@ -101,7 +101,7 @@ private fun BookmarkItem(
         (
         bookmark: BookmarkUiModel,
         isDragging: Boolean,
-        appearance: ContentAppearance,
+        appearance: BookmarkAppearance,
         cardImageSizing: CardImageSizing,
     ) -> Unit,
 ) {

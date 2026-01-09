@@ -32,7 +32,9 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
     override fun onEvent(event: HomeEvent) {
         when (event) {
             HomeEvent.OnInit -> onInit()
-            is HomeEvent.OnChangeContentAppearance -> onChangeContentAppearance(event)
+            is HomeEvent.OnChangeCollectionAppearance -> onChangeCollectionAppearance(event)
+            is HomeEvent.OnChangeBookmarkAppearance -> onChangeBookmarkAppearance(event)
+            is HomeEvent.OnChangeCardImageSizing -> onChangeCardImageSizing(event)
             is HomeEvent.OnChangeCollectionSorting -> onChangeCollectionSorting(event)
             is HomeEvent.OnChangeSortOrder -> onChangeSortOrder(event)
             is HomeEvent.OnDeleteFolder -> onDeleteFolder(event)
@@ -89,7 +91,10 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
                                     folders = folders,
                                     tags = tags,
                                     recentBookmarks = recentBookmarks,
-                                    contentAppearance = preferences.preferredContentAppearance,
+                                    collectionAppearance =
+                                            preferences.preferredCollectionAppearance,
+                                    bookmarkAppearance = preferences.preferredBookmarkAppearance,
+                                    cardImageSizing = preferences.preferredCardImageSizing,
                                     collectionSorting = preferences.preferredCollectionSorting,
                                     sortOrder = preferences.preferredSortOrder,
                                     isLoading = false,
@@ -100,8 +105,16 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
         }
     }
 
-    private fun onChangeContentAppearance(event: HomeEvent.OnChangeContentAppearance) {
-        launch { preferencesStore.setPreferredContentAppearance(event.appearance) }
+    private fun onChangeCollectionAppearance(event: HomeEvent.OnChangeCollectionAppearance) {
+        launch { preferencesStore.setPreferredCollectionAppearance(event.appearance) }
+    }
+
+    private fun onChangeBookmarkAppearance(event: HomeEvent.OnChangeBookmarkAppearance) {
+        launch { preferencesStore.setPreferredBookmarkAppearance(event.appearance) }
+    }
+
+    private fun onChangeCardImageSizing(event: HomeEvent.OnChangeCardImageSizing) {
+        launch { preferencesStore.setPreferredCardImageSizing(event.sizing) }
     }
 
     private fun onChangeCollectionSorting(event: HomeEvent.OnChangeCollectionSorting) {

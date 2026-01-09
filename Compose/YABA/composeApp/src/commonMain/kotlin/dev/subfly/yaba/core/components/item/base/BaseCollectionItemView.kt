@@ -39,7 +39,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.util.yabaClickable
-import dev.subfly.yabacore.model.utils.ContentAppearance
+import dev.subfly.yabacore.model.utils.CollectionAppearance
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.icon.iconTintArgb
@@ -81,7 +81,7 @@ data class CollectionSwipeAction(
  * @param description Optional secondary text (shown in grid view)
  * @param icon The icon name to display
  * @param color The color theme for this item
- * @param appearance The display mode (LIST/CARD shows list style, GRID shows grid style)
+ * @param appearance The display mode (LIST shows list style, GRID shows grid style)
  * @param parentColors List of parent colors to show as hierarchy indicators (only in list view)
  * @param menuActions List of menu actions to show in the dropdown menu
  * @param leftSwipeActions Swipe actions revealed when swiping right (only in list view)
@@ -97,7 +97,7 @@ fun BaseCollectionItemView(
     description: String? = null,
     icon: String,
     color: YabaColor,
-    appearance: ContentAppearance,
+    appearance: CollectionAppearance,
     parentColors: List<YabaColor> = emptyList(),
     menuActions: List<CollectionMenuAction> = emptyList(),
     leftSwipeActions: List<CollectionSwipeAction> = emptyList(),
@@ -107,7 +107,7 @@ fun BaseCollectionItemView(
     gridTrailingContent: @Composable (() -> Unit)? = null,
 ) {
     when (appearance) {
-        ContentAppearance.LIST, ContentAppearance.CARD -> {
+        CollectionAppearance.LIST -> {
             ListCollectionItemView(
                 modifier = modifier,
                 label = label,
@@ -122,7 +122,7 @@ fun BaseCollectionItemView(
             )
         }
 
-        ContentAppearance.GRID -> {
+        CollectionAppearance.GRID -> {
             GridCollectionItemView(
                 modifier = modifier,
                 label = label,

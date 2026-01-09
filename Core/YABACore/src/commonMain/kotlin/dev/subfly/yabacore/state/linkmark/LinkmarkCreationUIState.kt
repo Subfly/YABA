@@ -4,8 +4,8 @@ import androidx.compose.runtime.Immutable
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.ui.LinkmarkUiModel
 import dev.subfly.yabacore.model.ui.TagUiModel
+import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.CardImageSizing
-import dev.subfly.yabacore.model.utils.ContentAppearance
 import dev.subfly.yabacore.model.utils.LinkType
 
 /**
@@ -45,7 +45,7 @@ data class LinkmarkCreationUIState(
     val error: LinkmarkCreationError? = null,
 
     // Preview appearance (initialized from preferences, then user-controlled via cycling)
-    val contentAppearance: ContentAppearance = ContentAppearance.LIST,
+    val bookmarkAppearance: BookmarkAppearance = BookmarkAppearance.LIST,
     val cardImageSizing: CardImageSizing = CardImageSizing.SMALL,
 
     // Edit mode
@@ -93,7 +93,7 @@ data class LinkmarkCreationUIState(
         if (selectedTags != other.selectedTags) return false
         if (isLoading != other.isLoading) return false
         if (error != other.error) return false
-        if (contentAppearance != other.contentAppearance) return false
+        if (bookmarkAppearance != other.bookmarkAppearance) return false
         if (cardImageSizing != other.cardImageSizing) return false
         if (editingLinkmark != other.editingLinkmark) return false
         if (uncategorizedFolderCreationRequired != other.uncategorizedFolderCreationRequired)
@@ -120,7 +120,7 @@ data class LinkmarkCreationUIState(
         result = 31 * result + selectedTags.hashCode()
         result = 31 * result + isLoading.hashCode()
         result = 31 * result + (error?.hashCode() ?: 0)
-        result = 31 * result + contentAppearance.hashCode()
+        result = 31 * result + bookmarkAppearance.hashCode()
         result = 31 * result + cardImageSizing.hashCode()
         result = 31 * result + (editingLinkmark?.hashCode() ?: 0)
         result = 31 * result + uncategorizedFolderCreationRequired.hashCode()

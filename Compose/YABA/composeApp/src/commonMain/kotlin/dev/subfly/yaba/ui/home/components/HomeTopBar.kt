@@ -17,8 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import dev.subfly.yaba.util.Platform
 import dev.subfly.yaba.util.YabaPlatform
-import dev.subfly.yabacore.model.utils.CardImageSizing
-import dev.subfly.yabacore.model.utils.ContentAppearance
+import dev.subfly.yabacore.model.utils.CollectionAppearance
 import dev.subfly.yabacore.model.utils.SortType
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import org.jetbrains.compose.resources.stringResource
@@ -31,8 +30,7 @@ internal fun HomeTopBar(
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior,
     onSearchClicked: () -> Unit,
-    onAppearanceChanged: (ContentAppearance) -> Unit,
-    onSizingChanged: (CardImageSizing) -> Unit,
+    onCollectionAppearanceChanged: (CollectionAppearance) -> Unit,
     onSortingChanged: (SortType) -> Unit,
 ) {
     var isMenuExpanded by rememberSaveable {
@@ -59,8 +57,7 @@ internal fun HomeTopBar(
                     HomeDropdownMenu(
                         isExpanded = isMenuExpanded,
                         onDismissRequest = { isMenuExpanded = false },
-                        onAppearanceChanged = onAppearanceChanged,
-                        onSizingChanged = onSizingChanged,
+                        onCollectionAppearanceChanged = onCollectionAppearanceChanged,
                         onSortingChanged = onSortingChanged,
                         onSettingsClicked = {
                             // TODO: NAVIGATE TO SETTINGS
@@ -88,8 +85,7 @@ internal fun HomeTopBar(
                     HomeDropdownMenu(
                         isExpanded = isMenuExpanded,
                         onDismissRequest = { isMenuExpanded = false },
-                        onAppearanceChanged = onAppearanceChanged,
-                        onSizingChanged = onSizingChanged,
+                        onCollectionAppearanceChanged = onCollectionAppearanceChanged,
                         onSortingChanged = onSortingChanged,
                         onSettingsClicked = {
                             // TODO: NAVIGATE TO SETTINGS

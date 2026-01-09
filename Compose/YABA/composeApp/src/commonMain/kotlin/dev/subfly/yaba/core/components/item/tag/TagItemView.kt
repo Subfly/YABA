@@ -24,7 +24,7 @@ import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalDeletionDialogManager
 import dev.subfly.yabacore.model.ui.TagUiModel
-import dev.subfly.yabacore.model.utils.ContentAppearance
+import dev.subfly.yabacore.model.utils.CollectionAppearance
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.icon.iconTintArgb
@@ -40,14 +40,14 @@ import kotlin.uuid.ExperimentalUuidApi
  * Uses [BaseCollectionItemView] for consistent styling with folders.
  *
  * @param model The tag data to display
- * @param appearance The display mode (LIST/CARD or GRID)
+ * @param appearance The display mode (LIST or GRID)
  * @param onDeleteTag Callback when the tag should be deleted
  */
 @Composable
 fun TagItemView(
     modifier: Modifier = Modifier,
     model: TagUiModel,
-    appearance: ContentAppearance,
+    appearance: CollectionAppearance,
     onDeleteTag: (TagUiModel) -> Unit,
 ) {
     val creationNavigator = LocalCreationContentNavigator.current

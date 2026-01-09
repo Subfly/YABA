@@ -17,8 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.util.fastForEachIndexed
 import dev.subfly.yaba.util.LocalUserPreferences
-import dev.subfly.yabacore.model.utils.CardImageSizing
-import dev.subfly.yabacore.model.utils.ContentAppearance
+import dev.subfly.yabacore.model.utils.CollectionAppearance
 import dev.subfly.yabacore.model.utils.SortType
 import dev.subfly.yabacore.model.utils.uiIconName
 import dev.subfly.yabacore.model.utils.uiTitle
@@ -35,8 +34,7 @@ internal fun HomeDropdownMenu(
     modifier: Modifier = Modifier,
     isExpanded: Boolean,
     onDismissRequest: () -> Unit,
-    onAppearanceChanged: (ContentAppearance) -> Unit,
-    onSizingChanged: (CardImageSizing) -> Unit,
+    onCollectionAppearanceChanged: (CollectionAppearance) -> Unit,
     onSortingChanged: (SortType) -> Unit,
     onSettingsClicked: () -> Unit,
 ) {
@@ -54,18 +52,14 @@ internal fun HomeDropdownMenu(
                 count = 3
             )
         ) {
-            AppearanceSection(
+            CollectionAppearanceSection(
                 isExpanded = isAppearanceExpanded,
                 onPressedSection = { isAppearanceExpanded = !isAppearanceExpanded },
                 onDismissSubmenu = { isAppearanceExpanded = false },
                 onAppearanceSelection = { appearance ->
-                    onAppearanceChanged(appearance)
+                    onCollectionAppearanceChanged(appearance)
                     onDismissRequest()
                 },
-                onSizingSelection = { sizing ->
-                    onSizingChanged(sizing)
-                    onDismissRequest()
-                }
             )
             SortingSection(
                 isExpanded = isSortingExpanded,
@@ -96,15 +90,13 @@ internal fun HomeDropdownMenu(
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun AppearanceSection(
+private fun CollectionAppearanceSection(
     isExpanded: Boolean,
     onPressedSection: () -> Unit,
     onDismissSubmenu: () -> Unit,
-    onAppearanceSelection: (ContentAppearance) -> Unit,
-    onSizingSelection: (CardImageSizing) -> Unit,
+    onAppearanceSelection: (CollectionAppearance) -> Unit,
 ) {
     val userPreferences = LocalUserPreferences.current
-    var isCardAppearanceExpanded by remember { mutableStateOf(false) }
 
     Box {
         DropdownMenuItem(
@@ -134,70 +126,20 @@ private fun AppearanceSection(
             DropdownMenuGroup(
                 shapes = MenuDefaults.groupShape(
                     index = 0,
-                    count = ContentAppearance.entries.size
+                    count = CollectionAppearance.entries.size
                 )
             ) {
-                ContentAppearance.entries.fastForEachIndexed { index, appearance ->
-                    if (appearance != ContentAppearance.CARD) {
-                        DropdownMenuItem(
-                            shapes = MenuDefaults.itemShape(index, ContentAppearance.entries.size),
-                            checked = userPreferences.preferredContentAppearance == appearance,
-                            onCheckedChange = { _ ->
-                                onAppearanceSelection(appearance)
-                                onDismissSubmenu()
-                            },
-                            leadingIcon = { YabaIcon(name = appearance.uiIconName()) },
-                            text = { Text(text = appearance.uiTitle()) }
-                        )
-                    } else {
-                        Box {
-                            DropdownMenuItem(
-                                shapes = MenuDefaults.itemShape(index, ContentAppearance.entries.size),
-                                checked = userPreferences.preferredContentAppearance == appearance,
-                                onCheckedChange = { isCardAppearanceExpanded = !isCardAppearanceExpanded },
-                                leadingIcon = { YabaIcon(name = appearance.uiIconName()) },
-                                trailingIcon = {
-                                    val expandedRotation by animateFloatAsState(
-                                        targetValue = if (isCardAppearanceExpanded) 90F else 0F,
-                                    )
-                                    YabaIcon(
-                                        modifier = Modifier.rotate(expandedRotation),
-                                        name = "arrow-right-01"
-                                    )
-                                },
-                                text = { Text(text = appearance.uiTitle()) }
-                            )
-                            DropdownMenuPopup(
-                                expanded = isCardAppearanceExpanded,
-                                onDismissRequest = { isCardAppearanceExpanded = false },
-                            ) {
-                                DropdownMenuGroup(
-                                    shapes = MenuDefaults.groupShape(
-                                        index = 0,
-                                        count = CardImageSizing.entries.size,
-                                    )
-                                ) {
-                                    CardImageSizing.entries.fastForEachIndexed { imageSizeIndex, sizing ->
-                                        DropdownMenuItem(
-                                            shapes = MenuDefaults.itemShape(
-                                                index = imageSizeIndex,
-                                                count = CardImageSizing.entries.size
-                                            ),
-                                            checked = userPreferences.preferredCardImageSizing == sizing,
-                                            onCheckedChange = { _ ->
-                                                onAppearanceSelection(appearance)
-                                                onSizingSelection(sizing)
-                                                isCardAppearanceExpanded = false
-                                                onDismissSubmenu()
-                                            },
-                                            leadingIcon = { YabaIcon(name = sizing.uiIconName()) },
-                                            text = { Text(text = sizing.uiTitle()) }
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
+                CollectionAppearance.entries.fastForEachIndexed { index, appearance ->
+                    DropdownMenuItem(
+                        shapes = MenuDefaults.itemShape(index, CollectionAppearance.entries.size),
+                        checked = userPreferences.preferredCollectionAppearance == appearance,
+                        onCheckedChange = { _ ->
+                            onAppearanceSelection(appearance)
+                            onDismissSubmenu()
+                        },
+                        leadingIcon = { YabaIcon(name = appearance.uiIconName()) },
+                        text = { Text(text = appearance.uiTitle()) }
+                    )
                 }
             }
         }
@@ -246,7 +188,7 @@ private fun SortingSection(
             ) {
                 SortType.entries.fastForEachIndexed { index, sorting ->
                     DropdownMenuItem(
-                        shapes = MenuDefaults.itemShape(index, ContentAppearance.entries.size),
+                        shapes = MenuDefaults.itemShape(index, SortType.entries.size),
                         checked = userPreferences.preferredCollectionSorting == sorting,
                         onCheckedChange = { _ ->
                             onSortingSelection(sorting)

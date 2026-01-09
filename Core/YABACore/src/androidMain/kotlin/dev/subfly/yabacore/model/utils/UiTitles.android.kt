@@ -35,6 +35,19 @@ actual fun ContentAppearance.uiTitle(): String =
         ContentAppearance.GRID -> "View Grid"
     }
 
+actual fun CollectionAppearance.uiTitle(): String =
+    when (this) {
+        CollectionAppearance.LIST -> "View List"
+        CollectionAppearance.GRID -> "View Grid"
+    }
+
+actual fun BookmarkAppearance.uiTitle(): String =
+    when (this) {
+        BookmarkAppearance.LIST -> "View List"
+        BookmarkAppearance.CARD -> "View Card"
+        BookmarkAppearance.GRID -> "View Grid"
+    }
+
 actual fun CardImageSizing.uiTitle(): String =
     when (this) {
         CardImageSizing.BIG -> "Card Image Sizing Big"

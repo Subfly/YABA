@@ -33,6 +33,7 @@ import dev.subfly.yaba.ui.home.components.HomeTopBar
 import dev.subfly.yaba.util.LocalUserPreferences
 import dev.subfly.yaba.util.Platform
 import dev.subfly.yaba.util.YabaPlatform
+import dev.subfly.yabacore.model.utils.CollectionAppearance
 import dev.subfly.yabacore.model.utils.FabPosition
 import dev.subfly.yabacore.state.home.HomeEvent
 import dev.subfly.yabacore.ui.layout.ContentLayoutConfig
@@ -54,7 +55,13 @@ import kotlin.uuid.ExperimentalUuidApi
     ExperimentalUuidApi::class
 )
 @Composable
-fun HomeView(modifier: Modifier = Modifier) {
+fun HomeView(
+    modifier: Modifier = Modifier,
+    onClickSearch: () -> Unit,
+    onClickRecentBookmark: () -> Unit,
+    onClickFolder: () -> Unit,
+    onClickTag: () -> Unit,
+) {
     val userPreferences = LocalUserPreferences.current
 
     val vm = viewModel { HomeVM() }
@@ -74,19 +81,13 @@ fun HomeView(modifier: Modifier = Modifier) {
             topBar = {
                 HomeTopBar(
                     scrollBehavior = scrollBehavior,
-                    onAppearanceChanged = { newAppearance ->
-                        vm.onEvent(HomeEvent.OnChangeContentAppearance(newAppearance))
+                    onCollectionAppearanceChanged = { newAppearance ->
+                        vm.onEvent(HomeEvent.OnChangeCollectionAppearance(newAppearance))
                     },
                     onSortingChanged = { newSortType ->
                         vm.onEvent(HomeEvent.OnChangeCollectionSorting(newSortType))
                     },
-                    onSizingChanged = { newSizing ->
-                        // TODO: FIX ON VM
-                        // vm.onEvent(HomeEvent.OnChan)
-                    },
-                    onSearchClicked = {
-                        // TODO: NAVIGATE TO SEARCH
-                    }
+                    onSearchClicked = onClickSearch,
                 )
             },
             floatingActionButtonPosition = when (userPreferences.preferredFabPosition) {
@@ -96,23 +97,33 @@ fun HomeView(modifier: Modifier = Modifier) {
             },
             floatingActionButton = { HomeFab() }
         ) { paddings ->
+            // Determine span based on collection appearance
+            val collectionSpan = when (state.collectionAppearance) {
+                CollectionAppearance.LIST -> YabaContentSpan.FullLine
+                CollectionAppearance.GRID -> YabaContentSpan.Auto
+            }
+
             YabaContentLayout(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = paddings,
                 layoutConfig = ContentLayoutConfig(
-                    appearance = userPreferences.preferredContentAppearance,
-                    cardImageSizing = userPreferences.preferredCardImageSizing,
+                    collectionAppearance = state.collectionAppearance,
+                    bookmarkAppearance = state.bookmarkAppearance,
+                    cardImageSizing = state.cardImageSizing,
                     grid = GridLayoutConfig(
                         minCellWidth = 180.dp,
-                        outerPadding = PaddingValues(horizontal = 12.dp),
+                        outerPadding = PaddingValues(
+                            horizontal = if (state.collectionAppearance == CollectionAppearance.GRID) {
+                                12.dp
+                            } else {
+                                0.dp
+                            }
+                        ),
                     )
                 ),
                 content = {
                     if (state.recentBookmarks.isNotEmpty()) {
-                        item(
-                            key = "RECENTS_HEADER",
-                            span = YabaContentSpan.FullLine,
-                        ) {
+                        header(key = "RECENTS_HEADER") {
                             HomeTitleContent(
                                 title = Res.string.home_recents_label,
                                 iconName = "clock-01"
@@ -122,15 +133,13 @@ fun HomeView(modifier: Modifier = Modifier) {
                         items(
                             items = state.recentBookmarks,
                             key = { it.id },
-                        ) { bookmarkModel, appearance ->
-
+                            span = { YabaContentSpan.FullLine }, // Recent bookmarks always show as list
+                        ) { bookmarkModel ->
+                            // TODO: Implement bookmark item view
                         }
                     }
 
-                    item(
-                        key = "FOLDERS_HEADER",
-                        span = YabaContentSpan.FullLine,
-                    ) {
+                    header(key = "FOLDERS_HEADER") {
                         HomeTitleContent(
                             title = Res.string.folders_title,
                             iconName = "folder-01"
@@ -170,10 +179,11 @@ fun HomeView(modifier: Modifier = Modifier) {
                             items(
                                 items = state.folders,
                                 key = { it.id },
-                            ) { folderModel, appearance ->
+                                span = { collectionSpan },
+                            ) { folderModel ->
                                 FolderItemView(
                                     model = folderModel,
-                                    appearance = appearance,
+                                    appearance = state.collectionAppearance,
                                     onDeleteFolder = { folderToBeDeleted ->
                                         vm.onEvent(HomeEvent.OnDeleteFolder(folderToBeDeleted))
                                     }
@@ -182,10 +192,7 @@ fun HomeView(modifier: Modifier = Modifier) {
                         }
                     }
 
-                    item(
-                        key = "TAGS_HEADER",
-                        span = YabaContentSpan.FullLine,
-                    ) {
+                    header(key = "TAGS_HEADER") {
                         HomeTitleContent(
                             modifier = Modifier.padding(top = 6.dp),
                             title = Res.string.tags_title,
@@ -226,10 +233,11 @@ fun HomeView(modifier: Modifier = Modifier) {
                             items(
                                 items = state.tags,
                                 key = { it.id },
-                            ) { tagModel, appearance ->
+                                span = { collectionSpan },
+                            ) { tagModel ->
                                 TagItemView(
                                     model = tagModel,
-                                    appearance = appearance,
+                                    appearance = state.collectionAppearance,
                                     onDeleteTag = { tagToBeDeleted ->
                                         vm.onEvent(HomeEvent.OnDeleteTag(tagToBeDeleted))
                                     }
@@ -244,7 +252,7 @@ fun HomeView(modifier: Modifier = Modifier) {
                     ) {
                         Spacer(modifier = Modifier.height(100.dp))
                     }
-                },
+                }
             )
         }
     }

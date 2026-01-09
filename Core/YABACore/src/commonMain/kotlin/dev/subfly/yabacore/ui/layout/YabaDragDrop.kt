@@ -53,10 +53,10 @@ val dragState = rememberYabaDragDropState { result ->
 YabaTagLayout(tags, TagLayoutStyle.Flow, onDrop = {}, dragDropState = dragState) { tag, dragging ->
     /* tag UI */
 }
-YabaFolderLayout(folders, ContentAppearance.GRID, onDrop = {}, dragDropState = dragState) { folder, dragging, appearance ->
+YabaFolderLayout(folders, layoutConfig, onDrop = {}, dragDropState = dragState) { folder, dragging, appearance ->
     /* folder UI */
 }
-YabaBookmarkLayout(bookmarks, ContentAppearance.CARD, onDrop = {}, dragDropState = dragState) { bm, dragging, appearance, imageSize ->
+YabaBookmarkLayout(bookmarks, layoutConfig, onDrop = {}, dragDropState = dragState) { bm, dragging, appearance, imageSize ->
     /* bookmark UI */
 }
 

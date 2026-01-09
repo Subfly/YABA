@@ -50,7 +50,8 @@ fun SearchView(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(paddings),
             bookmarks = emptyList(),
             layoutConfig = ContentLayoutConfig(
-                appearance = userPreferences.preferredContentAppearance,
+                collectionAppearance = userPreferences.preferredCollectionAppearance,
+                bookmarkAppearance = userPreferences.preferredBookmarkAppearance,
                 cardImageSizing = userPreferences.preferredCardImageSizing,
             ),
             onDrop = {

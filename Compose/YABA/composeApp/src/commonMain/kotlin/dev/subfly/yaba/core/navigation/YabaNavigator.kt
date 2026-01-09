@@ -2,24 +2,19 @@ package dev.subfly.yaba.core.navigation
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDragHandle
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.rememberPaneExpansionState
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
-import androidx.navigation3.runtime.NavKey
 import dev.subfly.yaba.ui.home.HomeView
-import dev.subfly.yaba.util.Platform
-import dev.subfly.yaba.util.YabaPlatform
 
 @OptIn(
     ExperimentalMaterial3AdaptiveApi::class,
@@ -34,8 +29,21 @@ fun YabaNavigator(modifier: Modifier = Modifier) {
         modifier = modifier.fillMaxSize(),
         directive = listDetailNavigator.scaffoldDirective,
         value = listDetailNavigator.scaffoldValue,
-        listPane = { HomeView() },
-        detailPane = { Text("Detail") },
+        listPane = {
+            AnimatedPane {
+                HomeView(
+                    onClickSearch = { },
+                    onClickRecentBookmark = { },
+                    onClickFolder = { },
+                    onClickTag = { }
+                )
+            }
+        },
+        detailPane = {
+            AnimatedPane {
+                Text("Detail")
+            }
+        },
         paneExpansionDragHandle = { dragState ->
             val interactionSource = remember { MutableInteractionSource() }
             VerticalDragHandle(

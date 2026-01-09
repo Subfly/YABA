@@ -17,7 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.subfly.yabacore.model.ui.FolderUiModel
-import dev.subfly.yabacore.model.utils.ContentAppearance
+import dev.subfly.yabacore.model.utils.CollectionAppearance
 import kotlin.uuid.ExperimentalUuidApi
 
 @Composable
@@ -31,16 +31,11 @@ fun YabaFolderLayout(
     itemContent: @Composable (
         folder: FolderUiModel,
         isDragging: Boolean,
-        appearance: ContentAppearance,
+        appearance: CollectionAppearance,
     ) -> Unit,
 ) {
-    val resolvedAppearance =
-        when (layoutConfig.appearance) {
-            ContentAppearance.CARD -> ContentAppearance.LIST
-            else -> layoutConfig.appearance
-        }
-    when (resolvedAppearance) {
-        ContentAppearance.LIST, ContentAppearance.CARD ->
+    when (layoutConfig.collectionAppearance) {
+        CollectionAppearance.LIST ->
             LazyColumn(
                 modifier = modifier,
                 verticalArrangement = Arrangement.spacedBy(layoutConfig.list.itemSpacing),
@@ -52,7 +47,7 @@ fun YabaFolderLayout(
                 ) { folder ->
                     FolderItem(
                         folder = folder,
-                        appearance = resolvedAppearance,
+                        appearance = layoutConfig.collectionAppearance,
                         state = dragDropState,
                         orientation = Orientation.Vertical,
                         modifier = Modifier.animateItem(),
@@ -61,7 +56,7 @@ fun YabaFolderLayout(
                 }
             }
 
-        ContentAppearance.GRID ->
+        CollectionAppearance.GRID ->
             LazyVerticalStaggeredGrid(
                 modifier = modifier,
                 columns = StaggeredGridCells.Adaptive(layoutConfig.grid.minCellWidth),
@@ -76,7 +71,7 @@ fun YabaFolderLayout(
                 ) { folder ->
                     FolderItem(
                         folder = folder,
-                        appearance = resolvedAppearance,
+                        appearance = layoutConfig.collectionAppearance,
                         state = dragDropState,
                         orientation = Orientation.Vertical,
                         modifier = Modifier.animateItem(),
@@ -90,14 +85,14 @@ fun YabaFolderLayout(
 @Composable
 private fun FolderItem(
     folder: FolderUiModel,
-    appearance: ContentAppearance,
+    appearance: CollectionAppearance,
     state: YabaDragDropState,
     orientation: Orientation,
     modifier: Modifier = Modifier,
     itemContent: @Composable (
         folder: FolderUiModel,
         isDragging: Boolean,
-        appearance: ContentAppearance,
+        appearance: CollectionAppearance,
     ) -> Unit,
 ) {
     val payload = remember(folder.id) { DragFolderPayload(folder) }

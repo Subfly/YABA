@@ -6,9 +6,9 @@ import dev.subfly.yabacore.managers.FolderManager
 import dev.subfly.yabacore.managers.LinkmarkManager
 import dev.subfly.yabacore.managers.TagManager
 import dev.subfly.yabacore.model.ui.LinkmarkUiModel
+import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.CardImageSizing
-import dev.subfly.yabacore.model.utils.ContentAppearance
 import dev.subfly.yabacore.preferences.SettingsStores
 import dev.subfly.yabacore.state.base.BaseStateMachine
 import dev.subfly.yabacore.unfurl.LinkCleaner
@@ -70,7 +70,7 @@ class LinkmarkCreationStateMachine :
             val preferences = preferencesStore.get()
             updateState {
                 it.copy(
-                        contentAppearance = preferences.preferredContentAppearance,
+                        bookmarkAppearance = preferences.preferredBookmarkAppearance,
                         cardImageSizing = preferences.preferredCardImageSizing,
                 )
             }
@@ -242,20 +242,20 @@ class LinkmarkCreationStateMachine :
         val state = currentState()
 
         val (nextAppearance, nextSizing) =
-                when (state.contentAppearance) {
-                    ContentAppearance.LIST -> ContentAppearance.CARD to CardImageSizing.SMALL
-                    ContentAppearance.CARD -> {
+                when (state.bookmarkAppearance) {
+                    BookmarkAppearance.LIST -> BookmarkAppearance.CARD to CardImageSizing.SMALL
+                    BookmarkAppearance.CARD -> {
                         when (state.cardImageSizing) {
-                            CardImageSizing.SMALL -> ContentAppearance.CARD to CardImageSizing.BIG
-                            CardImageSizing.BIG -> ContentAppearance.GRID to state.cardImageSizing
+                            CardImageSizing.SMALL -> BookmarkAppearance.CARD to CardImageSizing.BIG
+                            CardImageSizing.BIG -> BookmarkAppearance.GRID to state.cardImageSizing
                         }
                     }
-                    ContentAppearance.GRID -> ContentAppearance.LIST to state.cardImageSizing
+                    BookmarkAppearance.GRID -> BookmarkAppearance.LIST to state.cardImageSizing
                 }
 
         updateState {
             it.copy(
-                    contentAppearance = nextAppearance,
+                    bookmarkAppearance = nextAppearance,
                     cardImageSizing = nextSizing,
             )
         }

@@ -37,8 +37,8 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
+import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.CardImageSizing
-import dev.subfly.yabacore.model.utils.ContentAppearance
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.model.utils.uiIconName
 import dev.subfly.yabacore.model.utils.uiTitle
@@ -67,7 +67,7 @@ private enum class PreviewSharedElementKey {
  * Composite key for AnimatedContent to track both appearance and card sizing changes
  */
 private data class PreviewAnimationKey(
-    val appearance: ContentAppearance,
+    val appearance: BookmarkAppearance,
     val cardSizing: CardImageSizing,
 )
 
@@ -96,15 +96,15 @@ internal fun LinkmarkPreviewContent(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     YabaIcon(
-                        name = state.contentAppearance.uiIconName(),
+                        name = state.bookmarkAppearance.uiIconName(),
                         color = state.selectedFolder?.color ?: YabaColor.BLUE,
                     )
                     Text(
-                        text = state.contentAppearance.uiTitle(),
+                        text = state.bookmarkAppearance.uiTitle(),
                         color = Color(color.iconTintArgb()),
                     )
 
-                    if (state.contentAppearance == ContentAppearance.CARD) {
+                    if (state.bookmarkAppearance == BookmarkAppearance.CARD) {
                         YabaIcon(
                             name = state.cardImageSizing.uiIconName(),
                             color = Color(color.iconTintArgb()),
@@ -138,12 +138,12 @@ private fun PreviewContent(
     SharedTransitionLayout {
         AnimatedContent(
             targetState = PreviewAnimationKey(
-                appearance = state.contentAppearance,
+                appearance = state.bookmarkAppearance,
                 cardSizing = state.cardImageSizing,
             ),
         ) { target ->
             when (target.appearance) {
-                ContentAppearance.LIST -> {
+                BookmarkAppearance.LIST -> {
                     ListPreview(
                         state = state,
                         color = color,
@@ -153,7 +153,7 @@ private fun PreviewContent(
                     )
                 }
 
-                ContentAppearance.CARD -> {
+                BookmarkAppearance.CARD -> {
                     when (target.cardSizing) {
                         CardImageSizing.BIG -> {
                             CardBigImagePreview(
@@ -177,7 +177,7 @@ private fun PreviewContent(
                     }
                 }
 
-                ContentAppearance.GRID -> {
+                BookmarkAppearance.GRID -> {
                     GridPreview(
                         state = state,
                         color = color,

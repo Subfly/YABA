@@ -5,9 +5,6 @@ package dev.subfly.yabacore.ui.layout
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridScope
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
@@ -17,7 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import dev.subfly.yabacore.model.utils.ContentAppearance
+import dev.subfly.yabacore.model.utils.BookmarkAppearance
+import dev.subfly.yabacore.model.utils.CollectionAppearance
 
 /**
  * A single, generic content layout that can mix different item types in one place.
@@ -29,45 +27,52 @@ import dev.subfly.yabacore.model.utils.ContentAppearance
  * This composable solves that by being the ONE lazy container; you insert sections/headers/items
  * via [YabaContentLayoutScope].
  *
+ * ## Layout Behavior:
+ * - Uses [LazyVerticalStaggeredGrid] internally for all appearances.
+ * - When [CollectionAppearance.LIST] or [BookmarkAppearance.LIST]/[BookmarkAppearance.CARD],
+ *   items should use [YabaContentSpan.FullLine] to span full width (behaves like LazyColumn).
+ * - When [CollectionAppearance.GRID] or [BookmarkAppearance.GRID], items use single cells.
+ *
  * ## Basic Usage:
  *
  * ```
  * YabaContentLayout(
- *   layoutConfig = ContentLayoutConfig(appearance = ContentAppearance.LIST),
+ *   layoutConfig = ContentLayoutConfig(
+ *     collectionAppearance = CollectionAppearance.LIST,
+ *     bookmarkAppearance = BookmarkAppearance.CARD,
+ *   ),
  *   modifier = Modifier.fillMaxSize(),
  * ) {
- *   // Section header (spans full width in grid)
+ *   // Section header (always spans full width)
  *   header(key = "foldersHeader") {
  *     Text("Folders", style = MaterialTheme.typography.titleMedium)
  *   }
  *
- *   // List of folders
+ *   // List of folders - use FullLine span when collection is LIST
  *   items(
  *     items = folders,
  *     key = { it.id },
- *   ) { folder, appearance ->
- *     FolderRow(folder, appearance)
+ *     span = { YabaContentSpan.FullLine }, // For LIST appearance
+ *   ) { folder ->
+ *     FolderRow(folder)
  *   }
  *
  *   // Single item (e.g., a horizontal tag flow)
  *   header(key = "tagsHeader") { Text("Tags") }
- *   item(key = "tagsFlow") { _ ->
+ *   item(key = "tagsFlow") {
  *     FlowRow {
  *       tags.forEach { TagChip(it) }
  *     }
  *   }
  *
- *   // Bookmarks with different rendering per appearance
+ *   // Bookmarks - span depends on bookmark appearance
  *   header(key = "bookmarksHeader") { Text("Bookmarks") }
  *   items(
  *     items = bookmarks,
  *     key = { it.id },
- *   ) { bookmark, appearance ->
- *     when (appearance) {
- *       ContentAppearance.LIST -> BookmarkListRow(bookmark)
- *       ContentAppearance.CARD -> BookmarkCard(bookmark)
- *       ContentAppearance.GRID -> BookmarkGridCard(bookmark)
- *     }
+ *     span = { if (bookmarkAppearance == BookmarkAppearance.GRID) YabaContentSpan.Auto else YabaContentSpan.FullLine },
+ *   ) { bookmark ->
+ *     BookmarkItem(bookmark, bookmarkAppearance)
  *   }
  * }
  * ```
@@ -78,112 +83,16 @@ import dev.subfly.yabacore.model.utils.ContentAppearance
  * bookmark, bookmark -> folder). Apply [yabaDragSource] and [yabaDropTarget] modifiers inside your
  * item content.
  *
- * ```
- * val dragDropState = rememberYabaDragDropState { result ->
- *   when {
- *     // Tag dragged to bookmark -> add tag to bookmark
- *     result.payload is DragTagPayload &&
- *         result.target is DragBookmarkPayload -> {
- *       TagManager.addTagToBookmark(
- *         tag = (result.payload as DragTagPayload).tag,
- *         bookmarkId = (result.target as DragBookmarkPayload).bookmark.id
- *       )
- *     }
- *     // Bookmark dragged to folder -> move bookmark
- *     result.payload is DragBookmarkPayload &&
- *         result.target is DragFolderPayload &&
- *         result.zone == DropZone.MIDDLE -> {
- *       BookmarkManager.moveBookmark(
- *         bookmark = (result.payload as DragBookmarkPayload).bookmark,
- *         targetFolder = (result.target as DragFolderPayload).folder
- *       )
- *     }
- *     // Folder reordering
- *     result.payload is DragFolderPayload &&
- *         result.target is DragFolderPayload -> {
- *       FolderManager.reorderFolder(
- *         dragged = (result.payload as DragFolderPayload).folder,
- *         target = (result.target as DragFolderPayload).folder,
- *         zone = result.zone
- *       )
- *     }
- *   }
- * }
- *
- * YabaContentLayout(layoutConfig = layoutConfig) {
- *   // Folders with drag/drop
- *   items(folders, key = { it.id }) { folder, appearance ->
- *     val payload = remember(folder.id) { DragFolderPayload(folder) }
- *     Box(
- *       modifier = Modifier
- *         .yabaDragSource(dragDropState, payload)
- *         .yabaDropTarget(dragDropState, payload, Orientation.Vertical)
- *     ) {
- *       FolderRow(folder, appearance, isDragging = dragDropState.isDragging(payload))
- *     }
- *   }
- *
- *   // Tags with horizontal drag/drop
- *   item(key = "tags") { _ ->
- *     YabaTagLayout(
- *       tags = tags,
- *       layoutStyle = TagLayoutStyle.Horizontal,
- *       onDrop = { /* handled by shared dragDropState */ },
- *       dragDropState = dragDropState,
- *     ) { tag, dragging ->
- *       TagChip(tag, isDragging = dragging)
- *     }
- *   }
- *
- *   // Bookmarks with drag/drop
- *   items(bookmarks, key = { it.id }) { bookmark, appearance ->
- *     val payload = remember(bookmark.id) { DragBookmarkPayload(bookmark) }
- *     Box(
- *       modifier = Modifier
- *         .yabaDragSource(dragDropState, payload)
- *         .yabaDropTarget(dragDropState, payload, Orientation.Vertical)
- *     ) {
- *       BookmarkRow(bookmark, appearance, isDragging = dragDropState.isDragging(payload))
- *     }
- *   }
- * }
- * ```
- *
  * ## Swipe Actions (List Items Only):
  *
  * Wrap row content with [YabaSwipeActions] when appearance is LIST. Swipe actions are not supported
  * for CARD or GRID appearances (use long-press context menus instead).
  *
- * ```
- * YabaContentLayout(layoutConfig = ContentLayoutConfig(appearance = ContentAppearance.LIST)) {
- *   items(bookmarks, key = { it.id }) { bookmark, appearance ->
- *     if (appearance == ContentAppearance.LIST) {
- *       YabaSwipeActions(
- *         leftActions = listOf(
- *           SwipeAction(key = "pin", onClick = { onPin(bookmark) }) {
- *             Icon(Icons.Default.Star, "Pin")
- *           }
- *         ),
- *         rightActions = listOf(
- *           SwipeAction(key = "delete", onClick = { onDelete(bookmark) }) {
- *             Icon(Icons.Default.Delete, "Delete")
- *           }
- *         ),
- *       ) {
- *         BookmarkListRow(bookmark)
- *       }
- *     } else {
- *       BookmarkCard(bookmark)
- *     }
- *   }
- * }
- * ```
- *
  * ## Notes:
  * - Tags can still be a FlowRow/LazyRow inside an item (horizontal nesting is fine).
  * - Headers automatically span full width in grid layouts via [YabaContentSpan.FullLine].
  * - Use stable keys for items to ensure proper recomposition and drag/drop tracking.
- * - The [appearance] parameter in item lambdas lets you render differently per layout type.
+ * - Item composables no longer receive appearance - access it from state/config directly.
  */
 @Composable
 fun YabaContentLayout(
@@ -194,30 +103,23 @@ fun YabaContentLayout(
 ) {
     val entries = buildList { YabaContentLayoutScopeImpl(this).content() }
 
-    when (layoutConfig.appearance) {
-        ContentAppearance.LIST, ContentAppearance.CARD -> LazyColumn(
-            modifier = modifier,
-            contentPadding = contentPadding,
-            verticalArrangement = Arrangement.spacedBy(layoutConfig.list.itemSpacing),
-        ) { renderAsLazyList(entries, layoutConfig.appearance) }
-
-        ContentAppearance.GRID -> LazyVerticalStaggeredGrid(
-            modifier = modifier,
-            contentPadding = PaddingValues(
-                start = contentPadding.calculateLeftPadding(LayoutDirection.Ltr) +
-                    layoutConfig.grid.outerPadding.calculateLeftPadding(LayoutDirection.Ltr),
-                end = contentPadding.calculateRightPadding(LayoutDirection.Ltr) +
-                    layoutConfig.grid.outerPadding.calculateRightPadding(LayoutDirection.Ltr),
-                top = contentPadding.calculateTopPadding() +
-                    layoutConfig.grid.outerPadding.calculateTopPadding(),
-                bottom = contentPadding.calculateBottomPadding() +
-                    layoutConfig.grid.outerPadding.calculateBottomPadding(),
-            ),
-            columns = StaggeredGridCells.Adaptive(layoutConfig.grid.minCellWidth),
-            verticalItemSpacing = layoutConfig.grid.verticalSpacing,
-            horizontalArrangement =
-                Arrangement.spacedBy(layoutConfig.grid.horizontalSpacing),
-        ) { renderAsStaggeredGrid(entries, layoutConfig.appearance) }
+    LazyVerticalStaggeredGrid(
+        modifier = modifier,
+        contentPadding = PaddingValues(
+            start = contentPadding.calculateLeftPadding(LayoutDirection.Ltr) +
+                layoutConfig.grid.outerPadding.calculateLeftPadding(LayoutDirection.Ltr),
+            end = contentPadding.calculateRightPadding(LayoutDirection.Ltr) +
+                layoutConfig.grid.outerPadding.calculateRightPadding(LayoutDirection.Ltr),
+            top = contentPadding.calculateTopPadding() +
+                layoutConfig.grid.outerPadding.calculateTopPadding(),
+            bottom = contentPadding.calculateBottomPadding() +
+                layoutConfig.grid.outerPadding.calculateBottomPadding(),
+        ),
+        columns = StaggeredGridCells.Adaptive(layoutConfig.grid.minCellWidth),
+        verticalItemSpacing = layoutConfig.grid.verticalSpacing,
+        horizontalArrangement = Arrangement.spacedBy(layoutConfig.grid.horizontalSpacing),
+    ) {
+        renderAsStaggeredGrid(entries)
     }
 }
 
@@ -234,13 +136,13 @@ interface YabaContentLayoutScope {
      * @param key Stable key for this item (used for recomposition and drag/drop tracking)
      * @param contentType Optional content type hint for performance optimization
      * @param span How this item spans in grid layouts (Auto = single cell, FullLine = full width)
-     * @param content Composable that receives the current [ContentAppearance] to render accordingly
+     * @param content Composable content for this item
      */
     fun item(
         key: Any,
         contentType: Any? = null,
         span: YabaContentSpan = YabaContentSpan.Auto,
-        content: @Composable (appearance: ContentAppearance) -> Unit,
+        content: @Composable () -> Unit,
     )
 
     /**
@@ -248,7 +150,7 @@ interface YabaContentLayoutScope {
      *
      * @param key Stable key for this header
      * @param contentType Optional content type (defaults to "header")
-     * @param content Header content (does not receive appearance parameter)
+     * @param content Header content
      */
     fun header(
         key: Any,
@@ -258,7 +160,8 @@ interface YabaContentLayoutScope {
         key = key,
         contentType = contentType,
         span = YabaContentSpan.FullLine,
-    ) { _ -> content() }
+        content = content,
+    )
 
     /**
      * Add multiple items from a list.
@@ -267,18 +170,18 @@ interface YabaContentLayoutScope {
      * @param key Function to extract stable key from each item
      * @param contentType Optional function to extract content type from each item
      * @param span Optional function to determine span for each item in grid layouts
-     * @param itemContent Composable that receives the item and current [ContentAppearance]
+     * @param itemContent Composable that receives the item
      *
      * Example with drag/drop:
      * ```
-     * items(folders, key = { it.id }) { folder, appearance ->
+     * items(folders, key = { it.id }, span = { YabaContentSpan.FullLine }) { folder ->
      *   val payload = remember(folder.id) { DragFolderPayload(folder) }
      *   Box(
      *     modifier = Modifier
      *       .yabaDragSource(dragDropState, payload)
      *       .yabaDropTarget(dragDropState, payload, Orientation.Vertical)
      *   ) {
-     *     FolderRow(folder, appearance)
+     *     FolderRow(folder)
      *   }
      * }
      * ```
@@ -288,22 +191,21 @@ interface YabaContentLayoutScope {
         key: (T) -> Any,
         contentType: (T) -> Any? = { null },
         span: (T) -> YabaContentSpan = { YabaContentSpan.Auto },
-        itemContent: @Composable (item: T, appearance: ContentAppearance) -> Unit,
+        itemContent: @Composable (item: T) -> Unit,
     )
 }
 
 /**
  * Controls how an item spans in grid layouts.
  *
- * - [Auto]: Item takes a single cell (default for most items)
- * - [FullLine]: Item spans the full width of the grid (used automatically by
- * [YabaContentLayoutScope.header])
+ * - [Auto]: Item takes a single cell (default for grid items)
+ * - [FullLine]: Item spans the full width of the grid (used for headers, list items, card items)
  */
 enum class YabaContentSpan {
     /** Item takes a single cell in the grid */
     Auto,
 
-    /** Item spans the full width of the grid (useful for headers, banners, etc.) */
+    /** Item spans the full width of the grid (useful for headers, list/card items, banners, etc.) */
     FullLine,
 }
 
@@ -314,7 +216,7 @@ private class YabaContentLayoutScopeImpl(
         key: Any,
         contentType: Any?,
         span: YabaContentSpan,
-        content: @Composable (appearance: ContentAppearance) -> Unit,
+        content: @Composable () -> Unit,
     ) {
         sink += YabaContentEntry(
             key = key,
@@ -329,7 +231,7 @@ private class YabaContentLayoutScopeImpl(
         key: (T) -> Any,
         contentType: (T) -> Any?,
         span: (T) -> YabaContentSpan,
-        itemContent: @Composable (item: T, appearance: ContentAppearance) -> Unit,
+        itemContent: @Composable (item: T) -> Unit,
     ) {
         items.forEach { model ->
             val k = key(model)
@@ -339,7 +241,7 @@ private class YabaContentLayoutScopeImpl(
                 key = k,
                 contentType = ct,
                 span = sp,
-            ) { appearance -> itemContent(model, appearance) }
+            ) { itemContent(model) }
         }
     }
 }
@@ -348,23 +250,11 @@ private data class YabaContentEntry(
     val key: Any,
     val contentType: Any?,
     val span: YabaContentSpan,
-    val content: @Composable (appearance: ContentAppearance) -> Unit,
+    val content: @Composable () -> Unit,
 )
-
-private fun LazyListScope.renderAsLazyList(
-    entries: List<YabaContentEntry>,
-    appearance: ContentAppearance,
-) {
-    items(
-        items = entries,
-        key = { it.key },
-        contentType = { it.contentType },
-    ) { entry -> entry.content(appearance) }
-}
 
 private fun LazyStaggeredGridScope.renderAsStaggeredGrid(
     entries: List<YabaContentEntry>,
-    appearance: ContentAppearance,
 ) {
     items(
         items = entries,
@@ -376,5 +266,5 @@ private fun LazyStaggeredGridScope.renderAsStaggeredGrid(
                 YabaContentSpan.FullLine -> StaggeredGridItemSpan.FullLine
             }
         }
-    ) { entry -> entry.content(appearance) }
+    ) { entry -> entry.content() }
 }

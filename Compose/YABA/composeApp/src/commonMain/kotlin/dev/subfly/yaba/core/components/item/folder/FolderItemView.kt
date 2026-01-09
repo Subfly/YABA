@@ -35,7 +35,7 @@ import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalDeletionDialogManager
 import dev.subfly.yabacore.model.ui.FolderUiModel
-import dev.subfly.yabacore.model.utils.ContentAppearance
+import dev.subfly.yabacore.model.utils.CollectionAppearance
 import dev.subfly.yabacore.model.utils.FolderSelectionMode
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.ui.icon.YabaIcon
@@ -56,7 +56,7 @@ import kotlin.uuid.ExperimentalUuidApi
 fun FolderItemView(
     modifier: Modifier = Modifier,
     model: FolderUiModel,
-    appearance: ContentAppearance,
+    appearance: CollectionAppearance,
     parentColors: List<YabaColor> = emptyList(),
     onDeleteFolder: (FolderUiModel) -> Unit,
 ) {
@@ -186,7 +186,7 @@ fun FolderItemView(
     }
 
     when (appearance) {
-        ContentAppearance.LIST, ContentAppearance.CARD -> {
+        CollectionAppearance.LIST -> {
             FolderListItemView(
                 modifier = modifier,
                 model = model,
@@ -199,7 +199,7 @@ fun FolderItemView(
             )
         }
 
-        ContentAppearance.GRID -> {
+        CollectionAppearance.GRID -> {
             val color by remember(model) {
                 mutableStateOf(Color(model.color.iconTintArgb()))
             }
@@ -240,7 +240,7 @@ fun FolderItemView(
 private fun FolderListItemView(
     modifier: Modifier = Modifier,
     model: FolderUiModel,
-    appearance: ContentAppearance,
+    appearance: CollectionAppearance,
     parentColors: List<YabaColor>,
     menuActions: List<CollectionMenuAction>,
     leftSwipeActions: List<CollectionSwipeAction>,
@@ -267,7 +267,7 @@ private fun FolderListItemView(
             description = model.description,
             icon = model.icon,
             color = model.color,
-            appearance = ContentAppearance.LIST,
+            appearance = CollectionAppearance.LIST,
             parentColors = parentColors,
             menuActions = menuActions,
             leftSwipeActions = leftSwipeActions,
