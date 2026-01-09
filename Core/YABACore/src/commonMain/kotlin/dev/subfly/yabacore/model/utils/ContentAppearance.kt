@@ -12,5 +12,3 @@ fun ContentAppearance.uiIconName(): String =
         ContentAppearance.CARD -> "rectangular"
         ContentAppearance.GRID -> "grid-view"
     }
-
-expect fun ContentAppearance.uiTitle(): String

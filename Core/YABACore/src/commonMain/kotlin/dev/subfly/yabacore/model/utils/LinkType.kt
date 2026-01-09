@@ -23,5 +23,3 @@ fun LinkType.uiIconName(): String =
         LinkType.AUDIO -> "headphones"
         LinkType.MUSIC -> "music-note-01"
     }
-
-expect fun LinkType.uiTitle(): String

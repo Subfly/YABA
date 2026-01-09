@@ -12,5 +12,3 @@ fun ThemePreference.uiIconName(): String =
         ThemePreference.DARK -> "moon-02"
         ThemePreference.SYSTEM -> "smart-phone-02"
     }
-
-expect fun ThemePreference.uiTitle(): String

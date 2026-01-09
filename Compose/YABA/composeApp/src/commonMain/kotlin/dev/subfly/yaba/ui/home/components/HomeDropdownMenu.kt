@@ -17,10 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.util.fastForEachIndexed
 import dev.subfly.yaba.util.LocalUserPreferences
+import dev.subfly.yaba.util.uiTitle
 import dev.subfly.yabacore.model.utils.CollectionAppearance
 import dev.subfly.yabacore.model.utils.SortType
 import dev.subfly.yabacore.model.utils.uiIconName
-import dev.subfly.yabacore.model.utils.uiTitle
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res

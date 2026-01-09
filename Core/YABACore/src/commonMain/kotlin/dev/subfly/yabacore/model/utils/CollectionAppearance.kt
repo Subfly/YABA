@@ -15,5 +15,3 @@ fun CollectionAppearance.uiIconName(): String =
         CollectionAppearance.GRID -> "grid-view"
     }
 
-expect fun CollectionAppearance.uiTitle(): String
-

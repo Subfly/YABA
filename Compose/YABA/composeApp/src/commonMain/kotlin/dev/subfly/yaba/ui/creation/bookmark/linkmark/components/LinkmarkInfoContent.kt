@@ -32,10 +32,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
+import dev.subfly.yaba.util.uiTitle
 import dev.subfly.yabacore.model.utils.LinkType
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.model.utils.uiIconName
-import dev.subfly.yabacore.model.utils.uiTitle
 import dev.subfly.yabacore.state.linkmark.LinkmarkCreationUIState
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.icon.iconTintArgb

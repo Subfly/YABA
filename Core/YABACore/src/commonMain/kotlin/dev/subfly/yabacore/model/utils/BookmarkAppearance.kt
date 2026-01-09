@@ -17,5 +17,3 @@ fun BookmarkAppearance.uiIconName(): String =
         BookmarkAppearance.GRID -> "grid-view"
     }
 
-expect fun BookmarkAppearance.uiTitle(): String
-

@@ -10,5 +10,3 @@ fun CardImageSizing.uiIconName(): String =
         CardImageSizing.BIG -> "image-composition-oval"
         CardImageSizing.SMALL -> "image-composition"
     }
-
-expect fun CardImageSizing.uiTitle(): String

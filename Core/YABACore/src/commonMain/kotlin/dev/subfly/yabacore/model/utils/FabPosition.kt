@@ -12,5 +12,3 @@ fun FabPosition.uiIconName(): String =
         FabPosition.RIGHT -> "circle-arrow-right-03"
         FabPosition.CENTER -> "circle-arrow-down-03"
     }
-
-expect fun FabPosition.uiTitle(): String

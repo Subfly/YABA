@@ -14,5 +14,3 @@ fun SortType.uiIconName(): String =
         SortType.LABEL -> "sorting-a-z-02"
         SortType.CUSTOM -> "custom-field"
     }
-
-expect fun SortType.uiTitle(): String
