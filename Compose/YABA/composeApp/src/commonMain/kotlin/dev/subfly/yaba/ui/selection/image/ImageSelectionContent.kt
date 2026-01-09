@@ -5,11 +5,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
@@ -26,7 +25,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -173,22 +174,34 @@ private fun SelectionContent(
                 verticalItemSpacing = 8.dp,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                items(items = state.imageDataMap.keys.toList()) { imageUrl ->
-                    Box(
-                        modifier = Modifier.wrapContentSize(),
-                        contentAlignment = Alignment.Center,
-                    ) {
+                items(
+                    items = state.imageDataMap.keys.toList(),
+                    key = { it },
+                ) { imageUrl ->
+                    val imageData by remember(imageUrl) {
+                        derivedStateOf { state.getImageData(imageUrl) }
+                    }
+
+                    Box(modifier = Modifier.fillMaxWidth()) {
                         YabaImage(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(8.dp))
                                 .clickable(onClick = { onSelectImage(imageUrl) }),
-                            bytes = state.getImageData(imageUrl),
+                            bytes = imageData,
+                            placeholder = {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(220.dp)
+                                        .background(color = Color.Gray.copy(alpha = 0.5F))
+                                )
+                            }
                         )
                         if (state.selectedImageUrl == imageUrl) {
                             Box(
                                 modifier = Modifier
-                                    .fillMaxSize()
+                                    .matchParentSize()
                                     .background(
                                         color = Color.White.copy(alpha = 0.5F),
                                         shape = RoundedCornerShape(8.dp),

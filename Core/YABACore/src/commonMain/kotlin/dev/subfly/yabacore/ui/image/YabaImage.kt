@@ -1,7 +1,12 @@
 package dev.subfly.yabacore.ui.image
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
@@ -24,7 +29,7 @@ fun rememberYabaImageLoader(): ImageLoader {
  * @param modifier Modifier for the image composable.
  * @param contentDescription Accessibility description.
  * @param contentScale How the image should be scaled.
- * @param placeholder Painter to show while loading.
+ * @param placeholder Composable content to show while loading.
  * @param error Painter to show on error.
  * @param fallback Painter to show if [filePath] is null.
  * @param imageLoader The Coil ImageLoader to use.
@@ -36,28 +41,44 @@ fun YabaImage(
     modifier: Modifier = Modifier,
     contentDescription: String? = null,
     contentScale: ContentScale = ContentScale.Crop,
-    placeholder: Painter? = null,
+    placeholder: @Composable () -> Unit = {},
     error: Painter? = null,
-    fallback: Painter? = placeholder,
+    fallback: Painter? = null,
     imageLoader: ImageLoader = rememberYabaImageLoader(),
     onState: ((AsyncImagePainter.State) -> Unit)? = null,
 ) {
     // Convert file path to file:// URI for Coil
     val model = filePath?.let { path -> if (path.startsWith("file://")) path else "file://$path" }
 
-    AsyncImage(
-        modifier = modifier,
-        model = model,
-        imageLoader = imageLoader,
-        contentDescription = contentDescription,
-        contentScale = contentScale,
-        placeholder = placeholder,
-        error = error,
-        fallback = fallback,
-        onLoading = { state -> onState?.invoke(state) },
-        onSuccess = { state -> onState?.invoke(state) },
-        onError = { state -> onState?.invoke(state) },
-    )
+    var imageState by remember { mutableStateOf<AsyncImagePainter.State?>(null) }
+
+    Box(modifier = modifier) {
+        AsyncImage(
+            modifier = Modifier.fillMaxSize(),
+            model = model,
+            imageLoader = imageLoader,
+            contentDescription = contentDescription,
+            contentScale = contentScale,
+            error = error,
+            fallback = fallback,
+            onLoading = { state ->
+                imageState = state
+                onState?.invoke(state)
+            },
+            onSuccess = { state ->
+                imageState = state
+                onState?.invoke(state)
+            },
+            onError = { state ->
+                imageState = state
+                onState?.invoke(state)
+            },
+        )
+
+        if (imageState is AsyncImagePainter.State.Loading) {
+            placeholder()
+        }
+    }
 }
 
 /**
@@ -69,7 +90,7 @@ fun YabaImage(
  * @param modifier Modifier for the image composable.
  * @param contentDescription Accessibility description.
  * @param contentScale How the image should be scaled.
- * @param placeholder Painter to show while loading.
+ * @param placeholder Composable content to show while loading.
  * @param error Painter to show on error.
  * @param fallback Painter to show if [bytes] is null.
  * @param imageLoader The Coil ImageLoader to use.
@@ -81,25 +102,41 @@ fun YabaImage(
     modifier: Modifier = Modifier,
     contentDescription: String? = null,
     contentScale: ContentScale = ContentScale.Crop,
-    placeholder: Painter? = null,
+    placeholder: @Composable () -> Unit = {},
     error: Painter? = null,
-    fallback: Painter? = placeholder,
+    fallback: Painter? = null,
     imageLoader: ImageLoader = rememberYabaImageLoader(),
     onState: ((AsyncImagePainter.State) -> Unit)? = null,
 ) {
-    AsyncImage(
-        modifier = modifier,
-        model = bytes,
-        imageLoader = imageLoader,
-        contentDescription = contentDescription,
-        contentScale = contentScale,
-        placeholder = placeholder,
-        error = error,
-        fallback = fallback,
-        onLoading = { state -> onState?.invoke(state) },
-        onSuccess = { state -> onState?.invoke(state) },
-        onError = { state -> onState?.invoke(state) },
-    )
+    var imageState by remember { mutableStateOf<AsyncImagePainter.State?>(null) }
+
+    Box(modifier = modifier) {
+        AsyncImage(
+            modifier = Modifier.fillMaxSize(),
+            model = bytes,
+            imageLoader = imageLoader,
+            contentDescription = contentDescription,
+            contentScale = contentScale,
+            error = error,
+            fallback = fallback,
+            onLoading = { state ->
+                imageState = state
+                onState?.invoke(state)
+            },
+            onSuccess = { state ->
+                imageState = state
+                onState?.invoke(state)
+            },
+            onError = { state ->
+                imageState = state
+                onState?.invoke(state)
+            },
+        )
+
+        if (imageState is AsyncImagePainter.State.Loading) {
+            placeholder()
+        }
+    }
 }
 
 /**
@@ -111,7 +148,7 @@ fun YabaImage(
  * @param modifier Modifier for the image composable.
  * @param contentDescription Accessibility description.
  * @param contentScale How the image should be scaled.
- * @param placeholder Painter to show while loading.
+ * @param placeholder Composable content to show while loading.
  * @param error Painter to show on error.
  * @param fallback Painter to show if [url] is null.
  * @param imageLoader The Coil ImageLoader to use.
@@ -123,23 +160,39 @@ fun YabaImageFromUrl(
     modifier: Modifier = Modifier,
     contentDescription: String? = null,
     contentScale: ContentScale = ContentScale.Crop,
-    placeholder: Painter? = null,
+    placeholder: @Composable () -> Unit = {},
     error: Painter? = null,
-    fallback: Painter? = placeholder,
+    fallback: Painter? = null,
     imageLoader: ImageLoader = rememberYabaImageLoader(),
     onState: ((AsyncImagePainter.State) -> Unit)? = null,
 ) {
-    AsyncImage(
-        modifier = modifier,
-        model = url,
-        imageLoader = imageLoader,
-        contentDescription = contentDescription,
-        contentScale = contentScale,
-        placeholder = placeholder,
-        error = error,
-        fallback = fallback,
-        onLoading = { state -> onState?.invoke(state) },
-        onSuccess = { state -> onState?.invoke(state) },
-        onError = { state -> onState?.invoke(state) },
-    )
+    var imageState by remember { mutableStateOf<AsyncImagePainter.State?>(null) }
+
+    Box(modifier = modifier) {
+        AsyncImage(
+            modifier = Modifier.fillMaxSize(),
+            model = url,
+            imageLoader = imageLoader,
+            contentDescription = contentDescription,
+            contentScale = contentScale,
+            error = error,
+            fallback = fallback,
+            onLoading = { state ->
+                imageState = state
+                onState?.invoke(state)
+            },
+            onSuccess = { state ->
+                imageState = state
+                onState?.invoke(state)
+            },
+            onError = { state ->
+                imageState = state
+                onState?.invoke(state)
+            },
+        )
+
+        if (imageState is AsyncImagePainter.State.Loading) {
+            placeholder()
+        }
+    }
 }
