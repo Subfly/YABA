@@ -25,6 +25,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.item.folder.FolderItemView
 import dev.subfly.yaba.core.components.item.tag.TagItemView
+import androidx.compose.material3.Text
+import org.jetbrains.compose.resources.stringResource
 import dev.subfly.yaba.ui.home.components.HomeFab
 import dev.subfly.yaba.ui.home.components.HomeTitleContent
 import dev.subfly.yaba.ui.home.components.HomeTopBar
@@ -159,7 +161,7 @@ fun HomeView(modifier: Modifier = Modifier) {
                                     iconName = "folder-01",
                                     // TODO: SEE WHY TITLE IS NOT TRANSLATED IN XML
                                     labelRes = Res.string.no_folders_message,
-                                    messageRes = Res.string.no_folders_message,
+                                    message = { Text(text = stringResource(Res.string.no_folders_message)) },
                                 )
                             }
                         }
@@ -215,7 +217,7 @@ fun HomeView(modifier: Modifier = Modifier) {
                                     iconName = "folder-01",
                                     // TODO: SEE WHY TITLE IS NOT TRANSLATED IN XML
                                     labelRes = Res.string.no_tags_message,
-                                    messageRes = Res.string.no_tags_message,
+                                    message = { Text(text = stringResource(Res.string.no_tags_message)) },
                                 )
                             }
                         }

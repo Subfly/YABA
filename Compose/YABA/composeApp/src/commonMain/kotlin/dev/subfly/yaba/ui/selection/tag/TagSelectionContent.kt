@@ -231,7 +231,7 @@ private fun SelectionContent(
                         modifier = Modifier.animateItem(),
                         iconName = "tags",
                         labelRes = Res.string.select_tags_no_tags_selected_title,
-                        messageRes = Res.string.select_tags_no_tags_selected_message,
+                        message = { Text(text = stringResource(Res.string.select_tags_no_tags_selected_message)) },
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                 }
@@ -286,7 +286,7 @@ private fun SelectionContent(
                         modifier = Modifier.animateItem(),
                         iconName = "tags",
                         labelRes = Res.string.select_tags_no_tags_available_title,
-                        messageRes = Res.string.select_tags_no_tags_available_description,
+                        message = { Text(text = stringResource(Res.string.select_tags_no_tags_available_description)) },
                     )
                 }
             }
@@ -297,7 +297,7 @@ private fun SelectionContent(
                         modifier = Modifier.animateItem(),
                         iconName = "tags",
                         labelRes = Res.string.select_tags_no_more_tags_left_title,
-                        messageRes = Res.string.select_tags_no_more_tags_left_description,
+                        message = { Text(text = stringResource(Res.string.select_tags_no_more_tags_left_description)) },
                     )
                 }
             }
@@ -308,8 +308,7 @@ private fun SelectionContent(
                         modifier = Modifier.animateItem(),
                         iconName = "search-01",
                         labelRes = Res.string.select_tags_no_tags_found_in_search_title,
-                        messageRes = Res.string.select_tags_no_tags_found_in_search_description,
-                        messageExtras = listOf(state.searchQuery),
+                        message = { Text(text = stringResource(Res.string.select_tags_no_tags_found_in_search_description, state.searchQuery)) },
                     )
                 }
             }
@@ -338,8 +337,7 @@ private fun NoContentBox(
     modifier: Modifier = Modifier,
     iconName: String,
     labelRes: StringResource,
-    messageRes: StringResource,
-    messageExtras: List<String> = emptyList(),
+    message: @Composable () -> Unit,
 ) {
     Box(
         modifier = modifier
@@ -355,8 +353,7 @@ private fun NoContentBox(
             modifier = Modifier.padding(12.dp).padding(vertical = 24.dp),
             iconName = iconName,
             labelRes = labelRes,
-            messageRes = messageRes,
-            messageExtras = messageExtras,
+            message = message,
         )
     }
 }

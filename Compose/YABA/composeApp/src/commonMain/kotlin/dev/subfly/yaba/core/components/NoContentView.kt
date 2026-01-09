@@ -1,6 +1,5 @@
 package dev.subfly.yaba.core.components
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,9 +7,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -25,9 +26,7 @@ fun NoContentView(
     modifier: Modifier = Modifier,
     iconName: String,
     labelRes: StringResource,
-    messageRes: StringResource,
-    labelExtras: List<String> = emptyList(),
-    messageExtras: List<String> = emptyList(),
+    message: @Composable () -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -42,21 +41,17 @@ fun NoContentView(
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = stringResource(
-                labelRes,
-                labelExtras,
-            ),
+            text = stringResource(labelRes),
             style = MaterialTheme.typography.titleLargeEmphasized,
             textAlign = TextAlign.Center,
         )
         Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = stringResource(
-                messageRes,
-                messageExtras,
-            ),
-            textAlign = TextAlign.Center,
-        )
+        CompositionLocalProvider(
+            LocalTextStyle provides MaterialTheme.typography.bodyMedium.copy(
+                textAlign = TextAlign.Center,
+            )
+        ) {
+            message()
+        }
     }
 }

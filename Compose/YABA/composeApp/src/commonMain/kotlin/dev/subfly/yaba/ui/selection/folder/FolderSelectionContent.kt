@@ -255,7 +255,7 @@ private fun SelectionContent(
                         NoContentView(
                             iconName = "folder-01",
                             labelRes = Res.string.select_folder_no_folders_available_title,
-                            messageRes = Res.string.select_folder_no_folders_available_description
+                            message = { Text(text = stringResource(Res.string.select_folder_no_folders_available_description)) },
                         )
                     }
                 } else {
@@ -264,10 +264,10 @@ private fun SelectionContent(
                         contentAlignment = Alignment.Center,
                     ) {
                         NoContentView(
+                            modifier = Modifier,
                             iconName = "search-01",
                             labelRes = Res.string.select_folder_no_folder_found_in_search_title,
-                            messageRes = Res.string.select_folder_no_folder_found_in_search_description,
-                            messageExtras = listOf(state.searchQuery),
+                            message = { Text(text = stringResource(Res.string.select_folder_no_folder_found_in_search_description, state.searchQuery)) },
                         )
                     }
                 }

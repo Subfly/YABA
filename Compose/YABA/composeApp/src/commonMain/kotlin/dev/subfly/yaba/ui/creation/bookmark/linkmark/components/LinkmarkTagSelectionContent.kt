@@ -31,6 +31,7 @@ import dev.subfly.yabacore.state.linkmark.LinkmarkCreationUIState
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.icon.iconTintArgb
 import org.jetbrains.compose.resources.stringResource
+import androidx.compose.material3.Text
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.create_bookmark_add_tags
 import yaba.composeapp.generated.resources.create_bookmark_edit_tags
@@ -109,7 +110,7 @@ internal fun LinkmarkTagSelectionContent(
                 modifier = Modifier.padding(12.dp).padding(vertical = 24.dp),
                 iconName = "tag-01",
                 labelRes = Res.string.create_bookmark_no_tags_selected_title,
-                messageRes = Res.string.create_bookmark_no_tags_selected_description,
+                message = { Text(text = stringResource(Res.string.create_bookmark_no_tags_selected_description)) },
             )
         }
     } else {
