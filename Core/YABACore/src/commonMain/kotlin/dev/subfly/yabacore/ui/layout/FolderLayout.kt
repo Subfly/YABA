@@ -37,7 +37,7 @@ fun YabaFolderLayout(
 ) {
     LazyColumn(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(layoutConfig.list.itemSpacing),
+        verticalArrangement = Arrangement.spacedBy(layoutConfig.itemSpacing),
         contentPadding = contentPadding,
     ) {
         items(

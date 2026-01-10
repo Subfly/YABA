@@ -222,7 +222,7 @@ private fun FolderListItemView(
         modifier = modifier
             .fillMaxWidth()
             .animateContentSize(),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         // Main folder item - parent colors are rendered inside BaseCollectionItemView
         BaseCollectionItemView(

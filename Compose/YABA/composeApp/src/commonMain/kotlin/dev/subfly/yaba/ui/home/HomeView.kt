@@ -1,13 +1,14 @@
 package dev.subfly.yaba.ui.home
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -23,6 +24,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.core.components.NoContentView
+import dev.subfly.yaba.core.components.RecentBookmarksGridSection
 import dev.subfly.yaba.core.components.item.bookmark.link.LinkmarkItemView
 import dev.subfly.yaba.core.components.item.folder.FolderItemView
 import dev.subfly.yaba.core.components.item.tag.TagItemView
@@ -37,10 +39,7 @@ import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.FabPosition
 import dev.subfly.yabacore.state.home.HomeEvent
-import dev.subfly.yabacore.ui.layout.ContentLayoutConfig
-import dev.subfly.yabacore.ui.layout.GridLayoutConfig
 import dev.subfly.yabacore.ui.layout.YabaContentLayout
-import dev.subfly.yabacore.ui.layout.YabaContentSpan
 import kotlin.uuid.ExperimentalUuidApi
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
@@ -84,6 +83,9 @@ fun HomeView(
                     onBookmarkAppearanceChanged = { newAppearance ->
                         vm.onEvent(HomeEvent.OnChangeBookmarkAppearance(newAppearance))
                     },
+                    onCardSizingChanged = { newSizing ->
+                        vm.onEvent(HomeEvent.OnChangeCardImageSizing(newSizing))
+                    },
                     onSortingChanged = { newSortType ->
                         vm.onEvent(HomeEvent.OnChangeCollectionSorting(newSortType))
                     },
@@ -97,58 +99,50 @@ fun HomeView(
             },
             floatingActionButton = { HomeFab() }
         ) { paddings ->
+            val listState = rememberLazyListState()
+
             YabaContentLayout(
                 modifier = Modifier.fillMaxSize(),
+                listState = listState,
                 contentPadding = paddings,
-                layoutConfig = ContentLayoutConfig(
-                    bookmarkAppearance = state.bookmarkAppearance,
-                    cardImageSizing = state.cardImageSizing,
-                    grid = GridLayoutConfig(
-                        minCellWidth = 180.dp,
-                        outerPadding =
-                            PaddingValues(
-                                horizontal = if (state.bookmarkAppearance == BookmarkAppearance.GRID) {
-                                    12.dp
-                                } else {
-                                    0.dp
-                                }
-                            ),
-                    )
-                ),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
                 content = {
-                    when {
-                        state.isLoading -> Unit
-                        state.recentBookmarks.isNotEmpty() -> {
-                            header(key = "RECENTS_HEADER") {
-                                HomeTitleContent(
-                                    title = Res.string.home_recents_label,
-                                    iconName = "clock-01"
-                                )
-                            }
-
-                            items(
-                                items = state.recentBookmarks,
-                                key = { it.id },
-                                span = {
-                                    when (state.bookmarkAppearance) {
-                                        BookmarkAppearance.LIST, BookmarkAppearance.CARD -> {
-                                            YabaContentSpan.FullLine
-                                        }
-
-                                        BookmarkAppearance.GRID -> YabaContentSpan.Auto
-                                    }
+                    if (Platform == YabaPlatform.ANDROID && userPreferences.showRecents) {
+                        // Recent Bookmarks Section
+                        header(key = "RECENTS_HEADER") {
+                            HomeTitleContent(
+                                title = Res.string.home_recents_label,
+                                iconName = "clock-01"
+                            )
+                        }
+                        when {
+                            state.isLoading -> {
+                                item(key = "RECENTS_LOADING") {
+                                    Box(
+                                        modifier = Modifier.fillMaxWidth().height(300.dp),
+                                        contentAlignment = Alignment.Center,
+                                    ) { CircularWavyProgressIndicator() }
                                 }
-                            ) { bookmarkModel ->
-                                when (bookmarkModel.kind) {
-                                    BookmarkKind.LINK -> {
-                                        // Cast to LinkmarkUiModel since we know the kind is LINK
-                                        val linkmark = bookmarkModel as LinkmarkUiModel
-
-                                        LinkmarkItemView(
-                                            model = linkmark,
+                            }
+                            state.recentBookmarks.isEmpty() -> {
+                                // TODO: LOCALIZATION
+                                item(key = "NO_RECENTS") {
+                                    NoContentView(
+                                        iconName = "bookmark-02",
+                                        labelRes = Res.string.no_folders_message,
+                                        message = { Text(text = stringResource(Res.string.no_folders_message)) },
+                                    )
+                                }
+                            }
+                            else -> {
+                                // For GRID appearance, render all bookmarks in a single grid item
+                                if (state.bookmarkAppearance == BookmarkAppearance.GRID) {
+                                    item(key = "RECENTS_GRID") {
+                                        RecentBookmarksGridSection(
+                                            bookmarks = state.recentBookmarks,
                                             appearance = state.bookmarkAppearance,
                                             cardImageSizing = state.cardImageSizing,
-                                            onClick = { onClickRecentBookmark() },
+                                            onClickBookmark = { onClickRecentBookmark() },
                                             onDeleteBookmark = { bookmark ->
                                                 vm.onEvent(HomeEvent.OnDeleteBookmark(bookmark))
                                             },
@@ -157,23 +151,54 @@ fun HomeView(
                                             },
                                         )
                                     }
+                                } else {
+                                    // For LIST/CARD appearance, render each bookmark as a list item
+                                    items(
+                                        items = state.recentBookmarks,
+                                        key = { it.id },
+                                    ) { bookmarkModel ->
+                                        when (bookmarkModel.kind) {
+                                            BookmarkKind.LINK -> {
+                                                val linkmark = bookmarkModel as LinkmarkUiModel
+                                                LinkmarkItemView(
+                                                    modifier = Modifier
+                                                        .padding(
+                                                            horizontal = if (state.bookmarkAppearance == BookmarkAppearance.CARD) {
+                                                                12.dp
+                                                            } else 0.dp
+                                                        ),
+                                                    model = linkmark,
+                                                    appearance = state.bookmarkAppearance,
+                                                    cardImageSizing = state.cardImageSizing,
+                                                    onClick = { onClickRecentBookmark() },
+                                                    onDeleteBookmark = { bookmark ->
+                                                        vm.onEvent(HomeEvent.OnDeleteBookmark(bookmark))
+                                                    },
+                                                    onShareBookmark = { bookmark ->
+                                                        // TODO: Implement share functionality
+                                                    },
+                                                )
+                                            }
 
-                                    BookmarkKind.NOTE -> {
-                                        // TODO: Implement NotemarkItemView
-                                    }
+                                            BookmarkKind.NOTE -> {
+                                                // TODO: Implement NotemarkItemView
+                                            }
 
-                                    BookmarkKind.IMAGE -> {
-                                        // TODO: Implement ImagemarkItemView
-                                    }
+                                            BookmarkKind.IMAGE -> {
+                                                // TODO: Implement ImagemarkItemView
+                                            }
 
-                                    BookmarkKind.FILE -> {
-                                        // TODO: Implement DocmarkItemView
+                                            BookmarkKind.FILE -> {
+                                                // TODO: Implement DocmarkItemView
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
                     }
 
+                    // Folders Section
                     header(key = "FOLDERS_HEADER") {
                         HomeTitleContent(
                             title = Res.string.folders_title,
@@ -183,10 +208,7 @@ fun HomeView(
 
                     when {
                         state.isLoading -> {
-                            item(
-                                key = "FOLDERS_LOADING",
-                                span = YabaContentSpan.FullLine,
-                            ) {
+                            item(key = "FOLDERS_LOADING") {
                                 Box(
                                     modifier = Modifier.fillMaxWidth().height(300.dp),
                                     contentAlignment = Alignment.Center,
@@ -195,13 +217,9 @@ fun HomeView(
                         }
 
                         state.folders.isEmpty() -> {
-                            item(
-                                key = "NO_FOLDERS",
-                                span = YabaContentSpan.FullLine,
-                            ) {
+                            item(key = "NO_FOLDERS") {
                                 NoContentView(
                                     iconName = "folder-01",
-                                    // TODO: SEE WHY TITLE IS NOT TRANSLATED IN XML
                                     labelRes = Res.string.no_folders_message,
                                     message = { Text(text = stringResource(Res.string.no_folders_message)) },
                                 )
@@ -212,7 +230,6 @@ fun HomeView(
                             items(
                                 items = state.folders,
                                 key = { it.id },
-                                span = { YabaContentSpan.FullLine },
                             ) { folderModel ->
                                 FolderItemView(
                                     model = folderModel,
@@ -224,6 +241,7 @@ fun HomeView(
                         }
                     }
 
+                    // Tags Section
                     header(key = "TAGS_HEADER") {
                         HomeTitleContent(
                             modifier = Modifier.padding(top = 6.dp),
@@ -234,10 +252,7 @@ fun HomeView(
 
                     when {
                         state.isLoading -> {
-                            item(
-                                key = "TAGS_LOADING",
-                                span = YabaContentSpan.FullLine,
-                            ) {
+                            item(key = "TAGS_LOADING") {
                                 Box(
                                     modifier = Modifier.fillMaxWidth().height(300.dp),
                                     contentAlignment = Alignment.Center,
@@ -246,13 +261,9 @@ fun HomeView(
                         }
 
                         state.tags.isEmpty() -> {
-                            item(
-                                key = "NO_TAGS",
-                                span = YabaContentSpan.FullLine,
-                            ) {
+                            item(key = "NO_TAGS") {
                                 NoContentView(
                                     iconName = "folder-01",
-                                    // TODO: SEE WHY TITLE IS NOT TRANSLATED IN XML
                                     labelRes = Res.string.no_tags_message,
                                     message = { Text(text = stringResource(Res.string.no_tags_message)) },
                                 )
@@ -263,7 +274,6 @@ fun HomeView(
                             items(
                                 items = state.tags,
                                 key = { it.id },
-                                span = { YabaContentSpan.FullLine },
                             ) { tagModel ->
                                 TagItemView(
                                     model = tagModel,
@@ -275,10 +285,10 @@ fun HomeView(
                         }
                     }
 
-                    item(
-                        key = "EMPTY_SPACER_FOR_FAB",
-                        span = YabaContentSpan.FullLine,
-                    ) { Spacer(modifier = Modifier.height(100.dp)) }
+                    // Spacer for FAB
+                    item(key = "EMPTY_SPACER_FOR_FAB") {
+                        Spacer(modifier = Modifier.height(100.dp))
+                    }
                 }
             )
         }

@@ -21,6 +21,12 @@ import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.CardImageSizing
 import kotlin.uuid.ExperimentalUuidApi
 
+/**
+ * Layout for displaying bookmarks with drag & drop support.
+ * 
+ * For LIST/CARD appearance, uses LazyColumn.
+ * For GRID appearance, uses LazyVerticalStaggeredGrid with adaptive columns.
+ */
 @Composable
 fun YabaBookmarkLayout(
     bookmarks: List<BookmarkUiModel>,
@@ -42,7 +48,7 @@ fun YabaBookmarkLayout(
         BookmarkAppearance.LIST, BookmarkAppearance.CARD ->
             LazyColumn(
                 modifier = modifier,
-                verticalArrangement = Arrangement.spacedBy(layoutConfig.list.itemSpacing),
+                verticalArrangement = Arrangement.spacedBy(layoutConfig.itemSpacing),
                 contentPadding = contentPadding,
             ) {
                 items(
@@ -64,10 +70,9 @@ fun YabaBookmarkLayout(
         BookmarkAppearance.GRID ->
             LazyVerticalStaggeredGrid(
                 modifier = modifier,
-                columns = StaggeredGridCells.Adaptive(layoutConfig.grid.minCellWidth),
-                verticalItemSpacing = layoutConfig.grid.verticalSpacing,
-                horizontalArrangement =
-                    Arrangement.spacedBy(layoutConfig.grid.horizontalSpacing),
+                columns = StaggeredGridCells.Fixed(layoutConfig.gridColumnCount),
+                verticalItemSpacing = layoutConfig.itemSpacing,
+                horizontalArrangement = Arrangement.spacedBy(layoutConfig.itemSpacing),
                 contentPadding = contentPadding,
             ) {
                 items(
