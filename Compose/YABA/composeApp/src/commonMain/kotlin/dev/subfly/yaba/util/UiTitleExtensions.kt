@@ -3,7 +3,6 @@ package dev.subfly.yaba.util
 import androidx.compose.runtime.Composable
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.CardImageSizing
-import dev.subfly.yabacore.model.utils.CollectionAppearance
 import dev.subfly.yabacore.model.utils.ContentAppearance
 import dev.subfly.yabacore.model.utils.FabPosition
 import dev.subfly.yabacore.model.utils.LinkType
@@ -74,20 +73,13 @@ fun ThemePreference.uiTitle(): String =
         ThemePreference.SYSTEM -> stringResource(Res.string.theme_system)
     }
 
-@Deprecated("Use CollectionAppearance or BookmarkAppearance instead")
+@Deprecated("Use BookmarkAppearance instead")
 @Composable
 fun ContentAppearance.uiTitle(): String =
     when (this) {
         ContentAppearance.LIST -> stringResource(Res.string.view_list)
         ContentAppearance.CARD -> stringResource(Res.string.view_card)
         ContentAppearance.GRID -> stringResource(Res.string.view_grid)
-    }
-
-@Composable
-fun CollectionAppearance.uiTitle(): String =
-    when (this) {
-        CollectionAppearance.LIST -> stringResource(Res.string.view_list)
-        CollectionAppearance.GRID -> stringResource(Res.string.view_grid)
     }
 
 @Composable

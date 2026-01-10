@@ -26,9 +26,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import dev.subfly.yaba.core.components.TagsRowContent
 import dev.subfly.yaba.core.components.item.bookmark.base.BaseBookmarkItemView
 import dev.subfly.yaba.core.components.item.bookmark.base.BookmarkMenuAction
 import dev.subfly.yaba.core.components.item.bookmark.base.BookmarkSwipeAction
@@ -41,7 +41,6 @@ import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalDeletionDialogManager
 import dev.subfly.yaba.util.yabaClickable
 import dev.subfly.yabacore.model.ui.LinkmarkUiModel
-import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.CardImageSizing
 import dev.subfly.yabacore.model.utils.FolderSelectionMode
@@ -66,7 +65,7 @@ import kotlin.uuid.ExperimentalUuidApi
  * @param model The linkmark data to display
  * @param appearance The display mode (LIST, CARD, GRID)
  * @param cardImageSizing The image sizing for card view (BIG or SMALL)
- * @param imageFilePath The local file path for the bookmark image (if available)
+ * @param imageFilePath Optional override for the local file path. Defaults to model.localImagePath.
  * @param onClick Callback when the item is clicked
  * @param onDeleteBookmark Callback when the bookmark should be deleted
  * @param onShareBookmark Callback when the bookmark should be shared
@@ -77,7 +76,7 @@ fun LinkmarkItemView(
     model: LinkmarkUiModel,
     appearance: BookmarkAppearance,
     cardImageSizing: CardImageSizing = CardImageSizing.SMALL,
-    imageFilePath: String? = null,
+    imageFilePath: String? = model.localImagePath,
     onClick: () -> Unit = {},
     onDeleteBookmark: (LinkmarkUiModel) -> Unit = {},
     onShareBookmark: (LinkmarkUiModel) -> Unit = {},
@@ -389,7 +388,8 @@ private fun LinkmarkCardBigItemContent(
                 TagsRowContent(
                     modifier = Modifier.weight(1f),
                     tags = model.tags,
-                    folderColor = folderColor,
+                    emptyStateTextRes = Res.string.bookmark_no_tags_added_title,
+                    emptyStateColor = folderColor,
                 )
                 CardOptionsButton(
                     menuActions = menuActions,
@@ -470,7 +470,8 @@ private fun LinkmarkCardSmallItemContent(
                 TagsRowContent(
                     modifier = Modifier.weight(1f),
                     tags = model.tags,
-                    folderColor = folderColor,
+                    emptyStateTextRes = Res.string.bookmark_no_tags_added_title,
+                    emptyStateColor = folderColor,
                 )
                 CardOptionsButton(
                     menuActions = menuActions,
@@ -614,71 +615,6 @@ private fun BookmarkImageContent(
                         )
                     }
                 }
-            }
-        }
-    }
-}
-
-/**
- * Tags row component showing bookmark tags.
- * Displays up to 5 tags with a +N indicator if there are more.
- */
-@Composable
-private fun TagsRowContent(
-    modifier: Modifier = Modifier,
-    tags: List<TagUiModel>,
-    folderColor: YabaColor,
-) {
-    val color = Color(folderColor.iconTintArgb())
-
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-        if (tags.isEmpty()) {
-            Surface(
-                modifier = Modifier.size(24.dp),
-                shape = RoundedCornerShape(4.dp),
-                color = color.copy(alpha = 0.3f),
-            ) {
-                YabaIcon(
-                    modifier = Modifier.padding(4.dp),
-                    name = "tags",
-                    color = folderColor,
-                )
-            }
-            Text(
-                text = stringResource(Res.string.bookmark_no_tags_added_title),
-                fontStyle = FontStyle.Italic,
-                style = MaterialTheme.typography.bodySmall,
-            )
-        } else {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(0.dp),
-            ) {
-                val displayTags = tags.take(5)
-                displayTags.forEach { tag ->
-                    val tagColor = Color(tag.color.iconTintArgb())
-                    Surface(
-                        modifier = Modifier.size(34.dp),
-                        shape = RoundedCornerShape(4.dp),
-                        color = tagColor.copy(alpha = 0.3f),
-                    ) {
-                        YabaIcon(
-                            modifier = Modifier.padding(5.dp),
-                            name = tag.icon,
-                            color = tag.color,
-                        )
-                    }
-                }
-            }
-            if (tags.size > 5) {
-                Text(
-                    text = "+${tags.size - 5}",
-                    style = MaterialTheme.typography.labelSmall,
-                    fontStyle = FontStyle.Italic,
-                )
             }
         }
     }

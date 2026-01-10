@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
-import dev.subfly.yabacore.model.utils.CollectionAppearance
 
 /**
  * A single, generic content layout that can mix different item types in one place.
@@ -29,16 +28,16 @@ import dev.subfly.yabacore.model.utils.CollectionAppearance
  *
  * ## Layout Behavior:
  * - Uses [LazyVerticalStaggeredGrid] internally for all appearances.
- * - When [CollectionAppearance.LIST] or [BookmarkAppearance.LIST]/[BookmarkAppearance.CARD],
+ * - Collections (folders, tags) always use LIST appearance and span full width.
+ * - When [BookmarkAppearance.LIST]/[BookmarkAppearance.CARD],
  *   items should use [YabaContentSpan.FullLine] to span full width (behaves like LazyColumn).
- * - When [CollectionAppearance.GRID] or [BookmarkAppearance.GRID], items use single cells.
+ * - When [BookmarkAppearance.GRID], bookmark items use single cells.
  *
  * ## Basic Usage:
  *
  * ```
  * YabaContentLayout(
  *   layoutConfig = ContentLayoutConfig(
- *     collectionAppearance = CollectionAppearance.LIST,
  *     bookmarkAppearance = BookmarkAppearance.CARD,
  *   ),
  *   modifier = Modifier.fillMaxSize(),

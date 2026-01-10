@@ -11,7 +11,6 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import dev.subfly.yabacore.common.CoreConstants
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.CardImageSizing
-import dev.subfly.yabacore.model.utils.CollectionAppearance
 import dev.subfly.yabacore.model.utils.ContentAppearance
 import dev.subfly.yabacore.model.utils.FabPosition
 import dev.subfly.yabacore.model.utils.SortOrderType
@@ -42,8 +41,6 @@ internal object UserPreferenceKeys {
     @Suppress("DEPRECATION")
     val preferredContentAppearance =
         stringPreferencesKey(CoreConstants.Settings.PREFERRED_CONTENT_APPEARANCE)
-    val preferredCollectionAppearance =
-        stringPreferencesKey(CoreConstants.Settings.PREFERRED_COLLECTION_APPEARANCE)
     val preferredBookmarkAppearance =
         stringPreferencesKey(CoreConstants.Settings.PREFERRED_BOOKMARK_APPEARANCE)
     val preferredCardImageSizing =
@@ -100,19 +97,13 @@ class UserPreferencesStore internal constructor(
     suspend fun setPreferredTheme(value: ThemePreference) =
         setEnum(UserPreferenceKeys.preferredTheme, value)
 
-    @Deprecated("Use setPreferredCollectionAppearance and setPreferredBookmarkAppearance instead")
+    @Deprecated("Use setPreferredBookmarkAppearance instead")
     suspend fun setPreferredContentAppearance(ordinal: Int) =
         setPreferredContentAppearance(enumFromOrdinal(ordinal, ContentAppearance.LIST))
 
-    @Deprecated("Use setPreferredCollectionAppearance and setPreferredBookmarkAppearance instead")
+    @Deprecated("Use setPreferredBookmarkAppearance instead")
     suspend fun setPreferredContentAppearance(value: ContentAppearance) =
         setEnum(UserPreferenceKeys.preferredContentAppearance, value)
-
-    suspend fun setPreferredCollectionAppearance(ordinal: Int) =
-        setPreferredCollectionAppearance(enumFromOrdinal(ordinal, CollectionAppearance.LIST))
-
-    suspend fun setPreferredCollectionAppearance(value: CollectionAppearance) =
-        setEnum(UserPreferenceKeys.preferredCollectionAppearance, value)
 
     suspend fun setPreferredBookmarkAppearance(ordinal: Int) =
         setPreferredBookmarkAppearance(enumFromOrdinal(ordinal, BookmarkAppearance.LIST))
@@ -256,10 +247,6 @@ private fun Preferences.toUserPreferences(): UserPreferences =
         preferredContentAppearance = enumValue(
             UserPreferenceKeys.preferredContentAppearance,
             ContentAppearance.LIST,
-        ),
-        preferredCollectionAppearance = enumValue(
-            UserPreferenceKeys.preferredCollectionAppearance,
-            CollectionAppearance.LIST,
         ),
         preferredBookmarkAppearance = enumValue(
             UserPreferenceKeys.preferredBookmarkAppearance,

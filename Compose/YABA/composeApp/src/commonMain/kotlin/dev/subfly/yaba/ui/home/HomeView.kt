@@ -8,11 +8,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.scrollIndicator
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,30 +23,32 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.core.components.NoContentView
+import dev.subfly.yaba.core.components.item.bookmark.link.LinkmarkItemView
 import dev.subfly.yaba.core.components.item.folder.FolderItemView
 import dev.subfly.yaba.core.components.item.tag.TagItemView
-import androidx.compose.material3.Text
-import org.jetbrains.compose.resources.stringResource
 import dev.subfly.yaba.ui.home.components.HomeFab
 import dev.subfly.yaba.ui.home.components.HomeTitleContent
 import dev.subfly.yaba.ui.home.components.HomeTopBar
 import dev.subfly.yaba.util.LocalUserPreferences
 import dev.subfly.yaba.util.Platform
 import dev.subfly.yaba.util.YabaPlatform
-import dev.subfly.yabacore.model.utils.CollectionAppearance
+import dev.subfly.yabacore.model.ui.LinkmarkUiModel
+import dev.subfly.yabacore.model.utils.BookmarkAppearance
+import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.FabPosition
 import dev.subfly.yabacore.state.home.HomeEvent
 import dev.subfly.yabacore.ui.layout.ContentLayoutConfig
 import dev.subfly.yabacore.ui.layout.GridLayoutConfig
 import dev.subfly.yabacore.ui.layout.YabaContentLayout
 import dev.subfly.yabacore.ui.layout.YabaContentSpan
+import kotlin.uuid.ExperimentalUuidApi
+import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.folders_title
 import yaba.composeapp.generated.resources.home_recents_label
 import yaba.composeapp.generated.resources.no_folders_message
 import yaba.composeapp.generated.resources.no_tags_message
 import yaba.composeapp.generated.resources.tags_title
-import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(
     ExperimentalMaterial3ExpressiveApi::class,
@@ -69,9 +71,7 @@ fun HomeView(
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
-    LaunchedEffect(Unit) {
-        vm.onEvent(HomeEvent.OnInit)
-    }
+    LaunchedEffect(Unit) { vm.onEvent(HomeEvent.OnInit) }
 
     Box(modifier = modifier.fillMaxSize()) {
         Scaffold(
@@ -81,8 +81,8 @@ fun HomeView(
             topBar = {
                 HomeTopBar(
                     scrollBehavior = scrollBehavior,
-                    onCollectionAppearanceChanged = { newAppearance ->
-                        vm.onEvent(HomeEvent.OnChangeCollectionAppearance(newAppearance))
+                    onBookmarkAppearanceChanged = { newAppearance ->
+                        vm.onEvent(HomeEvent.OnChangeBookmarkAppearance(newAppearance))
                     },
                     onSortingChanged = { newSortType ->
                         vm.onEvent(HomeEvent.OnChangeCollectionSorting(newSortType))
@@ -97,45 +97,80 @@ fun HomeView(
             },
             floatingActionButton = { HomeFab() }
         ) { paddings ->
-            // Determine span based on collection appearance
-            val collectionSpan = when (state.collectionAppearance) {
-                CollectionAppearance.LIST -> YabaContentSpan.FullLine
-                CollectionAppearance.GRID -> YabaContentSpan.Auto
-            }
-
             YabaContentLayout(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = paddings,
                 layoutConfig = ContentLayoutConfig(
-                    collectionAppearance = state.collectionAppearance,
                     bookmarkAppearance = state.bookmarkAppearance,
                     cardImageSizing = state.cardImageSizing,
                     grid = GridLayoutConfig(
                         minCellWidth = 180.dp,
-                        outerPadding = PaddingValues(
-                            horizontal = if (state.collectionAppearance == CollectionAppearance.GRID) {
-                                12.dp
-                            } else {
-                                0.dp
-                            }
-                        ),
+                        outerPadding =
+                            PaddingValues(
+                                horizontal = if (state.bookmarkAppearance == BookmarkAppearance.GRID) {
+                                    12.dp
+                                } else {
+                                    0.dp
+                                }
+                            ),
                     )
                 ),
                 content = {
-                    if (state.recentBookmarks.isNotEmpty()) {
-                        header(key = "RECENTS_HEADER") {
-                            HomeTitleContent(
-                                title = Res.string.home_recents_label,
-                                iconName = "clock-01"
-                            )
-                        }
+                    when {
+                        state.isLoading -> Unit
+                        state.recentBookmarks.isNotEmpty() -> {
+                            header(key = "RECENTS_HEADER") {
+                                HomeTitleContent(
+                                    title = Res.string.home_recents_label,
+                                    iconName = "clock-01"
+                                )
+                            }
 
-                        items(
-                            items = state.recentBookmarks,
-                            key = { it.id },
-                            span = { YabaContentSpan.FullLine }, // Recent bookmarks always show as list
-                        ) { bookmarkModel ->
-                            // TODO: Implement bookmark item view
+                            items(
+                                items = state.recentBookmarks,
+                                key = { it.id },
+                                span = {
+                                    when (state.bookmarkAppearance) {
+                                        BookmarkAppearance.LIST, BookmarkAppearance.CARD -> {
+                                            YabaContentSpan.FullLine
+                                        }
+
+                                        BookmarkAppearance.GRID -> YabaContentSpan.Auto
+                                    }
+                                }
+                            ) { bookmarkModel ->
+                                when (bookmarkModel.kind) {
+                                    BookmarkKind.LINK -> {
+                                        // Cast to LinkmarkUiModel since we know the kind is LINK
+                                        val linkmark = bookmarkModel as LinkmarkUiModel
+
+                                        LinkmarkItemView(
+                                            model = linkmark,
+                                            appearance = state.bookmarkAppearance,
+                                            cardImageSizing = state.cardImageSizing,
+                                            onClick = { onClickRecentBookmark() },
+                                            onDeleteBookmark = { bookmark ->
+                                                vm.onEvent(HomeEvent.OnDeleteBookmark(bookmark))
+                                            },
+                                            onShareBookmark = { bookmark ->
+                                                // TODO: Implement share functionality
+                                            },
+                                        )
+                                    }
+
+                                    BookmarkKind.NOTE -> {
+                                        // TODO: Implement NotemarkItemView
+                                    }
+
+                                    BookmarkKind.IMAGE -> {
+                                        // TODO: Implement ImagemarkItemView
+                                    }
+
+                                    BookmarkKind.FILE -> {
+                                        // TODO: Implement DocmarkItemView
+                                    }
+                                }
+                            }
                         }
                     }
 
@@ -153,9 +188,7 @@ fun HomeView(
                                 span = YabaContentSpan.FullLine,
                             ) {
                                 Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(300.dp),
+                                    modifier = Modifier.fillMaxWidth().height(300.dp),
                                     contentAlignment = Alignment.Center,
                                 ) { CircularWavyProgressIndicator() }
                             }
@@ -179,11 +212,10 @@ fun HomeView(
                             items(
                                 items = state.folders,
                                 key = { it.id },
-                                span = { collectionSpan },
+                                span = { YabaContentSpan.FullLine },
                             ) { folderModel ->
                                 FolderItemView(
                                     model = folderModel,
-                                    appearance = state.collectionAppearance,
                                     onDeleteFolder = { folderToBeDeleted ->
                                         vm.onEvent(HomeEvent.OnDeleteFolder(folderToBeDeleted))
                                     }
@@ -207,9 +239,7 @@ fun HomeView(
                                 span = YabaContentSpan.FullLine,
                             ) {
                                 Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(300.dp),
+                                    modifier = Modifier.fillMaxWidth().height(300.dp),
                                     contentAlignment = Alignment.Center,
                                 ) { CircularWavyProgressIndicator() }
                             }
@@ -233,11 +263,10 @@ fun HomeView(
                             items(
                                 items = state.tags,
                                 key = { it.id },
-                                span = { collectionSpan },
+                                span = { YabaContentSpan.FullLine },
                             ) { tagModel ->
                                 TagItemView(
                                     model = tagModel,
-                                    appearance = state.collectionAppearance,
                                     onDeleteTag = { tagToBeDeleted ->
                                         vm.onEvent(HomeEvent.OnDeleteTag(tagToBeDeleted))
                                     }
@@ -249,9 +278,7 @@ fun HomeView(
                     item(
                         key = "EMPTY_SPACER_FOR_FAB",
                         span = YabaContentSpan.FullLine,
-                    ) {
-                        Spacer(modifier = Modifier.height(100.dp))
-                    }
+                    ) { Spacer(modifier = Modifier.height(100.dp)) }
                 }
             )
         }

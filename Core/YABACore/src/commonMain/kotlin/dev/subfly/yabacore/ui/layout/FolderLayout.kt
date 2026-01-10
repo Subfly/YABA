@@ -9,17 +9,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.subfly.yabacore.model.ui.FolderUiModel
-import dev.subfly.yabacore.model.utils.CollectionAppearance
 import kotlin.uuid.ExperimentalUuidApi
 
+/**
+ * Layout for displaying folders in a list format.
+ * 
+ * Note: Folders always use LIST appearance as GRID view is not supported
+ * for collections that can have nested children (folder-in-folder).
+ */
 @Composable
 fun YabaFolderLayout(
     folders: List<FolderUiModel>,
@@ -31,68 +33,37 @@ fun YabaFolderLayout(
     itemContent: @Composable (
         folder: FolderUiModel,
         isDragging: Boolean,
-        appearance: CollectionAppearance,
     ) -> Unit,
 ) {
-    when (layoutConfig.collectionAppearance) {
-        CollectionAppearance.LIST ->
-            LazyColumn(
-                modifier = modifier,
-                verticalArrangement = Arrangement.spacedBy(layoutConfig.list.itemSpacing),
-                contentPadding = contentPadding,
-            ) {
-                items(
-                    items = folders,
-                    key = { "${it.id} ${it.label}" },
-                ) { folder ->
-                    FolderItem(
-                        folder = folder,
-                        appearance = layoutConfig.collectionAppearance,
-                        state = dragDropState,
-                        orientation = Orientation.Vertical,
-                        modifier = Modifier.animateItem(),
-                        itemContent = itemContent,
-                    )
-                }
-            }
-
-        CollectionAppearance.GRID ->
-            LazyVerticalStaggeredGrid(
-                modifier = modifier,
-                columns = StaggeredGridCells.Adaptive(layoutConfig.grid.minCellWidth),
-                verticalItemSpacing = layoutConfig.grid.verticalSpacing,
-                horizontalArrangement =
-                    Arrangement.spacedBy(layoutConfig.grid.horizontalSpacing),
-                contentPadding = contentPadding,
-            ) {
-                items(
-                    items = folders,
-                    key = { "${it.id} ${it.label}" },
-                ) { folder ->
-                    FolderItem(
-                        folder = folder,
-                        appearance = layoutConfig.collectionAppearance,
-                        state = dragDropState,
-                        orientation = Orientation.Vertical,
-                        modifier = Modifier.animateItem(),
-                        itemContent = itemContent,
-                    )
-                }
-            }
+    LazyColumn(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(layoutConfig.list.itemSpacing),
+        contentPadding = contentPadding,
+    ) {
+        items(
+            items = folders,
+            key = { "${it.id} ${it.label}" },
+        ) { folder ->
+            FolderItem(
+                folder = folder,
+                state = dragDropState,
+                orientation = Orientation.Vertical,
+                modifier = Modifier.animateItem(),
+                itemContent = itemContent,
+            )
+        }
     }
 }
 
 @Composable
 private fun FolderItem(
     folder: FolderUiModel,
-    appearance: CollectionAppearance,
     state: YabaDragDropState,
     orientation: Orientation,
     modifier: Modifier = Modifier,
     itemContent: @Composable (
         folder: FolderUiModel,
         isDragging: Boolean,
-        appearance: CollectionAppearance,
     ) -> Unit,
 ) {
     val payload = remember(folder.id) { DragFolderPayload(folder) }
@@ -106,7 +77,6 @@ private fun FolderItem(
         itemContent(
             folder,
             isDragging,
-            appearance
         )
     }
 }

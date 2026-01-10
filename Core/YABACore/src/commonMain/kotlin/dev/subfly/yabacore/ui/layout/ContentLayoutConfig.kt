@@ -5,7 +5,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.CardImageSizing
-import dev.subfly.yabacore.model.utils.CollectionAppearance
 
 data class GridLayoutConfig(
     val minCellWidth: Dp = 240.dp,
@@ -23,16 +22,16 @@ data class ListLayoutConfig(
  *
  * Since we now use StaggeredGrid internally for all appearances, this config
  * primarily controls spacing and sizing. The actual appearance decision is made
- * at the item level based on [collectionAppearance] and [bookmarkAppearance].
+ * at the item level based on [bookmarkAppearance].
  *
- * @param collectionAppearance Appearance for collection items (folders, tags)
+ * Note: Collections (folders, tags) always use LIST appearance and don't support GRID view.
+ *
  * @param bookmarkAppearance Appearance for bookmark items
  * @param cardImageSizing Size of images in card view (only applies when bookmarkAppearance is CARD)
  * @param grid Configuration for grid layout spacing
  * @param list Configuration for list layout spacing
  */
 data class ContentLayoutConfig(
-    val collectionAppearance: CollectionAppearance = CollectionAppearance.LIST,
     val bookmarkAppearance: BookmarkAppearance = BookmarkAppearance.LIST,
     val cardImageSizing: CardImageSizing = CardImageSizing.SMALL,
     val grid: GridLayoutConfig = GridLayoutConfig(),

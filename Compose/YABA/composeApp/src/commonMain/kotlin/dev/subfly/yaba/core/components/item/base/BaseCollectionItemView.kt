@@ -39,7 +39,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.util.yabaClickable
-import dev.subfly.yabacore.model.utils.CollectionAppearance
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.icon.iconTintArgb
@@ -75,66 +74,46 @@ data class CollectionSwipeAction(
 
 /**
  * Base composable for collection items (Folders, Tags, etc.).
- * Provides a unified UI for list and grid appearances with swipe actions and dropdown menus.
+ * Provides a unified UI with list appearance, swipe actions and dropdown menus.
+ *
+ * Note: Collections always use LIST appearance as GRID view is not supported
+ * for items that can have nested children (folder-in-folder).
  *
  * @param label The primary text to display
- * @param description Optional secondary text (shown in grid view)
  * @param icon The icon name to display
  * @param color The color theme for this item
- * @param appearance The display mode (LIST shows list style, GRID shows grid style)
- * @param parentColors List of parent colors to show as hierarchy indicators (only in list view)
+ * @param parentColors List of parent colors to show as hierarchy indicators
  * @param menuActions List of menu actions to show in the dropdown menu
- * @param leftSwipeActions Swipe actions revealed when swiping right (only in list view)
- * @param rightSwipeActions Swipe actions revealed when swiping left (only in list view)
+ * @param leftSwipeActions Swipe actions revealed when swiping right
+ * @param rightSwipeActions Swipe actions revealed when swiping left
  * @param onClick Callback when the item is clicked
- * @param listTrailingContent Optional composable for trailing content in list view
- * @param gridTrailingContent Optional composable for trailing content in grid view
+ * @param trailingContent Optional composable for trailing content
  */
 @Composable
 fun BaseCollectionItemView(
     modifier: Modifier = Modifier,
     label: String,
-    description: String? = null,
     icon: String,
     color: YabaColor,
-    appearance: CollectionAppearance,
     parentColors: List<YabaColor> = emptyList(),
     menuActions: List<CollectionMenuAction> = emptyList(),
     leftSwipeActions: List<CollectionSwipeAction> = emptyList(),
     rightSwipeActions: List<CollectionSwipeAction> = emptyList(),
     onClick: () -> Unit = {},
-    listTrailingContent: @Composable (() -> Unit)? = null,
-    gridTrailingContent: @Composable (() -> Unit)? = null,
+    trailingContent: @Composable (() -> Unit)? = null,
 ) {
-    when (appearance) {
-        CollectionAppearance.LIST -> {
-            ListCollectionItemView(
-                modifier = modifier,
-                label = label,
-                icon = icon,
-                color = color,
-                parentColors = parentColors,
-                menuActions = menuActions,
-                leftSwipeActions = leftSwipeActions,
-                rightSwipeActions = rightSwipeActions,
-                onClick = onClick,
-                trailingContent = listTrailingContent,
-            )
-        }
-
-        CollectionAppearance.GRID -> {
-            GridCollectionItemView(
-                modifier = modifier,
-                label = label,
-                description = description,
-                icon = icon,
-                color = color,
-                menuActions = menuActions,
-                onClick = onClick,
-                trailingContent = gridTrailingContent,
-            )
-        }
-    }
+    ListCollectionItemView(
+        modifier = modifier,
+        label = label,
+        icon = icon,
+        color = color,
+        parentColors = parentColors,
+        menuActions = menuActions,
+        leftSwipeActions = leftSwipeActions,
+        rightSwipeActions = rightSwipeActions,
+        onClick = onClick,
+        trailingContent = trailingContent,
+    )
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalFoundationApi::class)
@@ -248,85 +227,6 @@ private fun ListCollectionItemView(
                                 trailingContent()
                             }
                         }
-                    )
-                }
-            }
-        }
-
-        CollectionOptionsMenu(
-            menuActions = menuActions,
-            isExpanded = isOptionsExpanded,
-            onDismissRequest = { isOptionsExpanded = false },
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalFoundationApi::class)
-@Composable
-private fun GridCollectionItemView(
-    modifier: Modifier,
-    label: String,
-    description: String?,
-    icon: String,
-    color: YabaColor,
-    menuActions: List<CollectionMenuAction>,
-    onClick: () -> Unit,
-    trailingContent: @Composable (() -> Unit)?,
-) {
-    var isOptionsExpanded by remember { mutableStateOf(false) }
-    val itemColor by remember(color) {
-        mutableStateOf(Color(color.iconTintArgb()))
-    }
-
-    Box(modifier = modifier) {
-        Surface(
-            modifier = Modifier
-                .clip(RoundedCornerShape(12.dp))
-                .yabaClickable(
-                    onLongClick = { isOptionsExpanded = true },
-                    onClick = onClick,
-                ),
-            shape = RoundedCornerShape(12.dp),
-            color = MaterialTheme.colorScheme.surfaceContainer,
-        ) {
-            Column(
-                modifier = Modifier.padding(18.dp),
-                horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.SpaceBetween,
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(64.dp)
-                            .background(
-                                color = itemColor.copy(alpha = 0.3F),
-                                shape = CircleShape,
-                            ),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        YabaIcon(
-                            name = icon,
-                            color = itemColor,
-                        )
-                    }
-                    if (trailingContent != null) {
-                        trailingContent()
-                    }
-                }
-                Spacer(modifier = Modifier.height(18.dp))
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.titleMediumEmphasized,
-                )
-                if (!description.isNullOrBlank()) {
-                    Text(
-                        text = description,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }

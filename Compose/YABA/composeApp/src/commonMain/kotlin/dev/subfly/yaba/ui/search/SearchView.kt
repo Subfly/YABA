@@ -6,7 +6,6 @@ import androidx.compose.material3.AppBarWithSearch
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -50,7 +49,6 @@ fun SearchView(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(paddings),
             bookmarks = emptyList(),
             layoutConfig = ContentLayoutConfig(
-                collectionAppearance = userPreferences.preferredCollectionAppearance,
                 bookmarkAppearance = userPreferences.preferredBookmarkAppearance,
                 cardImageSizing = userPreferences.preferredCardImageSizing,
             ),

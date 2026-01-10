@@ -3,6 +3,7 @@ package dev.subfly.yabacore.state.home
 import dev.subfly.yabacore.database.DatabaseProvider
 import dev.subfly.yabacore.database.mappers.toModel
 import dev.subfly.yabacore.database.mappers.toUiModel
+import dev.subfly.yabacore.filesystem.LinkmarkFileManager
 import dev.subfly.yabacore.managers.AllBookmarksManager
 import dev.subfly.yabacore.managers.FolderManager
 import dev.subfly.yabacore.managers.TagManager
@@ -11,6 +12,7 @@ import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
 import dev.subfly.yabacore.preferences.SettingsStores
 import dev.subfly.yabacore.state.base.BaseStateMachine
+import io.github.vinceglb.filekit.path
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
@@ -32,7 +34,6 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
     override fun onEvent(event: HomeEvent) {
         when (event) {
             HomeEvent.OnInit -> onInit()
-            is HomeEvent.OnChangeCollectionAppearance -> onChangeCollectionAppearance(event)
             is HomeEvent.OnChangeBookmarkAppearance -> onChangeBookmarkAppearance(event)
             is HomeEvent.OnChangeCardImageSizing -> onChangeCardImageSizing(event)
             is HomeEvent.OnChangeCollectionSorting -> onChangeCollectionSorting(event)
@@ -60,53 +61,60 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
             // First, observe preferences to get sorting parameters
             // When sorting changes, flatMapLatest will cancel old subscriptions and create new ones
             preferencesStore
-                    .preferencesFlow
-                    .map { prefs ->
-                        SortingParams(prefs.preferredCollectionSorting, prefs.preferredSortOrder)
-                    }
-                    .distinctUntilChanged()
-                    .flatMapLatest { sortingParams ->
-                        // Combine all data sources with the current sorting parameters
-                        combine(
-                                preferencesStore.preferencesFlow,
-                                FolderManager.observeFolderTree(
-                                        sortType = sortingParams.sortType,
-                                        sortOrder = sortingParams.sortOrder,
-                                ),
-                                TagManager.observeTags(
-                                        sortType = sortingParams.sortType,
-                                        sortOrder = sortingParams.sortOrder,
-                                ),
-                                bookmarkDao.observeAllLinkBookmarks(
-                                        sortType = SortType.EDITED_AT.name,
-                                        sortOrder = SortOrderType.DESCENDING.name,
-                                ),
-                        ) { preferences, folders, tags, bookmarks ->
-                            val recentBookmarks: List<BookmarkUiModel> =
-                                    bookmarks.take(RECENT_BOOKMARKS_LIMIT).map {
-                                        it.toModel().toUiModel()
-                                    }
-
-                            HomeUIState(
-                                    folders = folders,
-                                    tags = tags,
-                                    recentBookmarks = recentBookmarks,
-                                    collectionAppearance =
-                                            preferences.preferredCollectionAppearance,
-                                    bookmarkAppearance = preferences.preferredBookmarkAppearance,
-                                    cardImageSizing = preferences.preferredCardImageSizing,
-                                    collectionSorting = preferences.preferredCollectionSorting,
-                                    sortOrder = preferences.preferredSortOrder,
-                                    isLoading = false,
+                .preferencesFlow
+                .map { prefs ->
+                    SortingParams(prefs.preferredCollectionSorting, prefs.preferredSortOrder)
+                }
+                .distinctUntilChanged()
+                .flatMapLatest { sortingParams ->
+                    // Combine all data sources with the current sorting parameters
+                    combine(
+                        preferencesStore.preferencesFlow,
+                        FolderManager.observeFolderTree(
+                            sortType = sortingParams.sortType,
+                            sortOrder = sortingParams.sortOrder,
+                        ),
+                        TagManager.observeTags(
+                            sortType = sortingParams.sortType,
+                            sortOrder = sortingParams.sortOrder,
+                        ),
+                        bookmarkDao.observeAllLinkBookmarks(
+                            sortType = SortType.EDITED_AT.name,
+                            sortOrder = SortOrderType.DESCENDING.name,
+                        ),
+                    ) { preferences, folders, tags, bookmarks ->
+                        // Build recent bookmarks with local file paths
+                        val recentBookmarks = mutableListOf<BookmarkUiModel>()
+                        for (linkBookmark in bookmarks.take(RECENT_BOOKMARKS_LIMIT)) {
+                            val domainModel = linkBookmark.toModel()
+                            val localImagePath = LinkmarkFileManager
+                                .getLinkImageFile(domainModel.id)
+                                ?.path
+                            val localIconPath = LinkmarkFileManager
+                                .getDomainIconFile(domainModel.id)
+                                ?.path
+                            recentBookmarks.add(
+                                domainModel.toUiModel(
+                                    localImagePath = localImagePath,
+                                    localIconPath = localIconPath,
+                                )
                             )
                         }
-                    }
-                    .collectLatest { newState -> updateState { newState } }
-        }
-    }
 
-    private fun onChangeCollectionAppearance(event: HomeEvent.OnChangeCollectionAppearance) {
-        launch { preferencesStore.setPreferredCollectionAppearance(event.appearance) }
+                        HomeUIState(
+                            folders = folders,
+                            tags = tags,
+                            recentBookmarks = recentBookmarks,
+                            bookmarkAppearance = preferences.preferredBookmarkAppearance,
+                            cardImageSizing = preferences.preferredCardImageSizing,
+                            collectionSorting = preferences.preferredCollectionSorting,
+                            sortOrder = preferences.preferredSortOrder,
+                            isLoading = false,
+                        )
+                    }
+                }
+                .collectLatest { newState -> updateState { newState } }
+        }
     }
 
     private fun onChangeBookmarkAppearance(event: HomeEvent.OnChangeBookmarkAppearance) {
@@ -126,8 +134,8 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
     }
 
     private data class SortingParams(
-            val sortType: SortType,
-            val sortOrder: SortOrderType,
+        val sortType: SortType,
+        val sortOrder: SortOrderType,
     )
 
     // Folder operations - delegated to FolderManager
@@ -160,8 +168,8 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
     private fun onMoveBookmarkToFolder(event: HomeEvent.OnMoveBookmarkToFolder) {
         launch {
             AllBookmarksManager.moveBookmarksToFolder(
-                    listOf(event.bookmark),
-                    event.targetFolder,
+                listOf(event.bookmark),
+                event.targetFolder,
             )
         }
     }

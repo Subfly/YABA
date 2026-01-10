@@ -39,6 +39,10 @@ data class LinkmarkUiModel(
     val previewImageUrl: String?,
     val previewIconUrl: String?,
     val videoUrl: String?,
+    /** Local file path for the bookmark's preview image, if saved to disk. */
+    val localImagePath: String? = null,
+    /** Local file path for the domain icon, if saved to disk. */
+    val localIconPath: String? = null,
     override val parentFolder: FolderUiModel?,
     override val tags: List<TagUiModel> = emptyList(),
 ) : BookmarkUiModel

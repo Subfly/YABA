@@ -74,6 +74,8 @@ internal fun TagUiModel.toDomain(): TagDomainModel =
 internal fun LinkBookmarkDomainModel.toUiModel(
     folder: FolderUiModel? = null,
     tags: List<TagUiModel> = emptyList(),
+    localImagePath: String? = null,
+    localIconPath: String? = null,
 ): LinkmarkUiModel = LinkmarkUiModel(
     id = id,
     folderId = folderId,
@@ -90,6 +92,8 @@ internal fun LinkBookmarkDomainModel.toUiModel(
     previewImageUrl = previewImageUrl,
     previewIconUrl = previewIconUrl,
     videoUrl = videoUrl,
+    localImagePath = localImagePath,
+    localIconPath = localIconPath,
     parentFolder = folder,
     tags = tags,
 )

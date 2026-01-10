@@ -2,17 +2,10 @@
 
 package dev.subfly.yaba.core.components.item.tag
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.components.item.base.BaseCollectionItemView
 import dev.subfly.yaba.core.components.item.base.CollectionMenuAction
 import dev.subfly.yaba.core.components.item.base.CollectionSwipeAction
@@ -24,10 +17,7 @@ import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalDeletionDialogManager
 import dev.subfly.yabacore.model.ui.TagUiModel
-import dev.subfly.yabacore.model.utils.CollectionAppearance
 import dev.subfly.yabacore.model.utils.YabaColor
-import dev.subfly.yabacore.ui.icon.YabaIcon
-import dev.subfly.yabacore.ui.icon.iconTintArgb
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.delete
@@ -36,27 +26,23 @@ import yaba.composeapp.generated.resources.new_bookmark
 import kotlin.uuid.ExperimentalUuidApi
 
 /**
- * Tag item view that adapts to different appearances.
+ * Tag item view using list appearance.
  * Uses [BaseCollectionItemView] for consistent styling with folders.
  *
+ * Note: Tags always use LIST appearance as GRID view is not supported for collections.
+ *
  * @param model The tag data to display
- * @param appearance The display mode (LIST or GRID)
  * @param onDeleteTag Callback when the tag should be deleted
  */
 @Composable
 fun TagItemView(
     modifier: Modifier = Modifier,
     model: TagUiModel,
-    appearance: CollectionAppearance,
     onDeleteTag: (TagUiModel) -> Unit,
 ) {
     val creationNavigator = LocalCreationContentNavigator.current
     val deletionDialogManager = LocalDeletionDialogManager.current
     val appStateManager = LocalAppStateManager.current
-
-    val color by remember(model) {
-        mutableStateOf(Color(model.color.iconTintArgb()))
-    }
 
     // Localized strings for menu items
     val newBookmarkText = stringResource(Res.string.new_bookmark)
@@ -150,30 +136,16 @@ fun TagItemView(
     BaseCollectionItemView(
         modifier = modifier,
         label = model.label,
-        description = null,
         icon = model.icon,
         color = model.color,
-        appearance = appearance,
         menuActions = menuActions,
         leftSwipeActions = leftSwipeActions,
         rightSwipeActions = rightSwipeActions,
         onClick = {
             // TODO: NAVIGATE TO TAG DETAIL
         },
-        listTrailingContent = {
+        trailingContent = {
             Text(model.bookmarkCount.toString())
-        },
-        gridTrailingContent = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                Text(model.bookmarkCount.toString())
-                YabaIcon(
-                    name = "bookmark-02",
-                    color = color,
-                )
-            }
         }
     )
 }

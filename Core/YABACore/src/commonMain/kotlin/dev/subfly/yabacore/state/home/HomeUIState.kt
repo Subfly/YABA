@@ -5,7 +5,6 @@ import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.CardImageSizing
-import dev.subfly.yabacore.model.utils.CollectionAppearance
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
 
@@ -13,7 +12,6 @@ data class HomeUIState(
     val folders: List<FolderUiModel> = emptyList(),
     val tags: List<TagUiModel> = emptyList(),
     val recentBookmarks: List<BookmarkUiModel> = emptyList(),
-    val collectionAppearance: CollectionAppearance = CollectionAppearance.LIST,
     val bookmarkAppearance: BookmarkAppearance = BookmarkAppearance.LIST,
     val cardImageSizing: CardImageSizing = CardImageSizing.SMALL,
     val collectionSorting: SortType = SortType.CREATED_AT,

@@ -18,7 +18,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.util.fastForEachIndexed
 import dev.subfly.yaba.util.LocalUserPreferences
 import dev.subfly.yaba.util.uiTitle
-import dev.subfly.yabacore.model.utils.CollectionAppearance
+import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.SortType
 import dev.subfly.yabacore.model.utils.uiIconName
 import dev.subfly.yabacore.ui.icon.YabaIcon
@@ -34,11 +34,11 @@ internal fun HomeDropdownMenu(
     modifier: Modifier = Modifier,
     isExpanded: Boolean,
     onDismissRequest: () -> Unit,
-    onCollectionAppearanceChanged: (CollectionAppearance) -> Unit,
+    onBookmarkAppearanceChanged: (BookmarkAppearance) -> Unit,
     onSortingChanged: (SortType) -> Unit,
     onSettingsClicked: () -> Unit,
 ) {
-    var isAppearanceExpanded by remember { mutableStateOf(false) }
+    var isBookmarkAppearanceExpanded by remember { mutableStateOf(false) }
     var isSortingExpanded by remember { mutableStateOf(false) }
 
     DropdownMenuPopup(
@@ -52,12 +52,12 @@ internal fun HomeDropdownMenu(
                 count = 3
             )
         ) {
-            CollectionAppearanceSection(
-                isExpanded = isAppearanceExpanded,
-                onPressedSection = { isAppearanceExpanded = !isAppearanceExpanded },
-                onDismissSubmenu = { isAppearanceExpanded = false },
+            BookmarkAppearanceSection(
+                isExpanded = isBookmarkAppearanceExpanded,
+                onPressedSection = { isBookmarkAppearanceExpanded = !isBookmarkAppearanceExpanded },
+                onDismissSubmenu = { isBookmarkAppearanceExpanded = false },
                 onAppearanceSelection = { appearance ->
-                    onCollectionAppearanceChanged(appearance)
+                    onBookmarkAppearanceChanged(appearance)
                     onDismissRequest()
                 },
             )
@@ -90,11 +90,11 @@ internal fun HomeDropdownMenu(
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun CollectionAppearanceSection(
+private fun BookmarkAppearanceSection(
     isExpanded: Boolean,
     onPressedSection: () -> Unit,
     onDismissSubmenu: () -> Unit,
-    onAppearanceSelection: (CollectionAppearance) -> Unit,
+    onAppearanceSelection: (BookmarkAppearance) -> Unit,
 ) {
     val userPreferences = LocalUserPreferences.current
 
@@ -116,6 +116,7 @@ private fun CollectionAppearanceSection(
                 )
             },
             text = {
+                // TODO: COME UP WITH LOCALIZATION
                 Text(text = stringResource(Res.string.settings_content_appearance_title))
             }
         )
@@ -126,13 +127,13 @@ private fun CollectionAppearanceSection(
             DropdownMenuGroup(
                 shapes = MenuDefaults.groupShape(
                     index = 0,
-                    count = CollectionAppearance.entries.size
+                    count = BookmarkAppearance.entries.size
                 )
             ) {
-                CollectionAppearance.entries.fastForEachIndexed { index, appearance ->
+                BookmarkAppearance.entries.fastForEachIndexed { index, appearance ->
                     DropdownMenuItem(
-                        shapes = MenuDefaults.itemShape(index, CollectionAppearance.entries.size),
-                        checked = userPreferences.preferredCollectionAppearance == appearance,
+                        shapes = MenuDefaults.itemShape(index, BookmarkAppearance.entries.size),
+                        checked = userPreferences.preferredBookmarkAppearance == appearance,
                         onCheckedChange = { _ ->
                             onAppearanceSelection(appearance)
                             onDismissSubmenu()

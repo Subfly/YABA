@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -35,7 +34,6 @@ import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalDeletionDialogManager
 import dev.subfly.yabacore.model.ui.FolderUiModel
-import dev.subfly.yabacore.model.utils.CollectionAppearance
 import dev.subfly.yabacore.model.utils.FolderSelectionMode
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.ui.icon.YabaIcon
@@ -51,12 +49,14 @@ import kotlin.uuid.ExperimentalUuidApi
 /**
  * Entry point for folder item rendering.
  * For top-level folders, pass an empty parentColors list.
+ *
+ * Note: Folders always use LIST appearance as GRID view is not supported
+ * for items that can have nested children (folder-in-folder).
  */
 @Composable
 fun FolderItemView(
     modifier: Modifier = Modifier,
     model: FolderUiModel,
-    appearance: CollectionAppearance,
     parentColors: List<YabaColor> = emptyList(),
     onDeleteFolder: (FolderUiModel) -> Unit,
 ) {
@@ -185,51 +185,15 @@ fun FolderItemView(
         )
     }
 
-    when (appearance) {
-        CollectionAppearance.LIST -> {
-            FolderListItemView(
-                modifier = modifier,
-                model = model,
-                appearance = appearance,
-                parentColors = parentColors,
-                menuActions = menuActions,
-                leftSwipeActions = leftSwipeActions,
-                rightSwipeActions = rightSwipeActions,
-                onDeleteFolder = onDeleteFolder,
-            )
-        }
-
-        CollectionAppearance.GRID -> {
-            val color by remember(model) {
-                mutableStateOf(Color(model.color.iconTintArgb()))
-            }
-
-            BaseCollectionItemView(
-                modifier = modifier,
-                label = model.label,
-                description = model.description,
-                icon = model.icon,
-                color = model.color,
-                appearance = appearance,
-                menuActions = menuActions,
-                onClick = {
-                    // TODO: NAVIGATE FOLDER DETAIL
-                },
-                gridTrailingContent = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        Text(model.bookmarkCount.toString())
-                        YabaIcon(
-                            name = "bookmark-02",
-                            color = color,
-                        )
-                    }
-                }
-            )
-        }
-    }
+    FolderListItemView(
+        modifier = modifier,
+        model = model,
+        parentColors = parentColors,
+        menuActions = menuActions,
+        leftSwipeActions = leftSwipeActions,
+        rightSwipeActions = rightSwipeActions,
+        onDeleteFolder = onDeleteFolder,
+    )
 }
 
 /**
@@ -240,7 +204,6 @@ fun FolderItemView(
 private fun FolderListItemView(
     modifier: Modifier = Modifier,
     model: FolderUiModel,
-    appearance: CollectionAppearance,
     parentColors: List<YabaColor>,
     menuActions: List<CollectionMenuAction>,
     leftSwipeActions: List<CollectionSwipeAction>,
@@ -264,10 +227,8 @@ private fun FolderListItemView(
         // Main folder item - parent colors are rendered inside BaseCollectionItemView
         BaseCollectionItemView(
             label = model.label,
-            description = model.description,
             icon = model.icon,
             color = model.color,
-            appearance = CollectionAppearance.LIST,
             parentColors = parentColors,
             menuActions = menuActions,
             leftSwipeActions = leftSwipeActions,
@@ -275,7 +236,7 @@ private fun FolderListItemView(
             onClick = {
                 // TODO: NAVIGATE TO FOLDER DETAIL
             },
-            listTrailingContent = {
+            trailingContent = {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -301,7 +262,6 @@ private fun FolderListItemView(
                 // Pass current folder's color to the child's parent colors
                 FolderItemView(
                     model = childModel,
-                    appearance = appearance,
                     parentColors = parentColors + model.color,
                     onDeleteFolder = onDeleteFolder,
                 )

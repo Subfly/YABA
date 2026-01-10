@@ -108,9 +108,8 @@ object CoreConstants {
         const val HAS_PASSED_ONBOARDING = "hasPassedOnboarding"
         const val HAS_NAMED_DEVICE = "hasNamedDevice"
         const val PREFERRED_THEME = "preferredTheme"
-        @Deprecated("Use PREFERRED_COLLECTION_APPEARANCE and PREFERRED_BOOKMARK_APPEARANCE instead")
+        @Deprecated("Use PREFERRED_BOOKMARK_APPEARANCE instead")
         const val PREFERRED_CONTENT_APPEARANCE = "preferredContentAppearance"
-        const val PREFERRED_COLLECTION_APPEARANCE = "preferredCollectionAppearance"
         const val PREFERRED_BOOKMARK_APPEARANCE = "preferredBookmarkAppearance"
         const val PREFERRED_CARD_IMAGE_SIZING = "preferredCardImageSizing"
         const val PREFERRED_COLLECTION_SORTING = "preferredCollectionSorting"
