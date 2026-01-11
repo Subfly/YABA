@@ -170,7 +170,7 @@ private fun BookmarkAppearanceSection(
                                     text = { Text(text = appearance.uiTitle()) },
                                     trailingIcon = {
                                         val sizingExpandedRotation by animateFloatAsState(
-                                            targetValue = if (isExpanded) 90F else 0F,
+                                            targetValue = if (isCardImageSizingExpanded) 90F else 0F,
                                         )
 
                                         YabaIcon(
@@ -196,7 +196,8 @@ private fun BookmarkAppearanceSection(
                                                     i,
                                                     CardImageSizing.entries.size
                                                 ),
-                                                checked = userPreferences.preferredCardImageSizing == sizing,
+                                                checked = userPreferences.preferredBookmarkAppearance == BookmarkAppearance.CARD
+                                                        && userPreferences.preferredCardImageSizing == sizing,
                                                 onCheckedChange = { _ ->
                                                     onAppearanceSelection(appearance)
                                                     onCardSizingSelection(sizing)

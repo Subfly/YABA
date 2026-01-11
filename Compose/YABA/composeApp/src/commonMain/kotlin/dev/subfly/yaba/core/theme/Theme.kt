@@ -244,6 +244,7 @@ fun YabaTheme(content: @Composable() () -> Unit) {
     MaterialExpressiveTheme(
         colorScheme = if (isSystemInDarkTheme()) darkScheme else lightScheme,
         motionScheme = MotionScheme.expressive(),
+        typography = yabaTypography(),
         content = content
     )
 }

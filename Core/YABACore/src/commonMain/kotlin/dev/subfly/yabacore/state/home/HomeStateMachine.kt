@@ -28,6 +28,8 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
     private var dataSubscriptionJob: Job? = null
     private val bookmarkDao
         get() = DatabaseProvider.bookmarkDao
+    private val tagDao
+        get() = DatabaseProvider.tagDao
     private val preferencesStore
         get() = SettingsStores.userPreferences
 
@@ -67,6 +69,20 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
                 }
                 .distinctUntilChanged()
                 .flatMapLatest { sortingParams ->
+                    // Transform bookmarks flow to include tags before combining
+                    val bookmarksWithTagsFlow = bookmarkDao.observeAllLinkBookmarks(
+                        sortType = SortType.EDITED_AT.name,
+                        sortOrder = SortOrderType.DESCENDING.name,
+                    ).map { bookmarks ->
+                        // Load tags for each bookmark
+                        bookmarks.map { linkBookmark ->
+                            val domainModel = linkBookmark.toModel()
+                            val bookmarkTags = tagDao.getTagsForBookmarkWithCounts(domainModel.id.toString())
+                                .map { it.toUiModel() }
+                            linkBookmark to bookmarkTags
+                        }
+                    }
+
                     // Combine all data sources with the current sorting parameters
                     combine(
                         preferencesStore.preferencesFlow,
@@ -78,14 +94,11 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
                             sortType = sortingParams.sortType,
                             sortOrder = sortingParams.sortOrder,
                         ),
-                        bookmarkDao.observeAllLinkBookmarks(
-                            sortType = SortType.EDITED_AT.name,
-                            sortOrder = SortOrderType.DESCENDING.name,
-                        ),
-                    ) { preferences, folders, tags, bookmarks ->
-                        // Build recent bookmarks with local file paths
+                        bookmarksWithTagsFlow,
+                    ) { preferences, folders, tags, bookmarksWithTags ->
+                        // Build recent bookmarks with local file paths and tags
                         val recentBookmarks = mutableListOf<BookmarkUiModel>()
-                        for (linkBookmark in bookmarks.take(RECENT_BOOKMARKS_LIMIT)) {
+                        for ((linkBookmark, bookmarkTags) in bookmarksWithTags.take(RECENT_BOOKMARKS_LIMIT)) {
                             val domainModel = linkBookmark.toModel()
                             val localImagePath = LinkmarkFileManager
                                 .getLinkImageFile(domainModel.id)
@@ -95,6 +108,7 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
                                 ?.path
                             recentBookmarks.add(
                                 domainModel.toUiModel(
+                                    tags = bookmarkTags,
                                     localImagePath = localImagePath,
                                     localIconPath = localIconPath,
                                 )
