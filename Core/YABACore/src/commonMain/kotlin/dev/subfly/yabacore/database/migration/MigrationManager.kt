@@ -168,11 +168,11 @@ object MigrationManager {
             description = description,
             createdAt = createdAt,
             editedAt = editedAt,
+            localImagePath = null,
+            localIconPath = null,
             url = url,
             domain = domain,
             linkType = LinkType.fromCode(linkTypeCode),
-            previewImageUrl = previewImageUrl,
-            previewIconUrl = previewIconUrl,
             videoUrl = videoUrl,
         )
 }

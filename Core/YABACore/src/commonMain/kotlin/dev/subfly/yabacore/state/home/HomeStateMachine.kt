@@ -1,9 +1,5 @@
 package dev.subfly.yabacore.state.home
 
-import dev.subfly.yabacore.database.DatabaseProvider
-import dev.subfly.yabacore.database.mappers.toModel
-import dev.subfly.yabacore.database.mappers.toUiModel
-import dev.subfly.yabacore.filesystem.LinkmarkFileManager
 import dev.subfly.yabacore.managers.AllBookmarksManager
 import dev.subfly.yabacore.managers.FolderManager
 import dev.subfly.yabacore.managers.TagManager
@@ -26,10 +22,6 @@ private const val RECENT_BOOKMARKS_LIMIT = 5
 class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState = HomeUIState()) {
     private var isInitialized = false
     private var dataSubscriptionJob: Job? = null
-    private val bookmarkDao
-        get() = DatabaseProvider.bookmarkDao
-    private val tagDao
-        get() = DatabaseProvider.tagDao
     private val preferencesStore
         get() = SettingsStores.userPreferences
 
@@ -69,19 +61,12 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
                 }
                 .distinctUntilChanged()
                 .flatMapLatest { sortingParams ->
-                    // Transform bookmarks flow to include tags before combining
-                    val bookmarksWithTagsFlow = bookmarkDao.observeAllLinkBookmarks(
-                        sortType = SortType.EDITED_AT.name,
-                        sortOrder = SortOrderType.DESCENDING.name,
-                    ).map { bookmarks ->
-                        // Load tags for each bookmark
-                        bookmarks.map { linkBookmark ->
-                            val domainModel = linkBookmark.toModel()
-                            val bookmarkTags = tagDao.getTagsForBookmarkWithCounts(domainModel.id.toString())
-                                .map { it.toUiModel() }
-                            linkBookmark to bookmarkTags
-                        }
-                    }
+                    val recentBookmarksFlow = AllBookmarksManager
+                        .observeAllBookmarks(
+                            sortType = SortType.EDITED_AT,
+                            sortOrder = SortOrderType.DESCENDING,
+                        )
+                        .map { it.take(RECENT_BOOKMARKS_LIMIT) }
 
                     // Combine all data sources with the current sorting parameters
                     combine(
@@ -94,27 +79,8 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
                             sortType = sortingParams.sortType,
                             sortOrder = sortingParams.sortOrder,
                         ),
-                        bookmarksWithTagsFlow,
-                    ) { preferences, folders, tags, bookmarksWithTags ->
-                        // Build recent bookmarks with local file paths and tags
-                        val recentBookmarks = mutableListOf<BookmarkUiModel>()
-                        for ((linkBookmark, bookmarkTags) in bookmarksWithTags.take(RECENT_BOOKMARKS_LIMIT)) {
-                            val domainModel = linkBookmark.toModel()
-                            val localImagePath = LinkmarkFileManager
-                                .getLinkImageFile(domainModel.id)
-                                ?.path
-                            val localIconPath = LinkmarkFileManager
-                                .getDomainIconFile(domainModel.id)
-                                ?.path
-                            recentBookmarks.add(
-                                domainModel.toUiModel(
-                                    tags = bookmarkTags,
-                                    localImagePath = localImagePath,
-                                    localIconPath = localIconPath,
-                                )
-                            )
-                        }
-
+                        recentBookmarksFlow,
+                    ) { preferences, folders, tags, recentBookmarks ->
                         HomeUIState(
                             folders = folders,
                             tags = tags,

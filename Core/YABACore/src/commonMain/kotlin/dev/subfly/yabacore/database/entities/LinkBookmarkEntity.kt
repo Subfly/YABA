@@ -22,11 +22,8 @@ import dev.subfly.yabacore.model.utils.LinkType
 )
 data class LinkBookmarkEntity(
     @PrimaryKey val bookmarkId: String,
-    val description: String?,
     val url: String,
     val domain: String,
     val linkType: LinkType,
-    val previewImageUrl: String?,
-    val previewIconUrl: String?,
     val videoUrl: String?,
 )

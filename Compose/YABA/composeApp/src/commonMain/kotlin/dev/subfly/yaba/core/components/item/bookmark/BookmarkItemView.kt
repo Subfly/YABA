@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalUuidApi::class)
 
-package dev.subfly.yaba.core.components.item.bookmark.link
+package dev.subfly.yaba.core.components.item.bookmark
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,9 +29,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.components.TagsRowContent
-import dev.subfly.yaba.core.components.item.bookmark.base.BaseBookmarkItemView
-import dev.subfly.yaba.core.components.item.bookmark.base.BookmarkMenuAction
-import dev.subfly.yaba.core.components.item.bookmark.base.BookmarkSwipeAction
 import dev.subfly.yaba.core.navigation.alert.DeletionState
 import dev.subfly.yaba.core.navigation.alert.DeletionType
 import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
@@ -40,8 +37,9 @@ import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalDeletionDialogManager
 import dev.subfly.yaba.util.yabaClickable
-import dev.subfly.yabacore.model.ui.LinkmarkUiModel
+import dev.subfly.yabacore.model.ui.BookmarkUiModel
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
+import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.CardImageSizing
 import dev.subfly.yabacore.model.utils.FolderSelectionMode
 import dev.subfly.yabacore.model.utils.YabaColor
@@ -59,10 +57,10 @@ import yaba.composeapp.generated.resources.share
 import kotlin.uuid.ExperimentalUuidApi
 
 /**
- * Entry point for link bookmark (Linkmark) item rendering.
+ * Entry point for bookmark item rendering.
  * Adapts to different appearances: LIST, CARD (big/small image), and GRID.
  *
- * @param model The linkmark data to display
+ * @param model The bookmark data to display
  * @param appearance The display mode (LIST, CARD, GRID)
  * @param cardImageSizing The image sizing for card view (BIG or SMALL)
  * @param imageFilePath Optional override for the local file path. Defaults to model.localImagePath.
@@ -71,15 +69,15 @@ import kotlin.uuid.ExperimentalUuidApi
  * @param onShareBookmark Callback when the bookmark should be shared
  */
 @Composable
-fun LinkmarkItemView(
+fun BookmarkItemView(
     modifier: Modifier = Modifier,
-    model: LinkmarkUiModel,
+    model: BookmarkUiModel,
     appearance: BookmarkAppearance,
     cardImageSizing: CardImageSizing = CardImageSizing.SMALL,
     imageFilePath: String? = model.localImagePath,
     onClick: () -> Unit = {},
-    onDeleteBookmark: (LinkmarkUiModel) -> Unit = {},
-    onShareBookmark: (LinkmarkUiModel) -> Unit = {},
+    onDeleteBookmark: (BookmarkUiModel) -> Unit = {},
+    onShareBookmark: (BookmarkUiModel) -> Unit = {},
 ) {
     val creationNavigator = LocalCreationContentNavigator.current
     val deletionDialogManager = LocalDeletionDialogManager.current
@@ -98,7 +96,7 @@ fun LinkmarkItemView(
     val shareText = stringResource(Res.string.share)
     val deleteText = stringResource(Res.string.delete)
 
-    // Create menu actions for this linkmark
+    // Create menu actions for this bookmark
     val menuActions = remember(model.id, editText, moveText, shareText, deleteText) {
         listOf(
             BookmarkMenuAction(
@@ -107,7 +105,23 @@ fun LinkmarkItemView(
                 text = editText,
                 color = YabaColor.ORANGE,
                 onClick = {
-                    creationNavigator.add(LinkmarkCreationRoute(bookmarkId = model.id.toString()))
+                    when (model.kind) {
+                        BookmarkKind.LINK -> {
+                            creationNavigator.add(LinkmarkCreationRoute(bookmarkId = model.id.toString()))
+                        }
+
+                        BookmarkKind.NOTE -> {
+
+                        }
+
+                        BookmarkKind.IMAGE -> {
+
+                        }
+
+                        BookmarkKind.FILE -> {
+
+                        }
+                    }
                     appStateManager.onShowCreationContent()
                 }
             ),
@@ -187,7 +201,23 @@ fun LinkmarkItemView(
                 icon = "edit-02",
                 color = YabaColor.ORANGE,
                 onClick = {
-                    creationNavigator.add(LinkmarkCreationRoute(bookmarkId = model.id.toString()))
+                    when (model.kind) {
+                        BookmarkKind.LINK -> {
+                            creationNavigator.add(LinkmarkCreationRoute(bookmarkId = model.id.toString()))
+                        }
+
+                        BookmarkKind.NOTE -> {
+
+                        }
+
+                        BookmarkKind.IMAGE -> {
+
+                        }
+
+                        BookmarkKind.FILE -> {
+
+                        }
+                    }
                     appStateManager.onShowCreationContent()
                 }
             ),
@@ -220,7 +250,7 @@ fun LinkmarkItemView(
     ) {
         when (appearance) {
             BookmarkAppearance.LIST -> {
-                LinkmarkListItemContent(
+                ListItemContent(
                     model = model,
                     folderColor = folderColor,
                     imageFilePath = imageFilePath,
@@ -232,7 +262,7 @@ fun LinkmarkItemView(
             BookmarkAppearance.CARD -> {
                 when (cardImageSizing) {
                     CardImageSizing.BIG -> {
-                        LinkmarkCardBigItemContent(
+                        CardBigItemContent(
                             model = model,
                             folderColor = folderColor,
                             imageFilePath = imageFilePath,
@@ -243,7 +273,7 @@ fun LinkmarkItemView(
                     }
 
                     CardImageSizing.SMALL -> {
-                        LinkmarkCardSmallItemContent(
+                        CardSmallItemContent(
                             model = model,
                             folderColor = folderColor,
                             imageFilePath = imageFilePath,
@@ -256,7 +286,7 @@ fun LinkmarkItemView(
             }
 
             BookmarkAppearance.GRID -> {
-                LinkmarkGridItemContent(
+                GridItemContent(
                     model = model,
                     folderColor = folderColor,
                     imageFilePath = imageFilePath,
@@ -269,13 +299,13 @@ fun LinkmarkItemView(
 }
 
 /**
- * List view for linkmark items.
+ * List view for model items.
  * Displays icon/image, title, and description in a compact row layout.
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun LinkmarkListItemContent(
-    model: LinkmarkUiModel,
+private fun ListItemContent(
+    model: BookmarkUiModel,
     folderColor: YabaColor,
     imageFilePath: String?,
     onClick: () -> Unit,
@@ -313,22 +343,22 @@ private fun LinkmarkListItemContent(
         leadingContent = {
             BookmarkImageContent(
                 imageFilePath = imageFilePath,
-                linkType = model.linkType,
+                bookmarkKind = model.kind,
                 folderColor = folderColor,
-                size = LinkmarkImageSize.SMALL,
+                size = ItemImageSize.SMALL,
             )
         },
     )
 }
 
 /**
- * Card view with big image for linkmark items.
+ * Card view with big image for model items.
  * Image is displayed at the top, followed by title, description, and tags.
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun LinkmarkCardBigItemContent(
-    model: LinkmarkUiModel,
+private fun CardBigItemContent(
+    model: BookmarkUiModel,
     folderColor: YabaColor,
     imageFilePath: String?,
     menuActions: List<BookmarkMenuAction>,
@@ -355,9 +385,9 @@ private fun LinkmarkCardBigItemContent(
             BookmarkImageContent(
                 modifier = Modifier.fillMaxWidth(),
                 imageFilePath = imageFilePath,
-                linkType = model.linkType,
+                bookmarkKind = model.kind,
                 folderColor = folderColor,
-                size = LinkmarkImageSize.BIG,
+                size = ItemImageSize.BIG,
             )
 
             // Title
@@ -401,13 +431,13 @@ private fun LinkmarkCardBigItemContent(
 }
 
 /**
- * Card view with small image for linkmark items.
+ * Card view with small image for model items.
  * Image is displayed inline with title, followed by description and tags.
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun LinkmarkCardSmallItemContent(
-    model: LinkmarkUiModel,
+private fun CardSmallItemContent(
+    model: BookmarkUiModel,
     folderColor: YabaColor,
     imageFilePath: String?,
     menuActions: List<BookmarkMenuAction>,
@@ -437,9 +467,9 @@ private fun LinkmarkCardSmallItemContent(
             ) {
                 BookmarkImageContent(
                     imageFilePath = imageFilePath,
-                    linkType = model.linkType,
+                    bookmarkKind = model.kind,
                     folderColor = folderColor,
-                    size = LinkmarkImageSize.SMALL,
+                    size = ItemImageSize.SMALL,
                 )
                 Text(
                     modifier = Modifier.weight(1f),
@@ -483,14 +513,14 @@ private fun LinkmarkCardSmallItemContent(
 }
 
 /**
- * Grid view for linkmark items.
+ * Grid view for model items.
  * Displays image, title, and description in a vertical layout.
  * No options button visible - uses long press for context menu.
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun LinkmarkGridItemContent(
-    model: LinkmarkUiModel,
+private fun GridItemContent(
+    model: BookmarkUiModel,
     folderColor: YabaColor,
     imageFilePath: String?,
     onClick: () -> Unit,
@@ -516,9 +546,9 @@ private fun LinkmarkGridItemContent(
             BookmarkImageContent(
                 modifier = Modifier.fillMaxWidth(),
                 imageFilePath = imageFilePath,
-                linkType = model.linkType,
+                bookmarkKind = model.kind,
                 folderColor = folderColor,
-                size = LinkmarkImageSize.GRID,
+                size = ItemImageSize.GRID,
             )
 
             // Title
@@ -544,9 +574,9 @@ private fun LinkmarkGridItemContent(
 }
 
 /**
- * Enum representing different image sizes for linkmark items
+ * Enum representing different image sizes for model items
  */
-private enum class LinkmarkImageSize {
+private enum class ItemImageSize {
     SMALL,  // 64x64 for list and card small
     BIG,    // Full width, 128dp height for card big
     GRID,   // Full width, 128dp height for grid
@@ -560,14 +590,14 @@ private enum class LinkmarkImageSize {
 private fun BookmarkImageContent(
     modifier: Modifier = Modifier,
     imageFilePath: String?,
-    linkType: dev.subfly.yabacore.model.utils.LinkType,
+    bookmarkKind: BookmarkKind,
     folderColor: YabaColor,
-    size: LinkmarkImageSize,
+    size: ItemImageSize,
 ) {
     val color = Color(folderColor.iconTintArgb())
 
     when (size) {
-        LinkmarkImageSize.SMALL -> {
+        ItemImageSize.SMALL -> {
             if (imageFilePath != null) {
                 YabaImage(
                     modifier = modifier
@@ -583,14 +613,14 @@ private fun BookmarkImageContent(
                 ) {
                     YabaIcon(
                         modifier = Modifier.padding(16.dp),
-                        name = linkType.uiIconName(),
+                        name = bookmarkKind.uiIconName(),
                         color = folderColor,
                     )
                 }
             }
         }
 
-        LinkmarkImageSize.BIG, LinkmarkImageSize.GRID -> {
+        ItemImageSize.BIG, ItemImageSize.GRID -> {
             if (imageFilePath != null) {
                 YabaImage(
                     modifier = modifier
@@ -610,7 +640,7 @@ private fun BookmarkImageContent(
                     ) {
                         YabaIcon(
                             modifier = Modifier.size(48.dp),
-                            name = linkType.uiIconName(),
+                            name = bookmarkKind.uiIconName(),
                             color = folderColor,
                         )
                     }
@@ -651,11 +681,10 @@ private fun CardOptionsButton(
             )
         }
 
-        dev.subfly.yaba.core.components.item.bookmark.base.BookmarkOptionsMenu(
+        BookmarkOptionsMenu(
             menuActions = menuActions,
             isExpanded = isMenuExpanded,
             onDismissRequest = { isMenuExpanded = false },
         )
     }
 }
-

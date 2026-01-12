@@ -73,7 +73,22 @@ fun LinkmarkCreationContent(bookmarkId: String?) {
             modifier = Modifier.padding(horizontal = 8.dp),
             canPerformDone = state.label.isNotBlank(),
             isEditing = state.editingLinkmark != null,
-            onDone = { vm.onEvent(LinkmarkCreationEvent.OnSave) },
+            isSaving = state.isSaving,
+            onDone = {
+                vm.onEvent(
+                    LinkmarkCreationEvent.OnSave(
+                        onSavedCallback = {
+                            if (creationNavigator.size == 2) {
+                                appStateManager.onHideCreationContent()
+                            }
+                            creationNavigator.removeLastOrNull()
+                        },
+                        onErrorCallback = {
+
+                        }
+                    )
+                )
+            },
             onDismiss = {
                 // Means next pop up destination is Empty Route,
                 // so dismiss first, then remove the last item

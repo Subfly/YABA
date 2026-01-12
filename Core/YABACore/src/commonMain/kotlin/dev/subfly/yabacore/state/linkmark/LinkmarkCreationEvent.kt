@@ -89,5 +89,8 @@ sealed class LinkmarkCreationEvent {
     /**
      * Save the linkmark (create or update).
      */
-    data object OnSave : LinkmarkCreationEvent()
+    data class OnSave(
+        val onSavedCallback: () -> Unit,
+        val onErrorCallback: () -> Unit,
+    ) : LinkmarkCreationEvent()
 }

@@ -13,11 +13,16 @@ sealed interface BookmarkUiModel {
     val folderId: Uuid
     val kind: BookmarkKind
     val label: String
+    val description: String?
     val createdAt: Instant
     val editedAt: Instant
     val viewCount: Long
     val isPrivate: Boolean
     val isPinned: Boolean
+    /** Absolute file path for the bookmark's preview image, if available. */
+    val localImagePath: String?
+    /** Absolute file path for the bookmark's preview icon, if available. */
+    val localIconPath: String?
     val parentFolder: FolderUiModel?
     val tags: List<TagUiModel>
 }
@@ -27,22 +32,20 @@ data class LinkmarkUiModel(
     override val folderId: Uuid,
     override val kind: BookmarkKind = BookmarkKind.LINK,
     override val label: String,
+    override val description: String?,
     override val createdAt: Instant,
     override val editedAt: Instant,
     override val viewCount: Long = 0,
     override val isPrivate: Boolean = false,
     override val isPinned: Boolean = false,
-    val description: String?,
     val url: String,
     val domain: String,
     val linkType: LinkType,
-    val previewImageUrl: String?,
-    val previewIconUrl: String?,
     val videoUrl: String?,
     /** Local file path for the bookmark's preview image, if saved to disk. */
-    val localImagePath: String? = null,
-    /** Local file path for the domain icon, if saved to disk. */
-    val localIconPath: String? = null,
+    override val localImagePath: String? = null,
+    /** Local file path for the bookmark's icon (domain icon for Linkmarks), if saved to disk. */
+    override val localIconPath: String? = null,
     override val parentFolder: FolderUiModel?,
     override val tags: List<TagUiModel> = emptyList(),
 ) : BookmarkUiModel

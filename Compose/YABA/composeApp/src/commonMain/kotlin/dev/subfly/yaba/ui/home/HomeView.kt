@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.RecentBookmarksGridSection
-import dev.subfly.yaba.core.components.item.bookmark.link.LinkmarkItemView
+import dev.subfly.yaba.core.components.item.bookmark.BookmarkItemView
 import dev.subfly.yaba.core.components.item.folder.FolderItemView
 import dev.subfly.yaba.core.components.item.tag.TagItemView
 import dev.subfly.yaba.ui.home.components.HomeFab
@@ -34,7 +34,6 @@ import dev.subfly.yaba.ui.home.components.HomeTopBar
 import dev.subfly.yaba.util.LocalUserPreferences
 import dev.subfly.yaba.util.Platform
 import dev.subfly.yaba.util.YabaPlatform
-import dev.subfly.yabacore.model.ui.LinkmarkUiModel
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.FabPosition
@@ -157,41 +156,24 @@ fun HomeView(
                                         items = state.recentBookmarks,
                                         key = { it.id },
                                     ) { bookmarkModel ->
-                                        when (bookmarkModel.kind) {
-                                            BookmarkKind.LINK -> {
-                                                val linkmark = bookmarkModel as LinkmarkUiModel
-                                                LinkmarkItemView(
-                                                    modifier = Modifier
-                                                        .padding(
-                                                            horizontal = if (state.bookmarkAppearance == BookmarkAppearance.CARD) {
-                                                                12.dp
-                                                            } else 0.dp
-                                                        ),
-                                                    model = linkmark,
-                                                    appearance = state.bookmarkAppearance,
-                                                    cardImageSizing = state.cardImageSizing,
-                                                    onClick = { onClickRecentBookmark() },
-                                                    onDeleteBookmark = { bookmark ->
-                                                        vm.onEvent(HomeEvent.OnDeleteBookmark(bookmark))
-                                                    },
-                                                    onShareBookmark = { bookmark ->
-                                                        // TODO: Implement share functionality
-                                                    },
-                                                )
-                                            }
-
-                                            BookmarkKind.NOTE -> {
-                                                // TODO: Implement NotemarkItemView
-                                            }
-
-                                            BookmarkKind.IMAGE -> {
-                                                // TODO: Implement ImagemarkItemView
-                                            }
-
-                                            BookmarkKind.FILE -> {
-                                                // TODO: Implement DocmarkItemView
-                                            }
-                                        }
+                                        BookmarkItemView(
+                                            modifier = Modifier
+                                                .padding(
+                                                    horizontal = if (state.bookmarkAppearance == BookmarkAppearance.CARD) {
+                                                        12.dp
+                                                    } else 0.dp
+                                                ),
+                                            model = bookmarkModel,
+                                            appearance = state.bookmarkAppearance,
+                                            cardImageSizing = state.cardImageSizing,
+                                            onClick = { onClickRecentBookmark() },
+                                            onDeleteBookmark = { bookmark ->
+                                                vm.onEvent(HomeEvent.OnDeleteBookmark(bookmark))
+                                            },
+                                            onShareBookmark = { bookmark ->
+                                                // TODO: Implement share functionality
+                                            },
+                                        )
                                     }
                                 }
                             }

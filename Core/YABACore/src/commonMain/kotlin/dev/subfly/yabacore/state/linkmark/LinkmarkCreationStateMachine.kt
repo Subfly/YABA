@@ -29,9 +29,9 @@ private const val DEBOUNCE_DELAY_MS = 750L
 
 @OptIn(ExperimentalUuidApi::class, FlowPreview::class)
 class LinkmarkCreationStateMachine :
-        BaseStateMachine<LinkmarkCreationUIState, LinkmarkCreationEvent>(
-                initialState = LinkmarkCreationUIState()
-        ) {
+    BaseStateMachine<LinkmarkCreationUIState, LinkmarkCreationEvent>(
+        initialState = LinkmarkCreationUIState()
+    ) {
     private var isInitialized = false
     private val preferencesStore
         get() = SettingsStores.userPreferences
@@ -51,10 +51,10 @@ class LinkmarkCreationStateMachine :
             is LinkmarkCreationEvent.OnChangeLinkType -> onChangeLinkType(event)
             is LinkmarkCreationEvent.OnSelectFolder -> onSelectFolder(event)
             is LinkmarkCreationEvent.OnSelectTags -> onSelectTags(event)
+            is LinkmarkCreationEvent.OnSave -> onSave(event)
             LinkmarkCreationEvent.OnClearLabel -> onClearLabel()
             LinkmarkCreationEvent.OnClearDescription -> onClearDescription()
             LinkmarkCreationEvent.OnRefetch -> onRefetch()
-            LinkmarkCreationEvent.OnSave -> onSave()
         }
     }
 
@@ -70,8 +70,8 @@ class LinkmarkCreationStateMachine :
             val preferences = preferencesStore.get()
             updateState {
                 it.copy(
-                        bookmarkAppearance = preferences.preferredBookmarkAppearance,
-                        cardImageSizing = preferences.preferredCardImageSizing,
+                    bookmarkAppearance = preferences.preferredBookmarkAppearance,
+                    cardImageSizing = preferences.preferredCardImageSizing,
                 )
             }
 
@@ -82,19 +82,19 @@ class LinkmarkCreationStateMachine :
                 if (existing != null) {
                     updateState {
                         it.copy(
-                                url = existing.url,
-                                cleanedUrl = existing.url,
-                                host = existing.domain,
-                                label = existing.label,
-                                description = existing.description ?: "",
-                                iconUrl = existing.previewIconUrl,
-                                imageUrl = existing.previewImageUrl,
-                                videoUrl = existing.videoUrl,
-                                selectedLinkType = existing.linkType,
-                                selectedFolder = existing.parentFolder,
-                                selectedTags = existing.tags,
-                                editingLinkmark = existing,
-                                lastFetchedUrl = existing.url,
+                            url = existing.url,
+                            cleanedUrl = existing.url,
+                            host = existing.domain,
+                            label = existing.label,
+                            description = existing.description ?: "",
+                            iconUrl = null,
+                            imageUrl = null,
+                            videoUrl = existing.videoUrl,
+                            selectedLinkType = existing.linkType,
+                            selectedFolder = existing.parentFolder,
+                            selectedTags = existing.tags,
+                            editingLinkmark = existing,
+                            lastFetchedUrl = existing.url,
                         )
                     }
                 }
@@ -133,8 +133,8 @@ class LinkmarkCreationStateMachine :
                     val temporaryUncategorized = FolderManager.createUncategorizedFolderModel()
                     updateState {
                         it.copy(
-                                selectedFolder = temporaryUncategorized,
-                                uncategorizedFolderCreationRequired = true,
+                            selectedFolder = temporaryUncategorized,
+                            uncategorizedFolderCreationRequired = true,
                         )
                     }
                 }
@@ -146,9 +146,9 @@ class LinkmarkCreationStateMachine :
         urlDebounceJob?.cancel()
         urlDebounceJob = launch {
             urlDebounceFlow
-                    .debounce(DEBOUNCE_DELAY_MS.milliseconds)
-                    .distinctUntilChanged()
-                    .collect { urlToFetch -> fetchLinkData(urlToFetch) }
+                .debounce(DEBOUNCE_DELAY_MS.milliseconds)
+                .distinctUntilChanged()
+                .collect { urlToFetch -> fetchLinkData(urlToFetch) }
         }
     }
 
@@ -162,8 +162,8 @@ class LinkmarkCreationStateMachine :
 
         updateState {
             it.copy(
-                    isLoading = true,
-                    error = null,
+                isLoading = true,
+                error = null,
             )
         }
 
@@ -176,21 +176,21 @@ class LinkmarkCreationStateMachine :
 
                 updateState {
                     it.copy(
-                            cleanedUrl = preview.url,
-                            host = preview.host ?: "",
-                            // Only update label/description if they're empty
-                            label = currentLabel.ifBlank { preview.title ?: "" },
-                            description = currentDescription.ifBlank { preview.description ?: "" },
-                            iconUrl = preview.iconUrl,
-                            imageUrl = preview.imageUrl,
-                            videoUrl = preview.videoUrl,
-                            iconData = preview.iconData,
-                            imageData = preview.imageData,
-                            selectableImages = preview.imageOptions,
-                            readableHtml = preview.readableHtml,
-                            lastFetchedUrl = urlString,
-                            isLoading = false,
-                            error = null,
+                        cleanedUrl = preview.url,
+                        host = preview.host ?: "",
+                        // Only update label/description if they're empty
+                        label = currentLabel.ifBlank { preview.title ?: "" },
+                        description = currentDescription.ifBlank { preview.description ?: "" },
+                        iconUrl = preview.iconUrl,
+                        imageUrl = preview.imageUrl,
+                        videoUrl = preview.videoUrl,
+                        iconData = preview.iconData,
+                        imageData = preview.imageData,
+                        selectableImages = preview.imageOptions,
+                        readableHtml = preview.readableHtml,
+                        lastFetchedUrl = urlString,
+                        isLoading = false,
+                        error = null,
                     )
                 }
             } else {
@@ -198,38 +198,38 @@ class LinkmarkCreationStateMachine :
                 val cleaned = LinkCleaner.clean(urlString)
                 updateState {
                     it.copy(
-                            cleanedUrl = cleaned,
-                            lastFetchedUrl = urlString,
-                            isLoading = false,
-                            error = LinkmarkCreationError.UnableToUnfurl,
+                        cleanedUrl = cleaned,
+                        lastFetchedUrl = urlString,
+                        isLoading = false,
+                        error = LinkmarkCreationError.UnableToUnfurl,
                     )
                 }
             }
         } catch (e: UnfurlError.CannotCreateUrl) {
             updateState {
                 it.copy(
-                        isLoading = false,
-                        error = LinkmarkCreationError.InvalidUrl(e.raw),
+                    isLoading = false,
+                    error = LinkmarkCreationError.InvalidUrl(e.raw),
                 )
             }
         } catch (e: UnfurlError) {
             val cleaned = LinkCleaner.clean(urlString)
             updateState {
                 it.copy(
-                        cleanedUrl = cleaned,
-                        lastFetchedUrl = urlString,
-                        isLoading = false,
-                        error = LinkmarkCreationError.UnableToUnfurl,
+                    cleanedUrl = cleaned,
+                    lastFetchedUrl = urlString,
+                    isLoading = false,
+                    error = LinkmarkCreationError.UnableToUnfurl,
                 )
             }
         } catch (e: Exception) {
             val cleaned = LinkCleaner.clean(urlString)
             updateState {
                 it.copy(
-                        cleanedUrl = cleaned,
-                        lastFetchedUrl = urlString,
-                        isLoading = false,
-                        error = LinkmarkCreationError.FetchFailed,
+                    cleanedUrl = cleaned,
+                    lastFetchedUrl = urlString,
+                    isLoading = false,
+                    error = LinkmarkCreationError.FetchFailed,
                 )
             }
         }
@@ -243,21 +243,22 @@ class LinkmarkCreationStateMachine :
         val state = currentState()
 
         val (nextAppearance, nextSizing) =
-                when (state.bookmarkAppearance) {
-                    BookmarkAppearance.LIST -> BookmarkAppearance.CARD to CardImageSizing.SMALL
-                    BookmarkAppearance.CARD -> {
-                        when (state.cardImageSizing) {
-                            CardImageSizing.SMALL -> BookmarkAppearance.CARD to CardImageSizing.BIG
-                            CardImageSizing.BIG -> BookmarkAppearance.GRID to state.cardImageSizing
-                        }
+            when (state.bookmarkAppearance) {
+                BookmarkAppearance.LIST -> BookmarkAppearance.CARD to CardImageSizing.SMALL
+                BookmarkAppearance.CARD -> {
+                    when (state.cardImageSizing) {
+                        CardImageSizing.SMALL -> BookmarkAppearance.CARD to CardImageSizing.BIG
+                        CardImageSizing.BIG -> BookmarkAppearance.GRID to state.cardImageSizing
                     }
-                    BookmarkAppearance.GRID -> BookmarkAppearance.LIST to state.cardImageSizing
                 }
+
+                BookmarkAppearance.GRID -> BookmarkAppearance.LIST to state.cardImageSizing
+            }
 
         updateState {
             it.copy(
-                    bookmarkAppearance = nextAppearance,
-                    cardImageSizing = nextSizing,
+                bookmarkAppearance = nextAppearance,
+                cardImageSizing = nextSizing,
             )
         }
     }
@@ -266,12 +267,12 @@ class LinkmarkCreationStateMachine :
         val state = currentState()
         // If imageData is not provided, try to look it up from selectableImages
         val imageData =
-                event.imageData ?: event.imageUrl?.let { url -> state.selectableImages[url] }
+            event.imageData ?: event.imageUrl?.let { url -> state.selectableImages[url] }
 
         updateState {
             it.copy(
-                    imageUrl = event.imageUrl,
-                    imageData = imageData,
+                imageUrl = event.imageUrl,
+                imageData = imageData,
             )
         }
     }
@@ -295,7 +296,12 @@ class LinkmarkCreationStateMachine :
     }
 
     private fun onSelectFolder(event: LinkmarkCreationEvent.OnSelectFolder) {
-        updateState { it.copy(selectedFolder = event.folder) }
+        updateState {
+            it.copy(
+                selectedFolder = event.folder,
+                uncategorizedFolderCreationRequired = false
+            )
+        }
     }
 
     private fun onSelectTags(event: LinkmarkCreationEvent.OnSelectTags) {
@@ -319,12 +325,12 @@ class LinkmarkCreationStateMachine :
         }
     }
 
-    private fun onSave() {
+    private fun onSave(event: LinkmarkCreationEvent.OnSave) {
         val state = currentState()
         var selectedFolder = state.selectedFolder ?: return
 
         launch {
-            updateState { it.copy(isLoading = true) }
+            updateState { it.copy(isSaving = true) }
 
             try {
                 // If uncategorized folder needs to be created, persist it now
@@ -335,22 +341,24 @@ class LinkmarkCreationStateMachine :
                 if (state.editingLinkmark != null) {
                     // Update existing linkmark
                     val updated =
-                            state.editingLinkmark.copy(
-                                    folderId = selectedFolder.id,
-                                    label = state.label.ifBlank { state.cleanedUrl },
-                                    description = state.description.ifBlank { null },
-                                    url = state.cleanedUrl,
-                                    domain = state.host,
-                                    linkType = state.selectedLinkType,
-                                    previewImageUrl = state.imageUrl,
-                                    previewIconUrl = state.iconUrl,
-                                    videoUrl = state.videoUrl,
-                            )
+                        state.editingLinkmark.copy(
+                            folderId = selectedFolder.id,
+                            label = state.label.ifBlank { state.cleanedUrl },
+                            description = state.description.ifBlank { null },
+                            url = state.cleanedUrl,
+                            domain = state.host,
+                            linkType = state.selectedLinkType,
+                            videoUrl = state.videoUrl,
+                        )
                     LinkmarkManager.updateLinkmark(updated)
 
                     // Save image data if available
-                    state.imageData?.let { data -> LinkmarkManager.saveLinkImage(updated.id, data) }
-                    state.iconData?.let { data -> LinkmarkManager.saveDomainIcon(updated.id, data) }
+                    state.imageData?.let { data ->
+                        LinkmarkManager.saveLinkImage(updated.id, data)
+                    }
+                    state.iconData?.let { data ->
+                        LinkmarkManager.saveDomainIcon(updated.id, data)
+                    }
 
                     // Handle tag changes
                     val existingTagIds = state.editingLinkmark.tags.map { it.id }.toSet()
@@ -369,28 +377,30 @@ class LinkmarkCreationStateMachine :
                     // Create new linkmark
                     val now = Clock.System.now()
                     val newLinkmark =
-                            LinkmarkUiModel(
-                                    id = Uuid.random(),
-                                    folderId = selectedFolder.id,
-                                    kind = BookmarkKind.LINK,
-                                    label = state.label.ifBlank { state.cleanedUrl },
-                                    description = state.description.ifBlank { null },
-                                    url = state.cleanedUrl,
-                                    domain = state.host,
-                                    linkType = state.selectedLinkType,
-                                    previewImageUrl = state.imageUrl,
-                                    previewIconUrl = state.iconUrl,
-                                    videoUrl = state.videoUrl,
-                                    createdAt = now,
-                                    editedAt = now,
-                                    parentFolder = selectedFolder,
-                                    tags = state.selectedTags,
-                            )
+                        LinkmarkUiModel(
+                            id = Uuid.random(),
+                            folderId = selectedFolder.id,
+                            kind = BookmarkKind.LINK,
+                            label = state.label.ifBlank { state.cleanedUrl },
+                            description = state.description.ifBlank { null },
+                            url = state.cleanedUrl,
+                            domain = state.host,
+                            linkType = state.selectedLinkType,
+                            videoUrl = state.videoUrl,
+                            createdAt = now,
+                            editedAt = now,
+                            parentFolder = selectedFolder,
+                            tags = state.selectedTags,
+                        )
                     val created = LinkmarkManager.createLinkmark(newLinkmark)
 
                     // Save image data if available
-                    state.imageData?.let { data -> LinkmarkManager.saveLinkImage(created.id, data) }
-                    state.iconData?.let { data -> LinkmarkManager.saveDomainIcon(created.id, data) }
+                    state.imageData?.let { data ->
+                        LinkmarkManager.saveLinkImage(created.id, data)
+                    }
+                    state.iconData?.let { data ->
+                        LinkmarkManager.saveDomainIcon(created.id, data)
+                    }
 
                     // Add tags
                     state.selectedTags.forEach { tag ->
@@ -398,14 +408,16 @@ class LinkmarkCreationStateMachine :
                     }
                 }
 
-                updateState { it.copy(isLoading = false, error = null) }
+                updateState { it.copy(isSaving = false, error = null) }
+                event.onSavedCallback()
             } catch (e: Exception) {
                 updateState {
                     it.copy(
-                            isLoading = false,
-                            error = LinkmarkCreationError.SaveFailed,
+                        isSaving = false,
+                        error = LinkmarkCreationError.SaveFailed,
                     )
                 }
+                event.onErrorCallback()
             }
         }
     }

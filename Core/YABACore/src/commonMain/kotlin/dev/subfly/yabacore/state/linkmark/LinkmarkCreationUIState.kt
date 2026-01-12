@@ -45,6 +45,7 @@ data class LinkmarkCreationUIState(
 
         // Loading and error states
         val isLoading: Boolean = false,
+        val isSaving: Boolean = false,
         val error: LinkmarkCreationError? = null,
 
         // Preview appearance (initialized from preferences, then user-controlled via cycling)

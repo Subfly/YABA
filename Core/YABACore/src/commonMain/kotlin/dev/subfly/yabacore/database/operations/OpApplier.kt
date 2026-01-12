@@ -173,22 +173,22 @@ object OpApplier {
                     folderId = folderId.asString(),
                     kind = BookmarkKind.fromCode(payload.kindCode),
                     label = payload.label,
+                    description = payload.description,
                     createdAt = payload.createdAtEpochMillis,
                     editedAt = payload.editedAtEpochMillis,
                     viewCount = payload.viewCount,
                     isPrivate = payload.isPrivate,
                     isPinned = payload.isPinned,
+                    localImagePath = payload.localImagePath,
+                    localIconPath = payload.localIconPath,
                 )
                 bookmarkDao.upsert(entity)
                 payload.link?.let { linkPayload ->
                     val linkEntity = LinkBookmarkEntity(
                         bookmarkId = bookmarkId.asString(),
-                        description = linkPayload.description,
                         url = linkPayload.url,
                         domain = linkPayload.domain,
                         linkType = LinkType.fromCode(linkPayload.linkTypeCode),
-                        previewImageUrl = linkPayload.previewImageUrl,
-                        previewIconUrl = linkPayload.previewIconUrl,
                         videoUrl = linkPayload.videoUrl,
                     )
                     linkBookmarkDao.upsert(linkEntity)

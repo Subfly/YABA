@@ -11,9 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import dev.subfly.yaba.core.components.item.bookmark.link.LinkmarkItemView
+import dev.subfly.yaba.core.components.item.bookmark.BookmarkItemView
 import dev.subfly.yabacore.model.ui.BookmarkUiModel
-import dev.subfly.yabacore.model.ui.LinkmarkUiModel
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.CardImageSizing
@@ -59,9 +58,8 @@ fun RecentBookmarksGridSection(
             ) {
                 when (bookmarkModel.kind) {
                     BookmarkKind.LINK -> {
-                        val linkmark = bookmarkModel as LinkmarkUiModel
-                        LinkmarkItemView(
-                            model = linkmark,
+                        BookmarkItemView(
+                            model = bookmarkModel,
                             appearance = appearance,
                             cardImageSizing = cardImageSizing,
                             onClick = { onClickBookmark(bookmarkModel) },

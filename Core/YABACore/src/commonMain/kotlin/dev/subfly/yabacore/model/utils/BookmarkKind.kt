@@ -11,3 +11,11 @@ enum class BookmarkKind(val code: Int) {
         fun fromCode(code: Int): BookmarkKind = entries.firstOrNull { it.code == code } ?: LINK
     }
 }
+
+fun BookmarkKind.uiIconName(): String =
+    when (this) {
+        BookmarkKind.LINK -> "link-02"
+        BookmarkKind.NOTE -> "note-edit"
+        BookmarkKind.IMAGE -> "image-03"
+        BookmarkKind.FILE -> "doc-02"
+    }

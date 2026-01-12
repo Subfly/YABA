@@ -89,8 +89,6 @@ internal fun LinkBookmarkDomainModel.toUiModel(
     url = url,
     domain = domain,
     linkType = linkType,
-    previewImageUrl = previewImageUrl,
-    previewIconUrl = previewIconUrl,
     videoUrl = videoUrl,
     localImagePath = localImagePath,
     localIconPath = localIconPath,
@@ -109,11 +107,11 @@ internal fun LinkmarkUiModel.toDomain(): LinkBookmarkDomainModel =
         viewCount = viewCount,
         isPrivate = isPrivate,
         isPinned = isPinned,
+        localImagePath = null,
+        localIconPath = null,
         url = url,
         domain = domain,
         linkType = linkType,
-        previewImageUrl = previewImageUrl,
-        previewIconUrl = previewIconUrl,
         videoUrl = videoUrl,
     )
 

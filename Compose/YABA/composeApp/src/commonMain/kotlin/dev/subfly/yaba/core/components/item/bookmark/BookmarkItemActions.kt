@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalUuidApi::class)
 
-package dev.subfly.yaba.core.components.item.bookmark.base
+package dev.subfly.yaba.core.components.item.bookmark
 
 import androidx.compose.runtime.Stable
 import dev.subfly.yabacore.model.utils.YabaColor

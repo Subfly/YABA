@@ -80,24 +80,26 @@ data class TagPayload(
 data class BookmarkPayload(
     val folderId: String,
     val label: String,
+    val description: String? = null,
     val kindCode: Int,
     val createdAtEpochMillis: Long,
     val editedAtEpochMillis: Long,
     val viewCount: Long = 0,
     val isPrivate: Boolean = false,
     val isPinned: Boolean = false,
+    /** Relative path within the app-managed bookmark filesystem. */
+    val localImagePath: String? = null,
+    /** Relative path within the app-managed bookmark filesystem. */
+    val localIconPath: String? = null,
     val link: LinkBookmarkPayload? = null,
 ) : OperationPayload
 
 @Serializable
 @SerialName("link_bookmark")
 data class LinkBookmarkPayload(
-    val description: String?,
     val url: String,
     val domain: String,
     val linkTypeCode: Int,
-    val previewImageUrl: String?,
-    val previewIconUrl: String?,
     val videoUrl: String?,
 ) : OperationPayload
 

@@ -2,7 +2,6 @@ package dev.subfly.yabacore.state.selection
 
 import dev.subfly.yabacore.managers.AllBookmarksManager
 import dev.subfly.yabacore.managers.FolderManager
-import dev.subfly.yabacore.managers.LinkmarkManager
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.utils.FolderSelectionMode
 import dev.subfly.yabacore.model.utils.SortOrderType
@@ -156,7 +155,7 @@ class FolderSelectionStateMachine :
         val bookmarkToMove = contextBookmarkId ?: return
 
         launch {
-            val bookmark = LinkmarkManager.getLinkmarkDetail(bookmarkToMove) ?: return@launch
+            val bookmark = AllBookmarksManager.getBookmarkDetail(bookmarkToMove) ?: return@launch
             val targetFolder = FolderManager.getFolder(Uuid.parse(event.targetFolderId)) ?: return@launch
             AllBookmarksManager.moveBookmarksToFolder(listOf(bookmark), targetFolder)
         }
