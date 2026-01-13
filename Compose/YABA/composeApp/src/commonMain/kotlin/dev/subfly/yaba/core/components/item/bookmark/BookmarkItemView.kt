@@ -75,6 +75,7 @@ fun BookmarkItemView(
     appearance: BookmarkAppearance,
     cardImageSizing: CardImageSizing = CardImageSizing.SMALL,
     imageFilePath: String? = model.localImagePath,
+    iconFilePath: String? = model.localIconPath,
     onClick: () -> Unit = {},
     onDeleteBookmark: (BookmarkUiModel) -> Unit = {},
     onShareBookmark: (BookmarkUiModel) -> Unit = {},
@@ -266,6 +267,7 @@ fun BookmarkItemView(
                             model = model,
                             folderColor = folderColor,
                             imageFilePath = imageFilePath,
+                            iconFilePath = iconFilePath,
                             menuActions = menuActions,
                             onClick = onClick,
                             onLongClick = { isOptionsExpanded = true },
@@ -277,6 +279,7 @@ fun BookmarkItemView(
                             model = model,
                             folderColor = folderColor,
                             imageFilePath = imageFilePath,
+                            iconFilePath = iconFilePath,
                             menuActions = menuActions,
                             onClick = onClick,
                             onLongClick = { isOptionsExpanded = true },
@@ -361,6 +364,7 @@ private fun CardBigItemContent(
     model: BookmarkUiModel,
     folderColor: YabaColor,
     imageFilePath: String?,
+    iconFilePath: String?,
     menuActions: List<BookmarkMenuAction>,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
@@ -421,10 +425,21 @@ private fun CardBigItemContent(
                     emptyStateTextRes = Res.string.bookmark_no_tags_added_title,
                     emptyStateColor = folderColor,
                 )
-                CardOptionsButton(
-                    menuActions = menuActions,
-                    folderColor = folderColor,
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    YabaImage(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clip(RoundedCornerShape(4.dp)),
+                        filePath = iconFilePath
+                    )
+                    CardOptionsButton(
+                        menuActions = menuActions,
+                        folderColor = folderColor,
+                    )
+                }
             }
         }
     }
@@ -440,6 +455,7 @@ private fun CardSmallItemContent(
     model: BookmarkUiModel,
     folderColor: YabaColor,
     imageFilePath: String?,
+    iconFilePath: String?,
     menuActions: List<BookmarkMenuAction>,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
@@ -503,10 +519,21 @@ private fun CardSmallItemContent(
                     emptyStateTextRes = Res.string.bookmark_no_tags_added_title,
                     emptyStateColor = folderColor,
                 )
-                CardOptionsButton(
-                    menuActions = menuActions,
-                    folderColor = folderColor,
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    YabaImage(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clip(RoundedCornerShape(8.dp)),
+                        filePath = iconFilePath
+                    )
+                    CardOptionsButton(
+                        menuActions = menuActions,
+                        folderColor = folderColor,
+                    )
+                }
             }
         }
     }
