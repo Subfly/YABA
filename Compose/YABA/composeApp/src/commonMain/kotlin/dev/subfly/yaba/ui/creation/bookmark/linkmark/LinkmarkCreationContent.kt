@@ -103,6 +103,7 @@ fun LinkmarkCreationContent(bookmarkId: String?) {
                 LinkmarkPreviewContent(
                     state = state,
                     onChangePreviewType = { vm.onEvent(LinkmarkCreationEvent.OnCyclePreviewAppearance) },
+                    onUpdateAccepted = { vm.onEvent(LinkmarkCreationEvent.OnApplyContentUpdates )},
                 )
             }
             item {

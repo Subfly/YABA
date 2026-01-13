@@ -36,6 +36,17 @@ data class LinkmarkCreationUIState(
         // Selectable images from unfurling (URL -> ByteArray)
         val selectableImages: Map<String, ByteArray> = emptyMap(),
 
+        // Content update indicator (edit mode): unfurl can detect newer assets/content.
+        // UI can show an "Has updates" button when this is true.
+    // Pending updates (applied only when user clicks the "apply updates" action).
+        val hasContentUpdates: Boolean = false,
+        val updateImageData: ByteArray? = null,
+        val updateIconData: ByteArray? = null,
+        val shouldUpdateVideoUrl: Boolean = false,
+        val updateVideoUrl: String? = null,
+        val shouldUpdateReadableHtml: Boolean = false,
+        val updateReadableHtml: String? = null,
+
         // Link type classification
         val selectedLinkType: LinkType = LinkType.NONE,
 
@@ -97,6 +108,19 @@ data class LinkmarkCreationUIState(
             if (!iconData.contentEquals(other.iconData)) return false
         } else if (other.iconData != null) return false
         if (!selectableImagesEqual(selectableImages, other.selectableImages)) return false
+        if (hasContentUpdates != other.hasContentUpdates) return false
+        if (updateImageData != null) {
+            if (other.updateImageData == null) return false
+            if (!updateImageData.contentEquals(other.updateImageData)) return false
+        } else if (other.updateImageData != null) return false
+        if (updateIconData != null) {
+            if (other.updateIconData == null) return false
+            if (!updateIconData.contentEquals(other.updateIconData)) return false
+        } else if (other.updateIconData != null) return false
+        if (shouldUpdateVideoUrl != other.shouldUpdateVideoUrl) return false
+        if (updateVideoUrl != other.updateVideoUrl) return false
+        if (shouldUpdateReadableHtml != other.shouldUpdateReadableHtml) return false
+        if (updateReadableHtml != other.updateReadableHtml) return false
         if (selectedLinkType != other.selectedLinkType) return false
         if (selectedFolder != other.selectedFolder) return false
         if (selectedTags != other.selectedTags) return false
@@ -125,6 +149,13 @@ data class LinkmarkCreationUIState(
         result = 31 * result + (imageData?.contentHashCode() ?: 0)
         result = 31 * result + (iconData?.contentHashCode() ?: 0)
         result = 31 * result + selectableImagesHashCode(selectableImages)
+        result = 31 * result + hasContentUpdates.hashCode()
+        result = 31 * result + (updateImageData?.contentHashCode() ?: 0)
+        result = 31 * result + (updateIconData?.contentHashCode() ?: 0)
+        result = 31 * result + shouldUpdateVideoUrl.hashCode()
+        result = 31 * result + (updateVideoUrl?.hashCode() ?: 0)
+        result = 31 * result + shouldUpdateReadableHtml.hashCode()
+        result = 31 * result + (updateReadableHtml?.hashCode() ?: 0)
         result = 31 * result + selectedLinkType.hashCode()
         result = 31 * result + (selectedFolder?.hashCode() ?: 0)
         result = 31 * result + selectedTags.hashCode()

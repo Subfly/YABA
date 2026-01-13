@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.ListItem
@@ -76,6 +77,7 @@ private data class PreviewAnimationKey(
 internal fun LinkmarkPreviewContent(
     state: LinkmarkCreationUIState,
     onChangePreviewType: () -> Unit,
+    onUpdateAccepted: () -> Unit
 ) {
     val creationNavigator = LocalCreationContentNavigator.current
 
@@ -138,6 +140,13 @@ internal fun LinkmarkPreviewContent(
         text = stringResource(Res.string.create_bookmark_change_image_tip_message),
         style = MaterialTheme.typography.bodySmallEmphasized,
     )
+    AnimatedContent(targetState = state.hasContentUpdates) { hasUpdates ->
+        if (hasUpdates) {
+            // TODO: SHOW A YOU HAVE UPDATES BUTTON IN THERE
+        } else {
+            Box(modifier = Modifier)
+        }
+    }
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)

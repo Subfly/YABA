@@ -2,11 +2,12 @@
 
 package dev.subfly.yabacore.state.linkmark
 
-import dev.subfly.yabacore.managers.FolderManager
+import dev.subfly.yabacore.database.operations.OperationKind
+import dev.subfly.yabacore.filesystem.LinkmarkFileManager
 import dev.subfly.yabacore.managers.AllBookmarksManager
+import dev.subfly.yabacore.managers.FolderManager
 import dev.subfly.yabacore.managers.LinkmarkManager
 import dev.subfly.yabacore.managers.TagManager
-import dev.subfly.yabacore.database.operations.OperationKind
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.CardImageSizing
@@ -15,6 +16,7 @@ import dev.subfly.yabacore.state.base.BaseStateMachine
 import dev.subfly.yabacore.unfurl.LinkCleaner
 import dev.subfly.yabacore.unfurl.UnfurlError
 import dev.subfly.yabacore.unfurl.Unfurler
+import io.github.vinceglb.filekit.readBytes
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -55,6 +57,7 @@ class LinkmarkCreationStateMachine :
             LinkmarkCreationEvent.OnClearLabel -> onClearLabel()
             LinkmarkCreationEvent.OnClearDescription -> onClearDescription()
             LinkmarkCreationEvent.OnRefetch -> onRefetch()
+            LinkmarkCreationEvent.OnApplyContentUpdates -> onApplyContentUpdates()
         }
     }
 
@@ -97,6 +100,29 @@ class LinkmarkCreationStateMachine :
                             lastFetchedUrl = existing.url,
                         )
                     }
+
+                    val savedImageBytes =
+                        LinkmarkFileManager.getLinkImageFile(linkmarkId)?.readBytes()
+                    val savedIconBytes =
+                        LinkmarkFileManager.getDomainIconFile(linkmarkId)?.readBytes()
+
+                    if (savedImageBytes != null || savedIconBytes != null) {
+                        updateState {
+                            it.copy(
+                                imageData = savedImageBytes,
+                                iconData = savedIconBytes,
+                            )
+                        }
+                    }
+
+                    // Always run unfurler on init to populate selectable images and readable HTML.
+                    // In edit mode we DO NOT overwrite user-editable fields
+                    // (label/description/url/etc).
+                    fetchLinkData(
+                        urlString = existing.url,
+                        force = true,
+                        previewOnly = true,
+                    )
                 }
             }
 
@@ -152,19 +178,29 @@ class LinkmarkCreationStateMachine :
         }
     }
 
-    private suspend fun fetchLinkData(urlString: String) {
+    private suspend fun fetchLinkData(
+        urlString: String,
+        force: Boolean = false,
+        previewOnly: Boolean = false,
+    ) {
         val state = currentState()
 
         // Skip if empty or same as last fetched
-        if (urlString.isBlank() || urlString == state.lastFetchedUrl) {
+        if (urlString.isBlank() || (force.not() && urlString == state.lastFetchedUrl)) {
             return
         }
 
         updateState {
-            it.copy(
-                isLoading = true,
-                error = null,
-            )
+            if (previewOnly) {
+                // Editing should feel instant: don't flip the UI into a loading/shimmer state
+                // while we background-refresh selectable images / update candidates.
+                it.copy(error = null)
+            } else {
+                it.copy(
+                    isLoading = true,
+                    error = null,
+                )
+            }
         }
 
         try {
@@ -175,28 +211,97 @@ class LinkmarkCreationStateMachine :
                 val currentDescription = currentState().description
 
                 updateState {
+                    if (previewOnly) {
+                        val imageUpdate = computeByteArrayUpdate(it.imageData, preview.imageData)
+                        val iconUpdate = computeByteArrayUpdate(it.iconData, preview.iconData)
+                        val videoDiff = preview.videoUrl != it.videoUrl
+                        val htmlDiff = preview.readableHtml != it.readableHtml
+                        val hasUpdates =
+                            (imageUpdate != null) ||
+                                    (iconUpdate != null) ||
+                                    videoDiff ||
+                                    htmlDiff
+                        it.copy(
+                            // Only enrich the selectable image list; everything else becomes a
+                            // pending update.
+                            selectableImages = preview.imageOptions,
+                            hasContentUpdates = hasUpdates,
+                            updateImageData = imageUpdate,
+                            updateIconData = iconUpdate,
+                            shouldUpdateVideoUrl = videoDiff,
+                            updateVideoUrl = if (videoDiff) preview.videoUrl else null,
+                            shouldUpdateReadableHtml = htmlDiff,
+                            updateReadableHtml = if (htmlDiff) preview.readableHtml else null,
+                            lastFetchedUrl = urlString,
+                            isLoading = false,
+                            error = null,
+                        )
+                    } else {
+                        it.copy(
+                            cleanedUrl = preview.url,
+                            host = preview.host ?: "",
+                            // Only update label/description if they're empty
+                            label = currentLabel.ifBlank { preview.title ?: "" },
+                            description =
+                                currentDescription.ifBlank { preview.description ?: "" },
+                            iconUrl = preview.iconUrl,
+                            imageUrl = preview.imageUrl,
+                            videoUrl = preview.videoUrl,
+                            iconData = preview.iconData,
+                            imageData = preview.imageData,
+                            selectableImages = preview.imageOptions,
+                            readableHtml = preview.readableHtml,
+                            // Clear any pending updates if we're not in preview-only mode.
+                            hasContentUpdates = false,
+                            updateImageData = null,
+                            updateIconData = null,
+                            shouldUpdateVideoUrl = false,
+                            updateVideoUrl = null,
+                            shouldUpdateReadableHtml = false,
+                            updateReadableHtml = null,
+                            lastFetchedUrl = urlString,
+                            isLoading = false,
+                            error = null,
+                        )
+                    }
+                }
+            } else {
+                updateState {
+                    if (previewOnly) {
+                        it.copy(
+                            lastFetchedUrl = urlString,
+                            isLoading = false,
+                            error = null,
+                        )
+                    } else {
+                        // Clean URL even if unfurl failed
+                        val cleaned = LinkCleaner.clean(urlString)
+                        it.copy(
+                            cleanedUrl = cleaned,
+                            lastFetchedUrl = urlString,
+                            isLoading = false,
+                            error = LinkmarkCreationError.UnableToUnfurl,
+                        )
+                    }
+                }
+            }
+        } catch (e: UnfurlError.CannotCreateUrl) {
+            updateState {
+                it.copy(
+                    isLoading = false,
+                    error = if (previewOnly) null else LinkmarkCreationError.InvalidUrl(e.raw),
+                )
+            }
+        } catch (e: UnfurlError) {
+            updateState {
+                if (previewOnly) {
                     it.copy(
-                        cleanedUrl = preview.url,
-                        host = preview.host ?: "",
-                        // Only update label/description if they're empty
-                        label = currentLabel.ifBlank { preview.title ?: "" },
-                        description = currentDescription.ifBlank { preview.description ?: "" },
-                        iconUrl = preview.iconUrl,
-                        imageUrl = preview.imageUrl,
-                        videoUrl = preview.videoUrl,
-                        iconData = preview.iconData,
-                        imageData = preview.imageData,
-                        selectableImages = preview.imageOptions,
-                        readableHtml = preview.readableHtml,
                         lastFetchedUrl = urlString,
                         isLoading = false,
                         error = null,
                     )
-                }
-            } else {
-                // Clean URL even if unfurl failed
-                val cleaned = LinkCleaner.clean(urlString)
-                updateState {
+                } else {
+                    val cleaned = LinkCleaner.clean(urlString)
                     it.copy(
                         cleanedUrl = cleaned,
                         lastFetchedUrl = urlString,
@@ -205,32 +310,23 @@ class LinkmarkCreationStateMachine :
                     )
                 }
             }
-        } catch (e: UnfurlError.CannotCreateUrl) {
-            updateState {
-                it.copy(
-                    isLoading = false,
-                    error = LinkmarkCreationError.InvalidUrl(e.raw),
-                )
-            }
-        } catch (e: UnfurlError) {
-            val cleaned = LinkCleaner.clean(urlString)
-            updateState {
-                it.copy(
-                    cleanedUrl = cleaned,
-                    lastFetchedUrl = urlString,
-                    isLoading = false,
-                    error = LinkmarkCreationError.UnableToUnfurl,
-                )
-            }
         } catch (e: Exception) {
-            val cleaned = LinkCleaner.clean(urlString)
             updateState {
-                it.copy(
-                    cleanedUrl = cleaned,
-                    lastFetchedUrl = urlString,
-                    isLoading = false,
-                    error = LinkmarkCreationError.FetchFailed,
-                )
+                if (previewOnly) {
+                    it.copy(
+                        lastFetchedUrl = urlString,
+                        isLoading = false,
+                        error = null,
+                    )
+                } else {
+                    val cleaned = LinkCleaner.clean(urlString)
+                    it.copy(
+                        cleanedUrl = cleaned,
+                        lastFetchedUrl = urlString,
+                        isLoading = false,
+                        error = LinkmarkCreationError.FetchFailed,
+                    )
+                }
             }
         }
     }
@@ -297,10 +393,7 @@ class LinkmarkCreationStateMachine :
 
     private fun onSelectFolder(event: LinkmarkCreationEvent.OnSelectFolder) {
         updateState {
-            it.copy(
-                selectedFolder = event.folder,
-                uncategorizedFolderCreationRequired = false
-            )
+            it.copy(selectedFolder = event.folder, uncategorizedFolderCreationRequired = false)
         }
     }
 
@@ -321,8 +414,44 @@ class LinkmarkCreationStateMachine :
         if (currentUrl.isNotBlank()) {
             // Reset lastFetchedUrl to force re-fetch
             updateState { it.copy(lastFetchedUrl = "") }
-            launch { fetchLinkData(currentUrl) }
+            launch {
+                val state = currentState()
+                fetchLinkData(
+                    urlString = currentUrl,
+                    force = true,
+                    previewOnly = state.isInEditMode,
+                )
+            }
         }
+    }
+
+    private fun onApplyContentUpdates() {
+        val state = currentState()
+        if (!state.hasContentUpdates) return
+
+        updateState {
+            it.copy(
+                imageData = it.updateImageData ?: it.imageData,
+                iconData = it.updateIconData ?: it.iconData,
+                videoUrl = if (it.shouldUpdateVideoUrl) it.updateVideoUrl else it.videoUrl,
+                readableHtml =
+                    if (it.shouldUpdateReadableHtml) it.updateReadableHtml
+                    else it.readableHtml,
+                hasContentUpdates = false,
+                updateImageData = null,
+                updateIconData = null,
+                shouldUpdateVideoUrl = false,
+                updateVideoUrl = null,
+                shouldUpdateReadableHtml = false,
+                updateReadableHtml = null,
+            )
+        }
+    }
+
+    private fun computeByteArrayUpdate(current: ByteArray?, candidate: ByteArray?): ByteArray? {
+        if (candidate == null) return null
+        if (current == null) return candidate
+        return if (current.contentEquals(candidate)) null else candidate
     }
 
     private fun onSave(event: LinkmarkCreationEvent.OnSave) {
@@ -399,9 +528,7 @@ class LinkmarkCreationStateMachine :
                     )
 
                     // Add tags
-                    state.selectedTags.forEach { tag ->
-                        TagManager.addTagToBookmark(tag, newId)
-                    }
+                    state.selectedTags.forEach { tag -> TagManager.addTagToBookmark(tag, newId) }
                 }
 
                 updateState { it.copy(isSaving = false, error = null) }

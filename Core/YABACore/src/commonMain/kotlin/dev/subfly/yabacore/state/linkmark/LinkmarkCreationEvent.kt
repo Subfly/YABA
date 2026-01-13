@@ -87,6 +87,14 @@ sealed class LinkmarkCreationEvent {
     data object OnRefetch : LinkmarkCreationEvent()
 
     /**
+     * Apply unfurl-detected updates (preview image/icon, videoUrl, readableHtml).
+     *
+     * This is intended for edit mode: we can fetch new remote-derived content without overwriting
+     * the user's title/description automatically.
+     */
+    data object OnApplyContentUpdates : LinkmarkCreationEvent()
+
+    /**
      * Save the linkmark (create or update).
      */
     data class OnSave(
