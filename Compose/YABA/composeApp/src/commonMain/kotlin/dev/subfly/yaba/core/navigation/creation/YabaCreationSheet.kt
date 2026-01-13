@@ -22,7 +22,7 @@ fun YabaCreationSheet(modifier: Modifier = Modifier) {
 
     LaunchedEffect(sheetState.isVisible) {
         if (sheetState.isVisible.not()) {
-            creationNavigator.removeIf { it !is EmptyRoute }
+            creationNavigator.removeIf { it !is EmptyCretionRoute }
         }
     }
 

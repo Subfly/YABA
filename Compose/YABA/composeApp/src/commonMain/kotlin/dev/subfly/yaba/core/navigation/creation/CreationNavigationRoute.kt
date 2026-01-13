@@ -29,7 +29,7 @@ val creationNavigationConfig = SavedStateConfiguration {
             subclass(IconSelectionRoute::class, IconSelectionRoute.serializer())
             subclass(ColorSelectionRoute::class, ColorSelectionRoute.serializer())
             subclass(ImageSelectionRoute::class, ImageSelectionRoute.serializer())
-            subclass(EmptyRoute::class, EmptyRoute.serializer())
+            subclass(EmptyCretionRoute::class, EmptyCretionRoute.serializer())
         }
     }
 }
@@ -116,4 +116,4 @@ data class ColorSelectionRoute(
 ): NavKey
 
 @Serializable
-data object EmptyRoute: NavKey
+data object EmptyCretionRoute: NavKey

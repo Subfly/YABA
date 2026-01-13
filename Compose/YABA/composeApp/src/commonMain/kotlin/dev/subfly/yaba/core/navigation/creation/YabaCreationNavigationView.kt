@@ -97,7 +97,7 @@ fun YabaCreationNavigationView(
                     imageDataMap = key.imageDataMap,
                 )
             }
-            entry<EmptyRoute> {
+            entry<EmptyCretionRoute> {
                 // Only old Compose users will remember why we had to put 1.dp boxes in sheets...
                 Box(modifier = Modifier.size((0.1).dp))
             }

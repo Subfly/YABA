@@ -8,10 +8,26 @@ import dev.subfly.yaba.core.navigation.alert.DeletionVM
 import dev.subfly.yaba.core.navigation.creation.ResultStore
 import dev.subfly.yabacore.preferences.UserPreferences
 
-val LocalUserPreferences = compositionLocalOf { UserPreferences() }
-val LocalResultStore = compositionLocalOf { ResultStore() }
-val LocalCreationContentNavigator = compositionLocalOf { NavBackStack<NavKey>() }
+val LocalUserPreferences = compositionLocalOf<UserPreferences> {
+    error("No user preferences provider provided")
+}
 
-val LocalAppStateManager = compositionLocalOf { AppVM() }
+val LocalResultStore = compositionLocalOf<ResultStore> {
+    error("No result store provided")
+}
 
-val LocalDeletionDialogManager = compositionLocalOf { DeletionVM() }
+val LocalCreationContentNavigator = compositionLocalOf<NavBackStack<NavKey>> {
+    error("No creation navigator provided")
+}
+
+val LocalContentNavigator = compositionLocalOf<NavBackStack<NavKey>> {
+    error("No detail navigator provided")
+}
+
+val LocalAppStateManager = compositionLocalOf<AppVM> {
+    error("No app state manager provided")
+}
+
+val LocalDeletionDialogManager = compositionLocalOf<DeletionVM> {
+    error("No deletion manager provided")
+}

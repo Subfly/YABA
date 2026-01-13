@@ -28,18 +28,18 @@ import dev.subfly.yaba.core.components.RecentBookmarksGridSection
 import dev.subfly.yaba.core.components.item.bookmark.BookmarkItemView
 import dev.subfly.yaba.core.components.item.folder.FolderItemView
 import dev.subfly.yaba.core.components.item.tag.TagItemView
+import dev.subfly.yaba.core.navigation.main.SearchRoute
 import dev.subfly.yaba.ui.home.components.HomeFab
 import dev.subfly.yaba.ui.home.components.HomeTitleContent
 import dev.subfly.yaba.ui.home.components.HomeTopBar
+import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalUserPreferences
 import dev.subfly.yaba.util.Platform
 import dev.subfly.yaba.util.YabaPlatform
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
-import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.FabPosition
 import dev.subfly.yabacore.state.home.HomeEvent
 import dev.subfly.yabacore.ui.layout.YabaContentLayout
-import kotlin.uuid.ExperimentalUuidApi
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.folders_title
@@ -47,6 +47,7 @@ import yaba.composeapp.generated.resources.home_recents_label
 import yaba.composeapp.generated.resources.no_folders_message
 import yaba.composeapp.generated.resources.no_tags_message
 import yaba.composeapp.generated.resources.tags_title
+import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(
     ExperimentalMaterial3ExpressiveApi::class,
@@ -55,14 +56,9 @@ import yaba.composeapp.generated.resources.tags_title
     ExperimentalUuidApi::class
 )
 @Composable
-fun HomeView(
-    modifier: Modifier = Modifier,
-    onClickSearch: () -> Unit,
-    onClickRecentBookmark: () -> Unit,
-    onClickFolder: () -> Unit,
-    onClickTag: () -> Unit,
-) {
+fun HomeView(modifier: Modifier = Modifier) {
     val userPreferences = LocalUserPreferences.current
+    val navigator = LocalContentNavigator.current
 
     val vm = viewModel { HomeVM() }
     val state by vm.state
@@ -88,7 +84,7 @@ fun HomeView(
                     onSortingChanged = { newSortType ->
                         vm.onEvent(HomeEvent.OnChangeCollectionSorting(newSortType))
                     },
-                    onSearchClicked = onClickSearch,
+                    onSearchClicked = { navigator.add(SearchRoute) },
                 )
             },
             floatingActionButtonPosition = when (userPreferences.preferredFabPosition) {
@@ -123,6 +119,7 @@ fun HomeView(
                                     ) { CircularWavyProgressIndicator() }
                                 }
                             }
+
                             state.recentBookmarks.isEmpty() -> {
                                 // TODO: LOCALIZATION
                                 item(key = "NO_RECENTS") {
@@ -133,6 +130,7 @@ fun HomeView(
                                     )
                                 }
                             }
+
                             else -> {
                                 // For GRID appearance, render all bookmarks in a single grid item
                                 if (state.bookmarkAppearance == BookmarkAppearance.GRID) {
@@ -141,7 +139,9 @@ fun HomeView(
                                             bookmarks = state.recentBookmarks,
                                             appearance = state.bookmarkAppearance,
                                             cardImageSizing = state.cardImageSizing,
-                                            onClickBookmark = { onClickRecentBookmark() },
+                                            onClickBookmark = {
+                                                // TODO: NAVIGATE TO BOOKMARK DETAIL
+                                            },
                                             onDeleteBookmark = { bookmark ->
                                                 vm.onEvent(HomeEvent.OnDeleteBookmark(bookmark))
                                             },
@@ -166,7 +166,9 @@ fun HomeView(
                                             model = bookmarkModel,
                                             appearance = state.bookmarkAppearance,
                                             cardImageSizing = state.cardImageSizing,
-                                            onClick = { onClickRecentBookmark() },
+                                            onClick = {
+                                                // TODO: NAVIGATE TO BOOKMARK DETAIL
+                                            },
                                             onDeleteBookmark = { bookmark ->
                                                 vm.onEvent(HomeEvent.OnDeleteBookmark(bookmark))
                                             },
