@@ -48,6 +48,11 @@ object TagManager {
     suspend fun getTag(tagId: Uuid): TagUiModel? =
         tagDao.getTagWithBookmarkCount(tagId.asString())?.toUiModel()
 
+    fun observeTag(tagId: Uuid): Flow<TagUiModel?> =
+        tagDao.observeById(tagId.asString()).map { entity ->
+            entity?.toModel()?.toUiModel()
+        }
+
     suspend fun createTag(tag: TagUiModel): TagUiModel {
         val now = clock.now()
         val tagsCount = tagDao.getAll().size

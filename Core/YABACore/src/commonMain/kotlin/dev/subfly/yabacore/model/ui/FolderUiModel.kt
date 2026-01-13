@@ -2,11 +2,13 @@
 
 package dev.subfly.yabacore.model.ui
 
+import androidx.compose.runtime.Immutable
 import dev.subfly.yabacore.model.utils.YabaColor
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
+@Immutable
 data class FolderUiModel(
     val id: Uuid,
     val parentId: Uuid?,

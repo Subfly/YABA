@@ -258,8 +258,8 @@ object AllBookmarksManager {
         return bookmarkDao
             .observeBookmarksSearch(
                 query = query,
-                kinds = params.kinds,
-                applyKindFilter = params.applyKindFilter,
+                kinds = emptyList(),
+                applyKindFilter = false,
                 folderIds = params.folderIds,
                 applyFolderFilter = params.applyFolderFilter,
                 tagIds = params.tagIds,
@@ -366,8 +366,6 @@ object AllBookmarksManager {
         rawExtension.orEmpty().lowercase().removePrefix(".").ifBlank { fallback }
 
     private data class BookmarkQueryParams(
-        val kinds: List<BookmarkKind>,
-        val applyKindFilter: Boolean,
         val folderIds: List<String>,
         val applyFolderFilter: Boolean,
         val tagIds: List<String>,
@@ -375,12 +373,9 @@ object AllBookmarksManager {
     )
 
     private fun BookmarkSearchFilters.toQueryParams(): BookmarkQueryParams {
-        val kindSet = kinds?.takeIf { it.isNotEmpty() }
         val folderSet = folderIds?.takeIf { it.isNotEmpty() }
         val tagSet = tagIds?.takeIf { it.isNotEmpty() }
         return BookmarkQueryParams(
-            kinds = kindSet?.toList() ?: listOf(BookmarkKind.LINK),
-            applyKindFilter = kindSet != null,
             folderIds = folderSet?.map { it.toString() } ?: listOf(Uuid.NIL.toString()),
             applyFolderFilter = folderSet != null,
             tagIds = tagSet?.map { it.toString() } ?: listOf(Uuid.NIL.toString()),

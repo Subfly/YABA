@@ -2,6 +2,7 @@
 
 package dev.subfly.yabacore.model.ui
 
+import androidx.compose.runtime.Immutable
 import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.LinkType
 import kotlin.time.Instant
@@ -33,6 +34,7 @@ sealed interface BookmarkUiModel {
  * Subtype-specific details (e.g., link url/domain) are intentionally excluded and should be loaded
  * only when navigating to detail screens.
  */
+@Immutable
 data class BookmarkPreviewUiModel(
     override val id: Uuid,
     override val folderId: Uuid,
@@ -52,6 +54,7 @@ data class BookmarkPreviewUiModel(
     override val tags: List<TagUiModel> = emptyList(),
 ) : BookmarkUiModel
 
+@Immutable
 data class LinkmarkUiModel(
     override val id: Uuid,
     override val folderId: Uuid,

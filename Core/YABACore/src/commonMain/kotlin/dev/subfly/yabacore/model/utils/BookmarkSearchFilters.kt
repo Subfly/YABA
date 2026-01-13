@@ -5,7 +5,6 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
 data class BookmarkSearchFilters(
-        val folderIds: Set<Uuid>? = null,
-        val tagIds: Set<Uuid>? = null,
-        val kinds: Set<BookmarkKind>? = null,
+    val folderIds: Set<Uuid>? = null,
+    val tagIds: Set<Uuid>? = null,
 )
