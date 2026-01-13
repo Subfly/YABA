@@ -1,5 +1,6 @@
 package dev.subfly.yabacore.state.search
 
+import dev.subfly.yabacore.model.ui.BookmarkUiModel
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
@@ -14,4 +15,5 @@ sealed interface SearchEvent {
     data class OnToggleTagFilter(val tagId: Uuid) : SearchEvent
     data class OnChangeSort(val sortType: SortType, val sortOrder: SortOrderType) : SearchEvent
     data class OnChangeAppearance(val appearance: BookmarkAppearance) : SearchEvent
+    data class OnDeleteBookmark(val bookmark: BookmarkUiModel) : SearchEvent
 }

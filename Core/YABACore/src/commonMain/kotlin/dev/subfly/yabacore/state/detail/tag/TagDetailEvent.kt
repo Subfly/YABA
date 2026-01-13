@@ -1,5 +1,6 @@
 package dev.subfly.yabacore.state.detail.tag
 
+import dev.subfly.yabacore.model.ui.BookmarkUiModel
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
@@ -13,6 +14,7 @@ sealed interface TagDetailEvent {
     data object OnToggleSelectionMode : TagDetailEvent
     data class OnToggleBookmarkSelection(val bookmarkId: Uuid) : TagDetailEvent
     data object OnDeleteSelected : TagDetailEvent
+    data class OnDeleteBookmark(val bookmark: BookmarkUiModel) : TagDetailEvent
     data class OnChangeSort(val sortType: SortType, val sortOrder: SortOrderType) : TagDetailEvent
     data class OnChangeAppearance(val appearance: BookmarkAppearance) : TagDetailEvent
 }

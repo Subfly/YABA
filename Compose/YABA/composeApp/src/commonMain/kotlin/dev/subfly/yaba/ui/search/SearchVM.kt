@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModel
 import dev.subfly.yabacore.state.search.SearchEvent
 import dev.subfly.yabacore.state.search.SearchStateMachine
 import dev.subfly.yabacore.state.search.SearchUIState
+import kotlin.uuid.ExperimentalUuidApi
 
+@OptIn(ExperimentalUuidApi::class)
 class SearchVM : ViewModel() {
     private val stateMachine = SearchStateMachine()
     var state = mutableStateOf(SearchUIState())

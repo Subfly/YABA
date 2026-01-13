@@ -84,7 +84,7 @@ fun HomeView(modifier: Modifier = Modifier) {
                     onSortingChanged = { newSortType ->
                         vm.onEvent(HomeEvent.OnChangeCollectionSorting(newSortType))
                     },
-                    onSearchClicked = { navigator.add(SearchRoute) },
+                    onSearchClicked = { navigator.add(SearchRoute()) },
                 )
             },
             floatingActionButtonPosition = when (userPreferences.preferredFabPosition) {

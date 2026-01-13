@@ -36,6 +36,7 @@ class FolderDetailStateMachine :
             is FolderDetailEvent.OnToggleBookmarkSelection -> onToggleBookmarkSelection(event.bookmarkId)
             is FolderDetailEvent.OnMoveSelectedToFolder -> onMoveSelectedToFolder(event.targetFolder)
             FolderDetailEvent.OnDeleteSelected -> onDeleteSelected()
+            is FolderDetailEvent.OnDeleteBookmark -> onDeleteBookmark(event.bookmark)
             is FolderDetailEvent.OnChangeSort -> onChangeSort(event.sortType, event.sortOrder)
             is FolderDetailEvent.OnChangeAppearance -> onChangeAppearance(event.appearance)
         }
@@ -141,6 +142,10 @@ class FolderDetailStateMachine :
             AllBookmarksManager.deleteBookmarks(bookmarksToDelete)
             updateState { it.copy(isSelectionMode = false, selectedBookmarkIds = emptySet()) }
         }
+    }
+
+    private fun onDeleteBookmark(bookmark: dev.subfly.yabacore.model.ui.BookmarkUiModel) {
+        launch { AllBookmarksManager.deleteBookmarks(listOf(bookmark)) }
     }
 
     private fun onChangeSort(sortType: SortType, sortOrder: SortOrderType) {

@@ -43,6 +43,7 @@ class SearchStateMachine :
             is SearchEvent.OnToggleTagFilter -> onToggleTagFilter(event.tagId)
             is SearchEvent.OnChangeSort -> onChangeSort(event.sortType, event.sortOrder)
             is SearchEvent.OnChangeAppearance -> onChangeAppearance(event.appearance)
+            is SearchEvent.OnDeleteBookmark -> onDeleteBookmark(event.bookmark)
         }
     }
 
@@ -114,6 +115,10 @@ class SearchStateMachine :
 
     private fun onChangeAppearance(appearance: dev.subfly.yabacore.model.utils.BookmarkAppearance) {
         launch { preferencesStore.setPreferredBookmarkAppearance(appearance) }
+    }
+
+    private fun onDeleteBookmark(bookmark: dev.subfly.yabacore.model.ui.BookmarkUiModel) {
+        launch { AllBookmarksManager.deleteBookmarks(listOf(bookmark)) }
     }
 
     override fun clear() {

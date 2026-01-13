@@ -50,7 +50,7 @@ fun App() {
     )
     val contentNavigator = rememberNavBackStack(
         configuration = detailNavigationConfig,
-        HomeRoute
+        HomeRoute()
     )
 
     val currentWindowInfo = currentWindowAdaptiveInfo()

@@ -35,6 +35,7 @@ class TagDetailStateMachine :
             is TagDetailEvent.OnToggleSelectionMode -> onToggleSelectionMode()
             is TagDetailEvent.OnToggleBookmarkSelection -> onToggleBookmarkSelection(event.bookmarkId)
             TagDetailEvent.OnDeleteSelected -> onDeleteSelected()
+            is TagDetailEvent.OnDeleteBookmark -> onDeleteBookmark(event.bookmark)
             is TagDetailEvent.OnChangeSort -> onChangeSort(event.sortType, event.sortOrder)
             is TagDetailEvent.OnChangeAppearance -> onChangeAppearance(event.appearance)
         }
@@ -128,6 +129,10 @@ class TagDetailStateMachine :
             AllBookmarksManager.deleteBookmarks(bookmarksToDelete)
             updateState { it.copy(isSelectionMode = false, selectedBookmarkIds = emptySet()) }
         }
+    }
+
+    private fun onDeleteBookmark(bookmark: dev.subfly.yabacore.model.ui.BookmarkUiModel) {
+        launch { AllBookmarksManager.deleteBookmarks(listOf(bookmark)) }
     }
 
     private fun onChangeSort(sortType: SortType, sortOrder: SortOrderType) {

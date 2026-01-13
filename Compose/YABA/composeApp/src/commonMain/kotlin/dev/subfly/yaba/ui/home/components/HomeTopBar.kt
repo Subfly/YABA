@@ -50,9 +50,7 @@ internal fun HomeTopBar(
                 IconButton(onClick = onSearchClicked) {
                     YabaIcon(name = "search-01")
                 }
-                Box(
-                    modifier = Modifier.wrapContentSize(Alignment.TopStart)
-                ) {
+                Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
                     IconButton(onClick = { isMenuExpanded = !isMenuExpanded }) {
                         YabaIcon(name = "more-horizontal-circle-02")
                     }
