@@ -7,14 +7,18 @@ import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.subfly.yabacore.model.ui.BookmarkUiModel
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
@@ -35,6 +39,7 @@ fun YabaBookmarkLayout(
     modifier: Modifier = Modifier,
     dragDropState: YabaDragDropState = rememberYabaDragDropState(onDrop),
     contentPadding: PaddingValues = PaddingValues(0.dp),
+    headLineSpacerSizing: Dp = 12.dp,
     itemContent:
     @Composable
         (
@@ -51,6 +56,7 @@ fun YabaBookmarkLayout(
                 verticalArrangement = Arrangement.spacedBy(layoutConfig.itemSpacing),
                 contentPadding = contentPadding,
             ) {
+                item { Spacer(modifier = Modifier.height(headLineSpacerSizing)) }
                 items(
                     items = bookmarks,
                     key = { "${it.id} ${it.label}" },
@@ -75,6 +81,9 @@ fun YabaBookmarkLayout(
                 horizontalArrangement = Arrangement.spacedBy(layoutConfig.itemSpacing),
                 contentPadding = contentPadding,
             ) {
+                item(
+                    span = StaggeredGridItemSpan.FullLine,
+                ) { Spacer(modifier = Modifier.height(headLineSpacerSizing)) }
                 items(
                     items = bookmarks,
                     key = { "${it.id} ${it.label}" },

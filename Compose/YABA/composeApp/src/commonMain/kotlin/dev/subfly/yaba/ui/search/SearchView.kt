@@ -143,6 +143,7 @@ fun SearchView(modifier: Modifier = Modifier) {
                         .fillMaxSize()
                         .padding(paddings),
                     bookmarks = state.bookmarks,
+                    headLineSpacerSizing = 8.dp,
                     layoutConfig = ContentLayoutConfig(
                         bookmarkAppearance = userPreferences.preferredBookmarkAppearance,
                         cardImageSizing = userPreferences.preferredCardImageSizing,
