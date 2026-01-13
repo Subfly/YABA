@@ -2,14 +2,16 @@
 
 package dev.subfly.yabacore.database.migration
 
+import dev.subfly.yabacore.common.CoreConstants
+import dev.subfly.yabacore.database.domain.BookmarkMetadataDomainModel
 import dev.subfly.yabacore.database.domain.FolderDomainModel
-import dev.subfly.yabacore.database.domain.LinkBookmarkDomainModel
 import dev.subfly.yabacore.database.domain.TagDomainModel
 import dev.subfly.yabacore.database.operations.OpApplier
 import dev.subfly.yabacore.database.operations.OperationDraft
 import dev.subfly.yabacore.database.operations.OperationEntityType
 import dev.subfly.yabacore.database.operations.OperationKind
 import dev.subfly.yabacore.database.operations.TagLinkPayload
+import dev.subfly.yabacore.database.operations.linkBookmarkOperationDraft
 import dev.subfly.yabacore.database.operations.toOperationDraft
 import dev.subfly.yabacore.filesystem.LinkmarkFileManager
 import dev.subfly.yabacore.model.utils.BookmarkKind
@@ -34,8 +36,8 @@ object MigrationManager {
 
         snapshot?.let {
             val sanitized = sanitizeSnapshot(it)
-            migrateDatabaseSnapshot(sanitized)
             migrateBookmarkAssets(sanitized)
+            migrateDatabaseSnapshot(sanitized)
         }
     }
 
@@ -63,9 +65,33 @@ object MigrationManager {
         }
 
     private fun buildBookmarkDrafts(snapshot: LegacySnapshot): List<OperationDraft> =
-        snapshot.bookmarks.sortedBy { it.createdAt }.map { legacy ->
-            legacy.toBookmark().toOperationDraft(OperationKind.CREATE)
-        }
+        snapshot.bookmarks
+            .sortedBy { it.createdAt }
+            .flatMap { legacy ->
+                val localImagePath = legacy.previewImageData?.let {
+                    CoreConstants.FileSystem.Linkmark.linkImagePath(legacy.id, "jpeg")
+                }
+                val localIconPath = legacy.previewIconData?.let {
+                    CoreConstants.FileSystem.Linkmark.domainIconPath(legacy.id, "png")
+                }
+
+                val metadata = legacy.toBookmarkMetadata(
+                    localImagePath = localImagePath,
+                    localIconPath = localIconPath,
+                )
+                listOf(
+                    metadata.toOperationDraft(OperationKind.CREATE),
+                    linkBookmarkOperationDraft(
+                        bookmarkId = legacy.id,
+                        url = legacy.url,
+                        domain = legacy.domain,
+                        linkType = LinkType.fromCode(legacy.linkTypeCode),
+                        videoUrl = legacy.videoUrl,
+                        kind = OperationKind.CREATE,
+                        happenedAt = legacy.editedAt,
+                    ),
+                )
+            }
 
     private fun buildTagLinkDrafts(snapshot: LegacySnapshot): List<OperationDraft> {
         val now = Clock.System.now()
@@ -159,8 +185,11 @@ object MigrationManager {
             order = order,
         )
 
-    private fun LegacyBookmark.toBookmark(): LinkBookmarkDomainModel =
-        LinkBookmarkDomainModel(
+    private fun LegacyBookmark.toBookmarkMetadata(
+        localImagePath: String?,
+        localIconPath: String?,
+    ): BookmarkMetadataDomainModel =
+        BookmarkMetadataDomainModel(
             id = id,
             folderId = folderId,
             kind = BookmarkKind.LINK,
@@ -168,11 +197,7 @@ object MigrationManager {
             description = description,
             createdAt = createdAt,
             editedAt = editedAt,
-            localImagePath = null,
-            localIconPath = null,
-            url = url,
-            domain = domain,
-            linkType = LinkType.fromCode(linkTypeCode),
-            videoUrl = videoUrl,
+            localImagePath = localImagePath,
+            localIconPath = localIconPath,
         )
 }

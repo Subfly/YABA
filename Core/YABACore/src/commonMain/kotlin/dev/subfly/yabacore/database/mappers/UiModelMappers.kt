@@ -4,10 +4,12 @@ package dev.subfly.yabacore.database.mappers
 
 import dev.subfly.yabacore.database.models.FolderWithBookmarkCount
 import dev.subfly.yabacore.database.models.TagWithBookmarkCount
+import dev.subfly.yabacore.database.domain.BookmarkMetadataDomainModel
 import dev.subfly.yabacore.database.domain.FolderDomainModel
 import dev.subfly.yabacore.database.domain.LinkBookmarkDomainModel
 import dev.subfly.yabacore.database.domain.TagDomainModel
 import dev.subfly.yabacore.model.ui.BookmarkUiModel
+import dev.subfly.yabacore.model.ui.BookmarkPreviewUiModel
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.ui.LinkmarkUiModel
 import dev.subfly.yabacore.model.ui.TagUiModel
@@ -69,6 +71,46 @@ internal fun TagUiModel.toDomain(): TagDomainModel =
         createdAt = createdAt,
         editedAt = editedAt,
         order = order,
+    )
+
+internal fun BookmarkMetadataDomainModel.toUiModel(
+    folder: FolderUiModel? = null,
+    tags: List<TagUiModel> = emptyList(),
+    localImagePath: String? = null,
+    localIconPath: String? = null,
+): BookmarkPreviewUiModel = BookmarkPreviewUiModel(
+    id = id,
+    folderId = folderId,
+    kind = kind,
+    label = label,
+    description = description,
+    createdAt = createdAt,
+    editedAt = editedAt,
+    viewCount = viewCount,
+    isPrivate = isPrivate,
+    isPinned = isPinned,
+    localImagePath = localImagePath,
+    localIconPath = localIconPath,
+    parentFolder = folder,
+    tags = tags,
+)
+
+internal fun BookmarkPreviewUiModel.toDomain(): BookmarkMetadataDomainModel =
+    BookmarkMetadataDomainModel(
+        id = id,
+        folderId = folderId,
+        kind = kind,
+        label = label,
+        description = description,
+        createdAt = createdAt,
+        editedAt = editedAt,
+        viewCount = viewCount,
+        isPrivate = isPrivate,
+        isPinned = isPinned,
+        // UI model stores absolute paths; domain stores relative paths.
+        // These should be set explicitly by managers when persisting bookmark preview assets.
+        localImagePath = null,
+        localIconPath = null,
     )
 
 internal fun LinkBookmarkDomainModel.toUiModel(

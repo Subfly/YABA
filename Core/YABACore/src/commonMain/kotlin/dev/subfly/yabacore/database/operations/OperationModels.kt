@@ -12,6 +12,7 @@ enum class OperationEntityType {
     FOLDER,
     TAG,
     BOOKMARK,
+    LINK_BOOKMARK,
     TAG_LINK,
     FILE,
     ALL,

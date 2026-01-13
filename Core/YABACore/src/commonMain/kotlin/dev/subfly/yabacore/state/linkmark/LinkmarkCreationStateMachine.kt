@@ -3,9 +3,10 @@
 package dev.subfly.yabacore.state.linkmark
 
 import dev.subfly.yabacore.managers.FolderManager
+import dev.subfly.yabacore.managers.AllBookmarksManager
 import dev.subfly.yabacore.managers.LinkmarkManager
 import dev.subfly.yabacore.managers.TagManager
-import dev.subfly.yabacore.model.ui.LinkmarkUiModel
+import dev.subfly.yabacore.database.operations.OperationKind
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.CardImageSizing
@@ -14,7 +15,6 @@ import dev.subfly.yabacore.state.base.BaseStateMachine
 import dev.subfly.yabacore.unfurl.LinkCleaner
 import dev.subfly.yabacore.unfurl.UnfurlError
 import dev.subfly.yabacore.unfurl.Unfurler
-import kotlin.time.Clock
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -339,26 +339,27 @@ class LinkmarkCreationStateMachine :
                 }
 
                 if (state.editingLinkmark != null) {
-                    // Update existing linkmark
-                    val updated =
-                        state.editingLinkmark.copy(
-                            folderId = selectedFolder.id,
-                            label = state.label.ifBlank { state.cleanedUrl },
-                            description = state.description.ifBlank { null },
-                            url = state.cleanedUrl,
-                            domain = state.host,
-                            linkType = state.selectedLinkType,
-                            videoUrl = state.videoUrl,
-                        )
-                    LinkmarkManager.updateLinkmark(updated)
+                    // Update base bookmark metadata first (list/grid source of truth)
+                    AllBookmarksManager.updateBookmarkMetadata(
+                        bookmarkId = state.editingLinkmark.id,
+                        folderId = selectedFolder.id,
+                        kind = BookmarkKind.LINK,
+                        label = state.label.ifBlank { state.cleanedUrl },
+                        description = state.description.ifBlank { null },
+                        previewImageBytes = state.imageData,
+                        previewImageExtension = "jpeg",
+                        previewIconBytes = state.iconData,
+                    )
 
-                    // Save image data if available
-                    state.imageData?.let { data ->
-                        LinkmarkManager.saveLinkImage(updated.id, data)
-                    }
-                    state.iconData?.let { data ->
-                        LinkmarkManager.saveDomainIcon(updated.id, data)
-                    }
+                    // Then upsert link-specific details (detail screen extras)
+                    LinkmarkManager.createOrUpdateLinkDetails(
+                        bookmarkId = state.editingLinkmark.id,
+                        url = state.cleanedUrl,
+                        domain = state.host,
+                        linkType = state.selectedLinkType,
+                        videoUrl = state.videoUrl,
+                        operationKind = OperationKind.UPDATE,
+                    )
 
                     // Handle tag changes
                     val existingTagIds = state.editingLinkmark.tags.map { it.id }.toSet()
@@ -366,45 +367,40 @@ class LinkmarkCreationStateMachine :
 
                     // Add new tags
                     state.selectedTags.filter { it.id !in existingTagIds }.forEach { tag ->
-                        TagManager.addTagToBookmark(tag, updated.id)
+                        TagManager.addTagToBookmark(tag, state.editingLinkmark.id)
                     }
 
                     // Remove old tags
                     state.editingLinkmark.tags.filter { it.id !in newTagIds }.forEach { tag ->
-                        TagManager.removeTagFromBookmark(tag, updated.id)
+                        TagManager.removeTagFromBookmark(tag, state.editingLinkmark.id)
                     }
                 } else {
-                    // Create new linkmark
-                    val now = Clock.System.now()
-                    val newLinkmark =
-                        LinkmarkUiModel(
-                            id = Uuid.random(),
-                            folderId = selectedFolder.id,
-                            kind = BookmarkKind.LINK,
-                            label = state.label.ifBlank { state.cleanedUrl },
-                            description = state.description.ifBlank { null },
-                            url = state.cleanedUrl,
-                            domain = state.host,
-                            linkType = state.selectedLinkType,
-                            videoUrl = state.videoUrl,
-                            createdAt = now,
-                            editedAt = now,
-                            parentFolder = selectedFolder,
-                            tags = state.selectedTags,
-                        )
-                    val created = LinkmarkManager.createLinkmark(newLinkmark)
+                    // Create new base bookmark metadata first (list/grid source of truth)
+                    val newId = Uuid.random()
+                    AllBookmarksManager.createBookmarkMetadata(
+                        id = newId,
+                        folderId = selectedFolder.id,
+                        kind = BookmarkKind.LINK,
+                        label = state.label.ifBlank { state.cleanedUrl },
+                        description = state.description.ifBlank { null },
+                        previewImageBytes = state.imageData,
+                        previewImageExtension = "jpeg",
+                        previewIconBytes = state.iconData,
+                    )
 
-                    // Save image data if available
-                    state.imageData?.let { data ->
-                        LinkmarkManager.saveLinkImage(created.id, data)
-                    }
-                    state.iconData?.let { data ->
-                        LinkmarkManager.saveDomainIcon(created.id, data)
-                    }
+                    // Then create link-specific details (detail screen extras)
+                    LinkmarkManager.createOrUpdateLinkDetails(
+                        bookmarkId = newId,
+                        url = state.cleanedUrl,
+                        domain = state.host,
+                        linkType = state.selectedLinkType,
+                        videoUrl = state.videoUrl,
+                        operationKind = OperationKind.CREATE,
+                    )
 
                     // Add tags
                     state.selectedTags.forEach { tag ->
-                        TagManager.addTagToBookmark(tag, created.id)
+                        TagManager.addTagToBookmark(tag, newId)
                     }
                 }
 

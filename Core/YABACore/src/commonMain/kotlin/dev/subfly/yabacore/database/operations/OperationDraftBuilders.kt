@@ -2,10 +2,11 @@
 
 package dev.subfly.yabacore.database.operations
 
+import dev.subfly.yabacore.database.domain.BookmarkMetadataDomainModel
 import dev.subfly.yabacore.database.domain.FolderDomainModel
-import dev.subfly.yabacore.database.domain.LinkBookmarkDomainModel
 import dev.subfly.yabacore.database.domain.TagDomainModel
 import dev.subfly.yabacore.filesystem.model.BookmarkFileAssetKind
+import dev.subfly.yabacore.model.utils.LinkType
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -44,7 +45,7 @@ internal fun TagDomainModel.toOperationDraft(kind: OperationKind): OperationDraf
         ),
     )
 
-internal fun LinkBookmarkDomainModel.toOperationDraft(kind: OperationKind): OperationDraft =
+internal fun BookmarkMetadataDomainModel.toOperationDraft(kind: OperationKind): OperationDraft =
     OperationDraft(
         entityType = OperationEntityType.BOOKMARK,
         entityId = id.toString(),
@@ -62,14 +63,30 @@ internal fun LinkBookmarkDomainModel.toOperationDraft(kind: OperationKind): Oper
             isPinned = isPinned,
             localImagePath = localImagePath,
             localIconPath = localIconPath,
-            link = LinkBookmarkPayload(
-                url = url,
-                domain = domain,
-                linkTypeCode = linkType.code,
-                videoUrl = videoUrl,
-            ),
+            link = null,
         ),
     )
+
+fun linkBookmarkOperationDraft(
+    bookmarkId: Uuid,
+    url: String,
+    domain: String,
+    linkType: LinkType,
+    videoUrl: String?,
+    kind: OperationKind,
+    happenedAt: Instant,
+): OperationDraft = OperationDraft(
+    entityType = OperationEntityType.LINK_BOOKMARK,
+    entityId = bookmarkId.toString(),
+    kind = kind,
+    happenedAt = happenedAt,
+    payload = LinkBookmarkPayload(
+        url = url,
+        domain = domain,
+        linkTypeCode = linkType.code,
+        videoUrl = videoUrl,
+    ),
+)
 
 fun tagLinkOperationDraft(
     tagId: Uuid,
@@ -97,7 +114,7 @@ data class FileOperationChange(
 
 fun FileOperationChange.toOperationDraft(
     kind: OperationKind,
-    happenedAt: Instant
+    happenedAt: Instant,
 ): OperationDraft = OperationDraft(
     entityType = OperationEntityType.FILE,
     entityId = "${bookmarkId}|${relativePath}",

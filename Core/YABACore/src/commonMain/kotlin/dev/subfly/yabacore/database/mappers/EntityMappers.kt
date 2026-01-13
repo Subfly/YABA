@@ -7,6 +7,7 @@ import dev.subfly.yabacore.database.entities.FolderEntity
 import dev.subfly.yabacore.database.entities.LinkBookmarkEntity
 import dev.subfly.yabacore.database.entities.TagEntity
 import dev.subfly.yabacore.database.models.LinkBookmarkWithRelations
+import dev.subfly.yabacore.database.domain.BookmarkMetadataDomainModel
 import dev.subfly.yabacore.database.domain.FolderDomainModel
 import dev.subfly.yabacore.database.domain.LinkBookmarkDomainModel
 import dev.subfly.yabacore.database.domain.TagDomainModel
@@ -39,6 +40,22 @@ internal fun TagEntity.toModel(): TagDomainModel =
     )
 
 internal fun LinkBookmarkWithRelations.toModel(): LinkBookmarkDomainModel = bookmark.toModel(link)
+
+internal fun BookmarkEntity.toMetadataModel(): BookmarkMetadataDomainModel =
+    BookmarkMetadataDomainModel(
+        id = id.toUuid(),
+        folderId = folderId.toUuid(),
+        kind = kind,
+        label = label,
+        description = description,
+        createdAt = createdAt.toInstant(),
+        editedAt = editedAt.toInstant(),
+        viewCount = viewCount,
+        isPrivate = isPrivate,
+        isPinned = isPinned,
+        localImagePath = localImagePath,
+        localIconPath = localIconPath,
+    )
 
 internal fun BookmarkEntity.toModel(linkEntity: LinkBookmarkEntity): LinkBookmarkDomainModel =
     LinkBookmarkDomainModel(

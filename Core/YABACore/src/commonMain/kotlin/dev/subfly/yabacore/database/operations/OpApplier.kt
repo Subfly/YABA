@@ -70,7 +70,16 @@ object OpApplier {
     suspend fun applyRemote(operations: List<Operation>) {
         if (operations.isEmpty()) return
         database.runWriterTransaction {
-            operations.forEach { operation ->
+            // Apply BOOKMARK operations before LINK_BOOKMARK operations within the batch
+            // to satisfy FK constraints (link_bookmarks.bookmarkId -> bookmarks.id).
+            val (linkBookmarkOps, otherOps) =
+                operations.partition { it.entityType == OperationEntityType.LINK_BOOKMARK }
+
+            otherOps.forEach { operation ->
+                applyOperation(operation)
+                opLogDao.insert(operation.toEntity())
+            }
+            linkBookmarkOps.forEach { operation ->
                 applyOperation(operation)
                 opLogDao.insert(operation.toEntity())
             }
@@ -100,6 +109,7 @@ object OpApplier {
             OperationEntityType.FOLDER -> applyFolderOperation(operation)
             OperationEntityType.TAG -> applyTagOperation(operation)
             OperationEntityType.BOOKMARK -> applyBookmarkOperation(operation)
+            OperationEntityType.LINK_BOOKMARK -> applyLinkBookmarkOperation(operation)
             OperationEntityType.TAG_LINK -> applyTagLinkOperation(operation)
             OperationEntityType.FILE -> applyFileOperation(operation)
             OperationEntityType.ALL -> applyDeleteAllOperation()
@@ -183,16 +193,32 @@ object OpApplier {
                     localIconPath = payload.localIconPath,
                 )
                 bookmarkDao.upsert(entity)
-                payload.link?.let { linkPayload ->
-                    val linkEntity = LinkBookmarkEntity(
-                        bookmarkId = bookmarkId.asString(),
-                        url = linkPayload.url,
-                        domain = linkPayload.domain,
-                        linkType = LinkType.fromCode(linkPayload.linkTypeCode),
-                        videoUrl = linkPayload.videoUrl,
-                    )
-                    linkBookmarkDao.upsert(linkEntity)
-                }
+            }
+        }
+    }
+
+    private suspend fun applyLinkBookmarkOperation(operation: Operation) {
+        val payload = operation.payload as? LinkBookmarkPayload ?: return
+        val bookmarkId = operation.entityId.toUuidOrNull() ?: return
+        when (operation.kind) {
+            OperationKind.DELETE, OperationKind.BULK_DELETE -> {
+                val existing = linkBookmarkDao.getByBookmarkId(bookmarkId.asString()) ?: return
+                linkBookmarkDao.delete(existing)
+            }
+
+            else -> {
+                // If the parent bookmark row doesn't exist yet, skip for now.
+                // (Remote batches are ordered in applyRemote, but keep this safe anyway.)
+                if (bookmarkDao.getById(bookmarkId.asString()) == null) return
+
+                val entity = LinkBookmarkEntity(
+                    bookmarkId = bookmarkId.asString(),
+                    url = payload.url,
+                    domain = payload.domain,
+                    linkType = LinkType.fromCode(payload.linkTypeCode),
+                    videoUrl = payload.videoUrl,
+                )
+                linkBookmarkDao.upsert(entity)
             }
         }
     }

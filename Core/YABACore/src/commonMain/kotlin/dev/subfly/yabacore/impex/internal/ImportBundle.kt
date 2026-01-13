@@ -2,11 +2,13 @@
 
 package dev.subfly.yabacore.impex.internal
 
+import dev.subfly.yabacore.database.domain.BookmarkMetadataDomainModel
 import dev.subfly.yabacore.database.domain.FolderDomainModel
 import dev.subfly.yabacore.database.domain.LinkBookmarkDomainModel
 import dev.subfly.yabacore.database.domain.TagDomainModel
 import dev.subfly.yabacore.database.operations.OperationDraft
 import dev.subfly.yabacore.database.operations.OperationKind
+import dev.subfly.yabacore.database.operations.linkBookmarkOperationDraft
 import dev.subfly.yabacore.database.operations.tagLinkOperationDraft
 import dev.subfly.yabacore.database.operations.toOperationDraft
 import dev.subfly.yabacore.impex.model.TagLink
@@ -24,7 +26,35 @@ internal fun ImportBundle.toOperationDrafts(): List<OperationDraft> {
     val drafts = mutableListOf<OperationDraft>()
     drafts += folders.sortedBy { it.order }.map { it.toOperationDraft(OperationKind.CREATE) }
     drafts += tags.sortedBy { it.order }.map { it.toOperationDraft(OperationKind.CREATE) }
-    drafts += bookmarks.map { it.toOperationDraft(OperationKind.CREATE) }
+    drafts += bookmarks.flatMap { linkBookmark ->
+        val metadata =
+            BookmarkMetadataDomainModel(
+                id = linkBookmark.id,
+                folderId = linkBookmark.folderId,
+                kind = linkBookmark.kind,
+                label = linkBookmark.label,
+                description = linkBookmark.description,
+                createdAt = linkBookmark.createdAt,
+                editedAt = linkBookmark.editedAt,
+                viewCount = linkBookmark.viewCount,
+                isPrivate = linkBookmark.isPrivate,
+                isPinned = linkBookmark.isPinned,
+                localImagePath = linkBookmark.localImagePath,
+                localIconPath = linkBookmark.localIconPath,
+            )
+        listOf(
+            metadata.toOperationDraft(OperationKind.CREATE),
+            linkBookmarkOperationDraft(
+                bookmarkId = linkBookmark.id,
+                url = linkBookmark.url,
+                domain = linkBookmark.domain,
+                linkType = linkBookmark.linkType,
+                videoUrl = linkBookmark.videoUrl,
+                kind = OperationKind.CREATE,
+                happenedAt = linkBookmark.editedAt,
+            )
+        )
+    }
     drafts += tagLinks.map { link ->
         tagLinkOperationDraft(
             tagId = link.tagId,
