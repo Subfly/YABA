@@ -29,7 +29,8 @@ import kotlin.uuid.ExperimentalUuidApi
  * Layout for displaying bookmarks with drag & drop support.
  * 
  * For LIST/CARD appearance, uses LazyColumn.
- * For GRID appearance, uses LazyVerticalStaggeredGrid with adaptive columns.
+ * For GRID appearance, uses LazyVerticalStaggeredGrid with adaptive columns based on a minimum
+ * cell size (see [ContentLayoutConfig.gridMinCellSize]).
  */
 @Composable
 fun YabaBookmarkLayout(
@@ -39,7 +40,6 @@ fun YabaBookmarkLayout(
     modifier: Modifier = Modifier,
     dragDropState: YabaDragDropState = rememberYabaDragDropState(onDrop),
     contentPadding: PaddingValues = PaddingValues(0.dp),
-    headLineSpacerSizing: Dp = 12.dp,
     itemContent:
     @Composable
         (
@@ -56,7 +56,7 @@ fun YabaBookmarkLayout(
                 verticalArrangement = Arrangement.spacedBy(layoutConfig.itemSpacing),
                 contentPadding = contentPadding,
             ) {
-                item { Spacer(modifier = Modifier.height(headLineSpacerSizing)) }
+                item { Spacer(modifier = Modifier.height(layoutConfig.headlineSpacerSizing)) }
                 items(
                     items = bookmarks,
                     key = { "${it.id} ${it.label}" },
@@ -76,14 +76,14 @@ fun YabaBookmarkLayout(
         BookmarkAppearance.GRID ->
             LazyVerticalStaggeredGrid(
                 modifier = modifier,
-                columns = StaggeredGridCells.Fixed(layoutConfig.gridColumnCount),
+                columns = StaggeredGridCells.Adaptive(layoutConfig.gridMinCellSize),
                 verticalItemSpacing = layoutConfig.itemSpacing,
                 horizontalArrangement = Arrangement.spacedBy(layoutConfig.itemSpacing),
                 contentPadding = contentPadding,
             ) {
                 item(
                     span = StaggeredGridItemSpan.FullLine,
-                ) { Spacer(modifier = Modifier.height(headLineSpacerSizing)) }
+                ) { Spacer(modifier = Modifier.height(layoutConfig.headlineSpacerSizing)) }
                 items(
                     items = bookmarks,
                     key = { "${it.id} ${it.label}" },

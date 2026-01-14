@@ -15,11 +15,15 @@ import dev.subfly.yabacore.model.utils.CardImageSizing
  * @param bookmarkAppearance Appearance for bookmark items (LIST, CARD, or GRID)
  * @param cardImageSizing Size of images in card view (only applies when bookmarkAppearance is CARD)
  * @param itemSpacing Vertical spacing between items in the list
- * @param gridColumnCount Number of columns when displaying bookmarks in GRID appearance
+ * @param gridMinCellSize Minimum cell size when displaying bookmarks in GRID appearance. The grid
+ * will automatically increase/decrease the number of columns as available width changes.
+ * @param gridColumnCount Legacy fixed column count for GRID appearance. Only used when
+ * [gridMinCellSize] is set to <= 0.dp.
  */
 data class ContentLayoutConfig(
     val bookmarkAppearance: BookmarkAppearance = BookmarkAppearance.LIST,
     val cardImageSizing: CardImageSizing = CardImageSizing.SMALL,
+    val headlineSpacerSizing: Dp = 12.dp,
     val itemSpacing: Dp = 8.dp,
-    val gridColumnCount: Int = 3,
+    val gridMinCellSize: Dp = 180.dp,
 )

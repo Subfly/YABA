@@ -141,22 +141,21 @@ fun SearchView(modifier: Modifier = Modifier) {
                 YabaBookmarkLayout(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(paddings),
+                        .padding(paddings)
+                        .padding(
+                            horizontal = if (state.bookmarkAppearance != BookmarkAppearance.LIST) {
+                                12.dp
+                            } else 0.dp
+                        ),
                     bookmarks = state.bookmarks,
-                    headLineSpacerSizing = 8.dp,
                     layoutConfig = ContentLayoutConfig(
                         bookmarkAppearance = userPreferences.preferredBookmarkAppearance,
                         cardImageSizing = userPreferences.preferredCardImageSizing,
+                        headlineSpacerSizing = 8.dp,
                     ),
                     onDrop = {},
                     itemContent = { model, _, appearance, cardImageSizing ->
                         BookmarkItemView(
-                            modifier = Modifier
-                                .padding(
-                                    horizontal = if (state.bookmarkAppearance == BookmarkAppearance.CARD) {
-                                        12.dp
-                                    } else 0.dp
-                                ),
                             model = model,
                             appearance = appearance,
                             cardImageSizing = cardImageSizing,
