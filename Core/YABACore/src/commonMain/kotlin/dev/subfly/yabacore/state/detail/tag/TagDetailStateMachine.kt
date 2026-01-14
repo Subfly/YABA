@@ -66,8 +66,8 @@ class TagDetailStateMachine :
                     val bookmarksFlow = AllBookmarksManager.searchBookmarksFlow(
                         query = query,
                         filters = BookmarkSearchFilters(tagIds = setOf(tagId)),
-                        sortType = prefs.preferredCollectionSorting,
-                        sortOrder = prefs.preferredSortOrder
+                        sortType = prefs.preferredBookmarkSorting,
+                        sortOrder = prefs.preferredBookmarkSortOrder
                     )
 
                     combine(
@@ -80,8 +80,8 @@ class TagDetailStateMachine :
                             bookmarks = bookmarks,
                             query = query,
                             bookmarkAppearance = latestPrefs.preferredBookmarkAppearance,
-                            sortType = latestPrefs.preferredCollectionSorting,
-                            sortOrder = latestPrefs.preferredSortOrder,
+                            sortType = latestPrefs.preferredBookmarkSorting,
+                            sortOrder = latestPrefs.preferredBookmarkSortOrder,
                             isLoading = false
                         )
                     }
@@ -138,7 +138,7 @@ class TagDetailStateMachine :
     private fun onChangeSort(sortType: SortType, sortOrder: SortOrderType) {
         launch {
             preferencesStore.setPreferredBookmarkSorting(sortType)
-            preferencesStore.setPreferredSortOrder(sortOrder)
+            preferencesStore.setPreferredBookmarkSortOrder(sortOrder)
         }
     }
 

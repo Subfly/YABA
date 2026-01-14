@@ -21,6 +21,8 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import dev.subfly.yaba.ui.detail.EmptyDetailView
+import dev.subfly.yaba.ui.detail.folder.FolderDetailView
+import dev.subfly.yaba.ui.detail.tag.TagDetailView
 import dev.subfly.yaba.ui.home.HomeView
 import dev.subfly.yaba.ui.search.SearchView
 import dev.subfly.yaba.util.LocalContentNavigator
@@ -85,6 +87,12 @@ fun YabaMainNavigationView(
             }
             entry<SearchRoute>(metadata = ListDetailSceneStrategy.detailPane()) {
                 SearchView()
+            }
+            entry<FolderDetailRoute>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
+                FolderDetailView(folderId = key.folderId)
+            }
+            entry<TagDetailRoute>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
+                TagDetailView(tagId = key.tagId)
             }
         }
     )

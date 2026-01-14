@@ -1,4 +1,4 @@
-package dev.subfly.yaba.ui.search
+package dev.subfly.yaba.ui.detail.tag
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
@@ -44,13 +44,16 @@ import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
 import dev.subfly.yabacore.model.utils.uiIconName
-import dev.subfly.yabacore.state.search.SearchEvent
-import dev.subfly.yabacore.state.search.SearchUIState
+import dev.subfly.yabacore.state.detail.tag.TagDetailEvent
+import dev.subfly.yabacore.state.detail.tag.TagDetailUIState
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.layout.ContentLayoutConfig
 import dev.subfly.yabacore.ui.layout.YabaBookmarkLayout
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
+import yaba.composeapp.generated.resources.bookmark_selection_cancel
+import yaba.composeapp.generated.resources.bookmark_selection_delete
+import yaba.composeapp.generated.resources.bookmark_selection_enable
 import yaba.composeapp.generated.resources.no_bookmarks_message
 import yaba.composeapp.generated.resources.no_bookmarks_title
 import yaba.composeapp.generated.resources.search_no_bookmarks_found_description
@@ -59,19 +62,29 @@ import yaba.composeapp.generated.resources.search_prompt
 import yaba.composeapp.generated.resources.settings_bookmark_sorting_title
 import yaba.composeapp.generated.resources.settings_content_appearance_title
 import yaba.composeapp.generated.resources.settings_sort_order_title
+import kotlin.uuid.ExperimentalUuidApi
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3ExpressiveApi::class,
+    ExperimentalUuidApi::class
+)
 @Composable
-fun SearchView(modifier: Modifier = Modifier) {
+fun TagDetailView(
+    modifier: Modifier = Modifier,
+    tagId: String,
+) {
     val userPreferences = LocalUserPreferences.current
     val navigator = LocalContentNavigator.current
 
     val searchBarState = rememberSearchBarState()
 
-    val vm = viewModel { SearchVM() }
+    val vm = viewModel { TagDetailVM() }
     val state by vm.state
 
-    LaunchedEffect(Unit) { vm.onEvent(event = SearchEvent.OnInit) }
+    LaunchedEffect(tagId) {
+        vm.onEvent(TagDetailEvent.OnInit(tagId = tagId))
+    }
 
     Scaffold(
         modifier = modifier,
@@ -85,10 +98,10 @@ fun SearchView(modifier: Modifier = Modifier) {
                         expanded = false,
                         onExpandedChange = {},
                         onQueryChange = { newQuery ->
-                            vm.onEvent(SearchEvent.OnChangeQuery(newQuery))
+                            vm.onEvent(TagDetailEvent.OnChangeQuery(query = newQuery))
                         },
                         onSearch = { finalQuery ->
-                            vm.onEvent(SearchEvent.OnChangeQuery(finalQuery))
+                            vm.onEvent(TagDetailEvent.OnChangeQuery(query = finalQuery))
                         },
                         leadingIcon = { YabaIcon(name = "search-01") },
                         trailingIcon = {
@@ -98,11 +111,11 @@ fun SearchView(modifier: Modifier = Modifier) {
                                 exit = fadeOut() + scaleOut(),
                             ) {
                                 IconButton(
-                                    onClick = { vm.onEvent(SearchEvent.OnChangeQuery("")) }
+                                    onClick = { vm.onEvent(TagDetailEvent.OnChangeQuery("")) }
                                 ) { YabaIcon(name = "cancel-01") }
                             }
                         },
-                        placeholder = { Text(text = stringResource(Res.string.search_prompt)) }
+                        placeholder = { Text(text = stringResource(Res.string.search_prompt)) },
                     )
                 },
                 navigationIcon = {
@@ -110,9 +123,14 @@ fun SearchView(modifier: Modifier = Modifier) {
                         YabaIcon(name = "arrow-left-01")
                     }
                 },
-                actions = { OptionsMenu(state = state, onEvent = vm::onEvent) }
+                actions = {
+                    TagDetailOptionsMenu(
+                        state = state,
+                        onEvent = vm::onEvent,
+                    )
+                },
             )
-        }
+        },
     ) { paddings ->
         when {
             state.isLoading && state.bookmarks.isEmpty() -> {
@@ -134,9 +152,7 @@ fun SearchView(modifier: Modifier = Modifier) {
                     NoContentView(
                         iconName = "bookmark-02",
                         labelRes = Res.string.no_bookmarks_title,
-                        message = {
-                            Text(text = stringResource(Res.string.no_bookmarks_message))
-                        }
+                        message = { Text(text = stringResource(Res.string.no_bookmarks_message)) },
                     )
                 }
             }
@@ -158,7 +174,7 @@ fun SearchView(modifier: Modifier = Modifier) {
                                     state.query,
                                 )
                             )
-                        }
+                        },
                     )
                 }
             }
@@ -169,7 +185,7 @@ fun SearchView(modifier: Modifier = Modifier) {
                         .fillMaxSize()
                         .padding(paddings)
                         .padding(
-                            horizontal = if (state.bookmarkAppearance != BookmarkAppearance.LIST) {
+                            horizontal = if (userPreferences.preferredBookmarkAppearance != BookmarkAppearance.LIST) {
                                 12.dp
                             } else 0.dp
                         ),
@@ -186,16 +202,24 @@ fun SearchView(modifier: Modifier = Modifier) {
                             appearance = appearance,
                             cardImageSizing = cardImageSizing,
                             onClick = {
-                                // TODO: OPEN BOOKMARK DETAIL
+                                if (state.isSelectionMode) {
+                                    vm.onEvent(
+                                        TagDetailEvent.OnToggleBookmarkSelection(
+                                            bookmarkId = model.id
+                                        )
+                                    )
+                                } else {
+                                    // TODO: OPEN BOOKMARK DETAIL
+                                }
                             },
                             onDeleteBookmark = { bookmark ->
-                                vm.onEvent(SearchEvent.OnDeleteBookmark(bookmark = bookmark))
+                                vm.onEvent(TagDetailEvent.OnDeleteBookmark(bookmark = bookmark))
                             },
                             onShareBookmark = {
                                 // TODO: IMPLEMENT SHARE
-                            }
+                            },
                         )
-                    }
+                    },
                 )
             }
         }
@@ -203,9 +227,9 @@ fun SearchView(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun OptionsMenu(
-    state: SearchUIState,
-    onEvent: (SearchEvent) -> Unit,
+private fun TagDetailOptionsMenu(
+    state: TagDetailUIState,
+    onEvent: (TagDetailEvent) -> Unit,
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
 
@@ -213,55 +237,87 @@ private fun OptionsMenu(
         IconButton(onClick = { isMenuExpanded = !isMenuExpanded }) {
             YabaIcon(name = "more-horizontal-circle-02")
         }
-        SearchDropdownMenu(
+
+        TagDetailDropdownMenu(
             isExpanded = isMenuExpanded,
             onDismissRequest = { isMenuExpanded = false },
-            bookmarkAppearance = state.bookmarkAppearance,
-            sortType = state.sortType,
-            sortOrder = state.sortOrder,
-            onChangeAppearance = { appearance ->
-                onEvent(SearchEvent.OnChangeAppearance(appearance = appearance))
-            },
-            onChangeSortType = { sortType ->
-                onEvent(SearchEvent.OnChangeSort(sortType = sortType, sortOrder = state.sortOrder))
-            },
-            onChangeSortOrder = { sortOrder ->
-                onEvent(SearchEvent.OnChangeSort(sortType = state.sortType, sortOrder = sortOrder))
-            },
+            state = state,
+            onEvent = onEvent,
         )
     }
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun SearchDropdownMenu(
+private fun TagDetailDropdownMenu(
     isExpanded: Boolean,
     onDismissRequest: () -> Unit,
-    bookmarkAppearance: BookmarkAppearance,
-    sortType: SortType,
-    sortOrder: SortOrderType,
-    onChangeAppearance: (BookmarkAppearance) -> Unit,
-    onChangeSortType: (SortType) -> Unit,
-    onChangeSortOrder: (SortOrderType) -> Unit,
+    state: TagDetailUIState,
+    onEvent: (TagDetailEvent) -> Unit,
 ) {
     var isAppearanceExpanded by remember { mutableStateOf(false) }
     var isSortingExpanded by remember { mutableStateOf(false) }
     var isSortOrderExpanded by remember { mutableStateOf(false) }
 
+    val selectText = stringResource(Res.string.bookmark_selection_enable)
+    val cancelSelectionText = stringResource(Res.string.bookmark_selection_cancel)
+    val deleteSelectionText = stringResource(Res.string.bookmark_selection_delete)
+    val groupCount = if (state.isSelectionMode) 3 else 2
+
     DropdownMenuPopup(
         expanded = isExpanded,
         onDismissRequest = onDismissRequest,
     ) {
+        // Actions group
         DropdownMenuGroup(
-            shapes = MenuDefaults.groupShape(index = 0, count = 3),
+            shapes = MenuDefaults.groupShape(index = 0, count = groupCount),
+        ) {
+            DropdownMenuItem(
+                shapes = MenuDefaults.itemShape(0, 1),
+                checked = false,
+                onCheckedChange = { _ ->
+                    onDismissRequest()
+                    onEvent(TagDetailEvent.OnToggleSelectionMode)
+                },
+                leadingIcon = {
+                    YabaIcon(
+                        name = if (state.isSelectionMode) "cancel-circle" else "checkmark-circle-01"
+                    )
+                },
+                text = {
+                    Text(text = if (state.isSelectionMode) cancelSelectionText else selectText)
+                },
+            )
+        }
+
+        if (state.isSelectionMode) {
+            DropdownMenuGroup(
+                shapes = MenuDefaults.groupShape(index = 1, count = groupCount),
+            ) {
+                DropdownMenuItem(
+                    shapes = MenuDefaults.itemShape(0, 1),
+                    checked = false,
+                    onCheckedChange = { _ ->
+                        onDismissRequest()
+                        onEvent(TagDetailEvent.OnDeleteSelected)
+                    },
+                    leadingIcon = { YabaIcon(name = "delete-02") },
+                    text = { Text(text = deleteSelectionText) },
+                )
+            }
+        }
+
+        // Config group (appearance / sorting / order)
+        DropdownMenuGroup(
+            shapes = MenuDefaults.groupShape(index = groupCount - 1, count = groupCount),
         ) {
             BookmarkAppearanceSection(
                 isExpanded = isAppearanceExpanded,
                 onPressedSection = { isAppearanceExpanded = !isAppearanceExpanded },
                 onDismissSubmenu = { isAppearanceExpanded = false },
-                currentAppearance = bookmarkAppearance,
+                currentAppearance = state.bookmarkAppearance,
                 onAppearanceSelection = { appearance ->
-                    onChangeAppearance(appearance)
+                    onEvent(TagDetailEvent.OnChangeAppearance(appearance = appearance))
                     onDismissRequest()
                 },
             )
@@ -270,9 +326,14 @@ private fun SearchDropdownMenu(
                 isExpanded = isSortingExpanded,
                 onPressedSection = { isSortingExpanded = !isSortingExpanded },
                 onDismissSubmenu = { isSortingExpanded = false },
-                currentSortType = sortType,
-                onSortingSelection = { newSortType ->
-                    onChangeSortType(newSortType)
+                currentSortType = state.sortType,
+                onSortingSelection = { sortType ->
+                    onEvent(
+                        TagDetailEvent.OnChangeSort(
+                            sortType = sortType,
+                            sortOrder = state.sortOrder
+                        )
+                    )
                     onDismissRequest()
                 },
             )
@@ -281,9 +342,14 @@ private fun SearchDropdownMenu(
                 isExpanded = isSortOrderExpanded,
                 onPressedSection = { isSortOrderExpanded = !isSortOrderExpanded },
                 onDismissSubmenu = { isSortOrderExpanded = false },
-                currentSortOrder = sortOrder,
-                onSortOrderSelection = { newSortOrder ->
-                    onChangeSortOrder(newSortOrder)
+                currentSortOrder = state.sortOrder,
+                onSortOrderSelection = { sortOrder ->
+                    onEvent(
+                        TagDetailEvent.OnChangeSort(
+                            sortType = state.sortType,
+                            sortOrder = sortOrder
+                        )
+                    )
                     onDismissRequest()
                 },
             )
@@ -446,3 +512,4 @@ private fun SortOrderSection(
         }
     }
 }
+

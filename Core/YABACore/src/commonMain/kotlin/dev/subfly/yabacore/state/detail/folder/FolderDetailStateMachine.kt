@@ -68,8 +68,8 @@ class FolderDetailStateMachine :
                     val bookmarksFlow = AllBookmarksManager.searchBookmarksFlow(
                         query = query,
                         filters = BookmarkSearchFilters(folderIds = setOf(folderId)),
-                        sortType = prefs.preferredCollectionSorting,
-                        sortOrder = prefs.preferredSortOrder
+                        sortType = prefs.preferredBookmarkSorting,
+                        sortOrder = prefs.preferredBookmarkSortOrder
                     )
 
                     combine(
@@ -82,8 +82,8 @@ class FolderDetailStateMachine :
                             bookmarks = bookmarks,
                             query = query,
                             bookmarkAppearance = latestPrefs.preferredBookmarkAppearance,
-                            sortType = latestPrefs.preferredCollectionSorting,
-                            sortOrder = latestPrefs.preferredSortOrder,
+                            sortType = latestPrefs.preferredBookmarkSorting,
+                            sortOrder = latestPrefs.preferredBookmarkSortOrder,
                             isLoading = false
                         )
                     }
@@ -150,8 +150,8 @@ class FolderDetailStateMachine :
 
     private fun onChangeSort(sortType: SortType, sortOrder: SortOrderType) {
         launch {
-            preferencesStore.setPreferredCollectionSorting(sortType)
-            preferencesStore.setPreferredSortOrder(sortOrder)
+            preferencesStore.setPreferredBookmarkSorting(sortType)
+            preferencesStore.setPreferredBookmarkSortOrder(sortOrder)
         }
     }
 

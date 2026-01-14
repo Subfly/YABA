@@ -11,7 +11,6 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import dev.subfly.yabacore.common.CoreConstants
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.CardImageSizing
-import dev.subfly.yabacore.model.utils.ContentAppearance
 import dev.subfly.yabacore.model.utils.FabPosition
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
@@ -38,18 +37,18 @@ internal object UserPreferenceKeys {
     val hasPassedOnboarding = booleanPreferencesKey(CoreConstants.Settings.HAS_PASSED_ONBOARDING)
     val hasNamedDevice = booleanPreferencesKey(CoreConstants.Settings.HAS_NAMED_DEVICE)
     val preferredTheme = stringPreferencesKey(CoreConstants.Settings.PREFERRED_THEME)
-    @Suppress("DEPRECATION")
-    val preferredContentAppearance =
-        stringPreferencesKey(CoreConstants.Settings.PREFERRED_CONTENT_APPEARANCE)
     val preferredBookmarkAppearance =
         stringPreferencesKey(CoreConstants.Settings.PREFERRED_BOOKMARK_APPEARANCE)
     val preferredCardImageSizing =
         stringPreferencesKey(CoreConstants.Settings.PREFERRED_CARD_IMAGE_SIZING)
     val preferredCollectionSorting =
         stringPreferencesKey(CoreConstants.Settings.PREFERRED_COLLECTION_SORTING)
+    val preferredCollectionSortOrder =
+        stringPreferencesKey(CoreConstants.Settings.PREFERRED_COLLECTION_SORT_ORDER)
     val preferredBookmarkSorting =
         stringPreferencesKey(CoreConstants.Settings.PREFERRED_BOOKMARK_SORTING)
-    val preferredSortOrder = stringPreferencesKey(CoreConstants.Settings.PREFERRED_SORT_ORDER)
+    val preferredBookmarkSortOrder =
+        stringPreferencesKey(CoreConstants.Settings.PREFERRED_BOOKMARK_SORT_ORDER)
     val preferredFabPosition = stringPreferencesKey(CoreConstants.Settings.PREFERRED_FAB_POSITION)
     val disableBackgroundAnimation =
         booleanPreferencesKey(CoreConstants.Settings.DISABLE_BACKGROUND_ANIMATION)
@@ -97,14 +96,6 @@ class UserPreferencesStore internal constructor(
     suspend fun setPreferredTheme(value: ThemePreference) =
         setEnum(UserPreferenceKeys.preferredTheme, value)
 
-    @Deprecated("Use setPreferredBookmarkAppearance instead")
-    suspend fun setPreferredContentAppearance(ordinal: Int) =
-        setPreferredContentAppearance(enumFromOrdinal(ordinal, ContentAppearance.LIST))
-
-    @Deprecated("Use setPreferredBookmarkAppearance instead")
-    suspend fun setPreferredContentAppearance(value: ContentAppearance) =
-        setEnum(UserPreferenceKeys.preferredContentAppearance, value)
-
     suspend fun setPreferredBookmarkAppearance(ordinal: Int) =
         setPreferredBookmarkAppearance(enumFromOrdinal(ordinal, BookmarkAppearance.LIST))
 
@@ -129,11 +120,17 @@ class UserPreferencesStore internal constructor(
     suspend fun setPreferredBookmarkSorting(value: SortType) =
         setEnum(UserPreferenceKeys.preferredBookmarkSorting, value)
 
-    suspend fun setPreferredSortOrder(ordinal: Int) =
-        setPreferredSortOrder(enumFromOrdinal(ordinal, SortOrderType.ASCENDING))
+    suspend fun setPreferredCollectionSortOrder(ordinal: Int) =
+        setPreferredCollectionSortOrder(enumFromOrdinal(ordinal, SortOrderType.ASCENDING))
 
-    suspend fun setPreferredSortOrder(value: SortOrderType) =
-        setEnum(UserPreferenceKeys.preferredSortOrder, value)
+    suspend fun setPreferredCollectionSortOrder(value: SortOrderType) =
+        setEnum(UserPreferenceKeys.preferredCollectionSortOrder, value)
+
+    suspend fun setPreferredBookmarkSortOrder(ordinal: Int) =
+        setPreferredBookmarkSortOrder(enumFromOrdinal(ordinal, SortOrderType.DESCENDING))
+
+    suspend fun setPreferredBookmarkSortOrder(value: SortOrderType) =
+        setEnum(UserPreferenceKeys.preferredBookmarkSortOrder, value)
 
     suspend fun setPreferredFabPosition(ordinal: Int) =
         setPreferredFabPosition(enumFromOrdinal(ordinal, FabPosition.CENTER))
@@ -235,7 +232,6 @@ object SettingsStores {
     val userPreferences: UserPreferencesStore by lazy { UserPreferencesStoreFactory.create() }
 }
 
-@Suppress("DEPRECATION")
 private fun Preferences.toUserPreferences(): UserPreferences =
     UserPreferences(
         hasPassedOnboarding = getBoolean(UserPreferenceKeys.hasPassedOnboarding, false),
@@ -243,10 +239,6 @@ private fun Preferences.toUserPreferences(): UserPreferences =
         preferredTheme = enumValue(
             UserPreferenceKeys.preferredTheme,
             ThemePreference.SYSTEM,
-        ),
-        preferredContentAppearance = enumValue(
-            UserPreferenceKeys.preferredContentAppearance,
-            ContentAppearance.LIST,
         ),
         preferredBookmarkAppearance = enumValue(
             UserPreferenceKeys.preferredBookmarkAppearance,
@@ -260,13 +252,17 @@ private fun Preferences.toUserPreferences(): UserPreferences =
             UserPreferenceKeys.preferredCollectionSorting,
             SortType.CREATED_AT,
         ),
+        preferredCollectionSortOrder = enumValue(
+            UserPreferenceKeys.preferredCollectionSortOrder,
+            SortOrderType.ASCENDING,
+        ),
         preferredBookmarkSorting = enumValue(
             UserPreferenceKeys.preferredBookmarkSorting,
             SortType.CREATED_AT,
         ),
-        preferredSortOrder = enumValue(
-            UserPreferenceKeys.preferredSortOrder,
-            SortOrderType.ASCENDING,
+        preferredBookmarkSortOrder = enumValue(
+            UserPreferenceKeys.preferredBookmarkSortOrder,
+            SortOrderType.DESCENDING,
         ),
         preferredFabPosition = enumValue(
             UserPreferenceKeys.preferredFabPosition,

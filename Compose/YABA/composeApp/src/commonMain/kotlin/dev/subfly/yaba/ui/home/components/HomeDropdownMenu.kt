@@ -18,15 +18,14 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.util.fastForEachIndexed
 import dev.subfly.yaba.util.LocalUserPreferences
 import dev.subfly.yaba.util.uiTitle
-import dev.subfly.yabacore.model.utils.BookmarkAppearance
-import dev.subfly.yabacore.model.utils.CardImageSizing
+import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
 import dev.subfly.yabacore.model.utils.uiIconName
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.settings_collection_sorting_title
-import yaba.composeapp.generated.resources.settings_content_appearance_title
+import yaba.composeapp.generated.resources.settings_sort_order_title
 import yaba.composeapp.generated.resources.settings_title
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -35,13 +34,12 @@ internal fun HomeDropdownMenu(
     modifier: Modifier = Modifier,
     isExpanded: Boolean,
     onDismissRequest: () -> Unit,
-    onBookmarkAppearanceChanged: (BookmarkAppearance) -> Unit,
-    onCardSizingChanged: (CardImageSizing) -> Unit,
     onSortingChanged: (SortType) -> Unit,
+    onSortOrderChanged: (SortOrderType) -> Unit,
     onSettingsClicked: () -> Unit,
 ) {
-    var isBookmarkAppearanceExpanded by remember { mutableStateOf(false) }
     var isSortingExpanded by remember { mutableStateOf(false) }
+    var isSortOrderExpanded by remember { mutableStateOf(false) }
 
     DropdownMenuPopup(
         modifier = modifier,
@@ -54,26 +52,21 @@ internal fun HomeDropdownMenu(
                 count = 3
             )
         ) {
-            BookmarkAppearanceSection(
-                isExpanded = isBookmarkAppearanceExpanded,
-                onPressedSection = { isBookmarkAppearanceExpanded = !isBookmarkAppearanceExpanded },
-                onDismissSubmenu = { isBookmarkAppearanceExpanded = false },
-                onAppearanceSelection = { appearance ->
-                    onBookmarkAppearanceChanged(appearance)
-                    onDismissRequest()
-                },
-                onCardSizingSelection = { sizing ->
-                    onCardSizingChanged(sizing)
-                    onBookmarkAppearanceChanged(BookmarkAppearance.CARD)
-                    onDismissRequest()
-                }
-            )
             SortingSection(
                 isExpanded = isSortingExpanded,
                 onPressedSection = { isSortingExpanded = !isSortingExpanded },
                 onDismissSubmenu = { isSortingExpanded = false },
                 onSortingSelection = { sorting ->
                     onSortingChanged(sorting)
+                    onDismissRequest()
+                }
+            )
+            SortOrderSection(
+                isExpanded = isSortOrderExpanded,
+                onPressedSection = { isSortOrderExpanded = !isSortOrderExpanded },
+                onDismissSubmenu = { isSortOrderExpanded = false },
+                onSortOrderSelection = { sortOrder ->
+                    onSortOrderChanged(sortOrder)
                     onDismissRequest()
                 }
             )
@@ -97,130 +90,6 @@ internal fun HomeDropdownMenu(
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun BookmarkAppearanceSection(
-    isExpanded: Boolean,
-    onPressedSection: () -> Unit,
-    onDismissSubmenu: () -> Unit,
-    onAppearanceSelection: (BookmarkAppearance) -> Unit,
-    onCardSizingSelection: (CardImageSizing) -> Unit,
-) {
-    val userPreferences = LocalUserPreferences.current
-    var isCardImageSizingExpanded by remember { mutableStateOf(false) }
-
-    Box {
-        DropdownMenuItem(
-            shapes = MenuDefaults.itemShape(0, 3),
-            checked = false,
-            onCheckedChange = { _ -> onPressedSection() },
-            leadingIcon = {
-                YabaIcon(name = "change-screen-mode")
-            },
-            trailingIcon = {
-                val expandedRotation by animateFloatAsState(
-                    targetValue = if (isExpanded) 90F else 0F,
-                )
-                YabaIcon(
-                    modifier = Modifier.rotate(expandedRotation),
-                    name = "arrow-right-01"
-                )
-            },
-            text = {
-                // TODO: COME UP WITH LOCALIZATION
-                Text(text = stringResource(Res.string.settings_content_appearance_title))
-            }
-        )
-        DropdownMenuPopup(
-            expanded = isExpanded,
-            onDismissRequest = onDismissSubmenu,
-        ) {
-            DropdownMenuGroup(
-                shapes = MenuDefaults.groupShape(
-                    index = 0,
-                    count = BookmarkAppearance.entries.size
-                )
-            ) {
-                BookmarkAppearance.entries.fastForEachIndexed { index, appearance ->
-                    when (appearance) {
-                        BookmarkAppearance.LIST, BookmarkAppearance.GRID -> {
-                            DropdownMenuItem(
-                                shapes = MenuDefaults.itemShape(
-                                    index,
-                                    BookmarkAppearance.entries.size
-                                ),
-                                checked = userPreferences.preferredBookmarkAppearance == appearance,
-                                onCheckedChange = { _ ->
-                                    onAppearanceSelection(appearance)
-                                    onDismissSubmenu()
-                                },
-                                leadingIcon = { YabaIcon(name = appearance.uiIconName()) },
-                                text = { Text(text = appearance.uiTitle()) }
-                            )
-                        }
-
-                        BookmarkAppearance.CARD -> {
-                            Box {
-                                DropdownMenuItem(
-                                    shapes = MenuDefaults.itemShape(
-                                        index,
-                                        BookmarkAppearance.entries.size
-                                    ),
-                                    checked = userPreferences.preferredBookmarkAppearance == appearance,
-                                    onCheckedChange = { _ -> isCardImageSizingExpanded = true },
-                                    leadingIcon = { YabaIcon(name = appearance.uiIconName()) },
-                                    text = { Text(text = appearance.uiTitle()) },
-                                    trailingIcon = {
-                                        val sizingExpandedRotation by animateFloatAsState(
-                                            targetValue = if (isCardImageSizingExpanded) 90F else 0F,
-                                        )
-
-                                        YabaIcon(
-                                            modifier = Modifier.rotate(sizingExpandedRotation),
-                                            name = "arrow-right-01"
-                                        )
-                                    }
-                                )
-
-                                DropdownMenuPopup(
-                                    expanded = isCardImageSizingExpanded,
-                                    onDismissRequest = { isCardImageSizingExpanded = false },
-                                ) {
-                                    DropdownMenuGroup(
-                                        shapes = MenuDefaults.groupShape(
-                                            index = 0,
-                                            count = CardImageSizing.entries.size
-                                        )
-                                    ) {
-                                        CardImageSizing.entries.fastForEachIndexed { i, sizing ->
-                                            DropdownMenuItem(
-                                                shapes = MenuDefaults.itemShape(
-                                                    i,
-                                                    CardImageSizing.entries.size
-                                                ),
-                                                checked = userPreferences.preferredBookmarkAppearance == BookmarkAppearance.CARD
-                                                        && userPreferences.preferredCardImageSizing == sizing,
-                                                onCheckedChange = { _ ->
-                                                    onAppearanceSelection(appearance)
-                                                    onCardSizingSelection(sizing)
-                                                    isCardImageSizingExpanded = false
-                                                    onDismissSubmenu()
-                                                },
-                                                leadingIcon = { YabaIcon(name = sizing.uiIconName()) },
-                                                text = { Text(text = sizing.uiTitle()) }
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
 private fun SortingSection(
     isExpanded: Boolean,
     onPressedSection: () -> Unit,
@@ -230,7 +99,7 @@ private fun SortingSection(
     val userPreferences = LocalUserPreferences.current
     Box {
         DropdownMenuItem(
-            shapes = MenuDefaults.itemShape(1, 3),
+            shapes = MenuDefaults.itemShape(0, 3),
             checked = false,
             onCheckedChange = { _ -> onPressedSection() },
             leadingIcon = {
@@ -269,6 +138,63 @@ private fun SortingSection(
                         },
                         leadingIcon = { YabaIcon(name = sorting.uiIconName()) },
                         text = { Text(text = sorting.uiTitle()) }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun SortOrderSection(
+    isExpanded: Boolean,
+    onPressedSection: () -> Unit,
+    onDismissSubmenu: () -> Unit,
+    onSortOrderSelection: (SortOrderType) -> Unit,
+) {
+    val userPreferences = LocalUserPreferences.current
+    Box {
+        DropdownMenuItem(
+            shapes = MenuDefaults.itemShape(1, 3),
+            checked = false,
+            onCheckedChange = { _ -> onPressedSection() },
+            leadingIcon = {
+                YabaIcon(name = "sorting-9-1")
+            },
+            trailingIcon = {
+                val expandedRotation by animateFloatAsState(
+                    targetValue = if (isExpanded) 90F else 0F,
+                )
+                YabaIcon(
+                    modifier = Modifier.rotate(expandedRotation),
+                    name = "arrow-right-01"
+                )
+            },
+            text = {
+                Text(text = stringResource(Res.string.settings_sort_order_title))
+            }
+        )
+        DropdownMenuPopup(
+            expanded = isExpanded,
+            onDismissRequest = onDismissSubmenu,
+        ) {
+            DropdownMenuGroup(
+                shapes = MenuDefaults.groupShape(
+                    index = 0,
+                    count = SortOrderType.entries.size
+                )
+            ) {
+                SortOrderType.entries.fastForEachIndexed { index, sortOrder ->
+                    DropdownMenuItem(
+                        shapes = MenuDefaults.itemShape(index, SortOrderType.entries.size),
+                        checked = userPreferences.preferredCollectionSortOrder == sortOrder,
+                        onCheckedChange = { _ ->
+                            onSortOrderSelection(sortOrder)
+                            onDismissSubmenu()
+                        },
+                        leadingIcon = { YabaIcon(name = sortOrder.uiIconName()) },
+                        text = { Text(text = sortOrder.uiTitle()) }
                     )
                 }
             }

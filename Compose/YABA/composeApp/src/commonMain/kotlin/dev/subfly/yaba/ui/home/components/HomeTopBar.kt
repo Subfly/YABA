@@ -17,8 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import dev.subfly.yaba.util.Platform
 import dev.subfly.yaba.util.YabaPlatform
-import dev.subfly.yabacore.model.utils.BookmarkAppearance
-import dev.subfly.yabacore.model.utils.CardImageSizing
+import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import org.jetbrains.compose.resources.stringResource
@@ -31,9 +30,8 @@ internal fun HomeTopBar(
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior,
     onSearchClicked: () -> Unit,
-    onBookmarkAppearanceChanged: (BookmarkAppearance) -> Unit,
-    onCardSizingChanged: (CardImageSizing) -> Unit,
     onSortingChanged: (SortType) -> Unit,
+    onSortOrderChanged: (SortOrderType) -> Unit,
 ) {
     var isMenuExpanded by rememberSaveable {
         mutableStateOf(false)
@@ -57,9 +55,8 @@ internal fun HomeTopBar(
                     HomeDropdownMenu(
                         isExpanded = isMenuExpanded,
                         onDismissRequest = { isMenuExpanded = false },
-                        onBookmarkAppearanceChanged = onBookmarkAppearanceChanged,
                         onSortingChanged = onSortingChanged,
-                        onCardSizingChanged = onCardSizingChanged,
+                        onSortOrderChanged = onSortOrderChanged,
                         onSettingsClicked = {
                             // TODO: NAVIGATE TO SETTINGS
                         }
@@ -86,9 +83,8 @@ internal fun HomeTopBar(
                     HomeDropdownMenu(
                         isExpanded = isMenuExpanded,
                         onDismissRequest = { isMenuExpanded = false },
-                        onBookmarkAppearanceChanged = onBookmarkAppearanceChanged,
-                        onCardSizingChanged = onCardSizingChanged,
                         onSortingChanged = onSortingChanged,
+                        onSortOrderChanged = onSortOrderChanged,
                         onSettingsClicked = {
                             // TODO: NAVIGATE TO SETTINGS
                         }

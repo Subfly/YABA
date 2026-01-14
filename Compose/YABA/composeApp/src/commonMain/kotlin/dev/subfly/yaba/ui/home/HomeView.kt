@@ -28,7 +28,9 @@ import dev.subfly.yaba.core.components.RecentBookmarksGridSection
 import dev.subfly.yaba.core.components.item.bookmark.BookmarkItemView
 import dev.subfly.yaba.core.components.item.folder.FolderItemView
 import dev.subfly.yaba.core.components.item.tag.TagItemView
+import dev.subfly.yaba.core.navigation.main.FolderDetailRoute
 import dev.subfly.yaba.core.navigation.main.SearchRoute
+import dev.subfly.yaba.core.navigation.main.TagDetailRoute
 import dev.subfly.yaba.ui.home.components.HomeFab
 import dev.subfly.yaba.ui.home.components.HomeTitleContent
 import dev.subfly.yaba.ui.home.components.HomeTopBar
@@ -40,6 +42,7 @@ import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.FabPosition
 import dev.subfly.yabacore.state.home.HomeEvent
 import dev.subfly.yabacore.ui.layout.YabaContentLayout
+import kotlin.uuid.ExperimentalUuidApi
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.folders_title
@@ -47,7 +50,6 @@ import yaba.composeapp.generated.resources.home_recents_label
 import yaba.composeapp.generated.resources.no_folders_message
 import yaba.composeapp.generated.resources.no_tags_message
 import yaba.composeapp.generated.resources.tags_title
-import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(
     ExperimentalMaterial3ExpressiveApi::class,
@@ -75,16 +77,23 @@ fun HomeView(modifier: Modifier = Modifier) {
             topBar = {
                 HomeTopBar(
                     scrollBehavior = scrollBehavior,
-                    onBookmarkAppearanceChanged = { newAppearance ->
-                        vm.onEvent(HomeEvent.OnChangeBookmarkAppearance(newAppearance))
-                    },
-                    onCardSizingChanged = { newSizing ->
-                        vm.onEvent(HomeEvent.OnChangeCardImageSizing(newSizing))
-                    },
                     onSortingChanged = { newSortType ->
                         vm.onEvent(HomeEvent.OnChangeCollectionSorting(newSortType))
                     },
-                    onSearchClicked = { navigator.add(SearchRoute()) },
+                    onSortOrderChanged = { newSortOrder ->
+                        vm.onEvent(HomeEvent.OnChangeSortOrder(newSortOrder))
+                    },
+                    onSearchClicked = {
+                        // If not in search route
+                        if (navigator.last() !is SearchRoute) {
+                            // Remove all the occurrences of Search Route
+                            navigator.removeAll { it is SearchRoute }
+                            // Then navigate
+                            navigator.add(SearchRoute())
+                            // So that we will be %100 sure that there
+                            // will only be one Search Route in the backstack
+                        }
+                    },
                 )
             },
             floatingActionButtonPosition = when (userPreferences.preferredFabPosition) {
@@ -219,7 +228,17 @@ fun HomeView(modifier: Modifier = Modifier) {
                                     model = folderModel,
                                     onDeleteFolder = { folderToBeDeleted ->
                                         vm.onEvent(HomeEvent.OnDeleteFolder(folderToBeDeleted))
-                                    }
+                                    },
+                                    onClick = onClick@{ clickedFolder ->
+                                        val clickedId = clickedFolder.id.toString()
+                                        val lastRoute = navigator.last()
+
+                                        if (lastRoute is FolderDetailRoute
+                                            && lastRoute.folderId == clickedId
+                                        ) return@onClick
+
+                                        navigator.add(FolderDetailRoute(folderId = clickedId))
+                                    },
                                 )
                             }
                         }
@@ -263,7 +282,18 @@ fun HomeView(modifier: Modifier = Modifier) {
                                     model = tagModel,
                                     onDeleteTag = { tagToBeDeleted ->
                                         vm.onEvent(HomeEvent.OnDeleteTag(tagToBeDeleted))
-                                    }
+                                    },
+                                    onClick = onClick@{ clickedTag ->
+                                        val clickedId = clickedTag.id.toString()
+                                        val lastRoute = navigator.last()
+                                        if (lastRoute is TagDetailRoute
+                                            && lastRoute.tagId == clickedId
+                                        ) return@onClick
+
+                                        navigator.add(
+                                            TagDetailRoute(tagId = clickedId)
+                                        )
+                                    },
                                 )
                             }
                         }

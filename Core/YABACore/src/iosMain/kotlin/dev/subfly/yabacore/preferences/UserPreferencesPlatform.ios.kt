@@ -4,7 +4,6 @@ import androidx.datastore.preferences.core.edit
 import dev.subfly.yabacore.common.CoreConstants
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.CardImageSizing
-import dev.subfly.yabacore.model.utils.ContentAppearance
 import dev.subfly.yabacore.model.utils.FabPosition
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
@@ -57,31 +56,15 @@ internal actual suspend fun migratePlatformPreferencesIfNeeded(store: UserPrefer
             )
                 .name
 
-        @Suppress("DEPRECATION")
-        prefs[UserPreferenceKeys.preferredContentAppearance] =
+        prefs[UserPreferenceKeys.preferredBookmarkAppearance] =
             enumFromOrdinal(
                 standard.intOrDefault(
-                    CoreConstants.Settings.PREFERRED_CONTENT_APPEARANCE,
-                    ContentAppearance.LIST.ordinal,
+                    CoreConstants.Settings.PREFERRED_BOOKMARK_APPEARANCE,
+                    BookmarkAppearance.LIST.ordinal,
                 ),
-                ContentAppearance.LIST,
+                BookmarkAppearance.LIST,
             )
                 .name
-
-        // Map old ContentAppearance to new BookmarkAppearance
-        @Suppress("DEPRECATION")
-        val oldAppearanceOrdinal =
-            standard.intOrDefault(
-                CoreConstants.Settings.PREFERRED_CONTENT_APPEARANCE,
-                ContentAppearance.LIST.ordinal,
-            )
-        val bookmarkAppearance =
-            when (enumFromOrdinal(oldAppearanceOrdinal, ContentAppearance.LIST)) {
-                ContentAppearance.LIST -> BookmarkAppearance.LIST
-                ContentAppearance.CARD -> BookmarkAppearance.CARD
-                ContentAppearance.GRID -> BookmarkAppearance.GRID
-            }
-        prefs[UserPreferenceKeys.preferredBookmarkAppearance] = bookmarkAppearance.name
 
         prefs[UserPreferenceKeys.preferredCardImageSizing] =
             enumFromOrdinal(
@@ -103,6 +86,16 @@ internal actual suspend fun migratePlatformPreferencesIfNeeded(store: UserPrefer
             )
                 .name
 
+        prefs[UserPreferenceKeys.preferredCollectionSortOrder] =
+            enumFromOrdinal(
+                standard.intOrDefault(
+                    CoreConstants.Settings.PREFERRED_COLLECTION_SORT_ORDER,
+                    SortOrderType.ASCENDING.ordinal,
+                ),
+                SortOrderType.ASCENDING,
+            )
+                .name
+
         prefs[UserPreferenceKeys.preferredBookmarkSorting] =
             enumFromOrdinal(
                 standard.intOrDefault(
@@ -113,13 +106,13 @@ internal actual suspend fun migratePlatformPreferencesIfNeeded(store: UserPrefer
             )
                 .name
 
-        prefs[UserPreferenceKeys.preferredSortOrder] =
+        prefs[UserPreferenceKeys.preferredBookmarkSortOrder] =
             enumFromOrdinal(
                 standard.intOrDefault(
-                    CoreConstants.Settings.PREFERRED_SORT_ORDER,
-                    SortOrderType.ASCENDING.ordinal,
+                    CoreConstants.Settings.PREFERRED_BOOKMARK_SORT_ORDER,
+                    SortOrderType.DESCENDING.ordinal,
                 ),
-                SortOrderType.ASCENDING,
+                SortOrderType.DESCENDING,
             )
                 .name
 

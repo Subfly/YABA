@@ -57,7 +57,10 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
             preferencesStore
                 .preferencesFlow
                 .map { prefs ->
-                    SortingParams(prefs.preferredCollectionSorting, prefs.preferredSortOrder)
+                    SortingParams(
+                        prefs.preferredCollectionSorting,
+                        prefs.preferredCollectionSortOrder
+                    )
                 }
                 .distinctUntilChanged()
                 .flatMapLatest { sortingParams ->
@@ -88,7 +91,7 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
                             bookmarkAppearance = preferences.preferredBookmarkAppearance,
                             cardImageSizing = preferences.preferredCardImageSizing,
                             collectionSorting = preferences.preferredCollectionSorting,
-                            sortOrder = preferences.preferredSortOrder,
+                            sortOrder = preferences.preferredCollectionSortOrder,
                             isLoading = false,
                         )
                     }
@@ -110,7 +113,7 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
     }
 
     private fun onChangeSortOrder(event: HomeEvent.OnChangeSortOrder) {
-        launch { preferencesStore.setPreferredSortOrder(event.sortOrder) }
+        launch { preferencesStore.setPreferredCollectionSortOrder(event.sortOrder) }
     }
 
     private data class SortingParams(

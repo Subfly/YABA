@@ -2,7 +2,6 @@ package dev.subfly.yabacore.preferences
 
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.CardImageSizing
-import dev.subfly.yabacore.model.utils.ContentAppearance
 import dev.subfly.yabacore.model.utils.FabPosition
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
@@ -18,13 +17,12 @@ data class UserPreferences(
     val hasPassedOnboarding: Boolean = false,
     val hasNamedDevice: Boolean = false,
     val preferredTheme: ThemePreference = ThemePreference.SYSTEM,
-    @Deprecated("Use preferredBookmarkAppearance instead")
-    val preferredContentAppearance: ContentAppearance = ContentAppearance.LIST,
     val preferredBookmarkAppearance: BookmarkAppearance = BookmarkAppearance.LIST,
     val preferredCardImageSizing: CardImageSizing = CardImageSizing.SMALL,
     val preferredCollectionSorting: SortType = SortType.CREATED_AT,
+    val preferredCollectionSortOrder: SortOrderType = SortOrderType.ASCENDING,
     val preferredBookmarkSorting: SortType = SortType.CREATED_AT,
-    val preferredSortOrder: SortOrderType = SortOrderType.ASCENDING,
+    val preferredBookmarkSortOrder: SortOrderType = SortOrderType.DESCENDING,
     val preferredFabPosition: FabPosition = FabPosition.CENTER,
     val disableBackgroundAnimation: Boolean = false,
     val deviceId: String = "",

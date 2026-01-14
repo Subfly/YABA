@@ -15,6 +15,8 @@ val detailNavigationConfig = SavedStateConfiguration {
         polymorphic(NavKey::class) {
             subclass(HomeRoute::class, HomeRoute.serializer())
             subclass(SearchRoute::class, SearchRoute.serializer())
+            subclass(FolderDetailRoute::class, FolderDetailRoute.serializer())
+            subclass(TagDetailRoute::class, TagDetailRoute.serializer())
         }
     }
 }
@@ -27,4 +29,16 @@ data class HomeRoute(
 @Serializable
 data class SearchRoute(
     val routeId: String = Uuid.generateV4().toString(),
+): NavKey
+
+@Serializable
+data class FolderDetailRoute(
+    val routeId: String = Uuid.generateV4().toString(),
+    val folderId: String,
+): NavKey
+
+@Serializable
+data class TagDetailRoute(
+    val routeId: String = Uuid.generateV4().toString(),
+    val tagId: String,
 ): NavKey

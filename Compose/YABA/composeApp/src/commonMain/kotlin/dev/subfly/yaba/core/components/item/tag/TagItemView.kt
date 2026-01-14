@@ -38,6 +38,7 @@ import kotlin.uuid.ExperimentalUuidApi
 fun TagItemView(
     modifier: Modifier = Modifier,
     model: TagUiModel,
+    onClick: (TagUiModel) -> Unit = {},
     onDeleteTag: (TagUiModel) -> Unit,
 ) {
     val creationNavigator = LocalCreationContentNavigator.current
@@ -141,9 +142,7 @@ fun TagItemView(
         menuActions = menuActions,
         leftSwipeActions = leftSwipeActions,
         rightSwipeActions = rightSwipeActions,
-        onClick = {
-            // TODO: NAVIGATE TO TAG DETAIL
-        },
+        onClick = { onClick(model) },
         trailingContent = {
             Text(model.bookmarkCount.toString())
         }

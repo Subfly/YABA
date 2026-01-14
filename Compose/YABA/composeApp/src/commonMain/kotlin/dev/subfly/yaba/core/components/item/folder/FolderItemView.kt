@@ -58,6 +58,7 @@ fun FolderItemView(
     modifier: Modifier = Modifier,
     model: FolderUiModel,
     parentColors: List<YabaColor> = emptyList(),
+    onClick: (FolderUiModel) -> Unit = {},
     onDeleteFolder: (FolderUiModel) -> Unit,
 ) {
     val creationNavigator = LocalCreationContentNavigator.current
@@ -192,6 +193,7 @@ fun FolderItemView(
         menuActions = menuActions,
         leftSwipeActions = leftSwipeActions,
         rightSwipeActions = rightSwipeActions,
+        onClick = onClick,
         onDeleteFolder = onDeleteFolder,
     )
 }
@@ -208,6 +210,7 @@ private fun FolderListItemView(
     menuActions: List<CollectionMenuAction>,
     leftSwipeActions: List<CollectionSwipeAction>,
     rightSwipeActions: List<CollectionSwipeAction>,
+    onClick: (FolderUiModel) -> Unit,
     onDeleteFolder: (FolderUiModel) -> Unit,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
@@ -233,9 +236,7 @@ private fun FolderListItemView(
             menuActions = menuActions,
             leftSwipeActions = leftSwipeActions,
             rightSwipeActions = rightSwipeActions,
-            onClick = {
-                // TODO: NAVIGATE TO FOLDER DETAIL
-            },
+            onClick = { onClick(model) },
             trailingContent = {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -263,6 +264,7 @@ private fun FolderListItemView(
                 FolderItemView(
                     model = childModel,
                     parentColors = parentColors + model.color,
+                    onClick = onClick,
                     onDeleteFolder = onDeleteFolder,
                 )
             }

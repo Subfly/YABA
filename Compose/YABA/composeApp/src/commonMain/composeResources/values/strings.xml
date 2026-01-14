@@ -430,6 +430,7 @@
     <string name="settings_theme_title">Theme</string>
     <string name="settings_title">Settings</string>
     <string name="settings_tos_link_title">Terms of Service</string>
+    <string name="settings_sort_order_title">Sort Order</string>
     <string name="setup_reminder_picker_title">Remind me at:</string>
     <string name="setup_reminder_success_message">Setup reminder at %1$s</string>
     <string name="setup_reminder_title">Setup Reminder</string>

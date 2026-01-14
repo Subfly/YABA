@@ -69,8 +69,8 @@ class SearchStateMachine :
                         folderIds = params.folderIds.takeIf { it.isNotEmpty() },
                         tagIds = params.tagIds.takeIf { it.isNotEmpty() }
                     ),
-                    sortType = params.prefs.preferredCollectionSorting,
-                    sortOrder = params.prefs.preferredSortOrder
+                    sortType = params.prefs.preferredBookmarkSorting,
+                    sortOrder = params.prefs.preferredBookmarkSortOrder
                 ).map { bookmarks ->
                     SearchUIState(
                         query = params.query,
@@ -78,8 +78,8 @@ class SearchStateMachine :
                         selectedFolderIds = params.folderIds,
                         selectedTagIds = params.tagIds,
                         bookmarkAppearance = params.prefs.preferredBookmarkAppearance,
-                        sortType = params.prefs.preferredCollectionSorting,
-                        sortOrder = params.prefs.preferredSortOrder,
+                        sortType = params.prefs.preferredBookmarkSorting,
+                        sortOrder = params.prefs.preferredBookmarkSortOrder,
                         isLoading = false
                     )
                 }
@@ -109,7 +109,7 @@ class SearchStateMachine :
     private fun onChangeSort(sortType: SortType, sortOrder: SortOrderType) {
         launch {
             preferencesStore.setPreferredBookmarkSorting(sortType)
-            preferencesStore.setPreferredSortOrder(sortOrder)
+            preferencesStore.setPreferredBookmarkSortOrder(sortOrder)
         }
     }
 

@@ -1,4 +1,4 @@
-package dev.subfly.yaba.ui.search
+package dev.subfly.yaba.ui.detail.folder
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
@@ -37,20 +37,33 @@ import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.item.bookmark.BookmarkItemView
+import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
+import dev.subfly.yaba.core.navigation.creation.LinkmarkCreationRoute
+import dev.subfly.yaba.core.navigation.creation.ResultStoreKeys
+import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalContentNavigator
+import dev.subfly.yaba.util.LocalCreationContentNavigator
+import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.LocalUserPreferences
 import dev.subfly.yaba.util.uiTitle
+import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
+import dev.subfly.yabacore.model.utils.FolderSelectionMode
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
 import dev.subfly.yabacore.model.utils.uiIconName
-import dev.subfly.yabacore.state.search.SearchEvent
-import dev.subfly.yabacore.state.search.SearchUIState
+import dev.subfly.yabacore.state.detail.folder.FolderDetailEvent
+import dev.subfly.yabacore.state.detail.folder.FolderDetailUIState
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.layout.ContentLayoutConfig
 import dev.subfly.yabacore.ui.layout.YabaBookmarkLayout
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
+import yaba.composeapp.generated.resources.bookmark_selection_cancel
+import yaba.composeapp.generated.resources.bookmark_selection_delete
+import yaba.composeapp.generated.resources.bookmark_selection_enable
+import yaba.composeapp.generated.resources.bookmark_selection_move
+import yaba.composeapp.generated.resources.new_bookmark
 import yaba.composeapp.generated.resources.no_bookmarks_message
 import yaba.composeapp.generated.resources.no_bookmarks_title
 import yaba.composeapp.generated.resources.search_no_bookmarks_found_description
@@ -59,19 +72,41 @@ import yaba.composeapp.generated.resources.search_prompt
 import yaba.composeapp.generated.resources.settings_bookmark_sorting_title
 import yaba.composeapp.generated.resources.settings_content_appearance_title
 import yaba.composeapp.generated.resources.settings_sort_order_title
+import kotlin.uuid.ExperimentalUuidApi
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3ExpressiveApi::class,
+    ExperimentalUuidApi::class
+)
 @Composable
-fun SearchView(modifier: Modifier = Modifier) {
+fun FolderDetailView(
+    modifier: Modifier = Modifier,
+    folderId: String,
+) {
     val userPreferences = LocalUserPreferences.current
     val navigator = LocalContentNavigator.current
+    val creationNavigator = LocalCreationContentNavigator.current
+    val appStateManager = LocalAppStateManager.current
+    val resultStore = LocalResultStore.current
 
     val searchBarState = rememberSearchBarState()
 
-    val vm = viewModel { SearchVM() }
+    val vm = viewModel { FolderDetailVM() }
     val state by vm.state
 
-    LaunchedEffect(Unit) { vm.onEvent(event = SearchEvent.OnInit) }
+    LaunchedEffect(folderId) {
+        vm.onEvent(FolderDetailEvent.OnInit(folderId = folderId))
+    }
+
+    LaunchedEffect(resultStore.getResult(ResultStoreKeys.SELECTED_FOLDER)) {
+        resultStore.getResult<FolderUiModel>(ResultStoreKeys.SELECTED_FOLDER)
+            ?.let { selectedFolder ->
+                vm.onEvent(FolderDetailEvent.OnMoveSelectedToFolder(targetFolder = selectedFolder))
+                resultStore.removeResult(ResultStoreKeys.SELECTED_FOLDER)
+                appStateManager.onHideCreationContent()
+            }
+    }
 
     Scaffold(
         modifier = modifier,
@@ -85,10 +120,10 @@ fun SearchView(modifier: Modifier = Modifier) {
                         expanded = false,
                         onExpandedChange = {},
                         onQueryChange = { newQuery ->
-                            vm.onEvent(SearchEvent.OnChangeQuery(newQuery))
+                            vm.onEvent(FolderDetailEvent.OnChangeQuery(query = newQuery))
                         },
                         onSearch = { finalQuery ->
-                            vm.onEvent(SearchEvent.OnChangeQuery(finalQuery))
+                            vm.onEvent(FolderDetailEvent.OnChangeQuery(query = finalQuery))
                         },
                         leadingIcon = { YabaIcon(name = "search-01") },
                         trailingIcon = {
@@ -98,11 +133,11 @@ fun SearchView(modifier: Modifier = Modifier) {
                                 exit = fadeOut() + scaleOut(),
                             ) {
                                 IconButton(
-                                    onClick = { vm.onEvent(SearchEvent.OnChangeQuery("")) }
+                                    onClick = { vm.onEvent(FolderDetailEvent.OnChangeQuery("")) }
                                 ) { YabaIcon(name = "cancel-01") }
                             }
                         },
-                        placeholder = { Text(text = stringResource(Res.string.search_prompt)) }
+                        placeholder = { Text(text = stringResource(Res.string.search_prompt)) },
                     )
                 },
                 navigationIcon = {
@@ -110,9 +145,30 @@ fun SearchView(modifier: Modifier = Modifier) {
                         YabaIcon(name = "arrow-left-01")
                     }
                 },
-                actions = { OptionsMenu(state = state, onEvent = vm::onEvent) }
+                actions = {
+                    FolderDetailOptionsMenu(
+                        state = state,
+                        onEvent = vm::onEvent,
+                        onNewBookmark = {
+                            val folder = state.folder ?: return@FolderDetailOptionsMenu
+                            resultStore.setResult(ResultStoreKeys.SELECTED_FOLDER, folder)
+                            creationNavigator.add(LinkmarkCreationRoute(bookmarkId = null))
+                            appStateManager.onShowCreationContent()
+                        },
+                        onMoveSelection = {
+                            creationNavigator.add(
+                                FolderSelectionRoute(
+                                    mode = FolderSelectionMode.FOLDER_SELECTION,
+                                    contextFolderId = null,
+                                    contextBookmarkId = null,
+                                )
+                            )
+                            appStateManager.onShowCreationContent()
+                        },
+                    )
+                },
             )
-        }
+        },
     ) { paddings ->
         when {
             state.isLoading && state.bookmarks.isEmpty() -> {
@@ -134,9 +190,7 @@ fun SearchView(modifier: Modifier = Modifier) {
                     NoContentView(
                         iconName = "bookmark-02",
                         labelRes = Res.string.no_bookmarks_title,
-                        message = {
-                            Text(text = stringResource(Res.string.no_bookmarks_message))
-                        }
+                        message = { Text(text = stringResource(Res.string.no_bookmarks_message)) },
                     )
                 }
             }
@@ -158,7 +212,7 @@ fun SearchView(modifier: Modifier = Modifier) {
                                     state.query,
                                 )
                             )
-                        }
+                        },
                     )
                 }
             }
@@ -169,7 +223,7 @@ fun SearchView(modifier: Modifier = Modifier) {
                         .fillMaxSize()
                         .padding(paddings)
                         .padding(
-                            horizontal = if (state.bookmarkAppearance != BookmarkAppearance.LIST) {
+                            horizontal = if (userPreferences.preferredBookmarkAppearance != BookmarkAppearance.LIST) {
                                 12.dp
                             } else 0.dp
                         ),
@@ -186,16 +240,24 @@ fun SearchView(modifier: Modifier = Modifier) {
                             appearance = appearance,
                             cardImageSizing = cardImageSizing,
                             onClick = {
-                                // TODO: OPEN BOOKMARK DETAIL
+                                if (state.isSelectionMode) {
+                                    vm.onEvent(
+                                        FolderDetailEvent.OnToggleBookmarkSelection(
+                                            bookmarkId = model.id
+                                        )
+                                    )
+                                } else {
+                                    // TODO: OPEN BOOKMARK DETAIL
+                                }
                             },
                             onDeleteBookmark = { bookmark ->
-                                vm.onEvent(SearchEvent.OnDeleteBookmark(bookmark = bookmark))
+                                vm.onEvent(FolderDetailEvent.OnDeleteBookmark(bookmark = bookmark))
                             },
                             onShareBookmark = {
                                 // TODO: IMPLEMENT SHARE
-                            }
+                            },
                         )
-                    }
+                    },
                 )
             }
         }
@@ -203,9 +265,11 @@ fun SearchView(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun OptionsMenu(
-    state: SearchUIState,
-    onEvent: (SearchEvent) -> Unit,
+private fun FolderDetailOptionsMenu(
+    state: FolderDetailUIState,
+    onEvent: (FolderDetailEvent) -> Unit,
+    onNewBookmark: () -> Unit,
+    onMoveSelection: () -> Unit,
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
 
@@ -213,55 +277,103 @@ private fun OptionsMenu(
         IconButton(onClick = { isMenuExpanded = !isMenuExpanded }) {
             YabaIcon(name = "more-horizontal-circle-02")
         }
-        SearchDropdownMenu(
+
+        FolderDetailDropdownMenu(
             isExpanded = isMenuExpanded,
             onDismissRequest = { isMenuExpanded = false },
-            bookmarkAppearance = state.bookmarkAppearance,
-            sortType = state.sortType,
-            sortOrder = state.sortOrder,
-            onChangeAppearance = { appearance ->
-                onEvent(SearchEvent.OnChangeAppearance(appearance = appearance))
-            },
-            onChangeSortType = { sortType ->
-                onEvent(SearchEvent.OnChangeSort(sortType = sortType, sortOrder = state.sortOrder))
-            },
-            onChangeSortOrder = { sortOrder ->
-                onEvent(SearchEvent.OnChangeSort(sortType = state.sortType, sortOrder = sortOrder))
-            },
+            state = state,
+            onEvent = onEvent,
+            onNewBookmark = onNewBookmark,
+            onMoveSelection = onMoveSelection,
         )
     }
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun SearchDropdownMenu(
+private fun FolderDetailDropdownMenu(
     isExpanded: Boolean,
     onDismissRequest: () -> Unit,
-    bookmarkAppearance: BookmarkAppearance,
-    sortType: SortType,
-    sortOrder: SortOrderType,
-    onChangeAppearance: (BookmarkAppearance) -> Unit,
-    onChangeSortType: (SortType) -> Unit,
-    onChangeSortOrder: (SortOrderType) -> Unit,
+    state: FolderDetailUIState,
+    onEvent: (FolderDetailEvent) -> Unit,
+    onNewBookmark: () -> Unit,
+    onMoveSelection: () -> Unit,
 ) {
     var isAppearanceExpanded by remember { mutableStateOf(false) }
     var isSortingExpanded by remember { mutableStateOf(false) }
     var isSortOrderExpanded by remember { mutableStateOf(false) }
 
+    val newBookmarkText = stringResource(Res.string.new_bookmark)
+    val selectText = stringResource(Res.string.bookmark_selection_enable)
+    val cancelSelectionText = stringResource(Res.string.bookmark_selection_cancel)
+    val moveSelectionText = stringResource(Res.string.bookmark_selection_move)
+    val deleteSelectionText = stringResource(Res.string.bookmark_selection_delete)
+    val groupCount = if (state.isSelectionMode) 3 else 2
+
     DropdownMenuPopup(
         expanded = isExpanded,
         onDismissRequest = onDismissRequest,
     ) {
+        // Actions group
         DropdownMenuGroup(
-            shapes = MenuDefaults.groupShape(index = 0, count = 3),
+            shapes = MenuDefaults.groupShape(index = 0, count = groupCount),
+        ) {
+            if (!state.isSelectionMode) {
+                DropdownMenuItem(
+                    shapes = MenuDefaults.itemShape(0, 2),
+                    checked = false,
+                    onCheckedChange = { _ ->
+                        onDismissRequest()
+                        onNewBookmark()
+                    },
+                    leadingIcon = { YabaIcon(name = "bookmark-add-02") },
+                    text = { Text(text = newBookmarkText) },
+                )
+                DropdownMenuItem(
+                    shapes = MenuDefaults.itemShape(1, 2),
+                    checked = false,
+                    onCheckedChange = { _ ->
+                        onDismissRequest()
+                        onEvent(FolderDetailEvent.OnToggleSelectionMode)
+                    },
+                    leadingIcon = { YabaIcon(name = "checkmark-circle-01") },
+                    text = { Text(text = selectText) },
+                )
+            } else {
+                DropdownMenuItem(
+                    shapes = MenuDefaults.itemShape(0, 2),
+                    checked = false,
+                    onCheckedChange = { _ ->
+                        onDismissRequest()
+                        onMoveSelection()
+                    },
+                    leadingIcon = { YabaIcon(name = "arrow-move-up-right") },
+                    text = { Text(text = moveSelectionText) },
+                )
+                DropdownMenuItem(
+                    shapes = MenuDefaults.itemShape(1, 2),
+                    checked = false,
+                    onCheckedChange = { _ ->
+                        onDismissRequest()
+                        onEvent(FolderDetailEvent.OnDeleteSelected)
+                    },
+                    leadingIcon = { YabaIcon(name = "delete-02") },
+                    text = { Text(text = deleteSelectionText) },
+                )
+            }
+        }
+
+        // Config group (appearance / sorting / order)
+        DropdownMenuGroup(
+            shapes = MenuDefaults.groupShape(index = 1, count = groupCount),
         ) {
             BookmarkAppearanceSection(
                 isExpanded = isAppearanceExpanded,
                 onPressedSection = { isAppearanceExpanded = !isAppearanceExpanded },
                 onDismissSubmenu = { isAppearanceExpanded = false },
-                currentAppearance = bookmarkAppearance,
+                currentAppearance = state.bookmarkAppearance,
                 onAppearanceSelection = { appearance ->
-                    onChangeAppearance(appearance)
+                    onEvent(FolderDetailEvent.OnChangeAppearance(appearance = appearance))
                     onDismissRequest()
                 },
             )
@@ -270,9 +382,14 @@ private fun SearchDropdownMenu(
                 isExpanded = isSortingExpanded,
                 onPressedSection = { isSortingExpanded = !isSortingExpanded },
                 onDismissSubmenu = { isSortingExpanded = false },
-                currentSortType = sortType,
-                onSortingSelection = { newSortType ->
-                    onChangeSortType(newSortType)
+                currentSortType = state.sortType,
+                onSortingSelection = { sortType ->
+                    onEvent(
+                        FolderDetailEvent.OnChangeSort(
+                            sortType = sortType,
+                            sortOrder = state.sortOrder
+                        )
+                    )
                     onDismissRequest()
                 },
             )
@@ -281,12 +398,35 @@ private fun SearchDropdownMenu(
                 isExpanded = isSortOrderExpanded,
                 onPressedSection = { isSortOrderExpanded = !isSortOrderExpanded },
                 onDismissSubmenu = { isSortOrderExpanded = false },
-                currentSortOrder = sortOrder,
-                onSortOrderSelection = { newSortOrder ->
-                    onChangeSortOrder(newSortOrder)
+                currentSortOrder = state.sortOrder,
+                onSortOrderSelection = { sortOrder ->
+                    onEvent(
+                        FolderDetailEvent.OnChangeSort(
+                            sortType = state.sortType,
+                            sortOrder = sortOrder
+                        )
+                    )
                     onDismissRequest()
                 },
             )
+        }
+
+        if (state.isSelectionMode) {
+            // Cancel selection group
+            DropdownMenuGroup(
+                shapes = MenuDefaults.groupShape(index = 2, count = groupCount),
+            ) {
+                DropdownMenuItem(
+                    shapes = MenuDefaults.itemShape(0, 1),
+                    checked = false,
+                    onCheckedChange = { _ ->
+                        onDismissRequest()
+                        onEvent(FolderDetailEvent.OnToggleSelectionMode)
+                    },
+                    leadingIcon = { YabaIcon(name = "cancel-circle") },
+                    text = { Text(text = cancelSelectionText) },
+                )
+            }
         }
     }
 }
