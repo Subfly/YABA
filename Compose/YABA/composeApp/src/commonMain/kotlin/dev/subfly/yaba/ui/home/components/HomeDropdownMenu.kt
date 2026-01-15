@@ -2,6 +2,8 @@ package dev.subfly.yaba.ui.home.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.DropdownMenuGroup
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.DropdownMenuPopup
@@ -15,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import dev.subfly.yaba.util.LocalUserPreferences
 import dev.subfly.yaba.util.uiTitle
@@ -49,7 +52,7 @@ internal fun HomeDropdownMenu(
         DropdownMenuGroup(
             shapes = MenuDefaults.groupShape(
                 index = 0,
-                count = 3
+                count = 2
             )
         ) {
             SortingSection(
@@ -70,19 +73,25 @@ internal fun HomeDropdownMenu(
                     onDismissRequest()
                 }
             )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        DropdownMenuGroup(
+            shapes = MenuDefaults.groupShape(
+                index = 1,
+                count = 2
+            )
+        ) {
             DropdownMenuItem(
-                shapes = MenuDefaults.itemShape(2, 3),
+                shapes = MenuDefaults.itemShape(0, 1),
                 checked = false,
                 onCheckedChange = { _ ->
                     onDismissRequest()
                     onSettingsClicked()
                 },
-                leadingIcon = {
-                    YabaIcon(name = "settings-02")
-                },
-                text = {
-                    Text(text = stringResource(Res.string.settings_title))
-                }
+                leadingIcon = { YabaIcon(name = "settings-02") },
+                text = { Text(text = stringResource(Res.string.settings_title)) }
             )
         }
     }
@@ -99,7 +108,7 @@ private fun SortingSection(
     val userPreferences = LocalUserPreferences.current
     Box {
         DropdownMenuItem(
-            shapes = MenuDefaults.itemShape(0, 3),
+            shapes = MenuDefaults.itemShape(0, 2),
             checked = false,
             onCheckedChange = { _ -> onPressedSection() },
             leadingIcon = {
@@ -125,7 +134,7 @@ private fun SortingSection(
             DropdownMenuGroup(
                 shapes = MenuDefaults.groupShape(
                     index = 0,
-                    count = SortType.entries.size
+                    count = 1,
                 )
             ) {
                 SortType.entries.fastForEachIndexed { index, sorting ->
@@ -156,7 +165,7 @@ private fun SortOrderSection(
     val userPreferences = LocalUserPreferences.current
     Box {
         DropdownMenuItem(
-            shapes = MenuDefaults.itemShape(1, 3),
+            shapes = MenuDefaults.itemShape(1, 2),
             checked = false,
             onCheckedChange = { _ -> onPressedSection() },
             leadingIcon = {
@@ -182,7 +191,7 @@ private fun SortOrderSection(
             DropdownMenuGroup(
                 shapes = MenuDefaults.groupShape(
                     index = 0,
-                    count = SortOrderType.entries.size
+                    count = 1
                 )
             ) {
                 SortOrderType.entries.fastForEachIndexed { index, sortOrder ->

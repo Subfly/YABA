@@ -1,5 +1,6 @@
 package dev.subfly.yaba.ui.detail.tag
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
@@ -7,7 +8,10 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.AppBarWithSearch
@@ -37,7 +41,12 @@ import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.item.bookmark.BookmarkItemView
+import dev.subfly.yaba.core.navigation.creation.BookmarkCreationRoute
+import dev.subfly.yaba.core.navigation.creation.ResultStoreKeys
+import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalContentNavigator
+import dev.subfly.yaba.util.LocalCreationContentNavigator
+import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.LocalUserPreferences
 import dev.subfly.yaba.util.uiTitle
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
@@ -54,6 +63,7 @@ import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.bookmark_selection_cancel
 import yaba.composeapp.generated.resources.bookmark_selection_delete
 import yaba.composeapp.generated.resources.bookmark_selection_enable
+import yaba.composeapp.generated.resources.new_bookmark
 import yaba.composeapp.generated.resources.no_bookmarks_message
 import yaba.composeapp.generated.resources.no_bookmarks_title
 import yaba.composeapp.generated.resources.search_no_bookmarks_found_description
@@ -76,6 +86,9 @@ fun TagDetailView(
 ) {
     val userPreferences = LocalUserPreferences.current
     val navigator = LocalContentNavigator.current
+    val creationNavigator = LocalCreationContentNavigator.current
+    val appStateManager = LocalAppStateManager.current
+    val resultStore = LocalResultStore.current
 
     val searchBarState = rememberSearchBarState()
 
@@ -127,6 +140,12 @@ fun TagDetailView(
                     TagDetailOptionsMenu(
                         state = state,
                         onEvent = vm::onEvent,
+                        onNewBookmark = {
+                            val tag = state.tag ?: return@TagDetailOptionsMenu
+                            resultStore.setResult(ResultStoreKeys.SELECTED_TAGS, listOf(tag))
+                            creationNavigator.add(BookmarkCreationRoute())
+                            appStateManager.onShowCreationContent()
+                        },
                     )
                 },
             )
@@ -230,6 +249,7 @@ fun TagDetailView(
 private fun TagDetailOptionsMenu(
     state: TagDetailUIState,
     onEvent: (TagDetailEvent) -> Unit,
+    onNewBookmark: () -> Unit,
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
 
@@ -243,6 +263,7 @@ private fun TagDetailOptionsMenu(
             onDismissRequest = { isMenuExpanded = false },
             state = state,
             onEvent = onEvent,
+            onNewBookmark = onNewBookmark,
         )
     }
 }
@@ -254,15 +275,16 @@ private fun TagDetailDropdownMenu(
     onDismissRequest: () -> Unit,
     state: TagDetailUIState,
     onEvent: (TagDetailEvent) -> Unit,
+    onNewBookmark: () -> Unit,
 ) {
     var isAppearanceExpanded by remember { mutableStateOf(false) }
     var isSortingExpanded by remember { mutableStateOf(false) }
     var isSortOrderExpanded by remember { mutableStateOf(false) }
 
+    val newBookmarkText = stringResource(Res.string.new_bookmark)
     val selectText = stringResource(Res.string.bookmark_selection_enable)
     val cancelSelectionText = stringResource(Res.string.bookmark_selection_cancel)
     val deleteSelectionText = stringResource(Res.string.bookmark_selection_delete)
-    val groupCount = if (state.isSelectionMode) 3 else 2
 
     DropdownMenuPopup(
         expanded = isExpanded,
@@ -270,46 +292,64 @@ private fun TagDetailDropdownMenu(
     ) {
         // Actions group
         DropdownMenuGroup(
-            shapes = MenuDefaults.groupShape(index = 0, count = groupCount),
+            shapes = MenuDefaults.groupShape(index = 0, count = 2),
         ) {
-            DropdownMenuItem(
-                shapes = MenuDefaults.itemShape(0, 1),
-                checked = false,
-                onCheckedChange = { _ ->
-                    onDismissRequest()
-                    onEvent(TagDetailEvent.OnToggleSelectionMode)
-                },
-                leadingIcon = {
-                    YabaIcon(
-                        name = if (state.isSelectionMode) "cancel-circle" else "checkmark-circle-01"
-                    )
-                },
-                text = {
-                    Text(text = if (state.isSelectionMode) cancelSelectionText else selectText)
-                },
-            )
-        }
-
-        if (state.isSelectionMode) {
-            DropdownMenuGroup(
-                shapes = MenuDefaults.groupShape(index = 1, count = groupCount),
-            ) {
-                DropdownMenuItem(
-                    shapes = MenuDefaults.itemShape(0, 1),
-                    checked = false,
-                    onCheckedChange = { _ ->
-                        onDismissRequest()
-                        onEvent(TagDetailEvent.OnDeleteSelected)
-                    },
-                    leadingIcon = { YabaIcon(name = "delete-02") },
-                    text = { Text(text = deleteSelectionText) },
-                )
+            AnimatedContent(targetState = state.isSelectionMode) { isInSelectionMode ->
+                if (isInSelectionMode) {
+                    Column {
+                        DropdownMenuItem(
+                            shapes = MenuDefaults.itemShape(0, 2),
+                            checked = false,
+                            onCheckedChange = { _ ->
+                                onDismissRequest()
+                                onEvent(TagDetailEvent.OnDeleteSelected)
+                            },
+                            leadingIcon = { YabaIcon(name = "delete-02") },
+                            text = { Text(text = deleteSelectionText) },
+                        )
+                        DropdownMenuItem(
+                            shapes = MenuDefaults.itemShape(1, 2),
+                            checked = false,
+                            onCheckedChange = { _ ->
+                                onDismissRequest()
+                                onEvent(TagDetailEvent.OnToggleSelectionMode)
+                            },
+                            leadingIcon = { YabaIcon(name = "cancel-circle") },
+                            text = { Text(text = cancelSelectionText) },
+                        )
+                    }
+                } else {
+                    Column {
+                        DropdownMenuItem(
+                            shapes = MenuDefaults.itemShape(0, 2),
+                            checked = false,
+                            onCheckedChange = { _ ->
+                                onDismissRequest()
+                                onNewBookmark()
+                            },
+                            leadingIcon = { YabaIcon(name = "bookmark-add-02") },
+                            text = { Text(text = newBookmarkText) },
+                        )
+                        DropdownMenuItem(
+                            shapes = MenuDefaults.itemShape(1, 2),
+                            checked = false,
+                            onCheckedChange = { _ ->
+                                onDismissRequest()
+                                onEvent(TagDetailEvent.OnToggleSelectionMode)
+                            },
+                            leadingIcon = { YabaIcon(name = "checkmark-circle-01") },
+                            text = { Text(text = selectText) },
+                        )
+                    }
+                }
             }
         }
 
+        Spacer(modifier = Modifier.height(8.dp))
+
         // Config group (appearance / sorting / order)
         DropdownMenuGroup(
-            shapes = MenuDefaults.groupShape(index = groupCount - 1, count = groupCount),
+            shapes = MenuDefaults.groupShape(index = 1, count = 2),
         ) {
             BookmarkAppearanceSection(
                 isExpanded = isAppearanceExpanded,
@@ -389,10 +429,7 @@ private fun BookmarkAppearanceSection(
             onDismissRequest = onDismissSubmenu,
         ) {
             DropdownMenuGroup(
-                shapes = MenuDefaults.groupShape(
-                    index = 0,
-                    count = BookmarkAppearance.entries.size
-                ),
+                shapes = MenuDefaults.groupShape(index = 0, count = 1),
             ) {
                 BookmarkAppearance.entries.fastForEachIndexed { index, appearance ->
                     DropdownMenuItem(
@@ -443,7 +480,7 @@ private fun SortingSection(
             onDismissRequest = onDismissSubmenu,
         ) {
             DropdownMenuGroup(
-                shapes = MenuDefaults.groupShape(index = 0, count = SortType.entries.size),
+                shapes = MenuDefaults.groupShape(index = 0, count = 1),
             ) {
                 SortType.entries.fastForEachIndexed { index, sortType ->
                     DropdownMenuItem(
@@ -494,7 +531,7 @@ private fun SortOrderSection(
             onDismissRequest = onDismissSubmenu,
         ) {
             DropdownMenuGroup(
-                shapes = MenuDefaults.groupShape(index = 0, count = SortOrderType.entries.size),
+                shapes = MenuDefaults.groupShape(index = 0, count = 1),
             ) {
                 SortOrderType.entries.fastForEachIndexed { index, sortOrder ->
                     DropdownMenuItem(

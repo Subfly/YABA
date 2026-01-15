@@ -21,6 +21,8 @@ class ResultStore {
         results.remove(key)
     }
 
+    fun cleanUp() { results.clear() }
+
     companion object {
         val Saver = Saver<ResultStore, Map<Any, Any?>>(
             save = { it.results.toMap() },

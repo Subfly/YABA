@@ -253,7 +253,7 @@ private fun SearchDropdownMenu(
         onDismissRequest = onDismissRequest,
     ) {
         DropdownMenuGroup(
-            shapes = MenuDefaults.groupShape(index = 0, count = 3),
+            shapes = MenuDefaults.groupShape(index = 0, count = 1),
         ) {
             BookmarkAppearanceSection(
                 isExpanded = isAppearanceExpanded,
@@ -325,7 +325,7 @@ private fun BookmarkAppearanceSection(
             DropdownMenuGroup(
                 shapes = MenuDefaults.groupShape(
                     index = 0,
-                    count = BookmarkAppearance.entries.size
+                    count = 1
                 ),
             ) {
                 BookmarkAppearance.entries.fastForEachIndexed { index, appearance ->
@@ -377,7 +377,7 @@ private fun SortingSection(
             onDismissRequest = onDismissSubmenu,
         ) {
             DropdownMenuGroup(
-                shapes = MenuDefaults.groupShape(index = 0, count = SortType.entries.size),
+                shapes = MenuDefaults.groupShape(index = 0, count = 1),
             ) {
                 SortType.entries.fastForEachIndexed { index, sortType ->
                     DropdownMenuItem(
@@ -428,7 +428,7 @@ private fun SortOrderSection(
             onDismissRequest = onDismissSubmenu,
         ) {
             DropdownMenuGroup(
-                shapes = MenuDefaults.groupShape(index = 0, count = SortOrderType.entries.size),
+                shapes = MenuDefaults.groupShape(index = 0, count = 1),
             ) {
                 SortOrderType.entries.fastForEachIndexed { index, sortOrder ->
                     DropdownMenuItem(

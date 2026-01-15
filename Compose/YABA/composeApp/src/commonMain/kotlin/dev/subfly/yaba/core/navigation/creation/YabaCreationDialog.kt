@@ -12,6 +12,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
+import dev.subfly.yaba.util.LocalResultStore
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -19,6 +20,7 @@ import kotlinx.coroutines.delay
 fun YabaCreationDialog() {
     val creationNavigator = LocalCreationContentNavigator.current
     val appStateManager = LocalAppStateManager.current
+    val resultStore = LocalResultStore.current
 
     val appState by appStateManager.state.collectAsState()
 
@@ -26,7 +28,8 @@ fun YabaCreationDialog() {
         if (appState.showCreationContent.not()) {
             // Just in case, some delay
             delay(100)
-            creationNavigator.removeIf { it !is EmptyCretionRoute }
+            creationNavigator.removeAll { it !is EmptyCretionRoute }
+            resultStore.cleanUp()
         }
     }
 

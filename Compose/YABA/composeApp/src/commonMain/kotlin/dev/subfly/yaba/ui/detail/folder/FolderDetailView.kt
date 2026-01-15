@@ -1,5 +1,6 @@
 package dev.subfly.yaba.ui.detail.folder
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
@@ -7,7 +8,10 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.AppBarWithSearch
@@ -37,8 +41,8 @@ import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.item.bookmark.BookmarkItemView
+import dev.subfly.yaba.core.navigation.creation.BookmarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
-import dev.subfly.yaba.core.navigation.creation.LinkmarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.ResultStoreKeys
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalContentNavigator
@@ -152,7 +156,7 @@ fun FolderDetailView(
                         onNewBookmark = {
                             val folder = state.folder ?: return@FolderDetailOptionsMenu
                             resultStore.setResult(ResultStoreKeys.SELECTED_FOLDER, folder)
-                            creationNavigator.add(LinkmarkCreationRoute(bookmarkId = null))
+                            creationNavigator.add(BookmarkCreationRoute())
                             appStateManager.onShowCreationContent()
                         },
                         onMoveSelection = {
@@ -308,7 +312,6 @@ private fun FolderDetailDropdownMenu(
     val cancelSelectionText = stringResource(Res.string.bookmark_selection_cancel)
     val moveSelectionText = stringResource(Res.string.bookmark_selection_move)
     val deleteSelectionText = stringResource(Res.string.bookmark_selection_delete)
-    val groupCount = if (state.isSelectionMode) 3 else 2
 
     DropdownMenuPopup(
         expanded = isExpanded,
@@ -316,56 +319,75 @@ private fun FolderDetailDropdownMenu(
     ) {
         // Actions group
         DropdownMenuGroup(
-            shapes = MenuDefaults.groupShape(index = 0, count = groupCount),
+            shapes = MenuDefaults.groupShape(index = 0, count = 2),
         ) {
-            if (!state.isSelectionMode) {
-                DropdownMenuItem(
-                    shapes = MenuDefaults.itemShape(0, 2),
-                    checked = false,
-                    onCheckedChange = { _ ->
-                        onDismissRequest()
-                        onNewBookmark()
-                    },
-                    leadingIcon = { YabaIcon(name = "bookmark-add-02") },
-                    text = { Text(text = newBookmarkText) },
-                )
-                DropdownMenuItem(
-                    shapes = MenuDefaults.itemShape(1, 2),
-                    checked = false,
-                    onCheckedChange = { _ ->
-                        onDismissRequest()
-                        onEvent(FolderDetailEvent.OnToggleSelectionMode)
-                    },
-                    leadingIcon = { YabaIcon(name = "checkmark-circle-01") },
-                    text = { Text(text = selectText) },
-                )
-            } else {
-                DropdownMenuItem(
-                    shapes = MenuDefaults.itemShape(0, 2),
-                    checked = false,
-                    onCheckedChange = { _ ->
-                        onDismissRequest()
-                        onMoveSelection()
-                    },
-                    leadingIcon = { YabaIcon(name = "arrow-move-up-right") },
-                    text = { Text(text = moveSelectionText) },
-                )
-                DropdownMenuItem(
-                    shapes = MenuDefaults.itemShape(1, 2),
-                    checked = false,
-                    onCheckedChange = { _ ->
-                        onDismissRequest()
-                        onEvent(FolderDetailEvent.OnDeleteSelected)
-                    },
-                    leadingIcon = { YabaIcon(name = "delete-02") },
-                    text = { Text(text = deleteSelectionText) },
-                )
+            AnimatedContent(targetState = state.isSelectionMode) { isInSelectionMode ->
+                if (isInSelectionMode) {
+                    Column {
+                        DropdownMenuItem(
+                            shapes = MenuDefaults.itemShape(0, 3),
+                            checked = false,
+                            onCheckedChange = { _ ->
+                                onDismissRequest()
+                                onMoveSelection()
+                            },
+                            leadingIcon = { YabaIcon(name = "arrow-move-up-right") },
+                            text = { Text(text = moveSelectionText) },
+                        )
+                        DropdownMenuItem(
+                            shapes = MenuDefaults.itemShape(1, 3),
+                            checked = false,
+                            onCheckedChange = { _ ->
+                                onDismissRequest()
+                                onEvent(FolderDetailEvent.OnDeleteSelected)
+                            },
+                            leadingIcon = { YabaIcon(name = "delete-02") },
+                            text = { Text(text = deleteSelectionText) },
+                        )
+
+                        DropdownMenuItem(
+                            shapes = MenuDefaults.itemShape(2, 3),
+                            checked = false,
+                            onCheckedChange = { _ ->
+                                onDismissRequest()
+                                onEvent(FolderDetailEvent.OnToggleSelectionMode)
+                            },
+                            leadingIcon = { YabaIcon(name = "cancel-circle") },
+                            text = { Text(text = cancelSelectionText) },
+                        )
+                    }
+                } else {
+                    Column {
+                        DropdownMenuItem(
+                            shapes = MenuDefaults.itemShape(0, 2),
+                            checked = false,
+                            onCheckedChange = { _ ->
+                                onDismissRequest()
+                                onNewBookmark()
+                            },
+                            leadingIcon = { YabaIcon(name = "bookmark-add-02") },
+                            text = { Text(text = newBookmarkText) },
+                        )
+                        DropdownMenuItem(
+                            shapes = MenuDefaults.itemShape(1, 2),
+                            checked = false,
+                            onCheckedChange = { _ ->
+                                onDismissRequest()
+                                onEvent(FolderDetailEvent.OnToggleSelectionMode)
+                            },
+                            leadingIcon = { YabaIcon(name = "checkmark-circle-01") },
+                            text = { Text(text = selectText) },
+                        )
+                    }
+                }
             }
         }
 
+        Spacer(modifier = Modifier.height(8.dp))
+
         // Config group (appearance / sorting / order)
         DropdownMenuGroup(
-            shapes = MenuDefaults.groupShape(index = 1, count = groupCount),
+            shapes = MenuDefaults.groupShape(index = 1, count = 2),
         ) {
             BookmarkAppearanceSection(
                 isExpanded = isAppearanceExpanded,
@@ -410,24 +432,6 @@ private fun FolderDetailDropdownMenu(
                 },
             )
         }
-
-        if (state.isSelectionMode) {
-            // Cancel selection group
-            DropdownMenuGroup(
-                shapes = MenuDefaults.groupShape(index = 2, count = groupCount),
-            ) {
-                DropdownMenuItem(
-                    shapes = MenuDefaults.itemShape(0, 1),
-                    checked = false,
-                    onCheckedChange = { _ ->
-                        onDismissRequest()
-                        onEvent(FolderDetailEvent.OnToggleSelectionMode)
-                    },
-                    leadingIcon = { YabaIcon(name = "cancel-circle") },
-                    text = { Text(text = cancelSelectionText) },
-                )
-            }
-        }
     }
 }
 
@@ -463,10 +467,7 @@ private fun BookmarkAppearanceSection(
             onDismissRequest = onDismissSubmenu,
         ) {
             DropdownMenuGroup(
-                shapes = MenuDefaults.groupShape(
-                    index = 0,
-                    count = BookmarkAppearance.entries.size
-                ),
+                shapes = MenuDefaults.groupShape(index = 0, count = 1),
             ) {
                 BookmarkAppearance.entries.fastForEachIndexed { index, appearance ->
                     DropdownMenuItem(
@@ -517,7 +518,7 @@ private fun SortingSection(
             onDismissRequest = onDismissSubmenu,
         ) {
             DropdownMenuGroup(
-                shapes = MenuDefaults.groupShape(index = 0, count = SortType.entries.size),
+                shapes = MenuDefaults.groupShape(index = 0, count = 1),
             ) {
                 SortType.entries.fastForEachIndexed { index, sortType ->
                     DropdownMenuItem(
@@ -568,7 +569,7 @@ private fun SortOrderSection(
             onDismissRequest = onDismissSubmenu,
         ) {
             DropdownMenuGroup(
-                shapes = MenuDefaults.groupShape(index = 0, count = SortOrderType.entries.size),
+                shapes = MenuDefaults.groupShape(index = 0, count = 1),
             ) {
                 SortOrderType.entries.fastForEachIndexed { index, sortOrder ->
                     DropdownMenuItem(

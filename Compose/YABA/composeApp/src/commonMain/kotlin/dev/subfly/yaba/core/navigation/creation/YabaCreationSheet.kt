@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import dev.subfly.yaba.core.components.AnimatedBottomSheet
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
+import dev.subfly.yaba.util.LocalResultStore
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalUuidApi::class)
@@ -17,12 +18,15 @@ import kotlin.uuid.ExperimentalUuidApi
 fun YabaCreationSheet(modifier: Modifier = Modifier) {
     val creationNavigator = LocalCreationContentNavigator.current
     val appStateManager = LocalAppStateManager.current
+    val resultStore = LocalResultStore.current
+
     val sheetState = rememberModalBottomSheetState()
     val appState by appStateManager.state.collectAsState()
 
     LaunchedEffect(sheetState.isVisible) {
         if (sheetState.isVisible.not()) {
-            creationNavigator.removeIf { it !is EmptyCretionRoute }
+            creationNavigator.removeAll { it !is EmptyCretionRoute }
+            resultStore.cleanUp()
         }
     }
 
