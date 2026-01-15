@@ -4,6 +4,7 @@ package dev.subfly.yabacore.ui.layout
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -204,5 +205,9 @@ private fun LazyListScope.renderAsList(
         items = entries,
         key = { it.key },
         contentType = { it.contentType },
-    ) { entry -> entry.content() }
+    ) { entry ->
+        Box(modifier = Modifier.animateItem()) {
+            entry.content()
+        }
+    }
 }
