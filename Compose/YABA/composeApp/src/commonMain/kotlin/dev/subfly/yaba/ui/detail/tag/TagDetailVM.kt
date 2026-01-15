@@ -10,9 +10,7 @@ import kotlin.uuid.ExperimentalUuidApi
 @OptIn(ExperimentalUuidApi::class)
 class TagDetailVM() : ViewModel() {
     private val stateMachine = TagDetailStateMachine()
-    var state = mutableStateOf(TagDetailUIState())
-
-    init { stateMachine.onState { newState -> state.value = newState } }
+    var state = stateMachine.stateFlow
 
     fun onEvent(event: TagDetailEvent) {
         stateMachine.onEvent(event)

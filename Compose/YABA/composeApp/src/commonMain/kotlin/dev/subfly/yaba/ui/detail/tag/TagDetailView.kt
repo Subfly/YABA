@@ -39,6 +39,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.item.bookmark.BookmarkItemView
@@ -100,7 +101,7 @@ fun TagDetailView(
     val searchBarState = rememberSearchBarState()
 
     val vm = viewModel { TagDetailVM() }
-    val state by vm.state
+    val state by vm.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(tagId) {
         vm.onEvent(TagDetailEvent.OnInit(tagId = tagId))

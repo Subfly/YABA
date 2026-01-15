@@ -14,6 +14,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.core.navigation.creation.ResultStoreKeys
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkFolderSelectionContent
@@ -36,7 +37,7 @@ fun LinkmarkCreationContent(bookmarkId: String?) {
     val resultStore = LocalResultStore.current
 
     val vm = viewModel { LinkmarkCreationVM() }
-    val state by vm.state
+    val state by vm.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(bookmarkId) {
         vm.onEvent(LinkmarkCreationEvent.OnInit(linkmarkIdString = bookmarkId))

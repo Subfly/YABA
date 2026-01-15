@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.navigation.creation.ResultStoreKeys
@@ -59,7 +60,7 @@ fun ImageSelectionContent(
     val resultStore = LocalResultStore.current
 
     val vm = viewModel { ImageSelectionVM() }
-    val state by vm.state
+    val state by vm.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(currentSelectedImageURL, imageDataMap) {
         vm.onEvent(

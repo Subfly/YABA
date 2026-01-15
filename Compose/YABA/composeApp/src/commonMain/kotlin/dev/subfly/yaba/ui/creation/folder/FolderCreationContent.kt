@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.core.components.item.folder.PresentableFolderItemView
 import dev.subfly.yaba.core.navigation.creation.ColorSelectionRoute
@@ -67,7 +68,7 @@ fun FolderCreationContent(folderId: String? = null) {
     val resultStore = LocalResultStore.current
 
     val vm = viewModel { FolderCreationVM() }
-    val state by vm.state
+    val state by vm.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(folderId) {
         folderId?.let { nonNullId ->

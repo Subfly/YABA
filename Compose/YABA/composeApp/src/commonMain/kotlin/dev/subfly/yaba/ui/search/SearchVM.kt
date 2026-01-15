@@ -10,9 +10,7 @@ import kotlin.uuid.ExperimentalUuidApi
 @OptIn(ExperimentalUuidApi::class)
 class SearchVM : ViewModel() {
     private val stateMachine = SearchStateMachine()
-    var state = mutableStateOf(SearchUIState())
-
-    init { stateMachine.onState { newState -> state.value = newState } }
+    var state = stateMachine.stateFlow
 
     fun onEvent(event: SearchEvent) {
         stateMachine.onEvent(event)

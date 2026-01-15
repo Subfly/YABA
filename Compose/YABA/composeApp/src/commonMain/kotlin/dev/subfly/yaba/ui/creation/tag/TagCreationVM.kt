@@ -8,13 +8,7 @@ import dev.subfly.yabacore.state.tag.TagCreationUIState
 
 class TagCreationVM: ViewModel() {
     private val stateMachine = TagCreationStateMachine()
-    var state = mutableStateOf(TagCreationUIState())
-
-    init {
-        stateMachine.onState { newState ->
-            state.value = newState
-        }
-    }
+    var state = stateMachine.stateFlow
 
     fun onEvent(event: TagCreationEvent) {
         stateMachine.onEvent(event)

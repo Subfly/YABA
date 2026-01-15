@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.RecentBookmarksGridSection
@@ -63,7 +64,7 @@ fun HomeView(modifier: Modifier = Modifier) {
     val navigator = LocalContentNavigator.current
 
     val vm = viewModel { HomeVM() }
-    val state by vm.state
+    val state by vm.state.collectAsStateWithLifecycle()
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 

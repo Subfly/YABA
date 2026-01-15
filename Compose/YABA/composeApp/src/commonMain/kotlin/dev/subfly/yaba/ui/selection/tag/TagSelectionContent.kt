@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.item.tag.PresentableTagItemView
@@ -69,7 +70,7 @@ fun TagSelectionContent(alreadySelectedTagIds: List<String>) {
     val resultStore = LocalResultStore.current
 
     val vm = viewModel { TagSelectionVM() }
-    val state by vm.state
+    val state by vm.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(alreadySelectedTagIds) {
         vm.onEvent(TagSelectionEvent.OnInit(selectedTagIds = alreadySelectedTagIds))

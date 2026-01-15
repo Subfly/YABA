@@ -8,13 +8,7 @@ import dev.subfly.yabacore.state.linkmark.LinkmarkCreationUIState
 
 class LinkmarkCreationVM : ViewModel() {
     private val stateMachine = LinkmarkCreationStateMachine()
-    var state = mutableStateOf(LinkmarkCreationUIState())
-
-    init {
-        stateMachine.onState { newState ->
-            state.value = newState
-        }
-    }
+    var state = stateMachine.stateFlow
 
     fun onEvent(event: LinkmarkCreationEvent) {
         stateMachine.onEvent(event)

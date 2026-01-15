@@ -9,14 +9,7 @@ import dev.subfly.yabacore.state.selection.TagSelectionUIState
 
 class TagSelectionVM : ViewModel() {
     private val stateMachine = TagSelectionStateMachine()
-    var state = mutableStateOf(TagSelectionUIState())
-        private set
-
-    init {
-        stateMachine.onState { newState ->
-            state.value = newState
-        }
-    }
+    var state = stateMachine.stateFlow
 
     fun onEvent(event: TagSelectionEvent) {
         stateMachine.onEvent(event)

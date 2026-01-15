@@ -10,9 +10,7 @@ import kotlin.uuid.ExperimentalUuidApi
 @OptIn(ExperimentalUuidApi::class)
 class FolderDetailVM() : ViewModel() {
     private val stateMachine = FolderDetailStateMachine()
-    var state = mutableStateOf(FolderDetailUIState())
-
-    init { stateMachine.onState { newState -> state.value = newState } }
+    var state = stateMachine.stateFlow
 
     fun onEvent(event: FolderDetailEvent) {
         stateMachine.onEvent(event)

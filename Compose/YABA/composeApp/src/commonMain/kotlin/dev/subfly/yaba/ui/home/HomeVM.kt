@@ -8,13 +8,7 @@ import dev.subfly.yabacore.state.home.HomeUIState
 
 class HomeVM : ViewModel() {
     private val stateMachine = HomeStateMachine()
-    var state = mutableStateOf(HomeUIState())
-
-    init {
-        stateMachine.onState { newState ->
-            state.value = newState
-        }
-    }
+    var state = stateMachine.stateFlow
 
     fun onEvent(event: HomeEvent) {
         stateMachine.onEvent(event)

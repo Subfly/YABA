@@ -8,13 +8,7 @@ import dev.subfly.yabacore.state.folder.FolderCreationUIState
 
 class FolderCreationVM : ViewModel() {
     private val stateMachine = FolderCreationStateMachine()
-    var state = mutableStateOf(FolderCreationUIState())
-
-    init {
-        stateMachine.onState { newState ->
-            state.value = newState
-        }
-    }
+    var state = stateMachine.stateFlow
 
     fun onEvent(event: FolderCreationEvent) {
         stateMachine.onEvent(event)
