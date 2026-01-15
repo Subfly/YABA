@@ -56,6 +56,7 @@ import dev.subfly.yabacore.model.utils.CardImageSizing
 import dev.subfly.yabacore.model.utils.FolderSelectionMode
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
+import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.model.utils.uiIconName
 import dev.subfly.yabacore.state.detail.folder.FolderDetailEvent
 import dev.subfly.yabacore.state.detail.folder.FolderDetailUIState
@@ -342,7 +343,12 @@ private fun FolderDetailDropdownMenu(
                                 onDismissRequest()
                                 onEvent(FolderDetailEvent.OnDeleteSelected)
                             },
-                            leadingIcon = { YabaIcon(name = "delete-02") },
+                            leadingIcon = {
+                                YabaIcon(
+                                    name = "delete-02",
+                                    color = YabaColor.RED,
+                                )
+                            },
                             text = { Text(text = deleteSelectionText) },
                         )
 

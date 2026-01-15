@@ -53,6 +53,7 @@ import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.CardImageSizing
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
+import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.model.utils.uiIconName
 import dev.subfly.yabacore.state.detail.tag.TagDetailEvent
 import dev.subfly.yabacore.state.detail.tag.TagDetailUIState
@@ -305,7 +306,12 @@ private fun TagDetailDropdownMenu(
                                 onDismissRequest()
                                 onEvent(TagDetailEvent.OnDeleteSelected)
                             },
-                            leadingIcon = { YabaIcon(name = "delete-02") },
+                            leadingIcon = {
+                                YabaIcon(
+                                    name = "delete-02",
+                                    color = YabaColor.RED,
+                                )
+                            },
                             text = { Text(text = deleteSelectionText) },
                         )
                         DropdownMenuItem(
