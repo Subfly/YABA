@@ -15,6 +15,7 @@ import dev.subfly.yabacore.ui.icon.YabaIcon
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.announcements_delete_title
+import yaba.composeapp.generated.resources.bookmark_selection_delete_all_message
 import yaba.composeapp.generated.resources.cancel
 import yaba.composeapp.generated.resources.delete
 import yaba.composeapp.generated.resources.delete_bookmark_title
@@ -65,6 +66,7 @@ fun YabaDeletionDialog(
                             DeletionType.TAG -> Res.string.delete_tag_title
                             DeletionType.FOLDER -> Res.string.delete_tag_title // TODO: ADD FOLDER TITLE :D
                             DeletionType.BOOKMARK -> Res.string.delete_bookmark_title
+                            DeletionType.BOOKMARKS -> Res.string.delete_bookmark_title // TODO: ADD PLURAL :D
                             DeletionType.ANNOUNCEMENT -> Res.string.announcements_delete_title
                         },
                     )
@@ -72,15 +74,19 @@ fun YabaDeletionDialog(
             },
             text = {
                 Text(
-                    text = stringResource(
-                        resource = Res.string.delete_content_message,
-                        when (state.deletionType) {
-                            DeletionType.TAG -> state.tagToBeDeleted?.label ?: "-"
-                            DeletionType.FOLDER -> state.folderToBeDeleted?.label ?: "-"
-                            DeletionType.BOOKMARK -> state.bookmarkToBeDeleted?.label ?: "-"
-                            DeletionType.ANNOUNCEMENT -> ""
-                        }
-                    )
+                    text = if (state.deletionType == DeletionType.BOOKMARKS) {
+                        stringResource(Res.string.bookmark_selection_delete_all_message)
+                    } else {
+                        stringResource(
+                            resource = Res.string.delete_content_message,
+                            when (state.deletionType) {
+                                DeletionType.TAG -> state.tagToBeDeleted?.label ?: "-"
+                                DeletionType.FOLDER -> state.folderToBeDeleted?.label ?: "-"
+                                DeletionType.BOOKMARK -> state.bookmarkToBeDeleted?.label ?: "-"
+                                DeletionType.ANNOUNCEMENT -> ""
+                            }
+                        )
+                    }
                 )
             }
         )

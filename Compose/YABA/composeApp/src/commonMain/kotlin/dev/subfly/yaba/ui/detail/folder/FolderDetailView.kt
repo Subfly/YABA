@@ -41,12 +41,15 @@ import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.item.bookmark.BookmarkItemView
+import dev.subfly.yaba.core.navigation.alert.DeletionState
+import dev.subfly.yaba.core.navigation.alert.DeletionType
 import dev.subfly.yaba.core.navigation.creation.BookmarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
 import dev.subfly.yaba.core.navigation.creation.ResultStoreKeys
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalCreationContentNavigator
+import dev.subfly.yaba.util.LocalDeletionDialogManager
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.LocalUserPreferences
 import dev.subfly.yaba.util.uiTitle
@@ -295,7 +298,7 @@ private fun FolderDetailOptionsMenu(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalUuidApi::class)
 @Composable
 private fun FolderDetailDropdownMenu(
     isExpanded: Boolean,
@@ -305,6 +308,9 @@ private fun FolderDetailDropdownMenu(
     onNewBookmark: () -> Unit,
     onMoveSelection: () -> Unit,
 ) {
+    val deletionDialogManager = LocalDeletionDialogManager.current
+    val appStateManager = LocalAppStateManager.current
+
     var isAppearanceExpanded by remember { mutableStateOf(false) }
     var isSortingExpanded by remember { mutableStateOf(false) }
     var isSortOrderExpanded by remember { mutableStateOf(false) }
@@ -329,9 +335,12 @@ private fun FolderDetailDropdownMenu(
                         DropdownMenuItem(
                             shapes = MenuDefaults.itemShape(0, 3),
                             checked = false,
+                            enabled = state.selectedBookmarkIds.isNotEmpty(),
                             onCheckedChange = { _ ->
                                 onDismissRequest()
-                                onMoveSelection()
+                                if (state.selectedBookmarkIds.isNotEmpty()) {
+                                    onMoveSelection()
+                                }
                             },
                             leadingIcon = { YabaIcon(name = "arrow-move-up-right") },
                             text = { Text(text = moveSelectionText) },
@@ -339,9 +348,18 @@ private fun FolderDetailDropdownMenu(
                         DropdownMenuItem(
                             shapes = MenuDefaults.itemShape(1, 3),
                             checked = false,
+                            enabled = state.selectedBookmarkIds.isNotEmpty(),
                             onCheckedChange = { _ ->
                                 onDismissRequest()
-                                onEvent(FolderDetailEvent.OnDeleteSelected)
+                                if (state.selectedBookmarkIds.isNotEmpty()) {
+                                    deletionDialogManager.send(
+                                        DeletionState(
+                                            deletionType = DeletionType.BOOKMARKS,
+                                            onConfirm = { onEvent(FolderDetailEvent.OnDeleteSelected) },
+                                        )
+                                    )
+                                    appStateManager.onShowDeletionDialog()
+                                }
                             },
                             leadingIcon = {
                                 YabaIcon(

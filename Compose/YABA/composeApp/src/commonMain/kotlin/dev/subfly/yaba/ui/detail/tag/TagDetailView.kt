@@ -41,11 +41,14 @@ import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.item.bookmark.BookmarkItemView
+import dev.subfly.yaba.core.navigation.alert.DeletionState
+import dev.subfly.yaba.core.navigation.alert.DeletionType
 import dev.subfly.yaba.core.navigation.creation.BookmarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.ResultStoreKeys
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalCreationContentNavigator
+import dev.subfly.yaba.util.LocalDeletionDialogManager
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.LocalUserPreferences
 import dev.subfly.yaba.util.uiTitle
@@ -270,7 +273,7 @@ private fun TagDetailOptionsMenu(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalUuidApi::class)
 @Composable
 private fun TagDetailDropdownMenu(
     isExpanded: Boolean,
@@ -279,6 +282,9 @@ private fun TagDetailDropdownMenu(
     onEvent: (TagDetailEvent) -> Unit,
     onNewBookmark: () -> Unit,
 ) {
+    val deletionDialogManager = LocalDeletionDialogManager.current
+    val appStateManager = LocalAppStateManager.current
+
     var isAppearanceExpanded by remember { mutableStateOf(false) }
     var isSortingExpanded by remember { mutableStateOf(false) }
     var isSortOrderExpanded by remember { mutableStateOf(false) }
@@ -302,9 +308,18 @@ private fun TagDetailDropdownMenu(
                         DropdownMenuItem(
                             shapes = MenuDefaults.itemShape(0, 2),
                             checked = false,
+                            enabled = state.selectedBookmarkIds.isNotEmpty(),
                             onCheckedChange = { _ ->
                                 onDismissRequest()
-                                onEvent(TagDetailEvent.OnDeleteSelected)
+                                if (state.selectedBookmarkIds.isNotEmpty()) {
+                                    deletionDialogManager.send(
+                                        DeletionState(
+                                            deletionType = DeletionType.BOOKMARKS,
+                                            onConfirm = { onEvent(TagDetailEvent.OnDeleteSelected) },
+                                        )
+                                    )
+                                    appStateManager.onShowDeletionDialog()
+                                }
                             },
                             leadingIcon = {
                                 YabaIcon(

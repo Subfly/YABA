@@ -4,5 +4,6 @@ enum class DeletionType {
     TAG,
     FOLDER,
     BOOKMARK,
+    BOOKMARKS,
     ANNOUNCEMENT,
 }
