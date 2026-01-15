@@ -8,6 +8,7 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.URLBuilder
 import io.ktor.http.Url
+import io.ktor.http.HttpHeaders
 import io.ktor.http.takeFrom
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -140,6 +141,11 @@ object Unfurler {
                 // TODO: ADD CUSTOM CLIENTS :)
                 header("User-Agent", "WhatsApp/2")
                 header("Referer", "https://google.com/")
+                header(
+                    HttpHeaders.Accept,
+                    "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+                )
+                header(HttpHeaders.AcceptLanguage, "en-US,en;q=0.9")
             }
             if (response.status.value in 200..299) {
                 response.bodyAsText()
