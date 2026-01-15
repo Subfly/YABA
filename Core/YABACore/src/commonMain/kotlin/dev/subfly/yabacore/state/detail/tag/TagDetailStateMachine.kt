@@ -2,7 +2,6 @@ package dev.subfly.yabacore.state.detail.tag
 
 import dev.subfly.yabacore.managers.AllBookmarksManager
 import dev.subfly.yabacore.managers.TagManager
-import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.BookmarkSearchFilters
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
@@ -37,7 +36,7 @@ class TagDetailStateMachine :
             TagDetailEvent.OnDeleteSelected -> onDeleteSelected()
             is TagDetailEvent.OnDeleteBookmark -> onDeleteBookmark(event.bookmark)
             is TagDetailEvent.OnChangeSort -> onChangeSort(event.sortType, event.sortOrder)
-            is TagDetailEvent.OnChangeAppearance -> onChangeAppearance(event.appearance)
+            is TagDetailEvent.OnChangeAppearance -> onChangeAppearance(event)
         }
     }
 
@@ -80,6 +79,7 @@ class TagDetailStateMachine :
                             bookmarks = bookmarks,
                             query = query,
                             bookmarkAppearance = latestPrefs.preferredBookmarkAppearance,
+                            cardImageSizing = latestPrefs.preferredCardImageSizing,
                             sortType = latestPrefs.preferredBookmarkSorting,
                             sortOrder = latestPrefs.preferredBookmarkSortOrder,
                             isLoading = false
@@ -142,8 +142,13 @@ class TagDetailStateMachine :
         }
     }
 
-    private fun onChangeAppearance(appearance: BookmarkAppearance) {
-        launch { preferencesStore.setPreferredBookmarkAppearance(appearance) }
+    private fun onChangeAppearance(event: TagDetailEvent.OnChangeAppearance) {
+        launch {
+            preferencesStore.setPreferredBookmarkAppearance(event.appearance)
+            event.cardImageSizing?.let { sizing ->
+                preferencesStore.setPreferredCardImageSizing(sizing)
+            }
+        }
     }
 
     override fun clear() {

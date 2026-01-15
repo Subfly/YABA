@@ -2,6 +2,7 @@ package dev.subfly.yabacore.state.detail.tag
 
 import dev.subfly.yabacore.model.ui.BookmarkUiModel
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
+import dev.subfly.yabacore.model.utils.CardImageSizing
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
 import kotlin.uuid.ExperimentalUuidApi
@@ -16,5 +17,8 @@ sealed interface TagDetailEvent {
     data object OnDeleteSelected : TagDetailEvent
     data class OnDeleteBookmark(val bookmark: BookmarkUiModel) : TagDetailEvent
     data class OnChangeSort(val sortType: SortType, val sortOrder: SortOrderType) : TagDetailEvent
-    data class OnChangeAppearance(val appearance: BookmarkAppearance) : TagDetailEvent
+    data class OnChangeAppearance(
+        val appearance: BookmarkAppearance,
+        val cardImageSizing: CardImageSizing? = null
+    ) : TagDetailEvent
 }

@@ -42,7 +42,7 @@ class SearchStateMachine :
             is SearchEvent.OnToggleFolderFilter -> onToggleFolderFilter(event.folderId)
             is SearchEvent.OnToggleTagFilter -> onToggleTagFilter(event.tagId)
             is SearchEvent.OnChangeSort -> onChangeSort(event.sortType, event.sortOrder)
-            is SearchEvent.OnChangeAppearance -> onChangeAppearance(event.appearance)
+            is SearchEvent.OnChangeAppearance -> onChangeAppearance(event)
             is SearchEvent.OnDeleteBookmark -> onDeleteBookmark(event.bookmark)
         }
     }
@@ -113,8 +113,13 @@ class SearchStateMachine :
         }
     }
 
-    private fun onChangeAppearance(appearance: dev.subfly.yabacore.model.utils.BookmarkAppearance) {
-        launch { preferencesStore.setPreferredBookmarkAppearance(appearance) }
+    private fun onChangeAppearance(event: SearchEvent.OnChangeAppearance) {
+        launch {
+            preferencesStore.setPreferredBookmarkAppearance(event.appearance)
+            event.cardImageSizing?.let { sizing ->
+                preferencesStore.setPreferredCardImageSizing(sizing)
+            }
+        }
     }
 
     private fun onDeleteBookmark(bookmark: dev.subfly.yabacore.model.ui.BookmarkUiModel) {

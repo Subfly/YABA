@@ -2,7 +2,6 @@ package dev.subfly.yabacore.state.detail.folder
 
 import dev.subfly.yabacore.managers.AllBookmarksManager
 import dev.subfly.yabacore.managers.FolderManager
-import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.BookmarkSearchFilters
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
@@ -38,7 +37,7 @@ class FolderDetailStateMachine :
             FolderDetailEvent.OnDeleteSelected -> onDeleteSelected()
             is FolderDetailEvent.OnDeleteBookmark -> onDeleteBookmark(event.bookmark)
             is FolderDetailEvent.OnChangeSort -> onChangeSort(event.sortType, event.sortOrder)
-            is FolderDetailEvent.OnChangeAppearance -> onChangeAppearance(event.appearance)
+            is FolderDetailEvent.OnChangeAppearance -> onChangeAppearance(event)
         }
     }
 
@@ -82,6 +81,7 @@ class FolderDetailStateMachine :
                             bookmarks = bookmarks,
                             query = query,
                             bookmarkAppearance = latestPrefs.preferredBookmarkAppearance,
+                            cardImageSizing = latestPrefs.preferredCardImageSizing,
                             sortType = latestPrefs.preferredBookmarkSorting,
                             sortOrder = latestPrefs.preferredBookmarkSortOrder,
                             isLoading = false
@@ -155,9 +155,12 @@ class FolderDetailStateMachine :
         }
     }
 
-    private fun onChangeAppearance(appearance: BookmarkAppearance) {
+    private fun onChangeAppearance(event: FolderDetailEvent.OnChangeAppearance) {
         launch {
-            preferencesStore.setPreferredBookmarkAppearance(appearance)
+            preferencesStore.setPreferredBookmarkAppearance(event.appearance)
+            event.cardImageSizing?.let { sizing ->
+                preferencesStore.setPreferredCardImageSizing(sizing)
+            }
         }
     }
 

@@ -41,6 +41,7 @@ import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalUserPreferences
 import dev.subfly.yaba.util.uiTitle
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
+import dev.subfly.yabacore.model.utils.CardImageSizing
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
 import dev.subfly.yabacore.model.utils.uiIconName
@@ -222,6 +223,14 @@ private fun OptionsMenu(
             onChangeAppearance = { appearance ->
                 onEvent(SearchEvent.OnChangeAppearance(appearance = appearance))
             },
+            onChangeCardImageSizing = { sizing ->
+                onEvent(
+                    SearchEvent.OnChangeAppearance(
+                        appearance = BookmarkAppearance.CARD,
+                        cardImageSizing = sizing
+                    )
+                )
+            },
             onChangeSortType = { sortType ->
                 onEvent(SearchEvent.OnChangeSort(sortType = sortType, sortOrder = state.sortOrder))
             },
@@ -241,6 +250,7 @@ private fun SearchDropdownMenu(
     sortType: SortType,
     sortOrder: SortOrderType,
     onChangeAppearance: (BookmarkAppearance) -> Unit,
+    onChangeCardImageSizing: (CardImageSizing) -> Unit,
     onChangeSortType: (SortType) -> Unit,
     onChangeSortOrder: (SortOrderType) -> Unit,
 ) {
@@ -262,6 +272,10 @@ private fun SearchDropdownMenu(
                 currentAppearance = bookmarkAppearance,
                 onAppearanceSelection = { appearance ->
                     onChangeAppearance(appearance)
+                    onDismissRequest()
+                },
+                onCardSizingSelection = { sizing ->
+                    onChangeCardImageSizing(sizing)
                     onDismissRequest()
                 },
             )
@@ -299,7 +313,11 @@ private fun BookmarkAppearanceSection(
     onDismissSubmenu: () -> Unit,
     currentAppearance: BookmarkAppearance,
     onAppearanceSelection: (BookmarkAppearance) -> Unit,
+    onCardSizingSelection: (CardImageSizing) -> Unit,
 ) {
+    val userPreferences = LocalUserPreferences.current
+    var isCardImageSizingExpanded by remember { mutableStateOf(false) }
+
     Box {
         DropdownMenuItem(
             shapes = MenuDefaults.itemShape(0, 3),
@@ -325,20 +343,83 @@ private fun BookmarkAppearanceSection(
             DropdownMenuGroup(
                 shapes = MenuDefaults.groupShape(
                     index = 0,
-                    count = 1
+                    count = BookmarkAppearance.entries.size
                 ),
             ) {
                 BookmarkAppearance.entries.fastForEachIndexed { index, appearance ->
-                    DropdownMenuItem(
-                        shapes = MenuDefaults.itemShape(index, BookmarkAppearance.entries.size),
-                        checked = currentAppearance == appearance,
-                        onCheckedChange = { _ ->
-                            onAppearanceSelection(appearance)
-                            onDismissSubmenu()
-                        },
-                        leadingIcon = { YabaIcon(name = appearance.uiIconName()) },
-                        text = { Text(text = appearance.uiTitle()) },
-                    )
+                    when (appearance) {
+                        BookmarkAppearance.LIST, BookmarkAppearance.GRID -> {
+                            DropdownMenuItem(
+                                shapes = MenuDefaults.itemShape(
+                                    index,
+                                    BookmarkAppearance.entries.size
+                                ),
+                                checked = currentAppearance == appearance,
+                                onCheckedChange = { _ ->
+                                    onAppearanceSelection(appearance)
+                                    onDismissSubmenu()
+                                },
+                                leadingIcon = { YabaIcon(name = appearance.uiIconName()) },
+                                text = { Text(text = appearance.uiTitle()) },
+                            )
+                        }
+
+                        BookmarkAppearance.CARD -> {
+                            Box {
+                                DropdownMenuItem(
+                                    shapes = MenuDefaults.itemShape(
+                                        index,
+                                        BookmarkAppearance.entries.size
+                                    ),
+                                    checked = currentAppearance == appearance,
+                                    onCheckedChange = { _ -> isCardImageSizingExpanded = true },
+                                    leadingIcon = { YabaIcon(name = appearance.uiIconName()) },
+                                    text = { Text(text = appearance.uiTitle()) },
+                                    trailingIcon = {
+                                        val sizingExpandedRotation by animateFloatAsState(
+                                            targetValue = if (isCardImageSizingExpanded) 90F else 0F,
+                                        )
+
+                                        YabaIcon(
+                                            modifier = Modifier.rotate(sizingExpandedRotation),
+                                            name = "arrow-right-01"
+                                        )
+                                    }
+                                )
+
+                                DropdownMenuPopup(
+                                    expanded = isCardImageSizingExpanded,
+                                    onDismissRequest = { isCardImageSizingExpanded = false },
+                                ) {
+                                    DropdownMenuGroup(
+                                        shapes = MenuDefaults.groupShape(
+                                            index = 0,
+                                            count = CardImageSizing.entries.size
+                                        )
+                                    ) {
+                                        CardImageSizing.entries.fastForEachIndexed { i, sizing ->
+                                            DropdownMenuItem(
+                                                shapes = MenuDefaults.itemShape(
+                                                    i,
+                                                    CardImageSizing.entries.size
+                                                ),
+                                                checked = currentAppearance == BookmarkAppearance.CARD
+                                                        && userPreferences.preferredCardImageSizing == sizing,
+                                                onCheckedChange = { _ ->
+                                                    onAppearanceSelection(appearance)
+                                                    onCardSizingSelection(sizing)
+                                                    isCardImageSizingExpanded = false
+                                                    onDismissSubmenu()
+                                                },
+                                                leadingIcon = { YabaIcon(name = sizing.uiIconName()) },
+                                                text = { Text(text = sizing.uiTitle()) }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
