@@ -343,7 +343,7 @@ private fun BookmarkAppearanceSection(
             DropdownMenuGroup(
                 shapes = MenuDefaults.groupShape(
                     index = 0,
-                    count = BookmarkAppearance.entries.size
+                    count = 1
                 ),
             ) {
                 BookmarkAppearance.entries.fastForEachIndexed { index, appearance ->
@@ -394,7 +394,7 @@ private fun BookmarkAppearanceSection(
                                     DropdownMenuGroup(
                                         shapes = MenuDefaults.groupShape(
                                             index = 0,
-                                            count = CardImageSizing.entries.size
+                                            count = 1
                                         )
                                     ) {
                                         CardImageSizing.entries.fastForEachIndexed { i, sizing ->
