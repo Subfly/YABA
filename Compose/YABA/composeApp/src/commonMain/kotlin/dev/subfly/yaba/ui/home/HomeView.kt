@@ -43,7 +43,6 @@ import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.FabPosition
 import dev.subfly.yabacore.state.home.HomeEvent
 import dev.subfly.yabacore.ui.layout.YabaContentLayout
-import kotlin.uuid.ExperimentalUuidApi
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.folders_title
@@ -51,6 +50,7 @@ import yaba.composeapp.generated.resources.home_recents_label
 import yaba.composeapp.generated.resources.no_folders_message
 import yaba.composeapp.generated.resources.no_tags_message
 import yaba.composeapp.generated.resources.tags_title
+import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(
     ExperimentalMaterial3ExpressiveApi::class,

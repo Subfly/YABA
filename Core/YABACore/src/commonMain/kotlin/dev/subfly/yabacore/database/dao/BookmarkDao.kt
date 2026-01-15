@@ -6,10 +6,11 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Upsert
 import dev.subfly.yabacore.database.entities.BookmarkEntity
-import dev.subfly.yabacore.database.models.LinkBookmarkWithRelations
 import dev.subfly.yabacore.database.models.BookmarkWithRelations
+import dev.subfly.yabacore.database.models.LinkBookmarkWithRelations
 import dev.subfly.yabacore.model.utils.BookmarkKind
 import kotlinx.coroutines.flow.Flow
+
 @Dao
 interface BookmarkDao {
     @Upsert

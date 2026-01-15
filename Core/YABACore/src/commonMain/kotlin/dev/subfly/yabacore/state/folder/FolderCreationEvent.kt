@@ -1,6 +1,5 @@
 package dev.subfly.yabacore.state.folder
 
-import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.utils.YabaColor
 
 sealed class FolderCreationEvent {

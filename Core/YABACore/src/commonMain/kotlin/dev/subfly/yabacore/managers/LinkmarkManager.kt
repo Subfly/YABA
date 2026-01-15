@@ -13,7 +13,6 @@ import dev.subfly.yabacore.filesystem.LinkmarkFileManager
 import dev.subfly.yabacore.model.ui.LinkmarkUiModel
 import dev.subfly.yabacore.model.utils.LinkType
 import io.github.vinceglb.filekit.path
-import io.github.vinceglb.filekit.PlatformFile
 import kotlin.time.Clock
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid

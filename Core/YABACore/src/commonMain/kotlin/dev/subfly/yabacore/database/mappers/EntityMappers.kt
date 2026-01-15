@@ -2,15 +2,15 @@
 
 package dev.subfly.yabacore.database.mappers
 
+import dev.subfly.yabacore.database.domain.BookmarkMetadataDomainModel
+import dev.subfly.yabacore.database.domain.FolderDomainModel
+import dev.subfly.yabacore.database.domain.LinkBookmarkDomainModel
+import dev.subfly.yabacore.database.domain.TagDomainModel
 import dev.subfly.yabacore.database.entities.BookmarkEntity
 import dev.subfly.yabacore.database.entities.FolderEntity
 import dev.subfly.yabacore.database.entities.LinkBookmarkEntity
 import dev.subfly.yabacore.database.entities.TagEntity
 import dev.subfly.yabacore.database.models.LinkBookmarkWithRelations
-import dev.subfly.yabacore.database.domain.BookmarkMetadataDomainModel
-import dev.subfly.yabacore.database.domain.FolderDomainModel
-import dev.subfly.yabacore.database.domain.LinkBookmarkDomainModel
-import dev.subfly.yabacore.database.domain.TagDomainModel
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid

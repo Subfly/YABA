@@ -1,10 +1,8 @@
 package dev.subfly.yaba.ui.selection.image
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import dev.subfly.yabacore.state.selection.ImageSelectionEvent
 import dev.subfly.yabacore.state.selection.ImageSelectionStateMachine
-import dev.subfly.yabacore.state.selection.ImageSelectionUIState
 
 class ImageSelectionVM : ViewModel() {
     private val stateMachine = ImageSelectionStateMachine()

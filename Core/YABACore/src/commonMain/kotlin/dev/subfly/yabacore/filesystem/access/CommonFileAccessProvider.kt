@@ -14,11 +14,11 @@ import io.github.vinceglb.filekit.filesDir
 import io.github.vinceglb.filekit.isDirectory
 import io.github.vinceglb.filekit.parent
 import io.github.vinceglb.filekit.write
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 internal object CommonFileAccessProvider {
     private val settingsStore = FileSystemSettings.store

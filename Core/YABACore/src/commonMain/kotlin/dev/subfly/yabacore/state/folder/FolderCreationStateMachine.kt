@@ -3,10 +3,10 @@ package dev.subfly.yabacore.state.folder
 import dev.subfly.yabacore.managers.FolderManager
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.state.base.BaseStateMachine
+import kotlinx.coroutines.Job
 import kotlin.time.Clock
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
-import kotlinx.coroutines.Job
 
 @OptIn(ExperimentalUuidApi::class)
 class FolderCreationStateMachine :

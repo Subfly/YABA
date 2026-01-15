@@ -2,7 +2,6 @@
 
 package dev.subfly.yabacore.database
 
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 /**

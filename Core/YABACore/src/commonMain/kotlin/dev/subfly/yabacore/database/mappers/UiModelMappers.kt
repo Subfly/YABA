@@ -2,14 +2,14 @@
 
 package dev.subfly.yabacore.database.mappers
 
-import dev.subfly.yabacore.database.models.FolderWithBookmarkCount
-import dev.subfly.yabacore.database.models.TagWithBookmarkCount
 import dev.subfly.yabacore.database.domain.BookmarkMetadataDomainModel
 import dev.subfly.yabacore.database.domain.FolderDomainModel
 import dev.subfly.yabacore.database.domain.LinkBookmarkDomainModel
 import dev.subfly.yabacore.database.domain.TagDomainModel
-import dev.subfly.yabacore.model.ui.BookmarkUiModel
+import dev.subfly.yabacore.database.models.FolderWithBookmarkCount
+import dev.subfly.yabacore.database.models.TagWithBookmarkCount
 import dev.subfly.yabacore.model.ui.BookmarkPreviewUiModel
+import dev.subfly.yabacore.model.ui.BookmarkUiModel
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.ui.LinkmarkUiModel
 import dev.subfly.yabacore.model.ui.TagUiModel

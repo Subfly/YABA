@@ -1,6 +1,9 @@
 package dev.subfly.yabacore.icons
 
 import dev.subfly.yabacore.database.preload.readResourceText
+import dev.subfly.yabacore.icons.IconCatalog.categoriesFlow
+import dev.subfly.yabacore.icons.IconCatalog.iconsFlow
+import dev.subfly.yabacore.icons.IconCatalog.loadIcons
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO

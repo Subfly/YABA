@@ -4,7 +4,6 @@ import dev.subfly.yabacore.impex.model.CodableBookmark
 import dev.subfly.yabacore.impex.model.CodableCollection
 import dev.subfly.yabacore.impex.model.ExportFormat
 import kotlinx.serialization.json.Json
-import kotlin.text.StringBuilder
 import kotlin.uuid.ExperimentalUuidApi
 
 

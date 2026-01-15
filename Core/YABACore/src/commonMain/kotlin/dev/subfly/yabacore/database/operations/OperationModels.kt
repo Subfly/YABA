@@ -2,11 +2,11 @@
 
 package dev.subfly.yabacore.database.operations
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 
 enum class OperationEntityType {
     FOLDER,

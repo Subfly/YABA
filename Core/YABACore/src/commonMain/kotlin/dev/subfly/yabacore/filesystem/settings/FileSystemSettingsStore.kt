@@ -11,7 +11,6 @@ import io.github.vinceglb.filekit.absolutePath
 import io.github.vinceglb.filekit.createDirectories
 import io.github.vinceglb.filekit.div
 import io.github.vinceglb.filekit.filesDir
-import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -19,6 +18,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import okio.Path.Companion.toPath
+import kotlin.coroutines.CoroutineContext
 
 private const val FILE_SETTINGS_SUBDIR = "settings"
 private const val FILE_SETTINGS_FILENAME = "file_settings.preferences_pb"

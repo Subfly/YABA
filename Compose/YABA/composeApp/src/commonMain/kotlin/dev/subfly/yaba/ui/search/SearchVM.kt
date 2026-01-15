@@ -1,10 +1,8 @@
 package dev.subfly.yaba.ui.search
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import dev.subfly.yabacore.state.search.SearchEvent
 import dev.subfly.yabacore.state.search.SearchStateMachine
-import dev.subfly.yabacore.state.search.SearchUIState
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)

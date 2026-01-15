@@ -15,12 +15,12 @@ import io.github.vinceglb.filekit.exists
 import io.github.vinceglb.filekit.isDirectory
 import io.github.vinceglb.filekit.readBytes
 import io.github.vinceglb.filekit.size
-import kotlin.time.Clock
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
+import kotlin.time.Clock
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 object BookmarkFileManager {
     private val accessProvider = FileAccessProvider

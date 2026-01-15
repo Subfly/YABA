@@ -84,7 +84,6 @@ import yaba.composeapp.generated.resources.no_bookmarks_title
 import yaba.composeapp.generated.resources.search_collection
 import yaba.composeapp.generated.resources.search_no_bookmarks_found_description
 import yaba.composeapp.generated.resources.search_no_bookmarks_found_title
-import yaba.composeapp.generated.resources.search_prompt
 import yaba.composeapp.generated.resources.settings_bookmark_sorting_title
 import yaba.composeapp.generated.resources.settings_content_appearance_title
 import yaba.composeapp.generated.resources.settings_sort_order_title

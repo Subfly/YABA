@@ -3,14 +3,14 @@
 package dev.subfly.yabacore.database.operations
 
 import dev.subfly.yabacore.database.entities.oplog.OpLogEntryEntity
-import kotlin.time.Instant
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
+import kotlin.time.Instant
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 private val payloadSerializer = PolymorphicSerializer(OperationPayload::class)
 
