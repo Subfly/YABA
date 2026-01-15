@@ -32,6 +32,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -41,6 +44,7 @@ import dev.subfly.yaba.core.components.item.bookmark.BookmarkItemView
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalUserPreferences
 import dev.subfly.yaba.util.uiTitle
+import dev.subfly.yaba.util.yabaPointerEventSpy
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.CardImageSizing
 import dev.subfly.yabacore.model.utils.SortOrderType
@@ -67,8 +71,12 @@ import yaba.composeapp.generated.resources.settings_sort_order_title
 fun SearchView(modifier: Modifier = Modifier) {
     val userPreferences = LocalUserPreferences.current
     val navigator = LocalContentNavigator.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
 
     val searchBarState = rememberSearchBarState()
+
+    var searchHasFocus by remember { mutableStateOf(false) }
 
     val vm = viewModel { SearchVM() }
     val state by vm.state.collectAsStateWithLifecycle()
@@ -76,13 +84,23 @@ fun SearchView(modifier: Modifier = Modifier) {
     LaunchedEffect(Unit) { vm.onEvent(event = SearchEvent.OnInit) }
 
     Scaffold(
-        modifier = modifier,
+        modifier = modifier.yabaPointerEventSpy(
+            onInteraction = {
+                if (searchHasFocus) {
+                    keyboardController?.hide()
+                    focusManager.clearFocus(force = true)
+                }
+            }
+        ),
         topBar = {
             AppBarWithSearch(
                 scrollBehavior = SearchBarDefaults.enterAlwaysSearchBarScrollBehavior(),
                 state = searchBarState,
                 inputField = {
                     SearchBarDefaults.InputField(
+                        modifier = Modifier.onFocusChanged { focusState ->
+                            searchHasFocus = focusState.hasFocus
+                        },
                         query = state.query,
                         expanded = false,
                         onExpandedChange = {},

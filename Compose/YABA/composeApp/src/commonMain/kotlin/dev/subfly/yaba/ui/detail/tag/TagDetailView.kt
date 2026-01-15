@@ -36,6 +36,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
@@ -54,6 +57,7 @@ import dev.subfly.yaba.util.LocalDeletionDialogManager
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.LocalUserPreferences
 import dev.subfly.yaba.util.uiTitle
+import dev.subfly.yaba.util.yabaPointerEventSpy
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.CardImageSizing
 import dev.subfly.yabacore.model.utils.SortOrderType
@@ -97,8 +101,12 @@ fun TagDetailView(
     val creationNavigator = LocalCreationContentNavigator.current
     val appStateManager = LocalAppStateManager.current
     val resultStore = LocalResultStore.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
 
     val searchBarState = rememberSearchBarState()
+
+    var searchHasFocus by remember { mutableStateOf(false) }
 
     val vm = viewModel { TagDetailVM() }
     val state by vm.state.collectAsStateWithLifecycle()
@@ -108,9 +116,19 @@ fun TagDetailView(
     }
 
     Scaffold(
-        modifier = modifier,
+        modifier = modifier.yabaPointerEventSpy(
+            onInteraction = {
+                if (searchHasFocus) {
+                    keyboardController?.hide()
+                    focusManager.clearFocus(force = true)
+                }
+            }
+        ),
         topBar = {
             AppBarWithSearch(
+                modifier = Modifier.onFocusChanged { focusState ->
+                    searchHasFocus = focusState.hasFocus
+                },
                 scrollBehavior = SearchBarDefaults.enterAlwaysSearchBarScrollBehavior(),
                 state = searchBarState,
                 inputField = {
