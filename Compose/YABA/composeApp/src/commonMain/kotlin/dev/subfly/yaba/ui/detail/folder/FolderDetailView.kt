@@ -277,6 +277,7 @@ fun FolderDetailView(
                             model = model,
                             appearance = appearance,
                             cardImageSizing = cardImageSizing,
+                            isAddedToSelection = model.id in state.selectedBookmarkIds,
                             onClick = {
                                 if (state.isSelectionMode) {
                                     vm.onEvent(

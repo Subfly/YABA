@@ -2,14 +2,20 @@
 
 package dev.subfly.yaba.core.components.item.bookmark
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.ListItem
@@ -29,6 +35,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.components.TagsRowContent
+import dev.subfly.yaba.core.components.item.base.BaseBookmarkItemView
+import dev.subfly.yaba.core.components.item.base.BookmarkOptionsMenu
 import dev.subfly.yaba.core.navigation.alert.DeletionState
 import dev.subfly.yaba.core.navigation.alert.DeletionType
 import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
@@ -76,6 +84,7 @@ fun BookmarkItemView(
     cardImageSizing: CardImageSizing = CardImageSizing.SMALL,
     imageFilePath: String? = model.localImagePath,
     iconFilePath: String? = model.localIconPath,
+    isAddedToSelection: Boolean = false,
     onClick: () -> Unit = {},
     onDeleteBookmark: (BookmarkUiModel) -> Unit = {},
     onShareBookmark: (BookmarkUiModel) -> Unit = {},
@@ -255,6 +264,7 @@ fun BookmarkItemView(
                     model = model,
                     folderColor = folderColor,
                     imageFilePath = imageFilePath,
+                    isAddedToSelection = isAddedToSelection,
                     onClick = onClick,
                     onLongClick = { isOptionsExpanded = true },
                 )
@@ -268,6 +278,7 @@ fun BookmarkItemView(
                             folderColor = folderColor,
                             imageFilePath = imageFilePath,
                             iconFilePath = iconFilePath,
+                            isAddedToSelection = isAddedToSelection,
                             menuActions = menuActions,
                             onClick = onClick,
                             onLongClick = { isOptionsExpanded = true },
@@ -280,6 +291,7 @@ fun BookmarkItemView(
                             folderColor = folderColor,
                             imageFilePath = imageFilePath,
                             iconFilePath = iconFilePath,
+                            isAddedToSelection = isAddedToSelection,
                             menuActions = menuActions,
                             onClick = onClick,
                             onLongClick = { isOptionsExpanded = true },
@@ -293,6 +305,7 @@ fun BookmarkItemView(
                     model = model,
                     folderColor = folderColor,
                     imageFilePath = imageFilePath,
+                    isAddedToSelection = isAddedToSelection,
                     onClick = onClick,
                     onLongClick = { isOptionsExpanded = true },
                 )
@@ -311,6 +324,7 @@ private fun ListItemContent(
     model: BookmarkUiModel,
     folderColor: YabaColor,
     imageFilePath: String?,
+    isAddedToSelection: Boolean,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
 ) {
@@ -349,6 +363,7 @@ private fun ListItemContent(
                 bookmarkKind = model.kind,
                 folderColor = folderColor,
                 size = ItemImageSize.SMALL,
+                isAddedToSelection = isAddedToSelection,
             )
         },
     )
@@ -365,6 +380,7 @@ private fun CardBigItemContent(
     folderColor: YabaColor,
     imageFilePath: String?,
     iconFilePath: String?,
+    isAddedToSelection: Boolean,
     menuActions: List<BookmarkMenuAction>,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
@@ -392,6 +408,7 @@ private fun CardBigItemContent(
                 bookmarkKind = model.kind,
                 folderColor = folderColor,
                 size = ItemImageSize.BIG,
+                isAddedToSelection = isAddedToSelection,
             )
 
             // Title
@@ -456,6 +473,7 @@ private fun CardSmallItemContent(
     folderColor: YabaColor,
     imageFilePath: String?,
     iconFilePath: String?,
+    isAddedToSelection: Boolean,
     menuActions: List<BookmarkMenuAction>,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
@@ -486,6 +504,7 @@ private fun CardSmallItemContent(
                     bookmarkKind = model.kind,
                     folderColor = folderColor,
                     size = ItemImageSize.SMALL,
+                    isAddedToSelection = isAddedToSelection,
                 )
                 Text(
                     modifier = Modifier.weight(1f),
@@ -550,6 +569,7 @@ private fun GridItemContent(
     model: BookmarkUiModel,
     folderColor: YabaColor,
     imageFilePath: String?,
+    isAddedToSelection: Boolean,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
 ) {
@@ -576,6 +596,7 @@ private fun GridItemContent(
                 bookmarkKind = model.kind,
                 folderColor = folderColor,
                 size = ItemImageSize.GRID,
+                isAddedToSelection = isAddedToSelection,
             )
 
             // Title
@@ -620,58 +641,83 @@ private fun BookmarkImageContent(
     bookmarkKind: BookmarkKind,
     folderColor: YabaColor,
     size: ItemImageSize,
+    isAddedToSelection: Boolean,
 ) {
     val color = Color(folderColor.iconTintArgb())
 
-    when (size) {
-        ItemImageSize.SMALL -> {
-            if (imageFilePath != null) {
-                YabaImage(
-                    modifier = modifier
-                        .size(64.dp)
-                        .clip(RoundedCornerShape(12.dp)),
-                    filePath = imageFilePath,
-                )
-            } else {
-                Surface(
-                    modifier = modifier.size(64.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    color = color.copy(alpha = 0.3f),
-                ) {
-                    YabaIcon(
-                        modifier = Modifier.padding(16.dp),
-                        name = bookmarkKind.uiIconName(),
-                        color = folderColor,
+    Box(
+        modifier = Modifier.wrapContentSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        when (size) {
+            ItemImageSize.SMALL -> {
+                if (imageFilePath != null) {
+                    YabaImage(
+                        modifier = modifier
+                            .size(64.dp)
+                            .clip(RoundedCornerShape(12.dp)),
+                        filePath = imageFilePath,
                     )
-                }
-            }
-        }
-
-        ItemImageSize.BIG, ItemImageSize.GRID -> {
-            if (imageFilePath != null) {
-                YabaImage(
-                    modifier = modifier
-                        .height(128.dp)
-                        .clip(RoundedCornerShape(12.dp)),
-                    filePath = imageFilePath,
-                )
-            } else {
-                Surface(
-                    modifier = modifier.height(128.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    color = color.copy(alpha = 0.3f),
-                ) {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center,
+                } else {
+                    Surface(
+                        modifier = modifier.size(64.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        color = color.copy(alpha = 0.3f),
                     ) {
                         YabaIcon(
-                            modifier = Modifier.size(48.dp),
+                            modifier = Modifier.padding(16.dp),
                             name = bookmarkKind.uiIconName(),
                             color = folderColor,
                         )
                     }
                 }
+            }
+
+            ItemImageSize.BIG, ItemImageSize.GRID -> {
+                if (imageFilePath != null) {
+                    YabaImage(
+                        modifier = modifier
+                            .height(128.dp)
+                            .clip(RoundedCornerShape(12.dp)),
+                        filePath = imageFilePath,
+                    )
+                } else {
+                    Surface(
+                        modifier = modifier.height(128.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        color = color.copy(alpha = 0.3f),
+                    ) {
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            YabaIcon(
+                                modifier = Modifier.size(48.dp),
+                                name = bookmarkKind.uiIconName(),
+                                color = folderColor,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        AnimatedVisibility(
+            modifier = Modifier.matchParentSize(),
+            visible = isAddedToSelection,
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(color.copy(alpha = 0.75F)),
+                contentAlignment = Alignment.Center,
+            ) {
+                YabaIcon(
+                    name = "checkmark-circle-02",
+                    color = Color.White,
+                )
             }
         }
     }

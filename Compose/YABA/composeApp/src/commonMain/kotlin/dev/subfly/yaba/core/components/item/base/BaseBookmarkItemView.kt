@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalUuidApi::class, ExperimentalMaterial3ExpressiveApi::class)
 
-package dev.subfly.yaba.core.components.item.bookmark
+package dev.subfly.yaba.core.components.item.base
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +20,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import dev.subfly.yaba.core.components.item.bookmark.BookmarkMenuAction
+import dev.subfly.yaba.core.components.item.bookmark.BookmarkSwipeAction
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.CardImageSizing
 import dev.subfly.yabacore.ui.icon.YabaIcon
