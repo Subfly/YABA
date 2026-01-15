@@ -36,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -75,6 +76,7 @@ import yaba.composeapp.generated.resources.bookmark_selection_move
 import yaba.composeapp.generated.resources.new_bookmark
 import yaba.composeapp.generated.resources.no_bookmarks_message
 import yaba.composeapp.generated.resources.no_bookmarks_title
+import yaba.composeapp.generated.resources.search_collection
 import yaba.composeapp.generated.resources.search_no_bookmarks_found_description
 import yaba.composeapp.generated.resources.search_no_bookmarks_found_title
 import yaba.composeapp.generated.resources.search_prompt
@@ -146,7 +148,16 @@ fun FolderDetailView(
                                 ) { YabaIcon(name = "cancel-01") }
                             }
                         },
-                        placeholder = { Text(text = stringResource(Res.string.search_prompt)) },
+                        placeholder = {
+                            Text(
+                                text = stringResource(
+                                    Res.string.search_collection,
+                                    state.folder?.label ?: ""
+                                ),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        },
                     )
                 },
                 navigationIcon = {
