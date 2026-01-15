@@ -38,7 +38,7 @@ internal fun LinkmarkFolderSelectionContent(state: LinkmarkCreationUIState) {
                 FolderSelectionRoute(
                     mode = FolderSelectionMode.FOLDER_SELECTION,
                     contextFolderId = null,
-                    contextBookmarkId = null,
+                    contextBookmarkIds = null,
                 )
             )
         },

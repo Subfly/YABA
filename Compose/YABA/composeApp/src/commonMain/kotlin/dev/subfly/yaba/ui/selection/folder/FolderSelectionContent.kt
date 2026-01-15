@@ -63,7 +63,7 @@ import kotlin.uuid.ExperimentalUuidApi
 fun FolderSelectionContent(
     mode: FolderSelectionMode,
     contextFolderId: String?,
-    contextBookmarkId: String?,
+    contextBookmarkIds: List<String>?,
 ) {
     val creationNavigator = LocalCreationContentNavigator.current
     val resultStore = LocalResultStore.current
@@ -77,7 +77,7 @@ fun FolderSelectionContent(
             FolderSelectionEvent.OnInit(
                 mode = mode,
                 contextFolderId = contextFolderId,
-                contextBookmarkId = contextBookmarkId,
+                contextBookmarkIds = contextBookmarkIds,
             )
         )
     }
@@ -124,9 +124,9 @@ fun FolderSelectionContent(
                         creationNavigator.removeLastOrNull()
                     }
 
-                    FolderSelectionMode.BOOKMARK_MOVE -> {
+                    FolderSelectionMode.BOOKMARKS_MOVE -> {
                         vm.onEvent(
-                            event = FolderSelectionEvent.OnMoveBookmarkToSelected(
+                            event = FolderSelectionEvent.OnMoveBookmarksToSelected(
                                 targetFolderId = selectedFolder.id.toString()
                             )
                         )
@@ -176,7 +176,7 @@ private fun TopBar(
                     }
                 }
 
-                FolderSelectionMode.BOOKMARK_MOVE, FolderSelectionMode.FOLDER_MOVE -> {
+                FolderSelectionMode.BOOKMARKS_MOVE, FolderSelectionMode.FOLDER_MOVE -> {
                     TextButton(
                         shapes = ButtonDefaults.shapes(),
                         onClick = {

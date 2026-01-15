@@ -143,9 +143,9 @@ fun BookmarkItemView(
                 onClick = {
                     creationNavigator.add(
                         FolderSelectionRoute(
-                            mode = FolderSelectionMode.BOOKMARK_MOVE,
+                            mode = FolderSelectionMode.BOOKMARKS_MOVE,
                             contextFolderId = model.folderId.toString(),
-                            contextBookmarkId = model.id.toString(),
+                            contextBookmarkIds = listOf(model.id.toString()),
                         )
                     )
                     appStateManager.onShowCreationContent()
@@ -193,9 +193,9 @@ fun BookmarkItemView(
                 onClick = {
                     creationNavigator.add(
                         FolderSelectionRoute(
-                            mode = FolderSelectionMode.BOOKMARK_MOVE,
+                            mode = FolderSelectionMode.BOOKMARKS_MOVE,
                             contextFolderId = model.folderId.toString(),
-                            contextBookmarkId = model.id.toString(),
+                            contextBookmarkIds = listOf(model.id.toString()),
                         )
                     )
                     appStateManager.onShowCreationContent()

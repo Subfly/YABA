@@ -24,7 +24,7 @@ class FolderSelectionStateMachine :
     // Stored context for filtering and move operations
     private var mode: FolderSelectionMode = FolderSelectionMode.FOLDER_SELECTION
     private var contextFolderId: Uuid? = null
-    private var contextBookmarkId: Uuid? = null
+    private var contextBookmarkIds: List<Uuid> = emptyList()
     private var excludedIds: Set<Uuid> = emptySet()
     private var currentParentId: Uuid? = null
 
@@ -36,7 +36,7 @@ class FolderSelectionStateMachine :
             is FolderSelectionEvent.OnInit -> onInit(event)
             is FolderSelectionEvent.OnSearchQueryChanged -> onSearchQueryChanged(event)
             is FolderSelectionEvent.OnMoveFolderToSelected -> onMoveFolderToSelected(event)
-            is FolderSelectionEvent.OnMoveBookmarkToSelected -> onMoveBookmarkToSelected(event)
+            is FolderSelectionEvent.OnMoveBookmarksToSelected -> onMoveBookmarksToSelected(event)
         }
     }
 
@@ -46,7 +46,7 @@ class FolderSelectionStateMachine :
 
         mode = event.mode
         contextFolderId = event.contextFolderId?.let { Uuid.parse(it) }
-        contextBookmarkId = event.contextBookmarkId?.let { Uuid.parse(it) }
+        contextBookmarkIds = event.contextBookmarkIds?.map { Uuid.parse(it) } ?: emptyList()
 
         launch {
             updateState { it.copy(isLoading = true) }
@@ -95,8 +95,8 @@ class FolderSelectionStateMachine :
                     }
                 }
 
-                FolderSelectionMode.BOOKMARK_MOVE -> {
-                    // Exclude only the bookmark's current containing folder
+                FolderSelectionMode.BOOKMARKS_MOVE -> {
+                    // Exclude only the bookmarks' current containing folder
                     excludedIds = contextFolderId?.let { setOf(it) } ?: emptySet()
                     updateState { it.copy(canMoveToRoot = false) }
                 }
@@ -151,13 +151,18 @@ class FolderSelectionStateMachine :
         }
     }
 
-    private fun onMoveBookmarkToSelected(event: FolderSelectionEvent.OnMoveBookmarkToSelected) {
-        val bookmarkToMove = contextBookmarkId ?: return
+    private fun onMoveBookmarksToSelected(event: FolderSelectionEvent.OnMoveBookmarksToSelected) {
+        if (contextBookmarkIds.isEmpty()) return
 
         launch {
-            val bookmark = AllBookmarksManager.getBookmarkDetail(bookmarkToMove) ?: return@launch
+            // TODO: OPTIMIZE WITH SINGLE QUERY but first if it looks ok in UI, maybe it's a feature :D
+            val bookmarks = contextBookmarkIds.mapNotNull { id ->
+                AllBookmarksManager.getBookmarkDetail(id)
+            }
+            if (bookmarks.isEmpty()) return@launch
+
             val targetFolder = FolderManager.getFolder(Uuid.parse(event.targetFolderId)) ?: return@launch
-            AllBookmarksManager.moveBookmarksToFolder(listOf(bookmark), targetFolder)
+            AllBookmarksManager.moveBookmarksToFolder(bookmarks, targetFolder)
         }
     }
 

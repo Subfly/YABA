@@ -8,14 +8,14 @@ sealed class FolderSelectionEvent {
      *
      * @param mode The selection mode determining which folders to show.
      * @param contextFolderId The folder ID to use for filtering (for PARENT_SELECTION or
-     * BOOKMARK_MOVE modes).
-     * @param contextBookmarkId The bookmark ID for BOOKMARK_MOVE mode. Cannot be used together with
+     * BOOKMARKS_MOVE modes).
+     * @param contextBookmarkIds The bookmark IDs for BOOKMARKS_MOVE mode. Cannot be used together with
      * contextFolderId for moving purposes.
      */
     data class OnInit(
         val mode: FolderSelectionMode,
         val contextFolderId: String? = null,
-        val contextBookmarkId: String? = null,
+        val contextBookmarkIds: List<String>? = null,
     ) : FolderSelectionEvent()
 
     /** Update the search query to filter folders by label. */
@@ -33,11 +33,11 @@ sealed class FolderSelectionEvent {
     ) : FolderSelectionEvent()
 
     /**
-     * Move the context bookmark to the selected target folder.
+     * Move the context bookmarks to the selected target folder.
      *
-     * @param targetFolderId The folder to move the bookmark into.
+     * @param targetFolderId The folder to move the bookmarks into.
      */
-    data class OnMoveBookmarkToSelected(
+    data class OnMoveBookmarksToSelected(
         val targetFolderId: String,
     ) : FolderSelectionEvent()
 }

@@ -104,7 +104,7 @@ fun FolderItemView(
                         FolderSelectionRoute(
                             mode = FolderSelectionMode.FOLDER_MOVE,
                             contextFolderId = model.id.toString(),
-                            contextBookmarkId = null,
+                            contextBookmarkIds = null,
                         )
                     )
                     appStateManager.onShowCreationContent()
@@ -140,7 +140,7 @@ fun FolderItemView(
                         FolderSelectionRoute(
                             mode = FolderSelectionMode.FOLDER_MOVE,
                             contextFolderId = model.id.toString(),
-                            contextBookmarkId = null,
+                            contextBookmarkIds = null,
                         )
                     )
                     appStateManager.onShowCreationContent()

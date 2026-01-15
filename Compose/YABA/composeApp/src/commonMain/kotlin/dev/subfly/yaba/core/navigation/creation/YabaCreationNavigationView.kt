@@ -85,7 +85,7 @@ fun YabaCreationNavigationView(
                 FolderSelectionContent(
                     mode = key.mode,
                     contextFolderId = key.contextFolderId,
-                    contextBookmarkId = key.contextBookmarkId,
+                    contextBookmarkIds = key.contextBookmarkIds,
                 )
             }
             entry<TagSelectionRoute> { key ->

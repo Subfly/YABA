@@ -33,7 +33,6 @@ class FolderDetailStateMachine :
             is FolderDetailEvent.OnChangeQuery -> onChangeQuery(event.query)
             is FolderDetailEvent.OnToggleSelectionMode -> onToggleSelectionMode()
             is FolderDetailEvent.OnToggleBookmarkSelection -> onToggleBookmarkSelection(event.bookmarkId)
-            is FolderDetailEvent.OnMoveSelectedToFolder -> onMoveSelectedToFolder(event.targetFolder)
             FolderDetailEvent.OnDeleteSelected -> onDeleteSelected()
             is FolderDetailEvent.OnDeleteBookmark -> onDeleteBookmark(event.bookmark)
             is FolderDetailEvent.OnChangeSort -> onChangeSort(event.sortType, event.sortOrder)
@@ -119,17 +118,6 @@ class FolderDetailStateMachine :
                 state.selectedBookmarkIds + bookmarkId
             }
             state.copy(selectedBookmarkIds = newSelection)
-        }
-    }
-
-    private fun onMoveSelectedToFolder(targetFolder: dev.subfly.yabacore.model.ui.FolderUiModel) {
-        val selectedIds = currentState().selectedBookmarkIds
-        if (selectedIds.isEmpty()) return
-
-        launch {
-            val bookmarksToMove = currentState().bookmarks.filter { it.id in selectedIds }
-            AllBookmarksManager.moveBookmarksToFolder(bookmarksToMove, targetFolder)
-            updateState { it.copy(isSelectionMode = false, selectedBookmarkIds = emptySet()) }
         }
     }
 

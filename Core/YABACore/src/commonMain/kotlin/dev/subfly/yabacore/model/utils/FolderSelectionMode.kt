@@ -21,7 +21,7 @@ enum class FolderSelectionMode {
     FOLDER_MOVE,
 
     /**
-     * Moving a bookmark to a different folder. Excludes the bookmark's current containing folder.
+     * Moving bookmarks to a different folder. Excludes the bookmarks' current containing folder.
      */
-    BOOKMARK_MOVE,
+    BOOKMARKS_MOVE,
 }

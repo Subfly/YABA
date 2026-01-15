@@ -118,15 +118,6 @@ fun FolderDetailView(
         vm.onEvent(FolderDetailEvent.OnInit(folderId = folderId))
     }
 
-    LaunchedEffect(resultStore.getResult(ResultStoreKeys.SELECTED_FOLDER)) {
-        resultStore.getResult<FolderUiModel>(ResultStoreKeys.SELECTED_FOLDER)
-            ?.let { selectedFolder ->
-                vm.onEvent(FolderDetailEvent.OnMoveSelectedToFolder(targetFolder = selectedFolder))
-                resultStore.removeResult(ResultStoreKeys.SELECTED_FOLDER)
-                appStateManager.onHideCreationContent()
-            }
-    }
-
     Scaffold(
         modifier = modifier.yabaPointerEventSpy(
             onInteraction = {
@@ -196,9 +187,9 @@ fun FolderDetailView(
                         onMoveSelection = {
                             creationNavigator.add(
                                 FolderSelectionRoute(
-                                    mode = FolderSelectionMode.FOLDER_SELECTION,
-                                    contextFolderId = null,
-                                    contextBookmarkId = null,
+                                    mode = FolderSelectionMode.BOOKMARKS_MOVE,
+                                    contextFolderId = state.folder?.id?.toString(),
+                                    contextBookmarkIds = state.selectedBookmarkIds.map { it.toString() },
                                 )
                             )
                             appStateManager.onShowCreationContent()

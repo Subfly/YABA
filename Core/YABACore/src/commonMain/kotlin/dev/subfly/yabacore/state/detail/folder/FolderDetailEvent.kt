@@ -15,7 +15,6 @@ sealed interface FolderDetailEvent {
     data class OnChangeQuery(val query: String) : FolderDetailEvent
     data object OnToggleSelectionMode : FolderDetailEvent
     data class OnToggleBookmarkSelection(val bookmarkId: Uuid) : FolderDetailEvent
-    data class OnMoveSelectedToFolder(val targetFolder: FolderUiModel) : FolderDetailEvent
     data object OnDeleteSelected : FolderDetailEvent
     data class OnDeleteBookmark(val bookmark: BookmarkUiModel) : FolderDetailEvent
     data class OnChangeSort(val sortType: SortType, val sortOrder: SortOrderType) : FolderDetailEvent
