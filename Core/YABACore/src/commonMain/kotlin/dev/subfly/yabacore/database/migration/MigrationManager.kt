@@ -3,33 +3,48 @@
 package dev.subfly.yabacore.database.migration
 
 import dev.subfly.yabacore.common.CoreConstants
+import dev.subfly.yabacore.database.DatabaseProvider
+import dev.subfly.yabacore.database.DeviceIdProvider
 import dev.subfly.yabacore.database.domain.BookmarkMetadataDomainModel
 import dev.subfly.yabacore.database.domain.FolderDomainModel
 import dev.subfly.yabacore.database.domain.TagDomainModel
-import dev.subfly.yabacore.database.operations.OpApplier
-import dev.subfly.yabacore.database.operations.OperationDraft
-import dev.subfly.yabacore.database.operations.OperationEntityType
-import dev.subfly.yabacore.database.operations.OperationKind
-import dev.subfly.yabacore.database.operations.TagLinkPayload
-import dev.subfly.yabacore.database.operations.linkBookmarkOperationDraft
-import dev.subfly.yabacore.database.operations.toOperationDraft
+import dev.subfly.yabacore.database.entities.BookmarkEntity
+import dev.subfly.yabacore.database.entities.FolderEntity
+import dev.subfly.yabacore.database.entities.LinkBookmarkEntity
+import dev.subfly.yabacore.database.entities.TagBookmarkCrossRef
+import dev.subfly.yabacore.database.entities.TagEntity
+import dev.subfly.yabacore.filesystem.EntityFileManager
 import dev.subfly.yabacore.filesystem.LinkmarkFileManager
+import dev.subfly.yabacore.filesystem.json.BookmarkMetaJson
+import dev.subfly.yabacore.filesystem.json.FolderMetaJson
+import dev.subfly.yabacore.filesystem.json.LinkJson
+import dev.subfly.yabacore.filesystem.json.TagMetaJson
 import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.LinkType
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.preferences.PreferencesMigration
-import kotlin.time.Clock
+import dev.subfly.yabacore.sync.VectorClock
 import kotlin.uuid.ExperimentalUuidApi
 
+/**
+ * Migrates legacy Darwin storage into the new filesystem-first architecture.
+ *
+ * - Settings/AppStorage/UserDefaults -> DataStore (handled per-platform)
+ * - SwiftData snapshot (if provided) -> Filesystem JSON + Room cache
+ */
 object MigrationManager {
-    private val opApplier
-        get() = OpApplier
+    private val folderDao get() = DatabaseProvider.folderDao
+    private val tagDao get() = DatabaseProvider.tagDao
+    private val bookmarkDao get() = DatabaseProvider.bookmarkDao
+    private val linkBookmarkDao get() = DatabaseProvider.linkBookmarkDao
+    private val tagBookmarkDao get() = DatabaseProvider.tagBookmarkDao
+    private val entityFileManager get() = EntityFileManager
 
     /**
      * Migrate everything from legacy Darwin storage into the Kotlin stack.
      *
      * - Settings/AppStorage/UserDefaults -> DataStore (handled per-platform)
-     * - SwiftData snapshot (if provided) -> Room via op drafts
+     * - SwiftData snapshot (if provided) -> Filesystem JSON + Room via filesystem-first
      */
     suspend fun migrate(snapshot: LegacySnapshot? = null) {
         PreferencesMigration.migrateIfNeeded()
@@ -42,71 +57,186 @@ object MigrationManager {
     }
 
     private suspend fun migrateDatabaseSnapshot(snapshot: LegacySnapshot) {
-        applyDrafts(buildFolderDrafts(snapshot))
-        applyDrafts(buildTagDrafts(snapshot))
-        applyDrafts(buildBookmarkDrafts(snapshot))
-        applyDrafts(buildTagLinkDrafts(snapshot))
-    }
-
-    private suspend fun applyDrafts(drafts: List<OperationDraft>) {
-        if (drafts.isNotEmpty()) {
-            opApplier.applyLocal(drafts)
-        }
-    }
-
-    private fun buildFolderDrafts(snapshot: LegacySnapshot): List<OperationDraft> =
-        snapshot.folders.sortedBy { it.order }.map { legacy ->
-            legacy.toFolder().toOperationDraft(OperationKind.CREATE)
+        val deviceId = DeviceIdProvider.get()
+        
+        // Migrate folders
+        snapshot.folders.sortedBy { it.order }.forEach { legacy ->
+            migrateFolderToFilesystem(legacy.toFolder(), deviceId)
         }
 
-    private fun buildTagDrafts(snapshot: LegacySnapshot): List<OperationDraft> =
-        snapshot.tags.sortedBy { it.order }.map { legacy ->
-            legacy.toTag().toOperationDraft(OperationKind.CREATE)
+        // Migrate tags
+        snapshot.tags.sortedBy { it.order }.forEach { legacy ->
+            migrateTagToFilesystem(legacy.toTag(), deviceId)
         }
 
-    private fun buildBookmarkDrafts(snapshot: LegacySnapshot): List<OperationDraft> =
-        snapshot.bookmarks
-            .sortedBy { it.createdAt }
-            .flatMap { legacy ->
-                val localImagePath = legacy.previewImageData?.let {
-                    CoreConstants.FileSystem.Linkmark.linkImagePath(legacy.id, "jpeg")
-                }
-                val localIconPath = legacy.previewIconData?.let {
-                    CoreConstants.FileSystem.Linkmark.domainIconPath(legacy.id, "png")
-                }
-
-                val metadata = legacy.toBookmarkMetadata(
-                    localImagePath = localImagePath,
-                    localIconPath = localIconPath,
-                )
-                listOf(
-                    metadata.toOperationDraft(OperationKind.CREATE),
-                    linkBookmarkOperationDraft(
-                        bookmarkId = legacy.id,
-                        url = legacy.url,
-                        domain = legacy.domain,
-                        linkType = LinkType.fromCode(legacy.linkTypeCode),
-                        videoUrl = legacy.videoUrl,
-                        kind = OperationKind.CREATE,
-                        happenedAt = legacy.editedAt,
-                    ),
-                )
+        // Migrate bookmarks
+        snapshot.bookmarks.sortedBy { it.createdAt }.forEach { legacy ->
+            val localImagePath = legacy.previewImageData?.let {
+                CoreConstants.FileSystem.Linkmark.linkImagePath(legacy.id, "jpeg")
+            }
+            val localIconPath = legacy.previewIconData?.let {
+                CoreConstants.FileSystem.Linkmark.domainIconPath(legacy.id, "png")
             }
 
-    private fun buildTagLinkDrafts(snapshot: LegacySnapshot): List<OperationDraft> {
-        val now = Clock.System.now()
-        return snapshot.tagLinks.map { link ->
-            OperationDraft(
-                entityType = OperationEntityType.TAG_LINK,
-                entityId = "${link.tagId}|${link.bookmarkId}",
-                kind = OperationKind.TAG_ADD,
-                happenedAt = now,
-                payload = TagLinkPayload(
-                    tagId = link.tagId.toString(),
-                    bookmarkId = link.bookmarkId.toString(),
-                ),
+            val metadata = legacy.toBookmarkMetadata(
+                localImagePath = localImagePath,
+                localIconPath = localIconPath,
+            )
+            migrateBookmarkToFilesystem(
+                metadata = metadata,
+                url = legacy.url,
+                domain = legacy.domain,
+                linkTypeCode = legacy.linkTypeCode,
+                videoUrl = legacy.videoUrl,
+                deviceId = deviceId,
             )
         }
+
+        // Migrate tag-bookmark relationships
+        snapshot.tagLinks.forEach { link ->
+            tagBookmarkDao.insert(
+                TagBookmarkCrossRef(
+                    tagId = link.tagId.toString(),
+                    bookmarkId = link.bookmarkId.toString(),
+                )
+            )
+        }
+    }
+
+    private suspend fun migrateFolderToFilesystem(folder: FolderDomainModel, deviceId: String) {
+        val initialClock = VectorClock.of(deviceId, 1)
+        val folderJson = FolderMetaJson(
+            id = folder.id.toString(),
+            parentId = folder.parentId?.toString(),
+            label = folder.label,
+            description = folder.description,
+            icon = folder.icon,
+            colorCode = folder.color.code,
+            order = folder.order,
+            createdAt = folder.createdAt.toEpochMilliseconds(),
+            editedAt = folder.editedAt.toEpochMilliseconds(),
+            clock = initialClock.toMap(),
+        )
+
+        // 1. Write to filesystem
+        entityFileManager.writeFolderMeta(folderJson)
+
+        // 2. Update SQLite cache
+        folderDao.upsert(
+            FolderEntity(
+                id = folder.id.toString(),
+                parentId = folder.parentId?.toString(),
+                label = folder.label,
+                description = folder.description,
+                icon = folder.icon,
+                color = folder.color,
+                order = folder.order,
+                createdAt = folder.createdAt.toEpochMilliseconds(),
+                editedAt = folder.editedAt.toEpochMilliseconds(),
+            )
+        )
+    }
+
+    private suspend fun migrateTagToFilesystem(tag: TagDomainModel, deviceId: String) {
+        val initialClock = VectorClock.of(deviceId, 1)
+        val tagJson = TagMetaJson(
+            id = tag.id.toString(),
+            label = tag.label,
+            icon = tag.icon,
+            colorCode = tag.color.code,
+            order = tag.order,
+            createdAt = tag.createdAt.toEpochMilliseconds(),
+            editedAt = tag.editedAt.toEpochMilliseconds(),
+            clock = initialClock.toMap(),
+        )
+
+        // 1. Write to filesystem
+        entityFileManager.writeTagMeta(tagJson)
+
+        // 2. Update SQLite cache
+        tagDao.upsert(
+            TagEntity(
+                id = tag.id.toString(),
+                label = tag.label,
+                icon = tag.icon,
+                color = tag.color,
+                order = tag.order,
+                createdAt = tag.createdAt.toEpochMilliseconds(),
+                editedAt = tag.editedAt.toEpochMilliseconds(),
+            )
+        )
+    }
+
+    private suspend fun migrateBookmarkToFilesystem(
+        metadata: BookmarkMetadataDomainModel,
+        url: String,
+        domain: String,
+        linkTypeCode: Int,
+        videoUrl: String?,
+        deviceId: String,
+    ) {
+        val initialClock = VectorClock.of(deviceId, 1)
+
+        // Create bookmark meta.json
+        val bookmarkJson = BookmarkMetaJson(
+            id = metadata.id.toString(),
+            folderId = metadata.folderId.toString(),
+            kind = metadata.kind.code,
+            label = metadata.label,
+            description = metadata.description,
+            createdAt = metadata.createdAt.toEpochMilliseconds(),
+            editedAt = metadata.editedAt.toEpochMilliseconds(),
+            viewCount = 0,
+            isPrivate = metadata.isPrivate,
+            isPinned = metadata.isPinned,
+            localImagePath = metadata.localImagePath,
+            localIconPath = metadata.localIconPath,
+            tagIds = emptyList(), // Tags will be linked separately
+            clock = initialClock.toMap(),
+        )
+
+        // 1. Write bookmark meta.json to filesystem
+        entityFileManager.writeBookmarkMeta(bookmarkJson)
+
+        // Create link.json
+        val linkJson = LinkJson(
+            url = url,
+            domain = domain,
+            linkTypeCode = linkTypeCode,
+            videoUrl = videoUrl,
+            clock = initialClock.toMap(),
+        )
+
+        // 2. Write link.json to filesystem
+        entityFileManager.writeLinkJson(metadata.id, linkJson)
+
+        // 3. Update SQLite cache
+        bookmarkDao.upsert(
+            BookmarkEntity(
+                id = metadata.id.toString(),
+                folderId = metadata.folderId.toString(),
+                kind = metadata.kind,
+                label = metadata.label,
+                description = metadata.description,
+                createdAt = metadata.createdAt.toEpochMilliseconds(),
+                editedAt = metadata.editedAt.toEpochMilliseconds(),
+                viewCount = 0,
+                isPrivate = metadata.isPrivate,
+                isPinned = metadata.isPinned,
+                localImagePath = metadata.localImagePath,
+                localIconPath = metadata.localIconPath,
+            )
+        )
+
+        linkBookmarkDao.upsert(
+            LinkBookmarkEntity(
+                bookmarkId = metadata.id.toString(),
+                url = url,
+                domain = domain,
+                linkType = LinkType.fromCode(linkTypeCode),
+                videoUrl = videoUrl,
+            )
+        )
     }
 
     /**

@@ -31,7 +31,6 @@ object LinkmarkFileManager {
         BookmarkFileManager.writeBytes(
             relativePath = targetPath,
             bytes = bytes,
-            assetKind = BookmarkFileAssetKind.LINK_IMAGE,
         )
         return BookmarkFileManager.resolve(targetPath)
     }
@@ -53,7 +52,6 @@ object LinkmarkFileManager {
             source = source,
             destinationRelativePath = targetPath,
             overwrite = true,
-            assetKind = BookmarkFileAssetKind.LINK_IMAGE,
         )
         return BookmarkFileManager.resolve(targetPath)
     }
@@ -75,7 +73,6 @@ object LinkmarkFileManager {
         BookmarkFileManager.writeBytes(
             relativePath = targetPath,
             bytes = bytes,
-            assetKind = BookmarkFileAssetKind.DOMAIN_ICON,
         )
         return BookmarkFileManager.resolve(targetPath)
     }
@@ -96,7 +93,6 @@ object LinkmarkFileManager {
             source = source,
             destinationRelativePath = targetPath,
             overwrite = true,
-            assetKind = BookmarkFileAssetKind.DOMAIN_ICON,
         )
         return BookmarkFileManager.resolve(targetPath)
     }
@@ -110,27 +106,20 @@ object LinkmarkFileManager {
         val relativePath = CoreConstants.FileSystem.Linkmark.bookmarkFolder(bookmarkId)
         BookmarkFileManager.deleteRelativePath(
             relativePath = relativePath,
-            assetKind = BookmarkFileAssetKind.UNKNOWN,
         )
     }
 
     private suspend fun purgeLinkImages(bookmarkId: Uuid) {
         LINK_IMAGE_EXTENSIONS.forEach { extension ->
             val path = CoreConstants.FileSystem.Linkmark.linkImagePath(bookmarkId, extension)
-            BookmarkFileManager.deleteRelativePath(
-                relativePath = path,
-                assetKind = BookmarkFileAssetKind.LINK_IMAGE,
-            )
+            BookmarkFileManager.deleteRelativePath(relativePath = path)
         }
     }
 
     private suspend fun purgeDomainIcons(bookmarkId: Uuid) {
         DOMAIN_ICON_EXTENSIONS.forEach { extension ->
             val path = CoreConstants.FileSystem.Linkmark.domainIconPath(bookmarkId, extension)
-            BookmarkFileManager.deleteRelativePath(
-                relativePath = path,
-                assetKind = BookmarkFileAssetKind.DOMAIN_ICON,
-            )
+            BookmarkFileManager.deleteRelativePath(relativePath = path)
         }
     }
 

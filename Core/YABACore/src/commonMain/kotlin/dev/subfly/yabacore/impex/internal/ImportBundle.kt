@@ -2,70 +2,21 @@
 
 package dev.subfly.yabacore.impex.internal
 
-import dev.subfly.yabacore.database.domain.BookmarkMetadataDomainModel
 import dev.subfly.yabacore.database.domain.FolderDomainModel
 import dev.subfly.yabacore.database.domain.LinkBookmarkDomainModel
 import dev.subfly.yabacore.database.domain.TagDomainModel
-import dev.subfly.yabacore.database.operations.OperationDraft
-import dev.subfly.yabacore.database.operations.OperationKind
-import dev.subfly.yabacore.database.operations.linkBookmarkOperationDraft
-import dev.subfly.yabacore.database.operations.tagLinkOperationDraft
-import dev.subfly.yabacore.database.operations.toOperationDraft
 import dev.subfly.yabacore.impex.model.TagLink
-import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 
+/**
+ * Internal representation of imported data before being applied to the system.
+ *
+ * The ImportBundle is converted to filesystem JSON files and SQLite cache
+ * entries using the filesystem-first approach in ImportExportManager.
+ */
 internal data class ImportBundle(
     val folders: List<FolderDomainModel> = emptyList(),
     val tags: List<TagDomainModel> = emptyList(),
     val bookmarks: List<LinkBookmarkDomainModel> = emptyList(),
     val tagLinks: List<TagLink> = emptyList(),
 )
-
-internal fun ImportBundle.toOperationDrafts(): List<OperationDraft> {
-    val drafts = mutableListOf<OperationDraft>()
-    drafts += folders.sortedBy { it.order }.map { it.toOperationDraft(OperationKind.CREATE) }
-    drafts += tags.sortedBy { it.order }.map { it.toOperationDraft(OperationKind.CREATE) }
-    drafts += bookmarks.flatMap { linkBookmark ->
-        val metadata =
-            BookmarkMetadataDomainModel(
-                id = linkBookmark.id,
-                folderId = linkBookmark.folderId,
-                kind = linkBookmark.kind,
-                label = linkBookmark.label,
-                description = linkBookmark.description,
-                createdAt = linkBookmark.createdAt,
-                editedAt = linkBookmark.editedAt,
-                viewCount = linkBookmark.viewCount,
-                isPrivate = linkBookmark.isPrivate,
-                isPinned = linkBookmark.isPinned,
-                localImagePath = linkBookmark.localImagePath,
-                localIconPath = linkBookmark.localIconPath,
-            )
-        listOf(
-            metadata.toOperationDraft(OperationKind.CREATE),
-            linkBookmarkOperationDraft(
-                bookmarkId = linkBookmark.id,
-                url = linkBookmark.url,
-                domain = linkBookmark.domain,
-                linkType = linkBookmark.linkType,
-                videoUrl = linkBookmark.videoUrl,
-                kind = OperationKind.CREATE,
-                happenedAt = linkBookmark.editedAt,
-            )
-        )
-    }
-    drafts += tagLinks.map { link ->
-        tagLinkOperationDraft(
-            tagId = link.tagId,
-            bookmarkId = link.bookmarkId,
-            kind = OperationKind.TAG_ADD,
-            happenedAt = latestEditedAt(bookmarkId = link.bookmarkId)
-                ?: Instant.fromEpochMilliseconds(0)
-        )
-    }
-    return drafts
-}
-
-private fun ImportBundle.latestEditedAt(bookmarkId: kotlin.uuid.Uuid): Instant? =
-    bookmarks.firstOrNull { it.id == bookmarkId }?.editedAt

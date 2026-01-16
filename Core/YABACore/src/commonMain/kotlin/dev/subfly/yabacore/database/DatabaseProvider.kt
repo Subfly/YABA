@@ -1,12 +1,8 @@
 package dev.subfly.yabacore.database
 
 import dev.subfly.yabacore.database.dao.BookmarkDao
-import dev.subfly.yabacore.database.dao.EntityClockDao
 import dev.subfly.yabacore.database.dao.FolderDao
 import dev.subfly.yabacore.database.dao.LinkBookmarkDao
-import dev.subfly.yabacore.database.dao.OpLogDao
-import dev.subfly.yabacore.database.dao.ReplicaCursorDao
-import dev.subfly.yabacore.database.dao.ReplicaInfoDao
 import dev.subfly.yabacore.database.dao.TagBookmarkDao
 import dev.subfly.yabacore.database.dao.TagDao
 import kotlin.concurrent.Volatile
@@ -16,6 +12,9 @@ import kotlin.concurrent.Volatile
  *
  * Call [initialize] once (pass Android context when needed) and use the exposed
  * properties everywhere instead of threading dependencies through constructors.
+ *
+ * Note: This database is a derived cache. The filesystem JSON files are the
+ * authoritative source of truth. Use [CacheRebuilder] to rebuild from filesystem.
  */
 expect fun buildDatabase(platformContext: Any? = null): YabaDatabase
 
@@ -49,17 +48,4 @@ object DatabaseProvider {
 
     val tagBookmarkDao: TagBookmarkDao
         get() = database().tagBookmarkDao()
-
-    val opLogDao: OpLogDao
-        get() = database().opLogDao()
-
-    val entityClockDao: EntityClockDao
-        get() = database().entityClockDao()
-
-    val replicaInfoDao: ReplicaInfoDao
-        get() = database().replicaInfoDao()
-
-    val replicaCursorDao: ReplicaCursorDao
-        get() = database().replicaCursorDao()
 }
-

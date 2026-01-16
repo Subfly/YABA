@@ -50,6 +50,41 @@ object CoreConstants {
     object FileSystem {
         const val ROOT_DIR = "YABA"
         const val BOOKMARKS_DIR = "bookmarks"
+        const val FOLDERS_DIR = "folders"
+        const val TAGS_DIR = "tags"
+        const val SYNC_DIR = "sync"
+        const val CONTENT_DIR = "content"
+
+        // JSON file names
+        const val META_JSON = "meta.json"
+        const val LINK_JSON = "link.json"
+        const val DELETED_JSON = "deleted.json"
+
+        // Events database
+        const val EVENTS_DB = "events.sqlite"
+
+        // Entity folder paths
+        fun folderPath(folderId: Uuid): String = join(FOLDERS_DIR, folderId.toString())
+        fun tagPath(tagId: Uuid): String = join(TAGS_DIR, tagId.toString())
+        fun bookmarkPath(bookmarkId: Uuid): String = join(BOOKMARKS_DIR, bookmarkId.toString())
+
+        // JSON file paths for folders
+        fun folderMetaPath(folderId: Uuid): String = join(folderPath(folderId), META_JSON)
+        fun folderDeletedPath(folderId: Uuid): String = join(folderPath(folderId), DELETED_JSON)
+
+        // JSON file paths for tags
+        fun tagMetaPath(tagId: Uuid): String = join(tagPath(tagId), META_JSON)
+        fun tagDeletedPath(tagId: Uuid): String = join(tagPath(tagId), DELETED_JSON)
+
+        // JSON file paths for bookmarks
+        fun bookmarkMetaPath(bookmarkId: Uuid): String = join(bookmarkPath(bookmarkId), META_JSON)
+        fun bookmarkLinkPath(bookmarkId: Uuid): String = join(bookmarkPath(bookmarkId), LINK_JSON)
+        fun bookmarkDeletedPath(bookmarkId: Uuid): String = join(bookmarkPath(bookmarkId), DELETED_JSON)
+        fun bookmarkContentPath(bookmarkId: Uuid): String = join(bookmarkPath(bookmarkId), CONTENT_DIR)
+
+        // Sync directory path
+        fun syncPath(): String = SYNC_DIR
+        fun eventsDbPath(): String = join(SYNC_DIR, EVENTS_DB)
 
         object Linkmark {
             const val DIRECTORY = "linkmark"

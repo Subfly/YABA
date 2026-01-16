@@ -9,6 +9,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import dev.subfly.yaba.core.app.App
 import dev.subfly.yabacore.database.DatabaseProvider
+import dev.subfly.yabacore.database.events.EventsDatabaseProvider
 
 class MainActivity : ComponentActivity() {
 
@@ -23,9 +24,8 @@ class MainActivity : ComponentActivity() {
 
         splashScreen.setKeepOnScreenCondition { keepSplashOnScreen }
 
-        DatabaseProvider.initialize(
-            platformContext = this,
-        )
+        DatabaseProvider.initialize(platformContext = this)
+        EventsDatabaseProvider.initialize(platformContext = this)
 
         keepSplashOnScreen = false
 

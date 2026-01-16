@@ -2,7 +2,6 @@
 
 package dev.subfly.yabacore.state.linkmark
 
-import dev.subfly.yabacore.database.operations.OperationKind
 import dev.subfly.yabacore.filesystem.LinkmarkFileManager
 import dev.subfly.yabacore.managers.AllBookmarksManager
 import dev.subfly.yabacore.managers.FolderManager
@@ -487,7 +486,6 @@ class LinkmarkCreationStateMachine :
                         domain = state.host,
                         linkType = state.selectedLinkType,
                         videoUrl = state.videoUrl,
-                        operationKind = OperationKind.UPDATE,
                     )
 
                     // Handle tag changes
@@ -524,7 +522,6 @@ class LinkmarkCreationStateMachine :
                         domain = state.host,
                         linkType = state.selectedLinkType,
                         videoUrl = state.videoUrl,
-                        operationKind = OperationKind.CREATE,
                     )
 
                     // Add tags
