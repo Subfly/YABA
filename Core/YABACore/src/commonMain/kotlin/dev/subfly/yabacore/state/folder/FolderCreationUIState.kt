@@ -10,4 +10,5 @@ data class FolderCreationUIState(
     val selectedIcon: String = "folder-01",
     val selectedParent: FolderUiModel? = null,
     val editingFolder: FolderUiModel? = null,
+    val isSaving: Boolean = false,
 )

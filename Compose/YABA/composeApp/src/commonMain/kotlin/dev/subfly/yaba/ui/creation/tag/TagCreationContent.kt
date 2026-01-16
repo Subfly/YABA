@@ -1,5 +1,6 @@
 package dev.subfly.yaba.ui.creation.tag
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButton
@@ -91,7 +93,24 @@ fun TagCreationContent(tagId: String? = null) {
             isStartingFlow = creationNavigator.size <= 2,
             canPerformDone = state.label.isNotBlank(),
             isEditing = state.editingTag != null,
-            onDone = { vm.onEvent(TagCreationEvent.OnSave) },
+            isSaving = state.isSaving,
+            onDone = {
+                vm.onEvent(
+                    TagCreationEvent.OnSave(
+                        onSavedCallback = {
+                            // Means next pop up destination is Empty Route,
+                            // so dismiss first, then remove the last item
+                            if (creationNavigator.size == 2) {
+                                appStateManager.onHideCreationContent()
+                            }
+                            creationNavigator.removeLastOrNull()
+                        },
+                        onErrorCallback = {
+                            // TODO SHOW GLOBAL TOAST
+                        }
+                    )
+                )
+            },
             onDismiss = {
                 // Means next pop up destination is Empty Route,
                 // so dismiss first, then remove the last item
@@ -137,6 +156,7 @@ private fun TopBar(
     isStartingFlow: Boolean,
     isEditing: Boolean,
     canPerformDone: Boolean,
+    isSaving: Boolean,
     onDone: () -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -176,14 +196,17 @@ private fun TopBar(
             }
         },
         actions = {
-            TextButton(
-                shapes = ButtonDefaults.shapes(),
-                enabled = canPerformDone,
-                onClick = {
-                    onDone()
-                    onDismiss()
+            AnimatedContent(isSaving) { saving ->
+                if (saving) {
+                    CircularWavyProgressIndicator()
+                } else {
+                    TextButton(
+                        shapes = ButtonDefaults.shapes(),
+                        enabled = canPerformDone,
+                        onClick = onDone
+                    ) { Text(text = stringResource(Res.string.done)) }
                 }
-            ) { Text(text = stringResource(Res.string.done)) }
+            }
         }
     )
 }

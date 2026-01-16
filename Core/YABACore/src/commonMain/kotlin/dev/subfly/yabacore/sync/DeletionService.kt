@@ -2,6 +2,7 @@
 
 package dev.subfly.yabacore.sync
 
+import dev.subfly.yabacore.common.CoreConstants
 import dev.subfly.yabacore.database.DatabaseProvider
 import dev.subfly.yabacore.database.DeviceIdProvider
 import dev.subfly.yabacore.filesystem.EntityFileManager
@@ -68,8 +69,15 @@ object DeletionService {
     /**
      * Deletes a single folder (without cascade).
      * Use [deleteFolderCascade] for recursive deletion.
+     *
+     * Note: System folders (like Uncategorized) cannot be deleted.
      */
     suspend fun deleteFolder(folderId: Uuid, deviceId: String? = null) {
+        // System folders cannot be deleted
+        if (CoreConstants.Folder.isSystemFolder(folderId.toString())) {
+            return
+        }
+
         val resolvedDeviceId = deviceId ?: DeviceIdProvider.get()
         val existingJson = entityFileManager.readFolderMeta(folderId)
         val existingClock = existingJson?.let { VectorClock.fromMap(it.clock) } ?: VectorClock.empty()
@@ -120,8 +128,15 @@ object DeletionService {
 
     /**
      * Deletes a single tag.
+     *
+     * Note: System tags (like Pinned and Private) cannot be deleted.
      */
     suspend fun deleteTag(tagId: Uuid, deviceId: String? = null) {
+        // System tags cannot be deleted
+        if (CoreConstants.Tag.isSystemTag(tagId.toString())) {
+            return
+        }
+
         val resolvedDeviceId = deviceId ?: DeviceIdProvider.get()
         val existingJson = entityFileManager.readTagMeta(tagId)
         val existingClock = existingJson?.let { VectorClock.fromMap(it.clock) } ?: VectorClock.empty()

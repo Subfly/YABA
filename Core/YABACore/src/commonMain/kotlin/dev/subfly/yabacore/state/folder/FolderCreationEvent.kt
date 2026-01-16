@@ -9,5 +9,8 @@ sealed class FolderCreationEvent {
     data class OnSelectNewIcon(val newIcon: String) : FolderCreationEvent()
     data class OnChangeLabel(val newLabel: String) : FolderCreationEvent()
     data class OnChangeDescription(val newDescription: String) : FolderCreationEvent()
-    data object OnSave: FolderCreationEvent()
+    data class OnSave(
+        val onSavedCallback: () -> Unit,
+        val onErrorCallback: () -> Unit,
+    ): FolderCreationEvent()
 }

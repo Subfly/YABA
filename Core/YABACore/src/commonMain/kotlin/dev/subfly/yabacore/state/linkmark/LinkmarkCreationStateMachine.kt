@@ -510,6 +510,7 @@ class LinkmarkCreationStateMachine :
                         kind = BookmarkKind.LINK,
                         label = state.label.ifBlank { state.cleanedUrl },
                         description = state.description.ifBlank { null },
+                        tagIds = state.selectedTags.map { it.id },
                         previewImageBytes = state.imageData,
                         previewImageExtension = "jpeg",
                         previewIconBytes = state.iconData,
@@ -523,9 +524,6 @@ class LinkmarkCreationStateMachine :
                         linkType = state.selectedLinkType,
                         videoUrl = state.videoUrl,
                     )
-
-                    // Add tags
-                    state.selectedTags.forEach { tag -> TagManager.addTagToBookmark(tag, newId) }
                 }
 
                 updateState { it.copy(isSaving = false, error = null) }

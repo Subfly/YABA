@@ -24,7 +24,7 @@ class FolderCreationStateMachine :
             is FolderCreationEvent.OnChangeDescription -> onChangeDescription(event)
             is FolderCreationEvent.OnSelectNewColor -> onSelectNewColor(event)
             is FolderCreationEvent.OnSelectNewIcon -> onSelectNewIcon(event)
-            FolderCreationEvent.OnSave -> onSave()
+            is FolderCreationEvent.OnSave -> onSave(event)
         }
     }
 
@@ -104,42 +104,50 @@ class FolderCreationStateMachine :
         }
     }
 
-    private fun onSave() {
+    private fun onSave(event: FolderCreationEvent.OnSave) {
         val currentState = currentState()
+        if (currentState.isSaving) return
+        updateState { it.copy(isSaving = true) }
+
         launch {
-            if (currentState.editingFolder == null) {
-                FolderManager.createFolder(
-                    FolderUiModel(
-                        id = Uuid.generateV7(),
-                        label = currentState.label,
-                        icon = currentState.selectedIcon,
-                        color = currentState.selectedColor,
-                        parentId = currentState.selectedParent?.id,
-                        description = currentState.description,
-                        createdAt = Clock.System.now(),
-                        editedAt = Clock.System.now(),
-                        order = -1,
+            try {
+                if (currentState.editingFolder == null) {
+                    FolderManager.createFolder(
+                        FolderUiModel(
+                            id = Uuid.generateV7(),
+                            label = currentState.label,
+                            icon = currentState.selectedIcon,
+                            color = currentState.selectedColor,
+                            parentId = currentState.selectedParent?.id,
+                            description = currentState.description,
+                            createdAt = Clock.System.now(),
+                            editedAt = Clock.System.now(),
+                            order = -1,
+                        )
                     )
-                )
-            } else {
-                val editingFolder = currentState.editingFolder
-                val newParentId = currentState.selectedParent?.id
-                val parentChanged = editingFolder.parentId != newParentId
+                } else {
+                    val editingFolder = currentState.editingFolder
+                    val newParentId = currentState.selectedParent?.id
+                    val parentChanged = editingFolder.parentId != newParentId
 
-                // If parent changed, move the folder first (handles reordering)
-                if (parentChanged) {
-                    FolderManager.moveFolder(editingFolder, currentState.selectedParent)
+                    // If parent changed, move the folder first (handles reordering)
+                    if (parentChanged) {
+                        FolderManager.moveFolder(editingFolder, currentState.selectedParent)
+                    }
+
+                    // Update metadata (label, description, icon, color)
+                    FolderManager.updateFolder(
+                        editingFolder.copy(
+                            label = currentState.label,
+                            description = currentState.description,
+                            icon = currentState.selectedIcon,
+                            color = currentState.selectedColor,
+                        )
+                    )
                 }
-
-                // Update metadata (label, description, icon, color)
-                FolderManager.updateFolder(
-                    editingFolder.copy(
-                        label = currentState.label,
-                        description = currentState.description,
-                        icon = currentState.selectedIcon,
-                        color = currentState.selectedColor,
-                    )
-                )
+                event.onSavedCallback()
+            } finally {
+                updateState { it.copy(isSaving = false) }
             }
         }
     }

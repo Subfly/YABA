@@ -16,6 +16,17 @@ object CoreConstants {
             const val DESCRIPTION: String = "Uncategorized Folder Description"
             const val ICON: String = "folder-01"
         }
+
+        /**
+         * Set of reserved folder IDs that are system folders.
+         * System folders cannot be truly deleted - they self-heal.
+         */
+        val SYSTEM_FOLDER_IDS: Set<String> = setOf(Uncategorized.ID)
+
+        /**
+         * Checks if a folder ID is a system folder.
+         */
+        fun isSystemFolder(folderId: String): Boolean = folderId in SYSTEM_FOLDER_IDS
     }
 
     object Tag {
@@ -38,6 +49,17 @@ object CoreConstants {
             const val NAME: String = "Private Tag Label"
             const val ICON: String = "view-off-slash"
         }
+
+        /**
+         * Set of reserved tag IDs that are system tags.
+         * System tags cannot be truly deleted - they self-heal.
+         */
+        val SYSTEM_TAG_IDS: Set<String> = setOf(Pinned.ID, Private.ID)
+
+        /**
+         * Checks if a tag ID is a system tag.
+         */
+        fun isSystemTag(tagId: String): Boolean = tagId in SYSTEM_TAG_IDS
     }
 
     /**
@@ -87,7 +109,7 @@ object CoreConstants {
         fun eventsDbPath(): String = join(SYNC_DIR, EVENTS_DB)
 
         object Linkmark {
-            const val DIRECTORY = "linkmark"
+            const val DIRECTORY = CONTENT_DIR
             const val LINK_IMAGE_BASENAME = "link_image"
             const val DOMAIN_ICON_BASENAME = "domain_icon"
             const val HTML_EXPORTS_DIR = "html_exports"

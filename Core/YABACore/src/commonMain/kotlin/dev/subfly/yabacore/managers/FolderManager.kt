@@ -114,11 +114,28 @@ object FolderManager {
     // ==================== Write Operations (Filesystem-First) ====================
 
     suspend fun ensureUncategorizedFolder(): FolderUiModel {
+        // SELF-HEALING: Remove any tombstone for the Uncategorized folder
+        // The Uncategorized folder is a system folder that cannot truly be deleted
+        if (entityFileManager.isFolderDeleted(uncategorizedFolderId)) {
+            entityFileManager.removeFolderTombstone(uncategorizedFolderId)
+        }
+
         // Check if already exists in cache
         folderDao.getFolderWithBookmarkCount(uncategorizedFolderId.toString())?.let {
             return it.toUiModel()
         }
 
+        // Check if exists in filesystem but not in cache (drift recovery)
+        val existingJson = entityFileManager.readFolderMeta(uncategorizedFolderId)
+        if (existingJson != null) {
+            // Folder exists in filesystem but not in cache - restore to cache
+            val entity = existingJson.toEntity()
+            folderDao.upsert(entity)
+            return folderDao.getFolderWithBookmarkCount(uncategorizedFolderId.toString())?.toUiModel()
+                ?: existingJson.toUiModel(bookmarkCount = 0)
+        }
+
+        // Create new Uncategorized folder
         val now = clock.now()
         val rootSiblings = loadSiblings(parentId = null)
         val deviceId = DeviceIdProvider.get()
@@ -152,10 +169,13 @@ object FolderManager {
 
     suspend fun createFolder(folder: FolderUiModel): FolderUiModel {
         val now = clock.now()
-        val siblings = loadSiblings(folder.parentId)
         val folderId = folder.id
         val deviceId = DeviceIdProvider.get()
         val initialClock = VectorClock.of(deviceId, 1)
+
+        // Force database warmup by querying siblings
+        // This ensures Room has created the database before we write
+        val siblings = loadSiblings(folder.parentId)
 
         val folderJson = FolderMetaJson(
             id = folderId.toString(),
@@ -179,6 +199,13 @@ object FolderManager {
         // 3. Update SQLite cache
         val entity = folderJson.toEntity()
         folderDao.upsert(entity)
+
+        // 4. Verify write succeeded - if not, retry once
+        val verification = folderDao.getById(folderId.toString())
+        if (verification == null) {
+            // Retry the upsert
+            folderDao.upsert(entity)
+        }
 
         return folderJson.toUiModel(bookmarkCount = 0)
     }
@@ -305,6 +332,11 @@ object FolderManager {
     }
 
     suspend fun deleteFolder(folder: FolderUiModel) {
+        // System folders (like Uncategorized) cannot be deleted
+        if (CoreConstants.Folder.isSystemFolder(folder.id.toString())) {
+            return
+        }
+
         val existingJson = entityFileManager.readFolderMeta(folder.id) ?: return
         val existingClock = VectorClock.fromMap(existingJson.clock)
         val deviceId = DeviceIdProvider.get()

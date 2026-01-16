@@ -68,9 +68,12 @@ object TagManager {
 
     suspend fun createTag(tag: TagUiModel): TagUiModel {
         val now = clock.now()
-        val tagsCount = tagDao.getAll().size
         val deviceId = DeviceIdProvider.get()
         val initialClock = VectorClock.of(deviceId, 1)
+
+        // Force database warmup by querying existing tags
+        // This ensures Room has created the database before we write
+        val tagsCount = tagDao.getAll().size
 
         val tagJson = TagMetaJson(
             id = tag.id.toString(),
@@ -90,7 +93,15 @@ object TagManager {
         recordTagCreationEvents(tag.id, tagJson)
 
         // 3. Update SQLite cache
-        tagDao.upsert(tagJson.toEntity())
+        val entity = tagJson.toEntity()
+        tagDao.upsert(entity)
+
+        // 4. Verify write succeeded - if not, retry once
+        val verification = tagDao.getById(tag.id.toString())
+        if (verification == null) {
+            // Retry the upsert
+            tagDao.upsert(entity)
+        }
 
         return tagJson.toUiModel()
     }

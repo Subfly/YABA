@@ -75,11 +75,24 @@ object EntityFileManager {
     }
 
     suspend fun deleteFolder(folderId: Uuid, clock: VectorClock) {
+        // System folders cannot be deleted
+        if (CoreConstants.Folder.isSystemFolder(folderId.toString())) {
+            return
+        }
         // Write the tombstone first
         writeFolderDeleted(folderId, clock)
         // Remove meta.json if it exists
         val metaPath = CoreConstants.FileSystem.folderMetaPath(folderId)
         deleteFile(metaPath)
+    }
+
+    /**
+     * Removes any deleted.json tombstone for a folder.
+     * Used for system folder self-healing.
+     */
+    suspend fun removeFolderTombstone(folderId: Uuid) {
+        val path = CoreConstants.FileSystem.folderDeletedPath(folderId)
+        deleteFile(path)
     }
 
     // ==================== Tag Operations ====================
@@ -110,11 +123,24 @@ object EntityFileManager {
     }
 
     suspend fun deleteTag(tagId: Uuid, clock: VectorClock) {
+        // System tags cannot be deleted
+        if (CoreConstants.Tag.isSystemTag(tagId.toString())) {
+            return
+        }
         // Write the tombstone first
         writeTagDeleted(tagId, clock)
         // Remove meta.json if it exists
         val metaPath = CoreConstants.FileSystem.tagMetaPath(tagId)
         deleteFile(metaPath)
+    }
+
+    /**
+     * Removes any deleted.json tombstone for a tag.
+     * Used for system tag self-healing.
+     */
+    suspend fun removeTagTombstone(tagId: Uuid) {
+        val path = CoreConstants.FileSystem.tagDeletedPath(tagId)
+        deleteFile(path)
     }
 
     // ==================== Bookmark Operations ====================

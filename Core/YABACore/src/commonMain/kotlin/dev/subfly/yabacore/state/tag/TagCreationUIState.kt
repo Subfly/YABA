@@ -8,4 +8,5 @@ data class TagCreationUIState(
     val selectedIcon: String = "tag-01",
     val label: String = "",
     val editingTag: TagUiModel? = null,
+    val isSaving: Boolean = false,
 )

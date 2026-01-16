@@ -19,7 +19,7 @@ class TagCreationStateMachine : BaseStateMachine<TagCreationUIState, TagCreation
             is TagCreationEvent.OnChangeLabel -> onChangeLabel(event)
             is TagCreationEvent.OnSelectNewColor -> onSelectNewColor(event)
             is TagCreationEvent.OnSelectNewIcon -> onSelectNewIcon(event)
-            TagCreationEvent.OnSave -> onSave()
+            is TagCreationEvent.OnSave -> onSave(event)
         }
     }
 
@@ -68,42 +68,50 @@ class TagCreationStateMachine : BaseStateMachine<TagCreationUIState, TagCreation
         }
     }
 
-    private fun onSave() {
+    private fun onSave(event: TagCreationEvent.OnSave) {
         val currentState = currentState()
+        if (currentState.isSaving) return
+        updateState { it.copy(isSaving = true) }
+
         launch {
-            if (currentState.editingTag == null) {
-                TagManager.createTag(
-                    TagUiModel(
-                        id = Uuid.generateV7(),
-                        label = currentState.label,
-                        icon = currentState.selectedIcon,
-                        color = currentState.selectedColor,
-                        createdAt = Clock.System.now(),
-                        editedAt = Clock.System.now(),
-                        order = -1,
+            try {
+                if (currentState.editingTag == null) {
+                    TagManager.createTag(
+                        TagUiModel(
+                            id = Uuid.generateV7(),
+                            label = currentState.label,
+                            icon = currentState.selectedIcon,
+                            color = currentState.selectedColor,
+                            createdAt = Clock.System.now(),
+                            editedAt = Clock.System.now(),
+                            order = -1,
+                        )
                     )
-                )
-            } else {
-                val editingTag = currentState.editingTag
-                TagManager.updateTag(
-                    editingTag.copy(
-                        label = if (editingTag.label != currentState.label) {
-                            currentState.label
-                        } else {
-                            editingTag.label
-                        },
-                        icon = if (editingTag.icon != currentState.selectedIcon) {
-                            currentState.selectedIcon
-                        } else {
-                            editingTag.icon
-                        },
-                        color = if (editingTag.color != currentState.selectedColor) {
-                            currentState.selectedColor
-                        } else {
-                            editingTag.color
-                        },
+                } else {
+                    val editingTag = currentState.editingTag
+                    TagManager.updateTag(
+                        editingTag.copy(
+                            label = if (editingTag.label != currentState.label) {
+                                currentState.label
+                            } else {
+                                editingTag.label
+                            },
+                            icon = if (editingTag.icon != currentState.selectedIcon) {
+                                currentState.selectedIcon
+                            } else {
+                                editingTag.icon
+                            },
+                            color = if (editingTag.color != currentState.selectedColor) {
+                                currentState.selectedColor
+                            } else {
+                                editingTag.color
+                            },
+                        )
                     )
-                )
+                }
+                event.onSavedCallback()
+            } finally {
+                updateState { it.copy(isSaving = false) }
             }
         }
     }

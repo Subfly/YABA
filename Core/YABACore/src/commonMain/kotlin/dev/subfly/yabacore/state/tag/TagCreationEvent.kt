@@ -7,5 +7,8 @@ sealed class TagCreationEvent {
     data class OnSelectNewColor(val newColor: YabaColor) : TagCreationEvent()
     data class OnSelectNewIcon(val newIcon: String) : TagCreationEvent()
     data class OnChangeLabel(val newLabel: String) : TagCreationEvent()
-    data object OnSave: TagCreationEvent()
+    data class OnSave(
+        val onSavedCallback: () -> Unit,
+        val onErrorCallback: () -> Unit,
+    ): TagCreationEvent()
 }
