@@ -1,12 +1,8 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package dev.subfly.yabacore.sync
 
 import dev.subfly.yabacore.database.events.EventsDatabaseProvider
 import dev.subfly.yabacore.database.events.toEvents
 import dev.subfly.yabacore.filesystem.EntityFileManager
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 /**
  * Configuration for log compaction.
@@ -56,7 +52,6 @@ object LogCompaction {
         val objectIds = eventsDao.getObjectIdsWithEvents()
 
         objectIds.forEach { objectId ->
-            val uuid = runCatching { Uuid.parse(objectId) }.getOrNull() ?: return@forEach
             val events = eventsDao.getEventsForObject(objectId).toEvents()
             if (events.isEmpty()) return@forEach
 
@@ -64,9 +59,9 @@ object LogCompaction {
 
             // Rule B: Tombstone Dominance
             val isDeleted = when (objectType) {
-                ObjectType.FOLDER -> entityFileManager.isFolderDeleted(uuid)
-                ObjectType.TAG -> entityFileManager.isTagDeleted(uuid)
-                ObjectType.BOOKMARK -> entityFileManager.isBookmarkDeleted(uuid)
+                ObjectType.FOLDER -> entityFileManager.isFolderDeleted(objectId)
+                ObjectType.TAG -> entityFileManager.isTagDeleted(objectId)
+                ObjectType.BOOKMARK -> entityFileManager.isBookmarkDeleted(objectId)
             }
 
             if (isDeleted) {
@@ -76,7 +71,7 @@ object LogCompaction {
             }
 
             // Rule A: Snapshot Dominance
-            val fileSystemClock = getFileSystemClock(objectType, uuid)
+            val fileSystemClock = getFileSystemClock(objectType, objectId)
             if (fileSystemClock != null) {
                 val allEventsAreOlder = events.all { event ->
                     fileSystemClock.isNewerOrEqual(event.clock)
@@ -119,7 +114,6 @@ object LogCompaction {
      * @return Number of events removed
      */
     suspend fun compactObject(objectId: String): Long {
-        val uuid = runCatching { Uuid.parse(objectId) }.getOrNull() ?: return 0L
         val events = eventsDao.getEventsForObject(objectId).toEvents()
         if (events.isEmpty()) return 0L
 
@@ -127,9 +121,9 @@ object LogCompaction {
 
         // Rule B: Tombstone Dominance
         val isDeleted = when (objectType) {
-            ObjectType.FOLDER -> entityFileManager.isFolderDeleted(uuid)
-            ObjectType.TAG -> entityFileManager.isTagDeleted(uuid)
-            ObjectType.BOOKMARK -> entityFileManager.isBookmarkDeleted(uuid)
+            ObjectType.FOLDER -> entityFileManager.isFolderDeleted(objectId)
+            ObjectType.TAG -> entityFileManager.isTagDeleted(objectId)
+            ObjectType.BOOKMARK -> entityFileManager.isBookmarkDeleted(objectId)
         }
 
         if (isDeleted) {
@@ -138,7 +132,7 @@ object LogCompaction {
         }
 
         // Rule A: Snapshot Dominance
-        val fileSystemClock = getFileSystemClock(objectType, uuid)
+        val fileSystemClock = getFileSystemClock(objectType, objectId)
         if (fileSystemClock != null) {
             val allEventsAreOlder = events.all { event ->
                 fileSystemClock.isNewerOrEqual(event.clock)
@@ -168,18 +162,18 @@ object LogCompaction {
 
     // ==================== Private Helpers ====================
 
-    private suspend fun getFileSystemClock(objectType: ObjectType, uuid: Uuid): VectorClock? {
+    private suspend fun getFileSystemClock(objectType: ObjectType, entityId: String): VectorClock? {
         return when (objectType) {
             ObjectType.FOLDER -> {
-                entityFileManager.readFolderMeta(uuid)?.let { VectorClock.fromMap(it.clock) }
+                entityFileManager.readFolderMeta(entityId)?.let { VectorClock.fromMap(it.clock) }
             }
             ObjectType.TAG -> {
-                entityFileManager.readTagMeta(uuid)?.let { VectorClock.fromMap(it.clock) }
+                entityFileManager.readTagMeta(entityId)?.let { VectorClock.fromMap(it.clock) }
             }
             ObjectType.BOOKMARK -> {
                 // For bookmarks, we need to consider both meta.json and link.json clocks
-                val metaClock = entityFileManager.readBookmarkMeta(uuid)?.let { VectorClock.fromMap(it.clock) }
-                val linkClock = entityFileManager.readLinkJson(uuid)?.let { VectorClock.fromMap(it.clock) }
+                val metaClock = entityFileManager.readBookmarkMeta(entityId)?.let { VectorClock.fromMap(it.clock) }
+                val linkClock = entityFileManager.readLinkJson(entityId)?.let { VectorClock.fromMap(it.clock) }
 
                 when {
                     metaClock != null && linkClock != null -> metaClock.merge(linkClock)

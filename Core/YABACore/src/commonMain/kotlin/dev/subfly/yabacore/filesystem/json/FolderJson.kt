@@ -21,4 +21,6 @@ data class FolderMetaJson(
     val editedAt: Long,
     /** Vector clock: Map of deviceId to sequence number */
     val clock: Map<String, Long>,
+    /** True if this is a hidden system folder. */
+    val isHidden: Boolean = false,
 )

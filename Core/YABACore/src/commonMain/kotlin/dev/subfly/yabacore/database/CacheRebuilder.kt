@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package dev.subfly.yabacore.database
 
 import dev.subfly.yabacore.database.entities.BookmarkEntity
@@ -18,8 +16,6 @@ import dev.subfly.yabacore.filesystem.json.TagMetaJson
 import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.LinkType
 import dev.subfly.yabacore.model.utils.YabaColor
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 /**
  * Rebuilds the SQLite cache from the filesystem.
@@ -89,18 +85,18 @@ object CacheRebuilder {
             // Remove entities that are deleted in filesystem but still in cache
             drift.deletedButInCache.forEach { entity ->
                 when (entity.type) {
-                    EntityType.FOLDER -> folderDao.deleteById(entity.id.toString())
-                    EntityType.TAG -> tagDao.deleteById(entity.id.toString())
-                    EntityType.BOOKMARK -> bookmarkDao.deleteByIds(listOf(entity.id.toString()))
+                    EntityType.FOLDER -> folderDao.deleteById(entity.id)
+                    EntityType.TAG -> tagDao.deleteById(entity.id)
+                    EntityType.BOOKMARK -> bookmarkDao.deleteByIds(listOf(entity.id))
                 }
             }
 
             // Remove entities that are in cache but missing in filesystem
             drift.missingInFilesystem.forEach { entity ->
                 when (entity.type) {
-                    EntityType.FOLDER -> folderDao.deleteById(entity.id.toString())
-                    EntityType.TAG -> tagDao.deleteById(entity.id.toString())
-                    EntityType.BOOKMARK -> bookmarkDao.deleteByIds(listOf(entity.id.toString()))
+                    EntityType.FOLDER -> folderDao.deleteById(entity.id)
+                    EntityType.TAG -> tagDao.deleteById(entity.id)
+                    EntityType.BOOKMARK -> bookmarkDao.deleteByIds(listOf(entity.id))
                 }
             }
 
@@ -134,15 +130,12 @@ object CacheRebuilder {
 
                             // Restore tag relationships
                             meta.tagIds.forEach { tagIdStr ->
-                                val tagId = runCatching { Uuid.parse(tagIdStr) }.getOrNull()
-                                if (tagId != null) {
-                                    tagBookmarkDao.insert(
-                                        TagBookmarkCrossRef(
-                                            tagId = tagIdStr,
-                                            bookmarkId = entity.id.toString(),
-                                        )
+                                tagBookmarkDao.insert(
+                                    TagBookmarkCrossRef(
+                                        tagId = tagIdStr,
+                                        bookmarkId = entity.id,
                                     )
-                                }
+                                )
                             }
                         }
                     }
@@ -206,13 +199,12 @@ object CacheRebuilder {
             val meta = entityFileManager.readBookmarkMeta(bookmarkId) ?: return@forEach
 
             meta.tagIds.forEach { tagIdStr ->
-                val tagId = runCatching { Uuid.parse(tagIdStr) }.getOrNull() ?: return@forEach
                 // Only add relationship if the tag exists and isn't deleted
-                if (!entityFileManager.isTagDeleted(tagId)) {
+                if (!entityFileManager.isTagDeleted(tagIdStr)) {
                     tagBookmarkDao.insert(
                         TagBookmarkCrossRef(
                             tagId = tagIdStr,
-                            bookmarkId = bookmarkId.toString(),
+                            bookmarkId = bookmarkId,
                         )
                     )
                 }
@@ -233,6 +225,7 @@ object CacheRebuilder {
             order = order,
             createdAt = createdAt,
             editedAt = editedAt,
+            isHidden = isHidden,
         )
 
     private fun TagMetaJson.toTagEntity(): TagEntity =
@@ -244,6 +237,7 @@ object CacheRebuilder {
             order = order,
             createdAt = createdAt,
             editedAt = editedAt,
+            isHidden = isHidden,
         )
 
     private fun BookmarkMetaJson.toBookmarkEntity(): BookmarkEntity =
@@ -262,9 +256,9 @@ object CacheRebuilder {
             localIconPath = localIconPath,
         )
 
-    private fun LinkJson.toLinkBookmarkEntity(bookmarkId: Uuid): LinkBookmarkEntity =
+    private fun LinkJson.toLinkBookmarkEntity(bookmarkId: String): LinkBookmarkEntity =
         LinkBookmarkEntity(
-            bookmarkId = bookmarkId.toString(),
+            bookmarkId = bookmarkId,
             url = url,
             domain = domain,
             linkType = LinkType.fromCode(linkTypeCode),

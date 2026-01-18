@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package dev.subfly.yabacore.database.mappers
 
 import dev.subfly.yabacore.database.domain.BookmarkMetadataDomainModel
@@ -13,7 +11,6 @@ import dev.subfly.yabacore.model.ui.BookmarkUiModel
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.ui.LinkmarkUiModel
 import dev.subfly.yabacore.model.ui.TagUiModel
-import kotlin.uuid.ExperimentalUuidApi
 
 internal fun FolderDomainModel.toUiModel(
     bookmarkCount: Int = 0,
@@ -172,4 +169,3 @@ fun TagWithBookmarkCount.toUiModel(
     bookmarkCount = bookmarkCount.toInt(),
     bookmarks = bookmarks,
 )
-

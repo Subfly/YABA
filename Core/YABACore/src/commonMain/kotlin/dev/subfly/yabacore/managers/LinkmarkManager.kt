@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package dev.subfly.yabacore.managers
 
 import dev.subfly.yabacore.database.DatabaseProvider
@@ -12,15 +10,13 @@ import dev.subfly.yabacore.filesystem.EntityFileManager
 import dev.subfly.yabacore.filesystem.json.LinkJson
 import dev.subfly.yabacore.model.ui.LinkmarkUiModel
 import dev.subfly.yabacore.model.utils.LinkType
+import dev.subfly.yabacore.queue.CoreOperationQueue
 import dev.subfly.yabacore.sync.CRDTEngine
 import dev.subfly.yabacore.sync.FileTarget
 import dev.subfly.yabacore.sync.ObjectType
 import dev.subfly.yabacore.sync.VectorClock
-import io.github.vinceglb.filekit.path
 import kotlinx.serialization.json.JsonPrimitive
 import kotlin.time.Clock
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 /**
  * Filesystem-first link bookmark manager.
@@ -39,16 +35,16 @@ object LinkmarkManager {
 
     // ==================== Query Operations ====================
 
-    suspend fun getLinkmarkDetail(bookmarkId: Uuid): LinkmarkUiModel? {
-        val linkBookmark = bookmarkDao.getLinkBookmarkById(bookmarkId.toString()) ?: return null
+    suspend fun getLinkmarkDetail(bookmarkId: String): LinkmarkUiModel? {
+        val linkBookmark = bookmarkDao.getLinkBookmarkById(bookmarkId) ?: return null
         val domain = linkBookmark.toModel()
-        val folder = folderDao.getFolderWithBookmarkCount(domain.folderId.toString())?.toUiModel()
-        val tags = tagDao.getTagsForBookmarkWithCounts(bookmarkId.toString()).map { it.toUiModel() }
+        val folder = folderDao.getFolderWithBookmarkCount(domain.folderId)?.toUiModel()
+        val tags = tagDao.getTagsForBookmarkWithCounts(bookmarkId).map { it.toUiModel() }
 
         val localImageAbsolutePath =
-            domain.localImagePath?.let { relativePath -> BookmarkFileManager.resolve(relativePath).path }
+            domain.localImagePath?.let { relativePath -> BookmarkFileManager.getAbsolutePath(relativePath) }
         val localIconAbsolutePath =
-            domain.localIconPath?.let { relativePath -> BookmarkFileManager.resolve(relativePath).path }
+            domain.localIconPath?.let { relativePath -> BookmarkFileManager.getAbsolutePath(relativePath) }
 
         return domain.toUiModel(
             folder = folder,
@@ -58,18 +54,27 @@ object LinkmarkManager {
         )
     }
 
-    // ==================== Write Operations (Filesystem-First) ====================
+    // ==================== Write Operations (Enqueued) ====================
 
     /**
-     * Creates link-specific details (url/domain/linkType/videoUrl) for a bookmark.
-     *
-     * Bookmark metadata (folder/title/description/tags/preview assets) must be saved via
-     * [AllBookmarksManager] first.
+     * Enqueues link details creation.
      */
-    suspend fun createLinkDetails(
-        bookmarkId: Uuid,
+    fun createLinkDetails(
+        bookmarkId: String,
         url: String,
         domain: String? = null,
+        linkType: LinkType,
+        videoUrl: String?,
+    ) {
+        CoreOperationQueue.queue("CreateLinkDetails:$bookmarkId") {
+            createLinkDetailsInternal(bookmarkId, url, domain, linkType, videoUrl)
+        }
+    }
+
+    private suspend fun createLinkDetailsInternal(
+        bookmarkId: String,
+        url: String,
+        domain: String?,
         linkType: LinkType,
         videoUrl: String?,
     ) {
@@ -96,12 +101,24 @@ object LinkmarkManager {
     }
 
     /**
-     * Updates link-specific details for an existing link bookmark.
+     * Enqueues link details update.
      */
-    suspend fun updateLinkDetails(
-        bookmarkId: Uuid,
+    fun updateLinkDetails(
+        bookmarkId: String,
         url: String,
         domain: String? = null,
+        linkType: LinkType,
+        videoUrl: String?,
+    ) {
+        CoreOperationQueue.queue("UpdateLinkDetails:$bookmarkId") {
+            updateLinkDetailsInternal(bookmarkId, url, domain, linkType, videoUrl)
+        }
+    }
+
+    private suspend fun updateLinkDetailsInternal(
+        bookmarkId: String,
+        url: String,
+        domain: String?,
         linkType: LinkType,
         videoUrl: String?,
     ) {
@@ -154,20 +171,22 @@ object LinkmarkManager {
     }
 
     /**
-     * Creates or updates link details based on whether they already exist.
+     * Enqueues link details create or update.
      */
-    suspend fun createOrUpdateLinkDetails(
-        bookmarkId: Uuid,
+    fun createOrUpdateLinkDetails(
+        bookmarkId: String,
         url: String,
         domain: String? = null,
         linkType: LinkType,
         videoUrl: String?,
     ) {
-        val existingJson = entityFileManager.readLinkJson(bookmarkId)
-        if (existingJson == null) {
-            createLinkDetails(bookmarkId, url, domain, linkType, videoUrl)
-        } else {
-            updateLinkDetails(bookmarkId, url, domain, linkType, videoUrl)
+        CoreOperationQueue.queue("CreateOrUpdateLinkDetails:$bookmarkId") {
+            val existingJson = entityFileManager.readLinkJson(bookmarkId)
+            if (existingJson == null) {
+                createLinkDetailsInternal(bookmarkId, url, domain, linkType, videoUrl)
+            } else {
+                updateLinkDetailsInternal(bookmarkId, url, domain, linkType, videoUrl)
+            }
         }
     }
 
@@ -180,7 +199,7 @@ object LinkmarkManager {
     }
 
     private suspend fun recordLinkCreationEvents(
-        bookmarkId: Uuid,
+        bookmarkId: String,
         json: LinkJson,
     ) {
         val changes = mapOf(
@@ -200,8 +219,8 @@ object LinkmarkManager {
 
     // ==================== Mappers ====================
 
-    private fun LinkJson.toEntity(bookmarkId: Uuid): LinkBookmarkEntity = LinkBookmarkEntity(
-        bookmarkId = bookmarkId.toString(),
+    private fun LinkJson.toEntity(bookmarkId: String): LinkBookmarkEntity = LinkBookmarkEntity(
+        bookmarkId = bookmarkId,
         url = url,
         domain = domain,
         linkType = LinkType.fromCode(linkTypeCode),

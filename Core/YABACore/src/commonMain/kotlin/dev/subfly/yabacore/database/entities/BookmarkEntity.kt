@@ -33,17 +33,6 @@ data class BookmarkEntity(
     val viewCount: Long = 0,
     val isPrivate: Boolean = false,
     val isPinned: Boolean = false,
-    /**
-     * Local preview image path for this bookmark.
-     *
-     * NOTE: This is expected to be a relative path within the app-managed bookmarks directory
-     * (see [BookmarkFileManager]).
-     */
     val localImagePath: String? = null,
-    /**
-     * Local preview icon path for this bookmark.
-     *
-     * NOTE: This is expected to be a relative path within the app-managed bookmarks directory.
-     */
     val localIconPath: String? = null,
 )

@@ -2,6 +2,7 @@ package dev.subfly.yabacore.state.detail.folder
 
 import dev.subfly.yabacore.managers.AllBookmarksManager
 import dev.subfly.yabacore.managers.FolderManager
+import dev.subfly.yabacore.model.ui.BookmarkUiModel
 import dev.subfly.yabacore.model.utils.BookmarkSearchFilters
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
@@ -14,10 +15,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalUuidApi::class)
 class FolderDetailStateMachine :
     BaseStateMachine<FolderDetailUIState, FolderDetailEvent>(initialState = FolderDetailUIState()) {
     private var isInitialized = false
@@ -25,7 +23,7 @@ class FolderDetailStateMachine :
     private val preferencesStore = SettingsStores.userPreferences
 
     private val queryFlow = MutableStateFlow("")
-    private val folderIdFlow = MutableStateFlow<Uuid?>(null)
+    private val folderIdFlow = MutableStateFlow<String?>(null)
 
     override fun onEvent(event: FolderDetailEvent) {
         when (event) {
@@ -44,7 +42,7 @@ class FolderDetailStateMachine :
     private fun onInit(folderId: String) {
         if (isInitialized) return
         isInitialized = true
-        folderIdFlow.value = Uuid.parse(folderId)
+        folderIdFlow.value = folderId
 
         dataSubscriptionJob?.cancel()
         dataSubscriptionJob = launch {
@@ -108,7 +106,7 @@ class FolderDetailStateMachine :
         }
     }
 
-    private fun onToggleBookmarkSelection(bookmarkId: Uuid) {
+    private fun onToggleBookmarkSelection(bookmarkId: String) {
         if (currentState().isSelectionMode.not()) return
 
         updateState { state ->
@@ -126,14 +124,13 @@ class FolderDetailStateMachine :
         if (selectedIds.isEmpty()) return
 
         launch {
-            val bookmarksToDelete = currentState().bookmarks.filter { it.id in selectedIds }
-            AllBookmarksManager.deleteBookmarks(bookmarksToDelete)
+            AllBookmarksManager.deleteBookmarks(selectedIds.toList())
             updateState { it.copy(isSelectionMode = false, selectedBookmarkIds = emptySet()) }
         }
     }
 
-    private fun onDeleteBookmark(bookmark: dev.subfly.yabacore.model.ui.BookmarkUiModel) {
-        launch { AllBookmarksManager.deleteBookmarks(listOf(bookmark)) }
+    private fun onDeleteBookmark(bookmark: BookmarkUiModel) {
+        launch { AllBookmarksManager.deleteBookmarks(listOf(bookmark.id)) }
     }
 
     private fun onChangeSort(sortType: SortType, sortOrder: SortOrderType) {

@@ -1,7 +1,6 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package dev.subfly.yabacore.impex.internal
 
+import dev.subfly.yabacore.common.IdGenerator
 import dev.subfly.yabacore.database.domain.FolderDomainModel
 import dev.subfly.yabacore.impex.model.CodableContent
 import dev.subfly.yabacore.impex.model.ImportExportError
@@ -10,8 +9,6 @@ import dev.subfly.yabacore.model.utils.YabaColor
 import kotlinx.serialization.json.Json
 import kotlin.time.Clock
 import kotlin.time.Instant
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 internal object JsonImporter {
     private val json = Json {
@@ -32,7 +29,7 @@ internal object JsonImporter {
         val tagIdResolver = IdResolver(existingIds.tags)
         val bookmarkIdResolver = IdResolver(existingIds.bookmarks)
 
-        val resolvedBookmarkIds = mutableMapOf<String, Uuid>()
+        val resolvedBookmarkIds = mutableMapOf<String, String>()
         content.bookmarks.forEach { bookmark ->
             val key = bookmark.bookmarkId ?: bookmark.link
             val resolved = bookmarkIdResolver.resolve(bookmark.bookmarkId)
@@ -81,7 +78,7 @@ internal object JsonImporter {
             ).copy(order = collection.order.takeIf { it >= 0 } ?: index)
         }
 
-        val bookmarkFolderAssignments = mutableMapOf<String, Uuid>()
+        val bookmarkFolderAssignments = mutableMapOf<String, String>()
         folderCollections.forEach { collection ->
             val folderId = folderIdResolver.resolve(collection.collectionId)
             collection.bookmarks.forEach { bookmarkIdString ->
@@ -135,7 +132,7 @@ internal object JsonImporter {
 
     private fun createFallbackFolder(now: Instant, order: Int): FolderDomainModel =
         FolderDomainModel(
-            id = Uuid.random(),
+            id = IdGenerator.newId(),
             parentId = null,
             label = "Imported $now",
             description = null,
@@ -146,4 +143,3 @@ internal object JsonImporter {
             order = order,
         )
 }
-

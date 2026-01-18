@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalEncodingApi::class, ExperimentalUuidApi::class)
+@file:OptIn(ExperimentalEncodingApi::class)
 
 package dev.subfly.yabacore.impex.model
 
@@ -12,8 +12,6 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 @Serializable
 internal data class CodableContent(
@@ -111,7 +109,6 @@ internal object Base64ByteArraySerializer : KSerializer<ByteArray> {
  * Simple pair tying a tag to a bookmark. Extracted here to avoid leaking DAO models.
  */
 internal data class TagLink(
-    val tagId: Uuid,
-    val bookmarkId: Uuid,
+    val tagId: String,
+    val bookmarkId: String,
 )
-

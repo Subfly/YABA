@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package dev.subfly.yabacore.filesystem.access
 
 import dev.subfly.yabacore.common.CoreConstants
@@ -13,12 +11,11 @@ import io.github.vinceglb.filekit.exists
 import io.github.vinceglb.filekit.filesDir
 import io.github.vinceglb.filekit.isDirectory
 import io.github.vinceglb.filekit.parent
+import io.github.vinceglb.filekit.readBytes
 import io.github.vinceglb.filekit.write
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 internal object CommonFileAccessProvider {
     private val settingsStore = FileSystemSettings.store
@@ -34,7 +31,7 @@ internal object CommonFileAccessProvider {
     }
 
     suspend fun bookmarkDirectory(
-        bookmarkId: Uuid,
+        bookmarkId: String,
         subtypeDirectory: String?,
         ensureExists: Boolean,
     ): PlatformFile {
@@ -70,9 +67,22 @@ internal object CommonFileAccessProvider {
         }
     }
 
-    suspend fun deleteBookmarkDirectory(bookmarkId: Uuid) {
+    suspend fun deleteBookmarkDirectory(bookmarkId: String) {
         val folder = CoreConstants.FileSystem.bookmarkFolderPath(bookmarkId)
         delete(folder)
+    }
+
+    suspend fun readBytes(relativePath: String): ByteArray? {
+        val target = resolveRelativePath(relativePath, ensureParentExists = false)
+        return if (target.exists()) {
+            withContext(Dispatchers.IO) {
+                target.readBytes()
+            }
+        } else null
+    }
+
+    suspend fun readText(relativePath: String): String? {
+        return readBytes(relativePath)?.decodeToString()
     }
 
     private fun createFallbackRoot(): PlatformFile =

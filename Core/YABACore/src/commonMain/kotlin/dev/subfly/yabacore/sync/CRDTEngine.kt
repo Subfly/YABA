@@ -1,7 +1,6 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package dev.subfly.yabacore.sync
 
+import dev.subfly.yabacore.common.IdGenerator
 import dev.subfly.yabacore.database.DeviceIdProvider
 import dev.subfly.yabacore.database.events.EventsDatabaseProvider
 import dev.subfly.yabacore.database.events.toEntities
@@ -13,8 +12,6 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.longOrNull
 import kotlin.time.Clock
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 /**
  * CRDT Engine for handling field-level merge operations.
@@ -38,7 +35,7 @@ object CRDTEngine {
      * Generates and stores a CRDT event for a field change.
      */
     suspend fun recordFieldChange(
-        objectId: Uuid,
+        objectId: String,
         objectType: ObjectType,
         file: FileTarget,
         field: String,
@@ -48,8 +45,8 @@ object CRDTEngine {
         val deviceId = DeviceIdProvider.get()
         val newClock = currentClock.increment(deviceId)
         val event = CRDTEvent(
-            eventId = Uuid.random().toString(),
-            objectId = objectId.toString(),
+            eventId = IdGenerator.newId(),
+            objectId = objectId,
             objectType = objectType,
             file = file,
             field = field,
@@ -65,7 +62,7 @@ object CRDTEngine {
      * Records multiple field changes as separate events.
      */
     suspend fun recordFieldChanges(
-        objectId: Uuid,
+        objectId: String,
         objectType: ObjectType,
         file: FileTarget,
         changes: Map<String, JsonElement>,
@@ -77,8 +74,8 @@ object CRDTEngine {
         val events = changes.map { (field, value) ->
             workingClock = workingClock.increment(deviceId)
             CRDTEvent(
-                eventId = Uuid.random().toString(),
-                objectId = objectId.toString(),
+                eventId = IdGenerator.newId(),
+                objectId = objectId,
                 objectType = objectType,
                 file = file,
                 field = field,

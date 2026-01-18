@@ -1,15 +1,13 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package dev.subfly.yabacore.filesystem
 
 import dev.subfly.yabacore.filesystem.access.FileAccessProvider
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.exists
+import io.github.vinceglb.filekit.path
 import io.github.vinceglb.filekit.readBytes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
-import kotlin.uuid.ExperimentalUuidApi
 
 /**
  * File manager for bookmark assets.
@@ -32,6 +30,15 @@ object BookmarkFileManager {
     suspend fun find(relativePath: String): PlatformFile? {
         val file = resolve(relativePath)
         return if (file.exists()) file else null
+    }
+
+    /**
+     * Returns the absolute path string for a relative path.
+     * This is the only way to get path strings - callers should not access PlatformFile.path directly.
+     */
+    suspend fun getAbsolutePath(relativePath: String): String {
+        val file = resolve(relativePath)
+        return file.path
     }
 
     suspend fun writeBytes(

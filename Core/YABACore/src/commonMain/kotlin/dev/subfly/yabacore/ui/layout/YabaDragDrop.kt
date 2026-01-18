@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalFoundationApi::class, ExperimentalUuidApi::class)
+@file:OptIn(ExperimentalFoundationApi::class)
 
 package dev.subfly.yabacore.ui.layout
 
@@ -24,8 +24,6 @@ import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.model.utils.DropZone
 import kotlin.math.max
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 /*
 Usage sketch:
@@ -65,23 +63,23 @@ YabaBookmarkLayout(bookmarks, layoutConfig, onDrop = {}, dragDropState = dragSta
 */
 
 sealed interface YabaDragPayload {
-    val id: Uuid
+    val id: String
 }
 
 class DragTagPayload(val tag: TagUiModel) : YabaDragPayload {
-    override val id: Uuid = tag.id
+    override val id: String = tag.id
     override fun equals(other: Any?): Boolean = other is DragTagPayload && other.id == id
     override fun hashCode(): Int = id.hashCode()
 }
 
 class DragFolderPayload(val folder: FolderUiModel) : YabaDragPayload {
-    override val id: Uuid = folder.id
+    override val id: String = folder.id
     override fun equals(other: Any?): Boolean = other is DragFolderPayload && other.id == id
     override fun hashCode(): Int = id.hashCode()
 }
 
 class DragBookmarkPayload(val bookmark: BookmarkUiModel) : YabaDragPayload {
-    override val id: Uuid = bookmark.id
+    override val id: String = bookmark.id
     override fun equals(other: Any?): Boolean = other is DragBookmarkPayload && other.id == id
     override fun hashCode(): Int = id.hashCode()
 }

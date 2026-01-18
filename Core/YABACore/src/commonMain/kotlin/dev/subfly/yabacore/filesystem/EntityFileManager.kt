@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package dev.subfly.yabacore.filesystem
 
 import dev.subfly.yabacore.common.CoreConstants
@@ -19,12 +17,7 @@ import io.github.vinceglb.filekit.list
 import io.github.vinceglb.filekit.name
 import io.github.vinceglb.filekit.readString
 import io.github.vinceglb.filekit.write
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 /**
  * Unified manager for reading/writing entity JSON files.
@@ -49,34 +42,34 @@ object EntityFileManager {
 
     // ==================== Folder Operations ====================
 
-    suspend fun readFolderMeta(folderId: Uuid): FolderMetaJson? {
+    suspend fun readFolderMeta(folderId: String): FolderMetaJson? {
         val path = CoreConstants.FileSystem.folderMetaPath(folderId)
         return readJson(path)
     }
 
     suspend fun writeFolderMeta(folder: FolderMetaJson) {
-        val path = CoreConstants.FileSystem.folderMetaPath(Uuid.parse(folder.id))
+        val path = CoreConstants.FileSystem.folderMetaPath(folder.id)
         writeJson(path, folder)
     }
 
-    suspend fun isFolderDeleted(folderId: Uuid): Boolean {
+    suspend fun isFolderDeleted(folderId: String): Boolean {
         val path = CoreConstants.FileSystem.folderDeletedPath(folderId)
         return fileExists(path)
     }
 
-    suspend fun writeFolderDeleted(folderId: Uuid, clock: VectorClock) {
+    suspend fun writeFolderDeleted(folderId: String, clock: VectorClock) {
         val path = CoreConstants.FileSystem.folderDeletedPath(folderId)
         val deleted = DeletedJson(
-            id = folderId.toString(),
+            id = folderId,
             deleted = true,
             clock = clock.toMap(),
         )
         writeJson(path, deleted)
     }
 
-    suspend fun deleteFolder(folderId: Uuid, clock: VectorClock) {
+    suspend fun deleteFolder(folderId: String, clock: VectorClock) {
         // System folders cannot be deleted
-        if (CoreConstants.Folder.isSystemFolder(folderId.toString())) {
+        if (CoreConstants.Folder.isSystemFolder(folderId)) {
             return
         }
         // Write the tombstone first
@@ -90,41 +83,41 @@ object EntityFileManager {
      * Removes any deleted.json tombstone for a folder.
      * Used for system folder self-healing.
      */
-    suspend fun removeFolderTombstone(folderId: Uuid) {
+    suspend fun removeFolderTombstone(folderId: String) {
         val path = CoreConstants.FileSystem.folderDeletedPath(folderId)
         deleteFile(path)
     }
 
     // ==================== Tag Operations ====================
 
-    suspend fun readTagMeta(tagId: Uuid): TagMetaJson? {
+    suspend fun readTagMeta(tagId: String): TagMetaJson? {
         val path = CoreConstants.FileSystem.tagMetaPath(tagId)
         return readJson(path)
     }
 
     suspend fun writeTagMeta(tag: TagMetaJson) {
-        val path = CoreConstants.FileSystem.tagMetaPath(Uuid.parse(tag.id))
+        val path = CoreConstants.FileSystem.tagMetaPath(tag.id)
         writeJson(path, tag)
     }
 
-    suspend fun isTagDeleted(tagId: Uuid): Boolean {
+    suspend fun isTagDeleted(tagId: String): Boolean {
         val path = CoreConstants.FileSystem.tagDeletedPath(tagId)
         return fileExists(path)
     }
 
-    suspend fun writeTagDeleted(tagId: Uuid, clock: VectorClock) {
+    suspend fun writeTagDeleted(tagId: String, clock: VectorClock) {
         val path = CoreConstants.FileSystem.tagDeletedPath(tagId)
         val deleted = DeletedJson(
-            id = tagId.toString(),
+            id = tagId,
             deleted = true,
             clock = clock.toMap(),
         )
         writeJson(path, deleted)
     }
 
-    suspend fun deleteTag(tagId: Uuid, clock: VectorClock) {
+    suspend fun deleteTag(tagId: String, clock: VectorClock) {
         // System tags cannot be deleted
-        if (CoreConstants.Tag.isSystemTag(tagId.toString())) {
+        if (CoreConstants.Tag.isSystemTag(tagId)) {
             return
         }
         // Write the tombstone first
@@ -138,56 +131,56 @@ object EntityFileManager {
      * Removes any deleted.json tombstone for a tag.
      * Used for system tag self-healing.
      */
-    suspend fun removeTagTombstone(tagId: Uuid) {
+    suspend fun removeTagTombstone(tagId: String) {
         val path = CoreConstants.FileSystem.tagDeletedPath(tagId)
         deleteFile(path)
     }
 
     // ==================== Bookmark Operations ====================
 
-    suspend fun readBookmarkMeta(bookmarkId: Uuid): BookmarkMetaJson? {
+    suspend fun readBookmarkMeta(bookmarkId: String): BookmarkMetaJson? {
         val path = CoreConstants.FileSystem.bookmarkMetaPath(bookmarkId)
         return readJson(path)
     }
 
     suspend fun writeBookmarkMeta(bookmark: BookmarkMetaJson) {
-        val path = CoreConstants.FileSystem.bookmarkMetaPath(Uuid.parse(bookmark.id))
+        val path = CoreConstants.FileSystem.bookmarkMetaPath(bookmark.id)
         writeJson(path, bookmark)
     }
 
-    suspend fun readLinkJson(bookmarkId: Uuid): LinkJson? {
+    suspend fun readLinkJson(bookmarkId: String): LinkJson? {
         val path = CoreConstants.FileSystem.bookmarkLinkPath(bookmarkId)
         return readJson(path)
     }
 
-    suspend fun writeLinkJson(bookmarkId: Uuid, link: LinkJson) {
+    suspend fun writeLinkJson(bookmarkId: String, link: LinkJson) {
         val path = CoreConstants.FileSystem.bookmarkLinkPath(bookmarkId)
         writeJson(path, link)
     }
 
-    suspend fun isBookmarkDeleted(bookmarkId: Uuid): Boolean {
+    suspend fun isBookmarkDeleted(bookmarkId: String): Boolean {
         val path = CoreConstants.FileSystem.bookmarkDeletedPath(bookmarkId)
         return fileExists(path)
     }
 
-    suspend fun writeBookmarkDeleted(bookmarkId: Uuid, clock: VectorClock) {
+    suspend fun writeBookmarkDeleted(bookmarkId: String, clock: VectorClock) {
         val path = CoreConstants.FileSystem.bookmarkDeletedPath(bookmarkId)
         val deleted = DeletedJson(
-            id = bookmarkId.toString(),
+            id = bookmarkId,
             deleted = true,
             clock = clock.toMap(),
         )
         writeJson(path, deleted)
     }
 
-    suspend fun getBookmarkContentDir(bookmarkId: Uuid): PlatformFile {
+    suspend fun getBookmarkContentDir(bookmarkId: String): PlatformFile {
         val path = CoreConstants.FileSystem.bookmarkContentPath(bookmarkId)
         val dir = accessProvider.resolveRelativePath(path, ensureParentExists = true)
         dir.createDirectories()
         return dir
     }
 
-    suspend fun deleteBookmark(bookmarkId: Uuid, clock: VectorClock) {
+    suspend fun deleteBookmark(bookmarkId: String, clock: VectorClock) {
         // Write the tombstone first
         writeBookmarkDeleted(bookmarkId, clock)
         // Remove meta.json, link.json, and content directory
@@ -201,15 +194,15 @@ object EntityFileManager {
 
     // ==================== Scanning Operations ====================
 
-    suspend fun scanAllFolders(): List<Uuid> {
+    suspend fun scanAllFolders(): List<String> {
         return scanEntityDirectory(CoreConstants.FileSystem.FOLDERS_DIR)
     }
 
-    suspend fun scanAllTags(): List<Uuid> {
+    suspend fun scanAllTags(): List<String> {
         return scanEntityDirectory(CoreConstants.FileSystem.TAGS_DIR)
     }
 
-    suspend fun scanAllBookmarks(): List<Uuid> {
+    suspend fun scanAllBookmarks(): List<String> {
         return scanEntityDirectory(CoreConstants.FileSystem.BOOKMARKS_DIR)
     }
 
@@ -217,7 +210,8 @@ object EntityFileManager {
      * Reads the deleted.json file for any entity type.
      */
     suspend fun readDeleted(entityPath: String): DeletedJson? {
-        val deletedPath = CoreConstants.FileSystem.join(entityPath, CoreConstants.FileSystem.DELETED_JSON)
+        val deletedPath =
+            CoreConstants.FileSystem.join(entityPath, CoreConstants.FileSystem.DELETED_JSON)
         return readJson(deletedPath)
     }
 
@@ -227,9 +221,9 @@ object EntityFileManager {
         val file = accessProvider.resolveRelativePath(relativePath, ensureParentExists = false)
         if (!file.exists()) return null
         return try {
-            val content = withContext(Dispatchers.IO) { file.readString() }
+            val content = file.readString()
             json.decodeFromString<T>(content)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
     }
@@ -237,9 +231,7 @@ object EntityFileManager {
     private suspend inline fun <reified T> writeJson(relativePath: String, data: T) {
         val file = accessProvider.resolveRelativePath(relativePath, ensureParentExists = true)
         val content = json.encodeToString(data)
-        withContext(Dispatchers.IO) {
-            file.write(content.encodeToByteArray())
-        }
+        file.write(content.encodeToByteArray())
     }
 
     private suspend fun fileExists(relativePath: String): Boolean {
@@ -250,27 +242,23 @@ object EntityFileManager {
     private suspend fun deleteFile(relativePath: String) {
         val file = accessProvider.resolveRelativePath(relativePath, ensureParentExists = false)
         if (file.exists() && !file.isDirectory()) {
-            withContext(Dispatchers.IO) { file.delete() }
+            file.delete()
         }
     }
 
     private suspend fun deleteDirectory(relativePath: String) {
         val dir = accessProvider.resolveRelativePath(relativePath, ensureParentExists = false)
         if (dir.exists() && dir.isDirectory()) {
-            withContext(Dispatchers.IO) { dir.delete() }
+            dir.delete()
         }
     }
 
-    private suspend fun scanEntityDirectory(entityDir: String): List<Uuid> {
+    private suspend fun scanEntityDirectory(entityDir: String): List<String> {
         val dir = accessProvider.resolveRelativePath(entityDir, ensureParentExists = false)
         if (!dir.exists() || !dir.isDirectory()) return emptyList()
 
-        return withContext(Dispatchers.IO) {
-            dir.list()
-                .filter { it.isDirectory() }
-                .mapNotNull { folder ->
-                    runCatching { Uuid.parse(folder.name) }.getOrNull()
-                }
-        }
+        return dir.list()
+            .filter { it.isDirectory() }
+            .map { folder -> folder.name }
     }
 }

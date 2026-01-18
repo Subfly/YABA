@@ -1,14 +1,10 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package dev.subfly.yabacore.database.migration
 
 import kotlin.time.Instant
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 data class LegacyFolder(
-    val id: Uuid,
-    val parentId: Uuid?,
+    val id: String,
+    val parentId: String?,
     val label: String,
     val description: String?,
     val icon: String,
@@ -19,7 +15,7 @@ data class LegacyFolder(
 )
 
 data class LegacyTag(
-    val id: Uuid,
+    val id: String,
     val label: String,
     val icon: String,
     val colorCode: Int,
@@ -29,8 +25,8 @@ data class LegacyTag(
 )
 
 data class LegacyBookmark(
-    val id: Uuid,
-    val folderId: Uuid,
+    val id: String,
+    val folderId: String,
     val label: String,
     val description: String?,
     val url: String,
@@ -47,8 +43,8 @@ data class LegacyBookmark(
 )
 
 data class LegacyTagLink(
-    val tagId: Uuid,
-    val bookmarkId: Uuid,
+    val tagId: String,
+    val bookmarkId: String,
 )
 
 data class LegacySnapshot(

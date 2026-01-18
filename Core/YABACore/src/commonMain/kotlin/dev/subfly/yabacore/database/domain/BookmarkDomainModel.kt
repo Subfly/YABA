@@ -1,16 +1,12 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package dev.subfly.yabacore.database.domain
 
 import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.LinkType
 import kotlin.time.Instant
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 internal sealed interface BookmarkDomainModel {
-    val id: Uuid
-    val folderId: Uuid
+    val id: String
+    val folderId: String
     val kind: BookmarkKind
     val label: String
     val description: String?
@@ -38,8 +34,8 @@ internal sealed interface BookmarkDomainModel {
  * Subtype details are saved and loaded separately (e.g., via LINK_BOOKMARK operations).
  */
 internal data class BookmarkMetadataDomainModel(
-    override val id: Uuid,
-    override val folderId: Uuid,
+    override val id: String,
+    override val folderId: String,
     override val kind: BookmarkKind,
     override val label: String,
     override val description: String?,
@@ -53,8 +49,8 @@ internal data class BookmarkMetadataDomainModel(
 ) : BookmarkDomainModel
 
 internal data class LinkBookmarkDomainModel(
-    override val id: Uuid,
-    override val folderId: Uuid,
+    override val id: String,
+    override val folderId: String,
     override val kind: BookmarkKind = BookmarkKind.LINK,
     override val label: String,
     override val description: String?,

@@ -7,6 +7,7 @@ import androidx.room.Upsert
 import dev.subfly.yabacore.database.entities.FolderEntity
 import dev.subfly.yabacore.database.models.FolderWithBookmarkCount
 import kotlinx.coroutines.flow.Flow
+
 @Dao
 interface FolderDao {
     @Upsert
@@ -33,15 +34,6 @@ interface FolderDao {
     @Query("SELECT * FROM folders WHERE id = :id LIMIT 1")
     fun observeById(id: String): Flow<FolderEntity?>
 
-    @Query("SELECT * FROM folders ORDER BY `order` ASC")
-    fun observeAll(): Flow<List<FolderEntity>>
-
-    @Query("SELECT * FROM folders WHERE parentId IS NULL ORDER BY `order` ASC")
-    fun observeRoot(): Flow<List<FolderEntity>>
-
-    @Query("SELECT * FROM folders WHERE parentId = :parentId ORDER BY `order` ASC")
-    fun observeChildren(parentId: String): Flow<List<FolderEntity>>
-
     @Query("SELECT * FROM folders WHERE parentId = :parentId ORDER BY `order` ASC")
     suspend fun getChildren(parentId: String): List<FolderEntity>
 
@@ -55,64 +47,7 @@ interface FolderDao {
             SELECT COUNT(*) FROM bookmarks WHERE bookmarks.folderId = folders.id
         ) AS bookmarkCount
         FROM folders
-        WHERE (
-            :parentId IS NULL AND folders.parentId IS NULL
-        ) OR (
-            :parentId IS NOT NULL AND folders.parentId = :parentId
-        )
-        ORDER BY
-            CASE WHEN :sortType = 'CUSTOM' AND :sortOrder = 'ASCENDING' THEN folders.`order` END ASC,
-            CASE WHEN :sortType = 'CUSTOM' AND :sortOrder = 'DESCENDING' THEN folders.`order` END DESC,
-            CASE WHEN :sortType = 'CREATED_AT' AND :sortOrder = 'ASCENDING' THEN folders.createdAt END ASC,
-            CASE WHEN :sortType = 'CREATED_AT' AND :sortOrder = 'DESCENDING' THEN folders.createdAt END DESC,
-            CASE WHEN :sortType = 'EDITED_AT' AND :sortOrder = 'ASCENDING' THEN folders.editedAt END ASC,
-            CASE WHEN :sortType = 'EDITED_AT' AND :sortOrder = 'DESCENDING' THEN folders.editedAt END DESC,
-            CASE WHEN :sortType = 'LABEL' AND :sortOrder = 'ASCENDING' THEN folders.label END COLLATE NOCASE ASC,
-            CASE WHEN :sortType = 'LABEL' AND :sortOrder = 'DESCENDING' THEN folders.label END COLLATE NOCASE DESC
-        """
-    )
-    fun observeFoldersWithBookmarkCounts(
-        parentId: String?,
-        sortType: String,
-        sortOrder: String,
-    ): Flow<List<FolderWithBookmarkCount>>
-
-    @Query(
-        """
-        SELECT folders.*,
-        (
-            SELECT COUNT(*) FROM bookmarks WHERE bookmarks.folderId = folders.id
-        ) AS bookmarkCount
-        FROM folders
-        WHERE (
-            :parentId IS NULL AND folders.parentId IS NULL
-        ) OR (
-            :parentId IS NOT NULL AND folders.parentId = :parentId
-        )
-        ORDER BY
-            CASE WHEN :sortType = 'CUSTOM' AND :sortOrder = 'ASCENDING' THEN folders.`order` END ASC,
-            CASE WHEN :sortType = 'CUSTOM' AND :sortOrder = 'DESCENDING' THEN folders.`order` END DESC,
-            CASE WHEN :sortType = 'CREATED_AT' AND :sortOrder = 'ASCENDING' THEN folders.createdAt END ASC,
-            CASE WHEN :sortType = 'CREATED_AT' AND :sortOrder = 'DESCENDING' THEN folders.createdAt END DESC,
-            CASE WHEN :sortType = 'EDITED_AT' AND :sortOrder = 'ASCENDING' THEN folders.editedAt END ASC,
-            CASE WHEN :sortType = 'EDITED_AT' AND :sortOrder = 'DESCENDING' THEN folders.editedAt END DESC,
-            CASE WHEN :sortType = 'LABEL' AND :sortOrder = 'ASCENDING' THEN folders.label END COLLATE NOCASE ASC,
-            CASE WHEN :sortType = 'LABEL' AND :sortOrder = 'DESCENDING' THEN folders.label END COLLATE NOCASE DESC
-        """
-    )
-    suspend fun getFoldersWithBookmarkCounts(
-        parentId: String?,
-        sortType: String,
-        sortOrder: String,
-    ): List<FolderWithBookmarkCount>
-
-    @Query(
-        """
-        SELECT folders.*,
-        (
-            SELECT COUNT(*) FROM bookmarks WHERE bookmarks.folderId = folders.id
-        ) AS bookmarkCount
-        FROM folders
+        WHERE folders.isHidden = 0
         ORDER BY
             CASE WHEN :sortType = 'CUSTOM' AND :sortOrder = 'ASCENDING' THEN folders.`order` END ASC,
             CASE WHEN :sortType = 'CUSTOM' AND :sortOrder = 'DESCENDING' THEN folders.`order` END DESC,
@@ -136,6 +71,7 @@ interface FolderDao {
             SELECT COUNT(*) FROM bookmarks WHERE bookmarks.folderId = folders.id
         ) AS bookmarkCount
         FROM folders
+        WHERE folders.isHidden = 0
         ORDER BY
             CASE WHEN :sortType = 'CUSTOM' AND :sortOrder = 'ASCENDING' THEN folders.`order` END ASC,
             CASE WHEN :sortType = 'CUSTOM' AND :sortOrder = 'DESCENDING' THEN folders.`order` END DESC,
@@ -172,7 +108,7 @@ interface FolderDao {
             SELECT COUNT(*) FROM bookmarks WHERE bookmarks.folderId = folders.id
         ) AS bookmarkCount
         FROM folders
-        WHERE id NOT IN (:excludedIds)
+        WHERE id NOT IN (:excludedIds) AND folders.isHidden = 0
         ORDER BY
             CASE WHEN :sortType = 'CUSTOM' AND :sortOrder = 'ASCENDING' THEN folders.`order` END ASC,
             CASE WHEN :sortType = 'CUSTOM' AND :sortOrder = 'DESCENDING' THEN folders.`order` END DESC,
@@ -197,6 +133,7 @@ interface FolderDao {
             SELECT COUNT(*) FROM bookmarks WHERE bookmarks.folderId = folders.id
         ) AS bookmarkCount
         FROM folders
+        WHERE folders.isHidden = 0
         ORDER BY
             CASE WHEN :sortType = 'CUSTOM' AND :sortOrder = 'ASCENDING' THEN folders.`order` END ASC,
             CASE WHEN :sortType = 'CUSTOM' AND :sortOrder = 'DESCENDING' THEN folders.`order` END DESC,

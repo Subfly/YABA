@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package dev.subfly.yabacore.impex.internal
 
 import dev.subfly.yabacore.database.DatabaseProvider
@@ -9,13 +7,11 @@ import dev.subfly.yabacore.database.domain.TagDomainModel
 import dev.subfly.yabacore.database.mappers.toModel
 import dev.subfly.yabacore.impex.model.TagLink
 import dev.subfly.yabacore.model.utils.BookmarkKind
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 internal data class ExistingIds(
-    val folders: Set<Uuid>,
-    val tags: Set<Uuid>,
-    val bookmarks: Set<Uuid>,
+    val folders: Set<String>,
+    val tags: Set<String>,
+    val bookmarks: Set<String>,
     val nextRootOrder: Int,
 )
 
@@ -38,9 +34,9 @@ internal object ImportExportDataSource {
 
     suspend fun existingIds(): ExistingIds {
         val allFolders = folderDao.getAll()
-        val folderIds = allFolders.mapNotNull { it.id.toUuidOrNull() }.toSet()
-        val tagIds = tagDao.getAll().mapNotNull { it.id.toUuidOrNull() }.toSet()
-        val bookmarkIds = bookmarkDao.getAll().mapNotNull { it.id.toUuidOrNull() }.toSet()
+        val folderIds = allFolders.map { it.id }.toSet()
+        val tagIds = tagDao.getAll().map { it.id }.toSet()
+        val bookmarkIds = bookmarkDao.getAll().map { it.id }.toSet()
         val rootMaxOrder = allFolders
             .filter { it.parentId == null }
             .maxOfOrNull { it.order } ?: -1
@@ -67,7 +63,7 @@ internal object ImportExportDataSource {
 
         val tagLinks =
             bookmarks.flatMap { bookmark ->
-                tagDao.getTagsForBookmarkWithCounts(bookmark.id.toString()).map {
+                tagDao.getTagsForBookmarkWithCounts(bookmark.id).map {
                     TagLink(tagId = it.tag.toModel().id, bookmarkId = bookmark.id)
                 }
             }
@@ -80,5 +76,3 @@ internal object ImportExportDataSource {
         )
     }
 }
-
-private fun String.toUuidOrNull(): Uuid? = runCatching { Uuid.parse(this) }.getOrNull()

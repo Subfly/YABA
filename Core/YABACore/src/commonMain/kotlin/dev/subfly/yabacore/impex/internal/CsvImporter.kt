@@ -1,7 +1,6 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package dev.subfly.yabacore.impex.internal
 
+import dev.subfly.yabacore.common.IdGenerator
 import dev.subfly.yabacore.database.domain.FolderDomainModel
 import dev.subfly.yabacore.impex.model.CodableBookmark
 import dev.subfly.yabacore.impex.model.ImportExportError
@@ -9,8 +8,6 @@ import dev.subfly.yabacore.impex.model.MappableCsvHeader
 import dev.subfly.yabacore.model.utils.YabaColor
 import kotlin.time.Clock
 import kotlin.time.Instant
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 internal object CsvImporter {
     fun import(
@@ -132,7 +129,7 @@ internal object CsvImporter {
 
     private fun createFallbackFolder(now: Instant, order: Int): FolderDomainModel =
         FolderDomainModel(
-            id = Uuid.random(),
+            id = IdGenerator.newId(),
             parentId = null,
             label = "Imported $now",
             description = null,

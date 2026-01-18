@@ -1,8 +1,7 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package dev.subfly.yabacore.managers
 
 import dev.subfly.yabacore.common.CoreConstants
+import dev.subfly.yabacore.common.IdGenerator
 import dev.subfly.yabacore.database.DatabaseProvider
 import dev.subfly.yabacore.database.DeviceIdProvider
 import dev.subfly.yabacore.database.entities.BookmarkEntity
@@ -16,24 +15,26 @@ import dev.subfly.yabacore.filesystem.LinkmarkFileManager
 import dev.subfly.yabacore.filesystem.json.BookmarkMetaJson
 import dev.subfly.yabacore.model.ui.BookmarkPreviewUiModel
 import dev.subfly.yabacore.model.ui.BookmarkUiModel
-import dev.subfly.yabacore.model.ui.FolderUiModel
-import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.BookmarkSearchFilters
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
+import dev.subfly.yabacore.queue.CoreOperationQueue
 import dev.subfly.yabacore.sync.CRDTEngine
 import dev.subfly.yabacore.sync.FileTarget
 import dev.subfly.yabacore.sync.ObjectType
 import dev.subfly.yabacore.sync.VectorClock
-import io.github.vinceglb.filekit.path
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonPrimitive
 import kotlin.time.Clock
 import kotlin.time.Instant
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
+
+private data class SavedPreviewAssets(
+    val localImageRelativePath: String?,
+    val localIconRelativePath: String?,
+)
 
 /**
  * Filesystem-first bookmark manager.
@@ -46,8 +47,6 @@ import kotlin.uuid.Uuid
 object AllBookmarksManager {
     private val bookmarkDao get() = DatabaseProvider.bookmarkDao
     private val tagBookmarkDao get() = DatabaseProvider.tagBookmarkDao
-    private val folderDao get() = DatabaseProvider.folderDao
-    private val tagDao get() = DatabaseProvider.tagDao
     private val entityFileManager get() = EntityFileManager
     private val bookmarkFileManager get() = BookmarkFileManager
     private val crdtEngine get() = CRDTEngine
@@ -68,7 +67,7 @@ object AllBookmarksManager {
                 sortType = sortType.name,
                 sortOrder = sortOrder.name,
             )
-            .map { rows -> rows.mapNotNull { it.toBookmarkPreviewUiModel() } }
+            .map { rows -> rows.map { it.toBookmarkPreviewUiModel() } }
     }
 
     fun searchBookmarksFlow(
@@ -90,28 +89,49 @@ object AllBookmarksManager {
                 sortType = sortType.name,
                 sortOrder = sortOrder.name,
             )
-            .map { rows -> rows.mapNotNull { it.toBookmarkPreviewUiModel() } }
+            .map { rows -> rows.map { it.toBookmarkPreviewUiModel() } }
     }
 
-    suspend fun getBookmarkDetail(bookmarkId: Uuid): BookmarkUiModel? =
-        bookmarkDao.getBookmarkWithRelationsById(bookmarkId.toString())?.toBookmarkPreviewUiModel()
+    // ==================== Write Operations (Enqueued) ====================
 
-    // ==================== Write Operations (Filesystem-First) ====================
-
-    suspend fun createBookmarkMetadata(
-        id: Uuid = Uuid.random(),
-        folderId: Uuid,
+    /**
+     * Enqueues bookmark creation.
+     */
+    fun createBookmarkMetadata(
+        id: String = IdGenerator.newId(),
+        folderId: String,
         kind: BookmarkKind,
         label: String,
         description: String? = null,
         isPrivate: Boolean = false,
         isPinned: Boolean = false,
-        tagIds: List<Uuid> = emptyList(),
+        tagIds: List<String> = emptyList(),
         previewImageBytes: ByteArray? = null,
         previewImageExtension: String? = "jpeg",
         previewIconBytes: ByteArray? = null,
-    ): BookmarkPreviewUiModel {
+    ) {
         require(label.isNotBlank()) { "Bookmark label must not be blank." }
+        CoreOperationQueue.queue("CreateBookmark:$id") {
+            createBookmarkMetadataInternal(
+                id, folderId, kind, label, description, isPrivate, isPinned,
+                tagIds, previewImageBytes, previewImageExtension, previewIconBytes
+            )
+        }
+    }
+
+    private suspend fun createBookmarkMetadataInternal(
+        id: String,
+        folderId: String,
+        kind: BookmarkKind,
+        label: String,
+        description: String?,
+        isPrivate: Boolean,
+        isPinned: Boolean,
+        tagIds: List<String>,
+        previewImageBytes: ByteArray?,
+        previewImageExtension: String?,
+        previewIconBytes: ByteArray?,
+    ) {
         val now = clock.now()
         val deviceId = DeviceIdProvider.get()
         val initialClock = VectorClock.of(deviceId, 1)
@@ -126,8 +146,8 @@ object AllBookmarksManager {
         )
 
         val bookmarkJson = BookmarkMetaJson(
-            id = id.toString(),
-            folderId = folderId.toString(),
+            id = id,
+            folderId = folderId,
             kind = kind.code,
             label = label,
             description = description,
@@ -138,7 +158,7 @@ object AllBookmarksManager {
             isPinned = isPinned,
             localImagePath = preview.localImageRelativePath,
             localIconPath = preview.localIconRelativePath,
-            tagIds = tagIds.map { it.toString() },
+            tagIds = tagIds,
             clock = initialClock.toMap(),
         )
 
@@ -156,43 +176,52 @@ object AllBookmarksManager {
         tagIds.forEach { tagId ->
             tagBookmarkDao.insert(
                 TagBookmarkCrossRef(
-                    tagId = tagId.toString(),
-                    bookmarkId = id.toString(),
+                    tagId = tagId,
+                    bookmarkId = id,
                 )
             )
         }
-
-        return getBookmarkDetail(id) as? BookmarkPreviewUiModel
-            ?: BookmarkPreviewUiModel(
-                id = id,
-                folderId = folderId,
-                kind = kind,
-                label = label,
-                description = description,
-                createdAt = now,
-                editedAt = now,
-                isPrivate = isPrivate,
-                isPinned = isPinned,
-                parentFolder = null,
-                tags = emptyList(),
-            )
     }
 
-    suspend fun updateBookmarkMetadata(
-        bookmarkId: Uuid,
-        folderId: Uuid,
+    /**
+     * Enqueues bookmark update.
+     */
+    fun updateBookmarkMetadata(
+        bookmarkId: String,
+        folderId: String,
         kind: BookmarkKind,
         label: String,
         description: String? = null,
         isPrivate: Boolean = false,
         isPinned: Boolean = false,
-        tagIds: List<Uuid>? = null,
+        tagIds: List<String>? = null,
         previewImageBytes: ByteArray? = null,
         previewImageExtension: String? = null,
         previewIconBytes: ByteArray? = null,
-    ): BookmarkPreviewUiModel? {
+    ) {
         require(label.isNotBlank()) { "Bookmark label must not be blank." }
-        val existingJson = entityFileManager.readBookmarkMeta(bookmarkId) ?: return null
+        CoreOperationQueue.queue("UpdateBookmark:$bookmarkId") {
+            updateBookmarkMetadataInternal(
+                bookmarkId, folderId, kind, label, description, isPrivate, isPinned,
+                tagIds, previewImageBytes, previewImageExtension, previewIconBytes
+            )
+        }
+    }
+
+    private suspend fun updateBookmarkMetadataInternal(
+        bookmarkId: String,
+        folderId: String,
+        kind: BookmarkKind,
+        label: String,
+        description: String?,
+        isPrivate: Boolean,
+        isPinned: Boolean,
+        tagIds: List<String>?,
+        previewImageBytes: ByteArray?,
+        previewImageExtension: String?,
+        previewIconBytes: ByteArray?,
+    ) {
+        val existingJson = entityFileManager.readBookmarkMeta(bookmarkId) ?: return
         val existingClock = VectorClock.fromMap(existingJson.clock)
         val deviceId = DeviceIdProvider.get()
         val now = clock.now()
@@ -208,8 +237,8 @@ object AllBookmarksManager {
 
         // Detect changes
         val changes = mutableMapOf<String, kotlinx.serialization.json.JsonElement>()
-        if (existingJson.folderId != folderId.toString()) {
-            changes["folderId"] = JsonPrimitive(folderId.toString())
+        if (existingJson.folderId != folderId) {
+            changes["folderId"] = JsonPrimitive(folderId)
         }
         if (existingJson.label != label) {
             changes["label"] = JsonPrimitive(label)
@@ -224,17 +253,18 @@ object AllBookmarksManager {
             changes["isPinned"] = JsonPrimitive(isPinned)
         }
         if (preview.localImageRelativePath != null && existingJson.localImagePath != preview.localImageRelativePath) {
-            changes["localImagePath"] = CRDTEngine.nullableStringValue(preview.localImageRelativePath)
+            changes["localImagePath"] =
+                CRDTEngine.nullableStringValue(preview.localImageRelativePath)
         }
         if (preview.localIconRelativePath != null && existingJson.localIconPath != preview.localIconRelativePath) {
             changes["localIconPath"] = CRDTEngine.nullableStringValue(preview.localIconRelativePath)
         }
 
         val newClock = existingClock.increment(deviceId)
-        val resolvedTagIds = tagIds?.map { it.toString() } ?: existingJson.tagIds
+        val resolvedTagIds = tagIds ?: existingJson.tagIds
 
         val updatedJson = existingJson.copy(
-            folderId = folderId.toString(),
+            folderId = folderId,
             kind = kind.code,
             label = label,
             description = description,
@@ -266,40 +296,53 @@ object AllBookmarksManager {
 
         // 4. Update tag-bookmark relationships if tags changed
         if (tagIds != null) {
-            val currentTagIds = existingJson.tagIds.mapNotNull { runCatching { Uuid.parse(it) }.getOrNull() }.toSet()
+            val currentTagIds = existingJson.tagIds.toSet()
             val newTagIds = tagIds.toSet()
 
             // Remove old tags
             (currentTagIds - newTagIds).forEach { tagId ->
-                tagBookmarkDao.delete(bookmarkId.toString(), tagId.toString())
+                tagBookmarkDao.delete(bookmarkId, tagId)
             }
 
             // Add new tags
             (newTagIds - currentTagIds).forEach { tagId ->
                 tagBookmarkDao.insert(
                     TagBookmarkCrossRef(
-                        tagId = tagId.toString(),
-                        bookmarkId = bookmarkId.toString(),
+                        tagId = tagId,
+                        bookmarkId = bookmarkId,
                     )
                 )
             }
         }
-
-        return getBookmarkDetail(bookmarkId) as? BookmarkPreviewUiModel
     }
 
-    suspend fun moveBookmarksToFolder(bookmarks: List<BookmarkUiModel>, targetFolder: FolderUiModel) {
-        if (bookmarks.isEmpty()) return
+    /**
+     * Enqueues move bookmarks operation.
+     */
+    fun moveBookmarksToFolder(
+        bookmarkIds: List<String>,
+        targetFolderId: String,
+    ) {
+        if (bookmarkIds.isEmpty()) return
+        CoreOperationQueue.queue("MoveBookmarks:${bookmarkIds.size}") {
+            moveBookmarksToFolderInternal(bookmarkIds, targetFolderId)
+        }
+    }
+
+    private suspend fun moveBookmarksToFolderInternal(
+        bookmarkIds: List<String>,
+        targetFolderId: String,
+    ) {
         val deviceId = DeviceIdProvider.get()
         val now = clock.now()
 
-        bookmarks.forEach { bookmark ->
-            val existingJson = entityFileManager.readBookmarkMeta(bookmark.id) ?: return@forEach
+        bookmarkIds.forEach { bookmarkId ->
+            val existingJson = entityFileManager.readBookmarkMeta(bookmarkId) ?: return@forEach
             val existingClock = VectorClock.fromMap(existingJson.clock)
             val newClock = existingClock.increment(deviceId)
 
             val updatedJson = existingJson.copy(
-                folderId = targetFolder.id.toString(),
+                folderId = targetFolderId,
                 editedAt = now.toEpochMilliseconds(),
                 clock = newClock.toMap(),
             )
@@ -309,11 +352,11 @@ object AllBookmarksManager {
 
             // 2. Record CRDT event
             crdtEngine.recordFieldChange(
-                objectId = bookmark.id,
+                objectId = bookmarkId,
                 objectType = ObjectType.BOOKMARK,
                 file = FileTarget.META_JSON,
                 field = "folderId",
-                value = JsonPrimitive(targetFolder.id.toString()),
+                value = JsonPrimitive(targetFolderId),
                 currentClock = existingClock,
             )
 
@@ -322,21 +365,31 @@ object AllBookmarksManager {
         }
     }
 
-    suspend fun deleteBookmarks(bookmarks: List<BookmarkUiModel>) {
-        if (bookmarks.isEmpty()) return
+    /**
+     * Enqueues bookmark deletions.
+     */
+    fun deleteBookmarks(bookmarkIds: List<String>) {
+        if (bookmarkIds.isEmpty()) return
+        CoreOperationQueue.queue("DeleteBookmarks:${bookmarkIds.size}") {
+            deleteBookmarksInternal(bookmarkIds)
+        }
+    }
+
+    internal suspend fun deleteBookmarksInternal(bookmarkIds: List<String>) {
         val deviceId = DeviceIdProvider.get()
 
-        bookmarks.forEach { bookmark ->
-            val existingJson = entityFileManager.readBookmarkMeta(bookmark.id)
-            val existingClock = existingJson?.let { VectorClock.fromMap(it.clock) } ?: VectorClock.empty()
+        bookmarkIds.forEach { bookmarkId ->
+            val existingJson = entityFileManager.readBookmarkMeta(bookmarkId)
+            val existingClock =
+                existingJson?.let { VectorClock.fromMap(it.clock) } ?: VectorClock.empty()
             val deletionClock = existingClock.increment(deviceId)
 
             // 1. Write deletion tombstone to filesystem
-            entityFileManager.deleteBookmark(bookmark.id, deletionClock)
+            entityFileManager.deleteBookmark(bookmarkId, deletionClock)
 
             // 2. Record deletion event
             crdtEngine.recordFieldChange(
-                objectId = bookmark.id,
+                objectId = bookmarkId,
                 objectType = ObjectType.BOOKMARK,
                 file = FileTarget.META_JSON,
                 field = "_deleted",
@@ -345,18 +398,27 @@ object AllBookmarksManager {
             )
 
             // 3. Remove from SQLite cache
-            bookmarkDao.deleteByIds(listOf(bookmark.id.toString()))
+            bookmarkDao.deleteByIds(listOf(bookmarkId))
         }
     }
 
-    suspend fun addTagToBookmark(tag: TagUiModel, bookmark: BookmarkUiModel) {
-        val existingJson = entityFileManager.readBookmarkMeta(bookmark.id) ?: return
+    /**
+     * Enqueues adding a tag to a bookmark.
+     */
+    fun addTagToBookmark(tagId: String, bookmarkId: String) {
+        CoreOperationQueue.queue("AddTag:$tagId:$bookmarkId") {
+            addTagToBookmarkInternal(tagId, bookmarkId)
+        }
+    }
+
+    private suspend fun addTagToBookmarkInternal(tagId: String, bookmarkId: String) {
+        val existingJson = entityFileManager.readBookmarkMeta(bookmarkId) ?: return
         val existingClock = VectorClock.fromMap(existingJson.clock)
         val deviceId = DeviceIdProvider.get()
         val newClock = existingClock.increment(deviceId)
         val now = clock.now()
 
-        val newTagIds = (existingJson.tagIds + tag.id.toString()).distinct()
+        val newTagIds = (existingJson.tagIds + tagId).distinct()
 
         val updatedJson = existingJson.copy(
             tagIds = newTagIds,
@@ -364,27 +426,46 @@ object AllBookmarksManager {
             clock = newClock.toMap(),
         )
 
-        // 1. Write to filesystem
+        // 1. Write to filesystem (authoritative)
         entityFileManager.writeBookmarkMeta(updatedJson)
 
-        // 2. Update SQLite cache
+        // 2. Record CRDT event for tagIds change
+        crdtEngine.recordFieldChange(
+            objectId = bookmarkId,
+            objectType = ObjectType.BOOKMARK,
+            file = FileTarget.META_JSON,
+            field = "tagIds",
+            value = JsonArray(newTagIds.map { JsonPrimitive(it) }),
+            currentClock = existingClock,
+        )
+
+        // 3. Update SQLite cache
         tagBookmarkDao.insert(
             TagBookmarkCrossRef(
-                tagId = tag.id.toString(),
-                bookmarkId = bookmark.id.toString(),
+                tagId = tagId,
+                bookmarkId = bookmarkId,
             )
         )
         bookmarkDao.upsert(updatedJson.toEntity())
     }
 
-    suspend fun removeTagFromBookmark(tag: TagUiModel, bookmark: BookmarkUiModel) {
-        val existingJson = entityFileManager.readBookmarkMeta(bookmark.id) ?: return
+    /**
+     * Enqueues removing a tag from a bookmark.
+     */
+    fun removeTagFromBookmark(tagId: String, bookmarkId: String) {
+        CoreOperationQueue.queue("RemoveTag:$tagId:$bookmarkId") {
+            removeTagFromBookmarkInternal(tagId, bookmarkId)
+        }
+    }
+
+    private suspend fun removeTagFromBookmarkInternal(tagId: String, bookmarkId: String) {
+        val existingJson = entityFileManager.readBookmarkMeta(bookmarkId) ?: return
         val existingClock = VectorClock.fromMap(existingJson.clock)
         val deviceId = DeviceIdProvider.get()
         val newClock = existingClock.increment(deviceId)
         val now = clock.now()
 
-        val newTagIds = existingJson.tagIds.filterNot { it == tag.id.toString() }
+        val newTagIds = existingJson.tagIds.filterNot { it == tagId }
 
         val updatedJson = existingJson.copy(
             tagIds = newTagIds,
@@ -392,31 +473,41 @@ object AllBookmarksManager {
             clock = newClock.toMap(),
         )
 
-        // 1. Write to filesystem
+        // 1. Write to filesystem (authoritative)
         entityFileManager.writeBookmarkMeta(updatedJson)
 
-        // 2. Update SQLite cache
-        tagBookmarkDao.delete(bookmark.id.toString(), tag.id.toString())
+        // 2. Record CRDT event for tagIds change
+        crdtEngine.recordFieldChange(
+            objectId = bookmarkId,
+            objectType = ObjectType.BOOKMARK,
+            file = FileTarget.META_JSON,
+            field = "tagIds",
+            value = JsonArray(newTagIds.map { JsonPrimitive(it) }),
+            currentClock = existingClock,
+        )
+
+        // 3. Update SQLite cache
+        tagBookmarkDao.delete(bookmarkId, tagId)
         bookmarkDao.upsert(updatedJson.toEntity())
     }
 
     // ==================== Private Helpers ====================
 
-    private suspend fun BookmarkWithRelations.toBookmarkPreviewUiModel(): BookmarkPreviewUiModel? {
+    private suspend fun BookmarkWithRelations.toBookmarkPreviewUiModel(): BookmarkPreviewUiModel {
         val folderUi = folder.toModel().toUiModel()
         val tagsUi = tags.sortedBy { it.order }.map { it.toModel().toUiModel() }
 
         val localImageAbsolutePath = bookmark.localImagePath?.let { relativePath ->
-            bookmarkFileManager.resolve(relativePath).path
+            bookmarkFileManager.getAbsolutePath(relativePath)
         }
 
         val localIconAbsolutePath = bookmark.localIconPath?.let { relativePath ->
-            bookmarkFileManager.resolve(relativePath).path
+            bookmarkFileManager.getAbsolutePath(relativePath)
         }
 
         return BookmarkPreviewUiModel(
-            id = Uuid.parse(bookmark.id),
-            folderId = Uuid.parse(bookmark.folderId),
+            id = bookmark.id,
+            folderId = bookmark.folderId,
             kind = bookmark.kind,
             label = bookmark.label,
             description = bookmark.description,
@@ -432,13 +523,8 @@ object AllBookmarksManager {
         )
     }
 
-    private data class SavedPreviewAssets(
-        val localImageRelativePath: String?,
-        val localIconRelativePath: String?,
-    )
-
     private suspend fun savePreviewAssets(
-        bookmarkId: Uuid,
+        bookmarkId: String,
         kind: BookmarkKind,
         imageBytes: ByteArray?,
         imageExtension: String?,
@@ -447,12 +533,13 @@ object AllBookmarksManager {
         val imageRelativePath = imageBytes?.let { bytes ->
             when (kind) {
                 BookmarkKind.LINK -> {
-                    val ext = sanitizeExtension(imageExtension, fallback = "jpeg")
+                    val ext = sanitizeExtension(imageExtension)
                     LinkmarkFileManager.saveLinkImageBytes(bookmarkId, bytes, ext)
                     CoreConstants.FileSystem.Linkmark.linkImagePath(bookmarkId, ext)
                 }
+
                 else -> {
-                    val ext = sanitizeExtension(imageExtension, fallback = "jpeg")
+                    val ext = sanitizeExtension(imageExtension)
                     val kindDir = kind.name.lowercase()
                     val relativePath = CoreConstants.FileSystem.join(
                         CoreConstants.FileSystem.bookmarkFolderPath(bookmarkId, kindDir),
@@ -470,6 +557,7 @@ object AllBookmarksManager {
                     LinkmarkFileManager.saveDomainIconBytes(bookmarkId, bytes)
                     CoreConstants.FileSystem.Linkmark.domainIconPath(bookmarkId, "png")
                 }
+
                 else -> {
                     val ext = "png"
                     val kindDir = kind.name.lowercase()
@@ -489,11 +577,11 @@ object AllBookmarksManager {
         )
     }
 
-    private fun sanitizeExtension(rawExtension: String?, fallback: String): String =
-        rawExtension.orEmpty().lowercase().removePrefix(".").ifBlank { fallback }
+    private fun sanitizeExtension(rawExtension: String?): String =
+        rawExtension.orEmpty().lowercase().removePrefix(".").ifBlank { "jpeg" }
 
     private suspend fun recordBookmarkCreationEvents(
-        bookmarkId: Uuid,
+        bookmarkId: String,
         json: BookmarkMetaJson,
     ) {
         val changes = mapOf(
@@ -527,13 +615,13 @@ object AllBookmarksManager {
     )
 
     private fun BookmarkSearchFilters.toQueryParams(): BookmarkQueryParams {
-        val folderSet = folderIds?.takeIf { it.isNotEmpty() }
-        val tagSet = tagIds?.takeIf { it.isNotEmpty() }
+        val folders = folderIds?.takeIf { it.isNotEmpty() }.orEmpty().toList()
+        val tags = tagIds?.takeIf { it.isNotEmpty() }.orEmpty().toList()
         return BookmarkQueryParams(
-            folderIds = folderSet?.map { it.toString() } ?: listOf(Uuid.NIL.toString()),
-            applyFolderFilter = folderSet != null,
-            tagIds = tagSet?.map { it.toString() } ?: listOf(Uuid.NIL.toString()),
-            applyTagFilter = tagSet != null,
+            folderIds = folders,
+            applyFolderFilter = folders.isNotEmpty(),
+            tagIds = tags,
+            applyTagFilter = tags.isNotEmpty(),
         )
     }
 

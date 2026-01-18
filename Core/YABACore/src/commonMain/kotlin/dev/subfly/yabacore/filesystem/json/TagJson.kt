@@ -19,4 +19,6 @@ data class TagMetaJson(
     val editedAt: Long,
     /** Vector clock: Map of deviceId to sequence number */
     val clock: Map<String, Long>,
+    /** True if this is a hidden system tag. */
+    val isHidden: Boolean = false,
 )

@@ -1,16 +1,14 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package dev.subfly.yabacore.managers
 
+import dev.subfly.yabacore.common.CoreConstants
 import dev.subfly.yabacore.database.DatabaseProvider
 import dev.subfly.yabacore.database.DeviceIdProvider
 import dev.subfly.yabacore.database.events.EventsDatabaseProvider
 import dev.subfly.yabacore.filesystem.EntityFileManager
 import dev.subfly.yabacore.sync.VectorClock
-import kotlin.uuid.ExperimentalUuidApi
 
 /**
- * Global data operations (e.g., wipe all data, database initialization).
+ * Global data operations (e.g., wipe all data).
  *
  * Uses filesystem-first approach for data management.
  */
@@ -24,44 +22,21 @@ object GlobalDataManager {
     private val entityFileManager get() = EntityFileManager
 
     /**
-     * Ensures the database is ready by performing a simple query.
-     * This forces Room to create the database file and tables if they don't exist.
-     *
-     * Call this at app startup before any user-initiated database operations.
-     */
-    suspend fun ensureDatabaseReady() {
-        // Simple queries to force database initialization
-        folderDao.getAll()
-        tagDao.getAll()
-        bookmarkDao.getAll()
-    }
-
-    /**
      * Performs startup self-healing:
      * - Removes any tombstones for system folders/tags
-     * - Ensures database is properly initialized
      *
      * Call this at app startup.
      */
     suspend fun performStartupSelfHealing() {
-        // 1. Ensure database is ready
-        ensureDatabaseReady()
-
-        // 2. Self-heal system folder tombstones
-        val uncategorizedId = kotlin.uuid.Uuid.parse(
-            dev.subfly.yabacore.common.CoreConstants.Folder.Uncategorized.ID
-        )
+        // Self-heal system folder tombstones
+        val uncategorizedId = CoreConstants.Folder.Uncategorized.ID
         if (entityFileManager.isFolderDeleted(uncategorizedId)) {
             entityFileManager.removeFolderTombstone(uncategorizedId)
         }
 
-        // 3. Self-heal system tag tombstones
-        val pinnedId = kotlin.uuid.Uuid.parse(
-            dev.subfly.yabacore.common.CoreConstants.Tag.Pinned.ID
-        )
-        val privateId = kotlin.uuid.Uuid.parse(
-            dev.subfly.yabacore.common.CoreConstants.Tag.Private.ID
-        )
+        // Self-heal system tag tombstones
+        val pinnedId = CoreConstants.Tag.Pinned.ID
+        val privateId = CoreConstants.Tag.Private.ID
         if (entityFileManager.isTagDeleted(pinnedId)) {
             entityFileManager.removeTagTombstone(pinnedId)
         }

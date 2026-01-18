@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package dev.subfly.yabacore.impex.internal
 
 import dev.subfly.yabacore.database.domain.FolderDomainModel
@@ -8,8 +6,6 @@ import dev.subfly.yabacore.impex.model.CodableBookmark
 import dev.subfly.yabacore.impex.model.ImportExportError
 import dev.subfly.yabacore.model.utils.YabaColor
 import kotlin.time.Clock
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 internal object HtmlImporter {
     fun import(
@@ -32,7 +28,7 @@ internal object HtmlImporter {
 
         fun addBookmarks(
             nodes: List<HtmlParser.BookmarkNode>,
-            folderId: Uuid,
+            folderId: String,
         ) {
             nodes.forEach { node ->
                 val bookmark = CodableBookmark(
@@ -62,7 +58,7 @@ internal object HtmlImporter {
 
         fun createFolderTree(
             node: HtmlParser.FolderNode,
-            parentId: Uuid?,
+            parentId: String?,
         ) {
             val folderId = folderIdResolver.resolve(null)
             val folder = FolderDomainModel(

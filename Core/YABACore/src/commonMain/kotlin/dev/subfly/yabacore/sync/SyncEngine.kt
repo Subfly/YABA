@@ -1,20 +1,18 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package dev.subfly.yabacore.sync
 
 import dev.subfly.yabacore.database.CacheRebuilder
+import dev.subfly.yabacore.database.DatabaseProvider
 import dev.subfly.yabacore.database.events.EventsDatabaseProvider
 import dev.subfly.yabacore.database.events.toEvents
 import dev.subfly.yabacore.filesystem.EntityFileManager
 import dev.subfly.yabacore.filesystem.FileSystemStateManager
 import dev.subfly.yabacore.filesystem.SyncState
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.longOrNull
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 /**
  * Sync modes for the SyncEngine.
@@ -70,7 +68,11 @@ object SyncEngine {
      * 1. Read current JSON from filesystem
      * 2. Merge events using CRDT rules
      * 3. Write merged JSON to filesystem
-     * 4. Update SQLite cache
+     * 4. Update SQLite cache (for cross-refs when tagIds change)
+     *
+     * Events are NOT deleted immediately after merge. Instead, LogCompaction runs
+     * after the merge to clean up events using "snapshot dominance" and "tombstone
+     * dominance" rules. This allows events to remain available for peer sync.
      */
     suspend fun incrementalMerge() {
         FileSystemStateManager.setSyncState(SyncState.SYNCING)
@@ -81,8 +83,11 @@ object SyncEngine {
                 mergeObjectEvents(objectId)
             }
 
-            // Compact logs after merge
-            LogCompaction.compactIfNeeded()
+            // Run compaction after merge to clean up events that are now
+            // older than the filesystem clock (snapshot dominance) or
+            // belong to deleted entities (tombstone dominance).
+            // This runs unconditionally to ensure events are cleaned up.
+            LogCompaction.compact()
 
             FileSystemStateManager.setSyncState(SyncState.IN_SYNC)
         } catch (e: Exception) {
@@ -93,6 +98,9 @@ object SyncEngine {
 
     /**
      * Receives events from a remote peer and applies them.
+     *
+     * Events are stored, merged into the filesystem, and then compaction
+     * runs to clean up events that are now covered by the filesystem clock.
      */
     suspend fun receiveRemoteEvents(events: List<CRDTEvent>) {
         if (events.isEmpty()) return
@@ -105,6 +113,9 @@ object SyncEngine {
         objectIds.forEach { objectId ->
             mergeObjectEvents(objectId)
         }
+
+        // Run compaction to clean up events that are now older than filesystem
+        LogCompaction.compact()
     }
 
     /**
@@ -147,29 +158,70 @@ object SyncEngine {
         if (events.isEmpty()) return
 
         val objectType = events.first().objectType
-        val uuid = runCatching { Uuid.parse(objectId) }.getOrNull() ?: return
 
-        // Check if entity is deleted
-        val isDeleted = when (objectType) {
-            ObjectType.FOLDER -> entityFileManager.isFolderDeleted(uuid)
-            ObjectType.TAG -> entityFileManager.isTagDeleted(uuid)
-            ObjectType.BOOKMARK -> entityFileManager.isBookmarkDeleted(uuid)
+        // Check if entity is already deleted on filesystem
+        val isDeletedOnFilesystem = when (objectType) {
+            ObjectType.FOLDER -> entityFileManager.isFolderDeleted(objectId)
+            ObjectType.TAG -> entityFileManager.isTagDeleted(objectId)
+            ObjectType.BOOKMARK -> entityFileManager.isBookmarkDeleted(objectId)
         }
 
-        if (isDeleted) {
-            // Entity is deleted, no need to merge, just clear events
+        if (isDeletedOnFilesystem) {
+            // Entity is already deleted on filesystem, just clear events
             eventsDao.deleteEventsForObject(objectId)
             return
         }
 
+        // Check if events contain a winning _deleted=true event
+        // This handles the case where deletion arrives via events before filesystem sync
+        val metaEvents = events.filter { it.file == FileTarget.META_JSON }
+        val deletedEvents = metaEvents.filter { it.field == "_deleted" }
+        if (deletedEvents.isNotEmpty()) {
+            val resolved = crdtEngine.resolveFieldFromEvents(deletedEvents)
+            val isDeleted = resolved.value.jsonPrimitive.booleanOrNull == true
+            if (isDeleted) {
+                // Deletion event wins - apply deletion to filesystem and index
+                applyDeletionFromEvent(objectType, objectId, resolved.winningClock)
+                eventsDao.deleteEventsForObject(objectId)
+                return
+            }
+        }
+
         when (objectType) {
-            ObjectType.FOLDER -> mergeFolderEvents(uuid, events)
-            ObjectType.TAG -> mergeTagEvents(uuid, events)
-            ObjectType.BOOKMARK -> mergeBookmarkEvents(uuid, events)
+            ObjectType.FOLDER -> mergeFolderEvents(objectId, events)
+            ObjectType.TAG -> mergeTagEvents(objectId, events)
+            ObjectType.BOOKMARK -> mergeBookmarkEvents(objectId, events)
         }
     }
 
-    private suspend fun mergeFolderEvents(folderId: Uuid, events: List<CRDTEvent>) {
+    /**
+     * Applies a deletion that was discovered via CRDT event resolution.
+     * This writes the tombstone and cleans up the filesystem and index.
+     */
+    private suspend fun applyDeletionFromEvent(
+        objectType: ObjectType,
+        entityId: String,
+        deletionClock: VectorClock,
+    ) {
+        when (objectType) {
+            ObjectType.FOLDER -> {
+                entityFileManager.deleteFolder(entityId, deletionClock)
+                DatabaseProvider.folderDao.deleteById(entityId)
+            }
+            ObjectType.TAG -> {
+                entityFileManager.deleteTag(entityId, deletionClock)
+                DatabaseProvider.tagDao.deleteById(entityId)
+            }
+            ObjectType.BOOKMARK -> {
+                entityFileManager.deleteBookmark(entityId, deletionClock)
+                DatabaseProvider.tagBookmarkDao.deleteForBookmark(entityId)
+                DatabaseProvider.linkBookmarkDao.deleteById(entityId)
+                DatabaseProvider.bookmarkDao.deleteByIds(listOf(entityId))
+            }
+        }
+    }
+
+    private suspend fun mergeFolderEvents(folderId: String, events: List<CRDTEvent>) {
         val existingJson = entityFileManager.readFolderMeta(folderId)
         val existingClock = existingJson?.let { VectorClock.fromMap(it.clock) } ?: VectorClock.empty()
 
@@ -199,11 +251,12 @@ object SyncEngine {
             entityFileManager.writeFolderMeta(updatedJson)
         }
 
-        // Clear processed events
-        eventsDao.deleteEventsForObject(folderId.toString())
+        // Events are NOT deleted immediately - LogCompaction will clean them up
+        // using "snapshot dominance" rule once the filesystem clock is newer.
+        // This allows events to remain available for peer sync until compaction.
     }
 
-    private suspend fun mergeTagEvents(tagId: Uuid, events: List<CRDTEvent>) {
+    private suspend fun mergeTagEvents(tagId: String, events: List<CRDTEvent>) {
         val existingJson = entityFileManager.readTagMeta(tagId)
         val existingClock = existingJson?.let { VectorClock.fromMap(it.clock) } ?: VectorClock.empty()
 
@@ -229,10 +282,11 @@ object SyncEngine {
             entityFileManager.writeTagMeta(updatedJson)
         }
 
-        eventsDao.deleteEventsForObject(tagId.toString())
+        // Events are NOT deleted immediately - LogCompaction will clean them up
+        // using "snapshot dominance" rule once the filesystem clock is newer.
     }
 
-    private suspend fun mergeBookmarkEvents(bookmarkId: Uuid, events: List<CRDTEvent>) {
+    private suspend fun mergeBookmarkEvents(bookmarkId: String, events: List<CRDTEvent>) {
         val existingMeta = entityFileManager.readBookmarkMeta(bookmarkId)
         val existingLink = entityFileManager.readLinkJson(bookmarkId)
         val existingMetaClock = existingMeta?.let { VectorClock.fromMap(it.clock) } ?: VectorClock.empty()
@@ -261,6 +315,14 @@ object SyncEngine {
         }
 
         if (existingMeta != null && metaFields.isNotEmpty()) {
+            // Parse tagIds from JsonArray if present
+            val resolvedTagIds = metaFields["tagIds"]?.let { tagIdsElement ->
+                when (tagIdsElement) {
+                    is JsonArray -> tagIdsElement.mapNotNull { it.jsonPrimitive.contentOrNull }
+                    else -> null
+                }
+            } ?: existingMeta.tagIds
+
             val updatedMeta = existingMeta.copy(
                 folderId = metaFields["folderId"]?.jsonPrimitive?.contentOrNull ?: existingMeta.folderId,
                 label = metaFields["label"]?.jsonPrimitive?.contentOrNull ?: existingMeta.label,
@@ -271,9 +333,15 @@ object SyncEngine {
                 isPinned = metaFields["isPinned"]?.jsonPrimitive?.booleanOrNull ?: existingMeta.isPinned,
                 localImagePath = metaFields["localImagePath"]?.jsonPrimitive?.contentOrNull ?: existingMeta.localImagePath,
                 localIconPath = metaFields["localIconPath"]?.jsonPrimitive?.contentOrNull ?: existingMeta.localIconPath,
+                tagIds = resolvedTagIds,
                 clock = mergedMetaClock.toMap(),
             )
             entityFileManager.writeBookmarkMeta(updatedMeta)
+
+            // Update SQLite tag-bookmark cross-ref if tagIds changed
+            if (metaFields.containsKey("tagIds")) {
+                updateTagBookmarkCrossRefs(bookmarkId, resolvedTagIds)
+            }
         }
 
         if (existingLink != null && linkFields.isNotEmpty()) {
@@ -287,6 +355,29 @@ object SyncEngine {
             entityFileManager.writeLinkJson(bookmarkId, updatedLink)
         }
 
-        eventsDao.deleteEventsForObject(bookmarkId.toString())
+        // Events are NOT deleted immediately - LogCompaction will clean them up
+        // using "snapshot dominance" rule once the filesystem clock is newer.
+    }
+
+    /**
+     * Updates SQLite tag-bookmark cross-refs to match the given tagIds list.
+     * This ensures the index stays in sync after merging tagIds from CRDT events.
+     */
+    private suspend fun updateTagBookmarkCrossRefs(bookmarkId: String, tagIds: List<String>) {
+        val tagBookmarkDao = DatabaseProvider.tagBookmarkDao
+
+        // Remove all existing cross-refs for this bookmark
+        tagBookmarkDao.deleteForBookmark(bookmarkId)
+
+        // Insert new cross-refs for each tag
+        val crossRefs = tagIds.map { tagId ->
+            dev.subfly.yabacore.database.entities.TagBookmarkCrossRef(
+                tagId = tagId,
+                bookmarkId = bookmarkId,
+            )
+        }
+        if (crossRefs.isNotEmpty()) {
+            tagBookmarkDao.insertAll(crossRefs)
+        }
     }
 }

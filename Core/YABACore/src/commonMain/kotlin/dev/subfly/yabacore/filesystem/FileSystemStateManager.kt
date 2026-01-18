@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package dev.subfly.yabacore.filesystem
 
 import dev.subfly.yabacore.database.DatabaseProvider
@@ -9,8 +7,6 @@ import dev.subfly.yabacore.filesystem.json.TagMetaJson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 /**
  * User-visible sync states.
@@ -43,19 +39,19 @@ data class FileSystemScanResult(
 )
 
 data class ScannedFolder(
-    val id: Uuid,
+    val id: String,
     val isDeleted: Boolean,
     val meta: FolderMetaJson?,
 )
 
 data class ScannedTag(
-    val id: Uuid,
+    val id: String,
     val isDeleted: Boolean,
     val meta: TagMetaJson?,
 )
 
 data class ScannedBookmark(
-    val id: Uuid,
+    val id: String,
     val isDeleted: Boolean,
     val meta: BookmarkMetaJson?,
     val hasLinkJson: Boolean,
@@ -77,7 +73,7 @@ data class DriftResult(
 )
 
 data class DriftEntity(
-    val id: Uuid,
+    val id: String,
     val type: EntityType,
 )
 
@@ -200,29 +196,25 @@ object FileSystemStateManager {
         val dataConflicts = mutableListOf<DriftEntity>()
 
         // Check folders
-        val cachefolderIds = folderDao.getAll().mapNotNull {
-            runCatching { Uuid.parse(it.id) }.getOrNull()
-        }.toSet()
+        val cacheFolderIds = folderDao.getAll().map { it.id }.toSet()
         val fsFolderIds = scanResult.folders.map { it.id }.toSet()
 
         scanResult.folders.forEach { scanned ->
-            if (scanned.isDeleted && scanned.id in cachefolderIds) {
+            if (scanned.isDeleted && scanned.id in cacheFolderIds) {
                 deletedButInCache.add(DriftEntity(scanned.id, EntityType.FOLDER))
-            } else if (!scanned.isDeleted && scanned.id !in cachefolderIds && scanned.meta != null) {
+            } else if (!scanned.isDeleted && scanned.id !in cacheFolderIds && scanned.meta != null) {
                 missingInCache.add(DriftEntity(scanned.id, EntityType.FOLDER))
             }
         }
 
-        cachefolderIds.forEach { cacheId ->
+        cacheFolderIds.forEach { cacheId ->
             if (cacheId !in fsFolderIds) {
                 missingInFilesystem.add(DriftEntity(cacheId, EntityType.FOLDER))
             }
         }
 
         // Check tags
-        val cacheTagIds = tagDao.getAll().mapNotNull {
-            runCatching { Uuid.parse(it.id) }.getOrNull()
-        }.toSet()
+        val cacheTagIds = tagDao.getAll().map { it.id }.toSet()
         val fsTagIds = scanResult.tags.map { it.id }.toSet()
 
         scanResult.tags.forEach { scanned ->
@@ -240,9 +232,7 @@ object FileSystemStateManager {
         }
 
         // Check bookmarks
-        val cacheBookmarkIds = bookmarkDao.getAll().mapNotNull {
-            runCatching { Uuid.parse(it.id) }.getOrNull()
-        }.toSet()
+        val cacheBookmarkIds = bookmarkDao.getAll().map { it.id }.toSet()
         val fsBookmarkIds = scanResult.bookmarks.map { it.id }.toSet()
 
         scanResult.bookmarks.forEach { scanned ->

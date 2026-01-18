@@ -22,13 +22,13 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import dev.subfly.yaba.core.app.App
 import dev.subfly.yaba.core.theme.YabaTheme
-import dev.subfly.yabacore.database.DatabaseProvider
+import dev.subfly.yabacore.CoreRuntime
 import dev.subfly.yabacore.util.FileKitHelper
 
 fun main() {
     System.setProperty("apple.awt.application.appearance", "system")
     FileKitHelper.initialize()
-    DatabaseProvider.initialize()
+    CoreRuntime.initialize()
 
     application {
         val windowState = rememberWindowState(

@@ -2,6 +2,7 @@
 
 package dev.subfly.yabacore.state.linkmark
 
+import dev.subfly.yabacore.common.IdGenerator
 import dev.subfly.yabacore.filesystem.LinkmarkFileManager
 import dev.subfly.yabacore.managers.AllBookmarksManager
 import dev.subfly.yabacore.managers.FolderManager
@@ -15,7 +16,6 @@ import dev.subfly.yabacore.state.base.BaseStateMachine
 import dev.subfly.yabacore.unfurl.LinkCleaner
 import dev.subfly.yabacore.unfurl.UnfurlError
 import dev.subfly.yabacore.unfurl.Unfurler
-import io.github.vinceglb.filekit.readBytes
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
@@ -23,12 +23,10 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlin.time.Duration.Companion.milliseconds
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 private const val DEBOUNCE_DELAY_MS = 750L
 
-@OptIn(ExperimentalUuidApi::class, FlowPreview::class)
+@OptIn(FlowPreview::class)
 class LinkmarkCreationStateMachine :
     BaseStateMachine<LinkmarkCreationUIState, LinkmarkCreationEvent>(
         initialState = LinkmarkCreationUIState()
@@ -78,8 +76,7 @@ class LinkmarkCreationStateMachine :
             }
 
             // If editing existing linkmark
-            event.linkmarkIdString?.let { idString ->
-                val linkmarkId = Uuid.parse(idString)
+            event.linkmarkIdString?.let { linkmarkId ->
                 val existing = LinkmarkManager.getLinkmarkDetail(linkmarkId)
                 if (existing != null) {
                     updateState {
@@ -100,10 +97,9 @@ class LinkmarkCreationStateMachine :
                         )
                     }
 
-                    val savedImageBytes =
-                        LinkmarkFileManager.getLinkImageFile(linkmarkId)?.readBytes()
-                    val savedIconBytes =
-                        LinkmarkFileManager.getDomainIconFile(linkmarkId)?.readBytes()
+                    // Use the new helper methods that don't expose FileKit
+                    val savedImageBytes = LinkmarkFileManager.readLinkImageBytes(linkmarkId)
+                    val savedIconBytes = LinkmarkFileManager.readDomainIconBytes(linkmarkId)
 
                     if (savedImageBytes != null || savedIconBytes != null) {
                         updateState {
@@ -133,7 +129,7 @@ class LinkmarkCreationStateMachine :
 
             // Pre-select folder if provided
             event.initialFolderId?.let { folderId ->
-                val folder = FolderManager.getFolder(Uuid.parse(folderId))
+                val folder = FolderManager.getFolder(folderId)
                 if (folder != null) {
                     updateState { it.copy(selectedFolder = folder) }
                 }
@@ -141,7 +137,7 @@ class LinkmarkCreationStateMachine :
 
             // Pre-select tags if provided
             event.initialTagIds?.let { tagIds ->
-                val tags = tagIds.mapNotNull { tagId -> TagManager.getTag(Uuid.parse(tagId)) }
+                val tags = tagIds.mapNotNull { tagId -> TagManager.getTag(tagId) }
                 if (tags.isNotEmpty()) {
                     updateState { it.copy(selectedTags = tags) }
                 }
@@ -503,7 +499,7 @@ class LinkmarkCreationStateMachine :
                     }
                 } else {
                     // Create new base bookmark metadata first (list/grid source of truth)
-                    val newId = Uuid.random()
+                    val newId = IdGenerator.newId()
                     AllBookmarksManager.createBookmarkMetadata(
                         id = newId,
                         folderId = selectedFolder.id,

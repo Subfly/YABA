@@ -4,10 +4,7 @@ import dev.subfly.yabacore.impex.model.CodableBookmark
 import dev.subfly.yabacore.impex.model.CodableCollection
 import dev.subfly.yabacore.impex.model.ExportFormat
 import kotlinx.serialization.json.Json
-import kotlin.uuid.ExperimentalUuidApi
 
-
-@OptIn(ExperimentalUuidApi::class)
 internal object Exporters {
     fun export(snapshot: ExportSnapshot, format: ExportFormat): ByteArray {
         val (collections, bookmarks) = buildCodable(snapshot)
@@ -28,7 +25,7 @@ internal object Exporters {
 
         val folderCollections = snapshot.folders.map { folder ->
             val bookmarkIds = bookmarksByFolder[folder.id].orEmpty().map { it.id }
-            val children = childFolders[folder.id].orEmpty().map { it.id.toString() }
+            val children = childFolders[folder.id].orEmpty().map { it.id }
             folder.toCodable(bookmarkIds).copy(children = children)
         }
 

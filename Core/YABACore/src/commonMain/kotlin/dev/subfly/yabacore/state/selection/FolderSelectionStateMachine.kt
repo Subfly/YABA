@@ -9,10 +9,7 @@ import dev.subfly.yabacore.model.utils.SortType
 import dev.subfly.yabacore.state.base.BaseStateMachine
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalUuidApi::class)
 class FolderSelectionStateMachine :
     BaseStateMachine<FolderSelectionUIState, FolderSelectionEvent>(
         initialState = FolderSelectionUIState()
@@ -23,10 +20,10 @@ class FolderSelectionStateMachine :
 
     // Stored context for filtering and move operations
     private var mode: FolderSelectionMode = FolderSelectionMode.FOLDER_SELECTION
-    private var contextFolderId: Uuid? = null
-    private var contextBookmarkIds: List<Uuid> = emptyList()
-    private var excludedIds: Set<Uuid> = emptySet()
-    private var currentParentId: Uuid? = null
+    private var contextFolderId: String? = null
+    private var contextBookmarkIds: List<String> = emptyList()
+    private var excludedIds: Set<String> = emptySet()
+    private var currentParentId: String? = null
 
     // Store unfiltered folders for re-filtering on search changes
     private var allAvailableFolders: List<FolderUiModel> = emptyList()
@@ -45,8 +42,8 @@ class FolderSelectionStateMachine :
         isInitialized = true
 
         mode = event.mode
-        contextFolderId = event.contextFolderId?.let { Uuid.parse(it) }
-        contextBookmarkIds = event.contextBookmarkIds?.map { Uuid.parse(it) } ?: emptyList()
+        contextFolderId = event.contextFolderId
+        contextBookmarkIds = event.contextBookmarkIds ?: emptyList()
 
         launch {
             updateState { it.copy(isLoading = true) }
@@ -146,7 +143,7 @@ class FolderSelectionStateMachine :
 
         launch {
             val folder = FolderManager.getFolder(folderToMove) ?: return@launch
-            val targetFolder = event.targetFolderId?.let { FolderManager.getFolder(Uuid.parse(it)) }
+            val targetFolder = event.targetFolderId?.let { FolderManager.getFolder(it) }
             FolderManager.moveFolder(folder, targetFolder)
         }
     }
@@ -155,14 +152,8 @@ class FolderSelectionStateMachine :
         if (contextBookmarkIds.isEmpty()) return
 
         launch {
-            // TODO: OPTIMIZE WITH SINGLE QUERY but first if it looks ok in UI, maybe it's a feature :D
-            val bookmarks = contextBookmarkIds.mapNotNull { id ->
-                AllBookmarksManager.getBookmarkDetail(id)
-            }
-            if (bookmarks.isEmpty()) return@launch
-
-            val targetFolder = FolderManager.getFolder(Uuid.parse(event.targetFolderId)) ?: return@launch
-            AllBookmarksManager.moveBookmarksToFolder(bookmarks, targetFolder)
+            val targetFolder = FolderManager.getFolder(event.targetFolderId) ?: return@launch
+            AllBookmarksManager.moveBookmarksToFolder(contextBookmarkIds, targetFolder.id)
         }
     }
 
@@ -206,16 +197,16 @@ class FolderSelectionStateMachine :
     /**
      * Collects all descendant folder IDs for a given folder.
      */
-    private suspend fun collectDescendantIds(rootId: Uuid): Set<Uuid> {
+    private suspend fun collectDescendantIds(rootId: String): Set<String> {
         val allFolders = FolderManager.getMovableFolders(
             currentFolderId = null,
             sortType = SortType.CUSTOM,
             sortOrder = SortOrderType.ASCENDING
         )
         val grouped = allFolders.groupBy { it.parentId }
-        val visited = mutableSetOf<Uuid>()
+        val visited = mutableSetOf<String>()
 
-        fun traverse(parentId: Uuid) {
+        fun traverse(parentId: String) {
             grouped[parentId]?.forEach { child ->
                 if (visited.add(child.id)) {
                     traverse(child.id)

@@ -1,13 +1,11 @@
 package dev.subfly.yabacore.state.tag
 
+import dev.subfly.yabacore.common.IdGenerator
 import dev.subfly.yabacore.managers.TagManager
 import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.state.base.BaseStateMachine
 import kotlin.time.Clock
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalUuidApi::class)
 class TagCreationStateMachine : BaseStateMachine<TagCreationUIState, TagCreationEvent>(
     initialState = TagCreationUIState()
 ) {
@@ -28,8 +26,7 @@ class TagCreationStateMachine : BaseStateMachine<TagCreationUIState, TagCreation
         isInitialized = true
 
         launch {
-            event.tagIdString?.let { nonNullIdString ->
-                val tagId = Uuid.parse(nonNullIdString)
+            event.tagIdString?.let { tagId ->
                 TagManager.getTag(tagId)?.let { nonNullTag ->
                     updateState {
                         it.copy(
@@ -78,7 +75,7 @@ class TagCreationStateMachine : BaseStateMachine<TagCreationUIState, TagCreation
                 if (currentState.editingTag == null) {
                     TagManager.createTag(
                         TagUiModel(
-                            id = Uuid.generateV7(),
+                            id = IdGenerator.newId(),
                             label = currentState.label,
                             icon = currentState.selectedIcon,
                             color = currentState.selectedColor,

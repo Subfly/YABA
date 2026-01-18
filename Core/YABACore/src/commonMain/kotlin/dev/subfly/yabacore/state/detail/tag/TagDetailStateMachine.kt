@@ -14,10 +14,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalUuidApi::class, ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class)
 class TagDetailStateMachine :
     BaseStateMachine<TagDetailUIState, TagDetailEvent>(initialState = TagDetailUIState()) {
     private var isInitialized = false
@@ -25,7 +23,7 @@ class TagDetailStateMachine :
     private val preferencesStore = SettingsStores.userPreferences
 
     private val queryFlow = MutableStateFlow("")
-    private val tagIdFlow = MutableStateFlow<Uuid?>(null)
+    private val tagIdFlow = MutableStateFlow<String?>(null)
 
     override fun onEvent(event: TagDetailEvent) {
         when (event) {
@@ -43,7 +41,7 @@ class TagDetailStateMachine :
     private fun onInit(tagId: String) {
         if (isInitialized) return
         isInitialized = true
-        tagIdFlow.value = Uuid.parse(tagId)
+        tagIdFlow.value = tagId
 
         dataSubscriptionJob?.cancel()
         dataSubscriptionJob = launch {
@@ -107,7 +105,7 @@ class TagDetailStateMachine :
         }
     }
 
-    private fun onToggleBookmarkSelection(bookmarkId: Uuid) {
+    private fun onToggleBookmarkSelection(bookmarkId: String) {
         if (currentState().isSelectionMode.not()) return
 
         updateState { state ->
@@ -125,14 +123,13 @@ class TagDetailStateMachine :
         if (selectedIds.isEmpty()) return
 
         launch {
-            val bookmarksToDelete = currentState().bookmarks.filter { it.id in selectedIds }
-            AllBookmarksManager.deleteBookmarks(bookmarksToDelete)
+            AllBookmarksManager.deleteBookmarks(selectedIds.toList())
             updateState { it.copy(isSelectionMode = false, selectedBookmarkIds = emptySet()) }
         }
     }
 
     private fun onDeleteBookmark(bookmark: dev.subfly.yabacore.model.ui.BookmarkUiModel) {
-        launch { AllBookmarksManager.deleteBookmarks(listOf(bookmark)) }
+        launch { AllBookmarksManager.deleteBookmarks(listOf(bookmark.id)) }
     }
 
     private fun onChangeSort(sortType: SortType, sortOrder: SortOrderType) {

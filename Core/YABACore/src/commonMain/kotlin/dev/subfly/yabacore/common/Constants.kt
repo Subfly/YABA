@@ -1,8 +1,5 @@
 package dev.subfly.yabacore.common
 
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
-
 /** Core-wide constants used by the data layer. */
 object CoreConstants {
     object Folder {
@@ -68,7 +65,6 @@ object CoreConstants {
      * All on-disk bookmark assets must remain under the app-owned root so we can move, delete and
      * sync them deterministically across platforms.
      */
-    @OptIn(ExperimentalUuidApi::class)
     object FileSystem {
         const val ROOT_DIR = "YABA"
         const val BOOKMARKS_DIR = "bookmarks"
@@ -86,37 +82,36 @@ object CoreConstants {
         const val EVENTS_DB = "events.sqlite"
 
         // Entity folder paths
-        fun folderPath(folderId: Uuid): String = join(FOLDERS_DIR, folderId.toString())
-        fun tagPath(tagId: Uuid): String = join(TAGS_DIR, tagId.toString())
-        fun bookmarkPath(bookmarkId: Uuid): String = join(BOOKMARKS_DIR, bookmarkId.toString())
+        fun folderPath(folderId: String): String = join(FOLDERS_DIR, folderId)
+        fun tagPath(tagId: String): String = join(TAGS_DIR, tagId)
+        fun bookmarkPath(bookmarkId: String): String = join(BOOKMARKS_DIR, bookmarkId)
 
         // JSON file paths for folders
-        fun folderMetaPath(folderId: Uuid): String = join(folderPath(folderId), META_JSON)
-        fun folderDeletedPath(folderId: Uuid): String = join(folderPath(folderId), DELETED_JSON)
+        fun folderMetaPath(folderId: String): String = join(folderPath(folderId), META_JSON)
+        fun folderDeletedPath(folderId: String): String = join(folderPath(folderId), DELETED_JSON)
 
         // JSON file paths for tags
-        fun tagMetaPath(tagId: Uuid): String = join(tagPath(tagId), META_JSON)
-        fun tagDeletedPath(tagId: Uuid): String = join(tagPath(tagId), DELETED_JSON)
+        fun tagMetaPath(tagId: String): String = join(tagPath(tagId), META_JSON)
+        fun tagDeletedPath(tagId: String): String = join(tagPath(tagId), DELETED_JSON)
 
         // JSON file paths for bookmarks
-        fun bookmarkMetaPath(bookmarkId: Uuid): String = join(bookmarkPath(bookmarkId), META_JSON)
-        fun bookmarkLinkPath(bookmarkId: Uuid): String = join(bookmarkPath(bookmarkId), LINK_JSON)
-        fun bookmarkDeletedPath(bookmarkId: Uuid): String = join(bookmarkPath(bookmarkId), DELETED_JSON)
-        fun bookmarkContentPath(bookmarkId: Uuid): String = join(bookmarkPath(bookmarkId), CONTENT_DIR)
+        fun bookmarkMetaPath(bookmarkId: String): String = join(bookmarkPath(bookmarkId), META_JSON)
+        fun bookmarkLinkPath(bookmarkId: String): String = join(bookmarkPath(bookmarkId), LINK_JSON)
+        fun bookmarkDeletedPath(bookmarkId: String): String = join(bookmarkPath(bookmarkId), DELETED_JSON)
+        fun bookmarkContentPath(bookmarkId: String): String = join(bookmarkPath(bookmarkId), CONTENT_DIR)
 
         // Sync directory path
         fun syncPath(): String = SYNC_DIR
         fun eventsDbPath(): String = join(SYNC_DIR, EVENTS_DB)
 
         object Linkmark {
-            const val DIRECTORY = CONTENT_DIR
             const val LINK_IMAGE_BASENAME = "link_image"
             const val DOMAIN_ICON_BASENAME = "domain_icon"
             const val HTML_EXPORTS_DIR = "html_exports"
-            fun bookmarkFolder(bookmarkId: Uuid): String = bookmarkFolderPath(bookmarkId, DIRECTORY)
+            fun bookmarkFolder(bookmarkId: String): String = bookmarkFolderPath(bookmarkId, CONTENT_DIR)
 
             fun linkImagePath(
-                bookmarkId: Uuid,
+                bookmarkId: String,
                 extension: String = "jpeg",
             ): String = join(
                 bookmarkFolder(bookmarkId),
@@ -124,28 +119,28 @@ object CoreConstants {
             )
 
             fun domainIconPath(
-                bookmarkId: Uuid,
+                bookmarkId: String,
                 extension: String = "png",
             ): String = join(
                 bookmarkFolder(bookmarkId),
                 "$DOMAIN_ICON_BASENAME.$extension",
             )
 
-            fun htmlExportsDir(bookmarkId: Uuid): String =
+            fun htmlExportsDir(bookmarkId: String): String =
                 join(bookmarkFolder(bookmarkId), HTML_EXPORTS_DIR)
 
             fun htmlExportPath(
-                bookmarkId: Uuid,
+                bookmarkId: String,
                 exportFileName: String,
             ): String = join(htmlExportsDir(bookmarkId), exportFileName)
         }
 
         fun bookmarkFolderPath(
-            bookmarkId: Uuid,
+            bookmarkId: String,
             subtypeDirectory: String? = null,
         ): String = join(
             BOOKMARKS_DIR,
-            bookmarkId.toString(),
+            bookmarkId,
             subtypeDirectory,
         )
 

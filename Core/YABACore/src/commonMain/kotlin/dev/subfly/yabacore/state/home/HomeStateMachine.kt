@@ -119,9 +119,8 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
         val sortOrder: SortOrderType,
     )
 
-    // Folder operations - delegated to FolderManager
     private fun onDeleteFolder(event: HomeEvent.OnDeleteFolder) {
-        launch { FolderManager.deleteFolder(event.folder) }
+        launch { FolderManager.deleteFolderCascade(event.folder.id) }
     }
 
     private fun onMoveFolder(event: HomeEvent.OnMoveFolder) {
@@ -143,20 +142,20 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
 
     // Bookmark operations - delegated to AllBookmarksManager
     private fun onDeleteBookmark(event: HomeEvent.OnDeleteBookmark) {
-        launch { AllBookmarksManager.deleteBookmarks(listOf(event.bookmark)) }
+        launch { AllBookmarksManager.deleteBookmarks(listOf(event.bookmark.id)) }
     }
 
     private fun onMoveBookmarkToFolder(event: HomeEvent.OnMoveBookmarkToFolder) {
         launch {
             AllBookmarksManager.moveBookmarksToFolder(
-                listOf(event.bookmark),
-                event.targetFolder,
+                bookmarkIds = listOf(event.bookmark.id),
+                targetFolderId = event.targetFolder.id,
             )
         }
     }
 
     private fun onMoveBookmarkToTag(event: HomeEvent.OnMoveBookmarkToTag) {
-        launch { AllBookmarksManager.addTagToBookmark(event.targetTag, event.bookmark) }
+        launch { AllBookmarksManager.addTagToBookmark(tagId = event.targetTag.id, bookmarkId = event.bookmark.id) }
     }
 
     override fun clear() {

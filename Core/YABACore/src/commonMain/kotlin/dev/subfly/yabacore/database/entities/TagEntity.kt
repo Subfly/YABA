@@ -4,12 +4,14 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import dev.subfly.yabacore.model.utils.YabaColor
+
 @Entity(
     tableName = "tags",
     indices = [
         Index(value = ["order"]),
         Index(value = ["label"]),
         Index(value = ["editedAt"]),
+        Index(value = ["isHidden"]),
     ],
 )
 data class TagEntity(
@@ -20,4 +22,6 @@ data class TagEntity(
     val order: Int,
     val createdAt: Long,
     val editedAt: Long,
+    /** True if this is a hidden system tag. Hidden tags are filtered from UI queries. */
+    val isHidden: Boolean = false,
 )

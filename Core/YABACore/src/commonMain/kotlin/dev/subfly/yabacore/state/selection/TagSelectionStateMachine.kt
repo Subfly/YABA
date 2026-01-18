@@ -7,10 +7,7 @@ import dev.subfly.yabacore.model.utils.SortType
 import dev.subfly.yabacore.state.base.BaseStateMachine
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalUuidApi::class)
 class TagSelectionStateMachine :
     BaseStateMachine<TagSelectionUIState, TagSelectionEvent>(
         initialState = TagSelectionUIState()
@@ -20,7 +17,7 @@ class TagSelectionStateMachine :
     private var tagSubscriptionJob: Job? = null
 
     // IDs of initially selected tags (from OnInit)
-    private var selectedTagIds: Set<Uuid> = emptySet()
+    private var selectedTagIds: Set<String> = emptySet()
 
     // In-memory list of currently selected tags (can change during session)
     private var currentSelectedTags: List<TagUiModel> = emptyList()
@@ -41,10 +38,8 @@ class TagSelectionStateMachine :
         if (isInitialized) return
         isInitialized = true
 
-        // Parse selected tag IDs
-        selectedTagIds = event.selectedTagIds.mapNotNull { id ->
-            runCatching { Uuid.parse(id) }.getOrNull()
-        }.toSet()
+        // Tag IDs are already strings
+        selectedTagIds = event.selectedTagIds.toSet()
 
         launch {
             updateState { it.copy(isLoading = true) }
@@ -129,7 +124,7 @@ class TagSelectionStateMachine :
      * This can be used when saving the bookmark.
      */
     fun getSelectedTagIds(): List<String> =
-        currentSelectedTags.map { it.id.toString() }
+        currentSelectedTags.map { it.id }
 
     /**
      * Returns the list of currently selected tags.
@@ -147,4 +142,3 @@ class TagSelectionStateMachine :
         super.clear()
     }
 }
-

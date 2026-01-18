@@ -1,16 +1,12 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package dev.subfly.yabacore.model.ui
 
 import androidx.compose.runtime.Immutable
 import dev.subfly.yabacore.model.utils.YabaColor
 import kotlin.time.Instant
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 @Immutable
 data class TagUiModel(
-    val id: Uuid,
+    val id: String,
     val label: String,
     val icon: String,
     val color: YabaColor,
@@ -20,4 +16,3 @@ data class TagUiModel(
     val bookmarkCount: Int = 0,
     val bookmarks: List<BookmarkUiModel> = emptyList(),
 )
-

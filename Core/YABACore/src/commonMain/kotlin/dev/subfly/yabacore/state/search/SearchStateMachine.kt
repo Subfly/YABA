@@ -5,6 +5,7 @@ import dev.subfly.yabacore.model.utils.BookmarkSearchFilters
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
 import dev.subfly.yabacore.preferences.SettingsStores
+import dev.subfly.yabacore.preferences.UserPreferences
 import dev.subfly.yabacore.state.base.BaseStateMachine
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -14,17 +15,14 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 private data class FilterParams(
-    val prefs: dev.subfly.yabacore.preferences.UserPreferences,
+    val prefs: UserPreferences,
     val query: String,
-    val folderIds: Set<Uuid>,
-    val tagIds: Set<Uuid>,
+    val folderIds: Set<String>,
+    val tagIds: Set<String>,
 )
 
-@OptIn(ExperimentalUuidApi::class)
 class SearchStateMachine :
     BaseStateMachine<SearchUIState, SearchEvent>(initialState = SearchUIState()) {
     private var isInitialized = false
@@ -32,8 +30,8 @@ class SearchStateMachine :
     private val preferencesStore = SettingsStores.userPreferences
 
     private val queryFlow = MutableStateFlow("")
-    private val selectedFolderIdsFlow = MutableStateFlow<Set<Uuid>>(emptySet())
-    private val selectedTagIdsFlow = MutableStateFlow<Set<Uuid>>(emptySet())
+    private val selectedFolderIdsFlow = MutableStateFlow<Set<String>>(emptySet())
+    private val selectedTagIdsFlow = MutableStateFlow<Set<String>>(emptySet())
 
     override fun onEvent(event: SearchEvent) {
         when (event) {
@@ -94,13 +92,13 @@ class SearchStateMachine :
         updateState { it.copy(query = query) }
     }
 
-    private fun onToggleFolderFilter(folderId: Uuid) {
+    private fun onToggleFolderFilter(folderId: String) {
         selectedFolderIdsFlow.update { current ->
             if (current.contains(folderId)) current - folderId else current + folderId
         }
     }
 
-    private fun onToggleTagFilter(tagId: Uuid) {
+    private fun onToggleTagFilter(tagId: String) {
         selectedTagIdsFlow.update { current ->
             if (current.contains(tagId)) current - tagId else current + tagId
         }
@@ -123,7 +121,7 @@ class SearchStateMachine :
     }
 
     private fun onDeleteBookmark(bookmark: dev.subfly.yabacore.model.ui.BookmarkUiModel) {
-        launch { AllBookmarksManager.deleteBookmarks(listOf(bookmark)) }
+        launch { AllBookmarksManager.deleteBookmarks(listOf(bookmark.id)) }
     }
 
     override fun clear() {

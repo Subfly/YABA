@@ -1,14 +1,12 @@
 package dev.subfly.yabacore.state.folder
 
+import dev.subfly.yabacore.common.IdGenerator
 import dev.subfly.yabacore.managers.FolderManager
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.state.base.BaseStateMachine
 import kotlinx.coroutines.Job
 import kotlin.time.Clock
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalUuidApi::class)
 class FolderCreationStateMachine :
     BaseStateMachine<FolderCreationUIState, FolderCreationEvent>(
         initialState = FolderCreationUIState()
@@ -33,8 +31,7 @@ class FolderCreationStateMachine :
         isInitialized = true
 
         launch {
-            event.folderIdString?.let { nonNullIdString ->
-                val folderId = Uuid.parse(nonNullIdString)
+            event.folderIdString?.let { folderId ->
                 FolderManager.getFolder(folderId)?.let { nonNullFolder ->
                     updateState {
                         it.copy(
@@ -47,7 +44,7 @@ class FolderCreationStateMachine :
                     }
                     // Start observing the parent folder if it exists
                     nonNullFolder.parentId?.let { parentId ->
-                        onEvent(FolderCreationEvent.OnSelectNewParent(parentId.toString()))
+                        onEvent(FolderCreationEvent.OnSelectNewParent(parentId))
                     }
                 }
             }
@@ -64,7 +61,7 @@ class FolderCreationStateMachine :
             return
         }
 
-        val folderId = Uuid.parse(event.newParentId)
+        val folderId = event.newParentId
         parentFolderSubscriptionJob = launch {
             FolderManager.observeFolder(folderId).collect { folder ->
                 updateState { it.copy(selectedParent = folder) }
@@ -114,7 +111,7 @@ class FolderCreationStateMachine :
                 if (currentState.editingFolder == null) {
                     FolderManager.createFolder(
                         FolderUiModel(
-                            id = Uuid.generateV7(),
+                            id = IdGenerator.newId(),
                             label = currentState.label,
                             icon = currentState.selectedIcon,
                             color = currentState.selectedColor,

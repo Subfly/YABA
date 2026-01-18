@@ -1,15 +1,12 @@
 package dev.subfly.yabacore.filesystem.access
 
 import io.github.vinceglb.filekit.PlatformFile
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalUuidApi::class)
 expect object FileAccessProvider {
     suspend fun currentRoot(): PlatformFile
 
     suspend fun bookmarkDirectory(
-        bookmarkId: Uuid,
+        bookmarkId: String,
         subtypeDirectory: String? = null,
         ensureExists: Boolean = true,
     ): PlatformFile
@@ -21,9 +18,13 @@ expect object FileAccessProvider {
 
     suspend fun writeBytes(relativePath: String, bytes: ByteArray)
 
+    suspend fun readBytes(relativePath: String): ByteArray?
+
+    suspend fun readText(relativePath: String): String?
+
     suspend fun delete(relativePath: String)
 
-    suspend fun deleteBookmarkDirectory(bookmarkId: Uuid)
+    suspend fun deleteBookmarkDirectory(bookmarkId: String)
 }
 
 fun createFileAccessProvider(): FileAccessProvider = FileAccessProvider

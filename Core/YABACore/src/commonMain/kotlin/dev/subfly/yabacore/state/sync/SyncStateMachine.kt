@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package dev.subfly.yabacore.state.sync
 
 import dev.subfly.yabacore.database.CacheRebuilder
@@ -14,8 +12,6 @@ import dev.subfly.yabacore.sync.SyncEngine
 import dev.subfly.yabacore.sync.SyncMode
 import kotlinx.coroutines.Job
 import kotlin.time.Clock
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 /**
  * State machine for managing filesystem sync operations and status.
@@ -208,19 +204,19 @@ class SyncStateMachine : BaseStateMachine<SyncUIState, SyncEvent>(
     )
 
     private data class ScannedFolder(
-        val id: Uuid,
+        val id: String,
         val isDeleted: Boolean,
         val meta: FolderMetaJson?,
     )
 
     private data class ScannedTag(
-        val id: Uuid,
+        val id: String,
         val isDeleted: Boolean,
         val meta: TagMetaJson?,
     )
 
     private data class ScannedBookmark(
-        val id: Uuid,
+        val id: String,
         val isDeleted: Boolean,
         val meta: BookmarkMetaJson?,
         val hasLinkJson: Boolean,
@@ -292,7 +288,7 @@ class SyncStateMachine : BaseStateMachine<SyncUIState, SyncEvent>(
 
     private enum class EntityType { FOLDER, TAG, BOOKMARK }
 
-    private data class DriftEntity(val id: Uuid, val type: EntityType)
+    private data class DriftEntity(val id: String, val type: EntityType)
 
     private data class DriftResult(
         val hasDrift: Boolean,
@@ -309,9 +305,7 @@ class SyncStateMachine : BaseStateMachine<SyncUIState, SyncEvent>(
         val dataConflicts = mutableListOf<DriftEntity>()
 
         // Check folders
-        val cacheFolderIds = folderDao.getAll().mapNotNull {
-            runCatching { Uuid.parse(it.id) }.getOrNull()
-        }.toSet()
+        val cacheFolderIds = folderDao.getAll().map { it.id }.toSet()
         val fsFolderIds = scanResult.folders.map { it.id }.toSet()
 
         scanResult.folders.forEach { scanned ->
@@ -329,9 +323,7 @@ class SyncStateMachine : BaseStateMachine<SyncUIState, SyncEvent>(
         }
 
         // Check tags
-        val cacheTagIds = tagDao.getAll().mapNotNull {
-            runCatching { Uuid.parse(it.id) }.getOrNull()
-        }.toSet()
+        val cacheTagIds = tagDao.getAll().map { it.id }.toSet()
         val fsTagIds = scanResult.tags.map { it.id }.toSet()
 
         scanResult.tags.forEach { scanned ->
@@ -349,9 +341,7 @@ class SyncStateMachine : BaseStateMachine<SyncUIState, SyncEvent>(
         }
 
         // Check bookmarks
-        val cacheBookmarkIds = bookmarkDao.getAll().mapNotNull {
-            runCatching { Uuid.parse(it.id) }.getOrNull()
-        }.toSet()
+        val cacheBookmarkIds = bookmarkDao.getAll().map { it.id }.toSet()
         val fsBookmarkIds = scanResult.bookmarks.map { it.id }.toSet()
 
         scanResult.bookmarks.forEach { scanned ->

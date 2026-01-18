@@ -1,11 +1,7 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package dev.subfly.yabacore.sync
 
 import dev.subfly.yabacore.filesystem.model.BookmarkFileAssetKind
 import kotlin.time.Instant
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 /**
  * Request to sync with a remote peer.
@@ -32,7 +28,7 @@ data class SyncResponse(
  * Describes a file that needs to be synced between devices.
  */
 data class FileSyncDescriptor(
-    val bookmarkId: Uuid,
+    val bookmarkId: String,
     val relativePath: String,
     val assetKind: BookmarkFileAssetKind,
     val checksum: String,

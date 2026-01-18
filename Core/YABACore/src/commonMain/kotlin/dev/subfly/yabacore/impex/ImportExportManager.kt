@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package dev.subfly.yabacore.impex
 
 import dev.subfly.yabacore.database.DatabaseProvider
@@ -28,7 +26,6 @@ import dev.subfly.yabacore.impex.model.MappableCsvHeader
 import dev.subfly.yabacore.sync.VectorClock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlin.uuid.ExperimentalUuidApi
 
 /**
  * Facade for import/export operations implemented in the shared Kotlin core.
@@ -102,8 +99,8 @@ object ImportExportManager {
         bundle.folders.sortedBy { it.order }.forEach { folder ->
             val initialClock = VectorClock.of(deviceId, 1)
             val folderJson = FolderMetaJson(
-                id = folder.id.toString(),
-                parentId = folder.parentId?.toString(),
+                id = folder.id,
+                parentId = folder.parentId,
                 label = folder.label,
                 description = folder.description,
                 icon = folder.icon,
@@ -112,6 +109,7 @@ object ImportExportManager {
                 createdAt = folder.createdAt.toEpochMilliseconds(),
                 editedAt = folder.editedAt.toEpochMilliseconds(),
                 clock = initialClock.toMap(),
+                isHidden = false,
             )
 
             // 1. Write to filesystem
@@ -120,8 +118,8 @@ object ImportExportManager {
             // 2. Update SQLite cache
             folderDao.upsert(
                 FolderEntity(
-                    id = folder.id.toString(),
-                    parentId = folder.parentId?.toString(),
+                    id = folder.id,
+                    parentId = folder.parentId,
                     label = folder.label,
                     description = folder.description,
                     icon = folder.icon,
@@ -129,6 +127,7 @@ object ImportExportManager {
                     order = folder.order,
                     createdAt = folder.createdAt.toEpochMilliseconds(),
                     editedAt = folder.editedAt.toEpochMilliseconds(),
+                    isHidden = false,
                 )
             )
         }
@@ -137,7 +136,7 @@ object ImportExportManager {
         bundle.tags.sortedBy { it.order }.forEach { tag ->
             val initialClock = VectorClock.of(deviceId, 1)
             val tagJson = TagMetaJson(
-                id = tag.id.toString(),
+                id = tag.id,
                 label = tag.label,
                 icon = tag.icon,
                 colorCode = tag.color.code,
@@ -145,6 +144,7 @@ object ImportExportManager {
                 createdAt = tag.createdAt.toEpochMilliseconds(),
                 editedAt = tag.editedAt.toEpochMilliseconds(),
                 clock = initialClock.toMap(),
+                isHidden = false,
             )
 
             // 1. Write to filesystem
@@ -153,13 +153,14 @@ object ImportExportManager {
             // 2. Update SQLite cache
             tagDao.upsert(
                 TagEntity(
-                    id = tag.id.toString(),
+                    id = tag.id,
                     label = tag.label,
                     icon = tag.icon,
                     color = tag.color,
                     order = tag.order,
                     createdAt = tag.createdAt.toEpochMilliseconds(),
                     editedAt = tag.editedAt.toEpochMilliseconds(),
+                    isHidden = false,
                 )
             )
         }
@@ -169,8 +170,8 @@ object ImportExportManager {
             val initialClock = VectorClock.of(deviceId, 1)
 
             val bookmarkJson = BookmarkMetaJson(
-                id = linkBookmark.id.toString(),
-                folderId = linkBookmark.folderId.toString(),
+                id = linkBookmark.id,
+                folderId = linkBookmark.folderId,
                 kind = linkBookmark.kind.code,
                 label = linkBookmark.label,
                 description = linkBookmark.description,
@@ -203,8 +204,8 @@ object ImportExportManager {
             // 3. Update SQLite cache
             bookmarkDao.upsert(
                 BookmarkEntity(
-                    id = linkBookmark.id.toString(),
-                    folderId = linkBookmark.folderId.toString(),
+                    id = linkBookmark.id,
+                    folderId = linkBookmark.folderId,
                     kind = linkBookmark.kind,
                     label = linkBookmark.label,
                     description = linkBookmark.description,
@@ -220,7 +221,7 @@ object ImportExportManager {
 
             linkBookmarkDao.upsert(
                 LinkBookmarkEntity(
-                    bookmarkId = linkBookmark.id.toString(),
+                    bookmarkId = linkBookmark.id,
                     url = linkBookmark.url,
                     domain = linkBookmark.domain,
                     linkType = linkBookmark.linkType,
@@ -233,8 +234,8 @@ object ImportExportManager {
         bundle.tagLinks.forEach { link ->
             tagBookmarkDao.insert(
                 TagBookmarkCrossRef(
-                    tagId = link.tagId.toString(),
-                    bookmarkId = link.bookmarkId.toString(),
+                    tagId = link.tagId,
+                    bookmarkId = link.bookmarkId,
                 )
             )
         }

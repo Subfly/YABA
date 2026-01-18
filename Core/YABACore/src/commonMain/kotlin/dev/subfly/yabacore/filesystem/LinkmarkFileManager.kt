@@ -1,13 +1,13 @@
 package dev.subfly.yabacore.filesystem
 
 import dev.subfly.yabacore.common.CoreConstants
-import dev.subfly.yabacore.filesystem.model.BookmarkFileAssetKind
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.extension
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
+import io.github.vinceglb.filekit.readBytes
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.withContext
 
-@OptIn(ExperimentalUuidApi::class)
 object LinkmarkFileManager {
     private const val DEFAULT_LINK_IMAGE_EXTENSION = "jpeg"
     private const val DEFAULT_DOMAIN_ICON_EXTENSION = "png"
@@ -15,7 +15,7 @@ object LinkmarkFileManager {
     private val DOMAIN_ICON_EXTENSIONS = listOf("png", "ico", "jpg", "jpeg", "webp")
 
     suspend fun saveLinkImageBytes(
-        bookmarkId: Uuid,
+        bookmarkId: String,
         bytes: ByteArray,
         extension: String = DEFAULT_LINK_IMAGE_EXTENSION,
     ): PlatformFile {
@@ -36,7 +36,7 @@ object LinkmarkFileManager {
     }
 
     suspend fun importLinkImageFromFile(
-        bookmarkId: Uuid,
+        bookmarkId: String,
         source: PlatformFile,
     ): PlatformFile {
         purgeLinkImages(bookmarkId)
@@ -56,13 +56,13 @@ object LinkmarkFileManager {
         return BookmarkFileManager.resolve(targetPath)
     }
 
-    suspend fun getLinkImageFile(bookmarkId: Uuid): PlatformFile? =
+    suspend fun getLinkImageFile(bookmarkId: String): PlatformFile? =
         findExistingAsset(bookmarkId, LINK_IMAGE_EXTENSIONS) { id, ext ->
             CoreConstants.FileSystem.Linkmark.linkImagePath(id, ext)
         }
 
     suspend fun saveDomainIconBytes(
-        bookmarkId: Uuid,
+        bookmarkId: String,
         bytes: ByteArray,
     ): PlatformFile {
         purgeDomainIcons(bookmarkId)
@@ -78,7 +78,7 @@ object LinkmarkFileManager {
     }
 
     suspend fun importDomainIconFromFile(
-        bookmarkId: Uuid,
+        bookmarkId: String,
         source: PlatformFile,
     ): PlatformFile {
         purgeDomainIcons(bookmarkId)
@@ -97,26 +97,48 @@ object LinkmarkFileManager {
         return BookmarkFileManager.resolve(targetPath)
     }
 
-    suspend fun getDomainIconFile(bookmarkId: Uuid): PlatformFile? =
+    suspend fun getDomainIconFile(bookmarkId: String): PlatformFile? =
         findExistingAsset(bookmarkId, DOMAIN_ICON_EXTENSIONS) { id, ext ->
             CoreConstants.FileSystem.Linkmark.domainIconPath(id, ext)
         }
 
-    suspend fun purgeLinkmarkFolder(bookmarkId: Uuid) {
+    /**
+     * Reads the link image bytes for a bookmark if it exists.
+     */
+    suspend fun readLinkImageBytes(bookmarkId: String): ByteArray? {
+        return getLinkImageFile(bookmarkId)?.let { file ->
+            withContext(Dispatchers.IO) {
+                file.readBytes()
+            }
+        }
+    }
+
+    /**
+     * Reads the domain icon bytes for a bookmark if it exists.
+     */
+    suspend fun readDomainIconBytes(bookmarkId: String): ByteArray? {
+        return getDomainIconFile(bookmarkId)?.let { file ->
+            withContext(Dispatchers.IO) {
+                file.readBytes()
+            }
+        }
+    }
+
+    suspend fun purgeLinkmarkFolder(bookmarkId: String) {
         val relativePath = CoreConstants.FileSystem.Linkmark.bookmarkFolder(bookmarkId)
         BookmarkFileManager.deleteRelativePath(
             relativePath = relativePath,
         )
     }
 
-    private suspend fun purgeLinkImages(bookmarkId: Uuid) {
+    private suspend fun purgeLinkImages(bookmarkId: String) {
         LINK_IMAGE_EXTENSIONS.forEach { extension ->
             val path = CoreConstants.FileSystem.Linkmark.linkImagePath(bookmarkId, extension)
             BookmarkFileManager.deleteRelativePath(relativePath = path)
         }
     }
 
-    private suspend fun purgeDomainIcons(bookmarkId: Uuid) {
+    private suspend fun purgeDomainIcons(bookmarkId: String) {
         DOMAIN_ICON_EXTENSIONS.forEach { extension ->
             val path = CoreConstants.FileSystem.Linkmark.domainIconPath(bookmarkId, extension)
             BookmarkFileManager.deleteRelativePath(relativePath = path)
@@ -124,9 +146,9 @@ object LinkmarkFileManager {
     }
 
     private suspend fun findExistingAsset(
-        bookmarkId: Uuid,
+        bookmarkId: String,
         extensions: List<String>,
-        builder: (Uuid, String) -> String,
+        builder: (String, String) -> String,
     ): PlatformFile? {
         extensions.forEach { extension ->
             val path = builder(bookmarkId, extension)

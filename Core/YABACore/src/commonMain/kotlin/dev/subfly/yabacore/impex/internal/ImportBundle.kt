@@ -1,12 +1,9 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package dev.subfly.yabacore.impex.internal
 
 import dev.subfly.yabacore.database.domain.FolderDomainModel
 import dev.subfly.yabacore.database.domain.LinkBookmarkDomainModel
 import dev.subfly.yabacore.database.domain.TagDomainModel
 import dev.subfly.yabacore.impex.model.TagLink
-import kotlin.uuid.ExperimentalUuidApi
 
 /**
  * Internal representation of imported data before being applied to the system.

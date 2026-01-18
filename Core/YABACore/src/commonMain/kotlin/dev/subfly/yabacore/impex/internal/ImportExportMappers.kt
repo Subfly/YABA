@@ -1,7 +1,6 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package dev.subfly.yabacore.impex.internal
 
+import dev.subfly.yabacore.common.IdGenerator
 import dev.subfly.yabacore.database.domain.FolderDomainModel
 import dev.subfly.yabacore.database.domain.LinkBookmarkDomainModel
 import dev.subfly.yabacore.database.domain.TagDomainModel
@@ -12,8 +11,6 @@ import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.LinkType
 import dev.subfly.yabacore.model.utils.YabaColor
 import kotlin.time.Instant
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 internal fun CodableCollection.toFolderDomain(
     idResolver: IdResolver,
@@ -45,9 +42,9 @@ internal fun CodableCollection.toTagDomain(
 
 internal fun CodableBookmark.toDomain(
     idResolver: IdResolver,
-    folderId: Uuid,
+    folderId: String,
     now: Instant,
-    resolvedId: Uuid? = null,
+    resolvedId: String? = null,
 ): LinkBookmarkDomainModel {
     val created = parseInstant(createdAt) ?: now
     val edited = parseInstant(editedAt) ?: created
@@ -78,7 +75,7 @@ internal fun CodableBookmark.toDomain(
 }
 
 internal fun LinkBookmarkDomainModel.toCodable(): CodableBookmark = CodableBookmark(
-    bookmarkId = id.toString(),
+    bookmarkId = id,
     label = label,
     description = description,
     link = url,
@@ -95,32 +92,32 @@ internal fun LinkBookmarkDomainModel.toCodable(): CodableBookmark = CodableBookm
     iconData = null,
 )
 
-internal fun FolderDomainModel.toCodable(bookmarkIds: List<Uuid>): CodableCollection =
+internal fun FolderDomainModel.toCodable(bookmarkIds: List<String>): CodableCollection =
     CodableCollection(
-        collectionId = id.toString(),
+        collectionId = id,
         label = label,
         icon = icon,
         createdAt = createdAt.toIsoString(),
         editedAt = editedAt.toIsoString(),
         color = color.code,
         type = 1, // folder
-        bookmarks = bookmarkIds.map { it.toString() },
+        bookmarks = bookmarkIds,
         version = 0,
-        parent = parentId?.toString(),
+        parent = parentId,
         children = emptyList(), // children filled by exporter using tree
         order = order,
     )
 
-internal fun TagDomainModel.toCodable(bookmarkIds: List<Uuid>): CodableCollection =
+internal fun TagDomainModel.toCodable(bookmarkIds: List<String>): CodableCollection =
     CodableCollection(
-        collectionId = id.toString(),
+        collectionId = id,
         label = label,
         icon = icon,
         createdAt = createdAt.toIsoString(),
         editedAt = editedAt.toIsoString(),
         color = color.code,
         type = 2, // tag
-        bookmarks = bookmarkIds.map { it.toString() },
+        bookmarks = bookmarkIds,
         version = 0,
         parent = null,
         children = emptyList(),
@@ -131,7 +128,7 @@ internal fun buildCodableContent(
     folders: List<CodableCollection>,
     bookmarks: List<CodableBookmark>,
 ): CodableContent = CodableContent(
-    id = Uuid.random().toString(),
+    id = IdGenerator.newId(),
     exportedFrom = "YABA",
     collections = folders,
     bookmarks = bookmarks,
