@@ -29,6 +29,7 @@ import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalDeletionDialogManager
+import dev.subfly.yabacore.common.CoreConstants
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.utils.FolderSelectionMode
 import dev.subfly.yabacore.model.utils.YabaColor
@@ -64,6 +65,9 @@ fun FolderItemView(
     val deletionDialogManager = LocalDeletionDialogManager.current
     val appStateManager = LocalAppStateManager.current
 
+    // Check if this is a system folder
+    val isSystemFolder = CoreConstants.Folder.isSystemFolder(model.id)
+
     // Localized strings for menu items
     val newBookmarkText = stringResource(Res.string.new_bookmark)
     val editText = stringResource(Res.string.edit)
@@ -71,118 +75,143 @@ fun FolderItemView(
     val deleteText = stringResource(Res.string.delete)
 
     // Create actions specific to THIS folder model
-    val menuActions = remember(model.id, newBookmarkText, editText, moveText, deleteText) {
-        listOf(
-            CollectionMenuAction(
-                key = "new_bookmark_${model.id}",
-                icon = "bookmark-add-02",
-                text = newBookmarkText,
-                color = YabaColor.CYAN,
-                onClick = {
-                    creationNavigator.add(BookmarkCreationRoute())
-                    appStateManager.onShowCreationContent()
-                }
-            ),
-            CollectionMenuAction(
-                key = "edit_${model.id}",
-                icon = "edit-02",
-                text = editText,
-                color = YabaColor.ORANGE,
-                onClick = {
-                    creationNavigator.add(FolderCreationRoute(folderId = model.id.toString()))
-                    appStateManager.onShowCreationContent()
-                }
-            ),
-            CollectionMenuAction(
-                key = "move_${model.id}",
-                icon = "arrow-move-up-right",
-                text = moveText,
-                color = YabaColor.TEAL,
-                onClick = {
-                    creationNavigator.add(
-                        FolderSelectionRoute(
-                            mode = FolderSelectionMode.FOLDER_MOVE,
-                            contextFolderId = model.id.toString(),
-                            contextBookmarkIds = null,
+    // System folders cannot be edited or moved
+    val menuActions =
+        remember(model.id, isSystemFolder, newBookmarkText, editText, moveText, deleteText) {
+            buildList {
+                add(
+                    CollectionMenuAction(
+                        key = "new_bookmark_${model.id}",
+                        icon = "bookmark-add-02",
+                        text = newBookmarkText,
+                        color = YabaColor.CYAN,
+                        onClick = {
+                            creationNavigator.add(BookmarkCreationRoute())
+                            appStateManager.onShowCreationContent()
+                        }
+                    )
+                )
+                if (isSystemFolder.not()) {
+                    add(
+                        CollectionMenuAction(
+                            key = "edit_${model.id}",
+                            icon = "edit-02",
+                            text = editText,
+                            color = YabaColor.ORANGE,
+                            onClick = {
+                                creationNavigator.add(FolderCreationRoute(folderId = model.id))
+                                appStateManager.onShowCreationContent()
+                            }
                         )
                     )
-                    appStateManager.onShowCreationContent()
-                }
-            ),
-            CollectionMenuAction(
-                key = "delete_${model.id}",
-                icon = "delete-02",
-                text = deleteText,
-                color = YabaColor.RED,
-                isDangerous = true,
-                onClick = {
-                    deletionDialogManager.send(
-                        DeletionState(
-                            deletionType = DeletionType.FOLDER,
-                            folderToBeDeleted = model,
-                            onConfirm = { onDeleteFolder(model) },
+                    add(
+                        CollectionMenuAction(
+                            key = "move_${model.id}",
+                            icon = "arrow-move-up-right",
+                            text = moveText,
+                            color = YabaColor.TEAL,
+                            onClick = {
+                                creationNavigator.add(
+                                    FolderSelectionRoute(
+                                        mode = FolderSelectionMode.FOLDER_MOVE,
+                                        contextFolderId = model.id,
+                                        contextBookmarkIds = null,
+                                    )
+                                )
+                                appStateManager.onShowCreationContent()
+                            }
                         )
                     )
                 }
-            ),
-        )
+                add(
+                    CollectionMenuAction(
+                        key = "delete_${model.id}",
+                        icon = "delete-02",
+                        text = deleteText,
+                        color = YabaColor.RED,
+                        isDangerous = true,
+                        onClick = {
+                            deletionDialogManager.send(
+                                DeletionState(
+                                    deletionType = DeletionType.FOLDER,
+                                    folderToBeDeleted = model,
+                                    onConfirm = { onDeleteFolder(model) },
+                                )
+                            )
+                        }
+                    )
+                )
+            }
+        }
+
+    // System folders cannot be moved or edited via swipe actions
+    val leftSwipeActions = remember(model.id, isSystemFolder) {
+        buildList {
+            if (!isSystemFolder) {
+                add(
+                    CollectionSwipeAction(
+                        key = "MOVE_${model.id}",
+                        icon = "arrow-move-up-right",
+                        color = YabaColor.TEAL,
+                        onClick = {
+                            creationNavigator.add(
+                                FolderSelectionRoute(
+                                    mode = FolderSelectionMode.FOLDER_MOVE,
+                                    contextFolderId = model.id,
+                                    contextBookmarkIds = null,
+                                )
+                            )
+                            appStateManager.onShowCreationContent()
+                        }
+                    )
+                )
+            }
+            add(
+                CollectionSwipeAction(
+                    key = "NEW_${model.id}",
+                    icon = "bookmark-add-02",
+                    color = YabaColor.BLUE,
+                    onClick = {
+                        creationNavigator.add(BookmarkCreationRoute())
+                        appStateManager.onShowCreationContent()
+                    }
+                )
+            )
+        }
     }
 
-    val leftSwipeActions = remember(model.id) {
-        listOf(
-            CollectionSwipeAction(
-                key = "MOVE_${model.id}",
-                icon = "arrow-move-up-right",
-                color = YabaColor.TEAL,
-                onClick = {
-                    creationNavigator.add(
-                        FolderSelectionRoute(
-                            mode = FolderSelectionMode.FOLDER_MOVE,
-                            contextFolderId = model.id.toString(),
-                            contextBookmarkIds = null,
-                        )
+    val rightSwipeActions = remember(model.id, isSystemFolder) {
+        buildList {
+            if (!isSystemFolder) {
+                add(
+                    CollectionSwipeAction(
+                        key = "EDIT_${model.id}",
+                        icon = "edit-02",
+                        color = YabaColor.ORANGE,
+                        onClick = {
+                            creationNavigator.add(FolderCreationRoute(folderId = model.id))
+                            appStateManager.onShowCreationContent()
+                        }
                     )
-                    appStateManager.onShowCreationContent()
-                }
-            ),
-            CollectionSwipeAction(
-                key = "NEW_${model.id}",
-                icon = "bookmark-add-02",
-                color = YabaColor.BLUE,
-                onClick = {
-                    creationNavigator.add(BookmarkCreationRoute())
-                    appStateManager.onShowCreationContent()
-                }
-            ),
-        )
-    }
-
-    val rightSwipeActions = remember(model.id) {
-        listOf(
-            CollectionSwipeAction(
-                key = "EDIT_${model.id}",
-                icon = "edit-02",
-                color = YabaColor.ORANGE,
-                onClick = {
-                    creationNavigator.add(FolderCreationRoute(folderId = model.id.toString()))
-                    appStateManager.onShowCreationContent()
-                }
-            ),
-            CollectionSwipeAction(
-                key = "DELETE_${model.id}",
-                icon = "delete-02",
-                color = YabaColor.RED,
-                onClick = {
-                    deletionDialogManager.send(
-                        DeletionState(
-                            deletionType = DeletionType.FOLDER,
-                            folderToBeDeleted = model,
-                            onConfirm = { onDeleteFolder(model) },
+                )
+            }
+            add(
+                CollectionSwipeAction(
+                    key = "DELETE_${model.id}",
+                    icon = "delete-02",
+                    color = YabaColor.RED,
+                    onClick = {
+                        deletionDialogManager.send(
+                            DeletionState(
+                                deletionType = DeletionType.FOLDER,
+                                folderToBeDeleted = model,
+                                onConfirm = { onDeleteFolder(model) },
+                            )
                         )
-                    )
-                }
-            ),
-        )
+                    }
+                )
+            )
+        }
     }
 
     val expandedIconRotation by animateFloatAsState(
