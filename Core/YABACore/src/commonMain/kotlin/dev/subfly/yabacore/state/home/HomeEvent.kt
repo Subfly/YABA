@@ -20,6 +20,7 @@ sealed class HomeEvent {
     data class OnChangeSortOrder(val sortOrder: SortOrderType) : HomeEvent()
 
     // Folder operations
+    data class OnToggleFolderExpanded(val folderId: String) : HomeEvent()
     data class OnDeleteFolder(val folder: FolderUiModel) : HomeEvent()
     data class OnMoveFolder(
         val folder: FolderUiModel,

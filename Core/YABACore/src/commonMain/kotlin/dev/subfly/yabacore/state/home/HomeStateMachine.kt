@@ -1,8 +1,11 @@
 package dev.subfly.yabacore.state.home
 
+import androidx.compose.ui.util.fastForEach
 import dev.subfly.yabacore.managers.AllBookmarksManager
 import dev.subfly.yabacore.managers.FolderManager
 import dev.subfly.yabacore.managers.TagManager
+import dev.subfly.yabacore.model.ui.FolderUiModel
+import dev.subfly.yabacore.model.ui.HomeFolderRowUiModel
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
 import dev.subfly.yabacore.preferences.SettingsStores
@@ -15,11 +18,27 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 
+private data class SortingParams(
+    val sortType: SortType,
+    val sortOrder: SortOrderType,
+)
+
+private data class HomeDataSnapshot(
+    val folders: List<FolderUiModel>,
+    val tags: List<dev.subfly.yabacore.model.ui.TagUiModel>,
+    val recentBookmarks: List<dev.subfly.yabacore.model.ui.BookmarkUiModel>,
+    val bookmarkAppearance: dev.subfly.yabacore.model.utils.BookmarkAppearance,
+    val cardImageSizing: dev.subfly.yabacore.model.utils.CardImageSizing,
+    val collectionSorting: SortType,
+    val sortOrder: SortOrderType,
+)
+
 private const val RECENT_BOOKMARKS_LIMIT = 5
 
 class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState = HomeUIState()) {
     private var isInitialized = false
     private var dataSubscriptionJob: Job? = null
+    private var allFoldersSorted: List<FolderUiModel> = emptyList()
     private val preferencesStore
         get() = SettingsStores.userPreferences
 
@@ -30,6 +49,7 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
             is HomeEvent.OnChangeCardImageSizing -> onChangeCardImageSizing(event)
             is HomeEvent.OnChangeCollectionSorting -> onChangeCollectionSorting(event)
             is HomeEvent.OnChangeSortOrder -> onChangeSortOrder(event)
+            is HomeEvent.OnToggleFolderExpanded -> onToggleFolderExpanded(event)
             is HomeEvent.OnDeleteFolder -> onDeleteFolder(event)
             is HomeEvent.OnMoveFolder -> onMoveFolder(event)
             is HomeEvent.OnReorderFolder -> onReorderFolder(event)
@@ -72,7 +92,7 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
                     // Combine all data sources with the current sorting parameters
                     combine(
                         preferencesStore.preferencesFlow,
-                        FolderManager.observeFolderTree(
+                        FolderManager.observeAllFoldersSorted(
                             sortType = sortingParams.sortType,
                             sortOrder = sortingParams.sortOrder,
                         ),
@@ -82,7 +102,7 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
                         ),
                         recentBookmarksFlow,
                     ) { preferences, folders, tags, recentBookmarks ->
-                        HomeUIState(
+                        HomeDataSnapshot(
                             folders = folders,
                             tags = tags,
                             recentBookmarks = recentBookmarks,
@@ -90,11 +110,33 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
                             cardImageSizing = preferences.preferredCardImageSizing,
                             collectionSorting = preferences.preferredCollectionSorting,
                             sortOrder = preferences.preferredCollectionSortOrder,
+                        )
+                    }
+                }
+                .collectLatest { snapshot ->
+                    val state = currentState()
+                    val existingIds = snapshot.folders.asSequence().map { it.id }.toSet()
+                    val prunedExpanded = state.expandedFolderIds.intersect(existingIds)
+                    val rows = buildVisibleFolderRows(
+                        allFolders = snapshot.folders,
+                        expandedFolderIds = prunedExpanded,
+                    )
+
+                    allFoldersSorted = snapshot.folders
+                    updateState { state ->
+                        state.copy(
+                            folderRows = rows,
+                            expandedFolderIds = prunedExpanded,
+                            tags = snapshot.tags,
+                            recentBookmarks = snapshot.recentBookmarks,
+                            bookmarkAppearance = snapshot.bookmarkAppearance,
+                            cardImageSizing = snapshot.cardImageSizing,
+                            collectionSorting = snapshot.collectionSorting,
+                            sortOrder = snapshot.sortOrder,
                             isLoading = false,
                         )
                     }
                 }
-                .collectLatest { newState -> updateState { newState } }
         }
     }
 
@@ -114,10 +156,27 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
         launch { preferencesStore.setPreferredCollectionSortOrder(event.sortOrder) }
     }
 
-    private data class SortingParams(
-        val sortType: SortType,
-        val sortOrder: SortOrderType,
-    )
+    private fun onToggleFolderExpanded(event: HomeEvent.OnToggleFolderExpanded) {
+        val folderId = event.folderId
+        if (folderId.isBlank()) return
+
+        val state = currentState()
+        val nextExpanded =
+            if (folderId in state.expandedFolderIds) state.expandedFolderIds - folderId
+            else state.expandedFolderIds + folderId
+
+        val rows = buildVisibleFolderRows(
+            allFolders = allFoldersSorted,
+            expandedFolderIds = nextExpanded,
+        )
+
+        updateState { state ->
+            state.copy(
+                expandedFolderIds = nextExpanded,
+                folderRows = rows,
+            )
+        }
+    }
 
     private fun onDeleteFolder(event: HomeEvent.OnDeleteFolder) {
         launch { FolderManager.deleteFolder(event.folder.id) }
@@ -155,13 +214,61 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
     }
 
     private fun onMoveBookmarkToTag(event: HomeEvent.OnMoveBookmarkToTag) {
-        launch { AllBookmarksManager.addTagToBookmark(tagId = event.targetTag.id, bookmarkId = event.bookmark.id) }
+        launch {
+            AllBookmarksManager.addTagToBookmark(
+                tagId = event.targetTag.id,
+                bookmarkId = event.bookmark.id
+            )
+        }
     }
 
     override fun clear() {
         isInitialized = false
         dataSubscriptionJob?.cancel()
         dataSubscriptionJob = null
+        allFoldersSorted = emptyList()
         super.clear()
     }
+}
+
+private fun buildVisibleFolderRows(
+    allFolders: List<FolderUiModel>,
+    expandedFolderIds: Set<String>,
+): List<HomeFolderRowUiModel> {
+    if (allFolders.isEmpty()) return emptyList()
+
+    val childrenByParentId = mutableMapOf<String?, MutableList<FolderUiModel>>()
+    allFolders.fastForEach { folder ->
+        childrenByParentId.getOrPut(folder.parentId) { mutableListOf() }.add(folder)
+    }
+
+    val result = mutableListOf<HomeFolderRowUiModel>()
+    val colorStack = mutableListOf<dev.subfly.yabacore.model.utils.YabaColor>()
+    val visited = mutableSetOf<String>()
+
+    fun visit(folder: FolderUiModel) {
+        if (!visited.add(folder.id)) return
+
+        val children = childrenByParentId[folder.id].orEmpty()
+        val hasChildren = children.isNotEmpty()
+        val isExpanded = folder.id in expandedFolderIds
+
+        result.add(
+            HomeFolderRowUiModel(
+                folder = folder,
+                parentColors = colorStack.toList(),
+                isExpanded = isExpanded,
+                hasChildren = hasChildren,
+            )
+        )
+
+        if (!hasChildren || !isExpanded) return
+
+        colorStack.add(folder.color)
+        children.fastForEach(::visit)
+        if (colorStack.isNotEmpty()) colorStack.removeAt(colorStack.lastIndex)
+    }
+
+    childrenByParentId[null].orEmpty().fastForEach(::visit)
+    return result
 }

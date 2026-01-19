@@ -210,7 +210,7 @@ fun HomeView(modifier: Modifier = Modifier) {
                             }
                         }
 
-                        state.folders.isEmpty() -> {
+                        state.folderRows.isEmpty() -> {
                             item(key = "NO_FOLDERS") {
                                 NoContentView(
                                     iconName = "folder-01",
@@ -222,11 +222,18 @@ fun HomeView(modifier: Modifier = Modifier) {
 
                         else -> {
                             items(
-                                items = state.folders,
-                                key = { it.id },
-                            ) { folderModel ->
+                                items = state.folderRows,
+                                key = { it.folder.id },
+                            ) { row ->
                                 FolderItemView(
-                                    model = folderModel,
+                                    modifier = Modifier,
+                                    model = row.folder,
+                                    parentColors = row.parentColors,
+                                    hasChildren = row.hasChildren,
+                                    isExpanded = row.isExpanded,
+                                    onToggleExpanded = {
+                                        vm.onEvent(HomeEvent.OnToggleFolderExpanded(row.folder.id))
+                                    },
                                     onDeleteFolder = { folderToBeDeleted ->
                                         vm.onEvent(HomeEvent.OnDeleteFolder(folderToBeDeleted))
                                     },

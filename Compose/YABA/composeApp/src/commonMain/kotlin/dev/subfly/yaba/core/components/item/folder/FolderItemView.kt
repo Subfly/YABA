@@ -2,20 +2,16 @@
 
 package dev.subfly.yaba.core.components.item.folder
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,17 +43,20 @@ import yaba.composeapp.generated.resources.new_bookmark
 import kotlin.uuid.ExperimentalUuidApi
 
 /**
- * Entry point for folder item rendering.
- * For top-level folders, pass an empty parentColors list.
+ * Folder row for list rendering (Home / any LazyColumn usage).
  *
- * Note: Folders always use LIST appearance as GRID view is not supported
- * for items that can have nested children (folder-in-folder).
+ * This component intentionally renders **only a single row**.
+ * Any "folder-in-folder" expansion must be handled by the parent list (state machine),
+ * so we can keep the UI lazy and avoid recursive composition.
  */
 @Composable
 fun FolderItemView(
     modifier: Modifier = Modifier,
     model: FolderUiModel,
     parentColors: List<YabaColor> = emptyList(),
+    hasChildren: Boolean = false,
+    isExpanded: Boolean = false,
+    onToggleExpanded: () -> Unit = {},
     onClick: (FolderUiModel) -> Unit = {},
     onDeleteFolder: (FolderUiModel) -> Unit,
 ) {
@@ -186,88 +185,38 @@ fun FolderItemView(
         )
     }
 
-    FolderListItemView(
-        modifier = modifier,
-        model = model,
+    val expandedIconRotation by animateFloatAsState(
+        targetValue = if (isExpanded) 90f else 0f,
+    )
+    val color = remember(model.color) { Color(model.color.iconTintArgb()) }
+
+    BaseCollectionItemView(
+        modifier = modifier.fillMaxWidth(),
+        label = model.label,
+        icon = model.icon,
+        color = model.color,
         parentColors = parentColors,
         menuActions = menuActions,
         leftSwipeActions = leftSwipeActions,
         rightSwipeActions = rightSwipeActions,
-        onClick = onClick,
-        onDeleteFolder = onDeleteFolder,
-    )
-}
-
-/**
- * List view for folders with support for expandable children.
- * Parent color bars are rendered inside BaseCollectionItemView.
- */
-@Composable
-private fun FolderListItemView(
-    modifier: Modifier = Modifier,
-    model: FolderUiModel,
-    parentColors: List<YabaColor>,
-    menuActions: List<CollectionMenuAction>,
-    leftSwipeActions: List<CollectionSwipeAction>,
-    rightSwipeActions: List<CollectionSwipeAction>,
-    onClick: (FolderUiModel) -> Unit,
-    onDeleteFolder: (FolderUiModel) -> Unit,
-) {
-    var isExpanded by remember { mutableStateOf(false) }
-    val expandedIconRotation by animateFloatAsState(
-        targetValue = if (isExpanded) 90f else 0f,
-    )
-    val color by remember(model) {
-        mutableStateOf(Color(model.color.iconTintArgb()))
-    }
-
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .animateContentSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        // Main folder item - parent colors are rendered inside BaseCollectionItemView
-        BaseCollectionItemView(
-            label = model.label,
-            icon = model.icon,
-            color = model.color,
-            parentColors = parentColors,
-            menuActions = menuActions,
-            leftSwipeActions = leftSwipeActions,
-            rightSwipeActions = rightSwipeActions,
-            onClick = { onClick(model) },
-            trailingContent = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    Text(model.bookmarkCount.toString())
-                    if (model.children.isNotEmpty()) {
-                        YabaIcon(
-                            modifier = Modifier
-                                .rotate(expandedIconRotation)
-                                .clip(CircleShape)
-                                .clickable(onClick = {isExpanded = !isExpanded }),
-                            name = "arrow-right-01",
-                            color = color,
-                        )
-                    }
+        onClick = { onClick(model) },
+        trailingContent = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text(model.bookmarkCount.toString())
+                if (hasChildren) {
+                    YabaIcon(
+                        modifier = Modifier
+                            .rotate(expandedIconRotation)
+                            .clip(CircleShape)
+                            .clickable(onClick = onToggleExpanded),
+                        name = "arrow-right-01",
+                        color = color,
+                    )
                 }
             }
-        )
-
-        // Render children if expanded - each child is a full FolderItemView with its own actions
-        if (model.children.isNotEmpty() && isExpanded) {
-            model.children.forEach { childModel ->
-                // Pass current folder's color to the child's parent colors
-                FolderItemView(
-                    model = childModel,
-                    parentColors = parentColors + model.color,
-                    onClick = onClick,
-                    onDeleteFolder = onDeleteFolder,
-                )
-            }
         }
-    }
+    )
 }
