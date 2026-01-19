@@ -120,7 +120,7 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
     )
 
     private fun onDeleteFolder(event: HomeEvent.OnDeleteFolder) {
-        launch { FolderManager.deleteFolderCascade(event.folder.id) }
+        launch { FolderManager.deleteFolder(event.folder.id) }
     }
 
     private fun onMoveFolder(event: HomeEvent.OnMoveFolder) {

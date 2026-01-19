@@ -15,6 +15,7 @@ import dev.subfly.yabacore.sync.CRDTEngine
 import dev.subfly.yabacore.sync.FileTarget
 import dev.subfly.yabacore.sync.ObjectType
 import dev.subfly.yabacore.sync.VectorClock
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 import kotlin.time.Clock
 
@@ -93,8 +94,14 @@ object LinkmarkManager {
         // 1. Write to filesystem (authoritative)
         entityFileManager.writeLinkJson(bookmarkId, linkJson)
 
-        // 2. Record CRDT events
-        recordLinkCreationEvents(bookmarkId, linkJson)
+        // 2. Record CRDT CREATE event (for link.json file)
+        crdtEngine.recordCreate(
+            objectId = bookmarkId,
+            objectType = ObjectType.BOOKMARK,
+            file = FileTarget.LINK_JSON,
+            payload = buildLinkCreatePayload(linkJson),
+            currentClock = VectorClock.empty(),
+        )
 
         // 3. Update SQLite cache
         linkBookmarkDao.upsert(linkJson.toEntity(bookmarkId))
@@ -155,9 +162,9 @@ object LinkmarkManager {
         // 1. Write to filesystem (authoritative)
         entityFileManager.writeLinkJson(bookmarkId, updatedJson)
 
-        // 2. Record CRDT events
+        // 2. Record CRDT UPDATE event (only if there are changes)
         if (changes.isNotEmpty()) {
-            crdtEngine.recordFieldChanges(
+            crdtEngine.recordUpdate(
                 objectId = bookmarkId,
                 objectType = ObjectType.BOOKMARK,
                 file = FileTarget.LINK_JSON,
@@ -198,24 +205,13 @@ object LinkmarkManager {
         return candidate.substringBefore("?").substringBefore("#")
     }
 
-    private suspend fun recordLinkCreationEvents(
-        bookmarkId: String,
-        json: LinkJson,
-    ) {
-        val changes = mapOf(
+    private fun buildLinkCreatePayload(json: LinkJson): Map<String, JsonElement> =
+        mapOf(
             "url" to JsonPrimitive(json.url),
             "domain" to JsonPrimitive(json.domain),
             "linkTypeCode" to JsonPrimitive(json.linkTypeCode),
             "videoUrl" to CRDTEngine.nullableStringValue(json.videoUrl),
         )
-        crdtEngine.recordFieldChanges(
-            objectId = bookmarkId,
-            objectType = ObjectType.BOOKMARK,
-            file = FileTarget.LINK_JSON,
-            changes = changes,
-            currentClock = VectorClock.empty(),
-        )
-    }
 
     // ==================== Mappers ====================
 

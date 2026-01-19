@@ -145,19 +145,14 @@ class LinkmarkCreationStateMachine :
 
             // Ensure a folder is selected (use uncategorized if none)
             if (currentState().selectedFolder == null) {
-                // First check if uncategorized folder already exists in DB
-                val existingUncategorized = FolderManager.getUncategorizedFolder()
-                if (existingUncategorized != null) {
-                    updateState { it.copy(selectedFolder = existingUncategorized) }
-                } else {
-                    // Create in-memory model only - will be persisted on save
-                    val temporaryUncategorized = FolderManager.createUncategorizedFolderModel()
-                    updateState {
-                        it.copy(
-                            selectedFolder = temporaryUncategorized,
-                            uncategorizedFolderCreationRequired = true,
-                        )
-                    }
+                // Use in-memory model immediately; actual persistence + visibility restoration happens on save.
+                // This ensures: if Uncategorized is currently hidden, we unhide it via UPDATE before using it.
+                val temporaryUncategorized = FolderManager.createUncategorizedFolderModel()
+                updateState {
+                    it.copy(
+                        selectedFolder = temporaryUncategorized,
+                        uncategorizedFolderCreationRequired = true,
+                    )
                 }
             }
         }
@@ -459,7 +454,7 @@ class LinkmarkCreationStateMachine :
             try {
                 // If uncategorized folder needs to be created, persist it now
                 if (state.uncategorizedFolderCreationRequired) {
-                    selectedFolder = FolderManager.ensureUncategorizedFolder()
+                    selectedFolder = FolderManager.ensureUncategorizedFolderVisible()
                 }
 
                 if (state.editingLinkmark != null) {
@@ -490,12 +485,18 @@ class LinkmarkCreationStateMachine :
 
                     // Add new tags
                     state.selectedTags.filter { it.id !in existingTagIds }.forEach { tag ->
-                        TagManager.addTagToBookmark(tag, state.editingLinkmark.id)
+                        AllBookmarksManager.addTagToBookmark(
+                            tag.id,
+                            state.editingLinkmark.id
+                        )
                     }
 
                     // Remove old tags
                     state.editingLinkmark.tags.filter { it.id !in newTagIds }.forEach { tag ->
-                        TagManager.removeTagFromBookmark(tag, state.editingLinkmark.id)
+                        AllBookmarksManager.removeTagFromBookmark(
+                            tag.id,
+                            state.editingLinkmark.id
+                        )
                     }
                 } else {
                     // Create new base bookmark metadata first (list/grid source of truth)

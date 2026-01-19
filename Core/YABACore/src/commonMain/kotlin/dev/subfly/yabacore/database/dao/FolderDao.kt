@@ -25,20 +25,37 @@ interface FolderDao {
     @Query("DELETE FROM folders")
     suspend fun deleteAll()
 
-    @Query("SELECT * FROM folders WHERE id = :id LIMIT 1")
+    // Visible-only queries (exclude hidden system folders)
+    @Query("SELECT * FROM folders WHERE id = :id AND isHidden = 0 LIMIT 1")
     suspend fun getById(id: String): FolderEntity?
 
-    @Query("SELECT * FROM folders")
+    @Query("SELECT * FROM folders WHERE isHidden = 0")
     suspend fun getAll(): List<FolderEntity>
 
-    @Query("SELECT * FROM folders WHERE id = :id LIMIT 1")
+    @Query("SELECT * FROM folders WHERE id = :id AND isHidden = 0 LIMIT 1")
     fun observeById(id: String): Flow<FolderEntity?>
 
-    @Query("SELECT * FROM folders WHERE parentId = :parentId ORDER BY `order` ASC")
+    @Query("SELECT * FROM folders WHERE parentId = :parentId AND isHidden = 0 ORDER BY `order` ASC")
     suspend fun getChildren(parentId: String): List<FolderEntity>
 
-    @Query("SELECT * FROM folders WHERE parentId IS NULL ORDER BY `order` ASC")
+    @Query("SELECT * FROM folders WHERE parentId IS NULL AND isHidden = 0 ORDER BY `order` ASC")
     suspend fun getRoot(): List<FolderEntity>
+
+    // Internal queries (include hidden folders). Use these for system-folder operations and drift recovery.
+    @Query("SELECT * FROM folders WHERE id = :id LIMIT 1")
+    suspend fun getByIdIncludingHidden(id: String): FolderEntity?
+
+    @Query("SELECT * FROM folders")
+    suspend fun getAllIncludingHidden(): List<FolderEntity>
+
+    @Query("SELECT * FROM folders WHERE id = :id LIMIT 1")
+    fun observeByIdIncludingHidden(id: String): Flow<FolderEntity?>
+
+    @Query("SELECT * FROM folders WHERE parentId = :parentId ORDER BY `order` ASC")
+    suspend fun getChildrenIncludingHidden(parentId: String): List<FolderEntity>
+
+    @Query("SELECT * FROM folders WHERE parentId IS NULL ORDER BY `order` ASC")
+    suspend fun getRootIncludingHidden(): List<FolderEntity>
 
     @Query(
         """
@@ -95,11 +112,24 @@ interface FolderDao {
             SELECT COUNT(*) FROM bookmarks WHERE bookmarks.folderId = folders.id
         ) AS bookmarkCount
         FROM folders
-        WHERE id = :id
+        WHERE id = :id AND folders.isHidden = 0
         LIMIT 1
         """
     )
     suspend fun getFolderWithBookmarkCount(id: String): FolderWithBookmarkCount?
+
+    @Query(
+        """
+        SELECT folders.*,
+        (
+            SELECT COUNT(*) FROM bookmarks WHERE bookmarks.folderId = folders.id
+        ) AS bookmarkCount
+        FROM folders
+        WHERE id = :id
+        LIMIT 1
+        """
+    )
+    suspend fun getFolderWithBookmarkCountIncludingHidden(id: String): FolderWithBookmarkCount?
 
     @Query(
         """

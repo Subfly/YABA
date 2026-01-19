@@ -305,7 +305,7 @@ class SyncStateMachine : BaseStateMachine<SyncUIState, SyncEvent>(
         val dataConflicts = mutableListOf<DriftEntity>()
 
         // Check folders
-        val cacheFolderIds = folderDao.getAll().map { it.id }.toSet()
+        val cacheFolderIds = folderDao.getAllIncludingHidden().map { it.id }.toSet()
         val fsFolderIds = scanResult.folders.map { it.id }.toSet()
 
         scanResult.folders.forEach { scanned ->

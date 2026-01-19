@@ -3,9 +3,13 @@ package dev.subfly.yabacore.managers
 import dev.subfly.yabacore.common.CoreConstants
 import dev.subfly.yabacore.database.DatabaseProvider
 import dev.subfly.yabacore.database.DeviceIdProvider
+import dev.subfly.yabacore.database.entities.FolderEntity
 import dev.subfly.yabacore.database.events.EventsDatabaseProvider
 import dev.subfly.yabacore.filesystem.EntityFileManager
+import dev.subfly.yabacore.model.utils.YabaColor
+import dev.subfly.yabacore.queue.CoreOperationQueue
 import dev.subfly.yabacore.sync.VectorClock
+import kotlin.time.Clock
 
 /**
  * Global data operations (e.g., wipe all data).
@@ -25,13 +29,49 @@ object GlobalDataManager {
      * Performs startup self-healing:
      * - Removes any tombstones for system folders/tags
      *
+     * Uses queueAndAwait to serialize with other operations.
      * Call this at app startup.
      */
     suspend fun performStartupSelfHealing() {
+        CoreOperationQueue.queueAndAwait("StartupSelfHealing") {
+            performStartupSelfHealingInternal()
+        }
+    }
+
+    private suspend fun performStartupSelfHealingInternal() {
+        val deviceId = DeviceIdProvider.get()
+
         // Self-heal system folder tombstones
         val uncategorizedId = CoreConstants.Folder.Uncategorized.ID
         if (entityFileManager.isFolderDeleted(uncategorizedId)) {
             entityFileManager.removeFolderTombstone(uncategorizedId)
+        }
+        // Enforce rule: system folders must always be root-level
+        val uncategorizedMeta = entityFileManager.readFolderMeta(uncategorizedId)
+        if (uncategorizedMeta != null && uncategorizedMeta.parentId != null) {
+            val existingClock = VectorClock.fromMap(uncategorizedMeta.clock)
+            val newClock = existingClock.increment(deviceId)
+            val now = Clock.System.now().toEpochMilliseconds()
+            val fixed = uncategorizedMeta.copy(
+                parentId = null,
+                editedAt = now,
+                clock = newClock.toMap(),
+            )
+            entityFileManager.writeFolderMeta(fixed)
+            folderDao.upsert(
+                FolderEntity(
+                    id = fixed.id,
+                    parentId = fixed.parentId,
+                    label = fixed.label,
+                    description = fixed.description,
+                    icon = fixed.icon,
+                    color = YabaColor.fromCode(fixed.colorCode),
+                    order = fixed.order,
+                    createdAt = fixed.createdAt,
+                    editedAt = fixed.editedAt,
+                    isHidden = fixed.isHidden,
+                )
+            )
         }
 
         // Self-heal system tag tombstones

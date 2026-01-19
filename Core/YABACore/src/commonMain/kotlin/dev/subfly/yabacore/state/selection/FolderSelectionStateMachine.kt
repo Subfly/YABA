@@ -1,5 +1,6 @@
 package dev.subfly.yabacore.state.selection
 
+import dev.subfly.yabacore.common.CoreConstants
 import dev.subfly.yabacore.managers.AllBookmarksManager
 import dev.subfly.yabacore.managers.FolderManager
 import dev.subfly.yabacore.model.ui.FolderUiModel
@@ -163,6 +164,14 @@ class FolderSelectionStateMachine :
      */
     private fun applyModeExclusions(allFolders: List<FolderUiModel>): List<FolderUiModel> {
         var result = allFolders
+
+        // System folders must always be root-level and cannot be used as move targets for folders.
+        // They remain selectable for bookmark moves / folder selection (e.g., Uncategorized).
+        val excludeSystemFoldersAsTargets = mode == FolderSelectionMode.PARENT_SELECTION ||
+            mode == FolderSelectionMode.FOLDER_MOVE
+        if (excludeSystemFoldersAsTargets) {
+            result = result.filterNot { folder -> CoreConstants.Folder.isSystemFolder(folder.id) }
+        }
 
         // Apply exclusions based on mode
         if (excludedIds.isNotEmpty()) {

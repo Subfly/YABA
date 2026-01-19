@@ -1,14 +1,23 @@
 package dev.subfly.yabacore.sync
 
+import dev.subfly.yabacore.common.CoreConstants
+import dev.subfly.yabacore.common.IdGenerator
 import dev.subfly.yabacore.database.CacheRebuilder
 import dev.subfly.yabacore.database.DatabaseProvider
+import dev.subfly.yabacore.database.entities.FolderEntity
+import dev.subfly.yabacore.database.entities.TagEntity
 import dev.subfly.yabacore.database.events.EventsDatabaseProvider
 import dev.subfly.yabacore.database.events.toEvents
 import dev.subfly.yabacore.filesystem.EntityFileManager
 import dev.subfly.yabacore.filesystem.FileSystemStateManager
 import dev.subfly.yabacore.filesystem.SyncState
+import dev.subfly.yabacore.model.utils.YabaColor
+import dev.subfly.yabacore.filesystem.json.FolderMetaJson
+import dev.subfly.yabacore.filesystem.json.TagMetaJson
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
@@ -32,6 +41,11 @@ enum class SyncMode {
  * - **Incremental Merge**: Applies CRDT events to merge changes
  *
  * The filesystem is always the authoritative source of truth.
+ *
+ * Delete handling:
+ * - DELETE events dominate all updates (delete dominance)
+ * - System entities (Uncategorized folder, Pinned/Private tags) become hidden instead of deleted
+ * - DELETE events are never compacted
  */
 object SyncEngine {
     private val eventsDao get() = EventsDatabaseProvider.eventsDao
@@ -154,7 +168,7 @@ object SyncEngine {
     // ==================== Private Helpers ====================
 
     private suspend fun mergeObjectEvents(objectId: String) {
-        val events = eventsDao.getEventsForObject(objectId).toEvents()
+        var events = eventsDao.getEventsForObject(objectId).toEvents()
         if (events.isEmpty()) return
 
         val objectType = events.first().objectType
@@ -167,30 +181,55 @@ object SyncEngine {
         }
 
         if (isDeletedOnFilesystem) {
-            // Entity is already deleted on filesystem, just clear events
-            eventsDao.deleteEventsForObject(objectId)
+            // Entity is already deleted on filesystem
+            // Only remove non-DELETE events (DELETE events are preserved forever)
+            crdtEngine.deleteNonDeleteEventsForObject(objectId)
             return
         }
 
-        // Check if events contain a winning _deleted=true event
-        // This handles the case where deletion arrives via events before filesystem sync
-        val metaEvents = events.filter { it.file == FileTarget.META_JSON }
-        val deletedEvents = metaEvents.filter { it.field == "_deleted" }
-        if (deletedEvents.isNotEmpty()) {
-            val resolved = crdtEngine.resolveFieldFromEvents(deletedEvents)
-            val isDeleted = resolved.value.jsonPrimitive.booleanOrNull == true
-            if (isDeleted) {
-                // Deletion event wins - apply deletion to filesystem and index
-                applyDeletionFromEvent(objectType, objectId, resolved.winningClock)
-                eventsDao.deleteEventsForObject(objectId)
+        // Check for DELETE events using the new typed event system
+        val deleteEvents = events.filter { it.isDelete() }
+        if (deleteEvents.isNotEmpty()) {
+            // Find the winning delete event
+            val winningDelete = deleteEvents.maxByOrNull { it.timestamp }
+                ?: deleteEvents.first()
+
+            // Check if this is a system entity
+            val isSystemEntity = isSystemEntity(objectType, objectId)
+
+            if (isSystemEntity) {
+                // Legacy compatibility:
+                // System entities must never be deleted as CRDT entities.
+                // Convert DELETE -> UPDATE(isHidden=true) and remove DELETE events so they don't dominate.
+                convertLegacySystemDeleteToHiddenUpdate(objectType, objectId, winningDelete)
+                // Reload events after conversion/removal and continue with normal merge.
+                events = eventsDao.getEventsForObject(objectId).toEvents()
+            } else {
+                // Normal entities get deleted
+                applyDeletionFromEvent(objectType, objectId, winningDelete.clock)
+
+                // Only remove non-DELETE events (DELETE events are preserved forever)
+                crdtEngine.deleteNonDeleteEventsForObject(objectId)
                 return
             }
         }
 
+        // No delete events - merge CREATE/UPDATE events
         when (objectType) {
             ObjectType.FOLDER -> mergeFolderEvents(objectId, events)
             ObjectType.TAG -> mergeTagEvents(objectId, events)
             ObjectType.BOOKMARK -> mergeBookmarkEvents(objectId, events)
+        }
+    }
+
+    /**
+     * Checks if an entity is a system entity that cannot be truly deleted.
+     */
+    private fun isSystemEntity(objectType: ObjectType, entityId: String): Boolean {
+        return when (objectType) {
+            ObjectType.FOLDER -> CoreConstants.Folder.isSystemFolder(entityId)
+            ObjectType.TAG -> CoreConstants.Tag.isSystemTag(entityId)
+            ObjectType.BOOKMARK -> false // No system bookmarks
         }
     }
 
@@ -221,22 +260,124 @@ object SyncEngine {
         }
     }
 
+    /**
+     * Applies a "hidden" state for system entities that receive DELETE events.
+     * System entities cannot be truly deleted, but they can be hidden.
+     * This sets isHidden=true in the entity's meta.json.
+     */
+    private suspend fun applyHiddenFromEvent(
+        objectType: ObjectType,
+        entityId: String,
+        deletionClock: VectorClock,
+    ) {
+        when (objectType) {
+            ObjectType.FOLDER -> {
+                val existing = entityFileManager.readFolderMeta(entityId)
+                if (existing != null) {
+                    val updated = existing.copy(
+                        isHidden = true,
+                        clock = deletionClock.toMap(),
+                    )
+                    entityFileManager.writeFolderMeta(updated)
+                    // Update cache with hidden state
+                    // The entity remains in the DB but with isHidden=true
+                    DatabaseProvider.folderDao.upsert(updated.toEntity())
+                }
+            }
+            ObjectType.TAG -> {
+                val existing = entityFileManager.readTagMeta(entityId)
+                if (existing != null) {
+                    val updated = existing.copy(
+                        isHidden = true,
+                        clock = deletionClock.toMap(),
+                    )
+                    entityFileManager.writeTagMeta(updated)
+                    // Update cache with hidden state
+                    DatabaseProvider.tagDao.upsert(updated.toEntity())
+                }
+            }
+            ObjectType.BOOKMARK -> {
+                // Bookmarks don't have system entities, so this shouldn't be called
+                // But if it is, just apply normal deletion
+                applyDeletionFromEvent(objectType, entityId, deletionClock)
+            }
+        }
+    }
+
+    /**
+     * Converts a legacy system-entity DELETE event into a visibility UPDATE (isHidden=true),
+     * then removes DELETE events for the entity so future visibility updates can win.
+     *
+     * System entities must never be terminally deleted.
+     */
+    private suspend fun convertLegacySystemDeleteToHiddenUpdate(
+        objectType: ObjectType,
+        entityId: String,
+        winningDelete: CRDTEvent,
+    ) {
+        // Apply hidden state with the delete's resolved clock (filesystem + cache)
+        applyHiddenFromEvent(objectType, entityId, winningDelete.clock)
+
+        // Insert an equivalent UPDATE event so state can sync without delete dominance
+        val updateEvent = CRDTEvent(
+            eventId = IdGenerator.newId(),
+            objectId = entityId,
+            objectType = objectType,
+            eventType = EventType.UPDATE,
+            file = FileTarget.META_JSON,
+            payload = JsonObject(
+                mapOf(
+                    "isHidden" to JsonPrimitive(true),
+                    "editedAt" to JsonPrimitive(winningDelete.timestamp),
+                )
+            ),
+            clock = winningDelete.clock,
+            timestamp = winningDelete.timestamp,
+        )
+        crdtEngine.applyEvent(updateEvent)
+
+        // Remove legacy DELETE events for this entity (prohibited for system entities)
+        crdtEngine.deleteDeleteEventsForObject(entityId)
+    }
+
+    private fun FolderMetaJson.toEntity(): FolderEntity = FolderEntity(
+        id = id,
+        parentId = parentId,
+        label = label,
+        description = description,
+        icon = icon,
+        color = YabaColor.fromCode(colorCode),
+        order = order,
+        createdAt = createdAt,
+        editedAt = editedAt,
+        isHidden = isHidden,
+    )
+
+    private fun TagMetaJson.toEntity(): TagEntity = TagEntity(
+        id = id,
+        label = label,
+        icon = icon,
+        color = YabaColor.fromCode(colorCode),
+        order = order,
+        createdAt = createdAt,
+        editedAt = editedAt,
+        isHidden = isHidden,
+    )
+
     private suspend fun mergeFolderEvents(folderId: String, events: List<CRDTEvent>) {
         val existingJson = entityFileManager.readFolderMeta(folderId)
         val existingClock = existingJson?.let { VectorClock.fromMap(it.clock) } ?: VectorClock.empty()
 
-        // Group events by field and resolve each
-        val metaEvents = events.filter { it.file == FileTarget.META_JSON }
+        // Use CRDTEngine to merge events and get resolved fields
+        val metaEvents = events.filter { it.file == FileTarget.META_JSON && !it.isDelete() }
         val resolvedFields = mutableMapOf<String, JsonElement>()
         var mergedClock = existingClock
 
-        metaEvents.groupBy { it.field }.forEach { (field, fieldEvents) ->
-            val resolved = crdtEngine.resolveFieldFromEvents(fieldEvents)
-            resolvedFields[field] = resolved.value
-            mergedClock = mergedClock.merge(resolved.winningClock)
-        }
+        // Merge all event payloads, resolving conflicts per-field
+        mergeEventPayloadsToFields(metaEvents, resolvedFields)
+        metaEvents.forEach { mergedClock = mergedClock.merge(it.clock) }
 
-        if (existingJson != null) {
+        if (existingJson != null && resolvedFields.isNotEmpty()) {
             // Apply resolved fields to existing JSON
             val updatedJson = existingJson.copy(
                 parentId = resolvedFields["parentId"]?.jsonPrimitive?.contentOrNull ?: existingJson.parentId,
@@ -246,44 +387,43 @@ object SyncEngine {
                 colorCode = resolvedFields["colorCode"]?.jsonPrimitive?.longOrNull?.toInt() ?: existingJson.colorCode,
                 order = resolvedFields["order"]?.jsonPrimitive?.longOrNull?.toInt() ?: existingJson.order,
                 editedAt = resolvedFields["editedAt"]?.jsonPrimitive?.longOrNull ?: existingJson.editedAt,
+                isHidden = resolvedFields["isHidden"]?.jsonPrimitive?.booleanOrNull ?: existingJson.isHidden,
                 clock = mergedClock.toMap(),
             )
             entityFileManager.writeFolderMeta(updatedJson)
+            DatabaseProvider.folderDao.upsert(updatedJson.toEntity())
         }
 
         // Events are NOT deleted immediately - LogCompaction will clean them up
         // using "snapshot dominance" rule once the filesystem clock is newer.
-        // This allows events to remain available for peer sync until compaction.
     }
 
     private suspend fun mergeTagEvents(tagId: String, events: List<CRDTEvent>) {
         val existingJson = entityFileManager.readTagMeta(tagId)
         val existingClock = existingJson?.let { VectorClock.fromMap(it.clock) } ?: VectorClock.empty()
 
-        val metaEvents = events.filter { it.file == FileTarget.META_JSON }
+        val metaEvents = events.filter { it.file == FileTarget.META_JSON && !it.isDelete() }
         val resolvedFields = mutableMapOf<String, JsonElement>()
         var mergedClock = existingClock
 
-        metaEvents.groupBy { it.field }.forEach { (field, fieldEvents) ->
-            val resolved = crdtEngine.resolveFieldFromEvents(fieldEvents)
-            resolvedFields[field] = resolved.value
-            mergedClock = mergedClock.merge(resolved.winningClock)
-        }
+        mergeEventPayloadsToFields(metaEvents, resolvedFields)
+        metaEvents.forEach { mergedClock = mergedClock.merge(it.clock) }
 
-        if (existingJson != null) {
+        if (existingJson != null && resolvedFields.isNotEmpty()) {
             val updatedJson = existingJson.copy(
                 label = resolvedFields["label"]?.jsonPrimitive?.contentOrNull ?: existingJson.label,
                 icon = resolvedFields["icon"]?.jsonPrimitive?.contentOrNull ?: existingJson.icon,
                 colorCode = resolvedFields["colorCode"]?.jsonPrimitive?.longOrNull?.toInt() ?: existingJson.colorCode,
                 order = resolvedFields["order"]?.jsonPrimitive?.longOrNull?.toInt() ?: existingJson.order,
                 editedAt = resolvedFields["editedAt"]?.jsonPrimitive?.longOrNull ?: existingJson.editedAt,
+                isHidden = resolvedFields["isHidden"]?.jsonPrimitive?.booleanOrNull ?: existingJson.isHidden,
                 clock = mergedClock.toMap(),
             )
             entityFileManager.writeTagMeta(updatedJson)
+            DatabaseProvider.tagDao.upsert(updatedJson.toEntity())
         }
 
         // Events are NOT deleted immediately - LogCompaction will clean them up
-        // using "snapshot dominance" rule once the filesystem clock is newer.
     }
 
     private suspend fun mergeBookmarkEvents(bookmarkId: String, events: List<CRDTEvent>) {
@@ -293,26 +433,20 @@ object SyncEngine {
         val existingLinkClock = existingLink?.let { VectorClock.fromMap(it.clock) } ?: VectorClock.empty()
 
         // Process meta.json events
-        val metaEvents = events.filter { it.file == FileTarget.META_JSON }
+        val metaEvents = events.filter { it.file == FileTarget.META_JSON && !it.isDelete() }
         val metaFields = mutableMapOf<String, JsonElement>()
         var mergedMetaClock = existingMetaClock
 
-        metaEvents.groupBy { it.field }.forEach { (field, fieldEvents) ->
-            val resolved = crdtEngine.resolveFieldFromEvents(fieldEvents)
-            metaFields[field] = resolved.value
-            mergedMetaClock = mergedMetaClock.merge(resolved.winningClock)
-        }
+        mergeEventPayloadsToFields(metaEvents, metaFields)
+        metaEvents.forEach { mergedMetaClock = mergedMetaClock.merge(it.clock) }
 
         // Process link.json events
-        val linkEvents = events.filter { it.file == FileTarget.LINK_JSON }
+        val linkEvents = events.filter { it.file == FileTarget.LINK_JSON && !it.isDelete() }
         val linkFields = mutableMapOf<String, JsonElement>()
         var mergedLinkClock = existingLinkClock
 
-        linkEvents.groupBy { it.field }.forEach { (field, fieldEvents) ->
-            val resolved = crdtEngine.resolveFieldFromEvents(fieldEvents)
-            linkFields[field] = resolved.value
-            mergedLinkClock = mergedLinkClock.merge(resolved.winningClock)
-        }
+        mergeEventPayloadsToFields(linkEvents, linkFields)
+        linkEvents.forEach { mergedLinkClock = mergedLinkClock.merge(it.clock) }
 
         if (existingMeta != null && metaFields.isNotEmpty()) {
             // Parse tagIds from JsonArray if present
@@ -356,7 +490,41 @@ object SyncEngine {
         }
 
         // Events are NOT deleted immediately - LogCompaction will clean them up
-        // using "snapshot dominance" rule once the filesystem clock is newer.
+    }
+
+    /**
+     * Merges event payloads into a field map, resolving conflicts per-field.
+     * For each field, the event with the highest clock wins.
+     */
+    private fun mergeEventPayloadsToFields(
+        events: List<CRDTEvent>,
+        target: MutableMap<String, JsonElement>,
+    ) {
+        // Collect all fields and their events
+        val fieldEvents = mutableMapOf<String, MutableList<Pair<CRDTEvent, JsonElement>>>()
+
+        for (event in events) {
+            for ((field, value) in event.payload) {
+                fieldEvents.getOrPut(field) { mutableListOf() }.add(event to value)
+            }
+        }
+
+        // Resolve each field - event with highest clock wins
+        for ((field, eventValuePairs) in fieldEvents) {
+            var winner = eventValuePairs.first()
+            for (pair in eventValuePairs.drop(1)) {
+                if (pair.first.clock.isNewerThan(winner.first.clock)) {
+                    winner = pair
+                } else if (!winner.first.clock.isNewerThan(pair.first.clock)) {
+                    // Concurrent - use deterministic tie-breaker
+                    val comparison = VectorClock.deterministicCompare(pair.first.clock, winner.first.clock)
+                    if (comparison > 0) {
+                        winner = pair
+                    }
+                }
+            }
+            target[field] = winner.second
+        }
     }
 
     /**

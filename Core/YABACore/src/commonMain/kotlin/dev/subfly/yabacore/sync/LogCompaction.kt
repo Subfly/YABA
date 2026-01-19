@@ -20,13 +20,14 @@ data class CompactionConfig(
  * Compaction rules from the spec:
  *
  * **Rule A: Snapshot Dominance**
- * If filesystem clock >= all event clocks for an object, delete events for that object
+ * If filesystem clock >= all event clocks for an object, delete CREATE/UPDATE events for that object.
+ * DELETE events are NEVER deleted.
  *
- * **Rule B: Tombstone Dominance**
- * If `deleted.json` exists, delete all events for that object
+ * **Rule B: Delete Events Preserved**
+ * DELETE events are never compacted or removed. They must be preserved forever to prevent resurrection.
  *
  * **Rule C: Size Threshold**
- * If events.sqlite exceeds limit, compact eligible objects
+ * If events.sqlite exceeds limit, compact eligible objects (but preserve DELETE events).
  */
 object LogCompaction {
     private val eventsDao get() = EventsDatabaseProvider.eventsDao
@@ -43,6 +44,7 @@ object LogCompaction {
 
     /**
      * Runs log compaction, applying all compaction rules.
+     * DELETE events are NEVER removed.
      *
      * @return Number of events removed
      */
@@ -57,29 +59,43 @@ object LogCompaction {
 
             val objectType = events.first().objectType
 
-            // Rule B: Tombstone Dominance
-            val isDeleted = when (objectType) {
+            // Separate DELETE events (never removed) from other events
+            val deleteEvents = events.filter { it.isDelete() }
+            val nonDeleteEvents = events.filterNot { it.isDelete() }
+
+            if (nonDeleteEvents.isEmpty()) {
+                // Only DELETE events exist, nothing to compact
+                return@forEach
+            }
+
+            // Check if entity is deleted on filesystem
+            val isDeletedOnFilesystem = when (objectType) {
                 ObjectType.FOLDER -> entityFileManager.isFolderDeleted(objectId)
                 ObjectType.TAG -> entityFileManager.isTagDeleted(objectId)
                 ObjectType.BOOKMARK -> entityFileManager.isBookmarkDeleted(objectId)
             }
 
-            if (isDeleted) {
-                eventsDao.deleteEventsForObject(objectId)
-                removedCount += events.size
+            if (isDeletedOnFilesystem || deleteEvents.isNotEmpty()) {
+                // Entity is deleted - remove only non-DELETE events
+                val nonDeleteEventIds = nonDeleteEvents.map { it.eventId }
+                if (nonDeleteEventIds.isNotEmpty()) {
+                    eventsDao.deleteEventsByIds(nonDeleteEventIds)
+                    removedCount += nonDeleteEventIds.size
+                }
                 return@forEach
             }
 
-            // Rule A: Snapshot Dominance
+            // Rule A: Snapshot Dominance (only for non-deleted entities)
             val fileSystemClock = getFileSystemClock(objectType, objectId)
             if (fileSystemClock != null) {
-                val allEventsAreOlder = events.all { event ->
+                val eligibleForRemoval = nonDeleteEvents.filter { event ->
                     fileSystemClock.isNewerOrEqual(event.clock)
                 }
 
-                if (allEventsAreOlder) {
-                    eventsDao.deleteEventsForObject(objectId)
-                    removedCount += events.size
+                if (eligibleForRemoval.isNotEmpty()) {
+                    val eventIdsToRemove = eligibleForRemoval.map { it.eventId }
+                    eventsDao.deleteEventsByIds(eventIdsToRemove)
+                    removedCount += eventIdsToRemove.size
                 }
             }
         }
@@ -110,6 +126,7 @@ object LogCompaction {
 
     /**
      * Compacts events for a specific object.
+     * DELETE events are NEVER removed.
      *
      * @return Number of events removed
      */
@@ -119,28 +136,43 @@ object LogCompaction {
 
         val objectType = events.first().objectType
 
-        // Rule B: Tombstone Dominance
-        val isDeleted = when (objectType) {
+        // Separate DELETE events (never removed) from other events
+        val deleteEvents = events.filter { it.isDelete() }
+        val nonDeleteEvents = events.filterNot { it.isDelete() }
+
+        if (nonDeleteEvents.isEmpty()) {
+            // Only DELETE events exist, nothing to compact
+            return 0L
+        }
+
+        // Check if entity is deleted on filesystem
+        val isDeletedOnFilesystem = when (objectType) {
             ObjectType.FOLDER -> entityFileManager.isFolderDeleted(objectId)
             ObjectType.TAG -> entityFileManager.isTagDeleted(objectId)
             ObjectType.BOOKMARK -> entityFileManager.isBookmarkDeleted(objectId)
         }
 
-        if (isDeleted) {
-            eventsDao.deleteEventsForObject(objectId)
-            return events.size.toLong()
+        if (isDeletedOnFilesystem || deleteEvents.isNotEmpty()) {
+            // Entity is deleted - remove only non-DELETE events
+            val nonDeleteEventIds = nonDeleteEvents.map { it.eventId }
+            if (nonDeleteEventIds.isNotEmpty()) {
+                eventsDao.deleteEventsByIds(nonDeleteEventIds)
+                return nonDeleteEventIds.size.toLong()
+            }
+            return 0L
         }
 
         // Rule A: Snapshot Dominance
         val fileSystemClock = getFileSystemClock(objectType, objectId)
         if (fileSystemClock != null) {
-            val allEventsAreOlder = events.all { event ->
+            val eligibleForRemoval = nonDeleteEvents.filter { event ->
                 fileSystemClock.isNewerOrEqual(event.clock)
             }
 
-            if (allEventsAreOlder) {
-                eventsDao.deleteEventsForObject(objectId)
-                return events.size.toLong()
+            if (eligibleForRemoval.isNotEmpty()) {
+                val eventIdsToRemove = eligibleForRemoval.map { it.eventId }
+                eventsDao.deleteEventsByIds(eventIdsToRemove)
+                return eventIdsToRemove.size.toLong()
             }
         }
 
@@ -151,10 +183,13 @@ object LogCompaction {
      * Gets statistics about the event log.
      */
     suspend fun getStats(): LogStats {
-        val totalEvents = eventsDao.getEventCount()
+        val allEvents = eventsDao.getAllEvents().toEvents()
+        val deleteEventCount = allEvents.count { it.isDelete() }.toLong()
+        val totalEvents = allEvents.size.toLong()
         val objectCount = eventsDao.getObjectIdsWithEvents().size.toLong()
         return LogStats(
             totalEvents = totalEvents,
+            deleteEventCount = deleteEventCount,
             objectCount = objectCount,
             needsCompaction = totalEvents > config.maxEventCount,
         )
@@ -191,6 +226,7 @@ object LogCompaction {
  */
 data class LogStats(
     val totalEvents: Long,
+    val deleteEventCount: Long,
     val objectCount: Long,
     val needsCompaction: Boolean,
 )

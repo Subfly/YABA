@@ -10,6 +10,7 @@ import dev.subfly.yabacore.database.mappers.toUiModel
 import dev.subfly.yabacore.database.models.FolderWithBookmarkCount
 import dev.subfly.yabacore.filesystem.EntityFileManager
 import dev.subfly.yabacore.filesystem.json.FolderMetaJson
+import dev.subfly.yabacore.filesystem.json.BookmarkMetaJson
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.utils.DropZone
 import dev.subfly.yabacore.model.utils.SortOrderType
@@ -22,6 +23,7 @@ import dev.subfly.yabacore.sync.ObjectType
 import dev.subfly.yabacore.sync.VectorClock
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 import kotlin.time.Clock
 import kotlin.time.Instant
@@ -37,6 +39,8 @@ import kotlin.time.Instant
 object FolderManager {
     private val folderDao get() = DatabaseProvider.folderDao
     private val bookmarkDao get() = DatabaseProvider.bookmarkDao
+    private val tagBookmarkDao get() = DatabaseProvider.tagBookmarkDao
+    private val linkBookmarkDao get() = DatabaseProvider.linkBookmarkDao
     private val entityFileManager get() = EntityFileManager
     private val crdtEngine get() = CRDTEngine
     private val clock = Clock.System
@@ -61,8 +65,27 @@ object FolderManager {
             entity?.toModel()?.toUiModel()
         }
 
-    suspend fun getUncategorizedFolder(): FolderUiModel? =
-        folderDao.getFolderWithBookmarkCount(UNCATEGORIZED_FOLDER_ID)?.toUiModel()
+
+    /**
+     * Ensures the Uncategorized system folder exists AND is visible.
+     *
+     * Rules:
+     * - System folders are never deleted as CRDT entities
+     * - Visibility is toggled via UPDATE events (isHidden true/false)
+     */
+    suspend fun ensureUncategorizedFolderVisible(): FolderUiModel {
+        CoreOperationQueue.queueAndAwait("EnsureUncategorizedFolderVisible") {
+            ensureUncategorizedFolderInternal()
+            setSystemFolderHiddenStateInternal(
+                folderId = UNCATEGORIZED_FOLDER_ID,
+                isHidden = false,
+            )
+        }
+
+        return folderDao.getFolderWithBookmarkCountIncludingHidden(UNCATEGORIZED_FOLDER_ID)
+            ?.toUiModel()
+            ?: createUncategorizedFolderModel()
+    }
 
     fun createUncategorizedFolderModel(): FolderUiModel {
         val now = clock.now()
@@ -106,31 +129,63 @@ object FolderManager {
                 sortOrder.name
             )
         }
-        return rows.map { it.toUiModel() }
+        return rows
+            .asSequence()
+            .map { it.toUiModel() }
+            .filterNot { CoreConstants.Folder.isSystemFolder(it.id) }
+            .toList()
     }
 
     // ==================== Write Operations (Filesystem-First) ====================
 
-    suspend fun ensureUncategorizedFolder(): FolderUiModel {
+    private suspend fun ensureUncategorizedFolderInternal() {
         // SELF-HEALING: Remove any tombstone for the Uncategorized folder
         // The Uncategorized folder is a system folder that cannot truly be deleted
         if (entityFileManager.isFolderDeleted(UNCATEGORIZED_FOLDER_ID)) {
             entityFileManager.removeFolderTombstone(UNCATEGORIZED_FOLDER_ID)
         }
 
-        // Check if already exists in cache
-        folderDao.getFolderWithBookmarkCount(UNCATEGORIZED_FOLDER_ID)?.let {
-            return it.toUiModel()
+        // Check if already exists in cache (re-check inside queue)
+        if (folderDao.getByIdIncludingHidden(UNCATEGORIZED_FOLDER_ID) != null) {
+            return
         }
 
         // Check if exists in filesystem but not in cache (drift recovery)
         val existingJson = entityFileManager.readFolderMeta(UNCATEGORIZED_FOLDER_ID)
         if (existingJson != null) {
+            // Enforce rule: system folders must always be root-level
+            if (existingJson.parentId != null) {
+                val existingClock = VectorClock.fromMap(existingJson.clock)
+                val deviceId = DeviceIdProvider.get()
+                val now = clock.now()
+                val rootSiblings =
+                    loadSiblings(parentId = null).filterNot { it.id == UNCATEGORIZED_FOLDER_ID }
+                val newClock = existingClock.increment(deviceId)
+                val fixedJson = existingJson.copy(
+                    parentId = null,
+                    order = rootSiblings.size,
+                    editedAt = now.toEpochMilliseconds(),
+                    clock = newClock.toMap(),
+                )
+                entityFileManager.writeFolderMeta(fixedJson)
+                crdtEngine.recordUpdate(
+                    objectId = UNCATEGORIZED_FOLDER_ID,
+                    objectType = ObjectType.FOLDER,
+                    file = FileTarget.META_JSON,
+                    changes = mapOf(
+                        "parentId" to CRDTEngine.nullableStringValue(null),
+                        "order" to JsonPrimitive(rootSiblings.size),
+                        "editedAt" to JsonPrimitive(now.toEpochMilliseconds()),
+                    ),
+                    currentClock = existingClock,
+                )
+                folderDao.upsert(fixedJson.toEntity())
+                return
+            }
             // Folder exists in filesystem but not in cache - restore to cache
             val entity = existingJson.toEntity()
             folderDao.upsert(entity)
-            return folderDao.getFolderWithBookmarkCount(UNCATEGORIZED_FOLDER_ID)?.toUiModel()
-                ?: existingJson.toUiModel(bookmarkCount = 0)
+            return
         }
 
         // Create new Uncategorized folder
@@ -155,14 +210,18 @@ object FolderManager {
         // 1. Write to filesystem (authoritative)
         entityFileManager.writeFolderMeta(folderJson)
 
-        // 2. Record CRDT events
-        recordFolderCreationEvents(UNCATEGORIZED_FOLDER_ID, folderJson)
+        // 2. Record CRDT CREATE event
+        crdtEngine.recordCreate(
+            objectId = UNCATEGORIZED_FOLDER_ID,
+            objectType = ObjectType.FOLDER,
+            file = FileTarget.META_JSON,
+            payload = buildFolderCreatePayload(folderJson),
+            currentClock = VectorClock.empty(),
+        )
 
         // 3. Update SQLite cache
         val entity = folderJson.toEntity()
         folderDao.upsert(entity)
-
-        return folderJson.toUiModel(bookmarkCount = 0)
     }
 
     /**
@@ -182,13 +241,16 @@ object FolderManager {
         val deviceId = DeviceIdProvider.get()
         val initialClock = VectorClock.of(deviceId, 1)
 
+        // Prevent nesting under system folders (system folders must stay root-level, no children)
+        val safeParentId = folder.parentId?.takeUnless { CoreConstants.Folder.isSystemFolder(it) }
+
         // Force database warmup by querying siblings
         // This ensures Room has created the database before we write
-        val siblings = loadSiblings(folder.parentId)
+        val siblings = loadSiblings(safeParentId)
 
         val folderJson = FolderMetaJson(
             id = folderId,
-            parentId = folder.parentId,
+            parentId = safeParentId,
             label = folder.label,
             description = folder.description,
             icon = folder.icon,
@@ -202,15 +264,21 @@ object FolderManager {
         // 1. Write to filesystem (authoritative)
         entityFileManager.writeFolderMeta(folderJson)
 
-        // 2. Record CRDT events
-        recordFolderCreationEvents(folderId, folderJson)
+        // 2. Record CRDT CREATE event
+        crdtEngine.recordCreate(
+            objectId = folderId,
+            objectType = ObjectType.FOLDER,
+            file = FileTarget.META_JSON,
+            payload = buildFolderCreatePayload(folderJson),
+            currentClock = VectorClock.empty(),
+        )
 
         // 3. Update SQLite cache
         val entity = folderJson.toEntity()
         folderDao.upsert(entity)
 
         // 4. Verify write succeeded - if not, retry once
-        val verification = folderDao.getById(folderId)
+        val verification = folderDao.getByIdIncludingHidden(folderId)
         if (verification == null) {
             // Retry the upsert
             folderDao.upsert(entity)
@@ -268,8 +336,8 @@ object FolderManager {
         // 1. Write to filesystem (authoritative)
         entityFileManager.writeFolderMeta(updatedJson)
 
-        // 2. Record CRDT events
-        crdtEngine.recordFieldChanges(
+        // 2. Record CRDT UPDATE event
+        crdtEngine.recordUpdate(
             objectId = folder.id,
             objectType = ObjectType.FOLDER,
             file = FileTarget.META_JSON,
@@ -291,11 +359,16 @@ object FolderManager {
     }
 
     private suspend fun moveFolderInternal(folder: FolderUiModel, targetParent: FolderUiModel?) {
+        // System folders are always root-level and cannot be moved.
+        if (CoreConstants.Folder.isSystemFolder(folder.id)) return
+
         val existingJson = entityFileManager.readFolderMeta(folder.id) ?: return
         val existingClock = VectorClock.fromMap(existingJson.clock)
         val deviceId = DeviceIdProvider.get()
         val now = clock.now()
-        val targetParentId = targetParent?.id
+        // Prevent nesting into system folders (system folders must stay root-level, no children)
+        val targetParentId =
+            targetParent?.id?.takeUnless { CoreConstants.Folder.isSystemFolder(it) }
 
         val targetSiblings = loadSiblings(targetParentId).filterNot { it.id == folder.id }
         val newClock = existingClock.increment(deviceId)
@@ -310,12 +383,12 @@ object FolderManager {
         // 1. Write to filesystem
         entityFileManager.writeFolderMeta(movedJson)
 
-        // 2. Record CRDT events
+        // 2. Record CRDT UPDATE event
         val changes = mapOf(
             "parentId" to CRDTEngine.nullableStringValue(targetParentId),
             "order" to JsonPrimitive(targetSiblings.size),
         )
-        crdtEngine.recordFieldChanges(
+        crdtEngine.recordUpdate(
             objectId = folder.id,
             objectType = ObjectType.FOLDER,
             file = FileTarget.META_JSON,
@@ -347,6 +420,7 @@ object FolderManager {
                 moveFolder(dragged, target)
                 return
             }
+
             else -> Unit
         }
         CoreOperationQueue.queue("ReorderFolder:${dragged.id}") {
@@ -354,7 +428,11 @@ object FolderManager {
         }
     }
 
-    private suspend fun reorderFolderInternal(dragged: FolderUiModel, target: FolderUiModel, zone: DropZone) {
+    private suspend fun reorderFolderInternal(
+        dragged: FolderUiModel,
+        target: FolderUiModel,
+        zone: DropZone,
+    ) {
         val draggedJson = entityFileManager.readFolderMeta(dragged.id) ?: return
         val parentId = draggedJson.parentId
         val siblings = loadSiblings(parentId)
@@ -365,76 +443,90 @@ object FolderManager {
     }
 
     /**
-     * Enqueues folder deletion. System folders cannot be deleted.
-     */
-    fun deleteFolder(folder: FolderUiModel) {
-        deleteFolder(folder.id)
-    }
-
-    /**
-     * Enqueues folder deletion by ID. System folders cannot be deleted.
+     * Enqueues folder deletion by ID with cascade. System folders cannot be deleted.
+     *
+     * This always cascades to delete:
+     * - All descendant folders
+     * - All bookmarks contained in the folder and its descendants
+     * - All related cache rows (tag_bookmarks, link_bookmarks)
      */
     fun deleteFolder(folderId: String) {
-        // System folders (like Uncategorized) cannot be deleted
         if (CoreConstants.Folder.isSystemFolder(folderId)) {
+            CoreOperationQueue.queue("DeleteSystemFolder:$folderId") {
+                deleteSystemFolderCascadeInternal(folderId)
+            }
             return
         }
-        CoreOperationQueue.queue("DeleteFolder:$folderId") {
-            deleteFolderInternal(folderId)
-        }
+        CoreOperationQueue.queue("DeleteFolder:$folderId") { deleteFolderCascadeInternal(folderId) }
     }
 
     /**
-     * Deletes a folder and normalizes sibling orders. Assumes caller already checked system folder rules.
+     * Deletes a single folder (without cascade).
+     * Internal helper - use deleteFolderCascadeInternal for full deletion.
      */
-    private suspend fun deleteFolderInternal(folderId: String) {
-        val existingJson = entityFileManager.readFolderMeta(folderId) ?: return
-        val existingClock = VectorClock.fromMap(existingJson.clock)
-        val deviceId = DeviceIdProvider.get()
-        val deletionClock = existingClock.increment(deviceId)
+    private suspend fun deleteSingleFolderInternal(folderId: String) {
+        val existingJson = entityFileManager.readFolderMeta(folderId)
+        val existingClock =
+            existingJson?.let { VectorClock.fromMap(it.clock) } ?: VectorClock.empty()
 
         // 1. Write deletion tombstone to filesystem
-        entityFileManager.deleteFolder(folderId, deletionClock)
+        entityFileManager.deleteFolder(folderId, existingClock)
 
-        // 2. Record deletion event
-        crdtEngine.recordFieldChange(
+        // 2. Record CRDT DELETE event
+        crdtEngine.recordDelete(
             objectId = folderId,
             objectType = ObjectType.FOLDER,
-            file = FileTarget.META_JSON,
-            field = "_deleted",
-            value = JsonPrimitive(true),
             currentClock = existingClock,
         )
 
         // 3. Remove from SQLite cache
         folderDao.deleteById(folderId)
-
-        // Normalize sibling orders
-        val parentId = existingJson.parentId
-        val siblings = loadSiblings(parentId).filterNot { it.id == folderId }
-        normalizeSiblingOrdersFromDomain(siblings, clock.now())
     }
 
     /**
-     * Deletes a folder and everything under it:
-     * - All descendant folders
-     * - All bookmarks contained in any of those folders
-     *
-     * This replaces the previously used (now removed) DeletionService folder cascade behavior.
+     * Deletes a single bookmark (inline, for cascade deletion).
+     * FolderManager handles this directly to avoid cross-manager dependencies.
      */
-    fun deleteFolderCascade(folderId: String) {
-        if (CoreConstants.Folder.isSystemFolder(folderId)) return
-        CoreOperationQueue.queue("DeleteFolderCascade:$folderId") {
-            deleteFolderCascadeInternal(folderId)
-        }
+    private suspend fun deleteSingleBookmarkInternal(bookmarkId: String) {
+        val existingJson = entityFileManager.readBookmarkMeta(bookmarkId)
+        val existingClock =
+            existingJson?.let { VectorClock.fromMap(it.clock) } ?: VectorClock.empty()
+
+        // 1. Write deletion tombstone to filesystem
+        entityFileManager.deleteBookmark(bookmarkId, existingClock)
+
+        // 2. Record CRDT DELETE event
+        crdtEngine.recordDelete(
+            objectId = bookmarkId,
+            objectType = ObjectType.BOOKMARK,
+            currentClock = existingClock,
+        )
+
+        // 3. Remove all related SQLite cache rows
+        tagBookmarkDao.deleteForBookmark(bookmarkId)
+        linkBookmarkDao.deleteById(bookmarkId)
+        bookmarkDao.deleteByIds(listOf(bookmarkId))
     }
 
+    /**
+     * Deletes a folder and everything under it (cascade deletion):
+     * - All descendant folders
+     * - All bookmarks contained in any of those folders
+     * - All related cache rows (tag_bookmarks, link_bookmarks)
+     *
+     * Then normalizes sibling orders for the parent folder.
+     */
     private suspend fun deleteFolderCascadeInternal(rootFolderId: String) {
         if (CoreConstants.Folder.isSystemFolder(rootFolderId)) return
 
+        // Get parent for sibling normalization later
+        val rootJson = entityFileManager.readFolderMeta(rootFolderId)
+        val parentId = rootJson?.parentId
+
         // Collect folders to delete in post-order (children before parents)
-        val folderIdsToDelete = collectFolderSubtreePostOrder(rootFolderId)
-            .filterNot { CoreConstants.Folder.isSystemFolder(it) }
+        val folderIdsToDelete =
+            collectFolderSubtreePostOrder(rootFolderId)
+                .filterNot { CoreConstants.Folder.isSystemFolder(it) }
         if (folderIdsToDelete.isEmpty()) return
 
         // 1) Delete bookmarks belonging to any folder in the subtree
@@ -445,16 +537,110 @@ object FolderManager {
                 .filter { it.folderId in folderIdSet }
                 .map { it.id }
                 .toList()
-        AllBookmarksManager.deleteBookmarksInternal(bookmarkIdsToDelete)
+
+        // Delete bookmarks inline (no cross-manager call)
+        bookmarkIdsToDelete.forEach { bookmarkId ->
+            deleteSingleBookmarkInternal(bookmarkId)
+        }
 
         // 2) Delete folders (bottom-up)
         folderIdsToDelete.forEach { folderId ->
-            deleteFolderInternal(folderId)
+            deleteSingleFolderInternal(folderId)
         }
+
+        // 3) Normalize sibling orders for the parent
+        val siblings = loadSiblings(parentId).filterNot { it.id in folderIdSet }
+        normalizeSiblingOrdersFromDomain(siblings, clock.now())
+    }
+
+    /**
+     * "Deletes" a system folder by:
+     * - Hard-deleting all descendant folders (non-system)
+     * - Hard-deleting all bookmarks in the folder and its descendants
+     * - Marking the system folder itself as hidden (and recording a DELETE event for sync)
+     */
+    private suspend fun deleteSystemFolderCascadeInternal(systemFolderId: String) {
+        if (!CoreConstants.Folder.isSystemFolder(systemFolderId)) return
+
+        val folderIdsInSubtree = collectFolderSubtreePostOrder(systemFolderId)
+        val descendantFolderIds = folderIdsInSubtree.filterNot { it == systemFolderId }
+        val folderIdsForBookmarkDeletion = (descendantFolderIds + systemFolderId).toSet()
+
+        // 1) Delete bookmarks in system folder + descendants
+        val bookmarkIdsToDelete =
+            bookmarkDao.getAll()
+                .asSequence()
+                .filter { it.folderId in folderIdsForBookmarkDeletion }
+                .map { it.id }
+                .toList()
+        bookmarkIdsToDelete.forEach { bookmarkId ->
+            deleteSingleBookmarkInternal(bookmarkId)
+        }
+
+        // 2) Delete descendant folders (bottom-up; they are all non-system)
+        descendantFolderIds.forEach { folderId ->
+            if (!CoreConstants.Folder.isSystemFolder(folderId)) {
+                deleteSingleFolderInternal(folderId)
+            }
+        }
+
+        // 3) Hide the system folder (but keep it in filesystem + DB) via UPDATE (never DELETE)
+        setSystemFolderHiddenStateInternal(
+            folderId = systemFolderId,
+            isHidden = true,
+        )
+    }
+
+    private suspend fun setSystemFolderHiddenStateInternal(
+        folderId: String,
+        isHidden: Boolean,
+    ) {
+        if (!CoreConstants.Folder.isSystemFolder(folderId)) return
+        val existingJson = entityFileManager.readFolderMeta(folderId) ?: return
+        val now = clock.now()
+
+        // System folder invariant: always root-level
+        val shouldFixParent = existingJson.parentId != null
+        val alreadyCorrect = existingJson.isHidden == isHidden && !shouldFixParent
+        if (alreadyCorrect) {
+            folderDao.upsert(existingJson.toEntity())
+            return
+        }
+
+        val existingClock = VectorClock.fromMap(existingJson.clock)
+        val deviceId = DeviceIdProvider.get()
+        val newClock = existingClock.increment(deviceId)
+
+        val changes = mutableMapOf<String, JsonElement>()
+        if (existingJson.isHidden != isHidden) changes["isHidden"] = JsonPrimitive(isHidden)
+        if (shouldFixParent) changes["parentId"] = CRDTEngine.nullableStringValue(null)
+        changes["editedAt"] = JsonPrimitive(now.toEpochMilliseconds())
+
+        val updatedJson = existingJson.copy(
+            parentId = null,
+            isHidden = isHidden,
+            editedAt = now.toEpochMilliseconds(),
+            clock = newClock.toMap(),
+        )
+
+        // 1) Write to filesystem
+        entityFileManager.writeFolderMeta(updatedJson)
+
+        // 2) Record CRDT UPDATE event (never DELETE for system folders)
+        crdtEngine.recordUpdate(
+            objectId = folderId,
+            objectType = ObjectType.FOLDER,
+            file = FileTarget.META_JSON,
+            changes = changes,
+            currentClock = existingClock,
+        )
+
+        // 3) Update SQLite cache
+        folderDao.upsert(updatedJson.toEntity())
     }
 
     private suspend fun collectFolderSubtreePostOrder(rootId: String): List<String> {
-        val folders = folderDao.getAll()
+        val folders = folderDao.getAllIncludingHidden()
         val grouped = folders.groupBy { it.parentId }
         val visited = mutableSetOf<String>()
         val result = mutableListOf<String>()
@@ -533,11 +719,11 @@ object FolderManager {
         folderIds: List<String>,
         timestamp: Instant,
     ) {
-        val deviceId = DeviceIdProvider.get()
         folderIds.forEachIndexed { index, folderId ->
             val json = entityFileManager.readFolderMeta(folderId) ?: return@forEachIndexed
             if (json.order != index) {
                 val existingClock = VectorClock.fromMap(json.clock)
+                val deviceId = DeviceIdProvider.get()
                 val newClock = existingClock.increment(deviceId)
                 val updatedJson = json.copy(
                     order = index,
@@ -545,12 +731,11 @@ object FolderManager {
                     clock = newClock.toMap(),
                 )
                 entityFileManager.writeFolderMeta(updatedJson)
-                crdtEngine.recordFieldChange(
+                crdtEngine.recordUpdate(
                     objectId = folderId,
                     objectType = ObjectType.FOLDER,
                     file = FileTarget.META_JSON,
-                    field = "order",
-                    value = JsonPrimitive(index),
+                    changes = mapOf("order" to JsonPrimitive(index)),
                     currentClock = existingClock,
                 )
                 folderDao.upsert(updatedJson.toEntity())
@@ -562,11 +747,11 @@ object FolderManager {
         folders: List<FolderDomainModel>,
         timestamp: Instant,
     ) {
-        val deviceId = DeviceIdProvider.get()
         folders.sortedBy { it.order }.forEachIndexed { index, folder ->
             if (folder.order != index) {
                 val json = entityFileManager.readFolderMeta(folder.id) ?: return@forEachIndexed
                 val existingClock = VectorClock.fromMap(json.clock)
+                val deviceId = DeviceIdProvider.get()
                 val newClock = existingClock.increment(deviceId)
                 val updatedJson = json.copy(
                     order = index,
@@ -574,12 +759,11 @@ object FolderManager {
                     clock = newClock.toMap(),
                 )
                 entityFileManager.writeFolderMeta(updatedJson)
-                crdtEngine.recordFieldChange(
+                crdtEngine.recordUpdate(
                     objectId = folder.id,
                     objectType = ObjectType.FOLDER,
                     file = FileTarget.META_JSON,
-                    field = "order",
-                    value = JsonPrimitive(index),
+                    changes = mapOf("order" to JsonPrimitive(index)),
                     currentClock = existingClock,
                 )
                 folderDao.upsert(updatedJson.toEntity())
@@ -587,11 +771,8 @@ object FolderManager {
         }
     }
 
-    private suspend fun recordFolderCreationEvents(
-        folderId: String,
-        json: FolderMetaJson,
-    ) {
-        val changes = mapOf(
+    private fun buildFolderCreatePayload(json: FolderMetaJson): Map<String, JsonElement> =
+        mapOf(
             "id" to JsonPrimitive(json.id),
             "parentId" to CRDTEngine.nullableStringValue(json.parentId),
             "label" to JsonPrimitive(json.label),
@@ -602,14 +783,6 @@ object FolderManager {
             "createdAt" to JsonPrimitive(json.createdAt),
             "editedAt" to JsonPrimitive(json.editedAt),
         )
-        crdtEngine.recordFieldChanges(
-            objectId = folderId,
-            objectType = ObjectType.FOLDER,
-            file = FileTarget.META_JSON,
-            changes = changes,
-            currentClock = VectorClock.empty(),
-        )
-    }
 
     // ==================== Mappers ====================
 
@@ -624,18 +797,5 @@ object FolderManager {
         createdAt = createdAt,
         editedAt = editedAt,
         isHidden = isHidden,
-    )
-
-    private fun FolderMetaJson.toUiModel(bookmarkCount: Int = 0): FolderUiModel = FolderUiModel(
-        id = id,
-        parentId = parentId,
-        label = label,
-        description = description,
-        icon = icon,
-        color = YabaColor.fromCode(colorCode),
-        createdAt = Instant.fromEpochMilliseconds(createdAt),
-        editedAt = Instant.fromEpochMilliseconds(editedAt),
-        order = order,
-        bookmarkCount = bookmarkCount,
     )
 }

@@ -41,7 +41,7 @@ object PreloadDataGenerator {
         val now = clock.now()
         val deviceId = DeviceIdProvider.get()
 
-        val existingRootFolders = folderDao.getRoot()
+        val existingRootFolders = folderDao.getRootIncludingHidden()
         val existingFolderIds = existingRootFolders.map { it.id }.toSet()
         val folderOrderStart = (existingRootFolders.maxOfOrNull { it.order } ?: -1) + 1
         val foldersToInsert: List<FolderDomainModel> =

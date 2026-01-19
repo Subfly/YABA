@@ -246,11 +246,30 @@ object EntityFileManager {
         }
     }
 
+    /**
+     * Recursively deletes a directory and all its contents.
+     * Uses depth-first deletion to ensure all children are deleted before parents.
+     */
     private suspend fun deleteDirectory(relativePath: String) {
         val dir = accessProvider.resolveRelativePath(relativePath, ensureParentExists = false)
-        if (dir.exists() && dir.isDirectory()) {
-            dir.delete()
+        if (!dir.exists()) return
+
+        if (dir.isDirectory()) {
+            // Recursively delete all contents first (depth-first)
+            dir.list().forEach { child ->
+                if (child.isDirectory()) {
+                    // Recursively delete subdirectory
+                    val childRelativePath = CoreConstants.FileSystem.join(relativePath, child.name)
+                    deleteDirectory(childRelativePath)
+                } else {
+                    // Delete file
+                    child.delete()
+                }
+            }
         }
+
+        // Now delete the (empty) directory or file
+        dir.delete()
     }
 
     private suspend fun scanEntityDirectory(entityDir: String): List<String> {

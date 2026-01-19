@@ -1,11 +1,12 @@
 package dev.subfly.yabacore.database.events
 
 import dev.subfly.yabacore.sync.CRDTEvent
+import dev.subfly.yabacore.sync.EventType
 import dev.subfly.yabacore.sync.FileTarget
 import dev.subfly.yabacore.sync.ObjectType
 import dev.subfly.yabacore.sync.VectorClock
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
 
 private val json = Json {
     ignoreUnknownKeys = true
@@ -19,9 +20,9 @@ fun CRDTEvent.toEntity(): CRDTEventEntity = CRDTEventEntity(
     eventId = eventId,
     objectId = objectId,
     objectType = objectType.name,
+    eventType = eventType.name,
     file = file.name,
-    field = field,
-    valueJson = json.encodeToString(value),
+    payloadJson = json.encodeToString(payload),
     clockJson = json.encodeToString(clock.clocks),
     timestamp = timestamp,
 )
@@ -33,9 +34,9 @@ fun CRDTEventEntity.toEvent(): CRDTEvent = CRDTEvent(
     eventId = eventId,
     objectId = objectId,
     objectType = ObjectType.valueOf(objectType),
+    eventType = EventType.valueOf(eventType),
     file = FileTarget.valueOf(file),
-    field = field,
-    value = json.decodeFromString<JsonElement>(valueJson),
+    payload = json.decodeFromString<JsonObject>(payloadJson),
     clock = VectorClock(json.decodeFromString<Map<String, Long>>(clockJson)),
     timestamp = timestamp,
 )
