@@ -26,9 +26,11 @@ import dev.subfly.yaba.core.navigation.alert.DeletionType
 import dev.subfly.yaba.core.navigation.creation.BookmarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.FolderCreationRoute
 import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
+import dev.subfly.yaba.core.navigation.creation.ResultStoreKeys
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalDeletionDialogManager
+import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yabacore.common.CoreConstants
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.utils.FolderSelectionMode
@@ -64,6 +66,7 @@ fun FolderItemView(
     val creationNavigator = LocalCreationContentNavigator.current
     val deletionDialogManager = LocalDeletionDialogManager.current
     val appStateManager = LocalAppStateManager.current
+    val resultStore = LocalResultStore.current
 
     // Check if this is a system folder
     val isSystemFolder = CoreConstants.Folder.isSystemFolder(model.id)
@@ -86,6 +89,7 @@ fun FolderItemView(
                         text = newBookmarkText,
                         color = YabaColor.CYAN,
                         onClick = {
+                            resultStore.setResult(ResultStoreKeys.SELECTED_FOLDER, model)
                             creationNavigator.add(BookmarkCreationRoute())
                             appStateManager.onShowCreationContent()
                         }
@@ -172,6 +176,7 @@ fun FolderItemView(
                     icon = "bookmark-add-02",
                     color = YabaColor.BLUE,
                     onClick = {
+                        resultStore.setResult(ResultStoreKeys.SELECTED_FOLDER, model)
                         creationNavigator.add(BookmarkCreationRoute())
                         appStateManager.onShowCreationContent()
                     }

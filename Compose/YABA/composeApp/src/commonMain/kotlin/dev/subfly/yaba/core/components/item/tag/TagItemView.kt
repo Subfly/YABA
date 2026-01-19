@@ -12,10 +12,12 @@ import dev.subfly.yaba.core.components.item.base.CollectionSwipeAction
 import dev.subfly.yaba.core.navigation.alert.DeletionState
 import dev.subfly.yaba.core.navigation.alert.DeletionType
 import dev.subfly.yaba.core.navigation.creation.BookmarkCreationRoute
+import dev.subfly.yaba.core.navigation.creation.ResultStoreKeys
 import dev.subfly.yaba.core.navigation.creation.TagCreationRoute
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalDeletionDialogManager
+import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yabacore.common.CoreConstants
 import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.model.utils.YabaColor
@@ -45,6 +47,7 @@ fun TagItemView(
     val creationNavigator = LocalCreationContentNavigator.current
     val deletionDialogManager = LocalDeletionDialogManager.current
     val appStateManager = LocalAppStateManager.current
+    val resultStore = LocalResultStore.current
 
     // Check if this is a system tag
     val isSystemTag = CoreConstants.Tag.isSystemTag(model.id)
@@ -65,7 +68,7 @@ fun TagItemView(
                         text = newBookmarkText,
                         color = YabaColor.CYAN,
                         onClick = {
-                            // TODO: ADD FUNCTIONALITY TO HAVE BASE CONTEXT
+                            resultStore.setResult(ResultStoreKeys.SELECTED_TAGS, listOf(model))
                             creationNavigator.add(BookmarkCreationRoute())
                             appStateManager.onShowCreationContent()
                         }
@@ -116,6 +119,7 @@ fun TagItemView(
                     icon = "bookmark-add-02",
                     color = YabaColor.BLUE,
                     onClick = {
+                        resultStore.setResult(ResultStoreKeys.SELECTED_TAGS, listOf(model))
                         creationNavigator.add(BookmarkCreationRoute())
                         appStateManager.onShowCreationContent()
                     }
