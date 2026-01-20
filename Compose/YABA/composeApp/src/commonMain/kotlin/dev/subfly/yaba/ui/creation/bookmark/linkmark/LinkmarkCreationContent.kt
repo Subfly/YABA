@@ -31,7 +31,7 @@ import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.state.linkmark.LinkmarkCreationEvent
 
 @Composable
-fun LinkmarkCreationContent(bookmarkId: String?) {
+fun LinkmarkCreationContent(bookmarkId: String?, initialUrl: String? = null) {
     val creationNavigator = LocalCreationContentNavigator.current
     val appStateManager = LocalAppStateManager.current
     val resultStore = LocalResultStore.current
@@ -39,8 +39,13 @@ fun LinkmarkCreationContent(bookmarkId: String?) {
     val vm = viewModel { LinkmarkCreationVM() }
     val state by vm.state.collectAsStateWithLifecycle()
 
-    LaunchedEffect(bookmarkId) {
-        vm.onEvent(LinkmarkCreationEvent.OnInit(linkmarkIdString = bookmarkId))
+    LaunchedEffect(bookmarkId, initialUrl) {
+        vm.onEvent(
+            LinkmarkCreationEvent.OnInit(
+                linkmarkIdString = bookmarkId,
+                initialUrl = initialUrl
+            )
+        )
     }
 
     LaunchedEffect(resultStore.getResult(ResultStoreKeys.SELECTED_FOLDER)) {

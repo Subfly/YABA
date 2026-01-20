@@ -55,6 +55,7 @@ data class BookmarkCreationRoute(
 data class LinkmarkCreationRoute(
     val routeId: String = Uuid.generateV4().toString(),
     val bookmarkId: String?,
+    val initialUrl: String? = null,
 ): NavKey
 
 @Serializable

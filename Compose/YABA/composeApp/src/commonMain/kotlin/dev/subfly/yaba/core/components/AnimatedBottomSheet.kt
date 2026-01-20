@@ -12,6 +12,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+// Taken from:
+// https://proandroiddev.com/improving-the-modal-bottom-sheet-api-in-jetpack-compose-5ca56901ada8
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnimatedBottomSheet(
@@ -26,7 +28,6 @@ fun AnimatedBottomSheet(
             sheetState.show()
         } else {
             sheetState.hide()
-            onDismissRequest()
         }
     }
     // Make sure we dispose of the bottom sheet when it is no longer needed

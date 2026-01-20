@@ -79,7 +79,10 @@ fun YabaCreationNavigationView(
                 BookmarkCreationRouteSelectionContent()
             }
             entry<LinkmarkCreationRoute> { key ->
-                LinkmarkCreationContent(bookmarkId = key.bookmarkId)
+                LinkmarkCreationContent(
+                    bookmarkId = key.bookmarkId,
+                    initialUrl = key.initialUrl,
+                )
             }
             entry<FolderSelectionRoute> { key ->
                 FolderSelectionContent(
