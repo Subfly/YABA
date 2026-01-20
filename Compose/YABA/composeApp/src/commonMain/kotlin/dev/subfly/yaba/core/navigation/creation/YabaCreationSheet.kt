@@ -34,7 +34,6 @@ fun YabaCreationSheet(modifier: Modifier = Modifier) {
         modifier = modifier,
         isVisible = appState.showCreationContent,
         sheetState = sheetState,
-        showDragHandle = true,
         onDismissRequest = appStateManager::onHideCreationContent,
     ) { YabaCreationNavigationView() }
 }
