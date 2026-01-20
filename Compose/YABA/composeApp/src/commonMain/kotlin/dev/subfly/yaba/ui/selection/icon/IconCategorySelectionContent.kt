@@ -68,7 +68,6 @@ fun IconCategorySelectionContent(currentSelectedIcon: String) {
                 )
             }
         )
-        Spacer(modifier = Modifier.height(36.dp))
     }
 }
 
@@ -161,5 +160,6 @@ private fun SelectionContent(
                 )
             }
         }
+        item { Spacer(modifier = Modifier.height(8.dp)) }
     }
 }

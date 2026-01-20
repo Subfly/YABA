@@ -92,7 +92,7 @@ fun FolderCreationContent(folderId: String? = null) {
 
     LaunchedEffect(resultStore.getResult(ResultStoreKeys.SELECTED_FOLDER)) {
         resultStore.getResult<FolderUiModel>(ResultStoreKeys.SELECTED_FOLDER)?.let { newFolder ->
-            vm.onEvent(FolderCreationEvent.OnSelectNewParent(newParentId = newFolder.id.toString()))
+            vm.onEvent(FolderCreationEvent.OnSelectNewParent(newParentId = newFolder.id))
             resultStore.removeResult(ResultStoreKeys.SELECTED_FOLDER)
         }
     }
