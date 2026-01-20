@@ -1,4 +1,4 @@
-package dev.subfly.yabacore.state.tag
+package dev.subfly.yabacore.state.creation.tag
 
 import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.model.utils.YabaColor

@@ -1,4 +1,4 @@
-package dev.subfly.yabacore.state.linkmark
+package dev.subfly.yabacore.state.creation.linkmark
 
 import androidx.compose.runtime.Immutable
 import dev.subfly.yabacore.model.ui.FolderUiModel
@@ -7,6 +7,7 @@ import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.CardImageSizing
 import dev.subfly.yabacore.model.utils.LinkType
+import kotlin.collections.iterator
 
 /**
  * UI state for linkmark (link bookmark) creation/editing.

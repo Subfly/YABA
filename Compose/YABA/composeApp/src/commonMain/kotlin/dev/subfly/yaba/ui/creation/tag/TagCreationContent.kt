@@ -39,7 +39,7 @@ import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yabacore.model.utils.YabaColor
-import dev.subfly.yabacore.state.tag.TagCreationEvent
+import dev.subfly.yabacore.state.creation.tag.TagCreationEvent
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.icon.iconTintArgb
 import org.jetbrains.compose.resources.stringResource

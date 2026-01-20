@@ -1,8 +1,8 @@
 package dev.subfly.yaba.ui.creation.folder
 
 import androidx.lifecycle.ViewModel
-import dev.subfly.yabacore.state.folder.FolderCreationEvent
-import dev.subfly.yabacore.state.folder.FolderCreationStateMachine
+import dev.subfly.yabacore.state.creation.folder.FolderCreationEvent
+import dev.subfly.yabacore.state.creation.folder.FolderCreationStateMachine
 
 class FolderCreationVM : ViewModel() {
     private val stateMachine = FolderCreationStateMachine()

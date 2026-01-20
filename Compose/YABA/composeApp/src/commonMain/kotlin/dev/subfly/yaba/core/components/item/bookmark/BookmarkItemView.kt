@@ -117,7 +117,7 @@ fun BookmarkItemView(
                 onClick = {
                     when (model.kind) {
                         BookmarkKind.LINK -> {
-                            creationNavigator.add(LinkmarkCreationRoute(bookmarkId = model.id.toString()))
+                            creationNavigator.add(LinkmarkCreationRoute(bookmarkId = model.id))
                         }
 
                         BookmarkKind.NOTE -> {
@@ -144,8 +144,8 @@ fun BookmarkItemView(
                     creationNavigator.add(
                         FolderSelectionRoute(
                             mode = FolderSelectionMode.BOOKMARKS_MOVE,
-                            contextFolderId = model.folderId.toString(),
-                            contextBookmarkIds = listOf(model.id.toString()),
+                            contextFolderId = model.folderId,
+                            contextBookmarkIds = listOf(model.id),
                         )
                     )
                     appStateManager.onShowCreationContent()
@@ -194,8 +194,8 @@ fun BookmarkItemView(
                     creationNavigator.add(
                         FolderSelectionRoute(
                             mode = FolderSelectionMode.BOOKMARKS_MOVE,
-                            contextFolderId = model.folderId.toString(),
-                            contextBookmarkIds = listOf(model.id.toString()),
+                            contextFolderId = model.folderId,
+                            contextBookmarkIds = listOf(model.id),
                         )
                     )
                     appStateManager.onShowCreationContent()
@@ -213,7 +213,7 @@ fun BookmarkItemView(
                 onClick = {
                     when (model.kind) {
                         BookmarkKind.LINK -> {
-                            creationNavigator.add(LinkmarkCreationRoute(bookmarkId = model.id.toString()))
+                            creationNavigator.add(LinkmarkCreationRoute(bookmarkId = model.id))
                         }
 
                         BookmarkKind.NOTE -> {

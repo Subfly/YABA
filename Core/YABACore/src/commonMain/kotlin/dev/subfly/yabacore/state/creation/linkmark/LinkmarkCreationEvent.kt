@@ -1,4 +1,4 @@
-package dev.subfly.yabacore.state.linkmark
+package dev.subfly.yabacore.state.creation.linkmark
 
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.ui.TagUiModel

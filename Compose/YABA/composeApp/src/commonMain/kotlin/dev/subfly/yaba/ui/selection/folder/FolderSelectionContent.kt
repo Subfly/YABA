@@ -45,8 +45,8 @@ import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.utils.FolderSelectionMode
 import dev.subfly.yabacore.model.utils.YabaColor
-import dev.subfly.yabacore.state.selection.FolderSelectionEvent
-import dev.subfly.yabacore.state.selection.FolderSelectionUIState
+import dev.subfly.yabacore.state.selection.folder.FolderSelectionEvent
+import dev.subfly.yabacore.state.selection.folder.FolderSelectionUIState
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
@@ -129,7 +129,7 @@ fun FolderSelectionContent(
                     FolderSelectionMode.BOOKMARKS_MOVE -> {
                         vm.onEvent(
                             event = FolderSelectionEvent.OnMoveBookmarksToSelected(
-                                targetFolderId = selectedFolder.id.toString()
+                                targetFolderId = selectedFolder.id
                             )
                         )
                         appStateManager.onHideCreationContent()
@@ -139,7 +139,7 @@ fun FolderSelectionContent(
                     FolderSelectionMode.FOLDER_MOVE -> {
                         vm.onEvent(
                             event = FolderSelectionEvent.OnMoveFolderToSelected(
-                                targetFolderId = selectedFolder.id.toString()
+                                targetFolderId = selectedFolder.id
                             )
                         )
                         appStateManager.onHideCreationContent()
@@ -288,7 +288,7 @@ private fun SelectionContent(
                     }
                     items(
                         items = state.folders,
-                        key = { it.id.toString() },
+                        key = { it.id },
                     ) { model ->
                         PresentableFolderItemView(
                             modifier = Modifier.padding(horizontal = 12.dp),

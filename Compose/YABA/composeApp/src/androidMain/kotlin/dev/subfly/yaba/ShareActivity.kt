@@ -31,7 +31,7 @@ import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalDeletionDialogManager
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.LocalUserPreferences
-import dev.subfly.yabacore.CoreRuntime
+import dev.subfly.yabacore.common.CoreRuntime
 import dev.subfly.yabacore.preferences.SettingsStores
 import dev.subfly.yabacore.preferences.UserPreferences
 

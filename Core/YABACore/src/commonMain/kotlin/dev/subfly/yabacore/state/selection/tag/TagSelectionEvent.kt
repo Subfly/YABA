@@ -1,4 +1,4 @@
-package dev.subfly.yabacore.state.selection
+package dev.subfly.yabacore.state.selection.tag
 
 import dev.subfly.yabacore.model.ui.TagUiModel
 

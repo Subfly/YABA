@@ -36,7 +36,7 @@ import dev.subfly.yaba.util.uiTitle
 import dev.subfly.yabacore.model.utils.LinkType
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.model.utils.uiIconName
-import dev.subfly.yabacore.state.linkmark.LinkmarkCreationUIState
+import dev.subfly.yabacore.state.creation.linkmark.LinkmarkCreationUIState
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.icon.iconTintArgb
 import org.jetbrains.compose.resources.stringResource

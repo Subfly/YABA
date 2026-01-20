@@ -1,4 +1,4 @@
-package dev.subfly.yabacore
+package dev.subfly.yabacore.common
 
 import dev.subfly.yabacore.database.DatabaseProvider
 import dev.subfly.yabacore.database.DeviceIdProvider

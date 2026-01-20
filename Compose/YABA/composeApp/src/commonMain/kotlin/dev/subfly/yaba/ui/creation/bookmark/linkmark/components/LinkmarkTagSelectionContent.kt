@@ -26,7 +26,7 @@ import dev.subfly.yaba.core.navigation.creation.TagCreationRoute
 import dev.subfly.yaba.core.navigation.creation.TagSelectionRoute
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yabacore.model.utils.YabaColor
-import dev.subfly.yabacore.state.linkmark.LinkmarkCreationUIState
+import dev.subfly.yabacore.state.creation.linkmark.LinkmarkCreationUIState
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.icon.iconTintArgb
 import org.jetbrains.compose.resources.stringResource
@@ -55,9 +55,7 @@ internal fun LinkmarkTagSelectionContent(
                 onClick = {
                     creationNavigator.add(
                         TagSelectionRoute(
-                            selectedTagIds = state.selectedTags.map {
-                                it.id.toString()
-                            }
+                            selectedTagIds = state.selectedTags.map { it.id }
                         )
                     )
                 },
@@ -121,9 +119,7 @@ internal fun LinkmarkTagSelectionContent(
                     // TODO: NAVIGATE TO PARENT SELECTION
                 },
                 onNavigateToEdit = {
-                    creationNavigator.add(
-                        TagCreationRoute(tagId = tag.id.toString())
-                    )
+                    creationNavigator.add(TagCreationRoute(tagId = tag.id))
                 },
             )
         }

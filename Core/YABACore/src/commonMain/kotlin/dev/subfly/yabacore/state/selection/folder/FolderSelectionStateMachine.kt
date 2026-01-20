@@ -1,4 +1,4 @@
-package dev.subfly.yabacore.state.selection
+package dev.subfly.yabacore.state.selection.folder
 
 import dev.subfly.yabacore.common.CoreConstants
 import dev.subfly.yabacore.managers.AllBookmarksManager

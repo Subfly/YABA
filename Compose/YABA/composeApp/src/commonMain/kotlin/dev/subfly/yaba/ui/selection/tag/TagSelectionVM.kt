@@ -2,8 +2,8 @@ package dev.subfly.yaba.ui.selection.tag
 
 import androidx.lifecycle.ViewModel
 import dev.subfly.yabacore.model.ui.TagUiModel
-import dev.subfly.yabacore.state.selection.TagSelectionEvent
-import dev.subfly.yabacore.state.selection.TagSelectionStateMachine
+import dev.subfly.yabacore.state.selection.tag.TagSelectionEvent
+import dev.subfly.yabacore.state.selection.tag.TagSelectionStateMachine
 
 class TagSelectionVM : ViewModel() {
     private val stateMachine = TagSelectionStateMachine()

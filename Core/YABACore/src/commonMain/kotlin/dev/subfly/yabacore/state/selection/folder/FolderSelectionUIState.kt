@@ -1,4 +1,4 @@
-package dev.subfly.yabacore.state.selection
+package dev.subfly.yabacore.state.selection.folder
 
 import androidx.compose.runtime.Immutable
 import dev.subfly.yabacore.model.ui.FolderUiModel

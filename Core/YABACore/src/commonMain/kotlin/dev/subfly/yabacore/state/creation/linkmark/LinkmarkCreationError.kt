@@ -1,4 +1,4 @@
-package dev.subfly.yabacore.state.linkmark
+package dev.subfly.yabacore.state.creation.linkmark
 
 /**
  * Error types for linkmark creation that can be localized on the UI side.

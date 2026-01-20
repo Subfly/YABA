@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalCoroutinesApi::class)
 
-package dev.subfly.yabacore.state.linkmark
+package dev.subfly.yabacore.state.creation.linkmark
 
 import dev.subfly.yabacore.common.IdGenerator
 import dev.subfly.yabacore.filesystem.LinkmarkFileManager

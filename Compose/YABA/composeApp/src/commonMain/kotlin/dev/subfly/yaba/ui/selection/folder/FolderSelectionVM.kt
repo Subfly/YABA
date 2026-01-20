@@ -1,8 +1,8 @@
 package dev.subfly.yaba.ui.selection.folder
 
 import androidx.lifecycle.ViewModel
-import dev.subfly.yabacore.state.selection.FolderSelectionEvent
-import dev.subfly.yabacore.state.selection.FolderSelectionStateMachine
+import dev.subfly.yabacore.state.selection.folder.FolderSelectionEvent
+import dev.subfly.yabacore.state.selection.folder.FolderSelectionStateMachine
 
 class FolderSelectionVM : ViewModel() {
     private val stateMachine = FolderSelectionStateMachine()

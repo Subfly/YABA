@@ -62,7 +62,7 @@ fun PresentableFolderItemView(
                     key = "EDIT",
                     onClick = {
                         creationNavigator.add(
-                            FolderCreationRoute(folderId = model.id.toString())
+                            FolderCreationRoute(folderId = model.id)
                         )
                     },
                     content = {
@@ -131,7 +131,7 @@ fun PresentableFolderItemView(
                             isOptionsExpanded = false
                             model?.let { nonNullModel ->
                                 creationNavigator.add(
-                                    FolderCreationRoute(folderId = nonNullModel.id.toString())
+                                    FolderCreationRoute(folderId = nonNullModel.id)
                                 )
                             }
                         },

@@ -1,4 +1,4 @@
-package dev.subfly.yabacore.state.folder
+package dev.subfly.yabacore.state.creation.folder
 
 import dev.subfly.yabacore.common.IdGenerator
 import dev.subfly.yabacore.managers.FolderManager

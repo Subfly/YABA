@@ -238,7 +238,7 @@ fun HomeView(modifier: Modifier = Modifier) {
                                         vm.onEvent(HomeEvent.OnDeleteFolder(folderToBeDeleted))
                                     },
                                     onClick = onClick@{ clickedFolder ->
-                                        val clickedId = clickedFolder.id.toString()
+                                        val clickedId = clickedFolder.id
                                         val lastRoute = navigator.last()
 
                                         if (lastRoute is FolderDetailRoute
@@ -292,7 +292,7 @@ fun HomeView(modifier: Modifier = Modifier) {
                                         vm.onEvent(HomeEvent.OnDeleteTag(tagToBeDeleted))
                                     },
                                     onClick = onClick@{ clickedTag ->
-                                        val clickedId = clickedTag.id.toString()
+                                        val clickedId = clickedTag.id
                                         val lastRoute = navigator.last()
                                         if (lastRoute is TagDetailRoute
                                             && lastRoute.tagId == clickedId

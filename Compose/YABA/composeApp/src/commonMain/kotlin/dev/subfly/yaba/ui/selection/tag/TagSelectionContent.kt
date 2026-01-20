@@ -44,8 +44,8 @@ import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.model.utils.YabaColor
-import dev.subfly.yabacore.state.selection.TagSelectionEvent
-import dev.subfly.yabacore.state.selection.TagSelectionUIState
+import dev.subfly.yabacore.state.selection.tag.TagSelectionEvent
+import dev.subfly.yabacore.state.selection.tag.TagSelectionUIState
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -243,7 +243,7 @@ private fun SelectionContent(
             else -> {
                 items(
                     items = state.selectedTags,
-                    key = { it.id.toString() },
+                    key = { it.id },
                 ) { model ->
                     PresentableTagItemView(
                         modifier = Modifier.animateItem().padding(horizontal = 12.dp),
@@ -251,7 +251,9 @@ private fun SelectionContent(
                         cornerSize = 12.dp,
                         nullModelPresentableColor = YabaColor.BLUE,
                         onPressed = { onTagDeselected(model) },
-                        onNavigateToEdit = { creationNavigator.add(TagCreationRoute(tagId = model.id.toString())) }
+                        onNavigateToEdit = {
+                            creationNavigator.add(TagCreationRoute(tagId = model.id))
+                        }
                     )
                 }
                 item { Spacer(modifier = Modifier.height(12.dp)) }
@@ -311,7 +313,14 @@ private fun SelectionContent(
                         modifier = Modifier.animateItem(),
                         iconName = "search-01",
                         labelRes = Res.string.select_tags_no_tags_found_in_search_title,
-                        message = { Text(text = stringResource(Res.string.select_tags_no_tags_found_in_search_description, state.searchQuery)) },
+                        message = {
+                            Text(
+                                text = stringResource(
+                                    Res.string.select_tags_no_tags_found_in_search_description,
+                                    state.searchQuery
+                                )
+                            )
+                        },
                     )
                 }
             }
@@ -319,7 +328,7 @@ private fun SelectionContent(
             else -> {
                 items(
                     items = state.availableTags,
-                    key = { it.id.toString() },
+                    key = { it.id },
                 ) { model ->
                     PresentableTagItemView(
                         modifier = Modifier.animateItem().padding(horizontal = 12.dp),
@@ -327,7 +336,9 @@ private fun SelectionContent(
                         cornerSize = 12.dp,
                         nullModelPresentableColor = YabaColor.BLUE,
                         onPressed = { onTagSelected(model) },
-                        onNavigateToEdit = { creationNavigator.add(TagCreationRoute(tagId = model.id.toString())) }
+                        onNavigateToEdit = {
+                            creationNavigator.add(TagCreationRoute(tagId = model.id))
+                        }
                     )
                 }
             }

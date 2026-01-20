@@ -1,4 +1,4 @@
-package dev.subfly.yabacore.state.selection
+package dev.subfly.yabacore.state.selection.folder
 
 import dev.subfly.yabacore.model.utils.FolderSelectionMode
 

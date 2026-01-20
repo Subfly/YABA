@@ -59,7 +59,6 @@ import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.LocalUserPreferences
 import dev.subfly.yaba.util.uiTitle
 import dev.subfly.yaba.util.yabaPointerEventSpy
-import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.CardImageSizing
 import dev.subfly.yabacore.model.utils.FolderSelectionMode
@@ -188,8 +187,8 @@ fun FolderDetailView(
                             creationNavigator.add(
                                 FolderSelectionRoute(
                                     mode = FolderSelectionMode.BOOKMARKS_MOVE,
-                                    contextFolderId = state.folder?.id?.toString(),
-                                    contextBookmarkIds = state.selectedBookmarkIds.map { it.toString() },
+                                    contextFolderId = state.folder?.id,
+                                    contextBookmarkIds = state.selectedBookmarkIds.map { it },
                                 )
                             )
                             appStateManager.onShowCreationContent()

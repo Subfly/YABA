@@ -28,7 +28,7 @@ import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.ui.TagUiModel
-import dev.subfly.yabacore.state.linkmark.LinkmarkCreationEvent
+import dev.subfly.yabacore.state.creation.linkmark.LinkmarkCreationEvent
 
 @Composable
 fun LinkmarkCreationContent(bookmarkId: String?, initialUrl: String? = null) {
