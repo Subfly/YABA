@@ -13,6 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import dev.subfly.yaba.core.navigation.creation.BookmarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.FolderCreationRoute
 import dev.subfly.yaba.core.navigation.creation.TagCreationRoute
@@ -20,7 +21,9 @@ import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalUserPreferences
 import dev.subfly.yabacore.model.utils.FabPosition
+import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.ui.icon.YabaIcon
+import dev.subfly.yabacore.ui.icon.iconTintArgb
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalUuidApi::class)
@@ -49,10 +52,12 @@ internal fun HomeFab(modifier: Modifier = Modifier) {
             ToggleFloatingActionButton(
                 checked = isFabExpanded,
                 onCheckedChange = { isFabExpanded = it },
+                containerColor = { _ -> Color(YabaColor.BLUE.iconTintArgb()) }
             ) {
                 YabaIcon(
                     modifier = Modifier.rotate(fabIconRotation),
                     name = "add-01",
+                    color = Color.White,
                 )
             }
         },
@@ -64,7 +69,8 @@ internal fun HomeFab(modifier: Modifier = Modifier) {
                     appStateManager.onShowCreationContent()
                 },
                 text = {},
-                icon = { YabaIcon(name = "bookmark-02") }
+                containerColor = Color(YabaColor.BLUE.iconTintArgb()),
+                icon = { YabaIcon(name = "bookmark-02", color = Color.White) }
             )
             FloatingActionButtonMenuItem(
                 onClick = {
@@ -73,7 +79,8 @@ internal fun HomeFab(modifier: Modifier = Modifier) {
                     appStateManager.onShowCreationContent()
                 },
                 text = {},
-                icon = { YabaIcon(name = "folder-01") }
+                containerColor = Color(YabaColor.BLUE.iconTintArgb()),
+                icon = { YabaIcon(name = "folder-01", color = Color.White) }
             )
             FloatingActionButtonMenuItem(
                 onClick = {
@@ -82,7 +89,8 @@ internal fun HomeFab(modifier: Modifier = Modifier) {
                     appStateManager.onShowCreationContent()
                 },
                 text = {},
-                icon = { YabaIcon(name = "tag-01") }
+                containerColor = Color(YabaColor.BLUE.iconTintArgb()),
+                icon = { YabaIcon(name = "tag-01", color = Color.White) }
             )
         }
     )
