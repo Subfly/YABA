@@ -25,8 +25,10 @@ import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalDeletionDialogManager
+import dev.subfly.yaba.util.LocalPaneInfo
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.LocalUserPreferences
+import dev.subfly.yaba.util.rememberPaneLayoutInfo
 import dev.subfly.yabacore.preferences.SettingsStores
 import dev.subfly.yabacore.preferences.UserPreferences
 
@@ -54,6 +56,7 @@ fun App() {
     )
 
     val currentWindowInfo = currentWindowAdaptiveInfo()
+    val paneInfo = rememberPaneLayoutInfo()
 
     CompositionLocalProvider(
         LocalUserPreferences provides userPreferences,
@@ -62,6 +65,7 @@ fun App() {
         LocalContentNavigator provides contentNavigator,
         LocalAppStateManager provides appVM,
         LocalDeletionDialogManager provides deletionVM,
+        LocalPaneInfo provides paneInfo,
     ) {
         YabaTheme {
             YabaMainNavigationView()

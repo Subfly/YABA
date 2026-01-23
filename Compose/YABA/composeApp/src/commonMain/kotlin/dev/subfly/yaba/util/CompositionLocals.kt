@@ -31,3 +31,7 @@ val LocalAppStateManager = compositionLocalOf<AppVM> {
 val LocalDeletionDialogManager = compositionLocalOf<DeletionVM> {
     error("No deletion manager provided")
 }
+
+val LocalPaneInfo = compositionLocalOf<PaneLayoutInfo> {
+    error("No pane layout info provided")
+}
