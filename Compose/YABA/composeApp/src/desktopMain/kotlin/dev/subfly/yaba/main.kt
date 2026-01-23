@@ -22,7 +22,7 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import dev.subfly.yaba.core.app.App
 import dev.subfly.yaba.core.theme.YabaTheme
-import dev.subfly.yabacore.CoreRuntime
+import dev.subfly.yabacore.common.CoreRuntime
 import dev.subfly.yabacore.util.FileKitHelper
 
 fun main() {
