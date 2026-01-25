@@ -7,6 +7,7 @@ import dev.subfly.yabacore.filesystem.LinkmarkFileManager
 import dev.subfly.yabacore.managers.AllBookmarksManager
 import dev.subfly.yabacore.managers.FolderManager
 import dev.subfly.yabacore.managers.LinkmarkManager
+import dev.subfly.yabacore.managers.ReadableContentManager
 import dev.subfly.yabacore.managers.TagManager
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.BookmarkKind
@@ -205,12 +206,12 @@ class LinkmarkCreationStateMachine :
                         val imageUpdate = computeByteArrayUpdate(it.imageData, preview.imageData)
                         val iconUpdate = computeByteArrayUpdate(it.iconData, preview.iconData)
                         val videoDiff = preview.videoUrl != it.videoUrl
-                        val htmlDiff = preview.readableHtml != it.readableHtml
+                        val readableDiff = preview.readable != it.readable
                         val hasUpdates =
                             (imageUpdate != null) ||
                                     (iconUpdate != null) ||
                                     videoDiff ||
-                                    htmlDiff
+                                    readableDiff
                         it.copy(
                             // Only enrich the selectable image list; everything else becomes a
                             // pending update.
@@ -220,8 +221,8 @@ class LinkmarkCreationStateMachine :
                             updateIconData = iconUpdate,
                             shouldUpdateVideoUrl = videoDiff,
                             updateVideoUrl = if (videoDiff) preview.videoUrl else null,
-                            shouldUpdateReadableHtml = htmlDiff,
-                            updateReadableHtml = if (htmlDiff) preview.readableHtml else null,
+                            shouldUpdateReadable = readableDiff,
+                            updateReadable = if (readableDiff) preview.readable else null,
                             lastFetchedUrl = urlString,
                             isLoading = false,
                             error = null,
@@ -240,15 +241,15 @@ class LinkmarkCreationStateMachine :
                             iconData = preview.iconData,
                             imageData = preview.imageData,
                             selectableImages = preview.imageOptions,
-                            readableHtml = preview.readableHtml,
+                            readable = preview.readable,
                             // Clear any pending updates if we're not in preview-only mode.
                             hasContentUpdates = false,
                             updateImageData = null,
                             updateIconData = null,
                             shouldUpdateVideoUrl = false,
                             updateVideoUrl = null,
-                            shouldUpdateReadableHtml = false,
-                            updateReadableHtml = null,
+                            shouldUpdateReadable = false,
+                            updateReadable = null,
                             lastFetchedUrl = urlString,
                             isLoading = false,
                             error = null,
@@ -424,16 +425,14 @@ class LinkmarkCreationStateMachine :
                 imageData = it.updateImageData ?: it.imageData,
                 iconData = it.updateIconData ?: it.iconData,
                 videoUrl = if (it.shouldUpdateVideoUrl) it.updateVideoUrl else it.videoUrl,
-                readableHtml =
-                    if (it.shouldUpdateReadableHtml) it.updateReadableHtml
-                    else it.readableHtml,
+                readable = if (it.shouldUpdateReadable) it.updateReadable else it.readable,
                 hasContentUpdates = false,
                 updateImageData = null,
                 updateIconData = null,
                 shouldUpdateVideoUrl = false,
                 updateVideoUrl = null,
-                shouldUpdateReadableHtml = false,
-                updateReadableHtml = null,
+                shouldUpdateReadable = false,
+                updateReadable = null,
             )
         }
     }
@@ -457,10 +456,13 @@ class LinkmarkCreationStateMachine :
                     selectedFolder = FolderManager.ensureUncategorizedFolderVisible()
                 }
 
+                val bookmarkId: String
                 if (state.editingLinkmark != null) {
+                    bookmarkId = state.editingLinkmark.id
+
                     // Update base bookmark metadata first (list/grid source of truth)
                     AllBookmarksManager.updateBookmarkMetadata(
-                        bookmarkId = state.editingLinkmark.id,
+                        bookmarkId = bookmarkId,
                         folderId = selectedFolder.id,
                         kind = BookmarkKind.LINK,
                         label = state.label.ifBlank { state.cleanedUrl },
@@ -472,7 +474,7 @@ class LinkmarkCreationStateMachine :
 
                     // Then upsert link-specific details (detail screen extras)
                     LinkmarkManager.createOrUpdateLinkDetails(
-                        bookmarkId = state.editingLinkmark.id,
+                        bookmarkId = bookmarkId,
                         url = state.cleanedUrl,
                         domain = state.host,
                         linkType = state.selectedLinkType,
@@ -485,24 +487,18 @@ class LinkmarkCreationStateMachine :
 
                     // Add new tags
                     state.selectedTags.filter { it.id !in existingTagIds }.forEach { tag ->
-                        AllBookmarksManager.addTagToBookmark(
-                            tag.id,
-                            state.editingLinkmark.id
-                        )
+                        AllBookmarksManager.addTagToBookmark(tag.id, bookmarkId)
                     }
 
                     // Remove old tags
                     state.editingLinkmark.tags.filter { it.id !in newTagIds }.forEach { tag ->
-                        AllBookmarksManager.removeTagFromBookmark(
-                            tag.id,
-                            state.editingLinkmark.id
-                        )
+                        AllBookmarksManager.removeTagFromBookmark(tag.id, bookmarkId)
                     }
                 } else {
                     // Create new base bookmark metadata first (list/grid source of truth)
-                    val newId = IdGenerator.newId()
+                    bookmarkId = IdGenerator.newId()
                     AllBookmarksManager.createBookmarkMetadata(
-                        id = newId,
+                        id = bookmarkId,
                         folderId = selectedFolder.id,
                         kind = BookmarkKind.LINK,
                         label = state.label.ifBlank { state.cleanedUrl },
@@ -515,12 +511,17 @@ class LinkmarkCreationStateMachine :
 
                     // Then create link-specific details (detail screen extras)
                     LinkmarkManager.createOrUpdateLinkDetails(
-                        bookmarkId = newId,
+                        bookmarkId = bookmarkId,
                         url = state.cleanedUrl,
                         domain = state.host,
                         linkType = state.selectedLinkType,
                         videoUrl = state.videoUrl,
                     )
+                }
+
+                // Save readable content if available (immutable versioning)
+                state.readable?.let { readable ->
+                    ReadableContentManager.saveReadableContent(bookmarkId, readable)
                 }
 
                 updateState { it.copy(isSaving = false, error = null) }

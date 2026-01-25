@@ -73,6 +73,7 @@ object LogCompaction {
                 ObjectType.FOLDER -> entityFileManager.isFolderDeleted(objectId)
                 ObjectType.TAG -> entityFileManager.isTagDeleted(objectId)
                 ObjectType.BOOKMARK -> entityFileManager.isBookmarkDeleted(objectId)
+                ObjectType.HIGHLIGHT -> isHighlightDeletedOnFilesystem(objectId)
             }
 
             if (isDeletedOnFilesystem || deleteEvents.isNotEmpty()) {
@@ -150,6 +151,7 @@ object LogCompaction {
             ObjectType.FOLDER -> entityFileManager.isFolderDeleted(objectId)
             ObjectType.TAG -> entityFileManager.isTagDeleted(objectId)
             ObjectType.BOOKMARK -> entityFileManager.isBookmarkDeleted(objectId)
+            ObjectType.HIGHLIGHT -> isHighlightDeletedOnFilesystem(objectId)
         }
 
         if (isDeletedOnFilesystem || deleteEvents.isNotEmpty()) {
@@ -217,7 +219,32 @@ object LogCompaction {
                     else -> null
                 }
             }
+            ObjectType.HIGHLIGHT -> {
+                readHighlightClock(entityId)
+            }
         }
+    }
+
+    /**
+     * Checks if a highlight annotation has been deleted on the filesystem.
+     */
+    private suspend fun isHighlightDeletedOnFilesystem(highlightId: String): Boolean {
+        // Look up the highlight in Room to find the bookmark it belongs to
+        val highlight = dev.subfly.yabacore.database.DatabaseProvider.highlightDao.getById(highlightId)
+            ?: return true
+        // Check if the file still exists
+        return entityFileManager.readHighlight(highlight.bookmarkId, highlightId) == null
+    }
+
+    /**
+     * Reads the clock from a highlight annotation file.
+     */
+    private suspend fun readHighlightClock(highlightId: String): VectorClock? {
+        val highlightEntity = dev.subfly.yabacore.database.DatabaseProvider.highlightDao.getById(highlightId)
+            ?: return null
+        val highlight = entityFileManager.readHighlight(highlightEntity.bookmarkId, highlightId)
+            ?: return null
+        return VectorClock.fromMap(highlight.clock)
     }
 }
 

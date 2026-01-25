@@ -2,12 +2,14 @@ package dev.subfly.yabacore.managers
 
 import dev.subfly.yabacore.database.DatabaseProvider
 import dev.subfly.yabacore.database.DeviceIdProvider
+import dev.subfly.yabacore.database.entities.HighlightEntity
 import dev.subfly.yabacore.database.entities.LinkBookmarkEntity
 import dev.subfly.yabacore.database.mappers.toModel
 import dev.subfly.yabacore.database.mappers.toUiModel
 import dev.subfly.yabacore.filesystem.BookmarkFileManager
 import dev.subfly.yabacore.filesystem.EntityFileManager
 import dev.subfly.yabacore.filesystem.json.LinkJson
+import dev.subfly.yabacore.model.ui.HighlightUiModel
 import dev.subfly.yabacore.model.ui.LinkmarkUiModel
 import dev.subfly.yabacore.model.utils.LinkType
 import dev.subfly.yabacore.queue.CoreOperationQueue
@@ -15,9 +17,10 @@ import dev.subfly.yabacore.sync.CRDTEngine
 import dev.subfly.yabacore.sync.FileTarget
 import dev.subfly.yabacore.sync.ObjectType
 import dev.subfly.yabacore.sync.VectorClock
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
-import kotlin.time.Clock
 
 /**
  * Filesystem-first link bookmark manager.
@@ -30,12 +33,15 @@ object LinkmarkManager {
     private val linkBookmarkDao get() = DatabaseProvider.linkBookmarkDao
     private val folderDao get() = DatabaseProvider.folderDao
     private val tagDao get() = DatabaseProvider.tagDao
+    private val highlightDao get() = DatabaseProvider.highlightDao
     private val entityFileManager get() = EntityFileManager
     private val crdtEngine get() = CRDTEngine
-    private val clock = Clock.System
 
     // ==================== Query Operations ====================
 
+    /**
+     * Gets a linkmark with basic info (without readable content).
+     */
     suspend fun getLinkmarkDetail(bookmarkId: String): LinkmarkUiModel? {
         val linkBookmark = bookmarkDao.getLinkBookmarkById(bookmarkId) ?: return null
         val domain = linkBookmark.toModel()
@@ -53,6 +59,27 @@ object LinkmarkManager {
             localImagePath = localImageAbsolutePath,
             localIconPath = localIconAbsolutePath,
         )
+    }
+
+    /**
+     * Observes a linkmark and its highlights in real-time.
+     *
+     * Combines:
+     * - Readable versions from readableVersionDao
+     * - Assets from readableAssetDao
+     * - Highlights from highlightDao
+     *
+     * Note: For full linkmark observation, use with bookmarkDao.observeById
+     * and linkBookmarkDao.observeByBookmarkId if needed.
+     *
+     * @param bookmarkId The bookmark ID to observe
+     * @return Flow emitting list of ReadableVersionUiModel with highlights
+     */
+    fun observeHighlights(bookmarkId: String): Flow<List<HighlightUiModel>> {
+        return highlightDao.observeByBookmarkId(bookmarkId)
+            .map { highlights ->
+                highlights.map { entity -> entity.toUiModel() }
+            }
     }
 
     // ==================== Write Operations (Enqueued) ====================
@@ -222,4 +249,20 @@ object LinkmarkManager {
         linkType = LinkType.fromCode(linkTypeCode),
         videoUrl = videoUrl,
     )
+
+    private suspend fun HighlightEntity.toUiModel(): HighlightUiModel =
+        HighlightUiModel(
+            id = id,
+            startBlockId = startBlockId,
+            startInlinePath = startInlinePath.split(",").mapNotNull { it.toIntOrNull() },
+            startOffset = startOffset,
+            endBlockId = endBlockId,
+            endInlinePath = endInlinePath.split(",").mapNotNull { it.toIntOrNull() },
+            endOffset = endOffset,
+            colorRole = colorRole,
+            note = note,
+            absolutePath = BookmarkFileManager.getAbsolutePath(relativePath),
+            createdAt = createdAt,
+            editedAt = editedAt,
+        )
 }

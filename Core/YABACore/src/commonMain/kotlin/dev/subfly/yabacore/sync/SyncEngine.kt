@@ -13,6 +13,8 @@ import dev.subfly.yabacore.filesystem.FileSystemStateManager
 import dev.subfly.yabacore.filesystem.SyncState
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.filesystem.json.FolderMetaJson
+import dev.subfly.yabacore.filesystem.json.HighlightAnchor
+import dev.subfly.yabacore.filesystem.json.HighlightJson
 import dev.subfly.yabacore.filesystem.json.TagMetaJson
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -178,6 +180,7 @@ object SyncEngine {
             ObjectType.FOLDER -> entityFileManager.isFolderDeleted(objectId)
             ObjectType.TAG -> entityFileManager.isTagDeleted(objectId)
             ObjectType.BOOKMARK -> entityFileManager.isBookmarkDeleted(objectId)
+            ObjectType.HIGHLIGHT -> isHighlightDeleted(objectId)
         }
 
         if (isDeletedOnFilesystem) {
@@ -219,6 +222,7 @@ object SyncEngine {
             ObjectType.FOLDER -> mergeFolderEvents(objectId, events)
             ObjectType.TAG -> mergeTagEvents(objectId, events)
             ObjectType.BOOKMARK -> mergeBookmarkEvents(objectId, events)
+            ObjectType.HIGHLIGHT -> mergeHighlightEvents(objectId, events)
         }
     }
 
@@ -230,6 +234,7 @@ object SyncEngine {
             ObjectType.FOLDER -> CoreConstants.Folder.isSystemFolder(entityId)
             ObjectType.TAG -> CoreConstants.Tag.isSystemTag(entityId)
             ObjectType.BOOKMARK -> false // No system bookmarks
+            ObjectType.HIGHLIGHT -> false // No system highlights
         }
     }
 
@@ -256,6 +261,11 @@ object SyncEngine {
                 DatabaseProvider.tagBookmarkDao.deleteForBookmark(entityId)
                 DatabaseProvider.linkBookmarkDao.deleteById(entityId)
                 DatabaseProvider.bookmarkDao.deleteByIds(listOf(entityId))
+                DatabaseProvider.highlightDao.deleteByBookmarkId(entityId)
+            }
+            ObjectType.HIGHLIGHT -> {
+                deleteHighlightFile(entityId)
+                DatabaseProvider.highlightDao.deleteById(entityId)
             }
         }
     }
@@ -299,6 +309,10 @@ object SyncEngine {
             ObjectType.BOOKMARK -> {
                 // Bookmarks don't have system entities, so this shouldn't be called
                 // But if it is, just apply normal deletion
+                applyDeletionFromEvent(objectType, entityId, deletionClock)
+            }
+            ObjectType.HIGHLIGHT -> {
+                // Highlights don't have system entities
                 applyDeletionFromEvent(objectType, entityId, deletionClock)
             }
         }
@@ -547,5 +561,105 @@ object SyncEngine {
         if (crossRefs.isNotEmpty()) {
             tagBookmarkDao.insertAll(crossRefs)
         }
+    }
+
+    // ==================== Highlight Support ====================
+
+    /**
+     * Checks if a highlight annotation file has been deleted.
+     */
+    private suspend fun isHighlightDeleted(highlightId: String): Boolean {
+        // Highlights don't have tombstone files - check Room index
+        return DatabaseProvider.highlightDao.getById(highlightId) == null
+    }
+
+    /**
+     * Deletes a highlight annotation file from the filesystem.
+     */
+    private suspend fun deleteHighlightFile(highlightId: String) {
+        val highlight = DatabaseProvider.highlightDao.getById(highlightId) ?: return
+        entityFileManager.deleteHighlight(highlight.bookmarkId, highlightId)
+    }
+
+    /**
+     * Merges CRDT events for a highlight annotation.
+     */
+    private suspend fun mergeHighlightEvents(highlightId: String, events: List<CRDTEvent>) {
+        val highlightFields = mutableMapOf<String, JsonElement>()
+        val highlightEvents = events.filter { it.file == FileTarget.HIGHLIGHT_JSON }
+
+        mergeEventPayloadsToFields(highlightEvents, highlightFields)
+
+        // Extract required fields
+        val bookmarkId = highlightFields["bookmarkId"]?.jsonPrimitive?.contentOrNull ?: return
+        val contentVersion = highlightFields["contentVersion"]?.jsonPrimitive?.contentOrNull?.toIntOrNull() ?: return
+
+        // Build HighlightJson from merged fields
+        val highlightData = HighlightJson(
+            id = highlightId,
+            bookmarkId = bookmarkId,
+            contentVersion = contentVersion,
+            startAnchor = parseAnchor(highlightFields["startAnchor"]) ?: return,
+            endAnchor = parseAnchor(highlightFields["endAnchor"]) ?: return,
+            colorRole = parseYabaColor(highlightFields["colorRole"]),
+            note = highlightFields["note"]?.jsonPrimitive?.contentOrNull,
+            createdAt = highlightFields["createdAt"]?.jsonPrimitive?.longOrNull ?: 0L,
+            editedAt = highlightFields["editedAt"]?.jsonPrimitive?.longOrNull ?: 0L,
+            clock = extractClockFromFields(highlightFields),
+        )
+
+        // Write to filesystem using entityFileManager
+        entityFileManager.writeHighlight(highlightData)
+
+        // Update Room index
+        val relativePath = CoreConstants.FileSystem.Linkmark.highlightPath(bookmarkId, highlightId)
+        val entity = dev.subfly.yabacore.database.entities.HighlightEntity(
+            id = highlightId,
+            bookmarkId = bookmarkId,
+            contentVersion = contentVersion,
+            startBlockId = highlightData.startAnchor.blockId,
+            startInlinePath = highlightData.startAnchor.inlinePath.joinToString(","),
+            startOffset = highlightData.startAnchor.offset,
+            endBlockId = highlightData.endAnchor.blockId,
+            endInlinePath = highlightData.endAnchor.inlinePath.joinToString(","),
+            endOffset = highlightData.endAnchor.offset,
+            colorRole = highlightData.colorRole,
+            note = highlightData.note,
+            relativePath = relativePath,
+            createdAt = highlightData.createdAt,
+            editedAt = highlightData.editedAt,
+        )
+        DatabaseProvider.highlightDao.upsert(entity)
+    }
+
+    /**
+     * Parses a highlight anchor from a JsonElement.
+     */
+    private fun parseAnchor(element: JsonElement?): HighlightAnchor? {
+        val obj = element as? JsonObject ?: return null
+        val blockId = obj["blockId"]?.jsonPrimitive?.contentOrNull ?: return null
+        val inlinePath = (obj["inlinePath"] as? JsonArray)?.mapNotNull {
+            it.jsonPrimitive.contentOrNull?.toIntOrNull()
+        } ?: emptyList()
+        val offset = obj["offset"]?.jsonPrimitive?.contentOrNull?.toIntOrNull() ?: return null
+        return HighlightAnchor(blockId, inlinePath, offset)
+    }
+
+    /**
+     * Extracts a clock map from merged fields.
+     */
+    private fun extractClockFromFields(fields: Map<String, JsonElement>): Map<String, Long> {
+        val clockElement = fields["clock"] as? JsonObject ?: return emptyMap()
+        return clockElement.mapNotNull { (key, value) ->
+            val count = value.jsonPrimitive.longOrNull
+            if (count != null) key to count else null
+        }.toMap()
+    }
+
+    private fun parseYabaColor(element: JsonElement?): YabaColor {
+        val primitive = element as? JsonPrimitive
+        val intValue = primitive?.longOrNull?.toInt()
+        if (intValue != null) return YabaColor.fromCode(intValue)
+        return YabaColor.fromRoleString(primitive?.contentOrNull)
     }
 }

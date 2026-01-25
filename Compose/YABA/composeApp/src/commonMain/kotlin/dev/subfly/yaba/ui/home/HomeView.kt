@@ -30,6 +30,7 @@ import dev.subfly.yaba.core.components.item.bookmark.BookmarkItemView
 import dev.subfly.yaba.core.components.item.folder.FolderItemView
 import dev.subfly.yaba.core.components.item.tag.TagItemView
 import dev.subfly.yaba.core.navigation.main.FolderDetailRoute
+import dev.subfly.yaba.core.navigation.main.LinkDetailRoute
 import dev.subfly.yaba.core.navigation.main.SearchRoute
 import dev.subfly.yaba.core.navigation.main.TagDetailRoute
 import dev.subfly.yaba.ui.home.components.HomeFab
@@ -149,8 +150,10 @@ fun HomeView(modifier: Modifier = Modifier) {
                                             bookmarks = state.recentBookmarks,
                                             appearance = state.bookmarkAppearance,
                                             cardImageSizing = state.cardImageSizing,
-                                            onClickBookmark = {
-                                                // TODO: NAVIGATE TO BOOKMARK DETAIL
+                                            onClickBookmark = { bookmark ->
+                                                navigator.add(
+                                                    LinkDetailRoute(bookmarkId = bookmark.id)
+                                                )
                                             },
                                             onDeleteBookmark = { bookmark ->
                                                 vm.onEvent(HomeEvent.OnDeleteBookmark(bookmark))
@@ -177,7 +180,9 @@ fun HomeView(modifier: Modifier = Modifier) {
                                             appearance = state.bookmarkAppearance,
                                             cardImageSizing = state.cardImageSizing,
                                             onClick = {
-                                                // TODO: NAVIGATE TO BOOKMARK DETAIL
+                                                navigator.add(
+                                                    LinkDetailRoute(bookmarkId = bookmarkModel.id)
+                                                )
                                             },
                                             onDeleteBookmark = { bookmark ->
                                                 vm.onEvent(HomeEvent.OnDeleteBookmark(bookmark))

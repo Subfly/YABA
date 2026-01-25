@@ -87,6 +87,9 @@ object Unfurler {
         val limitedImageUrls = allImageUrls.take(10)
         val imageOptions = downloadMultipleImageData(limitedImageUrls)
 
+        // Extract readable content from HTML
+        val readableUnfurl = extractReadableContent(html, baseUrl, metadata[META_TITLE])
+
         return YabaLinkPreview(
             url = cleaned,
             title = metadata[META_TITLE],
@@ -98,8 +101,140 @@ object Unfurler {
             iconData = downloadImageData(faviconUrl),
             imageData = metadata[META_IMAGE]?.let { imageOptions[it] },
             imageOptions = imageOptions,
-            readableHtml = html,
+            readable = readableUnfurl,
         )
+    }
+
+    suspend fun unfurlReadable(urlString: String): ReadableUnfurl? {
+        val normalized = normalizeURL(urlString)
+        val cleaned = LinkCleaner.clean(normalized)
+        val baseUrl = runCatching { Url(cleaned) }.getOrElse {
+            logger.e { "Cannot create url for readable: $cleaned (original: $urlString)" }
+            throw UnfurlError.CannotCreateUrl(cleaned)
+        }
+
+        val html = loadURL(cleaned) ?: return null
+        val tags = extractAllMetaTags(html)
+        val metadata = extractMetaData(tags)
+        return extractReadableContent(html, baseUrl, metadata[META_TITLE])
+    }
+
+    /**
+     * Extracts structured readable content from HTML.
+     *
+     * Runs the heuristic pipeline to produce a ReadableDocumentSnapshot
+     * and downloads retained images as assets.
+     */
+    private suspend fun extractReadableContent(
+        html: String,
+        baseUrl: Url,
+        metaTitle: String?,
+    ): ReadableUnfurl? {
+        return runCatching {
+            val result = ReadableExtractor.extract(html, baseUrl, metaTitle)
+
+            // Download images for readable content
+            val assets = downloadReadableAssets(result.imageUrls)
+
+            // Update document with downloaded assets only
+            val downloadedAssetIds = assets.map { it.assetId }.toSet()
+            val filteredBlocks = filterBlocksWithMissingAssets(result.document.blocks, downloadedAssetIds)
+
+            val document = result.document.copy(blocks = filteredBlocks)
+
+            ReadableUnfurl(document = document, assets = assets)
+        }.getOrElse { e ->
+            logger.w { "Failed to extract readable content: ${e.message}" }
+            null
+        }
+    }
+
+    /**
+     * Downloads images for readable content and returns them as assets.
+     */
+    private suspend fun downloadReadableAssets(
+        imageUrls: List<Pair<String, String>>,
+    ): List<ReadableAsset> = coroutineScope {
+        val tasks = imageUrls.map { (assetId, url) ->
+            async {
+                val bytes = downloadImageData(url)
+                if (bytes != null && isHighQualityImage(bytes)) {
+                    val extension = inferImageExtension(bytes, url)
+                    ReadableAsset(assetId = assetId, extension = extension, bytes = bytes)
+                } else null
+            }
+        }
+
+        tasks.mapNotNull { it.await() }
+    }
+
+    /**
+     * Infers image extension from magic bytes or URL.
+     */
+    private fun inferImageExtension(bytes: ByteArray, url: String): String {
+        // Check magic bytes
+        if (bytes.size >= 3) {
+            // JPEG: FF D8 FF
+            if (bytes[0] == 0xFF.toByte() && bytes[1] == 0xD8.toByte() && bytes[2] == 0xFF.toByte()) {
+                return "jpg"
+            }
+            // PNG: 89 50 4E 47
+            if (bytes.size >= 4 && bytes[0] == 0x89.toByte() && bytes[1] == 0x50.toByte() &&
+                bytes[2] == 0x4E.toByte() && bytes[3] == 0x47.toByte()
+            ) {
+                return "png"
+            }
+            // GIF: 47 49 46
+            if (bytes[0] == 0x47.toByte() && bytes[1] == 0x49.toByte() && bytes[2] == 0x46.toByte()) {
+                return "gif"
+            }
+            // WebP: RIFF....WEBP
+            if (bytes.size >= 12 && bytes[0] == 0x52.toByte() && bytes[1] == 0x49.toByte() &&
+                bytes[2] == 0x46.toByte() && bytes[3] == 0x46.toByte() &&
+                bytes[8] == 0x57.toByte() && bytes[9] == 0x45.toByte() &&
+                bytes[10] == 0x42.toByte() && bytes[11] == 0x50.toByte()
+            ) {
+                return "webp"
+            }
+        }
+
+        // Fallback to URL extension
+        val urlLower = url.lowercase()
+        return when {
+            urlLower.contains(".png") -> "png"
+            urlLower.contains(".gif") -> "gif"
+            urlLower.contains(".webp") -> "webp"
+            urlLower.contains(".jpeg") || urlLower.contains(".jpg") -> "jpg"
+            else -> "jpg" // Default
+        }
+    }
+
+    /**
+     * Filters out image blocks that reference missing assets.
+     */
+    private fun filterBlocksWithMissingAssets(
+        blocks: List<ReadableBlock>,
+        downloadedAssetIds: Set<String>,
+    ): List<ReadableBlock> {
+        return blocks.mapNotNull { block ->
+            when (block) {
+                is ReadableBlock.Image -> {
+                    if (block.assetId in downloadedAssetIds) block else null
+                }
+                is ReadableBlock.Quote -> {
+                    val filteredChildren = filterBlocksWithMissingAssets(block.children, downloadedAssetIds)
+                    if (filteredChildren.isNotEmpty()) block.copy(children = filteredChildren) else null
+                }
+                is ReadableBlock.ListBlock -> {
+                    val filteredItems = block.items.mapNotNull { item ->
+                        val filteredBlocks = filterBlocksWithMissingAssets(item.blocks, downloadedAssetIds)
+                        if (filteredBlocks.isNotEmpty()) ListItem(filteredBlocks) else null
+                    }
+                    if (filteredItems.isNotEmpty()) block.copy(items = filteredItems) else null
+                }
+                else -> block
+            }
+        }
     }
 
     private fun normalizeURL(urlString: String): String {

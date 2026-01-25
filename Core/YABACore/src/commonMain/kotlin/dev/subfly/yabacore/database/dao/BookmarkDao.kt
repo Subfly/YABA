@@ -31,6 +31,9 @@ interface BookmarkDao {
     @Query("SELECT * FROM bookmarks WHERE id = :id LIMIT 1")
     suspend fun getById(id: String): BookmarkEntity?
 
+    @Query("SELECT * FROM bookmarks WHERE id = :id LIMIT 1")
+    fun observeById(id: String): Flow<BookmarkEntity?>
+
     @Transaction
     @Query("SELECT * FROM bookmarks WHERE id = :id LIMIT 1")
     suspend fun getLinkBookmarkById(id: String): LinkBookmarkWithRelations?

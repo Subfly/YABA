@@ -3,6 +3,8 @@ package dev.subfly.yabacore.model.ui
 import androidx.compose.runtime.Immutable
 import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.LinkType
+import dev.subfly.yabacore.model.utils.ReadableAssetRole
+import dev.subfly.yabacore.model.utils.YabaColor
 import kotlin.time.Instant
 
 sealed interface BookmarkUiModel {
@@ -72,4 +74,63 @@ data class LinkmarkUiModel(
     override val localIconPath: String? = null,
     override val parentFolder: FolderUiModel?,
     override val tags: List<TagUiModel> = emptyList(),
-) : BookmarkUiModel
+    /** Readable versions ordered by contentVersion DESC (newest first) for "Time Machine" */
+    val readableVersions: List<ReadableVersionUiModel> = emptyList(),
+) : BookmarkUiModel {
+    /** The latest readable version, or null if no versions exist */
+    val latestVersion: ReadableVersionUiModel?
+        get() = readableVersions.firstOrNull()
+
+    /** Total number of readable versions */
+    val versionCount: Int
+        get() = readableVersions.size
+
+    /** Total number of highlights across all versions */
+    val totalHighlightCount: Int
+        get() = readableVersions.sumOf { it.highlights.size }
+}
+
+/**
+ * A single readable content version with its assets and highlights.
+ */
+@Immutable
+data class ReadableVersionUiModel(
+    val contentVersion: Int,
+    val createdAt: Long,
+    val title: String?,
+    val author: String?,
+    val document: ReadableDocumentUiModel?,
+    val assets: List<ReadableAssetUiModel> = emptyList(),
+    val highlights: List<HighlightUiModel> = emptyList(),
+)
+
+/**
+ * A readable content asset (image) with absolute path.
+ */
+@Immutable
+data class ReadableAssetUiModel(
+    val assetId: String,
+    val role: ReadableAssetRole,
+    /** Absolute path to the asset file */
+    val absolutePath: String?,
+)
+
+/**
+ * A highlight annotation.
+ */
+@Immutable
+data class HighlightUiModel(
+    val id: String,
+    val startBlockId: String,
+    val startInlinePath: List<Int>,
+    val startOffset: Int,
+    val endBlockId: String,
+    val endInlinePath: List<Int>,
+    val endOffset: Int,
+    val colorRole: YabaColor,
+    val note: String?,
+    /** Absolute path to the highlight JSON file */
+    val absolutePath: String?,
+    val createdAt: Long,
+    val editedAt: Long,
+)

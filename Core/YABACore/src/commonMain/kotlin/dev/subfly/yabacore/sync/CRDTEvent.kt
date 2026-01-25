@@ -11,6 +11,7 @@ enum class ObjectType {
     BOOKMARK,
     FOLDER,
     TAG,
+    HIGHLIGHT,
 }
 
 /**
@@ -21,6 +22,8 @@ enum class FileTarget {
     META_JSON,
     /** The link.json file containing link-specific bookmark data */
     LINK_JSON,
+    /** The highlight annotation JSON file in /content/annotations/ */
+    HIGHLIGHT_JSON,
 }
 
 /**
@@ -58,7 +61,7 @@ enum class EventType {
  *
  * @property eventId Unique identifier for this event (UUID)
  * @property objectId The entity UUID this event applies to
- * @property objectType The type of entity (BOOKMARK, FOLDER, TAG)
+ * @property objectType The type of entity (BOOKMARK, FOLDER, TAG, HIGHLIGHT)
  * @property eventType The type of event (CREATE, UPDATE, DELETE)
  * @property file Which JSON file the event applies to (META_JSON, LINK_JSON)
  * @property payload The event payload as a JsonObject. For CREATE/UPDATE, contains field values.
@@ -107,6 +110,8 @@ data class MergedState(
     val metaFields: Map<String, JsonElement>,
     /** Merged field values for link.json (only for BOOKMARK type) */
     val linkFields: Map<String, JsonElement>,
+    /** Merged field values for highlight.json (only for HIGHLIGHT type) */
+    val highlightFields: Map<String, JsonElement> = emptyMap(),
     /** The merged vector clock representing all applied events */
     val mergedClock: VectorClock,
 )

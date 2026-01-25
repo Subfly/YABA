@@ -5,6 +5,7 @@ import dev.subfly.yabacore.filesystem.access.FileAccessProvider
 import dev.subfly.yabacore.filesystem.json.BookmarkMetaJson
 import dev.subfly.yabacore.filesystem.json.DeletedJson
 import dev.subfly.yabacore.filesystem.json.FolderMetaJson
+import dev.subfly.yabacore.filesystem.json.HighlightJson
 import dev.subfly.yabacore.filesystem.json.LinkJson
 import dev.subfly.yabacore.filesystem.json.TagMetaJson
 import dev.subfly.yabacore.sync.VectorClock
@@ -192,6 +193,32 @@ object EntityFileManager {
         deleteDirectory(contentPath)
     }
 
+    // ==================== Highlight Operations ====================
+
+    suspend fun readHighlight(bookmarkId: String, highlightId: String): HighlightJson? {
+        val path = CoreConstants.FileSystem.Linkmark.highlightPath(bookmarkId, highlightId)
+        return readJson(path)
+    }
+
+    suspend fun writeHighlight(highlight: HighlightJson) {
+        val path = CoreConstants.FileSystem.Linkmark.highlightPath(highlight.bookmarkId, highlight.id)
+        writeJson(path, highlight)
+    }
+
+    suspend fun deleteHighlight(bookmarkId: String, highlightId: String) {
+        val path = CoreConstants.FileSystem.Linkmark.highlightPath(bookmarkId, highlightId)
+        deleteFile(path)
+    }
+
+    /**
+     * Reads all highlights for a bookmark.
+     */
+    suspend fun readAllHighlights(bookmarkId: String): List<HighlightJson> {
+        return scanHighlightsForBookmark(bookmarkId).mapNotNull { highlightId ->
+            readHighlight(bookmarkId, highlightId)
+        }
+    }
+
     // ==================== Scanning Operations ====================
 
     suspend fun scanAllFolders(): List<String> {
@@ -204,6 +231,16 @@ object EntityFileManager {
 
     suspend fun scanAllBookmarks(): List<String> {
         return scanEntityDirectory(CoreConstants.FileSystem.BOOKMARKS_DIR)
+    }
+
+    suspend fun scanHighlightsForBookmark(bookmarkId: String): List<String> {
+        val annotationsDir = CoreConstants.FileSystem.Linkmark.annotationsDir(bookmarkId)
+        val dir = accessProvider.resolveRelativePath(annotationsDir, ensureParentExists = false)
+        if (!dir.exists() || !dir.isDirectory()) return emptyList()
+
+        return dir.list()
+            .filter { !it.isDirectory() && it.name.endsWith(".json") }
+            .map { it.name.removeSuffix(".json") }
     }
 
     /**

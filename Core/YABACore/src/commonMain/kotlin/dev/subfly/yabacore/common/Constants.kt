@@ -108,6 +108,10 @@ object CoreConstants {
             const val LINK_IMAGE_BASENAME = "link_image"
             const val DOMAIN_ICON_BASENAME = "domain_icon"
             const val HTML_EXPORTS_DIR = "html_exports"
+            const val READABLE_DIR = "readable"
+            const val ASSETS_DIR = "assets"
+            const val ANNOTATIONS_DIR = "annotations"
+
             fun bookmarkFolder(bookmarkId: String): String = bookmarkFolderPath(bookmarkId, CONTENT_DIR)
 
             fun linkImagePath(
@@ -133,6 +137,27 @@ object CoreConstants {
                 bookmarkId: String,
                 exportFileName: String,
             ): String = join(htmlExportsDir(bookmarkId), exportFileName)
+
+            // Readable content paths (immutable versions)
+            fun readableDir(bookmarkId: String): String =
+                join(bookmarkFolder(bookmarkId), READABLE_DIR)
+
+            fun readableVersionPath(bookmarkId: String, contentVersion: Int): String =
+                join(readableDir(bookmarkId), "v$contentVersion.json")
+
+            // Asset paths (immutable, UUID-named)
+            fun assetsDir(bookmarkId: String): String =
+                join(bookmarkFolder(bookmarkId), ASSETS_DIR)
+
+            fun assetPath(bookmarkId: String, assetId: String, extension: String): String =
+                join(assetsDir(bookmarkId), "$assetId.$extension")
+
+            // Annotation paths (mutable, CRDT-merged highlights)
+            fun annotationsDir(bookmarkId: String): String =
+                join(bookmarkFolder(bookmarkId), ANNOTATIONS_DIR)
+
+            fun highlightPath(bookmarkId: String, highlightId: String): String =
+                join(annotationsDir(bookmarkId), "$highlightId.json")
         }
 
         fun bookmarkFolderPath(

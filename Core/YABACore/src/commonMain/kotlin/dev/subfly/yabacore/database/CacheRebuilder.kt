@@ -1,21 +1,35 @@
 package dev.subfly.yabacore.database
 
+import dev.subfly.yabacore.common.CoreConstants
 import dev.subfly.yabacore.database.entities.BookmarkEntity
 import dev.subfly.yabacore.database.entities.FolderEntity
+import dev.subfly.yabacore.database.entities.HighlightEntity
 import dev.subfly.yabacore.database.entities.LinkBookmarkEntity
+import dev.subfly.yabacore.database.entities.ReadableAssetEntity
+import dev.subfly.yabacore.database.entities.ReadableVersionEntity
 import dev.subfly.yabacore.database.entities.TagBookmarkCrossRef
 import dev.subfly.yabacore.database.entities.TagEntity
 import dev.subfly.yabacore.filesystem.EntityFileManager
 import dev.subfly.yabacore.filesystem.EntityType
 import dev.subfly.yabacore.filesystem.FileSystemStateManager
 import dev.subfly.yabacore.filesystem.SyncState
+import dev.subfly.yabacore.filesystem.access.FileAccessProvider
 import dev.subfly.yabacore.filesystem.json.BookmarkMetaJson
 import dev.subfly.yabacore.filesystem.json.FolderMetaJson
+import dev.subfly.yabacore.filesystem.json.HighlightJson
 import dev.subfly.yabacore.filesystem.json.LinkJson
 import dev.subfly.yabacore.filesystem.json.TagMetaJson
 import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.LinkType
+import dev.subfly.yabacore.model.utils.ReadableAssetRole
 import dev.subfly.yabacore.model.utils.YabaColor
+import dev.subfly.yabacore.unfurl.ReadableBlock
+import dev.subfly.yabacore.unfurl.ReadableDocumentSnapshot
+import io.github.vinceglb.filekit.exists
+import io.github.vinceglb.filekit.extension
+import io.github.vinceglb.filekit.list
+import io.github.vinceglb.filekit.name
+import kotlinx.serialization.json.Json
 
 /**
  * Rebuilds the SQLite cache from the filesystem.
@@ -34,7 +48,15 @@ object CacheRebuilder {
     private val bookmarkDao get() = DatabaseProvider.bookmarkDao
     private val linkBookmarkDao get() = DatabaseProvider.linkBookmarkDao
     private val tagBookmarkDao get() = DatabaseProvider.tagBookmarkDao
+    private val readableVersionDao get() = DatabaseProvider.readableVersionDao
+    private val readableAssetDao get() = DatabaseProvider.readableAssetDao
+    private val highlightDao get() = DatabaseProvider.highlightDao
     private val entityFileManager get() = EntityFileManager
+
+    private val json = Json {
+        ignoreUnknownKeys = true
+        isLenient = true
+    }
 
     /**
      * Rebuilds the entire SQLite cache from the filesystem.
@@ -60,6 +82,12 @@ object CacheRebuilder {
 
             // 5. Rebuild tag-bookmark relationships
             rebuildTagBookmarkRelationships()
+
+            // 6. Rebuild readable content indexes
+            rebuildReadableContent()
+
+            // 7. Rebuild highlight indexes
+            rebuildHighlights()
 
             FileSystemStateManager.setSyncState(SyncState.IN_SYNC)
         } catch (e: Exception) {
@@ -152,6 +180,9 @@ object CacheRebuilder {
     // ==================== Private Helpers ====================
 
     private suspend fun clearAllTables() {
+        highlightDao.deleteAll()
+        readableAssetDao.deleteAll()
+        readableVersionDao.deleteAll()
         tagBookmarkDao.deleteAll()
         linkBookmarkDao.deleteAll()
         bookmarkDao.deleteAll()
@@ -212,6 +243,125 @@ object CacheRebuilder {
         }
     }
 
+    /**
+     * Rebuilds the readable content version and asset indexes.
+     */
+    private suspend fun rebuildReadableContent() {
+        val bookmarkIds = entityFileManager.scanAllBookmarks()
+        bookmarkIds.forEach { bookmarkId ->
+            if (entityFileManager.isBookmarkDeleted(bookmarkId)) return@forEach
+
+            // Scan readable versions
+            val readableDir = CoreConstants.FileSystem.Linkmark.readableDir(bookmarkId)
+            val readableDirFile = FileAccessProvider.resolveRelativePath(readableDir, ensureParentExists = false)
+
+            if (readableDirFile.exists()) {
+                readableDirFile.list().forEach { versionFile ->
+                    val fileName = versionFile.name
+                    if (fileName.startsWith("v") && fileName.endsWith(".json")) {
+                        val versionNum = fileName.removePrefix("v").removeSuffix(".json").toIntOrNull()
+                        if (versionNum != null) {
+                            val relativePath = CoreConstants.FileSystem.Linkmark.readableVersionPath(bookmarkId, versionNum)
+                            val content = FileAccessProvider.readText(relativePath)
+                            if (content != null) {
+                                runCatching {
+                                    val doc = json.decodeFromString<ReadableDocumentSnapshot>(content)
+                                    val entity = ReadableVersionEntity(
+                                        id = "${bookmarkId}_v$versionNum",
+                                        bookmarkId = bookmarkId,
+                                        contentVersion = versionNum,
+                                        createdAt = doc.createdAt,
+                                        relativePath = relativePath,
+                                        title = doc.title,
+                                        author = doc.author,
+                                    )
+                                    readableVersionDao.upsert(entity)
+
+                                    // Extract asset roles from document
+                                    val assetRoles = extractAssetRoles(doc)
+
+                                    // Index assets for this version
+                                    indexAssetsForVersion(bookmarkId, versionNum, assetRoles)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Extracts asset roles from a document's blocks.
+     */
+    private fun extractAssetRoles(document: ReadableDocumentSnapshot): Map<String, ReadableAssetRole> {
+        val roles = mutableMapOf<String, ReadableAssetRole>()
+
+        fun processBlocks(blocks: List<ReadableBlock>) {
+            for (block in blocks) {
+                when (block) {
+                    is ReadableBlock.Image -> roles[block.assetId] = block.role
+                    is ReadableBlock.Quote -> processBlocks(block.children)
+                    is ReadableBlock.ListBlock -> block.items.forEach { processBlocks(it.blocks) }
+                    else -> {}
+                }
+            }
+        }
+
+        processBlocks(document.blocks)
+        return roles
+    }
+
+    /**
+     * Indexes assets for a specific content version.
+     */
+    private suspend fun indexAssetsForVersion(
+        bookmarkId: String,
+        contentVersion: Int,
+        assetRoles: Map<String, ReadableAssetRole>,
+    ) {
+        val assetsDir = CoreConstants.FileSystem.Linkmark.assetsDir(bookmarkId)
+        val assetsDirFile = FileAccessProvider.resolveRelativePath(assetsDir, ensureParentExists = false)
+
+        if (assetsDirFile.exists()) {
+            assetsDirFile.list().forEach { assetFile ->
+                val assetId = assetFile.name.substringBeforeLast(".")
+                val extension = assetFile.extension ?: ""
+
+                if (assetId.isNotEmpty() && extension.isNotEmpty()) {
+                    val role = assetRoles[assetId] ?: ReadableAssetRole.INLINE
+                    val relativePath = CoreConstants.FileSystem.Linkmark.assetPath(bookmarkId, assetId, extension)
+
+                    val entity = ReadableAssetEntity(
+                        id = assetId,
+                        bookmarkId = bookmarkId,
+                        contentVersion = contentVersion,
+                        role = role,
+                        relativePath = relativePath,
+                    )
+                    readableAssetDao.upsert(entity)
+                }
+            }
+        }
+    }
+
+    /**
+     * Rebuilds the highlight annotation indexes.
+     */
+    private suspend fun rebuildHighlights() {
+        val bookmarkIds = entityFileManager.scanAllBookmarks()
+        bookmarkIds.forEach { bookmarkId ->
+            if (entityFileManager.isBookmarkDeleted(bookmarkId)) return@forEach
+
+            // Use entityFileManager to read all highlights for this bookmark
+            val highlights = entityFileManager.readAllHighlights(bookmarkId)
+            highlights.forEach { highlight ->
+                val entity = highlight.toHighlightEntity()
+                highlightDao.upsert(entity)
+            }
+        }
+    }
+
     // ==================== Mappers ====================
 
     private fun FolderMetaJson.toFolderEntity(): FolderEntity =
@@ -264,4 +414,24 @@ object CacheRebuilder {
             linkType = LinkType.fromCode(linkTypeCode),
             videoUrl = videoUrl,
         )
+
+    private fun HighlightJson.toHighlightEntity(): HighlightEntity {
+        val relativePath = CoreConstants.FileSystem.Linkmark.highlightPath(bookmarkId, id)
+        return HighlightEntity(
+            id = id,
+            bookmarkId = bookmarkId,
+            contentVersion = contentVersion,
+            startBlockId = startAnchor.blockId,
+            startInlinePath = startAnchor.inlinePath.joinToString(","),
+            startOffset = startAnchor.offset,
+            endBlockId = endAnchor.blockId,
+            endInlinePath = endAnchor.inlinePath.joinToString(","),
+            endOffset = endAnchor.offset,
+            colorRole = colorRole,
+            note = note,
+            relativePath = relativePath,
+            createdAt = createdAt,
+            editedAt = editedAt,
+        )
+    }
 }

@@ -2,7 +2,10 @@ package dev.subfly.yabacore.database
 
 import dev.subfly.yabacore.database.dao.BookmarkDao
 import dev.subfly.yabacore.database.dao.FolderDao
+import dev.subfly.yabacore.database.dao.HighlightDao
 import dev.subfly.yabacore.database.dao.LinkBookmarkDao
+import dev.subfly.yabacore.database.dao.ReadableAssetDao
+import dev.subfly.yabacore.database.dao.ReadableVersionDao
 import dev.subfly.yabacore.database.dao.TagBookmarkDao
 import dev.subfly.yabacore.database.dao.TagDao
 import kotlin.concurrent.Volatile
@@ -48,4 +51,13 @@ object DatabaseProvider {
 
     val tagBookmarkDao: TagBookmarkDao
         get() = database().tagBookmarkDao()
+
+    val readableVersionDao: ReadableVersionDao
+        get() = database().readableVersionDao()
+
+    val readableAssetDao: ReadableAssetDao
+        get() = database().readableAssetDao()
+
+    val highlightDao: HighlightDao
+        get() = database().highlightDao()
 }

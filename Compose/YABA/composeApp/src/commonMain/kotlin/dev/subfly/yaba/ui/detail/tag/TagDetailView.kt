@@ -50,6 +50,7 @@ import dev.subfly.yaba.core.navigation.alert.DeletionState
 import dev.subfly.yaba.core.navigation.alert.DeletionType
 import dev.subfly.yaba.core.navigation.creation.BookmarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.ResultStoreKeys
+import dev.subfly.yaba.core.navigation.main.LinkDetailRoute
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalCreationContentNavigator
@@ -263,7 +264,9 @@ fun TagDetailView(
                                         )
                                     )
                                 } else {
-                                    // TODO: OPEN BOOKMARK DETAIL
+                                    navigator.add(
+                                        LinkDetailRoute(bookmarkId = model.id)
+                                    )
                                 }
                             },
                             onDeleteBookmark = { bookmark ->

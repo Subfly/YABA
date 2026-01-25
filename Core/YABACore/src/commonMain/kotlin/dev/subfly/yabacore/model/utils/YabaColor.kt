@@ -22,5 +22,12 @@ enum class YabaColor(val code: Int) {
 
     companion object {
         fun fromCode(code: Int): YabaColor = entries.firstOrNull { it.code == code } ?: NONE
+
+        fun fromRoleString(raw: String?): YabaColor {
+            val normalized = raw?.trim()?.lowercase().orEmpty()
+            if (normalized.isBlank()) return NONE
+            if (normalized == "default") return NONE
+            return entries.firstOrNull { it.name.lowercase() == normalized } ?: NONE
+        }
     }
 }

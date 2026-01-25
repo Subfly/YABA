@@ -215,6 +215,15 @@ object AllBookmarksManager {
         }
     }
 
+    /**
+     * Updates bookmark editedAt without changing other fields.
+     */
+    fun touchBookmarkEditedAt(bookmarkId: String) {
+        CoreOperationQueue.queue("TouchBookmarkEditedAt:$bookmarkId") {
+            touchBookmarkEditedAtInternal(bookmarkId)
+        }
+    }
+
     private suspend fun updateBookmarkMetadataInternal(
         bookmarkId: String,
         folderId: String,
@@ -323,6 +332,29 @@ object AllBookmarksManager {
         }
     }
 
+    private suspend fun touchBookmarkEditedAtInternal(bookmarkId: String) {
+        val existingJson = entityFileManager.readBookmarkMeta(bookmarkId) ?: return
+        val existingClock = VectorClock.fromMap(existingJson.clock)
+        val deviceId = DeviceIdProvider.get()
+        val now = clock.now()
+        val newClock = existingClock.increment(deviceId)
+
+        val updatedJson = existingJson.copy(
+            editedAt = now.toEpochMilliseconds(),
+            clock = newClock.toMap(),
+        )
+
+        entityFileManager.writeBookmarkMeta(updatedJson)
+        crdtEngine.recordUpdate(
+            objectId = bookmarkId,
+            objectType = ObjectType.BOOKMARK,
+            file = FileTarget.META_JSON,
+            changes = mapOf("editedAt" to JsonPrimitive(now.toEpochMilliseconds())),
+            currentClock = existingClock,
+        )
+        bookmarkDao.upsert(updatedJson.toEntity())
+    }
+
     /**
      * Enqueues move bookmarks operation.
      */
@@ -412,6 +444,7 @@ object AllBookmarksManager {
         // 3. Remove all related SQLite cache rows
         tagBookmarkDao.deleteForBookmark(bookmarkId)
         linkBookmarkDao.deleteById(bookmarkId)
+        DatabaseProvider.highlightDao.deleteByBookmarkId(bookmarkId)
         bookmarkDao.deleteByIds(listOf(bookmarkId))
     }
 

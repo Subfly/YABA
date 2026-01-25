@@ -7,6 +7,7 @@ import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.CardImageSizing
 import dev.subfly.yabacore.model.utils.LinkType
+import dev.subfly.yabacore.unfurl.ReadableUnfurl
 import kotlin.collections.iterator
 
 /**
@@ -28,7 +29,9 @@ data class LinkmarkCreationUIState(
         val iconUrl: String? = null,
         val imageUrl: String? = null,
         val videoUrl: String? = null,
-        val readableHtml: String? = null,
+
+        // Structured readable content extracted from HTML
+        val readable: ReadableUnfurl? = null,
 
         // Binary data (in-memory only, not persisted)
         val imageData: ByteArray? = null,
@@ -39,14 +42,14 @@ data class LinkmarkCreationUIState(
 
         // Content update indicator (edit mode): unfurl can detect newer assets/content.
         // UI can show an "Has updates" button when this is true.
-    // Pending updates (applied only when user clicks the "apply updates" action).
+        // Pending updates (applied only when user clicks the "apply updates" action).
         val hasContentUpdates: Boolean = false,
         val updateImageData: ByteArray? = null,
         val updateIconData: ByteArray? = null,
         val shouldUpdateVideoUrl: Boolean = false,
         val updateVideoUrl: String? = null,
-        val shouldUpdateReadableHtml: Boolean = false,
-        val updateReadableHtml: String? = null,
+        val shouldUpdateReadable: Boolean = false,
+        val updateReadable: ReadableUnfurl? = null,
 
         // Link type classification
         val selectedLinkType: LinkType = LinkType.NONE,
@@ -99,7 +102,7 @@ data class LinkmarkCreationUIState(
         if (iconUrl != other.iconUrl) return false
         if (imageUrl != other.imageUrl) return false
         if (videoUrl != other.videoUrl) return false
-        if (readableHtml != other.readableHtml) return false
+        if (readable != other.readable) return false
         if (imageData != null) {
             if (other.imageData == null) return false
             if (!imageData.contentEquals(other.imageData)) return false
@@ -120,8 +123,8 @@ data class LinkmarkCreationUIState(
         } else if (other.updateIconData != null) return false
         if (shouldUpdateVideoUrl != other.shouldUpdateVideoUrl) return false
         if (updateVideoUrl != other.updateVideoUrl) return false
-        if (shouldUpdateReadableHtml != other.shouldUpdateReadableHtml) return false
-        if (updateReadableHtml != other.updateReadableHtml) return false
+        if (shouldUpdateReadable != other.shouldUpdateReadable) return false
+        if (updateReadable != other.updateReadable) return false
         if (selectedLinkType != other.selectedLinkType) return false
         if (selectedFolder != other.selectedFolder) return false
         if (selectedTags != other.selectedTags) return false
@@ -146,7 +149,7 @@ data class LinkmarkCreationUIState(
         result = 31 * result + (iconUrl?.hashCode() ?: 0)
         result = 31 * result + (imageUrl?.hashCode() ?: 0)
         result = 31 * result + (videoUrl?.hashCode() ?: 0)
-        result = 31 * result + (readableHtml?.hashCode() ?: 0)
+        result = 31 * result + (readable?.hashCode() ?: 0)
         result = 31 * result + (imageData?.contentHashCode() ?: 0)
         result = 31 * result + (iconData?.contentHashCode() ?: 0)
         result = 31 * result + selectableImagesHashCode(selectableImages)
@@ -155,8 +158,8 @@ data class LinkmarkCreationUIState(
         result = 31 * result + (updateIconData?.contentHashCode() ?: 0)
         result = 31 * result + shouldUpdateVideoUrl.hashCode()
         result = 31 * result + (updateVideoUrl?.hashCode() ?: 0)
-        result = 31 * result + shouldUpdateReadableHtml.hashCode()
-        result = 31 * result + (updateReadableHtml?.hashCode() ?: 0)
+        result = 31 * result + shouldUpdateReadable.hashCode()
+        result = 31 * result + (updateReadable?.hashCode() ?: 0)
         result = 31 * result + selectedLinkType.hashCode()
         result = 31 * result + (selectedFolder?.hashCode() ?: 0)
         result = 31 * result + selectedTags.hashCode()
