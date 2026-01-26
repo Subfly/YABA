@@ -119,7 +119,6 @@ class FolderCreationStateMachine :
                             description = currentState.description,
                             createdAt = Clock.System.now(),
                             editedAt = Clock.System.now(),
-                            order = -1,
                         )
                     )
                 } else {

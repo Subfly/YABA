@@ -16,7 +16,6 @@ internal fun PreloadCollection.toFolderEntity(now: Instant): FolderEntity =
         color = YabaColor.fromCode(color),
         createdAt = now.toEpochMilliseconds(),
         editedAt = now.toEpochMilliseconds(),
-        order = 0,
     )
 
 internal fun PreloadCollection.toTagEntity(now: Instant): TagEntity =
@@ -27,5 +26,4 @@ internal fun PreloadCollection.toTagEntity(now: Instant): TagEntity =
         color = YabaColor.fromCode(color),
         createdAt = now.toEpochMilliseconds(),
         editedAt = now.toEpochMilliseconds(),
-        order = 0,
     )

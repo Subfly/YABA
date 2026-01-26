@@ -29,7 +29,7 @@ interface FolderDao {
         SELECT * FROM folders 
         WHERE (:parentId IS NULL AND parentId IS NULL OR :parentId IS NOT NULL AND parentId = :parentId)
         AND (:includeHidden = 1 OR isHidden = 0)
-        ORDER BY `order` ASC
+        ORDER BY createdAt ASC
         """
     )
     suspend fun getFoldersByParent(
@@ -63,8 +63,6 @@ interface FolderDao {
         WHERE folders.isHidden = 0
         AND (:excludedIdsCount = 0 OR id NOT IN (:excludedIds))
         ORDER BY
-            CASE WHEN :sortType = 'CUSTOM' AND :sortOrder = 'ASCENDING' THEN folders.`order` END ASC,
-            CASE WHEN :sortType = 'CUSTOM' AND :sortOrder = 'DESCENDING' THEN folders.`order` END DESC,
             CASE WHEN :sortType = 'CREATED_AT' AND :sortOrder = 'ASCENDING' THEN folders.createdAt END ASC,
             CASE WHEN :sortType = 'CREATED_AT' AND :sortOrder = 'DESCENDING' THEN folders.createdAt END DESC,
             CASE WHEN :sortType = 'EDITED_AT' AND :sortOrder = 'ASCENDING' THEN folders.editedAt END ASC,
@@ -90,8 +88,6 @@ interface FolderDao {
         WHERE folders.isHidden = 0
         AND (:excludedIdsCount = 0 OR id NOT IN (:excludedIds))
         ORDER BY
-            CASE WHEN :sortType = 'CUSTOM' AND :sortOrder = 'ASCENDING' THEN folders.`order` END ASC,
-            CASE WHEN :sortType = 'CUSTOM' AND :sortOrder = 'DESCENDING' THEN folders.`order` END DESC,
             CASE WHEN :sortType = 'CREATED_AT' AND :sortOrder = 'ASCENDING' THEN folders.createdAt END ASC,
             CASE WHEN :sortType = 'CREATED_AT' AND :sortOrder = 'DESCENDING' THEN folders.createdAt END DESC,
             CASE WHEN :sortType = 'EDITED_AT' AND :sortOrder = 'ASCENDING' THEN folders.editedAt END ASC,

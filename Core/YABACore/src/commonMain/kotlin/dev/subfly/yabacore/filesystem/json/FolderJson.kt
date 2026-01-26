@@ -16,7 +16,6 @@ data class FolderMetaJson(
     val description: String?,
     val icon: String,
     val colorCode: Int,
-    val order: Int,
     val createdAt: Long,
     val editedAt: Long,
     /** Vector clock: Map of deviceId to sequence number */

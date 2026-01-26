@@ -48,6 +48,7 @@ object AllBookmarksManager {
     private val bookmarkDao get() = DatabaseProvider.bookmarkDao
     private val tagBookmarkDao get() = DatabaseProvider.tagBookmarkDao
     private val linkBookmarkDao get() = DatabaseProvider.linkBookmarkDao
+    private val highlightDao get() = DatabaseProvider.highlightDao
     private val entityFileManager get() = EntityFileManager
     private val bookmarkFileManager get() = BookmarkFileManager
     private val crdtEngine get() = CRDTEngine
@@ -222,6 +223,8 @@ object AllBookmarksManager {
 
     /**
      * Updates bookmark editedAt without changing other fields.
+     * Useful for making the bookmark marked as edited after internal
+     * additions such as highlighting or new version fetching.
      */
     fun touchBookmarkEditedAt(bookmarkId: String) {
         CoreOperationQueue.queue("TouchBookmarkEditedAt:$bookmarkId") {
@@ -360,9 +363,6 @@ object AllBookmarksManager {
         bookmarkDao.upsert(updatedJson.toEntity())
     }
 
-    /**
-     * Enqueues move bookmarks operation.
-     */
     fun moveBookmarksToFolder(
         bookmarkIds: List<String>,
         targetFolderId: String,
@@ -408,9 +408,6 @@ object AllBookmarksManager {
         }
     }
 
-    /**
-     * Enqueues bookmark deletions.
-     */
     fun deleteBookmarks(bookmarkIds: List<String>) {
         if (bookmarkIds.isEmpty()) return
         CoreOperationQueue.queue("DeleteBookmarks:${bookmarkIds.size}") {
@@ -418,19 +415,12 @@ object AllBookmarksManager {
         }
     }
 
-    /**
-     * Internal bookmark deletion - can be called from within queued operations.
-     * Made private - other managers should not call this directly.
-     */
     private suspend fun deleteBookmarksInternal(bookmarkIds: List<String>) {
         bookmarkIds.forEach { bookmarkId ->
             deleteSingleBookmarkInternal(bookmarkId)
         }
     }
 
-    /**
-     * Deletes a single bookmark with full cleanup.
-     */
     private suspend fun deleteSingleBookmarkInternal(bookmarkId: String) {
         val existingJson = entityFileManager.readBookmarkMeta(bookmarkId)
         val existingClock =
@@ -449,13 +439,10 @@ object AllBookmarksManager {
         // 3. Remove all related SQLite cache rows
         tagBookmarkDao.deleteForBookmark(bookmarkId)
         linkBookmarkDao.deleteById(bookmarkId)
-        DatabaseProvider.highlightDao.deleteByBookmarkId(bookmarkId)
+        highlightDao.deleteByBookmarkId(bookmarkId)
         bookmarkDao.deleteByIds(listOf(bookmarkId))
     }
 
-    /**
-     * Enqueues adding a tag to a bookmark.
-     */
     fun addTagToBookmark(tagId: String, bookmarkId: String) {
         CoreOperationQueue.queue("AddTag:$tagId:$bookmarkId") {
             addTagToBookmarkInternal(tagId, bookmarkId)
@@ -499,9 +486,6 @@ object AllBookmarksManager {
         bookmarkDao.upsert(updatedJson.toEntity())
     }
 
-    /**
-     * Enqueues removing a tag from a bookmark.
-     */
     fun removeTagFromBookmark(tagId: String, bookmarkId: String) {
         CoreOperationQueue.queue("RemoveTag:$tagId:$bookmarkId") {
             removeTagFromBookmarkInternal(tagId, bookmarkId)
@@ -544,7 +528,7 @@ object AllBookmarksManager {
 
     private suspend fun BookmarkWithRelations.toBookmarkPreviewUiModel(): BookmarkPreviewUiModel {
         val folderUi = folder.toUiModel()
-        val tagsUi = tags.sortedBy { it.order }.map { it.toUiModel() }
+        val tagsUi = tags.map { it.toUiModel() }
 
         val localImageAbsolutePath = bookmark.localImagePath?.let { relativePath ->
             bookmarkFileManager.getAbsolutePath(relativePath)

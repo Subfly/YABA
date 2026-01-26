@@ -41,27 +41,21 @@ object PreloadDataGenerator {
 
         val existingRootFolders = folderDao.getFoldersByParent(parentId = null, includeHidden = true)
         val existingFolderIds = existingRootFolders.map { it.id }.toSet()
-        val folderOrderStart = (existingRootFolders.maxOfOrNull { it.order } ?: -1) + 1
         val foldersToInsert: List<FolderEntity> =
             preloadData
                 .folders
                 .map { it.toFolderEntity(now) }
                 .filterNot { existingFolderIds.contains(it.id) }
                 .sortedBy { it.label.lowercase() }
-                .mapIndexed { index, entity ->
-                    entity.copy(order = folderOrderStart + index)
-                }
 
         val existingTags = tagDao.getAll()
         val existingTagIds = existingTags.map { it.id }.toSet()
-        val tagOrderStart = (existingTags.maxOfOrNull { it.order } ?: -1) + 1
         val tagsToInsert: List<TagEntity> =
             preloadData
                 .tags
                 .map { it.toTagEntity(now) }
                 .filterNot { existingTagIds.contains(it.id) }
                 .sortedBy { it.label.lowercase() }
-                .mapIndexed { index, entity -> entity.copy(order = tagOrderStart + index) }
 
         var inserted = false
 
@@ -75,7 +69,6 @@ object PreloadDataGenerator {
                 description = folder.description,
                 icon = folder.icon,
                 colorCode = folder.color.code,
-                order = folder.order,
                 createdAt = folder.createdAt,
                 editedAt = folder.editedAt,
                 clock = initialClock.toMap(),
@@ -97,7 +90,6 @@ object PreloadDataGenerator {
                 label = tag.label,
                 icon = tag.icon,
                 colorCode = tag.color.code,
-                order = tag.order,
                 createdAt = tag.createdAt,
                 editedAt = tag.editedAt,
                 clock = initialClock.toMap(),

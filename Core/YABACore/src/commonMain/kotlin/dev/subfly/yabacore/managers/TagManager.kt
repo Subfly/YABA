@@ -11,7 +11,6 @@ import dev.subfly.yabacore.filesystem.json.BookmarkMetaJson
 import dev.subfly.yabacore.filesystem.json.TagMetaJson
 import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.ui.TagUiModel
-import dev.subfly.yabacore.model.utils.DropZone
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
 import dev.subfly.yabacore.model.utils.YabaColor
@@ -26,7 +25,6 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 import kotlin.time.Clock
-import kotlin.time.Instant
 
 /**
  * Filesystem-first tag manager.
@@ -49,7 +47,7 @@ object TagManager {
     // ==================== Query Operations (from SQLite cache) ====================
 
     fun observeTags(
-        sortType: SortType = SortType.CUSTOM,
+        sortType: SortType = SortType.LABEL,
         sortOrder: SortOrderType = SortOrderType.ASCENDING,
     ): Flow<List<TagUiModel>> =
         tagDao
@@ -81,16 +79,11 @@ object TagManager {
         val deviceId = DeviceIdProvider.get()
         val initialClock = VectorClock.of(deviceId, 1)
 
-        // Force database warmup by querying existing tags
-        // This ensures Room has created the database before we write
-        val tagsCount = tagDao.getAll().size
-
         val tagJson = TagMetaJson(
             id = tag.id,
             label = tag.label,
             icon = tag.icon,
             colorCode = tag.color.code,
-            order = tagsCount,
             createdAt = now.toEpochMilliseconds(),
             editedAt = now.toEpochMilliseconds(),
             clock = initialClock.toMap(),
@@ -178,25 +171,6 @@ object TagManager {
         tagDao.upsert(updatedJson.toEntity())
     }
 
-    /**
-     * Enqueues tag reorder operation.
-     */
-    fun reorderTag(dragged: TagUiModel, target: TagUiModel, zone: DropZone) {
-        if (zone == DropZone.NONE || zone == DropZone.MIDDLE) {
-            return
-        }
-        CoreOperationQueue.queue("ReorderTag:${dragged.id}") {
-            reorderTagInternal(dragged, target, zone)
-        }
-    }
-
-    private suspend fun reorderTagInternal(dragged: TagUiModel, target: TagUiModel, zone: DropZone) {
-        val tags = tagDao.getAll()
-        val ordered = reorder(tags, dragged.id, target.id, zone)
-        val now = clock.now()
-
-        normalizeTagOrders(ordered, now)
-    }
 
     /**
      * Deletes a tag and removes it from all bookmarks that reference it.
@@ -286,10 +260,6 @@ object TagManager {
 
         // 4. Remove from SQLite cache (tag_bookmarks will cascade due to foreign key)
         tagDao.deleteById(tag.id)
-
-        // 5. Normalize remaining tag orders
-        val remaining = tagDao.getAll()
-        normalizeTagOrders(remaining, now)
     }
 
     /**
@@ -395,7 +365,6 @@ object TagManager {
         }
 
         val now = clock.now()
-        val tagsCount = tagDao.getAll().size
         val deviceId = DeviceIdProvider.get()
         val initialClock = VectorClock.of(deviceId, 1)
 
@@ -404,7 +373,6 @@ object TagManager {
             label = CoreConstants.Tag.Pinned.NAME,
             icon = CoreConstants.Tag.Pinned.ICON,
             colorCode = YabaColor.YELLOW.code,
-            order = tagsCount,
             createdAt = now.toEpochMilliseconds(),
             editedAt = now.toEpochMilliseconds(),
             clock = initialClock.toMap(),
@@ -435,7 +403,6 @@ object TagManager {
             color = YabaColor.YELLOW,
             createdAt = now,
             editedAt = now,
-            order = 0,
             bookmarkCount = 0,
         )
     }
@@ -472,7 +439,6 @@ object TagManager {
         }
 
         val now = clock.now()
-        val tagsCount = tagDao.getAll().size
         val deviceId = DeviceIdProvider.get()
         val initialClock = VectorClock.of(deviceId, 1)
 
@@ -481,7 +447,6 @@ object TagManager {
             label = CoreConstants.Tag.Private.NAME,
             icon = CoreConstants.Tag.Private.ICON,
             colorCode = YabaColor.RED.code,
-            order = tagsCount,
             createdAt = now.toEpochMilliseconds(),
             editedAt = now.toEpochMilliseconds(),
             clock = initialClock.toMap(),
@@ -512,57 +477,11 @@ object TagManager {
             color = YabaColor.RED,
             createdAt = now,
             editedAt = now,
-            order = 0,
             bookmarkCount = 0,
         )
     }
 
     // ==================== Private Helpers ====================
-
-    private fun reorder(
-        tags: List<TagEntity>,
-        draggedId: String,
-        targetId: String,
-        zone: DropZone,
-    ): List<TagEntity> {
-        val sorted = tags.sortedBy { it.order }.toMutableList()
-        val dragged = sorted.firstOrNull { it.id == draggedId } ?: return tags
-        val targetIndex = sorted.indexOfFirst { it.id == targetId }
-        if (targetIndex == -1) return tags
-        sorted.remove(dragged)
-        val insertIndex = when (zone) {
-            DropZone.TOP -> targetIndex.coerceAtLeast(0)
-            DropZone.BOTTOM -> (targetIndex + 1).coerceAtMost(sorted.size)
-            else -> -1
-        }
-        sorted.add(insertIndex, dragged)
-        return sorted.mapIndexed { index, tag -> tag.copy(order = index) }
-    }
-
-    private suspend fun normalizeTagOrders(tags: List<TagEntity>, timestamp: Instant) {
-        tags.sortedBy { it.order }.forEachIndexed { index, tag ->
-            if (tag.order != index) {
-                val json = entityFileManager.readTagMeta(tag.id) ?: return@forEachIndexed
-                val existingClock = VectorClock.fromMap(json.clock)
-                val deviceId = DeviceIdProvider.get()
-                val newClock = existingClock.increment(deviceId)
-                val updatedJson = json.copy(
-                    order = index,
-                    editedAt = timestamp.toEpochMilliseconds(),
-                    clock = newClock.toMap(),
-                )
-                entityFileManager.writeTagMeta(updatedJson)
-                crdtEngine.recordUpdate(
-                    objectId = tag.id,
-                    objectType = ObjectType.TAG,
-                    file = FileTarget.META_JSON,
-                    changes = mapOf("order" to JsonPrimitive(index)),
-                    currentClock = existingClock,
-                )
-                tagDao.upsert(updatedJson.toEntity())
-            }
-        }
-    }
 
     private fun buildTagCreatePayload(json: TagMetaJson): Map<String, JsonElement> =
         mapOf(
@@ -570,7 +489,6 @@ object TagManager {
             "label" to JsonPrimitive(json.label),
             "icon" to JsonPrimitive(json.icon),
             "colorCode" to JsonPrimitive(json.colorCode),
-            "order" to JsonPrimitive(json.order),
             "createdAt" to JsonPrimitive(json.createdAt),
             "editedAt" to JsonPrimitive(json.editedAt),
         )
@@ -582,7 +500,6 @@ object TagManager {
         label = label,
         icon = icon,
         color = YabaColor.fromCode(colorCode),
-        order = order,
         createdAt = createdAt,
         editedAt = editedAt,
         isHidden = isHidden,

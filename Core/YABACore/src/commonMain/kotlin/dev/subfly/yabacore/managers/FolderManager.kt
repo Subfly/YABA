@@ -8,7 +8,6 @@ import dev.subfly.yabacore.database.mappers.toUiModel
 import dev.subfly.yabacore.filesystem.EntityFileManager
 import dev.subfly.yabacore.filesystem.json.FolderMetaJson
 import dev.subfly.yabacore.model.ui.FolderUiModel
-import dev.subfly.yabacore.model.utils.DropZone
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
 import dev.subfly.yabacore.model.utils.YabaColor
@@ -22,7 +21,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 import kotlin.time.Clock
-import kotlin.time.Instant
 
 /**
  * Filesystem-first folder manager.
@@ -83,7 +81,6 @@ object FolderManager {
             color = YabaColor.BLUE,
             createdAt = now,
             editedAt = now,
-            order = -1,
             bookmarkCount = 0,
         )
     }
@@ -141,12 +138,9 @@ object FolderManager {
                 val existingClock = VectorClock.fromMap(existingJson.clock)
                 val deviceId = DeviceIdProvider.get()
                 val now = clock.now()
-                val rootSiblings =
-                    loadSiblings(parentId = null).filterNot { it.id == UNCATEGORIZED_FOLDER_ID }
                 val newClock = existingClock.increment(deviceId)
                 val fixedJson = existingJson.copy(
                     parentId = null,
-                    order = rootSiblings.size,
                     editedAt = now.toEpochMilliseconds(),
                     clock = newClock.toMap(),
                 )
@@ -157,7 +151,6 @@ object FolderManager {
                     file = FileTarget.META_JSON,
                     changes = mapOf(
                         "parentId" to CRDTEngine.nullableStringValue(null),
-                        "order" to JsonPrimitive(rootSiblings.size),
                         "editedAt" to JsonPrimitive(now.toEpochMilliseconds()),
                     ),
                     currentClock = existingClock,
@@ -173,7 +166,6 @@ object FolderManager {
 
         // Create new Uncategorized folder
         val now = clock.now()
-        val rootSiblings = loadSiblings(parentId = null)
         val deviceId = DeviceIdProvider.get()
         val initialClock = VectorClock.of(deviceId, 1)
 
@@ -184,7 +176,6 @@ object FolderManager {
             description = CoreConstants.Folder.Uncategorized.DESCRIPTION,
             icon = CoreConstants.Folder.Uncategorized.ICON,
             colorCode = YabaColor.BLUE.code,
-            order = rootSiblings.size,
             createdAt = now.toEpochMilliseconds(),
             editedAt = now.toEpochMilliseconds(),
             clock = initialClock.toMap(),
@@ -227,10 +218,6 @@ object FolderManager {
         // Prevent nesting under system folders (system folders must stay root-level, no children)
         val safeParentId = folder.parentId?.takeUnless { CoreConstants.Folder.isSystemFolder(it) }
 
-        // Force database warmup by querying siblings
-        // This ensures Room has created the database before we write
-        val siblings = loadSiblings(safeParentId)
-
         val folderJson = FolderMetaJson(
             id = folderId,
             parentId = safeParentId,
@@ -238,7 +225,6 @@ object FolderManager {
             description = folder.description,
             icon = folder.icon,
             colorCode = folder.color.code,
-            order = siblings.size,
             createdAt = now.toEpochMilliseconds(),
             editedAt = now.toEpochMilliseconds(),
             clock = initialClock.toMap(),
@@ -280,7 +266,7 @@ object FolderManager {
         val now = clock.now()
 
         // Detect changes
-        val changes = mutableMapOf<String, kotlinx.serialization.json.JsonElement>()
+        val changes = mutableMapOf<String, JsonElement>()
         if (existingJson.label != folder.label) {
             changes["label"] = JsonPrimitive(folder.label)
         }
@@ -346,12 +332,10 @@ object FolderManager {
         val targetParentId =
             targetParent?.id?.takeUnless { CoreConstants.Folder.isSystemFolder(it) }
 
-        val targetSiblings = loadSiblings(targetParentId).filterNot { it.id == folder.id }
         val newClock = existingClock.increment(deviceId)
 
         val movedJson = existingJson.copy(
             parentId = targetParentId,
-            order = targetSiblings.size,
             editedAt = now.toEpochMilliseconds(),
             clock = newClock.toMap(),
         )
@@ -362,7 +346,6 @@ object FolderManager {
         // 2. Record CRDT UPDATE event
         val changes = mapOf(
             "parentId" to CRDTEngine.nullableStringValue(targetParentId),
-            "order" to JsonPrimitive(targetSiblings.size),
         )
         crdtEngine.recordUpdate(
             objectId = folder.id,
@@ -374,49 +357,8 @@ object FolderManager {
 
         // 3. Update SQLite cache
         folderDao.upsert(movedJson.toEntity())
-
-        // Normalize sibling orders
-        normalizeSiblingOrders(targetSiblings.map { it.id } + folder.id, now)
-
-        // Normalize old parent siblings if parent changed
-        val oldParentId = existingJson.parentId
-        if (oldParentId != targetParentId) {
-            val oldSiblings = loadSiblings(oldParentId).filterNot { it.id == folder.id }
-            normalizeSiblingOrders(oldSiblings.map { it.id }, now)
-        }
     }
 
-    /**
-     * Enqueues folder reorder operation.
-     */
-    fun reorderFolder(dragged: FolderUiModel, target: FolderUiModel, zone: DropZone) {
-        when (zone) {
-            DropZone.NONE -> return
-            DropZone.MIDDLE -> {
-                moveFolder(dragged, target)
-                return
-            }
-
-            else -> Unit
-        }
-        CoreOperationQueue.queue("ReorderFolder:${dragged.id}") {
-            reorderFolderInternal(dragged, target, zone)
-        }
-    }
-
-    private suspend fun reorderFolderInternal(
-        dragged: FolderUiModel,
-        target: FolderUiModel,
-        zone: DropZone,
-    ) {
-        val draggedJson = entityFileManager.readFolderMeta(dragged.id) ?: return
-        val parentId = draggedJson.parentId
-        val siblings = loadSiblings(parentId)
-        val ordered = reorderSiblings(siblings, dragged.id, target.id, zone)
-        val now = clock.now()
-
-        normalizeSiblingOrdersFromEntities(ordered, now)
-    }
 
     /**
      * Enqueues folder deletion by ID with cascade. System folders cannot be deleted.
@@ -495,10 +437,6 @@ object FolderManager {
     private suspend fun deleteFolderCascadeInternal(rootFolderId: String) {
         if (CoreConstants.Folder.isSystemFolder(rootFolderId)) return
 
-        // Get parent for sibling normalization later
-        val rootJson = entityFileManager.readFolderMeta(rootFolderId)
-        val parentId = rootJson?.parentId
-
         // Collect folders to delete in post-order (children before parents)
         val folderIdsToDelete =
             collectFolderSubtreePostOrder(rootFolderId)
@@ -523,10 +461,6 @@ object FolderManager {
         folderIdsToDelete.forEach { folderId ->
             deleteSingleFolderInternal(folderId)
         }
-
-        // 3) Normalize sibling orders for the parent
-        val siblings = loadSiblings(parentId).filterNot { it.id in folderIdSet }
-        normalizeSiblingOrdersFromEntities(siblings, clock.now())
     }
 
     /**
@@ -635,12 +569,9 @@ object FolderManager {
 
     // ==================== Private Helpers ====================
 
-    private suspend fun loadSiblings(parentId: String?): List<FolderEntity> =
-        folderDao.getFoldersByParent(parentId = parentId)
-
     private suspend fun collectDescendantIds(rootId: String): Set<String> {
         val rows = folderDao.getFolders(
-            SortType.CUSTOM.name,
+            SortType.LABEL.name,
             SortOrderType.ASCENDING.name
         ).map { it.toUiModel() }
         val grouped = rows.groupBy { it.parentId }
@@ -657,81 +588,6 @@ object FolderManager {
         return visited
     }
 
-    private fun reorderSiblings(
-        siblings: List<FolderEntity>,
-        draggedId: String,
-        targetId: String,
-        zone: DropZone,
-    ): List<FolderEntity> {
-        val sorted = siblings.sortedBy { it.order }.toMutableList()
-        val dragged = sorted.firstOrNull { it.id == draggedId } ?: return siblings
-        val targetIndex = sorted.indexOfFirst { it.id == targetId }
-        if (targetIndex == -1) return siblings
-        sorted.remove(dragged)
-        val insertIndex = when (zone) {
-            DropZone.TOP -> targetIndex.coerceAtLeast(0)
-            DropZone.BOTTOM -> (targetIndex + 1).coerceAtMost(sorted.size)
-            else -> -1
-        }
-        sorted.add(insertIndex, dragged)
-        return sorted.mapIndexed { index, folder -> folder.copy(order = index) }
-    }
-
-    private suspend fun normalizeSiblingOrders(
-        folderIds: List<String>,
-        timestamp: Instant,
-    ) {
-        folderIds.forEachIndexed { index, folderId ->
-            val json = entityFileManager.readFolderMeta(folderId) ?: return@forEachIndexed
-            if (json.order != index) {
-                val existingClock = VectorClock.fromMap(json.clock)
-                val deviceId = DeviceIdProvider.get()
-                val newClock = existingClock.increment(deviceId)
-                val updatedJson = json.copy(
-                    order = index,
-                    editedAt = timestamp.toEpochMilliseconds(),
-                    clock = newClock.toMap(),
-                )
-                entityFileManager.writeFolderMeta(updatedJson)
-                crdtEngine.recordUpdate(
-                    objectId = folderId,
-                    objectType = ObjectType.FOLDER,
-                    file = FileTarget.META_JSON,
-                    changes = mapOf("order" to JsonPrimitive(index)),
-                    currentClock = existingClock,
-                )
-                folderDao.upsert(updatedJson.toEntity())
-            }
-        }
-    }
-
-    private suspend fun normalizeSiblingOrdersFromEntities(
-        folders: List<FolderEntity>,
-        timestamp: Instant,
-    ) {
-        folders.sortedBy { it.order }.forEachIndexed { index, folder ->
-            if (folder.order != index) {
-                val json = entityFileManager.readFolderMeta(folder.id) ?: return@forEachIndexed
-                val existingClock = VectorClock.fromMap(json.clock)
-                val deviceId = DeviceIdProvider.get()
-                val newClock = existingClock.increment(deviceId)
-                val updatedJson = json.copy(
-                    order = index,
-                    editedAt = timestamp.toEpochMilliseconds(),
-                    clock = newClock.toMap(),
-                )
-                entityFileManager.writeFolderMeta(updatedJson)
-                crdtEngine.recordUpdate(
-                    objectId = folder.id,
-                    objectType = ObjectType.FOLDER,
-                    file = FileTarget.META_JSON,
-                    changes = mapOf("order" to JsonPrimitive(index)),
-                    currentClock = existingClock,
-                )
-                folderDao.upsert(updatedJson.toEntity())
-            }
-        }
-    }
 
     private fun buildFolderCreatePayload(json: FolderMetaJson): Map<String, JsonElement> =
         mapOf(
@@ -741,7 +597,6 @@ object FolderManager {
             "description" to CRDTEngine.nullableStringValue(json.description),
             "icon" to JsonPrimitive(json.icon),
             "colorCode" to JsonPrimitive(json.colorCode),
-            "order" to JsonPrimitive(json.order),
             "createdAt" to JsonPrimitive(json.createdAt),
             "editedAt" to JsonPrimitive(json.editedAt),
         )
@@ -755,7 +610,6 @@ object FolderManager {
         description = description,
         icon = icon,
         color = YabaColor.fromCode(colorCode),
-        order = order,
         createdAt = createdAt,
         editedAt = editedAt,
         isHidden = isHidden,

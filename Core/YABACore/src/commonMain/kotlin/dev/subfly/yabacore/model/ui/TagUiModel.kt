@@ -12,7 +12,6 @@ data class TagUiModel(
     val color: YabaColor,
     val createdAt: Instant,
     val editedAt: Instant,
-    val order: Int,
     val bookmarkCount: Int = 0,
     val bookmarks: List<BookmarkUiModel> = emptyList(),
 )

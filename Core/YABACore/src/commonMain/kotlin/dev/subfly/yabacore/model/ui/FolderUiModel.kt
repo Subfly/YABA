@@ -14,7 +14,6 @@ data class FolderUiModel(
     val color: YabaColor,
     val createdAt: Instant,
     val editedAt: Instant,
-    val order: Int,
     val bookmarkCount: Int = 0,
     val children: List<FolderUiModel> = emptyList(),
     val bookmarks: List<BookmarkUiModel> = emptyList(),

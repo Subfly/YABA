@@ -66,7 +66,6 @@ object GlobalDataManager {
                     description = fixed.description,
                     icon = fixed.icon,
                     color = YabaColor.fromCode(fixed.colorCode),
-                    order = fixed.order,
                     createdAt = fixed.createdAt,
                     editedAt = fixed.editedAt,
                     isHidden = fixed.isHidden,

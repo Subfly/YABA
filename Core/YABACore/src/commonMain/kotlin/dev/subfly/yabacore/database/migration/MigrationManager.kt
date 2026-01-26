@@ -57,12 +57,12 @@ object MigrationManager {
         val deviceId = DeviceIdProvider.get()
         
         // Migrate folders
-        snapshot.folders.sortedBy { it.order }.forEach { legacy ->
+        snapshot.folders.forEach { legacy ->
             migrateFolderToFilesystem(legacy.toFolderEntity(), deviceId)
         }
 
         // Migrate tags
-        snapshot.tags.sortedBy { it.order }.forEach { legacy ->
+        snapshot.tags.forEach { legacy ->
             migrateTagToFilesystem(legacy.toTagEntity(), deviceId)
         }
 
@@ -109,7 +109,6 @@ object MigrationManager {
             description = folder.description,
             icon = folder.icon,
             colorCode = folder.color.code,
-            order = folder.order,
             createdAt = folder.createdAt,
             editedAt = folder.editedAt,
             clock = initialClock.toMap(),
@@ -129,7 +128,6 @@ object MigrationManager {
             label = tag.label,
             icon = tag.icon,
             colorCode = tag.color.code,
-            order = tag.order,
             createdAt = tag.createdAt,
             editedAt = tag.editedAt,
             clock = initialClock.toMap(),
@@ -138,18 +136,6 @@ object MigrationManager {
         // 1. Write to filesystem
         entityFileManager.writeTagMeta(tagJson)
 
-        // 2. Update SQLite cache
-        tagDao.upsert(
-            TagEntity(
-                id = tag.id,
-                label = tag.label,
-                icon = tag.icon,
-                color = tag.color,
-                order = tag.order,
-            createdAt = tag.createdAt,
-            editedAt = tag.editedAt,
-            )
-        )
         // 2. Update SQLite cache
         tagDao.upsert(tag)
     }
@@ -212,37 +198,23 @@ object MigrationManager {
     }
 
     /**
-     * Defensive normalization: if a folder has an invalid order (<0) or references a missing
-     * parent, move it to root and append order. For tags with invalid order, append to the end.
+     * Defensive normalization: if a folder references a missing parent, move it to root.
      */
     private fun sanitizeSnapshot(snapshot: LegacySnapshot): LegacySnapshot {
         val folderIds = snapshot.folders.map { it.id }.toSet()
 
-        var nextRootOrder = (snapshot.folders.filter {
-            it.parentId == null
-        }.maxOfOrNull { it.order } ?: -1) + 1
-
         val fixedFolders = snapshot.folders.map { folder ->
             val parentExists = folder.parentId?.let { folderIds.contains(it) } ?: true
-            val hasValidOrder = folder.order >= 0
-            if (!parentExists || !hasValidOrder) {
-                folder.copy(parentId = null, order = nextRootOrder++)
+            if (!parentExists) {
+                folder.copy(parentId = null)
             } else {
                 folder
             }
         }
 
-        var nextTagOrder = (snapshot.tags.maxOfOrNull { it.order } ?: -1) + 1
-
-        val fixedTags = snapshot.tags.map { tag ->
-            if (tag.order < 0) {
-                tag.copy(order = nextTagOrder++)
-            } else tag
-        }
-
         return snapshot.copy(
             folders = fixedFolders,
-            tags = fixedTags,
+            tags = snapshot.tags,
         )
     }
 
@@ -273,7 +245,6 @@ object MigrationManager {
             color = YabaColor.fromCode(colorCode),
             createdAt = createdAt.toEpochMilliseconds(),
             editedAt = editedAt.toEpochMilliseconds(),
-            order = order,
         )
 
     private fun LegacyTag.toTagEntity(): TagEntity =
@@ -284,7 +255,6 @@ object MigrationManager {
             color = YabaColor.fromCode(colorCode),
             createdAt = createdAt.toEpochMilliseconds(),
             editedAt = editedAt.toEpochMilliseconds(),
-            order = order,
         )
 
     private fun LegacyBookmark.toBookmarkEntity(

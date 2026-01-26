@@ -52,9 +52,7 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
             is HomeEvent.OnToggleFolderExpanded -> onToggleFolderExpanded(event)
             is HomeEvent.OnDeleteFolder -> onDeleteFolder(event)
             is HomeEvent.OnMoveFolder -> onMoveFolder(event)
-            is HomeEvent.OnReorderFolder -> onReorderFolder(event)
             is HomeEvent.OnDeleteTag -> onDeleteTag(event)
-            is HomeEvent.OnReorderTag -> onReorderTag(event)
             is HomeEvent.OnDeleteBookmark -> onDeleteBookmark(event)
             is HomeEvent.OnMoveBookmarkToFolder -> onMoveBookmarkToFolder(event)
             is HomeEvent.OnMoveBookmarkToTag -> onMoveBookmarkToTag(event)
@@ -186,17 +184,9 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
         launch { FolderManager.moveFolder(event.folder, event.targetParent) }
     }
 
-    private fun onReorderFolder(event: HomeEvent.OnReorderFolder) {
-        launch { FolderManager.reorderFolder(event.dragged, event.target, event.zone) }
-    }
-
     // Tag operations - delegated to TagManager
     private fun onDeleteTag(event: HomeEvent.OnDeleteTag) {
         launch { TagManager.deleteTag(event.tag) }
-    }
-
-    private fun onReorderTag(event: HomeEvent.OnReorderTag) {
-        launch { TagManager.reorderTag(event.dragged, event.target, event.zone) }
     }
 
     // Bookmark operations - delegated to AllBookmarksManager

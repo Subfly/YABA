@@ -81,7 +81,6 @@ class TagCreationStateMachine : BaseStateMachine<TagCreationUIState, TagCreation
                             color = currentState.selectedColor,
                             createdAt = Clock.System.now(),
                             editedAt = Clock.System.now(),
-                            order = -1,
                         )
                     )
                 } else {

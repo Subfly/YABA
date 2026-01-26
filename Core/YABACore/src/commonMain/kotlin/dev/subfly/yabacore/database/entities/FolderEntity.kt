@@ -9,7 +9,6 @@ import dev.subfly.yabacore.model.utils.YabaColor
     tableName = "folders",
     indices = [
         Index(value = ["parentId"]),
-        Index(value = ["order"]),
         Index(value = ["label"]),
         Index(value = ["editedAt"]),
         Index(value = ["isHidden"]),
@@ -22,7 +21,6 @@ data class FolderEntity(
     val description: String?,
     val icon: String,
     val color: YabaColor,
-    val order: Int,
     val createdAt: Long,
     val editedAt: Long,
     /** True if this is a hidden system folder. Hidden folders are filtered from UI queries. */

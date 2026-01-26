@@ -5,7 +5,6 @@ import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.CardImageSizing
-import dev.subfly.yabacore.model.utils.DropZone
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
 
@@ -27,19 +26,8 @@ sealed class HomeEvent {
         val targetParent: FolderUiModel?,
     ) : HomeEvent()
 
-    data class OnReorderFolder(
-        val dragged: FolderUiModel,
-        val target: FolderUiModel,
-        val zone: DropZone,
-    ) : HomeEvent()
-
     // Tag operations
     data class OnDeleteTag(val tag: TagUiModel) : HomeEvent()
-    data class OnReorderTag(
-        val dragged: TagUiModel,
-        val target: TagUiModel,
-        val zone: DropZone,
-    ) : HomeEvent()
 
     // Bookmark operations
     data class OnDeleteBookmark(val bookmark: BookmarkUiModel) : HomeEvent()

@@ -23,7 +23,6 @@ import yaba.composeapp.generated.resources.fab_centered
 import yaba.composeapp.generated.resources.fab_left_aligned
 import yaba.composeapp.generated.resources.fab_right_aligned
 import yaba.composeapp.generated.resources.sort_created_at
-import yaba.composeapp.generated.resources.sort_custom
 import yaba.composeapp.generated.resources.sort_edited_at
 import yaba.composeapp.generated.resources.sort_label
 import yaba.composeapp.generated.resources.sort_order_ascending
@@ -47,7 +46,6 @@ fun SortType.uiTitle(): String =
         SortType.CREATED_AT -> stringResource(Res.string.sort_created_at)
         SortType.EDITED_AT -> stringResource(Res.string.sort_edited_at)
         SortType.LABEL -> stringResource(Res.string.sort_label)
-        SortType.CUSTOM -> stringResource(Res.string.sort_custom)
     }
 
 @Composable

@@ -209,7 +209,7 @@ class FolderSelectionStateMachine :
     private suspend fun collectDescendantIds(rootId: String): Set<String> {
         val allFolders = FolderManager.getMovableFolders(
             currentFolderId = null,
-            sortType = SortType.CUSTOM,
+            sortType = SortType.LABEL,
             sortOrder = SortOrderType.ASCENDING
         )
         val grouped = allFolders.groupBy { it.parentId }

@@ -21,7 +21,6 @@ internal fun FolderEntity.toUiModel(
     color = color,
     createdAt = createdAt.toInstant(),
     editedAt = editedAt.toInstant(),
-    order = order,
     bookmarkCount = bookmarkCount,
     children = children,
     bookmarks = bookmarks,
@@ -37,7 +36,6 @@ internal fun TagEntity.toUiModel(
     color = color,
     createdAt = createdAt.toInstant(),
     editedAt = editedAt.toInstant(),
-    order = order,
     bookmarkCount = bookmarkCount,
     bookmarks = bookmarks,
 )

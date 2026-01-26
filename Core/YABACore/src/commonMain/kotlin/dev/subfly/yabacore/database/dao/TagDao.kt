@@ -1,7 +1,6 @@
 package dev.subfly.yabacore.database.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
 import dev.subfly.yabacore.database.entities.TagEntity
@@ -37,8 +36,6 @@ interface TagDao {
         FROM tags
         WHERE tags.isHidden = 0
         ORDER BY
-            CASE WHEN :sortType = 'CUSTOM' AND :sortOrder = 'ASCENDING' THEN tags.`order` END ASC,
-            CASE WHEN :sortType = 'CUSTOM' AND :sortOrder = 'DESCENDING' THEN tags.`order` END DESC,
             CASE WHEN :sortType = 'CREATED_AT' AND :sortOrder = 'ASCENDING' THEN tags.createdAt END ASC,
             CASE WHEN :sortType = 'CREATED_AT' AND :sortOrder = 'DESCENDING' THEN tags.createdAt END DESC,
             CASE WHEN :sortType = 'EDITED_AT' AND :sortOrder = 'ASCENDING' THEN tags.editedAt END ASC,
