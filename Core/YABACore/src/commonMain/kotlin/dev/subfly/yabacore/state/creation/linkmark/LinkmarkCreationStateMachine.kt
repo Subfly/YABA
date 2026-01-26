@@ -353,8 +353,7 @@ class LinkmarkCreationStateMachine :
     private fun onSelectImage(event: LinkmarkCreationEvent.OnSelectImage) {
         val state = currentState()
         // If imageData is not provided, try to look it up from selectableImages
-        val imageData =
-            event.imageData ?: event.imageUrl?.let { url -> state.selectableImages[url] }
+        val imageData = event.imageData ?: event.imageUrl.let { url -> state.selectableImages[url] }
 
         updateState {
             it.copy(

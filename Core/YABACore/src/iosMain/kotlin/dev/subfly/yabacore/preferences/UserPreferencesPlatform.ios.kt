@@ -142,14 +142,10 @@ internal actual suspend fun migratePlatformPreferencesIfNeeded(store: UserPrefer
             standard.boolOrDefault(CoreConstants.Settings.SHOW_MENU_BAR_ITEM, true)
 
         val simplifiedShare =
-            appGroup?.boolOrDefault(
+            appGroup.boolOrDefault(
                 CoreConstants.Settings.USE_SIMPLIFIED_SHARE,
                 false,
             )
-                ?: standard.boolOrDefault(
-                    CoreConstants.Settings.USE_SIMPLIFIED_SHARE,
-                    false
-                )
         prefs[UserPreferenceKeys.useSimplifiedShare] = simplifiedShare
 
         prefs[UserPreferenceKeys.preventDeletionSync] =
