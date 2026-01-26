@@ -281,7 +281,7 @@ object CacheRebuilder {
                                     val assetRoles = extractAssetRoles(doc)
 
                                     // Index assets for this version
-                                    indexAssetsForVersion(bookmarkId, versionNum, assetRoles)
+                                    indexAssetsForVersion(bookmarkId, assetRoles)
                                 }
                             }
                         }
@@ -317,7 +317,6 @@ object CacheRebuilder {
      */
     private suspend fun indexAssetsForVersion(
         bookmarkId: String,
-        contentVersion: Int,
         assetRoles: Map<String, ReadableAssetRole>,
     ) {
         val assetsDir = CoreConstants.FileSystem.Linkmark.assetsDir(bookmarkId)
@@ -326,7 +325,7 @@ object CacheRebuilder {
         if (assetsDirFile.exists()) {
             assetsDirFile.list().forEach { assetFile ->
                 val assetId = assetFile.name.substringBeforeLast(".")
-                val extension = assetFile.extension ?: ""
+                val extension = assetFile.extension
 
                 if (assetId.isNotEmpty() && extension.isNotEmpty()) {
                     val role = assetRoles[assetId] ?: ReadableAssetRole.INLINE
@@ -335,7 +334,6 @@ object CacheRebuilder {
                     val entity = ReadableAssetEntity(
                         id = assetId,
                         bookmarkId = bookmarkId,
-                        contentVersion = contentVersion,
                         role = role,
                         relativePath = relativePath,
                     )

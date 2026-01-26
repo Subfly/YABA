@@ -4,12 +4,10 @@ package dev.subfly.yabacore.database.preload
 
 import dev.subfly.yabacore.database.DatabaseProvider
 import dev.subfly.yabacore.database.DeviceIdProvider
-import dev.subfly.yabacore.database.domain.FolderDomainModel
-import dev.subfly.yabacore.database.domain.TagDomainModel
 import dev.subfly.yabacore.database.entities.FolderEntity
 import dev.subfly.yabacore.database.entities.TagEntity
-import dev.subfly.yabacore.database.mappers.toFolderDomain
-import dev.subfly.yabacore.database.mappers.toTagDomain
+import dev.subfly.yabacore.database.mappers.toFolderEntity
+import dev.subfly.yabacore.database.mappers.toTagEntity
 import dev.subfly.yabacore.database.preload.model.PreloadData
 import dev.subfly.yabacore.filesystem.EntityFileManager
 import dev.subfly.yabacore.filesystem.json.FolderMetaJson
@@ -41,14 +39,14 @@ object PreloadDataGenerator {
         val now = clock.now()
         val deviceId = DeviceIdProvider.get()
 
-        val existingRootFolders = folderDao.getRootIncludingHidden()
+        val existingRootFolders = folderDao.getFoldersByParent(parentId = null, includeHidden = true)
         val existingFolderIds = existingRootFolders.map { it.id }.toSet()
         val folderOrderStart = (existingRootFolders.maxOfOrNull { it.order } ?: -1) + 1
-        val foldersToInsert: List<FolderDomainModel> =
+        val foldersToInsert: List<FolderEntity> =
             preloadData
                 .folders
-                .map { it.toFolderDomain(now) }
-                .filterNot { existingFolderIds.contains(it.id.toString()) }
+                .map { it.toFolderEntity(now) }
+                .filterNot { existingFolderIds.contains(it.id) }
                 .sortedBy { it.label.lowercase() }
                 .mapIndexed { index, entity ->
                     entity.copy(order = folderOrderStart + index)
@@ -57,11 +55,11 @@ object PreloadDataGenerator {
         val existingTags = tagDao.getAll()
         val existingTagIds = existingTags.map { it.id }.toSet()
         val tagOrderStart = (existingTags.maxOfOrNull { it.order } ?: -1) + 1
-        val tagsToInsert: List<TagDomainModel> =
+        val tagsToInsert: List<TagEntity> =
             preloadData
                 .tags
-                .map { it.toTagDomain(now) }
-                .filterNot { existingTagIds.contains(it.id.toString()) }
+                .map { it.toTagEntity(now) }
+                .filterNot { existingTagIds.contains(it.id) }
                 .sortedBy { it.label.lowercase() }
                 .mapIndexed { index, entity -> entity.copy(order = tagOrderStart + index) }
 
@@ -71,15 +69,15 @@ object PreloadDataGenerator {
         foldersToInsert.forEach { folder ->
             val initialClock = VectorClock.of(deviceId, 1)
             val folderJson = FolderMetaJson(
-                id = folder.id.toString(),
-                parentId = folder.parentId?.toString(),
+                id = folder.id,
+                parentId = folder.parentId,
                 label = folder.label,
                 description = folder.description,
                 icon = folder.icon,
                 colorCode = folder.color.code,
                 order = folder.order,
-                createdAt = folder.createdAt.toEpochMilliseconds(),
-                editedAt = folder.editedAt.toEpochMilliseconds(),
+                createdAt = folder.createdAt,
+                editedAt = folder.editedAt,
                 clock = initialClock.toMap(),
             )
 
@@ -87,19 +85,7 @@ object PreloadDataGenerator {
             entityFileManager.writeFolderMeta(folderJson)
 
             // 2. Update SQLite cache
-            folderDao.upsert(
-                FolderEntity(
-                    id = folder.id.toString(),
-                    parentId = folder.parentId?.toString(),
-                    label = folder.label,
-                    description = folder.description,
-                    icon = folder.icon,
-                    color = folder.color,
-                    order = folder.order,
-                    createdAt = folder.createdAt.toEpochMilliseconds(),
-                    editedAt = folder.editedAt.toEpochMilliseconds(),
-                )
-            )
+            folderDao.upsert(folder)
             inserted = true
         }
 
@@ -107,13 +93,13 @@ object PreloadDataGenerator {
         tagsToInsert.forEach { tag ->
             val initialClock = VectorClock.of(deviceId, 1)
             val tagJson = TagMetaJson(
-                id = tag.id.toString(),
+                id = tag.id,
                 label = tag.label,
                 icon = tag.icon,
                 colorCode = tag.color.code,
                 order = tag.order,
-                createdAt = tag.createdAt.toEpochMilliseconds(),
-                editedAt = tag.editedAt.toEpochMilliseconds(),
+                createdAt = tag.createdAt,
+                editedAt = tag.editedAt,
                 clock = initialClock.toMap(),
             )
 
@@ -121,17 +107,7 @@ object PreloadDataGenerator {
             entityFileManager.writeTagMeta(tagJson)
 
             // 2. Update SQLite cache
-            tagDao.upsert(
-                TagEntity(
-                    id = tag.id.toString(),
-                    label = tag.label,
-                    icon = tag.icon,
-                    color = tag.color,
-                    order = tag.order,
-                    createdAt = tag.createdAt.toEpochMilliseconds(),
-                    editedAt = tag.editedAt.toEpochMilliseconds(),
-                )
-            )
+            tagDao.upsert(tag)
             inserted = true
         }
 

@@ -5,9 +5,6 @@ package dev.subfly.yabacore.database.migration
 import dev.subfly.yabacore.common.CoreConstants
 import dev.subfly.yabacore.database.DatabaseProvider
 import dev.subfly.yabacore.database.DeviceIdProvider
-import dev.subfly.yabacore.database.domain.BookmarkMetadataDomainModel
-import dev.subfly.yabacore.database.domain.FolderDomainModel
-import dev.subfly.yabacore.database.domain.TagDomainModel
 import dev.subfly.yabacore.database.entities.BookmarkEntity
 import dev.subfly.yabacore.database.entities.FolderEntity
 import dev.subfly.yabacore.database.entities.LinkBookmarkEntity
@@ -61,12 +58,12 @@ object MigrationManager {
         
         // Migrate folders
         snapshot.folders.sortedBy { it.order }.forEach { legacy ->
-            migrateFolderToFilesystem(legacy.toFolder(), deviceId)
+            migrateFolderToFilesystem(legacy.toFolderEntity(), deviceId)
         }
 
         // Migrate tags
         snapshot.tags.sortedBy { it.order }.forEach { legacy ->
-            migrateTagToFilesystem(legacy.toTag(), deviceId)
+            migrateTagToFilesystem(legacy.toTagEntity(), deviceId)
         }
 
         // Migrate bookmarks
@@ -78,12 +75,12 @@ object MigrationManager {
                 CoreConstants.FileSystem.Linkmark.domainIconPath(legacy.id, "png")
             }
 
-            val metadata = legacy.toBookmarkMetadata(
+            val bookmark = legacy.toBookmarkEntity(
                 localImagePath = localImagePath,
                 localIconPath = localIconPath,
             )
             migrateBookmarkToFilesystem(
-                metadata = metadata,
+                bookmark = bookmark,
                 url = legacy.url,
                 domain = legacy.domain,
                 linkTypeCode = legacy.linkTypeCode,
@@ -96,25 +93,25 @@ object MigrationManager {
         snapshot.tagLinks.forEach { link ->
             tagBookmarkDao.insert(
                 TagBookmarkCrossRef(
-                    tagId = link.tagId.toString(),
-                    bookmarkId = link.bookmarkId.toString(),
+                    tagId = link.tagId,
+                    bookmarkId = link.bookmarkId,
                 )
             )
         }
     }
 
-    private suspend fun migrateFolderToFilesystem(folder: FolderDomainModel, deviceId: String) {
+    private suspend fun migrateFolderToFilesystem(folder: FolderEntity, deviceId: String) {
         val initialClock = VectorClock.of(deviceId, 1)
         val folderJson = FolderMetaJson(
-            id = folder.id.toString(),
-            parentId = folder.parentId?.toString(),
+            id = folder.id,
+            parentId = folder.parentId,
             label = folder.label,
             description = folder.description,
             icon = folder.icon,
             colorCode = folder.color.code,
             order = folder.order,
-            createdAt = folder.createdAt.toEpochMilliseconds(),
-            editedAt = folder.editedAt.toEpochMilliseconds(),
+            createdAt = folder.createdAt,
+            editedAt = folder.editedAt,
             clock = initialClock.toMap(),
         )
 
@@ -122,31 +119,19 @@ object MigrationManager {
         entityFileManager.writeFolderMeta(folderJson)
 
         // 2. Update SQLite cache
-        folderDao.upsert(
-            FolderEntity(
-                id = folder.id.toString(),
-                parentId = folder.parentId?.toString(),
-                label = folder.label,
-                description = folder.description,
-                icon = folder.icon,
-                color = folder.color,
-                order = folder.order,
-                createdAt = folder.createdAt.toEpochMilliseconds(),
-                editedAt = folder.editedAt.toEpochMilliseconds(),
-            )
-        )
+        folderDao.upsert(folder)
     }
 
-    private suspend fun migrateTagToFilesystem(tag: TagDomainModel, deviceId: String) {
+    private suspend fun migrateTagToFilesystem(tag: TagEntity, deviceId: String) {
         val initialClock = VectorClock.of(deviceId, 1)
         val tagJson = TagMetaJson(
-            id = tag.id.toString(),
+            id = tag.id,
             label = tag.label,
             icon = tag.icon,
             colorCode = tag.color.code,
             order = tag.order,
-            createdAt = tag.createdAt.toEpochMilliseconds(),
-            editedAt = tag.editedAt.toEpochMilliseconds(),
+            createdAt = tag.createdAt,
+            editedAt = tag.editedAt,
             clock = initialClock.toMap(),
         )
 
@@ -156,19 +141,21 @@ object MigrationManager {
         // 2. Update SQLite cache
         tagDao.upsert(
             TagEntity(
-                id = tag.id.toString(),
+                id = tag.id,
                 label = tag.label,
                 icon = tag.icon,
                 color = tag.color,
                 order = tag.order,
-                createdAt = tag.createdAt.toEpochMilliseconds(),
-                editedAt = tag.editedAt.toEpochMilliseconds(),
+            createdAt = tag.createdAt,
+            editedAt = tag.editedAt,
             )
         )
+        // 2. Update SQLite cache
+        tagDao.upsert(tag)
     }
 
     private suspend fun migrateBookmarkToFilesystem(
-        metadata: BookmarkMetadataDomainModel,
+        bookmark: BookmarkEntity,
         url: String,
         domain: String,
         linkTypeCode: Int,
@@ -179,18 +166,18 @@ object MigrationManager {
 
         // Create bookmark meta.json
         val bookmarkJson = BookmarkMetaJson(
-            id = metadata.id.toString(),
-            folderId = metadata.folderId.toString(),
-            kind = metadata.kind.code,
-            label = metadata.label,
-            description = metadata.description,
-            createdAt = metadata.createdAt.toEpochMilliseconds(),
-            editedAt = metadata.editedAt.toEpochMilliseconds(),
-            viewCount = 0,
-            isPrivate = metadata.isPrivate,
-            isPinned = metadata.isPinned,
-            localImagePath = metadata.localImagePath,
-            localIconPath = metadata.localIconPath,
+            id = bookmark.id,
+            folderId = bookmark.folderId,
+            kind = bookmark.kind.code,
+            label = bookmark.label,
+            description = bookmark.description,
+            createdAt = bookmark.createdAt,
+            editedAt = bookmark.editedAt,
+            viewCount = bookmark.viewCount,
+            isPrivate = bookmark.isPrivate,
+            isPinned = bookmark.isPinned,
+            localImagePath = bookmark.localImagePath,
+            localIconPath = bookmark.localIconPath,
             tagIds = emptyList(), // Tags will be linked separately
             clock = initialClock.toMap(),
         )
@@ -208,29 +195,14 @@ object MigrationManager {
         )
 
         // 2. Write link.json to filesystem
-        entityFileManager.writeLinkJson(metadata.id, linkJson)
+        entityFileManager.writeLinkJson(bookmark.id, linkJson)
 
         // 3. Update SQLite cache
-        bookmarkDao.upsert(
-            BookmarkEntity(
-                id = metadata.id.toString(),
-                folderId = metadata.folderId.toString(),
-                kind = metadata.kind,
-                label = metadata.label,
-                description = metadata.description,
-                createdAt = metadata.createdAt.toEpochMilliseconds(),
-                editedAt = metadata.editedAt.toEpochMilliseconds(),
-                viewCount = 0,
-                isPrivate = metadata.isPrivate,
-                isPinned = metadata.isPinned,
-                localImagePath = metadata.localImagePath,
-                localIconPath = metadata.localIconPath,
-            )
-        )
+        bookmarkDao.upsert(bookmark)
 
         linkBookmarkDao.upsert(
             LinkBookmarkEntity(
-                bookmarkId = metadata.id.toString(),
+                bookmarkId = bookmark.id,
                 url = url,
                 domain = domain,
                 linkType = LinkType.fromCode(linkTypeCode),
@@ -291,42 +263,45 @@ object MigrationManager {
         }
     }
 
-    private fun LegacyFolder.toFolder(): FolderDomainModel =
-        FolderDomainModel(
+    private fun LegacyFolder.toFolderEntity(): FolderEntity =
+        FolderEntity(
             id = id,
             parentId = parentId,
             label = label,
             description = description,
             icon = icon,
             color = YabaColor.fromCode(colorCode),
-            createdAt = createdAt,
-            editedAt = editedAt,
+            createdAt = createdAt.toEpochMilliseconds(),
+            editedAt = editedAt.toEpochMilliseconds(),
             order = order,
         )
 
-    private fun LegacyTag.toTag(): TagDomainModel =
-        TagDomainModel(
+    private fun LegacyTag.toTagEntity(): TagEntity =
+        TagEntity(
             id = id,
             label = label,
             icon = icon,
             color = YabaColor.fromCode(colorCode),
-            createdAt = createdAt,
-            editedAt = editedAt,
+            createdAt = createdAt.toEpochMilliseconds(),
+            editedAt = editedAt.toEpochMilliseconds(),
             order = order,
         )
 
-    private fun LegacyBookmark.toBookmarkMetadata(
+    private fun LegacyBookmark.toBookmarkEntity(
         localImagePath: String?,
         localIconPath: String?,
-    ): BookmarkMetadataDomainModel =
-        BookmarkMetadataDomainModel(
+    ): BookmarkEntity =
+        BookmarkEntity(
             id = id,
             folderId = folderId,
             kind = BookmarkKind.LINK,
             label = label,
             description = description,
-            createdAt = createdAt,
-            editedAt = editedAt,
+            createdAt = createdAt.toEpochMilliseconds(),
+            editedAt = editedAt.toEpochMilliseconds(),
+            viewCount = 0,
+            isPrivate = false,
+            isPinned = false,
             localImagePath = localImagePath,
             localIconPath = localIconPath,
         )

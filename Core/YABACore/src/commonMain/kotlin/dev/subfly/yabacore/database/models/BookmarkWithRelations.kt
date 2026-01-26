@@ -33,9 +33,4 @@ data class BookmarkWithRelations(
         ),
     )
     val tags: List<TagEntity>,
-    @Relation(
-        parentColumn = "id",
-        entityColumn = "bookmarkId",
-    )
-    val link: LinkBookmarkEntity?,
 )

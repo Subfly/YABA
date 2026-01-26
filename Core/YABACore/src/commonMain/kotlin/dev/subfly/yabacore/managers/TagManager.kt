@@ -3,10 +3,8 @@ package dev.subfly.yabacore.managers
 import dev.subfly.yabacore.common.CoreConstants
 import dev.subfly.yabacore.database.DatabaseProvider
 import dev.subfly.yabacore.database.DeviceIdProvider
-import dev.subfly.yabacore.database.domain.TagDomainModel
 import dev.subfly.yabacore.database.entities.BookmarkEntity
 import dev.subfly.yabacore.database.entities.TagEntity
-import dev.subfly.yabacore.database.mappers.toModel
 import dev.subfly.yabacore.database.mappers.toUiModel
 import dev.subfly.yabacore.filesystem.EntityFileManager
 import dev.subfly.yabacore.filesystem.json.BookmarkMetaJson
@@ -45,8 +43,8 @@ object TagManager {
     private val entityFileManager get() = EntityFileManager
     private val crdtEngine get() = CRDTEngine
     private val clock = Clock.System
-    private val pinnedTagId = CoreConstants.Tag.Pinned.ID
-    private val privateTagId = CoreConstants.Tag.Private.ID
+    private const val PINNED_TAG_ID = CoreConstants.Tag.Pinned.ID
+    private const val PRIVATE_TAG_ID = CoreConstants.Tag.Private.ID
 
     // ==================== Query Operations (from SQLite cache) ====================
 
@@ -63,7 +61,7 @@ object TagManager {
 
     fun observeTag(tagId: String): Flow<TagUiModel?> =
         tagDao.observeById(tagId).map { entity ->
-            entity?.toModel()?.toUiModel()
+            entity?.toUiModel()
         }
 
     // ==================== Write Operations (Enqueued) ====================
@@ -139,7 +137,7 @@ object TagManager {
         val now = clock.now()
 
         // Detect changes
-        val changes = mutableMapOf<String, kotlinx.serialization.json.JsonElement>()
+        val changes = mutableMapOf<String, JsonElement>()
         if (existingJson.label != tag.label) {
             changes["label"] = JsonPrimitive(tag.label)
         }
@@ -193,7 +191,7 @@ object TagManager {
     }
 
     private suspend fun reorderTagInternal(dragged: TagUiModel, target: TagUiModel, zone: DropZone) {
-        val tags = tagDao.getAll().map { it.toModel() }
+        val tags = tagDao.getAll()
         val ordered = reorder(tags, dragged.id, target.id, zone)
         val now = clock.now()
 
@@ -290,7 +288,7 @@ object TagManager {
         tagDao.deleteById(tag.id)
 
         // 5. Normalize remaining tag orders
-        val remaining = tagDao.getAll().map { it.toModel() }
+        val remaining = tagDao.getAll()
         normalizeTagOrders(remaining, now)
     }
 
@@ -371,7 +369,7 @@ object TagManager {
      */
     suspend fun ensurePinnedTag(): TagUiModel {
         // Check if already exists in cache first (fast path, no queueing needed)
-        tagDao.getTagWithBookmarkCount(pinnedTagId)?.let {
+        tagDao.getTagWithBookmarkCount(PINNED_TAG_ID)?.let {
             return it.toUiModel()
         }
 
@@ -381,19 +379,19 @@ object TagManager {
         }
 
         // Return the tag after creation
-        return tagDao.getTagWithBookmarkCount(pinnedTagId)?.toUiModel()
+        return tagDao.getTagWithBookmarkCount(PINNED_TAG_ID)?.toUiModel()
             ?: createPinnedTagModel()
     }
 
     private suspend fun ensurePinnedTagInternal() {
         // Re-check inside queue
-        if (tagDao.getById(pinnedTagId) != null) {
+        if (tagDao.getById(PINNED_TAG_ID) != null) {
             return
         }
 
         // SELF-HEALING: Remove any tombstone for system tag
-        if (entityFileManager.isTagDeleted(pinnedTagId)) {
-            entityFileManager.removeTagTombstone(pinnedTagId)
+        if (entityFileManager.isTagDeleted(PINNED_TAG_ID)) {
+            entityFileManager.removeTagTombstone(PINNED_TAG_ID)
         }
 
         val now = clock.now()
@@ -402,7 +400,7 @@ object TagManager {
         val initialClock = VectorClock.of(deviceId, 1)
 
         val tagJson = TagMetaJson(
-            id = pinnedTagId,
+            id = PINNED_TAG_ID,
             label = CoreConstants.Tag.Pinned.NAME,
             icon = CoreConstants.Tag.Pinned.ICON,
             colorCode = YabaColor.YELLOW.code,
@@ -417,7 +415,7 @@ object TagManager {
 
         // 2. Record CRDT CREATE event
         crdtEngine.recordCreate(
-            objectId = pinnedTagId,
+            objectId = PINNED_TAG_ID,
             objectType = ObjectType.TAG,
             file = FileTarget.META_JSON,
             payload = buildTagCreatePayload(tagJson),
@@ -431,7 +429,7 @@ object TagManager {
     private fun createPinnedTagModel(): TagUiModel {
         val now = clock.now()
         return TagUiModel(
-            id = pinnedTagId,
+            id = PINNED_TAG_ID,
             label = CoreConstants.Tag.Pinned.NAME,
             icon = CoreConstants.Tag.Pinned.ICON,
             color = YabaColor.YELLOW,
@@ -448,7 +446,7 @@ object TagManager {
      */
     suspend fun ensurePrivateTag(): TagUiModel {
         // Check if already exists in cache first (fast path, no queueing needed)
-        tagDao.getTagWithBookmarkCount(privateTagId)?.let {
+        tagDao.getTagWithBookmarkCount(PRIVATE_TAG_ID)?.let {
             return it.toUiModel()
         }
 
@@ -458,19 +456,19 @@ object TagManager {
         }
 
         // Return the tag after creation
-        return tagDao.getTagWithBookmarkCount(privateTagId)?.toUiModel()
+        return tagDao.getTagWithBookmarkCount(PRIVATE_TAG_ID)?.toUiModel()
             ?: createPrivateTagModel()
     }
 
     private suspend fun ensurePrivateTagInternal() {
         // Re-check inside queue
-        if (tagDao.getById(privateTagId) != null) {
+        if (tagDao.getById(PRIVATE_TAG_ID) != null) {
             return
         }
 
         // SELF-HEALING: Remove any tombstone for system tag
-        if (entityFileManager.isTagDeleted(privateTagId)) {
-            entityFileManager.removeTagTombstone(privateTagId)
+        if (entityFileManager.isTagDeleted(PRIVATE_TAG_ID)) {
+            entityFileManager.removeTagTombstone(PRIVATE_TAG_ID)
         }
 
         val now = clock.now()
@@ -479,7 +477,7 @@ object TagManager {
         val initialClock = VectorClock.of(deviceId, 1)
 
         val tagJson = TagMetaJson(
-            id = privateTagId,
+            id = PRIVATE_TAG_ID,
             label = CoreConstants.Tag.Private.NAME,
             icon = CoreConstants.Tag.Private.ICON,
             colorCode = YabaColor.RED.code,
@@ -494,7 +492,7 @@ object TagManager {
 
         // 2. Record CRDT CREATE event
         crdtEngine.recordCreate(
-            objectId = privateTagId,
+            objectId = PRIVATE_TAG_ID,
             objectType = ObjectType.TAG,
             file = FileTarget.META_JSON,
             payload = buildTagCreatePayload(tagJson),
@@ -508,7 +506,7 @@ object TagManager {
     private fun createPrivateTagModel(): TagUiModel {
         val now = clock.now()
         return TagUiModel(
-            id = privateTagId,
+            id = PRIVATE_TAG_ID,
             label = CoreConstants.Tag.Private.NAME,
             icon = CoreConstants.Tag.Private.ICON,
             color = YabaColor.RED,
@@ -522,11 +520,11 @@ object TagManager {
     // ==================== Private Helpers ====================
 
     private fun reorder(
-        tags: List<TagDomainModel>,
+        tags: List<TagEntity>,
         draggedId: String,
         targetId: String,
         zone: DropZone,
-    ): List<TagDomainModel> {
+    ): List<TagEntity> {
         val sorted = tags.sortedBy { it.order }.toMutableList()
         val dragged = sorted.firstOrNull { it.id == draggedId } ?: return tags
         val targetIndex = sorted.indexOfFirst { it.id == targetId }
@@ -541,7 +539,7 @@ object TagManager {
         return sorted.mapIndexed { index, tag -> tag.copy(order = index) }
     }
 
-    private suspend fun normalizeTagOrders(tags: List<TagDomainModel>, timestamp: Instant) {
+    private suspend fun normalizeTagOrders(tags: List<TagEntity>, timestamp: Instant) {
         tags.sortedBy { it.order }.forEachIndexed { index, tag ->
             if (tag.order != index) {
                 val json = entityFileManager.readTagMeta(tag.id) ?: return@forEachIndexed

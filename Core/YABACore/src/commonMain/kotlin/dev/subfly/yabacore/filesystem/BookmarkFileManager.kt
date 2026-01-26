@@ -34,7 +34,7 @@ object BookmarkFileManager {
 
     /**
      * Returns the absolute path string for a relative path.
-     * This is the only way to get path strings - callers should not access PlatformFile.path directly.
+     * This is the only way to get path strings - callers should not access [PlatformFile.path] directly.
      */
     suspend fun getAbsolutePath(relativePath: String): String {
         val file = resolve(relativePath)

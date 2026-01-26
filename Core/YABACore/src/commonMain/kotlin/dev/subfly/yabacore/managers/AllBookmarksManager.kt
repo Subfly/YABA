@@ -6,7 +6,7 @@ import dev.subfly.yabacore.database.DatabaseProvider
 import dev.subfly.yabacore.database.DeviceIdProvider
 import dev.subfly.yabacore.database.entities.BookmarkEntity
 import dev.subfly.yabacore.database.entities.TagBookmarkCrossRef
-import dev.subfly.yabacore.database.mappers.toModel
+import dev.subfly.yabacore.database.mappers.toPreviewUiModel
 import dev.subfly.yabacore.database.mappers.toUiModel
 import dev.subfly.yabacore.database.models.BookmarkWithRelations
 import dev.subfly.yabacore.filesystem.BookmarkFileManager
@@ -27,9 +27,9 @@ import dev.subfly.yabacore.sync.VectorClock
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 import kotlin.time.Clock
-import kotlin.time.Instant
 
 private data class SavedPreviewAssets(
     val localImageRelativePath: String?,
@@ -62,11 +62,16 @@ object AllBookmarksManager {
     ): Flow<List<BookmarkUiModel>> {
         val kindSet = kinds?.takeIf { it.isNotEmpty() }
         return bookmarkDao
-            .observeAllBookmarks(
+            .observeAll(
                 kinds = kindSet ?: listOf(BookmarkKind.LINK),
                 applyKindFilter = kindSet != null,
                 sortType = sortType.name,
                 sortOrder = sortOrder.name,
+                query = null,
+                folderIds = emptyList(),
+                applyFolderFilter = false,
+                tagIds = emptyList(),
+                applyTagFilter = false,
             )
             .map { rows -> rows.map { it.toBookmarkPreviewUiModel() } }
     }
@@ -79,7 +84,7 @@ object AllBookmarksManager {
     ): Flow<List<BookmarkUiModel>> {
         val params = filters.toQueryParams()
         return bookmarkDao
-            .observeBookmarksSearch(
+            .observeAll(
                 query = query,
                 kinds = emptyList(),
                 applyKindFilter = false,
@@ -252,7 +257,7 @@ object AllBookmarksManager {
         )
 
         // Detect changes
-        val changes = mutableMapOf<String, kotlinx.serialization.json.JsonElement>()
+        val changes = mutableMapOf<String, JsonElement>()
         if (existingJson.folderId != folderId) {
             changes["folderId"] = JsonPrimitive(folderId)
         }
@@ -538,8 +543,8 @@ object AllBookmarksManager {
     // ==================== Private Helpers ====================
 
     private suspend fun BookmarkWithRelations.toBookmarkPreviewUiModel(): BookmarkPreviewUiModel {
-        val folderUi = folder.toModel().toUiModel()
-        val tagsUi = tags.sortedBy { it.order }.map { it.toModel().toUiModel() }
+        val folderUi = folder.toUiModel()
+        val tagsUi = tags.sortedBy { it.order }.map { it.toUiModel() }
 
         val localImageAbsolutePath = bookmark.localImagePath?.let { relativePath ->
             bookmarkFileManager.getAbsolutePath(relativePath)
@@ -549,21 +554,11 @@ object AllBookmarksManager {
             bookmarkFileManager.getAbsolutePath(relativePath)
         }
 
-        return BookmarkPreviewUiModel(
-            id = bookmark.id,
-            folderId = bookmark.folderId,
-            kind = bookmark.kind,
-            label = bookmark.label,
-            description = bookmark.description,
-            createdAt = Instant.fromEpochMilliseconds(bookmark.createdAt),
-            editedAt = Instant.fromEpochMilliseconds(bookmark.editedAt),
-            viewCount = bookmark.viewCount,
-            isPrivate = bookmark.isPrivate,
-            isPinned = bookmark.isPinned,
+        return bookmark.toPreviewUiModel(
+            folder = folderUi,
+            tags = tagsUi,
             localImagePath = localImageAbsolutePath,
             localIconPath = localIconAbsolutePath,
-            parentFolder = folderUi,
-            tags = tagsUi,
         )
     }
 
@@ -624,7 +619,7 @@ object AllBookmarksManager {
     private fun sanitizeExtension(rawExtension: String?): String =
         rawExtension.orEmpty().lowercase().removePrefix(".").ifBlank { "jpeg" }
 
-    private fun buildBookmarkCreatePayload(json: BookmarkMetaJson): Map<String, kotlinx.serialization.json.JsonElement> =
+    private fun buildBookmarkCreatePayload(json: BookmarkMetaJson): Map<String, JsonElement> =
         mapOf(
             "id" to JsonPrimitive(json.id),
             "folderId" to JsonPrimitive(json.folderId),

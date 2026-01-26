@@ -11,7 +11,6 @@ enum class ReadableAssetRole {
             return when (normalized) {
                 "hero" -> HERO
                 "inline" -> INLINE
-                "" -> UNKNOWN
                 else -> UNKNOWN
             }
         }

@@ -30,19 +30,6 @@ internal object CommonFileAccessProvider {
         return directory
     }
 
-    suspend fun bookmarkDirectory(
-        bookmarkId: String,
-        subtypeDirectory: String?,
-        ensureExists: Boolean,
-    ): PlatformFile {
-        val relativePath = CoreConstants.FileSystem.bookmarkFolderPath(bookmarkId, subtypeDirectory)
-        val folder = resolveRelativePath(relativePath, ensureParentExists = ensureExists)
-        if (ensureExists) {
-            folder.createDirectories()
-        }
-        return folder
-    }
-
     suspend fun resolveRelativePath(
         relativePath: String,
         ensureParentExists: Boolean,
@@ -65,11 +52,6 @@ internal object CommonFileAccessProvider {
         if (target.exists()) {
             withContext(Dispatchers.IO) { target.delete() }
         }
-    }
-
-    suspend fun deleteBookmarkDirectory(bookmarkId: String) {
-        val folder = CoreConstants.FileSystem.bookmarkFolderPath(bookmarkId)
-        delete(folder)
     }
 
     suspend fun readBytes(relativePath: String): ByteArray? {

@@ -32,32 +32,18 @@ import dev.subfly.yabacore.model.utils.YabaColor
     ],
 )
 data class HighlightEntity(
-    /** Highlight UUID */
     @PrimaryKey val id: String,
-    /** Parent bookmark ID */
     val bookmarkId: String,
-    /** Content version this highlight references */
     val contentVersion: Int,
-    /** Start anchor block ID */
     val startBlockId: String,
-    /** Start anchor inline path (comma-separated integers) */
     val startInlinePath: String,
-    /** Start anchor character offset */
     val startOffset: Int,
-    /** End anchor block ID */
     val endBlockId: String,
-    /** End anchor inline path (comma-separated integers) */
     val endInlinePath: String,
-    /** End anchor character offset */
     val endOffset: Int,
-    /** Highlight color role */
     val colorRole: YabaColor,
-    /** Optional user note */
     val note: String?,
-    /** Relative path from YABA root to the JSON file */
     val relativePath: String,
-    /** Creation timestamp in epoch milliseconds */
     val createdAt: Long,
-    /** Last edit timestamp in epoch milliseconds */
     val editedAt: Long,
 )

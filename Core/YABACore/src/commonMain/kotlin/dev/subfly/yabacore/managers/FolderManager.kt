@@ -3,14 +3,10 @@ package dev.subfly.yabacore.managers
 import dev.subfly.yabacore.common.CoreConstants
 import dev.subfly.yabacore.database.DatabaseProvider
 import dev.subfly.yabacore.database.DeviceIdProvider
-import dev.subfly.yabacore.database.domain.FolderDomainModel
 import dev.subfly.yabacore.database.entities.FolderEntity
-import dev.subfly.yabacore.database.mappers.toModel
 import dev.subfly.yabacore.database.mappers.toUiModel
-import dev.subfly.yabacore.database.models.FolderWithBookmarkCount
 import dev.subfly.yabacore.filesystem.EntityFileManager
 import dev.subfly.yabacore.filesystem.json.FolderMetaJson
-import dev.subfly.yabacore.filesystem.json.BookmarkMetaJson
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.utils.DropZone
 import dev.subfly.yabacore.model.utils.SortOrderType
@@ -46,23 +42,12 @@ object FolderManager {
     private val clock = Clock.System
     private const val UNCATEGORIZED_FOLDER_ID = CoreConstants.Folder.Uncategorized.ID
 
-    // ==================== Query Operations (from SQLite cache) ====================
-
-    fun observeFolderTree(
-        sortType: SortType = SortType.CUSTOM,
-        sortOrder: SortOrderType = SortOrderType.ASCENDING,
-    ): Flow<List<FolderUiModel>> =
-        folderDao.observeAllFoldersWithBookmarkCounts(
-            sortType.name,
-            sortOrder.name
-        ).map { rows -> buildFolderTree(rows) }
-
     suspend fun getFolder(folderId: String): FolderUiModel? =
         folderDao.getFolderWithBookmarkCount(folderId)?.toUiModel()
 
     fun observeFolder(folderId: String): Flow<FolderUiModel?> =
         folderDao.observeById(folderId).map { entity ->
-            entity?.toModel()?.toUiModel()
+            entity?.toUiModel()
         }
 
 
@@ -82,7 +67,7 @@ object FolderManager {
             )
         }
 
-        return folderDao.getFolderWithBookmarkCountIncludingHidden(UNCATEGORIZED_FOLDER_ID)
+        return folderDao.getFolderWithBookmarkCount(UNCATEGORIZED_FOLDER_ID)
             ?.toUiModel()
             ?: createUncategorizedFolderModel()
     }
@@ -107,7 +92,7 @@ object FolderManager {
         sortType: SortType = SortType.LABEL,
         sortOrder: SortOrderType = SortOrderType.ASCENDING,
     ): Flow<List<FolderUiModel>> =
-        folderDao.observeAllFoldersWithBookmarkCounts(sortType.name, sortOrder.name)
+        folderDao.observeFolders(sortType.name, sortOrder.name)
             .map { rows -> rows.map { it.toUiModel() } }
 
     suspend fun getMovableFolders(
@@ -120,15 +105,13 @@ object FolderManager {
         } else {
             setOf(currentFolderId) + collectDescendantIds(currentFolderId)
         }
-        val rows = if (excluded.isEmpty()) {
-            folderDao.getMovableFolders(sortType.name, sortOrder.name)
-        } else {
-            folderDao.getMovableFoldersExcluding(
-                excluded.toList(),
-                sortType.name,
-                sortOrder.name
-            )
-        }
+        val excludedList = excluded.toList()
+        val rows = folderDao.getFolders(
+            sortType = sortType.name,
+            sortOrder = sortOrder.name,
+            excludedIds = excludedList,
+            excludedIdsCount = excludedList.size
+        )
         return rows
             .asSequence()
             .map { it.toUiModel() }
@@ -146,7 +129,7 @@ object FolderManager {
         }
 
         // Check if already exists in cache (re-check inside queue)
-        if (folderDao.getByIdIncludingHidden(UNCATEGORIZED_FOLDER_ID) != null) {
+        if (folderDao.getFolderWithBookmarkCount(UNCATEGORIZED_FOLDER_ID) != null) {
             return
         }
 
@@ -276,13 +259,6 @@ object FolderManager {
         // 3. Update SQLite cache
         val entity = folderJson.toEntity()
         folderDao.upsert(entity)
-
-        // 4. Verify write succeeded - if not, retry once
-        val verification = folderDao.getByIdIncludingHidden(folderId)
-        if (verification == null) {
-            // Retry the upsert
-            folderDao.upsert(entity)
-        }
     }
 
     /**
@@ -439,7 +415,7 @@ object FolderManager {
         val ordered = reorderSiblings(siblings, dragged.id, target.id, zone)
         val now = clock.now()
 
-        normalizeSiblingOrdersFromDomain(ordered, now)
+        normalizeSiblingOrdersFromEntities(ordered, now)
     }
 
     /**
@@ -550,7 +526,7 @@ object FolderManager {
 
         // 3) Normalize sibling orders for the parent
         val siblings = loadSiblings(parentId).filterNot { it.id in folderIdSet }
-        normalizeSiblingOrdersFromDomain(siblings, clock.now())
+        normalizeSiblingOrdersFromEntities(siblings, clock.now())
     }
 
     /**
@@ -659,25 +635,11 @@ object FolderManager {
 
     // ==================== Private Helpers ====================
 
-    private suspend fun loadSiblings(parentId: String?): List<FolderDomainModel> =
-        if (parentId == null) {
-            folderDao.getRoot()
-        } else {
-            folderDao.getChildren(parentId)
-        }.map { it.toModel() }
-
-    private fun buildFolderTree(rows: List<FolderWithBookmarkCount>): List<FolderUiModel> {
-        val uiRows = rows.map { it.toUiModel() }
-        val grouped = uiRows.groupBy { it.parentId }
-        fun build(parentId: String?): List<FolderUiModel> =
-            grouped[parentId]?.map { entry ->
-                entry.copy(children = build(entry.id))
-            } ?: emptyList()
-        return build(null)
-    }
+    private suspend fun loadSiblings(parentId: String?): List<FolderEntity> =
+        folderDao.getFoldersByParent(parentId = parentId)
 
     private suspend fun collectDescendantIds(rootId: String): Set<String> {
-        val rows = folderDao.getAllFoldersWithBookmarkCounts(
+        val rows = folderDao.getFolders(
             SortType.CUSTOM.name,
             SortOrderType.ASCENDING.name
         ).map { it.toUiModel() }
@@ -696,11 +658,11 @@ object FolderManager {
     }
 
     private fun reorderSiblings(
-        siblings: List<FolderDomainModel>,
+        siblings: List<FolderEntity>,
         draggedId: String,
         targetId: String,
         zone: DropZone,
-    ): List<FolderDomainModel> {
+    ): List<FolderEntity> {
         val sorted = siblings.sortedBy { it.order }.toMutableList()
         val dragged = sorted.firstOrNull { it.id == draggedId } ?: return siblings
         val targetIndex = sorted.indexOfFirst { it.id == targetId }
@@ -743,8 +705,8 @@ object FolderManager {
         }
     }
 
-    private suspend fun normalizeSiblingOrdersFromDomain(
-        folders: List<FolderDomainModel>,
+    private suspend fun normalizeSiblingOrdersFromEntities(
+        folders: List<FolderEntity>,
         timestamp: Instant,
     ) {
         folders.sortedBy { it.order }.forEachIndexed { index, folder ->

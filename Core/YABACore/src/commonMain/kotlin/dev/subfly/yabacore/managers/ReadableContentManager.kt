@@ -110,7 +110,10 @@ object ReadableContentManager {
     /**
      * Saves the document JSON to filesystem.
      */
-    private suspend fun saveDocumentVersion(bookmarkId: String, document: ReadableDocumentSnapshot) {
+    private suspend fun saveDocumentVersion(
+        bookmarkId: String,
+        document: ReadableDocumentSnapshot,
+    ) {
         val relativePath = CoreConstants.FileSystem.Linkmark.readableVersionPath(
             bookmarkId,
             document.contentVersion,
@@ -182,7 +185,6 @@ object ReadableContentManager {
             val assetEntity = ReadableAssetEntity(
                 id = asset.assetId,
                 bookmarkId = bookmarkId,
-                contentVersion = document.contentVersion,
                 role = role,
                 relativePath = asset.relativePath,
             )
@@ -202,14 +204,17 @@ object ReadableContentManager {
                     is ReadableBlock.Image -> {
                         roles[block.assetId] = block.role
                     }
+
                     is ReadableBlock.Quote -> {
                         processBlocks(block.children)
                     }
+
                     is ReadableBlock.ListBlock -> {
                         for (item in block.items) {
                             processBlocks(item.blocks)
                         }
                     }
+
                     else -> {}
                 }
             }
@@ -223,26 +228,10 @@ object ReadableContentManager {
      * Reads a specific readable version from filesystem.
      */
     suspend fun readVersion(bookmarkId: String, contentVersion: Int): ReadableDocumentSnapshot? {
-        val relativePath = CoreConstants.FileSystem.Linkmark.readableVersionPath(bookmarkId, contentVersion)
+        val relativePath =
+            CoreConstants.FileSystem.Linkmark.readableVersionPath(bookmarkId, contentVersion)
         val content = accessProvider.readText(relativePath) ?: return null
         return runCatching { json.decodeFromString<ReadableDocumentSnapshot>(content) }.getOrNull()
-    }
-
-    /**
-     * Gets the latest content version number for a bookmark.
-     */
-    suspend fun getLatestVersion(bookmarkId: String): Int? {
-        val readableDir = CoreConstants.FileSystem.Linkmark.readableDir(bookmarkId)
-        val dir = accessProvider.resolveRelativePath(readableDir, ensureParentExists = false)
-
-        if (!dir.exists()) return null
-
-        return dir.list()
-            .filter { it.name.startsWith("v") && it.name.endsWith(".json") }
-            .mapNotNull { file ->
-                file.name.removePrefix("v").removeSuffix(".json").toIntOrNull()
-            }
-            .maxOrNull()
     }
 
     fun observeReadableVersions(bookmarkId: String): Flow<List<ReadableVersionUiModel>> {
@@ -250,7 +239,7 @@ object ReadableContentManager {
             coroutineScope {
                 versions.map { versionEntity ->
                     async { buildReadableVersionUiModel(bookmarkId, versionEntity) }
-                }.awaitAll().filterNotNull()
+                }.awaitAll()
             }
         }
     }
@@ -258,35 +247,38 @@ object ReadableContentManager {
     private suspend fun buildReadableVersionUiModel(
         bookmarkId: String,
         versionEntity: ReadableVersionEntity,
-    ): ReadableVersionUiModel? {
+    ): ReadableVersionUiModel {
         val document = readVersion(bookmarkId, versionEntity.contentVersion)
-        val assets = readableAssetDao.getByBookmarkIdAndVersion(bookmarkId, versionEntity.contentVersion)
-        val highlights = highlightDao.getByBookmarkIdAndVersion(bookmarkId, versionEntity.contentVersion)
+        val assets = readableAssetDao.getByBookmarkId(bookmarkId)
+        val highlights = highlightDao.getById(bookmarkId)
         val assetPathMap = mutableMapOf<String, String?>()
         for (asset in assets) {
             assetPathMap[asset.id] = BookmarkFileManager.getAbsolutePath(asset.relativePath)
         }
         val assetsUi = mutableListOf<ReadableAssetUiModel>()
-        for (assetEntity in assets) {
+        assets.forEach { entity ->
             assetsUi.add(
                 ReadableAssetUiModel(
-                    assetId = assetEntity.id,
-                    role = assetEntity.role,
-                    absolutePath = BookmarkFileManager.getAbsolutePath(assetEntity.relativePath),
+                    assetId = entity.id,
+                    role = entity.role,
+                    absolutePath = BookmarkFileManager.getAbsolutePath(entity.relativePath),
                 )
             )
         }
+
         val highlightsUi = mutableListOf<HighlightUiModel>()
-        for (highlight in highlights) {
-            highlightsUi.add(highlight.toUiModel())
+        highlights?.let { nonNullHighlights ->
+            highlightsUi.add(nonNullHighlights.toUiModel())
         }
+
+        val documentUi = document?.let { buildReadableDocumentUiModel(it, assetPathMap) }
 
         return ReadableVersionUiModel(
             contentVersion = versionEntity.contentVersion,
             createdAt = versionEntity.createdAt,
             title = versionEntity.title,
             author = versionEntity.author,
-            document = document?.let { buildReadableDocumentUiModel(it, assetPathMap) },
+            document = documentUi,
             assets = assetsUi,
             highlights = highlightsUi,
         )
@@ -299,7 +291,12 @@ object ReadableContentManager {
         return ReadableDocumentUiModel(
             title = document.title,
             author = document.author,
-            blocks = document.blocks.map { block -> buildReadableBlockUiModel(block, assetPathMap) },
+            blocks = document.blocks.map { block ->
+                buildReadableBlockUiModel(
+                    block,
+                    assetPathMap
+                )
+            },
         )
     }
 
@@ -312,11 +309,13 @@ object ReadableContentManager {
                 id = block.id,
                 inlines = block.inlines,
             )
+
             is ReadableBlock.Heading -> ReadableBlockUiModel.Heading(
                 id = block.id,
                 level = block.level,
                 inlines = block.inlines,
             )
+
             is ReadableBlock.Image -> ReadableBlockUiModel.Image(
                 id = block.id,
                 assetId = block.assetId,
@@ -324,24 +323,38 @@ object ReadableContentManager {
                 role = block.role,
                 caption = block.caption,
             )
+
             is ReadableBlock.Code -> ReadableBlockUiModel.Code(
                 id = block.id,
                 language = block.language,
                 text = block.text,
             )
+
             is ReadableBlock.ListBlock -> ReadableBlockUiModel.ListBlock(
                 id = block.id,
                 ordered = block.ordered,
                 items = block.items.map { item ->
                     ReadableListItemUiModel(
-                        blocks = item.blocks.map { child -> buildReadableBlockUiModel(child, assetPathMap) }
+                        blocks = item.blocks.map { child ->
+                            buildReadableBlockUiModel(
+                                child,
+                                assetPathMap
+                            )
+                        }
                     )
                 },
             )
+
             is ReadableBlock.Quote -> ReadableBlockUiModel.Quote(
                 id = block.id,
-                children = block.children.map { child -> buildReadableBlockUiModel(child, assetPathMap) },
+                children = block.children.map { child ->
+                    buildReadableBlockUiModel(
+                        child,
+                        assetPathMap
+                    )
+                },
             )
+
             is ReadableBlock.Divider -> ReadableBlockUiModel.Divider(id = block.id)
         }
     }

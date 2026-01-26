@@ -13,12 +13,6 @@ interface TagDao {
     @Upsert
     suspend fun upsert(entity: TagEntity)
 
-    @Upsert
-    suspend fun upsertAll(entities: List<TagEntity>)
-
-    @Delete
-    suspend fun delete(entity: TagEntity)
-
     @Query("DELETE FROM tags WHERE id = :id")
     suspend fun deleteById(id: String)
 

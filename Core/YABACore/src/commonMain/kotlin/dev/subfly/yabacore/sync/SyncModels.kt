@@ -1,6 +1,5 @@
 package dev.subfly.yabacore.sync
 
-import dev.subfly.yabacore.filesystem.model.BookmarkFileAssetKind
 import kotlin.time.Instant
 
 /**
@@ -30,7 +29,6 @@ data class SyncResponse(
 data class FileSyncDescriptor(
     val bookmarkId: String,
     val relativePath: String,
-    val assetKind: BookmarkFileAssetKind,
     val checksum: String,
     val sizeBytes: Long,
     val originDeviceId: String,

@@ -12,12 +12,6 @@ interface LinkBookmarkDao {
     @Upsert
     suspend fun upsert(entity: LinkBookmarkEntity)
 
-    @Upsert
-    suspend fun upsertAll(entities: List<LinkBookmarkEntity>)
-
-    @Delete
-    suspend fun delete(entity: LinkBookmarkEntity)
-
     @Query("DELETE FROM link_bookmarks")
     suspend fun deleteAll()
 
@@ -27,10 +21,6 @@ interface LinkBookmarkDao {
     @Query("SELECT * FROM link_bookmarks WHERE bookmarkId = :bookmarkId LIMIT 1")
     suspend fun getByBookmarkId(bookmarkId: String): LinkBookmarkEntity?
 
-    /**
-     * Observes link details for a specific bookmark.
-     * Returns a Flow that emits the current link entity or null if not found.
-     */
     @Query("SELECT * FROM link_bookmarks WHERE bookmarkId = :bookmarkId LIMIT 1")
     fun observeByBookmarkId(bookmarkId: String): Flow<LinkBookmarkEntity?>
 }

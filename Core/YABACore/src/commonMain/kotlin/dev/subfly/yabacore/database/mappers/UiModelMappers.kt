@@ -1,76 +1,17 @@
 package dev.subfly.yabacore.database.mappers
 
-import dev.subfly.yabacore.database.domain.BookmarkMetadataDomainModel
-import dev.subfly.yabacore.database.domain.FolderDomainModel
-import dev.subfly.yabacore.database.domain.LinkBookmarkDomainModel
-import dev.subfly.yabacore.database.domain.TagDomainModel
+import dev.subfly.yabacore.database.entities.BookmarkEntity
 import dev.subfly.yabacore.database.models.FolderWithBookmarkCount
 import dev.subfly.yabacore.database.models.TagWithBookmarkCount
 import dev.subfly.yabacore.model.ui.BookmarkPreviewUiModel
 import dev.subfly.yabacore.model.ui.BookmarkUiModel
 import dev.subfly.yabacore.model.ui.FolderUiModel
-import dev.subfly.yabacore.model.ui.LinkmarkUiModel
 import dev.subfly.yabacore.model.ui.TagUiModel
+import kotlin.time.Instant
 
-internal fun FolderDomainModel.toUiModel(
-    bookmarkCount: Int = 0,
-    children: List<FolderUiModel> = emptyList(),
-    bookmarks: List<BookmarkUiModel> = emptyList(),
-): FolderUiModel = FolderUiModel(
-    id = id,
-    parentId = parentId,
-    label = label,
-    description = description,
-    icon = icon,
-    color = color,
-    createdAt = createdAt,
-    editedAt = editedAt,
-    order = order,
-    bookmarkCount = bookmarkCount,
-    children = children,
-    bookmarks = bookmarks,
-)
+private fun Long.toInstant(): Instant = Instant.fromEpochMilliseconds(this)
 
-internal fun FolderUiModel.toDomain(): FolderDomainModel =
-    FolderDomainModel(
-        id = id,
-        parentId = parentId,
-        label = label,
-        description = description,
-        icon = icon,
-        color = color,
-        createdAt = createdAt,
-        editedAt = editedAt,
-        order = order,
-    )
-
-internal fun TagDomainModel.toUiModel(
-    bookmarkCount: Int = 0,
-    bookmarks: List<BookmarkUiModel> = emptyList(),
-): TagUiModel = TagUiModel(
-    id = id,
-    label = label,
-    icon = icon,
-    color = color,
-    createdAt = createdAt,
-    editedAt = editedAt,
-    order = order,
-    bookmarkCount = bookmarkCount,
-    bookmarks = bookmarks,
-)
-
-internal fun TagUiModel.toDomain(): TagDomainModel =
-    TagDomainModel(
-        id = id,
-        label = label,
-        icon = icon,
-        color = color,
-        createdAt = createdAt,
-        editedAt = editedAt,
-        order = order,
-    )
-
-internal fun BookmarkMetadataDomainModel.toUiModel(
+internal fun BookmarkEntity.toPreviewUiModel(
     folder: FolderUiModel? = null,
     tags: List<TagUiModel> = emptyList(),
     localImagePath: String? = null,
@@ -81,83 +22,21 @@ internal fun BookmarkMetadataDomainModel.toUiModel(
     kind = kind,
     label = label,
     description = description,
-    createdAt = createdAt,
-    editedAt = editedAt,
+    createdAt = createdAt.toInstant(),
+    editedAt = editedAt.toInstant(),
     viewCount = viewCount,
     isPrivate = isPrivate,
     isPinned = isPinned,
-    localImagePath = localImagePath,
-    localIconPath = localIconPath,
+    localImagePath = localImagePath ?: this.localImagePath,
+    localIconPath = localIconPath ?: this.localIconPath,
     parentFolder = folder,
     tags = tags,
 )
-
-internal fun BookmarkPreviewUiModel.toDomain(): BookmarkMetadataDomainModel =
-    BookmarkMetadataDomainModel(
-        id = id,
-        folderId = folderId,
-        kind = kind,
-        label = label,
-        description = description,
-        createdAt = createdAt,
-        editedAt = editedAt,
-        viewCount = viewCount,
-        isPrivate = isPrivate,
-        isPinned = isPinned,
-        // UI model stores absolute paths; domain stores relative paths.
-        // These should be set explicitly by managers when persisting bookmark preview assets.
-        localImagePath = null,
-        localIconPath = null,
-    )
-
-internal fun LinkBookmarkDomainModel.toUiModel(
-    folder: FolderUiModel? = null,
-    tags: List<TagUiModel> = emptyList(),
-    localImagePath: String? = null,
-    localIconPath: String? = null,
-): LinkmarkUiModel = LinkmarkUiModel(
-    id = id,
-    folderId = folderId,
-    label = label,
-    description = description,
-    createdAt = createdAt,
-    editedAt = editedAt,
-    viewCount = viewCount,
-    isPrivate = isPrivate,
-    isPinned = isPinned,
-    url = url,
-    domain = domain,
-    linkType = linkType,
-    videoUrl = videoUrl,
-    localImagePath = localImagePath,
-    localIconPath = localIconPath,
-    parentFolder = folder,
-    tags = tags,
-)
-
-internal fun LinkmarkUiModel.toDomain(): LinkBookmarkDomainModel =
-    LinkBookmarkDomainModel(
-        id = id,
-        folderId = folderId,
-        label = label,
-        description = description,
-        createdAt = createdAt,
-        editedAt = editedAt,
-        viewCount = viewCount,
-        isPrivate = isPrivate,
-        isPinned = isPinned,
-        localImagePath = null,
-        localIconPath = null,
-        url = url,
-        domain = domain,
-        linkType = linkType,
-        videoUrl = videoUrl,
-    )
 
 fun FolderWithBookmarkCount.toUiModel(
     children: List<FolderUiModel> = emptyList(),
     bookmarks: List<BookmarkUiModel> = emptyList(),
-): FolderUiModel = folder.toModel().toUiModel(
+): FolderUiModel = folder.toUiModel(
     bookmarkCount = bookmarkCount.toInt(),
     children = children,
     bookmarks = bookmarks,
@@ -165,7 +44,7 @@ fun FolderWithBookmarkCount.toUiModel(
 
 fun TagWithBookmarkCount.toUiModel(
     bookmarks: List<BookmarkUiModel> = emptyList(),
-): TagUiModel = tag.toModel().toUiModel(
+): TagUiModel = tag.toUiModel(
     bookmarkCount = bookmarkCount.toInt(),
     bookmarks = bookmarks,
 )

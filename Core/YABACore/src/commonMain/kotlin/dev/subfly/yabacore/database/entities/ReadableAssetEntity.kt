@@ -26,18 +26,11 @@ import dev.subfly.yabacore.model.utils.ReadableAssetRole
     ],
     indices = [
         Index(value = ["bookmarkId"]),
-        Index(value = ["bookmarkId", "contentVersion"]),
     ],
 )
 data class ReadableAssetEntity(
-    /** Asset UUID */
     @PrimaryKey val id: String,
-    /** Parent bookmark ID */
     val bookmarkId: String,
-    /** Content version this asset belongs to */
-    val contentVersion: Int,
-    /** Asset role */
     val role: ReadableAssetRole,
-    /** Relative path from YABA root to the asset file */
     val relativePath: String,
 )

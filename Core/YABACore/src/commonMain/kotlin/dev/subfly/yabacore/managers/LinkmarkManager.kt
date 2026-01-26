@@ -4,7 +4,6 @@ import dev.subfly.yabacore.database.DatabaseProvider
 import dev.subfly.yabacore.database.DeviceIdProvider
 import dev.subfly.yabacore.database.entities.HighlightEntity
 import dev.subfly.yabacore.database.entities.LinkBookmarkEntity
-import dev.subfly.yabacore.database.mappers.toModel
 import dev.subfly.yabacore.database.mappers.toUiModel
 import dev.subfly.yabacore.filesystem.BookmarkFileManager
 import dev.subfly.yabacore.filesystem.EntityFileManager
@@ -21,6 +20,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
+import kotlin.time.Instant
 
 /**
  * Filesystem-first link bookmark manager.
@@ -39,25 +39,39 @@ object LinkmarkManager {
 
     // ==================== Query Operations ====================
 
-    /**
-     * Gets a linkmark with basic info (without readable content).
-     */
     suspend fun getLinkmarkDetail(bookmarkId: String): LinkmarkUiModel? {
-        val linkBookmark = bookmarkDao.getLinkBookmarkById(bookmarkId) ?: return null
-        val domain = linkBookmark.toModel()
-        val folder = folderDao.getFolderWithBookmarkCount(domain.folderId)?.toUiModel()
+        val bookmarkMetaData = bookmarkDao.getById(bookmarkId) ?: return null
+        val linkMetaData = linkBookmarkDao.getByBookmarkId(bookmarkId) ?: return null
+        val folder = folderDao.getFolderWithBookmarkCount(bookmarkMetaData.folderId)?.toUiModel()
         val tags = tagDao.getTagsForBookmarkWithCounts(bookmarkId).map { it.toUiModel() }
 
-        val localImageAbsolutePath =
-            domain.localImagePath?.let { relativePath -> BookmarkFileManager.getAbsolutePath(relativePath) }
-        val localIconAbsolutePath =
-            domain.localIconPath?.let { relativePath -> BookmarkFileManager.getAbsolutePath(relativePath) }
+        val localImageAbsolutePath = bookmarkMetaData.localImagePath?.let { relativePath ->
+            BookmarkFileManager.getAbsolutePath(relativePath)
+        }
+        val localIconAbsolutePath = bookmarkMetaData.localIconPath?.let {
+            relativePath -> BookmarkFileManager.getAbsolutePath(relativePath)
+        }
 
-        return domain.toUiModel(
-            folder = folder,
-            tags = tags,
+        return LinkmarkUiModel(
+            id = bookmarkMetaData.folderId,
+            folderId = bookmarkMetaData.folderId,
+            kind = bookmarkMetaData.kind,
+            label = bookmarkMetaData.label,
+            description = bookmarkMetaData.description,
+            createdAt = Instant.fromEpochMilliseconds(bookmarkMetaData.createdAt),
+            editedAt = Instant.fromEpochMilliseconds(bookmarkMetaData.editedAt),
+            viewCount = bookmarkMetaData.viewCount,
+            isPrivate = bookmarkMetaData.isPrivate,
+            isPinned = bookmarkMetaData.isPinned,
+            url = linkMetaData.url,
+            domain = linkMetaData.domain,
+            linkType = linkMetaData.linkType,
+            videoUrl = linkMetaData.videoUrl,
             localImagePath = localImageAbsolutePath,
             localIconPath = localIconAbsolutePath,
+            parentFolder = folder,
+            tags = tags,
+            readableVersions = emptyList(),
         )
     }
 
@@ -83,21 +97,6 @@ object LinkmarkManager {
     }
 
     // ==================== Write Operations (Enqueued) ====================
-
-    /**
-     * Enqueues link details creation.
-     */
-    fun createLinkDetails(
-        bookmarkId: String,
-        url: String,
-        domain: String? = null,
-        linkType: LinkType,
-        videoUrl: String?,
-    ) {
-        CoreOperationQueue.queue("CreateLinkDetails:$bookmarkId") {
-            createLinkDetailsInternal(bookmarkId, url, domain, linkType, videoUrl)
-        }
-    }
 
     private suspend fun createLinkDetailsInternal(
         bookmarkId: String,
@@ -134,21 +133,6 @@ object LinkmarkManager {
         linkBookmarkDao.upsert(linkJson.toEntity(bookmarkId))
     }
 
-    /**
-     * Enqueues link details update.
-     */
-    fun updateLinkDetails(
-        bookmarkId: String,
-        url: String,
-        domain: String? = null,
-        linkType: LinkType,
-        videoUrl: String?,
-    ) {
-        CoreOperationQueue.queue("UpdateLinkDetails:$bookmarkId") {
-            updateLinkDetailsInternal(bookmarkId, url, domain, linkType, videoUrl)
-        }
-    }
-
     private suspend fun updateLinkDetailsInternal(
         bookmarkId: String,
         url: String,
@@ -162,7 +146,7 @@ object LinkmarkManager {
         val resolvedDomain = domain?.takeIf { it.isNotBlank() } ?: extractDomain(url)
 
         // Detect changes
-        val changes = mutableMapOf<String, kotlinx.serialization.json.JsonElement>()
+        val changes = mutableMapOf<String, JsonElement>()
         if (existingJson?.url != url) {
             changes["url"] = JsonPrimitive(url)
         }

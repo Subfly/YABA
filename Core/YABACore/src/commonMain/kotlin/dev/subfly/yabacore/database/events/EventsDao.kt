@@ -19,17 +19,11 @@ interface EventsDao {
     @Query("SELECT * FROM crdt_events WHERE objectId = :objectId ORDER BY timestamp ASC")
     suspend fun getEventsForObject(objectId: String): List<CRDTEventEntity>
 
-    @Query("SELECT * FROM crdt_events WHERE objectId = :objectId AND objectType = :objectType ORDER BY timestamp ASC")
-    suspend fun getEventsForObjectOfType(objectId: String, objectType: String): List<CRDTEventEntity>
-
     @Query("SELECT * FROM crdt_events ORDER BY timestamp ASC")
     suspend fun getAllEvents(): List<CRDTEventEntity>
 
     @Query("SELECT * FROM crdt_events WHERE timestamp > :afterTimestamp ORDER BY timestamp ASC")
     suspend fun getEventsAfterTimestamp(afterTimestamp: Long): List<CRDTEventEntity>
-
-    @Query("DELETE FROM crdt_events WHERE objectId = :objectId")
-    suspend fun deleteEventsForObject(objectId: String)
 
     @Query("DELETE FROM crdt_events WHERE eventId IN (:eventIds)")
     suspend fun deleteEventsByIds(eventIds: List<String>)
@@ -42,7 +36,4 @@ interface EventsDao {
 
     @Query("SELECT DISTINCT objectId FROM crdt_events")
     suspend fun getObjectIdsWithEvents(): List<String>
-
-    @Query("SELECT * FROM crdt_events WHERE objectType = :objectType ORDER BY timestamp ASC")
-    suspend fun getEventsByObjectType(objectType: String): List<CRDTEventEntity>
 }
