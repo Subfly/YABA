@@ -21,12 +21,12 @@ import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yabacore.common.CoreConstants
 import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.model.utils.YabaColor
-import kotlin.uuid.ExperimentalUuidApi
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.delete
 import yaba.composeapp.generated.resources.edit
 import yaba.composeapp.generated.resources.new_bookmark
+import kotlin.uuid.ExperimentalUuidApi
 
 /**
  * Tag item view using list appearance. Uses [BaseCollectionItemView] for consistent styling with
@@ -41,6 +41,7 @@ import yaba.composeapp.generated.resources.new_bookmark
 fun TagItemView(
     modifier: Modifier = Modifier,
     model: TagUiModel,
+    allowsDeletion: Boolean = true,
     onClick: (TagUiModel) -> Unit = {},
     onDeleteTag: (TagUiModel) -> Unit,
 ) {
@@ -90,24 +91,26 @@ fun TagItemView(
                         )
                     )
                 }
-                add(
-                    CollectionMenuAction(
-                        key = "delete",
-                        icon = "delete-02",
-                        text = deleteText,
-                        color = YabaColor.RED,
-                        isDangerous = true,
-                        onClick = {
-                            deletionDialogManager.send(
-                                DeletionState(
-                                    deletionType = DeletionType.TAG,
-                                    tagToBeDeleted = model,
-                                    onConfirm = { onDeleteTag(model) },
+                if (allowsDeletion) {
+                    add(
+                        CollectionMenuAction(
+                            key = "delete",
+                            icon = "delete-02",
+                            text = deleteText,
+                            color = YabaColor.RED,
+                            isDangerous = true,
+                            onClick = {
+                                deletionDialogManager.send(
+                                    DeletionState(
+                                        deletionType = DeletionType.TAG,
+                                        tagToBeDeleted = model,
+                                        onConfirm = { onDeleteTag(model) },
+                                    )
                                 )
-                            )
-                        }
+                            }
+                        )
                     )
-                )
+                }
             }
         }
 
@@ -146,22 +149,24 @@ fun TagItemView(
                         )
                     )
                 }
-                add(
-                    CollectionSwipeAction(
-                        key = "DELETE",
-                        icon = "delete-02",
-                        color = YabaColor.RED,
-                        onClick = {
-                            deletionDialogManager.send(
-                                DeletionState(
-                                    deletionType = DeletionType.TAG,
-                                    tagToBeDeleted = model,
-                                    onConfirm = { onDeleteTag(model) },
+                if (allowsDeletion) {
+                    add(
+                        CollectionSwipeAction(
+                            key = "DELETE",
+                            icon = "delete-02",
+                            color = YabaColor.RED,
+                            onClick = {
+                                deletionDialogManager.send(
+                                    DeletionState(
+                                        deletionType = DeletionType.TAG,
+                                        tagToBeDeleted = model,
+                                        onConfirm = { onDeleteTag(model) },
+                                    )
                                 )
-                            )
-                        }
+                            }
+                        )
                     )
-                )
+                }
             }
         }
 

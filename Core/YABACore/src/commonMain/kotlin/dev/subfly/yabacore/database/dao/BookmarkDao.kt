@@ -30,6 +30,10 @@ interface BookmarkDao {
     fun observeById(id: String): Flow<BookmarkEntity?>
 
     @Transaction
+    @Query("SELECT * FROM bookmarks WHERE id = :id LIMIT 1")
+    fun observeByIdWithRelations(id: String): Flow<BookmarkWithRelations?>
+
+    @Transaction
     @Query(
         """
         SELECT * FROM bookmarks

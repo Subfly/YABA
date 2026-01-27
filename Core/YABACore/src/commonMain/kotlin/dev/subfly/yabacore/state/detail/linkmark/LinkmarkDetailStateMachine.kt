@@ -1,8 +1,10 @@
 package dev.subfly.yabacore.state.detail.linkmark
 
 import dev.subfly.yabacore.database.DatabaseProvider
-import dev.subfly.yabacore.database.entities.BookmarkEntity
 import dev.subfly.yabacore.database.entities.LinkBookmarkEntity
+import dev.subfly.yabacore.database.mappers.toPreviewUiModel
+import dev.subfly.yabacore.database.mappers.toUiModel
+import dev.subfly.yabacore.database.models.BookmarkWithRelations
 import dev.subfly.yabacore.filesystem.BookmarkFileManager
 import dev.subfly.yabacore.managers.AllBookmarksManager
 import dev.subfly.yabacore.managers.HighlightManager
@@ -18,7 +20,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlin.time.Instant
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LinkmarkDetailStateMachine :
@@ -54,8 +55,10 @@ class LinkmarkDetailStateMachine :
                 } else {
                     updateState { it.copy(isLoading = true) }
 
-                    val bookmarkFlow = DatabaseProvider.bookmarkDao.observeById(id)
-                        .map { bookmark -> bookmark?.toPreviewUiModel() }
+                    val bookmarkFlow = DatabaseProvider.bookmarkDao.observeByIdWithRelations(id)
+                        .map { bookmarkWithRelations ->
+                            bookmarkWithRelations?.toBookmarkPreviewUiModel()
+                        }
                     val linkDetailsFlow = DatabaseProvider.linkBookmarkDao.observeByBookmarkId(id)
                     val readableVersionsFlow = ReadableContentManager.observeReadableVersions(id)
                     val highlightsFlow = LinkmarkManager.observeHighlights(id)
@@ -136,29 +139,23 @@ class LinkmarkDetailStateMachine :
         super.clear()
     }
 
-    private suspend fun BookmarkEntity.toPreviewUiModel(): BookmarkPreviewUiModel {
-        val localImageAbsolutePath = localImagePath?.let { relativePath ->
-            BookmarkFileManager.getAbsolutePath(relativePath)
-        }
-        val localIconAbsolutePath = localIconPath?.let { relativePath ->
+    private suspend fun BookmarkWithRelations.toBookmarkPreviewUiModel(): BookmarkPreviewUiModel {
+        val folderUi = folder.toUiModel()
+        val tagsUi = tags.map { it.toUiModel() }
+
+        val localImageAbsolutePath = bookmark.localImagePath?.let { relativePath ->
             BookmarkFileManager.getAbsolutePath(relativePath)
         }
 
-        return BookmarkPreviewUiModel(
-            id = id,
-            folderId = folderId,
-            kind = kind,
-            label = label,
-            description = description,
-            createdAt = Instant.fromEpochMilliseconds(createdAt),
-            editedAt = Instant.fromEpochMilliseconds(editedAt),
-            viewCount = viewCount,
-            isPrivate = isPrivate,
-            isPinned = isPinned,
+        val localIconAbsolutePath = bookmark.localIconPath?.let { relativePath ->
+            BookmarkFileManager.getAbsolutePath(relativePath)
+        }
+
+        return bookmark.toPreviewUiModel(
+            folder = folderUi,
+            tags = tagsUi,
             localImagePath = localImageAbsolutePath,
             localIconPath = localIconAbsolutePath,
-            parentFolder = null,
-            tags = emptyList(),
         )
     }
 

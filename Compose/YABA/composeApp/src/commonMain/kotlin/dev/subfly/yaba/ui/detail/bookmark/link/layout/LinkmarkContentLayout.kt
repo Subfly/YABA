@@ -1,4 +1,4 @@
-package dev.subfly.yaba.ui.detail.bookmark.link.components
+package dev.subfly.yaba.ui.detail.bookmark.link.layout
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
@@ -58,7 +58,6 @@ import yaba.composeapp.generated.resources.bookmark_detail_title
     ExperimentalMaterial3ExpressiveApi::class
 )
 @Composable
-@Suppress("UNUSED_PARAMETER")
 internal fun LinkmarkContentLayout(
     modifier: Modifier = Modifier,
     state: LinkmarkDetailUIState,

@@ -59,6 +59,7 @@ fun FolderItemView(
     parentColors: List<YabaColor> = emptyList(),
     hasChildren: Boolean = false,
     isExpanded: Boolean = false,
+    allowsDeletion: Boolean = true,
     onToggleExpanded: () -> Unit = {},
     onClick: (FolderUiModel) -> Unit = {},
     onDeleteFolder: (FolderUiModel) -> Unit,
@@ -127,24 +128,26 @@ fun FolderItemView(
                         )
                     )
                 }
-                add(
-                    CollectionMenuAction(
-                        key = "delete_${model.id}",
-                        icon = "delete-02",
-                        text = deleteText,
-                        color = YabaColor.RED,
-                        isDangerous = true,
-                        onClick = {
-                            deletionDialogManager.send(
-                                DeletionState(
-                                    deletionType = DeletionType.FOLDER,
-                                    folderToBeDeleted = model,
-                                    onConfirm = { onDeleteFolder(model) },
+                if (allowsDeletion) {
+                    add(
+                        CollectionMenuAction(
+                            key = "delete_${model.id}",
+                            icon = "delete-02",
+                            text = deleteText,
+                            color = YabaColor.RED,
+                            isDangerous = true,
+                            onClick = {
+                                deletionDialogManager.send(
+                                    DeletionState(
+                                        deletionType = DeletionType.FOLDER,
+                                        folderToBeDeleted = model,
+                                        onConfirm = { onDeleteFolder(model) },
+                                    )
                                 )
-                            )
-                        }
+                            }
+                        )
                     )
-                )
+                }
             }
         }
 
@@ -200,22 +203,24 @@ fun FolderItemView(
                     )
                 )
             }
-            add(
-                CollectionSwipeAction(
-                    key = "DELETE_${model.id}",
-                    icon = "delete-02",
-                    color = YabaColor.RED,
-                    onClick = {
-                        deletionDialogManager.send(
-                            DeletionState(
-                                deletionType = DeletionType.FOLDER,
-                                folderToBeDeleted = model,
-                                onConfirm = { onDeleteFolder(model) },
+            if (allowsDeletion) {
+                add(
+                    CollectionSwipeAction(
+                        key = "DELETE_${model.id}",
+                        icon = "delete-02",
+                        color = YabaColor.RED,
+                        onClick = {
+                            deletionDialogManager.send(
+                                DeletionState(
+                                    deletionType = DeletionType.FOLDER,
+                                    folderToBeDeleted = model,
+                                    onConfirm = { onDeleteFolder(model) },
+                                )
                             )
-                        )
-                    }
+                        }
+                    )
                 )
-            )
+            }
         }
     }
 
