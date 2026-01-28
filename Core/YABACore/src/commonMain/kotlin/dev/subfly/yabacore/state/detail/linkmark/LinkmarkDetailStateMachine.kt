@@ -109,8 +109,8 @@ class LinkmarkDetailStateMachine :
         HighlightManager.createHighlight(
             bookmarkId = bookmarkId,
             contentVersion = event.contentVersion,
-            startAnchor = event.startAnchor,
-            endAnchor = event.endAnchor,
+            startOffset = event.startOffset,
+            endOffset = event.endOffset,
             colorRole = event.colorRole,
             note = event.note,
         )

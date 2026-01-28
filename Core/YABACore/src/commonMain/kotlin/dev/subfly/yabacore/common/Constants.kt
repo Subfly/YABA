@@ -143,7 +143,7 @@ object CoreConstants {
                 join(bookmarkFolder(bookmarkId), READABLE_DIR)
 
             fun readableVersionPath(bookmarkId: String, contentVersion: Int): String =
-                join(readableDir(bookmarkId), "v$contentVersion.json")
+                join(readableDir(bookmarkId), "v$contentVersion.md")
 
             // Asset paths (immutable, UUID-named)
             fun assetsDir(bookmarkId: String): String =

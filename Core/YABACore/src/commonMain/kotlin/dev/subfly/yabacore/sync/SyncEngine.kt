@@ -13,7 +13,6 @@ import dev.subfly.yabacore.filesystem.FileSystemStateManager
 import dev.subfly.yabacore.filesystem.SyncState
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.filesystem.json.FolderMetaJson
-import dev.subfly.yabacore.filesystem.json.HighlightAnchor
 import dev.subfly.yabacore.filesystem.json.HighlightJson
 import dev.subfly.yabacore.filesystem.json.TagMetaJson
 import kotlinx.serialization.json.JsonArray
@@ -589,14 +588,16 @@ object SyncEngine {
         // Extract required fields
         val bookmarkId = highlightFields["bookmarkId"]?.jsonPrimitive?.contentOrNull ?: return
         val contentVersion = highlightFields["contentVersion"]?.jsonPrimitive?.contentOrNull?.toIntOrNull() ?: return
+        val startOffset = highlightFields["startOffset"]?.jsonPrimitive?.contentOrNull?.toIntOrNull() ?: return
+        val endOffset = highlightFields["endOffset"]?.jsonPrimitive?.contentOrNull?.toIntOrNull() ?: return
 
         // Build HighlightJson from merged fields
         val highlightData = HighlightJson(
             id = highlightId,
             bookmarkId = bookmarkId,
             contentVersion = contentVersion,
-            startAnchor = parseAnchor(highlightFields["startAnchor"]) ?: return,
-            endAnchor = parseAnchor(highlightFields["endAnchor"]) ?: return,
+            startOffset = startOffset,
+            endOffset = endOffset,
             colorRole = parseYabaColor(highlightFields["colorRole"]),
             note = highlightFields["note"]?.jsonPrimitive?.contentOrNull,
             createdAt = highlightFields["createdAt"]?.jsonPrimitive?.longOrNull ?: 0L,
@@ -613,12 +614,8 @@ object SyncEngine {
             id = highlightId,
             bookmarkId = bookmarkId,
             contentVersion = contentVersion,
-            startBlockId = highlightData.startAnchor.blockId,
-            startInlinePath = highlightData.startAnchor.inlinePath.joinToString(","),
-            startOffset = highlightData.startAnchor.offset,
-            endBlockId = highlightData.endAnchor.blockId,
-            endInlinePath = highlightData.endAnchor.inlinePath.joinToString(","),
-            endOffset = highlightData.endAnchor.offset,
+            startOffset = highlightData.startOffset,
+            endOffset = highlightData.endOffset,
             colorRole = highlightData.colorRole,
             note = highlightData.note,
             relativePath = relativePath,
@@ -626,19 +623,6 @@ object SyncEngine {
             editedAt = highlightData.editedAt,
         )
         DatabaseProvider.highlightDao.upsert(entity)
-    }
-
-    /**
-     * Parses a highlight anchor from a JsonElement.
-     */
-    private fun parseAnchor(element: JsonElement?): HighlightAnchor? {
-        val obj = element as? JsonObject ?: return null
-        val blockId = obj["blockId"]?.jsonPrimitive?.contentOrNull ?: return null
-        val inlinePath = (obj["inlinePath"] as? JsonArray)?.mapNotNull {
-            it.jsonPrimitive.contentOrNull?.toIntOrNull()
-        } ?: emptyList()
-        val offset = obj["offset"]?.jsonPrimitive?.contentOrNull?.toIntOrNull() ?: return null
-        return HighlightAnchor(blockId, inlinePath, offset)
     }
 
     /**

@@ -1,6 +1,7 @@
 package dev.subfly.yabacore.database
 
 import dev.subfly.yabacore.common.CoreConstants
+import dev.subfly.yabacore.model.utils.parseReadableMarkdownFrontmatter
 import dev.subfly.yabacore.database.entities.BookmarkEntity
 import dev.subfly.yabacore.database.entities.FolderEntity
 import dev.subfly.yabacore.database.entities.HighlightEntity
@@ -23,8 +24,6 @@ import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.LinkType
 import dev.subfly.yabacore.model.utils.ReadableAssetRole
 import dev.subfly.yabacore.model.utils.YabaColor
-import dev.subfly.yabacore.unfurl.ReadableBlock
-import dev.subfly.yabacore.unfurl.ReadableDocumentSnapshot
 import io.github.vinceglb.filekit.exists
 import io.github.vinceglb.filekit.extension
 import io.github.vinceglb.filekit.list
@@ -258,58 +257,33 @@ object CacheRebuilder {
             if (readableDirFile.exists()) {
                 readableDirFile.list().forEach { versionFile ->
                     val fileName = versionFile.name
-                    if (fileName.startsWith("v") && fileName.endsWith(".json")) {
-                        val versionNum = fileName.removePrefix("v").removeSuffix(".json").toIntOrNull()
+                    if (fileName.startsWith("v") && fileName.endsWith(".md")) {
+                        val versionNum = fileName.removePrefix("v").removeSuffix(".md").toIntOrNull()
                         if (versionNum != null) {
                             val relativePath = CoreConstants.FileSystem.Linkmark.readableVersionPath(bookmarkId, versionNum)
                             val content = FileAccessProvider.readText(relativePath)
                             if (content != null) {
                                 runCatching {
-                                    val doc = json.decodeFromString<ReadableDocumentSnapshot>(content)
+                                    val parsed = parseReadableMarkdownFrontmatter(content)
                                     val entity = ReadableVersionEntity(
                                         id = "${bookmarkId}_v$versionNum",
                                         bookmarkId = bookmarkId,
                                         contentVersion = versionNum,
-                                        createdAt = doc.createdAt,
+                                        createdAt = 0L,
                                         relativePath = relativePath,
-                                        title = doc.title,
-                                        author = doc.author,
+                                        title = parsed.title,
+                                        author = parsed.author,
                                     )
                                     readableVersionDao.upsert(entity)
-
-                                    // Extract asset roles from document
-                                    val assetRoles = extractAssetRoles(doc)
-
-                                    // Index assets for this version
-                                    indexAssetsForVersion(bookmarkId, assetRoles)
                                 }
                             }
                         }
                     }
                 }
+                // Index all assets in assets/ for this bookmark with role INLINE (no document source when rebuilding from .md)
+                indexAssetsForVersion(bookmarkId, emptyMap())
             }
         }
-    }
-
-    /**
-     * Extracts asset roles from a document's blocks.
-     */
-    private fun extractAssetRoles(document: ReadableDocumentSnapshot): Map<String, ReadableAssetRole> {
-        val roles = mutableMapOf<String, ReadableAssetRole>()
-
-        fun processBlocks(blocks: List<ReadableBlock>) {
-            for (block in blocks) {
-                when (block) {
-                    is ReadableBlock.Image -> roles[block.assetId] = block.role
-                    is ReadableBlock.Quote -> processBlocks(block.children)
-                    is ReadableBlock.ListBlock -> block.items.forEach { processBlocks(it.blocks) }
-                    else -> {}
-                }
-            }
-        }
-
-        processBlocks(document.blocks)
-        return roles
     }
 
     /**
@@ -417,12 +391,8 @@ object CacheRebuilder {
             id = id,
             bookmarkId = bookmarkId,
             contentVersion = contentVersion,
-            startBlockId = startAnchor.blockId,
-            startInlinePath = startAnchor.inlinePath.joinToString(","),
-            startOffset = startAnchor.offset,
-            endBlockId = endAnchor.blockId,
-            endInlinePath = endAnchor.inlinePath.joinToString(","),
-            endOffset = endAnchor.offset,
+            startOffset = startOffset,
+            endOffset = endOffset,
             colorRole = colorRole,
             note = note,
             relativePath = relativePath,

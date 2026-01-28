@@ -237,11 +237,7 @@ object LinkmarkManager {
     private suspend fun HighlightEntity.toUiModel(): HighlightUiModel =
         HighlightUiModel(
             id = id,
-            startBlockId = startBlockId,
-            startInlinePath = startInlinePath.split(",").mapNotNull { it.toIntOrNull() },
             startOffset = startOffset,
-            endBlockId = endBlockId,
-            endInlinePath = endInlinePath.split(",").mapNotNull { it.toIntOrNull() },
             endOffset = endOffset,
             colorRole = colorRole,
             note = note,

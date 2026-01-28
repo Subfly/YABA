@@ -144,7 +144,8 @@ internal object HtmlParser {
 
     private val RELEVANT_ATTRIBUTES = setOf(
         "id", "class", "href", "src", "width", "height",
-        "rel", "name", "property", "content", "alt", "title"
+        "rel", "name", "property", "content", "alt", "title",
+        "srcset", "data-src", "data-srcset", "data-original", "data-lazy-src", "data-url"
     )
 
     /**

@@ -8,8 +8,8 @@ import androidx.room.PrimaryKey
 /**
  * Room entity for readable content versions.
  *
- * Indexes immutable readable document snapshots stored at
- * `/bookmarks/<id>/content/readable/vN.json`.
+ * Indexes immutable readable content stored at
+ * `/bookmarks/<id>/content/readable/vN.md`.
  *
  * This is a derived cache - the filesystem is authoritative.
  */

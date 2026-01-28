@@ -9,11 +9,7 @@ import dev.subfly.yabacore.model.utils.YabaColor
 @Stable
 data class HighlightUiModel(
     val id: String,
-    val startBlockId: String,
-    val startInlinePath: List<Int>,
     val startOffset: Int,
-    val endBlockId: String,
-    val endInlinePath: List<Int>,
     val endOffset: Int,
     val colorRole: YabaColor,
     val note: String?,

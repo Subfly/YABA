@@ -5,7 +5,6 @@ import dev.subfly.yabacore.common.IdGenerator
 import dev.subfly.yabacore.database.DatabaseProvider
 import dev.subfly.yabacore.database.entities.HighlightEntity
 import dev.subfly.yabacore.filesystem.EntityFileManager
-import dev.subfly.yabacore.filesystem.json.HighlightAnchor
 import dev.subfly.yabacore.filesystem.json.HighlightJson
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.queue.CoreOperationQueue
@@ -15,8 +14,6 @@ import dev.subfly.yabacore.sync.ObjectType
 import dev.subfly.yabacore.sync.VectorClock
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.buildJsonArray
-import kotlinx.serialization.json.buildJsonObject
 import kotlin.time.Clock
 
 /**
@@ -37,8 +34,8 @@ object HighlightManager {
      *
      * @param bookmarkId The bookmark this highlight belongs to
      * @param contentVersion The readable content version this highlight references
-     * @param startAnchor The start position in the document
-     * @param endAnchor The end position in the document
+     * @param startOffset Character offset (inclusive) into the markdown string
+     * @param endOffset Character offset (exclusive) into the markdown string
      * @param colorRole The highlight color role (e.g., "yellow", "blue")
      * @param note Optional note text
      * @return The created highlight ID
@@ -46,8 +43,8 @@ object HighlightManager {
     fun createHighlight(
         bookmarkId: String,
         contentVersion: Int,
-        startAnchor: HighlightAnchor,
-        endAnchor: HighlightAnchor,
+        startOffset: Int,
+        endOffset: Int,
         colorRole: YabaColor = YabaColor.NONE,
         note: String? = null,
     ): String {
@@ -59,8 +56,8 @@ object HighlightManager {
             val payload = buildHighlightPayload(
                 bookmarkId = bookmarkId,
                 contentVersion = contentVersion,
-                startAnchor = startAnchor,
-                endAnchor = endAnchor,
+                startOffset = startOffset,
+                endOffset = endOffset,
                 colorRole = colorRole,
                 note = note,
                 createdAt = now,
@@ -80,8 +77,8 @@ object HighlightManager {
                 id = highlightId,
                 bookmarkId = bookmarkId,
                 contentVersion = contentVersion,
-                startAnchor = startAnchor,
-                endAnchor = endAnchor,
+                startOffset = startOffset,
+                endOffset = endOffset,
                 colorRole = colorRole,
                 note = note,
                 createdAt = now,
@@ -220,12 +217,8 @@ object HighlightManager {
             id = highlight.id,
             bookmarkId = highlight.bookmarkId,
             contentVersion = highlight.contentVersion,
-            startBlockId = highlight.startAnchor.blockId,
-            startInlinePath = highlight.startAnchor.inlinePath.joinToString(","),
-            startOffset = highlight.startAnchor.offset,
-            endBlockId = highlight.endAnchor.blockId,
-            endInlinePath = highlight.endAnchor.inlinePath.joinToString(","),
-            endOffset = highlight.endAnchor.offset,
+            startOffset = highlight.startOffset,
+            endOffset = highlight.endOffset,
             colorRole = highlight.colorRole,
             note = highlight.note,
             relativePath = CoreConstants.FileSystem.Linkmark.highlightPath(
@@ -241,8 +234,8 @@ object HighlightManager {
     private fun buildHighlightPayload(
         bookmarkId: String,
         contentVersion: Int,
-        startAnchor: HighlightAnchor,
-        endAnchor: HighlightAnchor,
+        startOffset: Int,
+        endOffset: Int,
         colorRole: YabaColor,
         note: String?,
         createdAt: Long,
@@ -250,21 +243,12 @@ object HighlightManager {
     ): Map<String, JsonElement> = mapOf(
         "bookmarkId" to JsonPrimitive(bookmarkId),
         "contentVersion" to JsonPrimitive(contentVersion),
-        "startAnchor" to buildAnchorJson(startAnchor),
-        "endAnchor" to buildAnchorJson(endAnchor),
+        "startOffset" to JsonPrimitive(startOffset),
+        "endOffset" to JsonPrimitive(endOffset),
         "colorRole" to JsonPrimitive(colorRole.code),
         "note" to CRDTEngine.nullableStringValue(note),
         "createdAt" to JsonPrimitive(createdAt),
         "editedAt" to JsonPrimitive(editedAt),
     )
 
-    private fun buildAnchorJson(anchor: HighlightAnchor): JsonElement {
-        return buildJsonObject {
-            put("blockId", JsonPrimitive(anchor.blockId))
-            put("inlinePath", buildJsonArray {
-                anchor.inlinePath.forEach { add(JsonPrimitive(it)) }
-            })
-            put("offset", JsonPrimitive(anchor.offset))
-        }
-    }
 }

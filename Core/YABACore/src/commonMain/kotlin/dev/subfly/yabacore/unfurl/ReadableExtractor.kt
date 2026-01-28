@@ -1,26 +1,22 @@
 package dev.subfly.yabacore.unfurl
 
 import dev.subfly.yabacore.common.IdGenerator
-import dev.subfly.yabacore.model.utils.ReadableAssetRole
-import dev.subfly.yabacore.unfurl.ReadableHeadingLevel
+import dev.subfly.yabacore.unfurl.AssetToDownload
+import dev.subfly.yabacore.unfurl.MarkdownExtractionResult
 import io.ktor.http.Url
 import io.ktor.http.URLBuilder
 import io.ktor.http.takeFrom
-import kotlin.time.Clock
 
 /**
  * Extracts readable content from HTML using deterministic heuristics.
  *
  * The extraction pipeline:
  * 1. Parse HTML into minimal DOM
- * 2. Hard structural pruning (tags + class/id keywords)
- * 3. Link density pruning
- * 4. Text density pruning
- * 5. Image cluster pruning
- * 6. Article root selection
- * 7. Convert to readable AST with block/inline mapping
- * 8. Image retention and role assignment
- * 9. Author extraction
+ * 2. Normalize images (lazy-load, srcset, etc.)
+ * 3. Pruning (structural, link density, text density, image cluster)
+ * 4. Article root selection
+ * 5. DOM → Markdown (best-effort)
+ * 6. Return markdown + assets to download
  */
 internal object ReadableExtractor {
     // Tags to unconditionally remove
@@ -51,19 +47,6 @@ internal object ReadableExtractor {
     private const val MIN_TEXT_FOR_LINK_DENSITY = 80
     private const val MAX_LINK_DENSITY = 0.4
 
-    // Image filename patterns to drop
-    private val IMAGE_DROP_PATTERNS = setOf(
-        "avatar", "icon", "logo", "sprite", "badge", "button",
-        "arrow", "bullet", "tracking", "pixel", "analytics", "ad", "banner"
-    )
-
-    // Image area thresholds
-    private const val IMAGE_KEEP_AREA = 100_000
-    private const val IMAGE_DROP_AREA = 40_000
-
-    // Maximum images to retain
-    private const val MAX_INLINE_IMAGES = 3
-
     /**
      * Extract readable content from HTML.
      *
@@ -71,66 +54,50 @@ internal object ReadableExtractor {
      * @param baseUrl Base URL for resolving relative links/images
      * @param metaTitle Title from metadata (fallback)
      * @param metaAuthor Author from metadata (fallback)
-     * @return Extraction result with document, image candidates, and extracted author
+     * @return Markdown extraction result (markdown string, title, author, assets to download)
      */
     fun extract(
         html: String,
         baseUrl: Url,
         metaTitle: String? = null,
         metaAuthor: String? = null,
-    ): ExtractionResult {
+    ): MarkdownExtractionResult {
         // 1. Parse HTML
         val root = HtmlParser.parse(html)
 
-        // 2. Extract author before pruning
+        // 2. Normalize images (resolve lazy-load, srcset, etc.) before pruning
+        normalizeImages(root, baseUrl)
+
+        // 3. Extract author before pruning
         val author = extractAuthor(root, html) ?: metaAuthor
 
-        // 3. Hard structural pruning
+        // 4. Hard structural pruning
         applyHardPruning(root)
 
-        // 4. Link density pruning
+        // 5. Link density pruning
         applyLinkDensityPruning(root)
 
-        // 5. Text density pruning
+        // 6. Text density pruning
         applyTextDensityPruning(root)
 
-        // 6. Image cluster pruning
+        // 7. Image cluster pruning
         applyImageClusterPruning(root)
 
-        // 7. Article root selection
+        // 8. Article root selection
         val articleRoot = selectArticleRoot(root) ?: root
 
-        // 8. Extract title
+        // 9. Extract title
         val title = extractTitle(articleRoot) ?: metaTitle
 
-        // 9. Collect and score images
-        val imageCandidates = collectImageCandidates(articleRoot, baseUrl)
+        // 10. DOM → Markdown
+        val (rawMarkdown, assetsToDownload) = domToMarkdown(articleRoot, baseUrl)
+        val markdown = postProcessMarkdown(rawMarkdown)
 
-        // 10. Convert to readable blocks
-        var blockIndex = 0
-        val blocks = mutableListOf<ReadableBlock>()
-
-        fun nextBlockId(): String = "b${blockIndex++}"
-
-        convertToBlocks(articleRoot, blocks, ::nextBlockId, baseUrl, imageCandidates)
-
-        // 11. Assign image roles and filter
-        val retainedImages = assignImageRoles(imageCandidates)
-
-        // Create document snapshot (contentVersion will be set by caller)
-        val document = ReadableDocumentSnapshot(
-            schemaVersion = 1,
-            contentVersion = 0, // Placeholder, set by ReadableContentManager
-            sourceUrl = baseUrl.toString(),
+        return MarkdownExtractionResult(
+            markdown = markdown,
             title = title,
             author = author,
-            createdAt = Clock.System.now().toEpochMilliseconds(),
-            blocks = blocks,
-        )
-
-        return ExtractionResult(
-            document = document,
-            imageCandidates = retainedImages,
+            assetsToDownload = assetsToDownload,
         )
     }
 
@@ -382,252 +349,179 @@ internal object ReadableExtractor {
 
     // ==================== Image Handling ====================
 
-    data class ImageCandidate(
-        val src: String,
-        val resolvedUrl: String,
-        val width: Int?,
-        val height: Int?,
-        val alt: String?,
-        val inFigure: Boolean,
-        val hasFigcaption: Boolean,
-        val adjacentToHeading: Boolean,
-        var role: ReadableAssetRole = ReadableAssetRole.INLINE,
-        var assetId: String = "",
+    /** Placeholder URL patterns to reject (lazy-load placeholders, tracking pixels, etc.) */
+    private val IMAGE_PLACEHOLDER_PATTERNS = setOf(
+        "1x1", "pixel", "spacer", "blank", "data:image", "transparent.gif", "tracking"
     )
 
-    private fun collectImageCandidates(root: HtmlElement, baseUrl: Url): MutableList<ImageCandidate> {
-        val candidates = mutableListOf<ImageCandidate>()
-
+    /**
+     * Normalizes all images in the DOM: resolves best URL from srcset/data-src/etc.,
+     * rejects placeholders, and writes the resolved URL back to img src so downstream
+     * code sees a single consistent attribute.
+     */
+    private fun normalizeImages(root: HtmlElement, baseUrl: Url) {
         for (img in root.getElementsByTagName("img")) {
-            val src = img.attr("src") ?: continue
-            if (src.startsWith("data:")) continue
-
-            val resolvedUrl = resolveUrl(baseUrl, src) ?: continue
-            val srcLower = src.lowercase()
-
-            // Check drop patterns
-            if (IMAGE_DROP_PATTERNS.any { srcLower.contains(it) }) continue
-
-            val width = img.attr("width")?.toIntOrNull()
-            val height = img.attr("height")?.toIntOrNull()
-            val alt = img.attr("alt")
-
-            // Check parent for figure
-            val inFigure = isInsideFigure(img)
-            val hasFigcaption = img.parent?.hasDescendant("figcaption") == true
-            val adjacentToHeading = hasAdjacentHeading(img)
-
-            candidates.add(
-                ImageCandidate(
-                    src = src,
-                    resolvedUrl = resolvedUrl,
-                    width = width,
-                    height = height,
-                    alt = alt,
-                    inFigure = inFigure,
-                    hasFigcaption = hasFigcaption,
-                    adjacentToHeading = adjacentToHeading,
-                )
-            )
+            val bestSrc = resolveBestImageUrl(img, baseUrl) ?: continue
+            img.attributes["src"] = bestSrc
         }
-
-        return candidates
     }
 
-    private fun isInsideFigure(element: HtmlElement): Boolean {
-        var parent = element.parent
-        while (parent != null) {
-            if (parent.tagName == "figure") return true
-            parent = parent.parent
-        }
-        return false
-    }
+    /**
+     * Resolves the best image URL for an img element: parses srcset (picks largest width),
+     * falls back to data-src, data-original, data-lazy-src, data-url, then src.
+     * Rejects placeholders and returns absolute URL or null.
+     */
+    private fun resolveBestImageUrl(img: HtmlElement, baseUrl: Url): String? {
+        val rawCandidates = mutableListOf<Pair<String, Int>>()
 
-    private fun assignImageRoles(candidates: MutableList<ImageCandidate>): List<ImageCandidate> {
-        val retained = mutableListOf<ImageCandidate>()
-
-        for (candidate in candidates) {
-            val area = if (candidate.width != null && candidate.height != null) {
-                candidate.width * candidate.height
-            } else null
-
-            // Keep conditions (any true = keep)
-            val keepImage = when {
-                area != null && area >= IMAGE_KEEP_AREA -> true
-                candidate.inFigure -> true
-                candidate.hasFigcaption -> true
-                candidate.adjacentToHeading -> true
-                (candidate.alt?.length ?: 0) >= 40 -> true
-                else -> false
-            }
-
-            // Drop conditions (all true = drop)
-            val dropImage = when {
-                area != null && area < IMAGE_DROP_AREA -> true
-                candidate.alt != null && candidate.alt.length < 10 -> {
-                    val srcLower = candidate.src.lowercase()
-                    IMAGE_DROP_PATTERNS.any { srcLower.contains(it) }
+        // 1. srcset or data-srcset (pick largest width)
+        val srcset = img.attr("srcset") ?: img.attr("data-srcset")
+        if (srcset != null) {
+            // Parse "url1 100w, url2 200w" or "url1 1x, url2 2x"
+            val parts = srcset.split(Regex("""\s*,\s*"""))
+            for (part in parts) {
+                val tokens = part.trim().split(Regex("""\s+"""))
+                val url = tokens.firstOrNull() ?: continue
+                var width = 0
+                if (tokens.size >= 2) {
+                    val desc = tokens[1].lowercase()
+                    when {
+                        desc.endsWith("w") -> width = desc.removeSuffix("w").toIntOrNull() ?: 0
+                        desc.endsWith("x") -> width = (desc.removeSuffix("x").toDoubleOrNull()?.times(100)?.toInt()) ?: 0
+                    }
                 }
-                else -> false
-            }
-
-            if (keepImage || !dropImage) {
-                candidate.assetId = IdGenerator.newId()
-                retained.add(candidate)
+                rawCandidates.add(url to width)
             }
         }
 
-        // Assign roles
-        if (retained.isNotEmpty()) {
-            // Sort by area (largest first), treating unknown as 0
-            val sorted = retained.sortedByDescending { candidate ->
-                if (candidate.width != null && candidate.height != null) {
-                    candidate.width * candidate.height
-                } else 0
+        if (rawCandidates.isNotEmpty()) {
+            val best = rawCandidates.maxByOrNull { it.second } ?: rawCandidates.first()
+            val candidate = best.first
+            if (!isImagePlaceholder(candidate)) {
+                resolveUrl(baseUrl, candidate)?.let { return it }
             }
-
-            // Largest is hero
-            sorted.first().role = ReadableAssetRole.HERO
-
-            // Next few are inline, rest are dropped
-            val inlineCount = minOf(MAX_INLINE_IMAGES, sorted.size - 1)
-            for (i in 1..inlineCount) {
-                sorted[i].role = ReadableAssetRole.INLINE
-            }
-
-            // Return only hero + inline images
-            return sorted.take(1 + inlineCount)
         }
 
-        return emptyList()
+        // 2. data-src, data-original, data-lazy-src, data-url, then src
+        val fallbacks = listOf(
+            img.attr("data-src"),
+            img.attr("data-original"),
+            img.attr("data-lazy-src"),
+            img.attr("data-url"),
+            img.attr("src"),
+        )
+        for (candidate in fallbacks) {
+            if (candidate != null && !isImagePlaceholder(candidate)) {
+                resolveUrl(baseUrl, candidate)?.let { return it }
+            }
+        }
+
+        return null
     }
 
-    // ==================== Block Conversion ====================
+    private fun isImagePlaceholder(url: String): Boolean {
+        val u = url.lowercase()
+        return IMAGE_PLACEHOLDER_PATTERNS.any { u.contains(it) }
+    }
 
-    private fun convertToBlocks(
+    // ==================== DOM → Markdown ====================
+
+    private fun domToMarkdown(root: HtmlElement, baseUrl: Url): Pair<String, List<AssetToDownload>> {
+        val sb = StringBuilder()
+        val assetsToDownload = mutableListOf<AssetToDownload>()
+        appendDomToMarkdown(root, baseUrl, sb, assetsToDownload)
+        return sb.toString() to assetsToDownload
+    }
+
+    private fun appendDomToMarkdown(
         element: HtmlElement,
-        blocks: MutableList<ReadableBlock>,
-        nextId: () -> String,
         baseUrl: Url,
-        imageCandidates: List<ImageCandidate>,
+        sb: StringBuilder,
+        assetsToDownload: MutableList<AssetToDownload>,
     ) {
         for (child in element.children) {
             when (child) {
                 is HtmlText -> {
                     val text = child.content.trim()
-                    if (text.isNotBlank()) {
-                        // Wrap orphan text in paragraph
-                        blocks.add(
-                            ReadableBlock.Paragraph(
-                                id = nextId(),
-                                inlines = listOf(ReadableInline.Text(text)),
-                            )
-                        )
-                    }
+                    if (text.isNotBlank()) sb.append(escapeInlineMarkdown(text))
                 }
-
                 is HtmlElement -> {
                     when (child.tagName) {
                         "p" -> {
-                            val inlines = convertToInlines(child, baseUrl)
-                            if (inlines.isNotEmpty()) {
-                                blocks.add(ReadableBlock.Paragraph(id = nextId(), inlines = inlines))
-                            }
+                            appendInlineMarkdown(child, baseUrl, sb)
+                            sb.append("\n\n")
                         }
-
                         "h1", "h2", "h3", "h4", "h5", "h6" -> {
-                            val level = ReadableHeadingLevel.fromInt(child.tagName[1].digitToInt())
-                            val inlines = convertToInlines(child, baseUrl)
-                            if (inlines.isNotEmpty()) {
-                                blocks.add(ReadableBlock.Heading(id = nextId(), level = level, inlines = inlines))
-                            }
+                            val level = child.tagName[1].digitToInt()
+                            sb.append("#".repeat(level)).append(" ")
+                            appendInlineMarkdown(child, baseUrl, sb)
+                            sb.append("\n\n")
                         }
-
                         "pre" -> {
-                            val codeElement = child.getElementsByTagName("code").firstOrNull()
-                            val text = (codeElement ?: child).textContent()
-                            val language = codeElement?.className?.let { extractLanguage(it) }
-                            blocks.add(ReadableBlock.Code(id = nextId(), language = language, text = text))
+                            val codeEl = child.getElementsByTagName("code").firstOrNull()
+                            val text = (codeEl ?: child).textContent().trim()
+                            val lang = codeEl?.className?.let { extractLanguage(it) }
+                            sb.append("\n```").append(lang ?: "").append("\n").append(text).append("\n```\n\n")
                         }
-
                         "blockquote" -> {
-                            val quoteBlocks = mutableListOf<ReadableBlock>()
-                            convertToBlocks(child, quoteBlocks, nextId, baseUrl, imageCandidates)
-                            if (quoteBlocks.isNotEmpty()) {
-                                blocks.add(ReadableBlock.Quote(id = nextId(), children = quoteBlocks))
+                            for (c in child.children) {
+                                when (c) {
+                                    is HtmlText -> if (c.content.trim().isNotBlank()) sb.append("> ").append(c.content.trim().replace("\n", "\n> ")).append("\n")
+                                    is HtmlElement -> {
+                                        if (c.tagName == "p") {
+                                            sb.append("> ")
+                                            appendInlineMarkdown(c, baseUrl, sb)
+                                            sb.append("\n")
+                                        } else {
+                                            appendDomToMarkdown(c, baseUrl, sb, assetsToDownload)
+                                        }
+                                    }
+                                }
                             }
+                            sb.append("\n")
                         }
-
                         "ul" -> {
-                            val items = convertListItems(child, nextId, baseUrl, imageCandidates)
-                            if (items.isNotEmpty()) {
-                                blocks.add(ReadableBlock.ListBlock(id = nextId(), ordered = false, items = items))
+                            for (li in child.childElements().filter { it.tagName == "li" }) {
+                                sb.append("- ")
+                                appendInlineOrBlockMarkdown(li, baseUrl, sb, assetsToDownload)
+                                sb.append("\n")
                             }
+                            sb.append("\n")
                         }
-
                         "ol" -> {
-                            val items = convertListItems(child, nextId, baseUrl, imageCandidates)
-                            if (items.isNotEmpty()) {
-                                blocks.add(ReadableBlock.ListBlock(id = nextId(), ordered = true, items = items))
+                            var index = 1
+                            for (li in child.childElements().filter { it.tagName == "li" }) {
+                                sb.append("$index. ")
+                                appendInlineOrBlockMarkdown(li, baseUrl, sb, assetsToDownload)
+                                sb.append("\n")
+                                index++
                             }
+                            sb.append("\n")
                         }
-
-                        "hr" -> {
-                            blocks.add(ReadableBlock.Divider(id = nextId()))
-                        }
-
+                        "hr" -> sb.append("---\n\n")
                         "figure" -> {
-                            // Look for img inside figure
                             val img = child.getElementsByTagName("img").firstOrNull()
                             if (img != null) {
-                                val src = img.attr("src")
-                                val candidate = imageCandidates.find { it.src == src }
-                                if (candidate != null) {
-                                    val caption = child.getElementsByTagName("figcaption")
-                                        .firstOrNull()?.textContent()?.trim()
-                                    blocks.add(
-                                        ReadableBlock.Image(
-                                            id = nextId(),
-                                            assetId = candidate.assetId,
-                                            role = candidate.role,
-                                            caption = caption,
-                                        )
-                                    )
-                                }
+                                val caption = child.getElementsByTagName("figcaption").firstOrNull()?.textContent()?.trim()
+                                emitImageMarkdown(img, baseUrl, sb, assetsToDownload, caption)
                             } else {
-                                // Figure without img, process children
-                                convertToBlocks(child, blocks, nextId, baseUrl, imageCandidates)
+                                appendDomToMarkdown(child, baseUrl, sb, assetsToDownload)
                             }
                         }
-
                         "img" -> {
-                            val src = child.attr("src")
-                            val candidate = imageCandidates.find { it.src == src }
-                            if (candidate != null) {
-                                blocks.add(
-                                    ReadableBlock.Image(
-                                        id = nextId(),
-                                        assetId = candidate.assetId,
-                                        role = candidate.role,
-                                        caption = child.attr("alt"),
-                                    )
-                                )
-                            }
+                            emitImageMarkdown(child, baseUrl, sb, assetsToDownload, null)
                         }
-
-                        "div", "section", "article", "main" -> {
-                            // Container elements: process children
-                            convertToBlocks(child, blocks, nextId, baseUrl, imageCandidates)
+                        "table" -> {
+                            emitTableMarkdown(child, sb)
                         }
-
+                        "div", "section", "article", "main" -> appendDomToMarkdown(child, baseUrl, sb, assetsToDownload)
                         else -> {
-                            // Try to extract inline content if it looks like text
                             val text = child.textContent().trim()
                             if (text.isNotBlank() && text.length > 10) {
-                                val inlines = convertToInlines(child, baseUrl)
-                                if (inlines.isNotEmpty()) {
-                                    blocks.add(ReadableBlock.Paragraph(id = nextId(), inlines = inlines))
-                                }
+                                appendInlineMarkdown(child, baseUrl, sb)
+                                sb.append("\n\n")
+                            } else {
+                                appendDomToMarkdown(child, baseUrl, sb, assetsToDownload)
                             }
                         }
                     }
@@ -636,34 +530,121 @@ internal object ReadableExtractor {
         }
     }
 
-    private fun convertListItems(
-        list: HtmlElement,
-        nextId: () -> String,
+    private fun appendInlineOrBlockMarkdown(
+        element: HtmlElement,
         baseUrl: Url,
-        imageCandidates: List<ImageCandidate>,
-    ): List<ListItem> {
-        val items = mutableListOf<ListItem>()
+        sb: StringBuilder,
+        assetsToDownload: MutableList<AssetToDownload>,
+    ) {
+        val directText = element.children.filterIsInstance<HtmlText>().joinToString("") { it.content.trim() }.trim()
+        val hasBlockChildren = element.childElements().any { it.tagName in setOf("p", "ul", "ol", "div") }
+        if (hasBlockChildren) {
+            appendDomToMarkdown(element, baseUrl, sb, assetsToDownload)
+        } else {
+            appendInlineMarkdown(element, baseUrl, sb)
+        }
+    }
 
-        for (child in list.children) {
-            if (child is HtmlElement && child.tagName == "li") {
-                val itemBlocks = mutableListOf<ReadableBlock>()
-                convertToBlocks(child, itemBlocks, nextId, baseUrl, imageCandidates)
-
-                // If no blocks but has text, create paragraph
-                if (itemBlocks.isEmpty()) {
-                    val inlines = convertToInlines(child, baseUrl)
-                    if (inlines.isNotEmpty()) {
-                        itemBlocks.add(ReadableBlock.Paragraph(id = nextId(), inlines = inlines))
+    private fun appendInlineMarkdown(element: HtmlElement, baseUrl: Url, sb: StringBuilder) {
+        for (child in element.children) {
+            when (child) {
+                is HtmlText -> if (child.content.isNotBlank()) sb.append(escapeInlineMarkdown(child.content))
+                is HtmlElement -> {
+                    when (child.tagName) {
+                        "b", "strong" -> {
+                            sb.append("**")
+                            appendInlineMarkdown(child, baseUrl, sb)
+                            sb.append("**")
+                        }
+                        "i", "em" -> {
+                            sb.append("*")
+                            appendInlineMarkdown(child, baseUrl, sb)
+                            sb.append("*")
+                        }
+                        "code" -> sb.append("`").append(child.textContent().trim()).append("`")
+                        "a" -> {
+                            val href = child.attr("href")
+                            val url = if (href != null) resolveUrl(baseUrl, href) ?: href else ""
+                            sb.append("[")
+                            appendInlineMarkdown(child, baseUrl, sb)
+                            sb.append("]($url)")
+                        }
+                        else -> appendInlineMarkdown(child, baseUrl, sb)
                     }
-                }
-
-                if (itemBlocks.isNotEmpty()) {
-                    items.add(ListItem(blocks = itemBlocks))
                 }
             }
         }
+    }
 
-        return items
+    private fun escapeInlineMarkdown(text: String): String =
+        text.replace("\\", "\\\\")
+            .replace("*", "\\*")
+            .replace("_", "\\_")
+            .replace("[", "\\[")
+            .replace("]", "\\]")
+
+    private fun emitImageMarkdown(
+        img: HtmlElement,
+        baseUrl: Url,
+        sb: StringBuilder,
+        assetsToDownload: MutableList<AssetToDownload>,
+        caption: String? = null,
+    ) {
+        val src = img.attr("src") ?: return
+        if (src.startsWith("data:") || isImagePlaceholder(src)) return
+        val resolvedUrl = resolveUrl(baseUrl, src) ?: return
+        val assetId = IdGenerator.newId()
+        val ext = extensionFromUrl(src)
+        val relativePath = "../assets/$assetId.$ext"
+        val alt = img.attr("alt")?.take(200) ?: ""
+        assetsToDownload.add(
+            AssetToDownload(
+                assetId = assetId,
+                resolvedUrl = resolvedUrl,
+                relativePath = relativePath,
+                alt = alt.ifBlank { null },
+                caption = caption?.take(500)?.ifBlank { null },
+            )
+        )
+        sb.append("![").append(alt.replace("]", "\\]")).append("](").append(relativePath).append(")\n\n")
+        if (!caption.isNullOrBlank()) sb.append("*").append(caption.replace("*", "\\*")).append("*\n\n")
+    }
+
+    private fun extensionFromUrl(url: String): String {
+        val lower = url.lowercase()
+        return when {
+            lower.contains(".png") -> "png"
+            lower.contains(".gif") -> "gif"
+            lower.contains(".webp") -> "webp"
+            lower.contains(".jpeg") || lower.contains(".jpg") -> "jpg"
+            else -> "jpg"
+        }
+    }
+
+    private fun emitTableMarkdown(table: HtmlElement, sb: StringBuilder) {
+        val rows = table.getElementsByTagName("tr")
+        if (rows.isEmpty()) return
+        val headerCells = rows.first().getElementsByTagName("th").ifEmpty { rows.first().getElementsByTagName("td") }
+        val hasTh = rows.first().getElementsByTagName("th").isNotEmpty()
+        if (headerCells.isEmpty()) return
+        sb.append("\n")
+        sb.append("| ").append(headerCells.joinToString(" | ") { it.textContent().trim().replace("|", "\\|") }).append(" |\n")
+        sb.append("| ").append(headerCells.map { "---" }.joinToString(" | ")).append(" |\n")
+        for (i in 1 until rows.size) {
+            val cells = rows[i].getElementsByTagName("td")
+            if (cells.isNotEmpty()) {
+                sb.append("| ").append(cells.joinToString(" | ") { it.textContent().trim().replace("|", "\\|") }).append(" |\n")
+            }
+        }
+        sb.append("\n")
+    }
+
+    private fun postProcessMarkdown(markdown: String): String {
+        var s = markdown
+        s = s.replace(Regex("\n{3,}"), "\n\n")
+        s = s.trim()
+        s = s.replace(Regex("(?m) +$"), "")
+        return s
     }
 
     private fun extractLanguage(className: String): String? {
@@ -689,102 +670,9 @@ internal object ReadableExtractor {
         return classes.find { it in knownLanguages }
     }
 
-    // ==================== Inline Conversion ====================
-
-    private fun convertToInlines(element: HtmlElement, baseUrl: Url): List<ReadableInline> {
-        val inlines = mutableListOf<ReadableInline>()
-
-        for (child in element.children) {
-            when (child) {
-                is HtmlText -> {
-                    val text = child.content
-                    if (text.isNotBlank()) {
-                        inlines.add(ReadableInline.Text(text))
-                    }
-                }
-
-                is HtmlElement -> {
-                    val childInlines = convertToInlines(child, baseUrl)
-                    if (childInlines.isEmpty()) continue
-
-                    when (child.tagName) {
-                        "b", "strong" -> inlines.add(ReadableInline.Bold(childInlines))
-                        "i", "em" -> inlines.add(ReadableInline.Italic(childInlines))
-                        "u" -> inlines.add(ReadableInline.Underline(childInlines))
-                        "s", "del", "strike" -> inlines.add(ReadableInline.Strikethrough(childInlines))
-                        "code" -> {
-                            val text = child.textContent()
-                            inlines.add(ReadableInline.Code(text))
-                        }
-
-                        "a" -> {
-                            val href = child.attr("href")
-                            val resolvedHref = if (href != null) resolveUrl(baseUrl, href) ?: href else ""
-                            inlines.add(ReadableInline.Link(resolvedHref, childInlines))
-                        }
-
-                        "span" -> {
-                            // Check for semantic color (we preserve meaningful colors only)
-                            // For now, just flatten spans
-                            inlines.addAll(childInlines)
-                        }
-
-                        else -> {
-                            // Flatten other inline elements
-                            inlines.addAll(childInlines)
-                        }
-                    }
-                }
-            }
-        }
-
-        return mergeAdjacentText(inlines)
-    }
-
-    private fun mergeAdjacentText(inlines: List<ReadableInline>): List<ReadableInline> {
-        if (inlines.isEmpty()) return inlines
-
-        val result = mutableListOf<ReadableInline>()
-        var pendingText: StringBuilder? = null
-
-        for (inline in inlines) {
-            if (inline is ReadableInline.Text) {
-                if (pendingText == null) {
-                    pendingText = StringBuilder(inline.content)
-                } else {
-                    pendingText.append(inline.content)
-                }
-            } else {
-                if (pendingText != null) {
-                    result.add(ReadableInline.Text(pendingText.toString()))
-                    pendingText = null
-                }
-                result.add(inline)
-            }
-        }
-
-        if (pendingText != null) {
-            result.add(ReadableInline.Text(pendingText.toString()))
-        }
-
-        return result
-    }
-
     // ==================== URL Resolution ====================
 
     private fun resolveUrl(base: Url, relative: String): String? =
         runCatching { URLBuilder(base).takeFrom(relative).buildString() }.getOrNull()
             ?: runCatching { URLBuilder().takeFrom(relative).buildString() }.getOrNull()
-}
-
-/**
- * Result of readable content extraction.
- */
-internal data class ExtractionResult(
-    val document: ReadableDocumentSnapshot,
-    val imageCandidates: List<ReadableExtractor.ImageCandidate>,
-) {
-    /** Get resolved URLs for image candidates that need downloading */
-    val imageUrls: List<Pair<String, String>> get() =
-        imageCandidates.map { it.assetId to it.resolvedUrl }
 }

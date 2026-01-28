@@ -120,10 +120,8 @@ object Unfurler {
     }
 
     /**
-     * Extracts structured readable content from HTML.
-     *
-     * Runs the heuristic pipeline to produce a ReadableDocumentSnapshot
-     * and downloads retained images as assets.
+     * Extracts structured readable content from HTML as Markdown
+     * and downloads images as assets.
      */
     private suspend fun extractReadableContent(
         html: String,
@@ -133,16 +131,14 @@ object Unfurler {
         return runCatching {
             val result = ReadableExtractor.extract(html, baseUrl, metaTitle)
 
-            // Download images for readable content
-            val assets = downloadReadableAssets(result.imageUrls)
+            val assets = downloadReadableAssetsFrom(result.assetsToDownload)
 
-            // Update document with downloaded assets only
-            val downloadedAssetIds = assets.map { it.assetId }.toSet()
-            val filteredBlocks = filterBlocksWithMissingAssets(result.document.blocks, downloadedAssetIds)
-
-            val document = result.document.copy(blocks = filteredBlocks)
-
-            ReadableUnfurl(document = document, assets = assets)
+            ReadableUnfurl(
+                markdown = result.markdown,
+                title = result.title,
+                author = result.author,
+                assets = assets,
+            )
         }.getOrElse { e ->
             logger.w { "Failed to extract readable content: ${e.message}" }
             null
@@ -150,17 +146,17 @@ object Unfurler {
     }
 
     /**
-     * Downloads images for readable content and returns them as assets.
+     * Downloads images from assetsToDownload and returns them as ReadableAsset list.
      */
-    private suspend fun downloadReadableAssets(
-        imageUrls: List<Pair<String, String>>,
+    private suspend fun downloadReadableAssetsFrom(
+        assetsToDownload: List<AssetToDownload>,
     ): List<ReadableAsset> = coroutineScope {
-        val tasks = imageUrls.map { (assetId, url) ->
+        val tasks = assetsToDownload.map { asset ->
             async {
-                val bytes = downloadImageData(url)
+                val bytes = downloadImageData(asset.resolvedUrl)
                 if (bytes != null && isHighQualityImage(bytes)) {
-                    val extension = inferImageExtension(bytes, url)
-                    ReadableAsset(assetId = assetId, extension = extension, bytes = bytes)
+                    val extension = asset.relativePath.substringAfterLast(".", "jpg")
+                    ReadableAsset(assetId = asset.assetId, extension = extension, bytes = bytes)
                 } else null
             }
         }
@@ -206,34 +202,6 @@ object Unfurler {
             urlLower.contains(".webp") -> "webp"
             urlLower.contains(".jpeg") || urlLower.contains(".jpg") -> "jpg"
             else -> "jpg" // Default
-        }
-    }
-
-    /**
-     * Filters out image blocks that reference missing assets.
-     */
-    private fun filterBlocksWithMissingAssets(
-        blocks: List<ReadableBlock>,
-        downloadedAssetIds: Set<String>,
-    ): List<ReadableBlock> {
-        return blocks.mapNotNull { block ->
-            when (block) {
-                is ReadableBlock.Image -> {
-                    if (block.assetId in downloadedAssetIds) block else null
-                }
-                is ReadableBlock.Quote -> {
-                    val filteredChildren = filterBlocksWithMissingAssets(block.children, downloadedAssetIds)
-                    if (filteredChildren.isNotEmpty()) block.copy(children = filteredChildren) else null
-                }
-                is ReadableBlock.ListBlock -> {
-                    val filteredItems = block.items.mapNotNull { item ->
-                        val filteredBlocks = filterBlocksWithMissingAssets(item.blocks, downloadedAssetIds)
-                        if (filteredBlocks.isNotEmpty()) ListItem(filteredBlocks) else null
-                    }
-                    if (filteredItems.isNotEmpty()) block.copy(items = filteredItems) else null
-                }
-                else -> block
-            }
         }
     }
 

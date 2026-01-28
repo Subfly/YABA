@@ -1,6 +1,8 @@
 package dev.subfly.yabacore.managers
 
 import dev.subfly.yabacore.common.CoreConstants
+import dev.subfly.yabacore.model.utils.parseReadableMarkdownFrontmatter
+import dev.subfly.yabacore.model.utils.writeReadableMarkdownWithFrontmatter
 import dev.subfly.yabacore.database.DatabaseProvider
 import dev.subfly.yabacore.database.entities.HighlightEntity
 import dev.subfly.yabacore.database.entities.ReadableAssetEntity
@@ -9,15 +11,10 @@ import dev.subfly.yabacore.filesystem.BookmarkFileManager
 import dev.subfly.yabacore.filesystem.access.FileAccessProvider
 import dev.subfly.yabacore.model.ui.HighlightUiModel
 import dev.subfly.yabacore.model.ui.ReadableAssetUiModel
-import dev.subfly.yabacore.model.ui.ReadableBlockUiModel
-import dev.subfly.yabacore.model.ui.ReadableDocumentUiModel
-import dev.subfly.yabacore.model.ui.ReadableListItemUiModel
 import dev.subfly.yabacore.model.ui.ReadableVersionUiModel
 import dev.subfly.yabacore.model.utils.ReadableAssetRole
 import dev.subfly.yabacore.queue.CoreOperationQueue
 import dev.subfly.yabacore.unfurl.ReadableAsset
-import dev.subfly.yabacore.unfurl.ReadableBlock
-import dev.subfly.yabacore.unfurl.ReadableDocumentSnapshot
 import dev.subfly.yabacore.unfurl.ReadableUnfurl
 import io.github.vinceglb.filekit.exists
 import io.github.vinceglb.filekit.list
@@ -28,7 +25,6 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.json.Json
 import kotlin.time.Clock
 
 /**
@@ -38,7 +34,7 @@ import kotlin.time.Clock
  * Content is never overwritten - new saves create new versions.
  *
  * File layout:
- * - /bookmarks/<id>/content/readable/v1.json, v2.json, ...
+ * - /bookmarks/<id>/content/readable/v1.md, v2.md, ...
  * - /bookmarks/<id>/content/assets/<assetId>.<ext>
  */
 object ReadableContentManager {
@@ -46,11 +42,6 @@ object ReadableContentManager {
     private val readableAssetDao get() = DatabaseProvider.readableAssetDao
     private val highlightDao get() = DatabaseProvider.highlightDao
     private val accessProvider = FileAccessProvider
-    private val json = Json {
-        ignoreUnknownKeys = true
-        encodeDefaults = true
-        prettyPrint = true
-    }
 
     /**
      * Saves a new readable content version for a bookmark.
@@ -70,23 +61,12 @@ object ReadableContentManager {
      * Internal implementation for saving readable content.
      */
     internal suspend fun saveReadableContentInternal(bookmarkId: String, readable: ReadableUnfurl) {
-        // 1. Determine next content version
         val nextVersion = getNextContentVersion(bookmarkId)
+        val createdAt = Clock.System.now().toEpochMilliseconds()
 
-        // 2. Update document with correct content version
-        val document = readable.document.copy(
-            contentVersion = nextVersion,
-            createdAt = Clock.System.now().toEpochMilliseconds(),
-        )
-
-        // 3. Save assets first (immutable, never overwrite)
         val savedAssets = saveAssets(bookmarkId, readable.assets)
-
-        // 4. Save the document JSON (immutable, never overwrite)
-        saveDocumentVersion(bookmarkId, document)
-
-        // 5. Update Room index
-        updateRoomIndex(bookmarkId, document, savedAssets)
+        saveMarkdownVersion(bookmarkId, nextVersion, readable.markdown, readable.title, readable.author)
+        updateRoomIndex(bookmarkId, nextVersion, createdAt, readable.title, readable.author, savedAssets)
     }
 
     /**
@@ -99,32 +79,35 @@ object ReadableContentManager {
         if (!dir.exists()) return 1
 
         val existingVersions = dir.list()
-            .filter { it.name.startsWith("v") && it.name.endsWith(".json") }
+            .filter { it.name.startsWith("v") && it.name.endsWith(".md") }
             .mapNotNull { file ->
-                file.name.removePrefix("v").removeSuffix(".json").toIntOrNull()
+                file.name.removePrefix("v").removeSuffix(".md").toIntOrNull()
             }
 
         return (existingVersions.maxOrNull() ?: 0) + 1
     }
 
     /**
-     * Saves the document JSON to filesystem.
+     * Saves the markdown content to filesystem with optional YAML frontmatter (title, author).
+     * Frontmatter allows CacheRebuilder to restore title/author when rebuilding from .md.
      */
-    private suspend fun saveDocumentVersion(
+    private suspend fun saveMarkdownVersion(
         bookmarkId: String,
-        document: ReadableDocumentSnapshot,
+        contentVersion: Int,
+        markdown: String,
+        title: String?,
+        author: String?,
     ) {
         val relativePath = CoreConstants.FileSystem.Linkmark.readableVersionPath(
             bookmarkId,
-            document.contentVersion,
+            contentVersion,
         )
 
-        // Check if file already exists (immutable, never overwrite)
         val file = accessProvider.resolveRelativePath(relativePath, ensureParentExists = true)
         if (file.exists()) return
 
-        val jsonContent = json.encodeToString(document)
-        file.write(jsonContent.encodeToByteArray())
+        val content = writeReadableMarkdownWithFrontmatter(markdown, title, author)
+        file.write(content.encodeToByteArray())
     }
 
     /**
@@ -160,32 +143,31 @@ object ReadableContentManager {
      */
     private suspend fun updateRoomIndex(
         bookmarkId: String,
-        document: ReadableDocumentSnapshot,
+        contentVersion: Int,
+        createdAt: Long,
+        title: String?,
+        author: String?,
         savedAssets: List<SavedAssetInfo>,
     ) {
-        // Insert readable version
         val versionEntity = ReadableVersionEntity(
-            id = "${bookmarkId}_v${document.contentVersion}",
+            id = "${bookmarkId}_v$contentVersion",
             bookmarkId = bookmarkId,
-            contentVersion = document.contentVersion,
-            createdAt = document.createdAt,
+            contentVersion = contentVersion,
+            createdAt = createdAt,
             relativePath = CoreConstants.FileSystem.Linkmark.readableVersionPath(
                 bookmarkId,
-                document.contentVersion,
+                contentVersion,
             ),
-            title = document.title,
-            author = document.author,
+            title = title,
+            author = author,
         )
         readableVersionDao.upsert(versionEntity)
 
-        // Insert assets with roles from document
-        val assetRoles = extractAssetRoles(document)
         for (asset in savedAssets) {
-            val role = assetRoles[asset.assetId] ?: ReadableAssetRole.INLINE
             val assetEntity = ReadableAssetEntity(
                 id = asset.assetId,
                 bookmarkId = bookmarkId,
-                role = role,
+                role = ReadableAssetRole.INLINE,
                 relativePath = asset.relativePath,
             )
             readableAssetDao.upsert(assetEntity)
@@ -193,45 +175,14 @@ object ReadableContentManager {
     }
 
     /**
-     * Extracts asset roles from document blocks.
+     * Reads a specific readable version from filesystem as raw markdown.
+     * Strips YAML frontmatter so the UI receives only the body.
      */
-    private fun extractAssetRoles(document: ReadableDocumentSnapshot): Map<String, ReadableAssetRole> {
-        val roles = mutableMapOf<String, ReadableAssetRole>()
-
-        fun processBlocks(blocks: List<ReadableBlock>) {
-            for (block in blocks) {
-                when (block) {
-                    is ReadableBlock.Image -> {
-                        roles[block.assetId] = block.role
-                    }
-
-                    is ReadableBlock.Quote -> {
-                        processBlocks(block.children)
-                    }
-
-                    is ReadableBlock.ListBlock -> {
-                        for (item in block.items) {
-                            processBlocks(item.blocks)
-                        }
-                    }
-
-                    else -> {}
-                }
-            }
-        }
-
-        processBlocks(document.blocks)
-        return roles
-    }
-
-    /**
-     * Reads a specific readable version from filesystem.
-     */
-    suspend fun readVersion(bookmarkId: String, contentVersion: Int): ReadableDocumentSnapshot? {
+    suspend fun readVersion(bookmarkId: String, contentVersion: Int): String? {
         val relativePath =
             CoreConstants.FileSystem.Linkmark.readableVersionPath(bookmarkId, contentVersion)
-        val content = accessProvider.readText(relativePath) ?: return null
-        return runCatching { json.decodeFromString<ReadableDocumentSnapshot>(content) }.getOrNull()
+        val raw = accessProvider.readText(relativePath) ?: return null
+        return parseReadableMarkdownFrontmatter(raw).body
     }
 
     fun observeReadableVersions(bookmarkId: String): Flow<List<ReadableVersionUiModel>> {
@@ -248,13 +199,10 @@ object ReadableContentManager {
         bookmarkId: String,
         versionEntity: ReadableVersionEntity,
     ): ReadableVersionUiModel {
-        val document = readVersion(bookmarkId, versionEntity.contentVersion)
+        val markdownContent = readVersion(bookmarkId, versionEntity.contentVersion)
         val assets = readableAssetDao.getByBookmarkId(bookmarkId)
         val highlights = highlightDao.getById(bookmarkId)
-        val assetPathMap = mutableMapOf<String, String?>()
-        for (asset in assets) {
-            assetPathMap[asset.id] = BookmarkFileManager.getAbsolutePath(asset.relativePath)
-        }
+
         val assetsUi = mutableListOf<ReadableAssetUiModel>()
         assets.forEach { entity ->
             assetsUi.add(
@@ -271,102 +219,21 @@ object ReadableContentManager {
             highlightsUi.add(nonNullHighlights.toUiModel())
         }
 
-        val documentUi = document?.let { buildReadableDocumentUiModel(it, assetPathMap) }
-
         return ReadableVersionUiModel(
             contentVersion = versionEntity.contentVersion,
             createdAt = versionEntity.createdAt,
             title = versionEntity.title,
             author = versionEntity.author,
-            document = documentUi,
+            markdown = markdownContent,
             assets = assetsUi,
             highlights = highlightsUi,
         )
     }
 
-    private fun buildReadableDocumentUiModel(
-        document: ReadableDocumentSnapshot,
-        assetPathMap: Map<String, String?>,
-    ): ReadableDocumentUiModel {
-        return ReadableDocumentUiModel(
-            title = document.title,
-            author = document.author,
-            blocks = document.blocks.map { block ->
-                buildReadableBlockUiModel(
-                    block,
-                    assetPathMap
-                )
-            },
-        )
-    }
-
-    private fun buildReadableBlockUiModel(
-        block: ReadableBlock,
-        assetPathMap: Map<String, String?>,
-    ): ReadableBlockUiModel {
-        return when (block) {
-            is ReadableBlock.Paragraph -> ReadableBlockUiModel.Paragraph(
-                id = block.id,
-                inlines = block.inlines,
-            )
-
-            is ReadableBlock.Heading -> ReadableBlockUiModel.Heading(
-                id = block.id,
-                level = block.level,
-                inlines = block.inlines,
-            )
-
-            is ReadableBlock.Image -> ReadableBlockUiModel.Image(
-                id = block.id,
-                assetId = block.assetId,
-                assetPath = assetPathMap[block.assetId],
-                role = block.role,
-                caption = block.caption,
-            )
-
-            is ReadableBlock.Code -> ReadableBlockUiModel.Code(
-                id = block.id,
-                language = block.language,
-                text = block.text,
-            )
-
-            is ReadableBlock.ListBlock -> ReadableBlockUiModel.ListBlock(
-                id = block.id,
-                ordered = block.ordered,
-                items = block.items.map { item ->
-                    ReadableListItemUiModel(
-                        blocks = item.blocks.map { child ->
-                            buildReadableBlockUiModel(
-                                child,
-                                assetPathMap
-                            )
-                        }
-                    )
-                },
-            )
-
-            is ReadableBlock.Quote -> ReadableBlockUiModel.Quote(
-                id = block.id,
-                children = block.children.map { child ->
-                    buildReadableBlockUiModel(
-                        child,
-                        assetPathMap
-                    )
-                },
-            )
-
-            is ReadableBlock.Divider -> ReadableBlockUiModel.Divider(id = block.id)
-        }
-    }
-
     private suspend fun HighlightEntity.toUiModel(): HighlightUiModel =
         HighlightUiModel(
             id = id,
-            startBlockId = startBlockId,
-            startInlinePath = startInlinePath.split(",").mapNotNull { it.toIntOrNull() },
             startOffset = startOffset,
-            endBlockId = endBlockId,
-            endInlinePath = endInlinePath.split(",").mapNotNull { it.toIntOrNull() },
             endOffset = endOffset,
             colorRole = colorRole,
             note = note,

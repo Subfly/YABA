@@ -1,6 +1,5 @@
 package dev.subfly.yabacore.state.detail.linkmark
 
-import dev.subfly.yabacore.filesystem.json.HighlightAnchor
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.unfurl.ReadableUnfurl
 
@@ -11,8 +10,8 @@ sealed interface LinkmarkDetailEvent {
     data object OnDeleteBookmark : LinkmarkDetailEvent
     data class OnCreateHighlight(
         val contentVersion: Int,
-        val startAnchor: HighlightAnchor,
-        val endAnchor: HighlightAnchor,
+        val startOffset: Int,
+        val endOffset: Int,
         val colorRole: YabaColor = YabaColor.NONE,
         val note: String? = null,
     ) : LinkmarkDetailEvent
