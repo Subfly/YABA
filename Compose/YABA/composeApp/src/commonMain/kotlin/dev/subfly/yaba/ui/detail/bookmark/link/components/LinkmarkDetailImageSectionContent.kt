@@ -1,5 +1,6 @@
 package dev.subfly.yaba.ui.detail.bookmark.link.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import dev.subfly.yaba.util.rememberUrlLauncher
 import dev.subfly.yabacore.model.ui.BookmarkPreviewUiModel
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.detail.linkmark.LinkmarkLinkDetailsUiModel
@@ -33,8 +35,17 @@ internal fun LinkmarkDetailImageSectionContent(
     linkDetails: LinkmarkLinkDetailsUiModel?,
     mainColor: YabaColor,
 ) {
+    val openUrl = rememberUrlLauncher()
+    
     Column(
-        modifier = modifier.padding(horizontal = 12.dp),
+        modifier = modifier
+            .padding(horizontal = 12.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .clickable(enabled = linkDetails != null) {
+                linkDetails?.url?.let { url ->
+                    openUrl(url)
+                }
+            },
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Row(
