@@ -49,6 +49,7 @@ internal fun LinkmarkDetailLayout(
             LinkmarkDetailActionsContent(
                 modifier = Modifier.animateItem(),
                 isExpanded = isExpanded,
+                mainColor = mainColor,
                 onExpand = onExpand,
                 onHide = onHide,
             )

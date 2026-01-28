@@ -12,8 +12,11 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.ui.icon.YabaIcon
+import dev.subfly.yabacore.ui.icon.iconTintArgb
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.done
@@ -23,6 +26,7 @@ import yaba.composeapp.generated.resources.done
 internal fun LinkmarkDetailActionsContent(
     modifier: Modifier = Modifier,
     isExpanded: Boolean,
+    mainColor: YabaColor,
     onExpand: () -> Unit,
     onHide: () -> Unit,
 ) {
@@ -31,12 +35,18 @@ internal fun LinkmarkDetailActionsContent(
             TextButton(
                 modifier = Modifier.align(Alignment.CenterEnd).padding(end = 12.dp),
                 shapes = ButtonDefaults.shapes(),
+                colors = ButtonDefaults.textButtonColors().copy(
+                    contentColor = Color(mainColor.iconTintArgb())
+                ),
                 onClick = onHide,
             ) { Text(stringResource(Res.string.done)) }
         } else {
             TextButton(
                 modifier = Modifier.align(Alignment.Center),
                 shapes = ButtonDefaults.shapes(),
+                colors = ButtonDefaults.textButtonColors().copy(
+                    contentColor = Color(mainColor.iconTintArgb())
+                ),
                 onClick = onExpand,
             ) {
                 Row (
@@ -45,7 +55,7 @@ internal fun LinkmarkDetailActionsContent(
                 ) {
                     YabaIcon(
                         name = "information-circle",
-                        color = ButtonDefaults.textButtonColors().contentColor,
+                        color = mainColor,
                     )
                     Text("Show Details")
                 }
