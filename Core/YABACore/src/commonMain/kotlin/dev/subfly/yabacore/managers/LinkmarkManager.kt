@@ -53,7 +53,7 @@ object LinkmarkManager {
         }
 
         return LinkmarkUiModel(
-            id = bookmarkMetaData.folderId,
+            id = bookmarkMetaData.id,
             folderId = bookmarkMetaData.folderId,
             kind = bookmarkMetaData.kind,
             label = bookmarkMetaData.label,

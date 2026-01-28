@@ -62,6 +62,7 @@ internal fun LinkmarkDetailTagSectionContent(
                     model = tag,
                     allowsDeletion = false,
                     onClick = onClickTag,
+                    containerColor = MaterialTheme.colorScheme.surface,
                     onDeleteTag = {}
                 )
             }
