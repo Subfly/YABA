@@ -1,7 +1,6 @@
 package dev.subfly.yaba.ui.selection.icon
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,7 +16,8 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -29,7 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.util.fastForEachIndexed
 import dev.subfly.yaba.core.navigation.creation.IconSelectionRoute
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.localizedDescriptionRes
@@ -126,14 +126,12 @@ private fun SelectionContent(
                         color = Color(color.iconTintArgb()),
                     )
                 }
-                category.subcategories.fastForEach { subcategory ->
-                    ListItem(
-                        modifier =
-                            Modifier.clip(RoundedCornerShape(8.dp))
-                                .clickable(
-                                    onClick = { onSelectedSubcategory(subcategory) }
-                                ),
-                        headlineContent = {
+                category.subcategories.fastForEachIndexed { index, subcategory ->
+                    SegmentedListItem(
+                        modifier = Modifier.clip(RoundedCornerShape(8.dp)),
+                        onClick = { onSelectedSubcategory(subcategory) },
+                        shapes = ListItemDefaults.segmentedShapes(index = index, count = category.subcategories.size),
+                        content = {
                             Text(stringResource(subcategory.localizedNameRes()))
                         },
                         leadingContent = {

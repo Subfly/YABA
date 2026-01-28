@@ -10,14 +10,11 @@ import androidx.compose.ui.input.pointer.PointerButton
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-actual fun Modifier.yabaClickable(
-    onLongClick: () -> Unit,
-    onClick: () -> Unit,
+actual fun Modifier.yabaRightClick(
+    onRightClick: () -> Unit,
 ): Modifier {
-    return this then Modifier
-        .onClick(
-            matcher = PointerMatcher.mouse(PointerButton.Secondary),
-            onClick = onLongClick,
-        )
-        .clickable(onClick = onClick)
+    return this then Modifier.onClick(
+        matcher = PointerMatcher.mouse(PointerButton.Secondary),
+        onClick = onRightClick,
+    )
 }

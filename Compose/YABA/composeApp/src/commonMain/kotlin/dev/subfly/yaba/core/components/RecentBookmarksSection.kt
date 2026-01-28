@@ -52,7 +52,7 @@ fun RecentBookmarksGridSection(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         maxItemsInEachRow = 3,
     ) {
-        bookmarks.forEach { bookmarkModel ->
+        bookmarks.forEachIndexed { index, bookmarkModel ->
             Box(
                 modifier = Modifier.weight(1f),
             ) {
@@ -65,6 +65,8 @@ fun RecentBookmarksGridSection(
                             onClick = { onClickBookmark(bookmarkModel) },
                             onDeleteBookmark = { onDeleteBookmark(bookmarkModel) },
                             onShareBookmark = { onShareBookmark(bookmarkModel) },
+                            index = index,
+                            count = bookmarks.size,
                         )
                     }
 

@@ -165,10 +165,10 @@ fun HomeView(modifier: Modifier = Modifier) {
                                     }
                                 } else {
                                     // For LIST/CARD appearance, render each bookmark as a list item
-                                    items(
+                                    itemsIndexed(
                                         items = state.recentBookmarks,
-                                        key = { it.id },
-                                    ) { bookmarkModel ->
+                                        key = { _, it -> it.id },
+                                    ) { index, bookmarkModel ->
                                         BookmarkItemView(
                                             modifier = Modifier
                                                 .padding(
@@ -190,6 +190,8 @@ fun HomeView(modifier: Modifier = Modifier) {
                                             onShareBookmark = { bookmark ->
                                                 // TODO: Implement share functionality
                                             },
+                                            index = index,
+                                            count = state.recentBookmarks.size,
                                         )
                                     }
                                 }
@@ -226,10 +228,10 @@ fun HomeView(modifier: Modifier = Modifier) {
                         }
 
                         else -> {
-                            items(
+                            itemsIndexed(
                                 items = state.folderRows,
-                                key = { it.folder.id },
-                            ) { row ->
+                                key = { _, it -> it.folder.id },
+                            ) { index, row ->
                                 FolderItemView(
                                     modifier = Modifier,
                                     model = row.folder,
@@ -252,6 +254,8 @@ fun HomeView(modifier: Modifier = Modifier) {
 
                                         navigator.add(FolderDetailRoute(folderId = clickedId))
                                     },
+                                    index = index,
+                                    count = state.folderRows.size,
                                 )
                             }
                         }
@@ -287,10 +291,10 @@ fun HomeView(modifier: Modifier = Modifier) {
                         }
 
                         else -> {
-                            items(
+                            itemsIndexed(
                                 items = state.tags,
-                                key = { it.id },
-                            ) { tagModel ->
+                                key = { _, it -> it.id },
+                            ) { index, tagModel ->
                                 TagItemView(
                                     model = tagModel,
                                     onDeleteTag = { tagToBeDeleted ->
@@ -307,6 +311,8 @@ fun HomeView(modifier: Modifier = Modifier) {
                                             TagDetailRoute(tagId = clickedId)
                                         )
                                     },
+                                    index = index,
+                                    count = state.tags.size,
                                 )
                             }
                         }

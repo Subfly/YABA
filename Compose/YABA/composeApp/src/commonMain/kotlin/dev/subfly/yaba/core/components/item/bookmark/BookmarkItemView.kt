@@ -6,6 +6,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,9 +19,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,7 +45,7 @@ import dev.subfly.yaba.core.navigation.creation.LinkmarkCreationRoute
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalDeletionDialogManager
-import dev.subfly.yaba.util.yabaClickable
+import dev.subfly.yaba.util.yabaRightClick
 import dev.subfly.yabacore.model.ui.BookmarkUiModel
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.BookmarkKind
@@ -75,6 +76,7 @@ import kotlin.uuid.ExperimentalUuidApi
  * @param onClick Callback when the item is clicked
  * @param onDeleteBookmark Callback when the bookmark should be deleted
  * @param onShareBookmark Callback when the bookmark should be shared
+ * @param containerColor The background color for the list item container
  */
 @Composable
 fun BookmarkItemView(
@@ -88,6 +90,9 @@ fun BookmarkItemView(
     onClick: () -> Unit = {},
     onDeleteBookmark: (BookmarkUiModel) -> Unit = {},
     onShareBookmark: (BookmarkUiModel) -> Unit = {},
+    index: Int = 0,
+    count: Int = 1,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
 ) {
     val creationNavigator = LocalCreationContentNavigator.current
     val deletionDialogManager = LocalDeletionDialogManager.current
@@ -267,6 +272,9 @@ fun BookmarkItemView(
                     isAddedToSelection = isAddedToSelection,
                     onClick = onClick,
                     onLongClick = { isOptionsExpanded = true },
+                    index = index,
+                    count = count,
+                    containerColor = containerColor,
                 )
             }
 
@@ -327,18 +335,19 @@ private fun ListItemContent(
     isAddedToSelection: Boolean,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
+    index: Int,
+    count: Int,
+    containerColor: Color,
 ) {
-    ListItem(
+    SegmentedListItem(
         modifier = Modifier
             .clip(RoundedCornerShape(12.dp))
-            .yabaClickable(
-                onLongClick = onLongClick,
-                onClick = onClick,
-            ),
-        colors = ListItemDefaults.colors().copy(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-        ),
-        headlineContent = {
+            .yabaRightClick(onRightClick = onLongClick),
+        onClick = onClick,
+        onLongClick = onLongClick,
+        colors = ListItemDefaults.colors(containerColor = containerColor),
+        shapes = ListItemDefaults.segmentedShapes(index = index, count = count),
+        content = {
             Text(
                 text = model.label,
                 style = MaterialTheme.typography.bodyLargeEmphasized,
@@ -389,7 +398,7 @@ private fun CardBigItemContent(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .yabaClickable(
+            .combinedClickable(
                 onLongClick = onLongClick,
                 onClick = onClick,
             ),
@@ -482,7 +491,7 @@ private fun CardSmallItemContent(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .yabaClickable(
+            .combinedClickable(
                 onLongClick = onLongClick,
                 onClick = onClick,
             ),
@@ -577,7 +586,7 @@ private fun GridItemContent(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .yabaClickable(
+            .combinedClickable(
                 onLongClick = onLongClick,
                 onClick = onClick,
             ),
@@ -740,7 +749,7 @@ private fun CardOptionsButton(
             modifier = Modifier
                 .size(34.dp)
                 .clip(RoundedCornerShape(8.dp))
-                .yabaClickable(
+                .combinedClickable(
                     onClick = { isMenuExpanded = true },
                     onLongClick = { isMenuExpanded = true },
                 ),

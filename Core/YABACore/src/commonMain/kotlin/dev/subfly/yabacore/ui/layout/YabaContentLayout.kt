@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEachIndexed
 
 /**
  * A single, generic content layout that can mix different item types in one place.
@@ -158,6 +159,21 @@ interface YabaContentLayoutScope {
         contentType: (T) -> Any? = { null },
         itemContent: @Composable (item: T) -> Unit,
     )
+
+    /**
+     * Add multiple items from a list with index support.
+     *
+     * @param items List of items to render
+     * @param key Function to extract stable key from each item (receives index and item)
+     * @param contentType Optional function to extract content type from each item
+     * @param itemContent Composable that receives the item and its index
+     */
+    fun <T> itemsIndexed(
+        items: List<T>,
+        key: (Int, T) -> Any,
+        contentType: (Int, T) -> Any? = { _, _ -> null },
+        itemContent: @Composable (index: Int, item: T) -> Unit,
+    )
 }
 
 private class YabaContentLayoutScopeImpl(
@@ -188,6 +204,22 @@ private class YabaContentLayoutScopeImpl(
                 key = k,
                 contentType = ct,
             ) { itemContent(model) }
+        }
+    }
+
+    override fun <T> itemsIndexed(
+        items: List<T>,
+        key: (Int, T) -> Any,
+        contentType: (Int, T) -> Any?,
+        itemContent: @Composable (index: Int, item: T) -> Unit,
+    ) {
+        items.fastForEachIndexed { index, model ->
+            val k = key(index, model)
+            val ct = contentType(index, model)
+            item(
+                key = k,
+                contentType = ct,
+            ) { itemContent(index, model) }
         }
     }
 }

@@ -2,10 +2,12 @@
 
 package dev.subfly.yaba.core.components.item.tag
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import dev.subfly.yaba.core.components.item.base.BaseCollectionItemView
 import dev.subfly.yaba.core.components.item.base.CollectionMenuAction
 import dev.subfly.yaba.core.components.item.base.CollectionSwipeAction
@@ -44,6 +46,9 @@ fun TagItemView(
     allowsDeletion: Boolean = true,
     onClick: (TagUiModel) -> Unit = {},
     onDeleteTag: (TagUiModel) -> Unit,
+    index: Int = 0,
+    count: Int = 1,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
 ) {
     val creationNavigator = LocalCreationContentNavigator.current
     val deletionDialogManager = LocalDeletionDialogManager.current
@@ -179,6 +184,9 @@ fun TagItemView(
         leftSwipeActions = leftSwipeActions,
         rightSwipeActions = rightSwipeActions,
         onClick = { onClick(model) },
-        trailingContent = { Text(model.bookmarkCount.toString()) }
+        trailingContent = { Text(model.bookmarkCount.toString()) },
+        index = index,
+        count = count,
+        containerColor = containerColor,
     )
 }

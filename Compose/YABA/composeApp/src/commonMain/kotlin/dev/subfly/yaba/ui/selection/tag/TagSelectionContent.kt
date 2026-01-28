@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -241,10 +241,10 @@ private fun SelectionContent(
             }
 
             else -> {
-                items(
+                itemsIndexed(
                     items = state.selectedTags,
-                    key = { it.id },
-                ) { model ->
+                    key = { _, it -> it.id },
+                ) { index, model ->
                     PresentableTagItemView(
                         modifier = Modifier.animateItem().padding(horizontal = 12.dp),
                         model = model,
@@ -253,7 +253,9 @@ private fun SelectionContent(
                         onPressed = { onTagDeselected(model) },
                         onNavigateToEdit = {
                             creationNavigator.add(TagCreationRoute(tagId = model.id))
-                        }
+                        },
+                        index = index,
+                        count = state.selectedTags.size,
                     )
                 }
                 item { Spacer(modifier = Modifier.height(12.dp)) }
@@ -326,10 +328,10 @@ private fun SelectionContent(
             }
 
             else -> {
-                items(
+                itemsIndexed(
                     items = state.availableTags,
-                    key = { it.id },
-                ) { model ->
+                    key = { _, it -> it.id },
+                ) { index, model ->
                     PresentableTagItemView(
                         modifier = Modifier.animateItem().padding(horizontal = 12.dp),
                         model = model,
@@ -338,7 +340,9 @@ private fun SelectionContent(
                         onPressed = { onTagSelected(model) },
                         onNavigateToEdit = {
                             creationNavigator.add(TagCreationRoute(tagId = model.id))
-                        }
+                        },
+                        index = index,
+                        count = state.availableTags.size,
                     )
                 }
             }

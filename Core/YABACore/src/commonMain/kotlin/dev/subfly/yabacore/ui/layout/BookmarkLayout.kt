@@ -10,11 +10,11 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
-import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -46,6 +46,8 @@ fun YabaBookmarkLayout(
         isDragging: Boolean,
         appearance: BookmarkAppearance,
         cardImageSizing: CardImageSizing,
+        index: Int,
+        count: Int,
     ) -> Unit,
 ) {
     when (layoutConfig.bookmarkAppearance) {
@@ -56,10 +58,10 @@ fun YabaBookmarkLayout(
                 contentPadding = contentPadding,
             ) {
                 item { Spacer(modifier = Modifier.height(layoutConfig.headlineSpacerSizing)) }
-                items(
+                itemsIndexed(
                     items = bookmarks,
-                    key = { "${it.id} ${it.label}" },
-                ) { bookmark ->
+                    key = { _, it -> "${it.id} ${it.label}" },
+                ) { index, bookmark ->
                     BookmarkItem(
                         bookmark = bookmark,
                         appearance = layoutConfig.bookmarkAppearance,
@@ -68,6 +70,8 @@ fun YabaBookmarkLayout(
                         orientation = Orientation.Vertical,
                         modifier = Modifier.animateItem(),
                         itemContent = itemContent,
+                        index = index,
+                        count = bookmarks.size,
                     )
                 }
             }
@@ -83,10 +87,10 @@ fun YabaBookmarkLayout(
                 item(
                     span = StaggeredGridItemSpan.FullLine,
                 ) { Spacer(modifier = Modifier.height(layoutConfig.headlineSpacerSizing)) }
-                items(
+                itemsIndexed(
                     items = bookmarks,
-                    key = { "${it.id} ${it.label}" },
-                ) { bookmark ->
+                    key = { _, item -> "${item.id} ${item.label}" },
+                ) { index, bookmark ->
                     BookmarkItem(
                         bookmark = bookmark,
                         appearance = layoutConfig.bookmarkAppearance,
@@ -95,6 +99,8 @@ fun YabaBookmarkLayout(
                         orientation = Orientation.Vertical,
                         modifier = Modifier.animateItem(),
                         itemContent = itemContent,
+                        index = index,
+                        count = bookmarks.size,
                     )
                 }
             }
@@ -116,7 +122,11 @@ private fun BookmarkItem(
         isDragging: Boolean,
         appearance: BookmarkAppearance,
         cardImageSizing: CardImageSizing,
+        index: Int,
+        count: Int,
     ) -> Unit,
+    index: Int,
+    count: Int,
 ) {
     val payload = remember(bookmark.id) { DragBookmarkPayload(bookmark) }
     val isDragging = state.isDragging(payload)
@@ -125,5 +135,5 @@ private fun BookmarkItem(
         modifier =
             modifier.yabaDropTarget(state, payload, orientation)
                 .yabaDragSource(state, payload),
-    ) { itemContent(bookmark, isDragging, appearance, cardImageSizing) }
+    ) { itemContent(bookmark, isDragging, appearance, cardImageSizing, index, count) }
 }

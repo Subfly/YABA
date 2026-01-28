@@ -20,8 +20,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -226,12 +227,13 @@ private fun ListPreview(
     animatedContentScope: AnimatedContentScope,
 ) {
     with(sharedTransitionScope) {
-        ListItem(
+        SegmentedListItem(
             modifier =
                 Modifier.padding(horizontal = 12.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .clickable(onClick = onClick),
-            headlineContent = {
+                    .clip(RoundedCornerShape(12.dp)),
+            onClick = onClick,
+            shapes = ListItemDefaults.segmentedShapes(index = 0, count = 1),
+            content = {
                 ShimmerItem(
                     isLoading = state.isLoading,
                     modifier =

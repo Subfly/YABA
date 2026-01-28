@@ -1,7 +1,6 @@
 package dev.subfly.yaba.ui.creation.bookmark
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,8 +12,9 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.util.fastForEachIndexed
 import dev.subfly.yaba.core.navigation.creation.BookmarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.DocmarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.ImagemarkCreationRoute
@@ -89,6 +89,7 @@ private fun TopBar(
 }
 
 // TODO: LOCALIZATION
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun SelectionContent() {
     val creationNavigator = LocalCreationContentNavigator.current
@@ -130,13 +131,14 @@ private fun SelectionContent() {
                 creationNavigator.removeIf { it is BookmarkCreationRoute }
             },
         )
-    ).fastForEach { item ->
-        ListItem(
+    ).fastForEachIndexed { index, item ->
+        SegmentedListItem(
             modifier = Modifier
                 .padding(horizontal = 12.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .clickable(onClick = item.onClick),
-            headlineContent = { Text(item.label) },
+                .clip(RoundedCornerShape(12.dp)),
+            onClick = item.onClick,
+            shapes = ListItemDefaults.segmentedShapes(index = index, count = 4),
+            content = { Text(item.label) },
             leadingContent = {
                 YabaIcon(
                     name = item.iconName,

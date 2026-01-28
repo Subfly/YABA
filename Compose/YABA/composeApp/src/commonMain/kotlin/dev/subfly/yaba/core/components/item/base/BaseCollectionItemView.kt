@@ -21,10 +21,10 @@ import androidx.compose.material3.DropdownMenuGroup
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.DropdownMenuPopup
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
+import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,7 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import dev.subfly.yaba.util.yabaClickable
+import dev.subfly.yaba.util.yabaRightClick
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.icon.iconTintArgb
@@ -88,6 +88,7 @@ data class CollectionSwipeAction(
  * @param rightSwipeActions Swipe actions revealed when swiping left
  * @param onClick Callback when the item is clicked
  * @param trailingContent Optional composable for trailing content
+ * @param containerColor The background color for the list item container
  */
 @Composable
 fun BaseCollectionItemView(
@@ -101,6 +102,9 @@ fun BaseCollectionItemView(
     rightSwipeActions: List<CollectionSwipeAction> = emptyList(),
     onClick: () -> Unit = {},
     trailingContent: @Composable (() -> Unit)? = null,
+    index: Int = 0,
+    count: Int = 1,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
 ) {
     ListCollectionItemView(
         modifier = modifier,
@@ -113,6 +117,9 @@ fun BaseCollectionItemView(
         rightSwipeActions = rightSwipeActions,
         onClick = onClick,
         trailingContent = trailingContent,
+        index = index,
+        count = count,
+        containerColor = containerColor,
     )
 }
 
@@ -129,6 +136,9 @@ private fun ListCollectionItemView(
     rightSwipeActions: List<CollectionSwipeAction>,
     onClick: () -> Unit,
     trailingContent: @Composable (() -> Unit)?,
+    index: Int,
+    count: Int,
+    containerColor: Color,
 ) {
     var isOptionsExpanded by remember { mutableStateOf(false) }
     val itemColor by remember(color) {
@@ -210,23 +220,21 @@ private fun ListCollectionItemView(
                     leftActions = swipeLeftActions,
                     rightActions = swipeRightActions,
                 ) {
-                    ListItem(
+                    SegmentedListItem(
                         modifier = Modifier
                             .clip(RoundedCornerShape(12.dp))
-                            .yabaClickable(
-                                onLongClick = { isOptionsExpanded = true },
-                                onClick = onClick,
-                            ),
-                        colors = ListItemDefaults.colors().copy(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                        ),
-                        headlineContent = { Text(label) },
+                            .yabaRightClick(onRightClick = { isOptionsExpanded = true }),
+                        onClick = onClick,
+                        onLongClick = { isOptionsExpanded = true },
+                        colors = ListItemDefaults.colors(containerColor = containerColor),
+                        shapes = ListItemDefaults.segmentedShapes(index = index, count = count),
+                        content = { Text(label) },
                         leadingContent = { YabaIcon(name = icon, color = itemColor) },
                         trailingContent = {
                             if (trailingContent != null) {
                                 trailingContent()
                             }
-                        }
+                        },
                     )
                 }
             }

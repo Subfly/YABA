@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -63,6 +64,9 @@ fun FolderItemView(
     onToggleExpanded: () -> Unit = {},
     onClick: (FolderUiModel) -> Unit = {},
     onDeleteFolder: (FolderUiModel) -> Unit,
+    index: Int = 0,
+    count: Int = 1,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
 ) {
     val creationNavigator = LocalCreationContentNavigator.current
     val deletionDialogManager = LocalDeletionDialogManager.current
@@ -239,6 +243,9 @@ fun FolderItemView(
         leftSwipeActions = leftSwipeActions,
         rightSwipeActions = rightSwipeActions,
         onClick = { onClick(model) },
+        index = index,
+        count = count,
+        containerColor = containerColor,
         trailingContent = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,

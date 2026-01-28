@@ -7,9 +7,8 @@ import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
 
 @Composable
-expect fun Modifier.yabaClickable(
-    onLongClick: () -> Unit,
-    onClick: () -> Unit,
+expect fun Modifier.yabaRightClick(
+    onRightClick: () -> Unit,
 ): Modifier
 
 @Composable

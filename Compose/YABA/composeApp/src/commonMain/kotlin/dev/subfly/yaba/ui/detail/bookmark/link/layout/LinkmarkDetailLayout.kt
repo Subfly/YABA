@@ -79,6 +79,7 @@ internal fun LinkmarkDetailLayout(
                     LinkmarkDetailFolderSectionContent(
                         modifier = Modifier.animateItem(),
                         folder = folder,
+                        mainColor = mainColor,
                         onClickFolder = { navigator.add(FolderDetailRoute(folderId = folder.id)) }
                     )
                 }

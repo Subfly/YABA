@@ -250,7 +250,7 @@ fun TagDetailView(
                         headlineSpacerSizing = 8.dp,
                     ),
                     onDrop = {},
-                    itemContent = { model, _, appearance, cardImageSizing ->
+                    itemContent = { model, _, appearance, cardImageSizing, index, count ->
                         BookmarkItemView(
                             model = model,
                             appearance = appearance,
@@ -275,6 +275,8 @@ fun TagDetailView(
                             onShareBookmark = {
                                 // TODO: IMPLEMENT SHARE
                             },
+                            index = index,
+                            count = count,
                         )
                     },
                 )

@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularWavyProgressIndicator
@@ -283,19 +283,23 @@ private fun SelectionContent(
                                     .padding(horizontal = 12.dp)
                                     .padding(bottom = 8.dp),
                                 onClick = onMoveToRootFolder,
+                                index = 0,
+                                count = state.folders.size + 1,
                             )
                         }
                     }
-                    items(
+                    itemsIndexed(
                         items = state.folders,
-                        key = { it.id },
-                    ) { model ->
+                        key = { _, it -> it.id },
+                    ) { index, model ->
                         PresentableFolderItemView(
                             modifier = Modifier.padding(horizontal = 12.dp),
                             model = model,
                             nullModelPresentableColor = YabaColor.BLUE,
                             onPressed = { onFolderSelected(model) },
                             cornerSize = 12.dp,
+                            index = if (state.canMoveToRoot) index + 1 else index,
+                            count = state.folders.size + (if (state.canMoveToRoot) 1 else 0),
                         )
                     }
                 }

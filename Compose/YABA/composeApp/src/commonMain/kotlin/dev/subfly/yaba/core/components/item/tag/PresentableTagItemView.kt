@@ -9,7 +9,8 @@ import androidx.compose.material3.DropdownMenuGroup
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.DropdownMenuPopup
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -23,7 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import dev.subfly.yaba.util.yabaClickable
+import dev.subfly.yaba.util.yabaRightClick
 import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.ui.icon.YabaIcon
@@ -43,6 +44,8 @@ fun PresentableTagItemView(
     onPressed: () -> Unit,
     onNavigateToEdit: () -> Unit,
     cornerSize: Dp = 24.dp,
+    index: Int = 0,
+    count: Int = 1,
 ) {
     var isOptionsExpanded by remember { mutableStateOf(false) }
 
@@ -71,18 +74,24 @@ fun PresentableTagItemView(
         } else emptyList()
     ) {
         Box {
-            ListItem(
+            SegmentedListItem(
                 modifier = Modifier
                     .clip(RoundedCornerShape(cornerSize))
-                    .yabaClickable(
-                        onClick = onPressed,
-                        onLongClick = {
+                    .yabaRightClick(
+                        onRightClick = {
                             if (model != null) {
                                 isOptionsExpanded = true
                             }
                         }
                     ),
-                headlineContent = { Text(text = model?.label ?: "") },
+                onClick = onPressed,
+                onLongClick = {
+                    if (model != null) {
+                        isOptionsExpanded = true
+                    }
+                },
+                shapes = ListItemDefaults.segmentedShapes(index = index, count = count),
+                content = { Text(text = model?.label ?: "") },
                 leadingContent = {
                     YabaIcon(
                         name = model?.icon ?: "tag-01",

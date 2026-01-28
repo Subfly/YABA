@@ -19,7 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.util.fastForEachIndexed
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.item.tag.PresentableTagItemView
 import dev.subfly.yaba.core.navigation.creation.TagCreationRoute
@@ -109,7 +109,7 @@ internal fun LinkmarkTagSelectionContent(
             )
         }
     } else {
-        state.selectedTags.fastForEach { tag ->
+        state.selectedTags.fastForEachIndexed { index, tag ->
             PresentableTagItemView(
                 modifier = Modifier.padding(horizontal = 12.dp),
                 model = tag,
@@ -121,6 +121,8 @@ internal fun LinkmarkTagSelectionContent(
                 onNavigateToEdit = {
                     creationNavigator.add(TagCreationRoute(tagId = tag.id))
                 },
+                index = index,
+                count = state.selectedTags.size,
             )
         }
     }

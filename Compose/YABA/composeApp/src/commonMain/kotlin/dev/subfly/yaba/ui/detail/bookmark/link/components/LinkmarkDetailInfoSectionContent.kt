@@ -1,11 +1,13 @@
 package dev.subfly.yaba.ui.detail.bookmark.link.components
 
+import androidx.compose.runtime.remember
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,6 +38,11 @@ internal fun LinkmarkDetailInfoSectionContent(
     linkDetails: LinkmarkLinkDetailsUiModel?,
     mainColor: YabaColor,
 ) {
+    val itemCount = remember(linkDetails, bookmarkDetails.createdAt, bookmarkDetails.editedAt) {
+        3 + (if (linkDetails != null) 1 else 0) + (if (bookmarkDetails.createdAt != bookmarkDetails.editedAt) 1 else 0)
+    }
+    var currentIndex = 0
+    
     Column(
         modifier = modifier.padding(horizontal = 12.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -45,14 +52,18 @@ internal fun LinkmarkDetailInfoSectionContent(
             iconName = "information-circle",
             label = stringResource(Res.string.info)
         )
-        ListItem(
+        SegmentedListItem(
             modifier = Modifier.clip(RoundedCornerShape(8.dp)),
-            headlineContent = { Text(bookmarkDetails.label) },
+            onClick = {},
+            shapes = ListItemDefaults.segmentedShapes(index = currentIndex++, count = itemCount),
+            content = { Text(bookmarkDetails.label) },
             leadingContent = { YabaIcon(name = "text", color = mainColor) }
         )
-        ListItem(
+        SegmentedListItem(
             modifier = Modifier.clip(RoundedCornerShape(8.dp)),
-            headlineContent = {
+            onClick = {},
+            shapes = ListItemDefaults.segmentedShapes(index = currentIndex++, count = itemCount),
+            content = {
                 Text(
                     text = bookmarkDetails.description
                         ?: stringResource(Res.string.bookmark_detail_no_description_provided),
@@ -63,9 +74,11 @@ internal fun LinkmarkDetailInfoSectionContent(
             leadingContent = { YabaIcon(name = "paragraph", color = mainColor) }
         )
         linkDetails?.let { linkMetadata ->
-            ListItem(
+            SegmentedListItem(
                 modifier = Modifier.clip(RoundedCornerShape(8.dp)),
-                headlineContent = {
+                onClick = {},
+                shapes = ListItemDefaults.segmentedShapes(index = currentIndex++, count = itemCount),
+                content = {
                     Text(stringResource(Res.string.create_bookmark_type_placeholder))
                 },
                 leadingContent = {
@@ -82,9 +95,11 @@ internal fun LinkmarkDetailInfoSectionContent(
                 }
             )
         }
-        ListItem(
+        SegmentedListItem(
             modifier = Modifier.clip(RoundedCornerShape(8.dp)),
-            headlineContent = {
+            onClick = {},
+            shapes = ListItemDefaults.segmentedShapes(index = currentIndex++, count = itemCount),
+            content = {
                 Text(stringResource(Res.string.bookmark_detail_created_at_title))
             },
             leadingContent = { YabaIcon(name = "clock-01", color = mainColor) },
@@ -96,9 +111,11 @@ internal fun LinkmarkDetailInfoSectionContent(
             }
         )
         if (bookmarkDetails.createdAt != bookmarkDetails.editedAt) {
-            ListItem(
+            SegmentedListItem(
                 modifier = Modifier.clip(RoundedCornerShape(8.dp)),
-                headlineContent = {
+                onClick = {},
+                shapes = ListItemDefaults.segmentedShapes(index = currentIndex++, count = itemCount),
+                content = {
                     Text(stringResource(Res.string.bookmark_detail_edited_at_title))
                 },
                 leadingContent = { YabaIcon(name = "edit-02", color = mainColor) },

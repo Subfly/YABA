@@ -3,11 +3,13 @@ package dev.subfly.yaba.ui.detail.bookmark.link.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.components.item.folder.FolderItemView
 import dev.subfly.yabacore.model.ui.FolderUiModel
+import dev.subfly.yabacore.model.utils.YabaColor
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.folder
@@ -16,6 +18,7 @@ import yaba.composeapp.generated.resources.folder
 internal fun LinkmarkDetailFolderSectionContent(
     modifier: Modifier = Modifier,
     folder: FolderUiModel,
+    mainColor: YabaColor,
     onClickFolder: (FolderUiModel) -> Unit,
 ) {
     Column(
@@ -31,6 +34,7 @@ internal fun LinkmarkDetailFolderSectionContent(
             model = folder,
             allowsDeletion = false,
             onClick = onClickFolder,
+            containerColor = MaterialTheme.colorScheme.surface,
             onDeleteFolder = {}
         )
     }

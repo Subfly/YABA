@@ -5,12 +5,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-actual fun Modifier.yabaClickable(
-    onLongClick: () -> Unit,
-    onClick: () -> Unit,
+actual fun Modifier.yabaRightClick(
+    onRightClick: () -> Unit,
 ): Modifier {
-    return this then Modifier.combinedClickable(
-        onLongClick = onLongClick,
-        onClick = onClick
-    )
+    // No-op on Android - right click is not supported
+    return this
 }
