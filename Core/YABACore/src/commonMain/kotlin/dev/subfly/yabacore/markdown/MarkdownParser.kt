@@ -27,8 +27,9 @@ object MarkdownParser {
                     i++
                     continue
                 }
-                headingRegex.matches(line) -> {
-                    val (hashes, content) = headingRegex.find(line)!!.destructured
+                headingRegex.matches(line.trim()) -> {
+                    val trimmed = line.trim()
+                    val (hashes, content) = headingRegex.find(trimmed)!!.destructured
                     segments.add(MarkdownSegment.Heading(hashes.length, content.trim()))
                     i++
                     continue
@@ -75,7 +76,7 @@ object MarkdownParser {
                 else -> {
                     val paragraphLines = mutableListOf<String>()
                     while (i < lines.size && lines[i].isNotBlank() &&
-                        !headingRegex.matches(lines[i]) &&
+                        !headingRegex.matches(lines[i].trim()) &&
                         !lines[i].trimStart().startsWith("```") &&
                         !lines[i].trimStart().startsWith(">") &&
                         !listItemUnorderedRegex.matches(lines[i].trim()) &&
