@@ -8,9 +8,7 @@ import kotlinx.serialization.Serializable
  * JSON schema for highlight data stored at `/bookmarks/<uuid>/content/annotations/<highlightId>.json`.
  *
  * Highlights are mutable and CRDT-merged. They reference a specific content version
- * and use character offsets into the markdown string for that version.
- *
- * This is the authoritative representation of a highlight in the filesystem.
+ * and use section-anchored offsets (deterministic sectionKey + offset within section).
  */
 @Serializable
 data class HighlightJson(
@@ -20,10 +18,14 @@ data class HighlightJson(
     val bookmarkId: String,
     /** Content version this highlight is anchored to */
     val contentVersion: Int,
-    /** Character offset (inclusive) into the markdown string for this content version */
-    val startOffset: Int,
-    /** Character offset (exclusive) into the markdown string for this content version */
-    val endOffset: Int,
+    /** Section key where the highlight starts (e.g. "b:0") */
+    val startSectionKey: String,
+    /** Character offset within the start section (inclusive) */
+    val startOffsetInSection: Int,
+    /** Section key where the highlight ends (e.g. "b:0" for same block) */
+    val endSectionKey: String,
+    /** Character offset within the end section (exclusive) */
+    val endOffsetInSection: Int,
     /** Semantic color role for the highlight */
     @Serializable(with = YabaColorSerializer::class)
     val colorRole: YabaColor,

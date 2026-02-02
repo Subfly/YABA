@@ -10,8 +10,10 @@ sealed interface LinkmarkDetailEvent {
     data object OnDeleteBookmark : LinkmarkDetailEvent
     data class OnCreateHighlight(
         val contentVersion: Int,
-        val startOffset: Int,
-        val endOffset: Int,
+        val startSectionKey: String,
+        val startOffsetInSection: Int,
+        val endSectionKey: String,
+        val endOffsetInSection: Int,
         val colorRole: YabaColor = YabaColor.NONE,
         val note: String? = null,
     ) : LinkmarkDetailEvent

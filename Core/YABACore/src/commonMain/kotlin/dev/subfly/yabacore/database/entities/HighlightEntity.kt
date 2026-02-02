@@ -14,6 +14,7 @@ import dev.subfly.yabacore.model.utils.YabaColor
  *
  * This is a derived cache - the filesystem is authoritative.
  * Highlights are CRDT-merged for conflict-free sync.
+ * Section-anchored: startSectionKey, startOffsetInSection, endSectionKey, endOffsetInSection.
  */
 @Entity(
     tableName = "highlights",
@@ -35,8 +36,10 @@ data class HighlightEntity(
     @PrimaryKey val id: String,
     val bookmarkId: String,
     val contentVersion: Int,
-    val startOffset: Int,
-    val endOffset: Int,
+    val startSectionKey: String,
+    val startOffsetInSection: Int,
+    val endSectionKey: String,
+    val endOffsetInSection: Int,
     val colorRole: YabaColor,
     val note: String?,
     val relativePath: String,

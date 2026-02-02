@@ -1,6 +1,7 @@
 package dev.subfly.yabacore.state.detail.linkmark
 
 import androidx.compose.runtime.Immutable
+import dev.subfly.yabacore.markdown.formatting.PreviewDocumentUiModel
 import dev.subfly.yabacore.model.ui.BookmarkPreviewUiModel
 import dev.subfly.yabacore.model.ui.HighlightUiModel
 import dev.subfly.yabacore.model.ui.ReadableVersionUiModel
@@ -11,6 +12,7 @@ data class LinkmarkDetailUIState(
     val bookmark: BookmarkPreviewUiModel? = null,
     val linkDetails: LinkmarkLinkDetailsUiModel? = null,
     val readableVersions: List<ReadableVersionUiModel> = emptyList(),
+    val previewDocument: PreviewDocumentUiModel? = null,
     val highlights: List<HighlightUiModel> = emptyList(),
     val isLoading: Boolean = false,
 )

@@ -585,19 +585,23 @@ object SyncEngine {
 
         mergeEventPayloadsToFields(highlightEvents, highlightFields)
 
-        // Extract required fields
+        // Extract required fields (section-anchored)
         val bookmarkId = highlightFields["bookmarkId"]?.jsonPrimitive?.contentOrNull ?: return
         val contentVersion = highlightFields["contentVersion"]?.jsonPrimitive?.contentOrNull?.toIntOrNull() ?: return
-        val startOffset = highlightFields["startOffset"]?.jsonPrimitive?.contentOrNull?.toIntOrNull() ?: return
-        val endOffset = highlightFields["endOffset"]?.jsonPrimitive?.contentOrNull?.toIntOrNull() ?: return
+        val startSectionKey = highlightFields["startSectionKey"]?.jsonPrimitive?.contentOrNull ?: return
+        val startOffsetInSection = highlightFields["startOffsetInSection"]?.jsonPrimitive?.contentOrNull?.toIntOrNull() ?: return
+        val endSectionKey = highlightFields["endSectionKey"]?.jsonPrimitive?.contentOrNull ?: return
+        val endOffsetInSection = highlightFields["endOffsetInSection"]?.jsonPrimitive?.contentOrNull?.toIntOrNull() ?: return
 
         // Build HighlightJson from merged fields
         val highlightData = HighlightJson(
             id = highlightId,
             bookmarkId = bookmarkId,
             contentVersion = contentVersion,
-            startOffset = startOffset,
-            endOffset = endOffset,
+            startSectionKey = startSectionKey,
+            startOffsetInSection = startOffsetInSection,
+            endSectionKey = endSectionKey,
+            endOffsetInSection = endOffsetInSection,
             colorRole = parseYabaColor(highlightFields["colorRole"]),
             note = highlightFields["note"]?.jsonPrimitive?.contentOrNull,
             createdAt = highlightFields["createdAt"]?.jsonPrimitive?.longOrNull ?: 0L,
@@ -614,8 +618,10 @@ object SyncEngine {
             id = highlightId,
             bookmarkId = bookmarkId,
             contentVersion = contentVersion,
-            startOffset = highlightData.startOffset,
-            endOffset = highlightData.endOffset,
+            startSectionKey = highlightData.startSectionKey,
+            startOffsetInSection = highlightData.startOffsetInSection,
+            endSectionKey = highlightData.endSectionKey,
+            endOffsetInSection = highlightData.endOffsetInSection,
             colorRole = highlightData.colorRole,
             note = highlightData.note,
             relativePath = relativePath,

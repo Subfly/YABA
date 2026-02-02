@@ -30,21 +30,25 @@ object HighlightManager {
     // ==================== Create ====================
 
     /**
-     * Creates a new highlight annotation.
+     * Creates a new highlight annotation (section-anchored).
      *
      * @param bookmarkId The bookmark this highlight belongs to
      * @param contentVersion The readable content version this highlight references
-     * @param startOffset Character offset (inclusive) into the markdown string
-     * @param endOffset Character offset (exclusive) into the markdown string
-     * @param colorRole The highlight color role (e.g., "yellow", "blue")
+     * @param startSectionKey Section key where the highlight starts (e.g. "b:0")
+     * @param startOffsetInSection Character offset within the start section (inclusive)
+     * @param endSectionKey Section key where the highlight ends
+     * @param endOffsetInSection Character offset within the end section (exclusive)
+     * @param colorRole The highlight color role
      * @param note Optional note text
      * @return The created highlight ID
      */
     fun createHighlight(
         bookmarkId: String,
         contentVersion: Int,
-        startOffset: Int,
-        endOffset: Int,
+        startSectionKey: String,
+        startOffsetInSection: Int,
+        endSectionKey: String,
+        endOffsetInSection: Int,
         colorRole: YabaColor = YabaColor.NONE,
         note: String? = null,
     ): String {
@@ -52,19 +56,19 @@ object HighlightManager {
         val now = Clock.System.now().toEpochMilliseconds()
 
         CoreOperationQueue.queue("CreateHighlight:$highlightId") {
-            // Build CRDT payload
             val payload = buildHighlightPayload(
                 bookmarkId = bookmarkId,
                 contentVersion = contentVersion,
-                startOffset = startOffset,
-                endOffset = endOffset,
+                startSectionKey = startSectionKey,
+                startOffsetInSection = startOffsetInSection,
+                endSectionKey = endSectionKey,
+                endOffsetInSection = endOffsetInSection,
                 colorRole = colorRole,
                 note = note,
                 createdAt = now,
                 editedAt = now,
             )
 
-            // Record CRDT CREATE event
             val event = crdtEngine.recordCreate(
                 objectId = highlightId,
                 objectType = ObjectType.HIGHLIGHT,
@@ -72,13 +76,14 @@ object HighlightManager {
                 payload = payload,
             )
 
-            // Build highlight JSON with the new clock
             val highlightData = HighlightJson(
                 id = highlightId,
                 bookmarkId = bookmarkId,
                 contentVersion = contentVersion,
-                startOffset = startOffset,
-                endOffset = endOffset,
+                startSectionKey = startSectionKey,
+                startOffsetInSection = startOffsetInSection,
+                endSectionKey = endSectionKey,
+                endOffsetInSection = endOffsetInSection,
                 colorRole = colorRole,
                 note = note,
                 createdAt = now,
@@ -217,8 +222,10 @@ object HighlightManager {
             id = highlight.id,
             bookmarkId = highlight.bookmarkId,
             contentVersion = highlight.contentVersion,
-            startOffset = highlight.startOffset,
-            endOffset = highlight.endOffset,
+            startSectionKey = highlight.startSectionKey,
+            startOffsetInSection = highlight.startOffsetInSection,
+            endSectionKey = highlight.endSectionKey,
+            endOffsetInSection = highlight.endOffsetInSection,
             colorRole = highlight.colorRole,
             note = highlight.note,
             relativePath = CoreConstants.FileSystem.Linkmark.highlightPath(
@@ -234,8 +241,10 @@ object HighlightManager {
     private fun buildHighlightPayload(
         bookmarkId: String,
         contentVersion: Int,
-        startOffset: Int,
-        endOffset: Int,
+        startSectionKey: String,
+        startOffsetInSection: Int,
+        endSectionKey: String,
+        endOffsetInSection: Int,
         colorRole: YabaColor,
         note: String?,
         createdAt: Long,
@@ -243,8 +252,10 @@ object HighlightManager {
     ): Map<String, JsonElement> = mapOf(
         "bookmarkId" to JsonPrimitive(bookmarkId),
         "contentVersion" to JsonPrimitive(contentVersion),
-        "startOffset" to JsonPrimitive(startOffset),
-        "endOffset" to JsonPrimitive(endOffset),
+        "startSectionKey" to JsonPrimitive(startSectionKey),
+        "startOffsetInSection" to JsonPrimitive(startOffsetInSection),
+        "endSectionKey" to JsonPrimitive(endSectionKey),
+        "endOffsetInSection" to JsonPrimitive(endOffsetInSection),
         "colorRole" to JsonPrimitive(colorRole.code),
         "note" to CRDTEngine.nullableStringValue(note),
         "createdAt" to JsonPrimitive(createdAt),

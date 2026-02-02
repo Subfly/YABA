@@ -10,6 +10,8 @@ import dev.subfly.yabacore.managers.AllBookmarksManager
 import dev.subfly.yabacore.managers.HighlightManager
 import dev.subfly.yabacore.managers.LinkmarkManager
 import dev.subfly.yabacore.managers.ReadableContentManager
+import dev.subfly.yabacore.markdown.formatting.PreviewModelBuilder
+import dev.subfly.yabacore.markdown.parser.MarkdownParser
 import dev.subfly.yabacore.model.ui.BookmarkPreviewUiModel
 import dev.subfly.yabacore.state.base.BaseStateMachine
 import dev.subfly.yabacore.unfurl.Unfurler
@@ -69,10 +71,17 @@ class LinkmarkDetailStateMachine :
                         readableVersionsFlow,
                         highlightsFlow,
                     ) { bookmark, linkDetails, readableVersions, highlights ->
+                        val readable = readableVersions.firstOrNull()
+                        val markdown = readable?.markdown
+                        val assetPathByAssetId = readable?.assets?.associate { it.assetId to it.absolutePath } ?: emptyMap()
+                        val previewDocument = if (markdown != null) {
+                            PreviewModelBuilder.build(MarkdownParser.parse(markdown), assetPathByAssetId)
+                        } else null
                         currentState().copy(
                             bookmark = bookmark,
                             linkDetails = linkDetails?.toUiModel(),
                             readableVersions = readableVersions,
+                            previewDocument = previewDocument,
                             highlights = highlights,
                             isLoading = false,
                         )
@@ -109,8 +118,10 @@ class LinkmarkDetailStateMachine :
         HighlightManager.createHighlight(
             bookmarkId = bookmarkId,
             contentVersion = event.contentVersion,
-            startOffset = event.startOffset,
-            endOffset = event.endOffset,
+            startSectionKey = event.startSectionKey,
+            startOffsetInSection = event.startOffsetInSection,
+            endSectionKey = event.endSectionKey,
+            endOffsetInSection = event.endOffsetInSection,
             colorRole = event.colorRole,
             note = event.note,
         )

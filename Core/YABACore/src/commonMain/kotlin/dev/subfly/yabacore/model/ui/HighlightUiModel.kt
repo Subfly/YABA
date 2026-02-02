@@ -4,13 +4,15 @@ import androidx.compose.runtime.Stable
 import dev.subfly.yabacore.model.utils.YabaColor
 
 /**
- * A highlight annotation.
+ * A highlight annotation (section-anchored).
  */
 @Stable
 data class HighlightUiModel(
     val id: String,
-    val startOffset: Int,
-    val endOffset: Int,
+    val startSectionKey: String,
+    val startOffsetInSection: Int,
+    val endSectionKey: String,
+    val endOffsetInSection: Int,
     val colorRole: YabaColor,
     val note: String?,
     /** Absolute path to the highlight JSON file */

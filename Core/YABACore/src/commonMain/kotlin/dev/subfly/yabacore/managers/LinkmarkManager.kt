@@ -237,8 +237,10 @@ object LinkmarkManager {
     private suspend fun HighlightEntity.toUiModel(): HighlightUiModel =
         HighlightUiModel(
             id = id,
-            startOffset = startOffset,
-            endOffset = endOffset,
+            startSectionKey = startSectionKey,
+            startOffsetInSection = startOffsetInSection,
+            endSectionKey = endSectionKey,
+            endOffsetInSection = endOffsetInSection,
             colorRole = colorRole,
             note = note,
             absolutePath = BookmarkFileManager.getAbsolutePath(relativePath),
