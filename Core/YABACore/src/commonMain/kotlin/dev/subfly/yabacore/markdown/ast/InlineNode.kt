@@ -70,4 +70,23 @@ sealed interface InlineNode {
         override val range: Range,
         override val children: List<InlineNode> = emptyList(),
     ) : InlineNode
+
+    data class FootnoteRef(
+        override val id: String,
+        override val range: Range,
+        override val children: List<InlineNode> = emptyList(),
+        val footnoteId: String,
+    ) : InlineNode
+
+    data class Superscript(
+        override val id: String,
+        override val range: Range,
+        override val children: List<InlineNode>,
+    ) : InlineNode
+
+    data class Subscript(
+        override val id: String,
+        override val range: Range,
+        override val children: List<InlineNode>,
+    ) : InlineNode
 }

@@ -4,9 +4,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.LinkInteractionListener
@@ -27,18 +30,27 @@ internal fun MarkdownListBlock(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        block.items.forEachIndexed { index, runs ->
+        block.items.forEachIndexed { index: Int, item: PreviewBlockUiModel.ListItem ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.Top,
             ) {
-                Text(
-                    text = if (block.ordered) "${index + 1}." else "•",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = defaultColor,
-                )
+                when (val checked = item.checked) {
+                    null -> Text(
+                        text = if (block.ordered) "${index + 1}." else "•",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = defaultColor,
+                    )
+                    else -> Checkbox(
+                        checked = checked,
+                        onCheckedChange = {},
+                        modifier = Modifier.size(24.dp),
+                        enabled = false,
+                    )
+                }
                 val (annotated, inlineContent) = buildBlockAnnotatedString(
-                    runs = runs,
+                    runs = item.runs,
                     blockRange = block.range,
                     blockSectionKey = block.sectionKey,
                     highlights = highlights,

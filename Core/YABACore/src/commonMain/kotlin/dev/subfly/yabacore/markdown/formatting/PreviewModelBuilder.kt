@@ -47,9 +47,24 @@ object PreviewModelBuilder {
         )
 
         is BlockNode.BlockQuote -> {
-            val firstChild = block.children.firstOrNull() as? BlockNode.Paragraph
-            val runs =
-                firstChild?.let { inlineToRuns(it.inline, assetPathByAssetId) } ?: emptyList()
+            val paragraphRuns = block.children
+                .filterIsInstance<BlockNode.Paragraph>()
+                .map { inlineToRuns(it.inline, assetPathByAssetId) }
+            val runs = paragraphRuns.flatMapIndexed { index, runs ->
+                if (index > 0) {
+                    listOf(
+                        InlineRunUiModel.Text(
+                            range = block.range,
+                            text = "\n\n",
+                            bold = false,
+                            italic = false,
+                            strikethrough = false,
+                            code = false,
+                            linkUrl = null,
+                        )
+                    ) + runs
+                } else runs
+            }
             PreviewBlockUiModel.BlockQuote(
                 sectionKey = sectionKey,
                 range = block.range,
@@ -63,8 +78,11 @@ object PreviewModelBuilder {
             ordered = block.ordered,
             items = block.children.map { item ->
                 when (item) {
-                    is BlockNode.ListItem -> inlineToRuns(item.inline, assetPathByAssetId)
-                    else -> emptyList()
+                    is BlockNode.ListItem -> PreviewBlockUiModel.ListItem(
+                        runs = inlineToRuns(item.inline, assetPathByAssetId),
+                        checked = item.checked,
+                    )
+                    else -> PreviewBlockUiModel.ListItem(runs = emptyList(), checked = null)
                 }
             },
         )
@@ -94,7 +112,24 @@ object PreviewModelBuilder {
                     )
                 }
             },
+            alignments = block.alignments,
         )
+
+        is BlockNode.DefinitionList -> PreviewBlockUiModel.DefinitionList(
+            sectionKey = sectionKey,
+            range = block.range,
+            items = block.children.map { item ->
+                when (item) {
+                    is BlockNode.DefinitionItem -> PreviewBlockUiModel.DefinitionItem(
+                        term = inlineToRuns(item.term, assetPathByAssetId),
+                        definitions = item.definitions.map { def -> inlineToRuns(def, assetPathByAssetId) },
+                    )
+                    else -> PreviewBlockUiModel.DefinitionItem(term = emptyList(), definitions = emptyList())
+                }
+            },
+        )
+
+        is BlockNode.DefinitionItem -> throw IllegalArgumentException("DefinitionItem should be under DefinitionList")
     }
 
     private fun inlineToRuns(
@@ -110,6 +145,8 @@ object PreviewModelBuilder {
                 strikethrough = false,
                 code = false,
                 linkUrl = null,
+                superscript = false,
+                subscript = false,
                 assetPathByAssetId,
                 runs
             )
@@ -124,6 +161,8 @@ object PreviewModelBuilder {
         strikethrough: Boolean,
         code: Boolean,
         linkUrl: String?,
+        superscript: Boolean,
+        subscript: Boolean,
         assetPathByAssetId: Map<String, String?>,
         out: MutableList<InlineRunUiModel>,
     ) {
@@ -137,6 +176,8 @@ object PreviewModelBuilder {
                     strikethrough = strikethrough,
                     code = code,
                     linkUrl = linkUrl,
+                    superscript = superscript,
+                    subscript = subscript,
                 )
             )
 
@@ -148,6 +189,8 @@ object PreviewModelBuilder {
                     strikethrough,
                     code,
                     linkUrl,
+                    superscript,
+                    subscript,
                     assetPathByAssetId,
                     out
                 )
@@ -161,6 +204,8 @@ object PreviewModelBuilder {
                     strikethrough,
                     code,
                     linkUrl,
+                    superscript,
+                    subscript,
                     assetPathByAssetId,
                     out
                 )
@@ -174,6 +219,8 @@ object PreviewModelBuilder {
                     true,
                     code,
                     linkUrl,
+                    superscript,
+                    subscript,
                     assetPathByAssetId,
                     out
                 )
@@ -188,6 +235,8 @@ object PreviewModelBuilder {
                     strikethrough = strikethrough,
                     code = true,
                     linkUrl = linkUrl,
+                    superscript = superscript,
+                    subscript = subscript,
                 )
             )
 
@@ -199,6 +248,8 @@ object PreviewModelBuilder {
                     strikethrough,
                     code,
                     node.url,
+                    superscript,
+                    subscript,
                     assetPathByAssetId,
                     out
                 )
@@ -226,7 +277,9 @@ object PreviewModelBuilder {
                     italic = italic,
                     strikethrough = strikethrough,
                     code = code,
-                    linkUrl = linkUrl
+                    linkUrl = linkUrl,
+                    superscript = superscript,
+                    subscript = subscript,
                 )
             )
 
@@ -238,9 +291,55 @@ object PreviewModelBuilder {
                     italic = italic,
                     strikethrough = strikethrough,
                     code = code,
-                    linkUrl = linkUrl
+                    linkUrl = linkUrl,
+                    superscript = superscript,
+                    subscript = subscript,
                 )
             )
+
+            is InlineNode.FootnoteRef -> out.add(
+                InlineRunUiModel.Text(
+                    range = node.range,
+                    text = "[^${node.footnoteId}]",
+                    bold = bold,
+                    italic = italic,
+                    strikethrough = strikethrough,
+                    code = code,
+                    linkUrl = linkUrl,
+                    superscript = superscript,
+                    subscript = subscript,
+                )
+            )
+
+            is InlineNode.Superscript -> node.children.forEach {
+                flattenInline(
+                    it,
+                    bold,
+                    italic,
+                    strikethrough,
+                    code,
+                    linkUrl,
+                    true,
+                    subscript,
+                    assetPathByAssetId,
+                    out
+                )
+            }
+
+            is InlineNode.Subscript -> node.children.forEach {
+                flattenInline(
+                    it,
+                    bold,
+                    italic,
+                    strikethrough,
+                    code,
+                    linkUrl,
+                    superscript,
+                    true,
+                    assetPathByAssetId,
+                    out
+                )
+            }
         }
     }
 }

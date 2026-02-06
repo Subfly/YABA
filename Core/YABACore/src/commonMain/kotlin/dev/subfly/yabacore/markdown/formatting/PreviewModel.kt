@@ -1,5 +1,6 @@
 package dev.subfly.yabacore.markdown.formatting
 
+import dev.subfly.yabacore.markdown.ast.TableAlignment
 import dev.subfly.yabacore.markdown.core.Range
 
 /**
@@ -47,8 +48,14 @@ sealed interface PreviewBlockUiModel {
         override val sectionKey: String,
         override val range: Range,
         val ordered: Boolean,
-        val items: List<List<InlineRunUiModel>>,
+        val items: List<ListItem>,
     ) : PreviewBlockUiModel
+
+    /** Single list item: inline runs and optional task checked state (null = not a task item). */
+    data class ListItem(
+        val runs: List<InlineRunUiModel>,
+        val checked: Boolean?,
+    )
 
     data class HorizontalRule(
         override val sectionKey: String,
@@ -60,6 +67,7 @@ sealed interface PreviewBlockUiModel {
         override val range: Range,
         val header: List<List<InlineRunUiModel>>,
         val rows: List<List<List<InlineRunUiModel>>>,
+        val alignments: List<TableAlignment> = emptyList(),
     ) : PreviewBlockUiModel
 
     data class Image(
@@ -70,6 +78,17 @@ sealed interface PreviewBlockUiModel {
         val alt: String?,
         val caption: String?,
     ) : PreviewBlockUiModel
+
+    data class DefinitionList(
+        override val sectionKey: String,
+        override val range: Range,
+        val items: List<DefinitionItem>,
+    ) : PreviewBlockUiModel
+
+    data class DefinitionItem(
+        val term: List<InlineRunUiModel>,
+        val definitions: List<List<InlineRunUiModel>>,
+    )
 }
 
 /**
@@ -86,6 +105,8 @@ sealed interface InlineRunUiModel {
         val strikethrough: Boolean = false,
         val code: Boolean = false,
         val linkUrl: String? = null,
+        val superscript: Boolean = false,
+        val subscript: Boolean = false,
     ) : InlineRunUiModel
 
     data class Image(

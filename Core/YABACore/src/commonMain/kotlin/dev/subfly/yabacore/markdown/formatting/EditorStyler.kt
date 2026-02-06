@@ -32,6 +32,11 @@ object EditorStyler {
                 out.add(EditorStyleSpan(block.range, EditorSpanStyle.CODE))
             }
             is BlockNode.HorizontalRule, is BlockNode.TableBlock -> {}
+            is BlockNode.DefinitionList -> block.children.forEach { collectSpansFromBlock(it, out) }
+            is BlockNode.DefinitionItem -> {
+                block.term.forEach { collectSpansFromInline(it, out) }
+                block.definitions.forEach { def -> def.forEach { collectSpansFromInline(it, out) } }
+            }
         }
     }
 
@@ -57,6 +62,8 @@ object EditorStyler {
             }
             is InlineNode.Image -> {}
             is InlineNode.SoftBreak, is InlineNode.HardBreak -> {}
+            is InlineNode.FootnoteRef, is InlineNode.Superscript, is InlineNode.Subscript ->
+                node.children.forEach { collectSpansFromInline(it, out) }
         }
     }
 }

@@ -22,6 +22,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
@@ -56,6 +57,11 @@ internal fun buildBlockAnnotatedString(
                         fontStyle = if (run.italic) FontStyle.Italic else FontStyle.Normal,
                         textDecoration = if (run.strikethrough) TextDecoration.LineThrough else null,
                         fontFamily = if (run.code) FontFamily.Monospace else FontFamily.Default,
+                        baselineShift = when {
+                            run.superscript -> BaselineShift.Superscript
+                            run.subscript -> BaselineShift.Subscript
+                            else -> null
+                        },
                     )
                     if (run.linkUrl != null) {
                         style = style.copy(

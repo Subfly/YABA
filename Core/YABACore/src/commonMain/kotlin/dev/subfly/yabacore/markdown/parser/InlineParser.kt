@@ -23,6 +23,21 @@ object InlineParser {
                 }
 
                 input[i] == '[' -> {
+                    val footnoteRef = matchFootnoteRef(input, i)
+                    if (footnoteRef != null) {
+                        val (endIdx, refId) = footnoteRef
+                        val id = IdGenerator.newId()
+                        result.add(
+                            InlineNode.FootnoteRef(
+                                id,
+                                Range(baseOffset + i, baseOffset + endIdx),
+                                emptyList(),
+                                refId
+                            )
+                        )
+                        i = endIdx
+                        continue
+                    }
                     val linkMatch = matchLink(input, i)
                     if (linkMatch != null) {
                         val (textNodes, endIdx) = linkMatch
@@ -111,19 +126,20 @@ object InlineParser {
                 }
 
                 input[i] == '`' -> {
-                    val end = input.indexOf('`', i + 1)
+                    val n = countBackticks(input, i)
+                    val end = findClosingBackticks(input, i + n, n)
                     if (end != -1) {
-                        val literal = input.substring(i + 1, end)
+                        val literal = input.substring(i + n, end)
                         val id = IdGenerator.newId()
                         result.add(
                             InlineNode.InlineCode(
                                 id,
-                                Range(baseOffset + i, baseOffset + end + 1),
+                                Range(baseOffset + i, baseOffset + end + n),
                                 emptyList(),
                                 literal
                             )
                         )
-                        i = end + 1
+                        i = end + n
                         continue
                     }
                 }
@@ -145,8 +161,67 @@ object InlineParser {
                         continue
                     }
                 }
+
+                input[i] == '^' && i + 1 < input.length && !input[i + 1].isWhitespace() -> {
+                    val end = findUnescaped(input, "^", i + 1)
+                    if (end != -1 && end > i + 1 && (end == i + 2 || !input[end - 1].isWhitespace())) {
+                        val inner = input.substring(i + 1, end)
+                        val innerNodes = parse(inner, baseOffset + i + 1)
+                        val id = IdGenerator.newId()
+                        result.add(
+                            InlineNode.Superscript(
+                                id,
+                                Range(baseOffset + i, baseOffset + end + 1),
+                                innerNodes
+                            )
+                        )
+                        i = end + 1
+                        continue
+                    }
+                }
+
+                input[i] == '~' && i + 1 < input.length && input[i + 1] != '~' -> {
+                    val end = input.indexOf('~', i + 1)
+                    if (end != -1 && end > i + 1 && (end == i + 2 || !input[end - 1].isWhitespace()) && (i + 1 >= input.length || !input[i + 1].isWhitespace())) {
+                        val inner = input.substring(i + 1, end)
+                        val innerNodes = parse(inner, baseOffset + i + 1)
+                        val id = IdGenerator.newId()
+                        result.add(
+                            InlineNode.Subscript(
+                                id,
+                                Range(baseOffset + i, baseOffset + end + 1),
+                                innerNodes
+                            )
+                        )
+                        i = end + 1
+                        continue
+                    }
+                }
             }
-            val nextSpecial = input.indexOfAny(charArrayOf('[', '*', '_', '`', '\n', '~'), i)
+            matchAutolink(input, i)?.let { (linkEnd, url) ->
+                val id = IdGenerator.newId()
+                result.add(
+                    InlineNode.Link(
+                        id,
+                        Range(baseOffset + i, baseOffset + linkEnd),
+                        listOf(
+                            InlineNode.Text(
+                                IdGenerator.newId(),
+                                Range(baseOffset + i, baseOffset + linkEnd),
+                                emptyList(),
+                                url
+                            )
+                        ),
+                        url,
+                        null
+                    )
+                )
+                i = linkEnd
+                continue
+            }
+
+            val nextSpecial =
+                input.indexOfAny(charArrayOf('[', '*', '_', '`', '\n', '~', '\\', '^'), i)
             val end = if (nextSpecial == -1) input.length else nextSpecial
             if (end > i) {
                 val slice = input.substring(i, end)
@@ -161,28 +236,43 @@ object InlineParser {
                     )
                     i = hardEnd
                 } else {
+                    val displayText = processBackslashEscapes(slice)
                     val id = IdGenerator.newId()
                     result.add(
                         InlineNode.Text(
                             id,
                             Range(baseOffset + i, baseOffset + end),
                             emptyList(),
-                            slice
+                            displayText
                         )
                     )
                     i = end
                 }
             } else {
-                val id = IdGenerator.newId()
-                result.add(
-                    InlineNode.Text(
-                        id,
-                        Range(baseOffset + i, baseOffset + i + 1),
-                        emptyList(),
-                        input[i].toString()
+                if (input[i] == '\\' && i + 1 < input.length) {
+                    val displayChar = processBackslashEscapes(input.substring(i, i + 2))
+                    val id = IdGenerator.newId()
+                    result.add(
+                        InlineNode.Text(
+                            id,
+                            Range(baseOffset + i, baseOffset + i + 2),
+                            emptyList(),
+                            displayChar
+                        )
                     )
-                )
-                i++
+                    i += 2
+                } else {
+                    val id = IdGenerator.newId()
+                    result.add(
+                        InlineNode.Text(
+                            id,
+                            Range(baseOffset + i, baseOffset + i + 1),
+                            emptyList(),
+                            input[i].toString()
+                        )
+                    )
+                    i++
+                }
             }
         }
         return result
@@ -283,6 +373,99 @@ object InlineParser {
                 }
             }
             i++
+        }
+        return -1
+    }
+
+    /** Markdown escapable characters (backslash followed by one of these is dropped). */
+    private val escapableChars = setOf(
+        '\\', '`', '*', '_', '{', '}', '[', ']', '(', ')', '#', '+', '-', '.', '!', '|'
+    )
+
+    private fun processBackslashEscapes(s: String): String {
+        val out = StringBuilder(s.length)
+        var i = 0
+        while (i < s.length) {
+            if (s[i] == '\\' && i + 1 < s.length && s[i + 1] in escapableChars) {
+                out.append(s[i + 1])
+                i += 2
+            } else {
+                out.append(s[i])
+                i++
+            }
+        }
+        return out.toString()
+    }
+
+    /**
+     * If at [start] we have a bare URL (http://, https://, or www.), returns (endIndex, url).
+     * End of URL: space, newline, or closing punctuation like ), ], etc.
+     */
+    private fun matchFootnoteRef(input: String, start: Int): Pair<Int, String>? {
+        if (start >= input.length || input[start] != '[' || start + 2 > input.length || input[start + 1] != '^') return null
+        val closeBracket = input.indexOf(']', start + 2)
+        if (closeBracket == -1) return null
+        val refId = input.substring(start + 2, closeBracket).trim()
+        if (refId.isEmpty()) return null
+        return closeBracket + 1 to refId
+    }
+
+    private fun matchAutolink(input: String, start: Int): Pair<Int, String>? {
+        if (start >= input.length) return null
+        val prefix: String
+        val urlStart: Int
+        when {
+            input.startsWith("https://", start) -> {
+                prefix = "https://"
+                urlStart = start
+            }
+
+            input.startsWith("http://", start) -> {
+                prefix = "http://"
+                urlStart = start
+            }
+
+            input.startsWith("www.", start) -> {
+                prefix = "www."
+                urlStart = start
+            }
+
+            else -> return null
+        }
+        var i = urlStart + prefix.length
+        while (i < input.length) {
+            val c = input[i]
+            when {
+                c.isWhitespace() -> break
+                c in ")\\]>\"'`*,;:!?" -> break
+                c == '<' -> break
+            }
+            i++
+        }
+        if (i == urlStart + prefix.length) return null
+        val url = input.substring(urlStart, i)
+        return i to url
+    }
+
+    private fun countBackticks(input: String, start: Int): Int {
+        var i = start
+        while (i < input.length && input[i] == '`') i++
+        return i - start
+    }
+
+    /** Find closing run of exactly [n] backticks starting at [start]. Returns start index of closing run, or -1. */
+    private fun findClosingBackticks(input: String, start: Int, n: Int): Int {
+        var i = start
+        while (i <= input.length - n) {
+            if (input[i] != '`') {
+                i++
+                continue
+            }
+            var j = i
+            while (j < input.length && input[j] == '`') j++
+            val count = j - i
+            if (count == n) return i
+            i = j
         }
         return -1
     }

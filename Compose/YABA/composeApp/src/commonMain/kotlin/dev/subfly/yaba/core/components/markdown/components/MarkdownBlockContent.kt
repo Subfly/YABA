@@ -67,5 +67,13 @@ internal fun MarkdownBlockContent(
         )
 
         is PreviewBlockUiModel.Image -> MarkdownImageBlock(block)
+
+        is PreviewBlockUiModel.DefinitionList -> MarkdownDefinitionListBlock(
+            block = block,
+            highlights = highlights,
+            defaultColor = defaultColor,
+            linkColor = linkColor,
+            linkInteractionListener = linkInteractionListener,
+        )
     }
 }

@@ -3,6 +3,7 @@ package dev.subfly.yabacore.markdown.parser
 import dev.subfly.yabacore.common.IdGenerator
 import dev.subfly.yabacore.markdown.ast.BlockNode
 import dev.subfly.yabacore.markdown.ast.InlineNode
+import dev.subfly.yabacore.markdown.ast.TableAlignment
 import dev.subfly.yabacore.markdown.core.Range
 
 /**
@@ -30,6 +31,56 @@ object BlockParser {
                 line.isBlank() -> {
                     charOffset = lineEnd + 1
                     i++
+                    continue
+                }
+
+                i + 1 < lines.size && line.isNotBlank() && lines[i + 1].trim().let { next ->
+                    next.isNotEmpty() && next.all { it == '=' }
+                } -> {
+                    val (content, customId) = parseHeadingContent(line.trim())
+                    val contentStart = lineStart + line.indexOf(line.trim())
+                    val inline = InlineParser.parse(content, contentStart)
+                    val id = IdGenerator.newId()
+                    val underlineStart = charOffset + line.length + 1
+                    val underlineLine = lines[i + 1]
+                    val underlineEnd = underlineStart + underlineLine.length
+                    blocks.add(
+                        BlockNode.Heading(
+                            id,
+                            Range(lineStart, underlineEnd),
+                            emptyList(),
+                            1,
+                            inline,
+                            customId
+                        )
+                    )
+                    charOffset = underlineEnd + 1
+                    i += 2
+                    continue
+                }
+
+                i + 1 < lines.size && line.isNotBlank() && lines[i + 1].trim().let { next ->
+                    next.isNotEmpty() && next.all { it == '-' }
+                } -> {
+                    val (content, customId) = parseHeadingContent(line.trim())
+                    val contentStart = lineStart + line.indexOf(line.trim())
+                    val inline = InlineParser.parse(content, contentStart)
+                    val id = IdGenerator.newId()
+                    val underlineStart = charOffset + line.length + 1
+                    val underlineLine = lines[i + 1]
+                    val underlineEnd = underlineStart + underlineLine.length
+                    blocks.add(
+                        BlockNode.Heading(
+                            id,
+                            Range(lineStart, underlineEnd),
+                            emptyList(),
+                            2,
+                            inline,
+                            customId
+                        )
+                    )
+                    charOffset = underlineEnd + 1
+                    i += 2
                     continue
                 }
 
@@ -72,34 +123,59 @@ object BlockParser {
                     continue
                 }
 
-                line.trimStart().startsWith(">") -> {
-                    val quoteLines = mutableListOf<String>()
-                    while (i < lines.size && lines[i].trimStart().startsWith(">")) {
-                        quoteLines.add(lines[i].trimStart().removePrefix(">").trim())
-                        charOffset += lines[i].length + 1
+                isIndentedCodeLine(line) -> {
+                    val codeLines = mutableListOf<String>()
+                    var codeCharOffset = charOffset
+                    while (i < lines.size && isIndentedCodeLine(lines[i])) {
+                        val stripped = stripIndentedCodeLine(lines[i])
+                        codeLines.add(stripped)
+                        codeCharOffset += lines[i].length + 1
                         i++
                     }
-                    val quoteEnd = charOffset - 1
-                    val quoteContent = quoteLines.joinToString("\n")
-                    val firstQuoteLine = lines[i - quoteLines.size]
+                    val codeEnd = codeCharOffset - 1
+                    val codeText = codeLines.joinToString("\n")
+                    val id = IdGenerator.newId()
+                    blocks.add(
+                        BlockNode.CodeFence(
+                            id,
+                            Range(lineStart, codeEnd),
+                            emptyList(),
+                            null,
+                            codeText
+                        )
+                    )
+                    charOffset = codeCharOffset
+                    continue
+                }
+
+                line.trimStart().startsWith(">") -> {
+                    val (nextI, quoteEndOffset, paragraphContents) = parseBlockQuoteLines(lines, i, charOffset)
+                    val firstQuoteLine = lines[i]
                     val contentStartOffset = lineStart +
                             firstQuoteLine.takeWhile { it == ' ' }.length +
                             1 +
                             (if (firstQuoteLine.trimStart().startsWith("> ")) 1 else 0)
-                    val inline = InlineParser.parse(quoteContent, contentStartOffset)
+                    var runningOffset = contentStartOffset
+                    val paragraphBlocks = paragraphContents.map { content ->
+                        val range = Range(runningOffset, runningOffset + content.length)
+                        runningOffset += content.length + 2
+                        BlockNode.Paragraph(
+                            IdGenerator.newId(),
+                            range,
+                            emptyList(),
+                            InlineParser.parse(content, range.start)
+                        )
+                    }
                     val id = IdGenerator.newId()
                     blocks.add(
                         BlockNode.BlockQuote(
-                            id, Range(lineStart, quoteEnd), listOf(
-                                BlockNode.Paragraph(
-                                    IdGenerator.newId(),
-                                    Range(lineStart, quoteEnd),
-                                    emptyList(),
-                                    inline
-                                )
-                            )
+                            id,
+                            Range(lineStart, quoteEndOffset),
+                            paragraphBlocks
                         )
                     )
+                    charOffset = quoteEndOffset + 1
+                    i = nextI
                     continue
                 }
 
@@ -186,9 +262,10 @@ object BlockParser {
 
                 headingRegex.matches(line.trim()) -> {
                     val trimmed = line.trim()
-                    val (hashes, content) = headingRegex.find(trimmed)!!.destructured
+                    val (hashes, rawContent) = headingRegex.find(trimmed)!!.destructured
+                    val (content, customId) = parseHeadingContent(rawContent.trim())
                     val contentStart = lineStart + line.indexOf(trimmed) + hashes.length + 1
-                    val inline = InlineParser.parse(content.trim(), contentStart)
+                    val inline = InlineParser.parse(content, contentStart)
                     val id = IdGenerator.newId()
                     blocks.add(
                         BlockNode.Heading(
@@ -196,7 +273,8 @@ object BlockParser {
                             Range(lineStart, lineEnd),
                             emptyList(),
                             hashes.length,
-                            inline
+                            inline,
+                            customId
                         )
                     )
                     charOffset = lineEnd + 1
@@ -205,7 +283,7 @@ object BlockParser {
                 }
 
                 tableRowRegex.matches(line.trim()) -> {
-                    val (nextI, headerCells, rows) = parseTable(source, lines, i, charOffset)
+                    val (nextI, headerCells, rows, alignments) = parseTable(source, lines, i, charOffset)
                     val headerInline = headerCells.map { (text, r) ->
                         InlineParser.parse(text, r.start).ifEmpty {
                             listOf(
@@ -244,9 +322,36 @@ object BlockParser {
                             Range(tableStart, tableEnd),
                             emptyList(),
                             headerInline,
-                            rowInlines
+                            rowInlines,
+                            alignments
                         )
                     )
+                    i = nextI
+                    charOffset = if (i < lines.size) charOffsetForLine(lines, i) else source.length
+                    continue
+                }
+
+                i + 1 < lines.size && line.isNotBlank() && lines[i + 1].trimStart().startsWith(":") -> {
+                    val (nextI, items) = parseDefinitionList(lines, i, charOffset)
+                    val defItemBlocks = items.map { (termContent, termRange, defContents) ->
+                        val termInline = InlineParser.parse(termContent, termRange.start)
+                        val defInlines = defContents.map { (defContent, defRange) ->
+                            InlineParser.parse(defContent, defRange.start)
+                        }
+                        BlockNode.DefinitionItem(
+                            IdGenerator.newId(),
+                            termRange,
+                            emptyList(),
+                            termInline,
+                            defInlines
+                        )
+                    }
+                    val listId = IdGenerator.newId()
+                    val listRange = Range(
+                        lineStart,
+                        if (nextI < lines.size) charOffsetForLine(lines, nextI) - 1 else source.length
+                    )
+                    blocks.add(BlockNode.DefinitionList(listId, listRange, defItemBlocks))
                     i = nextI
                     charOffset = if (i < lines.size) charOffsetForLine(lines, i) else source.length
                     continue
@@ -259,10 +364,13 @@ object BlockParser {
                         !headingRegex.matches(lines[i].trim()) &&
                         !lines[i].trimStart().startsWith("```") &&
                         !lines[i].trimStart().startsWith(">") &&
+                        !isIndentedCodeLine(lines[i]) &&
                         !listItemUnorderedRegex.matches(lines[i].trim()) &&
                         !listItemOrderedRegex.matches(lines[i].trim()) &&
                         !tableRowRegex.matches(lines[i].trim()) &&
-                        lines[i].trim() != "---" && lines[i].trim() != "***" && lines[i].trim() != "___"
+                        lines[i].trim() != "---" && lines[i].trim() != "***" && lines[i].trim() != "___" &&
+                        !lines[i].trim().let { t -> t.isNotEmpty() && t.all { c -> c == '=' } } &&
+                        !lines[i].trim().let { t -> t.isNotEmpty() && t.all { c -> c == '-' } }
                     ) {
                         paraLines.add(lines[i])
                         charOffset += lines[i].length + 1
@@ -342,9 +450,19 @@ object BlockParser {
         lines: List<String>,
         start: Int,
         startCharOffset: Int,
-    ): Triple<Int, List<Pair<String, Range>>, List<List<Pair<String, Range>>>> {
+    ): Quad<Int, List<Pair<String, Range>>, List<List<Pair<String, Range>>>, List<TableAlignment>> {
         fun splitCells(row: String): List<String> =
             row.trim().removeSurrounding("|").split("|").map { it.trim().replace("\\|", "|") }
+
+        fun parseAlignment(cell: String): TableAlignment {
+            val t = cell.trim()
+            return when {
+                t.startsWith(":") && t.endsWith(":") -> TableAlignment.CENTER
+                t.endsWith(":") -> TableAlignment.RIGHT
+                t.startsWith(":") -> TableAlignment.LEFT
+                else -> TableAlignment.LEFT
+            }
+        }
 
         var i = start
         var charOffset = startCharOffset
@@ -361,10 +479,16 @@ object BlockParser {
         }
         charOffset += lines[i].length + 1
         i++
+        var alignments = List(headerCells.size) { TableAlignment.LEFT }
         val rows = mutableListOf<List<Pair<String, Range>>>()
         while (i < lines.size && tableRowRegex.matches(lines[i].trim())) {
             val row = lines[i].trim()
             if (row.contains("---")) {
+                val delimCells = splitCells(row)
+                alignments = delimCells.map { parseAlignment(it) }
+                if (alignments.size != headerCells.size) {
+                    alignments = List(headerCells.size) { TableAlignment.LEFT }
+                }
                 charOffset += lines[i].length + 1
                 i++
                 continue
@@ -383,6 +507,99 @@ object BlockParser {
             charOffset += lines[i].length + 1
             i++
         }
-        return Triple(i, headerRanges, rows)
+        return Quad(i, headerRanges, rows, alignments)
+    }
+
+    private data class Quad<A, B, C, D>(val first: A, val second: B, val third: C, val fourth: D)
+
+    /** If content ends with {#id}, returns (content without suffix, id); else (content, null). */
+    private fun parseHeadingContent(content: String): Pair<String, String?> {
+        val regex = Regex("\\s*\\{\\s*#([^}]+)\\s*\\}\\s*$")
+        val match = regex.find(content) ?: return content to null
+        val text = content.removeRange(match.range)
+        return text.trimEnd() to match.groupValues[1].trim()
+    }
+
+    private fun isIndentedCodeLine(line: String): Boolean {
+        if (line.isEmpty()) return false
+        return line.startsWith("    ") || line[0] == '\t'
+    }
+
+    private fun stripIndentedCodeLine(line: String): String {
+        return when {
+            line.startsWith("    ") -> line.drop(4)
+            line.isNotEmpty() && line[0] == '\t' -> line.drop(1)
+            else -> line
+        }
+    }
+
+    /**
+     * Parses definition list starting at [start]. Returns (next line index, list of (termContent, termRange, list of (defContent, defRange))).
+     */
+    private fun parseDefinitionList(
+        lines: List<String>,
+        start: Int,
+        startCharOffset: Int,
+    ): Pair<Int, List<Triple<String, Range, List<Pair<String, Range>>>>> {
+        val items = mutableListOf<Triple<String, Range, List<Pair<String, Range>>>>()
+        var i = start
+        var charOffset = startCharOffset
+        while (i < lines.size) {
+            val line = lines[i]
+            val lineStart = charOffset
+            val trimmed = line.trim()
+            if (trimmed.isBlank()) {
+                i++
+                charOffset += line.length + 1
+                break
+            }
+            val termContent = trimmed
+            val termRange = Range(lineStart + line.indexOf(trimmed), lineStart + line.length)
+            charOffset += line.length + 1
+            i++
+            val defContents = mutableListOf<Pair<String, Range>>()
+            while (i < lines.size && lines[i].trimStart().startsWith(":")) {
+                val defLine = lines[i]
+                val defStart = charOffset + defLine.takeWhile { it == ' ' }.length
+                val defContent = defLine.trimStart().removePrefix(":").trim()
+                val defRange = Range(defStart, defStart + defContent.length)
+                defContents.add(defContent to defRange)
+                charOffset += defLine.length + 1
+                i++
+            }
+            items.add(Triple(termContent, termRange, defContents))
+        }
+        return i to items
+    }
+
+    /**
+     * Consumes ">" lines and returns (next line index, quote end char offset, list of paragraph contents).
+     * Blank ">" or "> " lines start a new paragraph.
+     */
+    private fun parseBlockQuoteLines(
+        lines: List<String>,
+        start: Int,
+        startCharOffset: Int,
+    ): Triple<Int, Int, List<String>> {
+        val paragraphs = mutableListOf<String>()
+        var current = mutableListOf<String>()
+        var i = start
+        var charOffset = startCharOffset
+        while (i < lines.size && lines[i].trimStart().startsWith(">")) {
+            val content = lines[i].trimStart().removePrefix(">").trim()
+            if (content.isEmpty()) {
+                if (current.isNotEmpty()) {
+                    paragraphs.add(current.joinToString("\n"))
+                    current = mutableListOf()
+                }
+            } else {
+                current.add(content)
+            }
+            charOffset += lines[i].length + 1
+            i++
+        }
+        if (current.isNotEmpty()) paragraphs.add(current.joinToString("\n"))
+        val quoteEnd = if (i > start) charOffset - 1 else startCharOffset
+        return Triple(i, quoteEnd, paragraphs)
     }
 }

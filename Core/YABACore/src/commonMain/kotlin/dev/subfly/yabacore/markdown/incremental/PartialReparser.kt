@@ -69,6 +69,16 @@ object PartialReparser {
         is BlockNode.TableBlock -> block.copy(
             range = Range(block.range.start + delta, block.range.end + delta),
         )
+
+        is BlockNode.DefinitionList -> block.copy(
+            range = Range(block.range.start + delta, block.range.end + delta),
+            children = block.children.map { shiftBlockRange(it, delta) },
+        )
+
+        is BlockNode.DefinitionItem -> block.copy(
+            range = Range(block.range.start + delta, block.range.end + delta),
+            children = block.children.map { shiftBlockRange(it, delta) },
+        )
     }
 
     /**

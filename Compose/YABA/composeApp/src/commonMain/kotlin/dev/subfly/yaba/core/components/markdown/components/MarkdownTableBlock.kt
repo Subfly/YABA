@@ -15,8 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.LinkInteractionListener
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.components.markdown.MarkdownSelectableText
+import dev.subfly.yabacore.markdown.ast.TableAlignment
 import dev.subfly.yabacore.markdown.formatting.PreviewBlockUiModel
 import dev.subfly.yabacore.model.ui.HighlightUiModel
 
@@ -42,7 +44,8 @@ internal fun MarkdownTableBlock(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            block.header.forEach { cellRuns ->
+            block.header.forEachIndexed { colIndex, cellRuns ->
+                val align = block.alignments.getOrNull(colIndex) ?: TableAlignment.LEFT
                 val (annotated, inlineContent) = buildBlockAnnotatedString(
                     runs = cellRuns,
                     blockRange = block.range,
@@ -54,7 +57,11 @@ internal fun MarkdownTableBlock(
                 )
                 MarkdownSelectableText(
                     text = annotated,
-                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.labelMedium.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = textAlignFor(align),
+                    ),
                     inlineContent = inlineContent,
                 )
             }
@@ -65,7 +72,8 @@ internal fun MarkdownTableBlock(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                row.forEach { cellRuns ->
+                row.forEachIndexed { colIndex, cellRuns ->
+                    val align = block.alignments.getOrNull(colIndex) ?: TableAlignment.LEFT
                     val (annotated, inlineContent) = buildBlockAnnotatedString(
                         runs = cellRuns,
                         blockRange = block.range,
@@ -77,11 +85,20 @@ internal fun MarkdownTableBlock(
                     )
                     MarkdownSelectableText(
                         text = annotated,
-                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            textAlign = textAlignFor(align),
+                        ),
                         inlineContent = inlineContent,
                     )
                 }
             }
         }
     }
+}
+
+private fun textAlignFor(alignment: TableAlignment): TextAlign = when (alignment) {
+    TableAlignment.LEFT -> TextAlign.Start
+    TableAlignment.CENTER -> TextAlign.Center
+    TableAlignment.RIGHT -> TextAlign.End
 }
