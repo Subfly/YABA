@@ -28,6 +28,7 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.core.splashscreen)
+            implementation(libs.androidx.webkit)
         }
         commonMain.dependencies {
             implementation(libs.kotlinx.serialization.json)

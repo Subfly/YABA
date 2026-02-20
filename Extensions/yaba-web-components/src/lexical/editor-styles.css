@@ -1,0 +1,119 @@
+/* Lexical editor styling - uses CSS variables from theme */
+.yaba-editor-container {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  padding: 1rem;
+  font-family: var(--yaba-font-family);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--yaba-on-bg);
+  caret-color: var(--yaba-cursor, var(--yaba-primary));
+}
+
+.yaba-editor-container [contenteditable="true"] {
+  outline: none;
+  min-height: 100%;
+}
+
+.yaba-editor-paragraph {
+  margin: 0 0 0.75em;
+}
+
+.yaba-editor-h1 { font-size: 2em; margin: 0.67em 0 0.5em; font-weight: 700; }
+.yaba-editor-h2 { font-size: 1.5em; margin: 0.75em 0 0.5em; font-weight: 600; }
+.yaba-editor-h3 { font-size: 1.25em; margin: 0.83em 0 0.5em; font-weight: 600; }
+.yaba-editor-h4, .yaba-editor-h5, .yaba-editor-h6 { font-size: 1em; margin: 1em 0 0.5em; font-weight: 600; }
+
+.yaba-editor-ul, .yaba-editor-ol {
+  margin: 0.5em 0;
+  padding-left: 1.5em;
+}
+
+.yaba-editor-li {
+  margin: 0.25em 0;
+}
+
+.yaba-editor-link {
+  color: var(--yaba-primary);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.yaba-editor-bold { font-weight: 700; }
+.yaba-editor-italic { font-style: italic; }
+.yaba-editor-underline { text-decoration: underline; }
+.yaba-editor-strikethrough { text-decoration: line-through; }
+.yaba-editor-code {
+  font-family: ui-monospace, monospace;
+  background: var(--yaba-surface-variant);
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.yaba-editor-quote {
+  margin: 0.5em 0;
+  padding-left: 1em;
+  border-left: 3px solid var(--yaba-primary);
+  color: var(--yaba-on-surface-variant);
+}
+
+.yaba-editor-code-block {
+  font-family: ui-monospace, monospace;
+  background: var(--yaba-surface-variant);
+  padding: 1em;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 0.5em 0;
+  font-size: 0.9em;
+}
+
+.yaba-editor-table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0.5em 0;
+}
+
+.yaba-editor-table-cell,
+.yaba-editor-table-cell-header {
+  border: 1px solid var(--yaba-outline);
+  padding: 0.5em 0.75em;
+  text-align: left;
+}
+
+.yaba-editor-table-cell-header {
+  font-weight: 600;
+  background: var(--yaba-surface-variant);
+}
+
+.yaba-editor-hr {
+  border: none;
+  border-top: 2px solid var(--yaba-outline);
+  margin: 1em 0;
+}
+
+/* Selection */
+.yaba-editor-container ::selection {
+  background: var(--yaba-primary-container);
+  color: var(--yaba-on-primary-container);
+}
+
+/* Excalidraw */
+.yaba-excalidraw-wrapper {
+  position: relative;
+  display: block;
+  margin: 8px 0;
+}
+.yaba-excalidraw-edit-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
+  background: var(--yaba-primary, #ff7c75);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -16,6 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import dev.subfly.yaba.core.components.webview.ConverterInput
+import dev.subfly.yaba.core.components.webview.YabaWebViewConverter
 import dev.subfly.yaba.core.navigation.creation.ResultStoreKeys
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkFolderSelectionContent
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkInfoContent
@@ -29,6 +32,8 @@ import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.state.creation.linkmark.LinkmarkCreationEvent
+import dev.subfly.yabacore.unfurl.ConverterAssetInput
+import dev.subfly.yabacore.ui.webview.WebComponentUris
 
 @Composable
 fun LinkmarkCreationContent(bookmarkId: String?, initialUrl: String? = null) {
@@ -68,6 +73,35 @@ fun LinkmarkCreationContent(bookmarkId: String?, initialUrl: String? = null) {
             resultStore.removeResult(ResultStoreKeys.SELECTED_IMAGE)
         }
     }
+
+    val converterInput = state.converterHtml?.let { html ->
+        ConverterInput(html = html, baseUrl = state.converterBaseUrl)
+    }
+
+    YabaWebViewConverter(
+        modifier = Modifier.size(0.dp),
+        baseUrl = WebComponentUris.getConverterUri(),
+        input = converterInput,
+        onConverterResult = { result ->
+            vm.onEvent(
+                LinkmarkCreationEvent.OnConverterSucceeded(
+                    markdown = result.markdown,
+                    assets = result.assets.map { a ->
+                        ConverterAssetInput(
+                            placeholder = a.placeholder,
+                            url = a.url,
+                            alt = a.alt,
+                        )
+                    },
+                    title = state.label.takeIf { it.isNotBlank() },
+                    author = null,
+                ),
+            )
+        },
+        onConverterError = { error ->
+            vm.onEvent(LinkmarkCreationEvent.OnConverterFailed(error = error))
+        },
+    )
 
     Column(
         modifier = Modifier

@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -19,13 +18,13 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import dev.subfly.yaba.core.components.markdown.MarkdownPreviewView
+import dev.subfly.yaba.core.components.webview.YabaWebViewViewer
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.rememberUrlLauncher
-import dev.subfly.yabacore.markdown.formatting.PreviewDocumentUiModel
 import dev.subfly.yabacore.state.detail.linkmark.LinkmarkDetailEvent
 import dev.subfly.yabacore.state.detail.linkmark.LinkmarkDetailUIState
 import dev.subfly.yabacore.ui.icon.YabaIcon
+import dev.subfly.yabacore.ui.webview.WebComponentUris
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.bookmark_detail_title
@@ -72,14 +71,12 @@ internal fun LinkmarkContentLayout(
             }
         }
     ) { paddings ->
-        MarkdownPreviewView(
-            model = state.previewDocument ?: PreviewDocumentUiModel(emptyList()),
+        YabaWebViewViewer(
             modifier = Modifier.fillMaxSize().padding(paddings),
-            highlights = state.highlights,
-            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 12.dp),
-            defaultColor = MaterialTheme.colorScheme.onSurface,
-            linkColor = MaterialTheme.colorScheme.primary,
-            openUrl = openUrl,
+            baseUrl = WebComponentUris.getViewerUri(),
+            markdown = state.readableMarkdown ?: "",
+            assetsBaseUrl = state.assetsBaseUrl,
+            onUrlClick = openUrl,
         )
     }
 }

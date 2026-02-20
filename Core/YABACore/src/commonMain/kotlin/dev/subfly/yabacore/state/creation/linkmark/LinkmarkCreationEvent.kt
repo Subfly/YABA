@@ -3,6 +3,7 @@ package dev.subfly.yabacore.state.creation.linkmark
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.model.utils.LinkType
+import dev.subfly.yabacore.unfurl.ConverterAssetInput
 
 /**
  * Events for linkmark creation/editing state machine.
@@ -93,6 +94,21 @@ sealed class LinkmarkCreationEvent {
      * the user's title/description automatically.
      */
     data object OnApplyContentUpdates : LinkmarkCreationEvent()
+
+    /**
+     * Converter (WebView) finished successfully with markdown + asset mappings.
+     */
+    data class OnConverterSucceeded(
+        val markdown: String,
+        val assets: List<ConverterAssetInput>,
+        val title: String?,
+        val author: String?,
+    ) : LinkmarkCreationEvent()
+
+    /**
+     * Converter (WebView) failed.
+     */
+    data class OnConverterFailed(val error: Throwable) : LinkmarkCreationEvent()
 
     /**
      * Save the linkmark (create or update).

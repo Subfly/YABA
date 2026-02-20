@@ -14,6 +14,7 @@ kotlin = "2.3.0"
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.10.0"
 androidx-core-splashscreen = "1.2.0"
+androidx-webkit = "1.15.0"
 yabacore = "0.1.0-SNAPSHOT"
 
 [libraries]
@@ -31,6 +32,7 @@ material3-adaptive-layout = { module = "org.jetbrains.compose.material3.adaptive
 material3-adaptive-nav3 = { module = "org.jetbrains.compose.material3.adaptive:adaptive-navigation3", version.ref = "adaptive" }
 jetbrains-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "cmpNavigation3" }
 compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
+androidx-webkit = { module = "androidx.webkit:webkit", version.ref = "androidx-webkit" }
 yabacore = { module = "dev.subfly.yabacore:yabacore", version.ref = "yabacore" }
 
 [plugins]

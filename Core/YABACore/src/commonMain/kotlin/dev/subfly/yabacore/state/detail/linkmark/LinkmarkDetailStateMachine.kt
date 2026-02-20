@@ -6,12 +6,11 @@ import dev.subfly.yabacore.database.mappers.toPreviewUiModel
 import dev.subfly.yabacore.database.mappers.toUiModel
 import dev.subfly.yabacore.database.models.BookmarkWithRelations
 import dev.subfly.yabacore.filesystem.BookmarkFileManager
+import dev.subfly.yabacore.common.CoreConstants
 import dev.subfly.yabacore.managers.AllBookmarksManager
 import dev.subfly.yabacore.managers.HighlightManager
 import dev.subfly.yabacore.managers.LinkmarkManager
 import dev.subfly.yabacore.managers.ReadableContentManager
-import dev.subfly.yabacore.markdown.formatting.PreviewModelBuilder
-import dev.subfly.yabacore.markdown.parser.MarkdownParser
 import dev.subfly.yabacore.model.ui.BookmarkPreviewUiModel
 import dev.subfly.yabacore.state.base.BaseStateMachine
 import dev.subfly.yabacore.unfurl.Unfurler
@@ -21,7 +20,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+
+private data class LinkmarkDetailCombine(
+    val bookmark: BookmarkPreviewUiModel?,
+    val linkDetails: LinkBookmarkEntity?,
+    val readableVersions: List<dev.subfly.yabacore.model.ui.ReadableVersionUiModel>,
+    val highlights: List<dev.subfly.yabacore.model.ui.HighlightUiModel>,
+)
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LinkmarkDetailStateMachine :
@@ -71,20 +78,37 @@ class LinkmarkDetailStateMachine :
                         readableVersionsFlow,
                         highlightsFlow,
                     ) { bookmark, linkDetails, readableVersions, highlights ->
-                        val readable = readableVersions.firstOrNull()
-                        val markdown = readable?.markdown
-                        val assetPathByAssetId = readable?.assets?.associate { it.assetId to it.absolutePath } ?: emptyMap()
-                        val previewDocument = if (markdown != null) {
-                            PreviewModelBuilder.build(MarkdownParser.parse(markdown), assetPathByAssetId)
-                        } else null
-                        currentState().copy(
+                        LinkmarkDetailCombine(
                             bookmark = bookmark,
-                            linkDetails = linkDetails?.toUiModel(),
+                            linkDetails = linkDetails,
                             readableVersions = readableVersions,
-                            previewDocument = previewDocument,
                             highlights = highlights,
-                            isLoading = false,
                         )
+                    }.flatMapLatest { combined ->
+                        flow {
+                            val readable = combined.readableVersions.firstOrNull()
+                            val markdown = readable?.markdown
+                            val assetsBaseUrl = if (markdown != null && id != null) {
+                                val folderPath =
+                                    BookmarkFileManager.getAbsolutePath(
+                                        CoreConstants.FileSystem.Linkmark.bookmarkFolder(id),
+                                    )
+                                val base =
+                                    if (folderPath.startsWith("file://")) folderPath else "file://$folderPath"
+                                base.trimEnd('/') + "/"
+                            } else null
+                            emit(
+                                currentState().copy(
+                                    bookmark = combined.bookmark,
+                                    linkDetails = combined.linkDetails?.toUiModel(),
+                                    readableVersions = combined.readableVersions,
+                                    readableMarkdown = markdown,
+                                    assetsBaseUrl = assetsBaseUrl,
+                                    highlights = combined.highlights,
+                                    isLoading = false,
+                                ),
+                            )
+                        }
                     }
                 }
             }.collectLatest { newState ->

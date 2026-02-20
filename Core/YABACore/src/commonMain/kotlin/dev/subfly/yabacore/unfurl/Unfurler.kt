@@ -87,9 +87,6 @@ object Unfurler {
         val limitedImageUrls = allImageUrls.take(10)
         val imageOptions = downloadMultipleImageData(limitedImageUrls)
 
-        // Extract readable content from HTML
-        val readableUnfurl = extractReadableContent(html, baseUrl, metadata[META_TITLE])
-
         return YabaLinkPreview(
             url = cleaned,
             title = metadata[META_TITLE],
@@ -101,109 +98,16 @@ object Unfurler {
             iconData = downloadImageData(faviconUrl),
             imageData = metadata[META_IMAGE]?.let { imageOptions[it] },
             imageOptions = imageOptions,
-            readable = readableUnfurl,
+            readable = null,
+            rawHtml = html,
         )
     }
 
-    suspend fun unfurlReadable(urlString: String): ReadableUnfurl? {
-        val normalized = normalizeURL(urlString)
-        val cleaned = LinkCleaner.clean(normalized)
-        val baseUrl = runCatching { Url(cleaned) }.getOrElse {
-            logger.e { "Cannot create url for readable: $cleaned (original: $urlString)" }
-            throw UnfurlError.CannotCreateUrl(cleaned)
-        }
-
-        val html = loadURL(cleaned) ?: return null
-        val tags = extractAllMetaTags(html)
-        val metadata = extractMetaData(tags)
-        return extractReadableContent(html, baseUrl, metadata[META_TITLE])
-    }
-
     /**
-     * Extracts structured readable content from HTML as Markdown
-     * and downloads images as assets.
+     * Fetches HTML and returns readable content. Deprecated: conversion now happens
+     * via WebView converter. Returns null; use creation flow with converter for new content.
      */
-    private suspend fun extractReadableContent(
-        html: String,
-        baseUrl: Url,
-        metaTitle: String?,
-    ): ReadableUnfurl? {
-        return runCatching {
-            val result = ReadableExtractor.extract(html, baseUrl, metaTitle)
-
-            val assets = downloadReadableAssetsFrom(result.assetsToDownload)
-
-            ReadableUnfurl(
-                markdown = result.markdown,
-                title = result.title,
-                author = result.author,
-                assets = assets,
-            )
-        }.getOrElse { e ->
-            logger.w { "Failed to extract readable content: ${e.message}" }
-            null
-        }
-    }
-
-    /**
-     * Downloads images from assetsToDownload and returns them as ReadableAsset list.
-     */
-    private suspend fun downloadReadableAssetsFrom(
-        assetsToDownload: List<AssetToDownload>,
-    ): List<ReadableAsset> = coroutineScope {
-        val tasks = assetsToDownload.map { asset ->
-            async {
-                val bytes = downloadImageData(asset.resolvedUrl)
-                if (bytes != null && isHighQualityImage(bytes)) {
-                    val extension = asset.relativePath.substringAfterLast(".", "jpg")
-                    ReadableAsset(assetId = asset.assetId, extension = extension, bytes = bytes)
-                } else null
-            }
-        }
-
-        tasks.mapNotNull { it.await() }
-    }
-
-    /**
-     * Infers image extension from magic bytes or URL.
-     */
-    private fun inferImageExtension(bytes: ByteArray, url: String): String {
-        // Check magic bytes
-        if (bytes.size >= 3) {
-            // JPEG: FF D8 FF
-            if (bytes[0] == 0xFF.toByte() && bytes[1] == 0xD8.toByte() && bytes[2] == 0xFF.toByte()) {
-                return "jpg"
-            }
-            // PNG: 89 50 4E 47
-            if (bytes.size >= 4 && bytes[0] == 0x89.toByte() && bytes[1] == 0x50.toByte() &&
-                bytes[2] == 0x4E.toByte() && bytes[3] == 0x47.toByte()
-            ) {
-                return "png"
-            }
-            // GIF: 47 49 46
-            if (bytes[0] == 0x47.toByte() && bytes[1] == 0x49.toByte() && bytes[2] == 0x46.toByte()) {
-                return "gif"
-            }
-            // WebP: RIFF....WEBP
-            if (bytes.size >= 12 && bytes[0] == 0x52.toByte() && bytes[1] == 0x49.toByte() &&
-                bytes[2] == 0x46.toByte() && bytes[3] == 0x46.toByte() &&
-                bytes[8] == 0x57.toByte() && bytes[9] == 0x45.toByte() &&
-                bytes[10] == 0x42.toByte() && bytes[11] == 0x50.toByte()
-            ) {
-                return "webp"
-            }
-        }
-
-        // Fallback to URL extension
-        val urlLower = url.lowercase()
-        return when {
-            urlLower.contains(".png") -> "png"
-            urlLower.contains(".gif") -> "gif"
-            urlLower.contains(".webp") -> "webp"
-            urlLower.contains(".jpeg") || urlLower.contains(".jpg") -> "jpg"
-            else -> "jpg" // Default
-        }
-    }
+    suspend fun unfurlReadable(urlString: String): ReadableUnfurl? = null
 
     private fun normalizeURL(urlString: String): String {
         var normalized = urlString.trim()

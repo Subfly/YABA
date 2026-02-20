@@ -1,6 +1,7 @@
 package dev.subfly.yabacore.state.creation.linkmark
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.ui.LinkmarkUiModel
 import dev.subfly.yabacore.model.ui.TagUiModel
@@ -15,7 +16,7 @@ import kotlin.collections.iterator
  *
  * Mirrors the Swift BookmarkCreationState with adaptations for KMP.
  */
-@Immutable
+@Stable
 data class LinkmarkCreationUIState(
         // URL-related state
         val url: String = "",
@@ -57,6 +58,11 @@ data class LinkmarkCreationUIState(
         // Collection associations
         val selectedFolder: FolderUiModel? = null,
         val selectedTags: List<TagUiModel> = emptyList(),
+
+        // Converter flow: raw HTML to be converted by WebView (when both set, conversion runs)
+        val converterHtml: String? = null,
+        val converterBaseUrl: String? = null,
+        val converterError: String? = null,
 
         // Loading and error states
         val isLoading: Boolean = false,
@@ -128,6 +134,9 @@ data class LinkmarkCreationUIState(
         if (selectedLinkType != other.selectedLinkType) return false
         if (selectedFolder != other.selectedFolder) return false
         if (selectedTags != other.selectedTags) return false
+        if (converterHtml != other.converterHtml) return false
+        if (converterBaseUrl != other.converterBaseUrl) return false
+        if (converterError != other.converterError) return false
         if (isLoading != other.isLoading) return false
         if (error != other.error) return false
         if (bookmarkAppearance != other.bookmarkAppearance) return false
@@ -163,6 +172,9 @@ data class LinkmarkCreationUIState(
         result = 31 * result + selectedLinkType.hashCode()
         result = 31 * result + (selectedFolder?.hashCode() ?: 0)
         result = 31 * result + selectedTags.hashCode()
+        result = 31 * result + (converterHtml?.hashCode() ?: 0)
+        result = 31 * result + (converterBaseUrl?.hashCode() ?: 0)
+        result = 31 * result + (converterError?.hashCode() ?: 0)
         result = 31 * result + isLoading.hashCode()
         result = 31 * result + (error?.hashCode() ?: 0)
         result = 31 * result + bookmarkAppearance.hashCode()

@@ -1,0 +1,35 @@
+@import "../../theme/fonts.css";
+
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --yaba-bg: #FAF8FF;
+  --yaba-on-bg: #1A1B21;
+  --yaba-surface: #FAF8FF;
+  --yaba-on-surface: #1A1B21;
+  --yaba-surface-variant: #E1E2EC;
+  --yaba-on-surface-variant: #44464F;
+  --yaba-outline: #757780;
+  --yaba-primary: #485D92;
+  --yaba-on-primary: #FFFFFF;
+  --yaba-font-family: "Quicksand", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--yaba-bg);
+  color: var(--yaba-on-bg);
+  font-family: var(--yaba-font-family);
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}

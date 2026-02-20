@@ -14,6 +14,7 @@ import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.CardImageSizing
 import dev.subfly.yabacore.preferences.SettingsStores
 import dev.subfly.yabacore.state.base.BaseStateMachine
+import dev.subfly.yabacore.unfurl.ConverterResultProcessor
 import dev.subfly.yabacore.unfurl.LinkCleaner
 import dev.subfly.yabacore.unfurl.UnfurlError
 import dev.subfly.yabacore.unfurl.Unfurler
@@ -56,6 +57,8 @@ class LinkmarkCreationStateMachine :
             LinkmarkCreationEvent.OnClearDescription -> onClearDescription()
             LinkmarkCreationEvent.OnRefetch -> onRefetch()
             LinkmarkCreationEvent.OnApplyContentUpdates -> onApplyContentUpdates()
+            is LinkmarkCreationEvent.OnConverterSucceeded -> onConverterSucceeded(event)
+            is LinkmarkCreationEvent.OnConverterFailed -> onConverterFailed(event)
         }
     }
 
@@ -206,32 +209,33 @@ class LinkmarkCreationStateMachine :
                         val imageUpdate = computeByteArrayUpdate(it.imageData, preview.imageData)
                         val iconUpdate = computeByteArrayUpdate(it.iconData, preview.iconData)
                         val videoDiff = preview.videoUrl != it.videoUrl
-                        val readableDiff = preview.readable != it.readable
+                        val rawHtml = preview.rawHtml
+                        val needsConverter = rawHtml != null && rawHtml.isNotBlank()
+                        // When needsConverter, updateReadable will be set via OnConverterSucceeded
                         val hasUpdates =
                             (imageUpdate != null) ||
                                     (iconUpdate != null) ||
-                                    videoDiff ||
-                                    readableDiff
+                                    videoDiff
                         it.copy(
-                            // Only enrich the selectable image list; everything else becomes a
-                            // pending update.
                             selectableImages = preview.imageOptions,
                             hasContentUpdates = hasUpdates,
                             updateImageData = imageUpdate,
                             updateIconData = iconUpdate,
                             shouldUpdateVideoUrl = videoDiff,
                             updateVideoUrl = if (videoDiff) preview.videoUrl else null,
-                            shouldUpdateReadable = readableDiff,
-                            updateReadable = if (readableDiff) preview.readable else null,
+                            converterHtml = if (needsConverter) rawHtml else null,
+                            converterBaseUrl = if (needsConverter) preview.url else null,
                             lastFetchedUrl = urlString,
                             isLoading = false,
                             error = null,
                         )
                     } else {
+                        // Converter flow: pass rawHtml to WebView; wait for OnConverterSucceeded
+                        val rawHtml = preview.rawHtml
+                        val needsConverter = rawHtml != null && rawHtml.isNotBlank()
                         it.copy(
                             cleanedUrl = preview.url,
                             host = preview.host ?: "",
-                            // Only update label/description if they're empty
                             label = currentLabel.ifBlank { preview.title ?: "" },
                             description =
                                 currentDescription.ifBlank { preview.description ?: "" },
@@ -241,8 +245,10 @@ class LinkmarkCreationStateMachine :
                             iconData = preview.iconData,
                             imageData = preview.imageData,
                             selectableImages = preview.imageOptions,
-                            readable = preview.readable,
-                            // Clear any pending updates if we're not in preview-only mode.
+                            readable = if (needsConverter) null else preview.readable,
+                            converterHtml = if (needsConverter) rawHtml else null,
+                            converterBaseUrl = if (needsConverter) preview.url else null,
+                            converterError = null,
                             hasContentUpdates = false,
                             updateImageData = null,
                             updateIconData = null,
@@ -251,7 +257,7 @@ class LinkmarkCreationStateMachine :
                             shouldUpdateReadable = false,
                             updateReadable = null,
                             lastFetchedUrl = urlString,
-                            isLoading = false,
+                            isLoading = !needsConverter,
                             error = null,
                         )
                     }
@@ -412,6 +418,49 @@ class LinkmarkCreationStateMachine :
                     previewOnly = state.isInEditMode,
                 )
             }
+        }
+    }
+
+    private fun onConverterSucceeded(event: LinkmarkCreationEvent.OnConverterSucceeded) {
+        launch {
+            val readable = ConverterResultProcessor.process(
+                markdown = event.markdown,
+                assets = event.assets,
+                title = event.title,
+                author = event.author,
+            )
+            updateState {
+                if (it.isInEditMode) {
+                    it.copy(
+                        hasContentUpdates = true,
+                        shouldUpdateReadable = true,
+                        updateReadable = readable,
+                        converterHtml = null,
+                        converterBaseUrl = null,
+                        converterError = null,
+                        isLoading = false,
+                    )
+                } else {
+                    it.copy(
+                        readable = readable,
+                        converterHtml = null,
+                        converterBaseUrl = null,
+                        converterError = null,
+                        isLoading = false,
+                    )
+                }
+            }
+        }
+    }
+
+    private fun onConverterFailed(event: LinkmarkCreationEvent.OnConverterFailed) {
+        updateState {
+            it.copy(
+                converterHtml = null,
+                converterBaseUrl = null,
+                converterError = event.error.message ?: "Conversion failed",
+                isLoading = false,
+            )
         }
     }
 
