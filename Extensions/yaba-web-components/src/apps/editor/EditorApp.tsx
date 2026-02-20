@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { LexicalEditorView } from "@/lexical/LexicalEditorView"
+import { TiptapEditorView } from "@/tiptap/TiptapEditorView"
 import { initEditorBridge } from "@/bridge/editor-bridge"
 
 function EditorApp() {
@@ -7,7 +7,7 @@ function EditorApp() {
 
   return (
     <div data-yaba-editor style={{ width: "100%", height: "100%" }}>
-      <LexicalEditorView
+      <TiptapEditorView
         editable={editable}
         onEditorReady={initEditorBridge}
         assetsBaseUrl={undefined}

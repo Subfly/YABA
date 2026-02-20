@@ -1,32 +1,6 @@
-import type { LexicalEditor } from "lexical"
-import { $getSelection, $isRangeSelection } from "lexical"
-import {
-  $convertFromMarkdownString,
-  $convertToMarkdownString,
-  TRANSFORMERS,
-} from "@lexical/markdown"
-import { INSERT_HORIZONTAL_RULE_COMMAND } from "@lexical/react/LexicalHorizontalRuleNode"
-import {
-  FORMAT_TEXT_COMMAND,
-  UNDO_COMMAND,
-  REDO_COMMAND,
-  INDENT_CONTENT_COMMAND,
-  OUTDENT_CONTENT_COMMAND,
-} from "lexical"
-import {
-  INSERT_UNORDERED_LIST_COMMAND,
-  INSERT_ORDERED_LIST_COMMAND,
-} from "@lexical/list"
-import { TOGGLE_LINK_COMMAND } from "@lexical/link"
-import { $setBlocksType } from "@lexical/selection"
-import { $createQuoteNode } from "@lexical/rich-text"
+import type { Editor } from "@tiptap/core"
 import type { Platform, AppearanceMode } from "@/theme"
 import { applyTheme } from "@/theme"
-import { IMAGE } from "@/lexical/markdown-transformers"
-import { TABLE } from "@/lexical/table-transformer"
-import { INSERT_EXCALIDRAW_COMMAND } from "@/lexical/plugins/ExcalidrawPlugin"
-
-const YABA_TRANSFORMERS = [...TRANSFORMERS, IMAGE, TABLE]
 
 export interface YabaEditorBridge {
   isReady: () => boolean
@@ -46,6 +20,8 @@ export type EditorCommandPayload =
   | { type: "toggleItalic" }
   | { type: "toggleUnderline" }
   | { type: "toggleStrikethrough" }
+  | { type: "toggleSubscript" }
+  | { type: "toggleSuperscript" }
   | { type: "toggleCode" }
   | { type: "toggleQuote" }
   | { type: "insertHr" }
@@ -58,13 +34,16 @@ export type EditorCommandPayload =
   | { type: "insertLink"; url: string }
   | { type: "removeLink" }
   | { type: "openExcalidraw" }
+  | { type: "insertYouTube"; url: string }
+  | { type: "insertInlineMath"; latex: string }
+  | { type: "insertBlockMath"; latex: string }
 
-let editorInstance: LexicalEditor | null = null
+let editorInstance: Editor | null = null
 let platform: Platform = "compose"
 let appearance: AppearanceMode = "auto"
 let cursorColor: string | null = null
 
-export function initEditorBridge(editor: LexicalEditor): void {
+export function initEditorBridge(editor: Editor): void {
   editorInstance = editor
   const win = window as Window & { YabaEditorBridge?: YabaEditorBridge }
   win.YabaEditorBridge = {
@@ -90,77 +69,87 @@ export function initEditorBridge(editor: LexicalEditor): void {
         const base = options.assetsBaseUrl.replace(/\/?$/, "/")
         content = content.replace(/\]\(\.\.\/assets\//g, `](${base}assets/`)
       }
-      editorInstance?.update(() => {
-        $convertFromMarkdownString(content, YABA_TRANSFORMERS)
+      editorInstance?.commands.setContent(content, {
+        contentType: "markdown",
+        emitUpdate: false,
       })
     },
     getMarkdown: () => {
-      let result = ""
-      editorInstance?.getEditorState().read(() => {
-        result = $convertToMarkdownString(YABA_TRANSFORMERS)
-      })
-      return result
+      return editorInstance?.getMarkdown() ?? ""
     },
-    focus: () => editorInstance?.focus(),
-    blur: () => editorInstance?.blur(),
+    focus: () => editorInstance?.commands.focus(),
+    blur: () => editorInstance?.commands.blur(),
     dispatch: (cmd: EditorCommandPayload) => {
       const ed = editorInstance
       if (!ed) return
-      ed.update(() => {
-        const selection = $getSelection()
-        switch (cmd.type) {
-          case "toggleBold":
-            ed.dispatchCommand(FORMAT_TEXT_COMMAND, "bold")
-            break
-          case "toggleItalic":
-            ed.dispatchCommand(FORMAT_TEXT_COMMAND, "italic")
-            break
-          case "toggleUnderline":
-            ed.dispatchCommand(FORMAT_TEXT_COMMAND, "underline")
-            break
-          case "toggleStrikethrough":
-            ed.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough")
-            break
-          case "toggleCode":
-            ed.dispatchCommand(FORMAT_TEXT_COMMAND, "code")
-            break
-          case "toggleQuote":
-            if (selection && $isRangeSelection(selection)) {
-              $setBlocksType(selection, () => $createQuoteNode())
-            }
-            break
-          case "insertHr":
-            ed.dispatchCommand(INSERT_HORIZONTAL_RULE_COMMAND, undefined)
-            break
-          case "toggleBulletedList":
-            ed.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined)
-            break
-          case "toggleNumberedList":
-            ed.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined)
-            break
-          case "indent":
-            ed.dispatchCommand(INDENT_CONTENT_COMMAND, undefined)
-            break
-          case "outdent":
-            ed.dispatchCommand(OUTDENT_CONTENT_COMMAND, undefined)
-            break
-          case "undo":
-            ed.dispatchCommand(UNDO_COMMAND, undefined)
-            break
-          case "redo":
-            ed.dispatchCommand(REDO_COMMAND, undefined)
-            break
-          case "insertLink":
-            ed.dispatchCommand(TOGGLE_LINK_COMMAND, cmd.url)
-            break
-          case "removeLink":
-            ed.dispatchCommand(TOGGLE_LINK_COMMAND, null)
-            break
-          case "openExcalidraw":
-            ed.dispatchCommand(INSERT_EXCALIDRAW_COMMAND, undefined)
-            break
-        }
-      })
+
+      const chain = ed.chain().focus()
+
+      switch (cmd.type) {
+        case "toggleBold":
+          chain.toggleBold().run()
+          break
+        case "toggleItalic":
+          chain.toggleItalic().run()
+          break
+        case "toggleUnderline":
+          chain.toggleUnderline().run()
+          break
+        case "toggleSubscript":
+          chain.toggleSubscript().run()
+          break
+        case "toggleSuperscript":
+          chain.toggleSuperscript().run()
+          break
+        case "toggleStrikethrough":
+          chain.toggleStrike().run()
+          break
+        case "toggleCode":
+          chain.toggleCode().run()
+          break
+        case "toggleQuote":
+          chain.toggleBlockquote().run()
+          break
+        case "insertHr":
+          chain.setHorizontalRule().run()
+          break
+        case "toggleBulletedList":
+          chain.toggleBulletList().run()
+          break
+        case "toggleNumberedList":
+          chain.toggleOrderedList().run()
+          break
+        case "indent":
+          chain.sinkListItem("listItem").run()
+          break
+        case "outdent":
+          chain.liftListItem("listItem").run()
+          break
+        case "undo":
+          chain.undo().run()
+          break
+        case "redo":
+          chain.redo().run()
+          break
+        case "insertLink":
+          chain.setLink({ href: cmd.url }).run()
+          break
+        case "removeLink":
+          chain.unsetLink().run()
+          break
+        case "openExcalidraw":
+          ed.commands.insertExcalidraw()
+          break
+        case "insertYouTube":
+          ed.commands.setYoutubeVideo({ src: cmd.url })
+          break
+        case "insertInlineMath":
+          ed.commands.insertInlineMath({ latex: cmd.latex })
+          break
+        case "insertBlockMath":
+          ed.commands.insertBlockMath({ latex: cmd.latex })
+          break
+      }
     },
   }
 }

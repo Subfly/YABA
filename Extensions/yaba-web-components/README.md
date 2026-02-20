@@ -1,6 +1,6 @@
 # YABA Web Components
 
-WebView-hosted components for YABA: Lexical editor, read-only viewer, and HTML-to-Markdown converter. Built with Vite 7, React 19, Lexical 0.40, Excalidraw 0.18, and TypeScript.
+WebView-hosted components for YABA: TipTap editor, read-only viewer, and HTML-to-Markdown converter. Built with Vite 7, React 19, TipTap 3.20, Excalidraw 0.18, and TypeScript.
 
 ## Build
 
@@ -15,8 +15,8 @@ Output: `dist/editor.html`, `dist/viewer.html`, `dist/converter.html` plus JS an
 
 | File | Purpose |
 |------|---------|
-| `editor.html` | Full Lexical WYSIWYG editor (no visible toolbar; native buttons only) |
-| `viewer.html` | Read-only Lexical viewer for saved link content |
+| `editor.html` | Full TipTap WYSIWYG editor (no visible toolbar; native buttons only) |
+| `viewer.html` | Read-only TipTap viewer for saved link content |
 | `converter.html` | Hidden utility page: DOMPurify → Readability → Turndown (HTML→Markdown) |
 
 ## URL Parameters
@@ -86,11 +86,15 @@ The `converter.html` page is loaded in a hidden WebView when link saving needs H
 
 ## Features
 
-- **Images**: Markdown image syntax (`![](url)`); `setMarkdown` accepts `assetsBaseUrl` to resolve `../assets/` paths
+- **Images**: Markdown image syntax (`![](url)`); `setMarkdown` accepts `assetsBaseUrl` to resolve `../assets/` paths. Android WebView uses `allowFileAccess` for `file://` image URLs.
 - **GFM tables**: Markdown import and export for tables
-- **Excalidraw**: Insert diagrams via `dispatch({ type: 'openExcalidraw' })`; Excalidraw nodes are rendered as SVG in the editor and viewer; double-click or Edit button to modify existing diagrams
+- **Task lists**: GFM task list syntax (`- [ ]` / `- [x]`)
+- **Code highlighting**: Syntax highlighting via lowlight
+- **Mathematics**: LaTeX math via KaTeX; inline `$...$` and block `$$...$$`; `dispatch({ type: 'insertInlineMath', latex: '...' })` / `{ type: 'insertBlockMath', latex: '...' }`
+- **Subscript / Superscript**: `dispatch({ type: 'toggleSubscript' })` / `{ type: 'toggleSuperscript' }`
+- **YouTube**: `dispatch({ type: 'insertYouTube', url: 'https://youtube.com/watch?v=...' })`; paste of YouTube URLs auto-embeds
+- **Excalidraw**: Insert diagrams via `dispatch({ type: 'openExcalidraw' })`; Excalidraw nodes serialize as fenced blocks (` ```yaba-excalidraw `) and render as SVG; Edit button to modify existing diagrams
 
 ## Follow-ups (Not in Scope)
 
 - Native WebView wrappers and asset packaging
-- Highlight/annotation mapping from Core to Lexical nodes

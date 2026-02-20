@@ -6,8 +6,11 @@ import type {
 } from "@excalidraw/excalidraw/types"
 import type { ReactPortal } from "react"
 import { Excalidraw } from "@excalidraw/excalidraw"
-import { isDOMNode } from "lexical"
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
+
+function isDOMNode(target: unknown): target is Node {
+  return target instanceof Node
+}
 import { createPortal } from "react-dom"
 import Button from "./Button"
 import Modal from "./Modal"

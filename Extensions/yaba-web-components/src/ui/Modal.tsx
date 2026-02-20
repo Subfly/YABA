@@ -1,6 +1,9 @@
 import type { ReactNode } from "react"
-import { isDOMNode } from "lexical"
 import { useEffect, useRef } from "react"
+
+function isDOMNode(target: unknown): target is Node {
+  return target instanceof Node
+}
 import { createPortal } from "react-dom"
 import "./Modal.css"
 

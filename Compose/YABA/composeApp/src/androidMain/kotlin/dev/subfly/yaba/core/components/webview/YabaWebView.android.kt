@@ -2,6 +2,7 @@ package dev.subfly.yaba.core.components.webview
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import android.view.ViewGroup
@@ -57,6 +58,25 @@ private fun extractAndroidAssetPath(rawUrl: String): String? {
 }
 
 private fun isAssetLoaderRequest(uri: Uri?): Boolean = uri?.host == ASSET_LOADER_HOST
+
+private fun normalizeTrailingSlash(url: String): String = if (url.endsWith("/")) url else "$url/"
+
+private fun toInternalStorageAssetLoaderBaseUrl(
+    context: Context,
+    rawBaseUrl: String?,
+): String? {
+    if (rawBaseUrl.isNullOrBlank()) return null
+    val uri = runCatching { rawBaseUrl.toUri() }.getOrNull() ?: return null
+    if (uri.scheme != "file") return null
+    val rawPath = uri.path ?: return null
+    val filesRoot = context.filesDir.absolutePath.trimEnd('/')
+    if (!rawPath.startsWith(filesRoot)) return null
+
+    val relativePath = rawPath.removePrefix(filesRoot).trimStart('/')
+    if (relativePath.isBlank()) return null
+
+    return normalizeTrailingSlash("$ASSET_LOADER_DOMAIN/local/$relativePath")
+}
 
 private fun escapeJsString(s: String): String =
     s.replace("\\", "\\\\")
@@ -169,6 +189,10 @@ actual fun YabaWebViewViewerInternal(
     val assetLoaderUrl = remember(baseUrl) { toAssetLoaderUrl(baseUrl) }
     val assetLoader = remember(context) {
         WebViewAssetLoader.Builder()
+            .addPathHandler(
+                "/local/",
+                WebViewAssetLoader.InternalStoragePathHandler(context, context.filesDir),
+            )
             .addPathHandler("/", WebViewAssetLoader.AssetsPathHandler(context))
             .build()
     }
@@ -177,6 +201,7 @@ actual fun YabaWebViewViewerInternal(
     val myWebView = remember(context) {
         WebView(context).apply {
             settings.javaScriptEnabled = true
+            settings.allowFileAccess = true
             webChromeClient = denyPermissionsChromeClient()
         }
     }
@@ -227,8 +252,9 @@ actual fun YabaWebViewViewerInternal(
         }
 
         val markdownEscaped = escapeJsString(markdown)
-        val opts = if (assetsBaseUrl != null) {
-            "{ assetsBaseUrl: '${escapeJsString(assetsBaseUrl)}' }"
+        val resolvedAssetsBaseUrl = toInternalStorageAssetLoaderBaseUrl(context, assetsBaseUrl) ?: assetsBaseUrl
+        val opts = if (resolvedAssetsBaseUrl != null) {
+            "{ assetsBaseUrl: '${escapeJsString(resolvedAssetsBaseUrl)}' }"
         } else {
             "undefined"
         }
@@ -271,6 +297,10 @@ actual fun YabaWebViewEditorInternal(
     val assetLoaderUrl = remember(baseUrl) { toAssetLoaderUrl(baseUrl) }
     val assetLoader = remember(context) {
         WebViewAssetLoader.Builder()
+            .addPathHandler(
+                "/local/",
+                WebViewAssetLoader.InternalStoragePathHandler(context, context.filesDir),
+            )
             .addPathHandler("/", WebViewAssetLoader.AssetsPathHandler(context))
             .build()
     }
@@ -281,6 +311,7 @@ actual fun YabaWebViewEditorInternal(
         factory = { ctx ->
             val webView = WebView(ctx).apply {
                 settings.javaScriptEnabled = true
+                settings.allowFileAccess = true
                 webChromeClient = object : WebChromeClient() {
                     override fun onPermissionRequest(request: PermissionRequest?) {
                         if (request == null) return
@@ -364,8 +395,9 @@ actual fun YabaWebViewEditorInternal(
         }
 
         val markdownEscaped = escapeJsString(markdown)
-        val opts = if (assetsBaseUrl != null) {
-            "{ assetsBaseUrl: '${escapeJsString(assetsBaseUrl)}' }"
+        val resolvedAssetsBaseUrl = toInternalStorageAssetLoaderBaseUrl(context, assetsBaseUrl) ?: assetsBaseUrl
+        val opts = if (resolvedAssetsBaseUrl != null) {
+            "{ assetsBaseUrl: '${escapeJsString(resolvedAssetsBaseUrl)}' }"
         } else {
             "undefined"
         }
@@ -405,6 +437,7 @@ actual fun YabaWebViewConverterInternal(
         factory = { ctx ->
             val webView = WebView(ctx).apply {
                 settings.javaScriptEnabled = true
+                settings.allowFileAccess = true
                 webChromeClient = denyPermissionsChromeClient()
                 webViewClient = defaultWebViewClient(
                     assetLoader = assetLoader,
