@@ -96,7 +96,7 @@ private fun SelectionContent() {
 
     listOf(
         SelectionContentItem(
-            label = "New Link Bookmark",
+            label = "New Link",
             iconName = "link-02",
             color = YabaColor.BLUE,
             onClick = {
@@ -105,7 +105,7 @@ private fun SelectionContent() {
             },
         ),
         SelectionContentItem(
-            label = "New Note Bookmark",
+            label = "New Note",
             iconName = "note-edit",
             color = YabaColor.YELLOW,
             onClick = {
@@ -114,7 +114,7 @@ private fun SelectionContent() {
             },
         ),
         SelectionContentItem(
-            label = "New Image Bookmark",
+            label = "New Image",
             iconName = "image-03",
             color = YabaColor.GREEN,
             onClick = {
@@ -123,7 +123,7 @@ private fun SelectionContent() {
             },
         ),
         SelectionContentItem(
-            label = "New Document Bookmark",
+            label = "New Document",
             iconName = "doc-02",
             color = YabaColor.RED,
             onClick = {

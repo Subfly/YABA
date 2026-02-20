@@ -11,7 +11,6 @@ import androidx.compose.material3.SheetValue
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -66,11 +65,6 @@ private fun BottomSheetLayout(
     ) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
-
-    LaunchedEffect(scaffoldState.bottomSheetState.targetValue) {
-        println("LELE current: ${scaffoldState.bottomSheetState.currentValue}")
-        println("LELE target: ${scaffoldState.bottomSheetState.targetValue}")
-    }
 
     BottomSheetScaffold(
         modifier = modifier,

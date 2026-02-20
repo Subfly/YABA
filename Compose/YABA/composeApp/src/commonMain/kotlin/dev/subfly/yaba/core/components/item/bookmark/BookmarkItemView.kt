@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.components.TagsRowContent
@@ -58,6 +59,7 @@ import dev.subfly.yabacore.ui.icon.iconTintArgb
 import dev.subfly.yabacore.ui.image.YabaImage
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
+import yaba.composeapp.generated.resources.bookmark_detail_no_description_provided
 import yaba.composeapp.generated.resources.bookmark_no_tags_added_title
 import yaba.composeapp.generated.resources.delete
 import yaba.composeapp.generated.resources.edit
@@ -364,6 +366,14 @@ private fun ListItemContent(
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
+            } else {
+                Text(
+                    text = stringResource(Res.string.bookmark_detail_no_description_provided),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontStyle = FontStyle.Italic,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
             }
         },
         leadingContent = {
@@ -435,6 +445,14 @@ private fun CardBigItemContent(
                     text = modelDescription,
                     style = MaterialTheme.typography.bodyMedium,
                     maxLines = 3,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            } else {
+                Text(
+                    text = stringResource(Res.string.bookmark_detail_no_description_provided),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontStyle = FontStyle.Italic,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
             }
@@ -533,6 +551,14 @@ private fun CardSmallItemContent(
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis,
                 )
+            } else {
+                Text(
+                    text = stringResource(Res.string.bookmark_detail_no_description_provided),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontStyle = FontStyle.Italic,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
             }
 
             // Tags row with options button
@@ -623,6 +649,14 @@ private fun GridItemContent(
                     text = modelDescription,
                     style = MaterialTheme.typography.bodyMedium,
                     maxLines = 3,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            } else {
+                Text(
+                    text = stringResource(Res.string.bookmark_detail_no_description_provided),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontStyle = FontStyle.Italic,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
             }

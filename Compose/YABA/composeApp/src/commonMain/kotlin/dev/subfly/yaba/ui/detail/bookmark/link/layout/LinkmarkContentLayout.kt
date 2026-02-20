@@ -65,7 +65,7 @@ internal fun LinkmarkContentLayout(
                                 .background(color = MaterialTheme.colorScheme.surface)
                         ) { LinearWavyProgressIndicator(modifier = Modifier.fillMaxWidth()) }
                     } else {
-                        Box(modifier = Modifier)
+                        Box(modifier = Modifier.fillMaxWidth())
                     }
                 }
             }

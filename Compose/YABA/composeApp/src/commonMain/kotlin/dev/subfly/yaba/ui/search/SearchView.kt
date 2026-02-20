@@ -41,6 +41,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.item.bookmark.BookmarkItemView
+import dev.subfly.yaba.core.navigation.main.LinkDetailRoute
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalUserPreferences
 import dev.subfly.yaba.util.uiTitle
@@ -205,9 +206,7 @@ fun SearchView(modifier: Modifier = Modifier) {
                             model = model,
                             appearance = appearance,
                             cardImageSizing = cardImageSizing,
-                            onClick = {
-                                // TODO: OPEN BOOKMARK DETAIL
-                            },
+                            onClick = { navigator.add(LinkDetailRoute(bookmarkId = model.id)) },
                             onDeleteBookmark = { bookmark ->
                                 vm.onEvent(SearchEvent.OnDeleteBookmark(bookmark = bookmark))
                             },
