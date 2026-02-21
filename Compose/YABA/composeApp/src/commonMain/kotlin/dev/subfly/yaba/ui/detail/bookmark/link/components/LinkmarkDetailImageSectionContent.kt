@@ -1,7 +1,9 @@
 package dev.subfly.yaba.ui.detail.bookmark.link.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.util.rememberUrlLauncher
 import dev.subfly.yabacore.model.ui.BookmarkPreviewUiModel
 import dev.subfly.yabacore.model.utils.YabaColor
@@ -25,6 +28,8 @@ import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.image.YabaImage
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
+import yaba.composeapp.generated.resources.bookmark_detail_image_error_description
+import yaba.composeapp.generated.resources.bookmark_detail_image_error_title
 import yaba.composeapp.generated.resources.bookmark_detail_image_header_title
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -36,7 +41,7 @@ internal fun LinkmarkDetailImageSectionContent(
     mainColor: YabaColor,
 ) {
     val openUrl = rememberUrlLauncher()
-    
+
     Column(
         modifier = modifier
             .padding(horizontal = 12.dp)
@@ -74,13 +79,32 @@ internal fun LinkmarkDetailImageSectionContent(
                 }
             }
         }
-        YabaImage(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(320.dp)
-                .clip(RoundedCornerShape(12.dp)),
-            filePath = bookmarkDetails.localImagePath
-        )
+        if (bookmarkDetails.localImagePath != null) {
+            YabaImage(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(320.dp)
+                    .clip(RoundedCornerShape(12.dp)),
+                filePath = bookmarkDetails.localImagePath
+            )
+        } else {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        color = MaterialTheme.colorScheme.surface,
+                        shape = RoundedCornerShape(12.dp),
+                    ),
+                contentAlignment = Alignment.Center,
+            ) {
+                NoContentView(
+                    modifier = Modifier.padding(vertical = 20.dp, horizontal = 4.dp),
+                    iconName = "image-not-found-01",
+                    labelRes = Res.string.bookmark_detail_image_error_title,
+                    message = { Text(text = stringResource(Res.string.bookmark_detail_image_error_description)) },
+                )
+            }
+        }
         linkDetails?.let { linkMetadata ->
             Row(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),

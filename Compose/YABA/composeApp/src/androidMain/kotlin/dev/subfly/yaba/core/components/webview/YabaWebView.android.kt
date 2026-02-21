@@ -3,6 +3,7 @@ package dev.subfly.yaba.core.components.webview
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
 import android.net.Uri
 import android.util.Log
 import android.view.ViewGroup
@@ -203,6 +204,8 @@ actual fun YabaWebViewViewerInternal(
             settings.javaScriptEnabled = true
             settings.allowFileAccess = true
             webChromeClient = denyPermissionsChromeClient()
+            settings.setSupportZoom(false)
+            setBackgroundColor(Color.TRANSPARENT)
         }
     }
     webViewRef.value = myWebView
@@ -350,6 +353,8 @@ actual fun YabaWebViewEditorInternal(
                         return super.onConsoleMessage(consoleMessage)
                     }
                 }
+                settings.setSupportZoom(false)
+                setBackgroundColor(Color.TRANSPARENT)
                 webViewClient = defaultWebViewClient(
                     assetLoader = assetLoader,
                     onPageFinished = {
