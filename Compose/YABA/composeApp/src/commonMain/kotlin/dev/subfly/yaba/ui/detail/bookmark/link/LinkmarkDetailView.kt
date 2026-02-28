@@ -25,17 +25,16 @@ fun LinkmarkDetailView(
 
     BookmarkContentDetailLayout(
         modifier = modifier,
-        contentLayout = {
+        contentLayout = { onExpand ->
             LinkmarkContentLayout(
                 state = state,
+                onShowDetail = onExpand,
                 onEvent = vm::onEvent,
             )
         },
-        detailLayout = { isExpanded, onExpand, onHide ->
+        detailLayout = { onHide ->
             LinkmarkDetailLayout(
                 state = state,
-                isExpanded = isExpanded,
-                onExpand = onExpand,
                 onHide = onHide,
                 onEvent = vm::onEvent,
             )

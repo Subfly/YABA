@@ -28,8 +28,6 @@ import dev.subfly.yabacore.state.detail.linkmark.LinkmarkDetailUIState
 @Composable
 internal fun LinkmarkDetailLayout(
     state: LinkmarkDetailUIState,
-    isExpanded: Boolean,
-    onExpand: () -> Unit,
     onHide: () -> Unit,
     onEvent: (LinkmarkDetailEvent) -> Unit,
 ) {
@@ -43,14 +41,11 @@ internal fun LinkmarkDetailLayout(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxSize(0.9F),
-        userScrollEnabled = isExpanded,
     ) {
         item (key = "ACTIONS") {
             LinkmarkDetailActionsContent(
                 modifier = Modifier.animateItem(),
-                isExpanded = isExpanded,
                 mainColor = mainColor,
-                onExpand = onExpand,
                 onHide = onHide,
             )
         }
