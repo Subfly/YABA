@@ -7,9 +7,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.window.core.layout.WindowSizeClass
+import dev.subfly.yaba.core.components.toast.YabaToastHost
 import dev.subfly.yaba.core.navigation.alert.DeletionVM
 import dev.subfly.yaba.core.navigation.alert.YabaDeletionDialog
 import dev.subfly.yaba.core.navigation.creation.EmptyCretionRoute
@@ -68,17 +72,20 @@ fun App() {
         LocalPaneInfo provides paneInfo,
     ) {
         YabaTheme {
-            YabaMainNavigationView()
-            if (
-                currentWindowInfo.windowSizeClass.isWidthAtLeastBreakpoint(
-                    WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND
-                ).not()
-            ) {
-                YabaCreationSheet()
-            } else {
-                YabaCreationDialog()
+            Box(modifier = Modifier.fillMaxSize()) {
+                YabaMainNavigationView()
+                if (
+                    currentWindowInfo.windowSizeClass.isWidthAtLeastBreakpoint(
+                        WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND
+                    ).not()
+                ) {
+                    YabaCreationSheet()
+                } else {
+                    YabaCreationDialog()
+                }
+                YabaDeletionDialog()
+                YabaToastHost()
             }
-            YabaDeletionDialog()
         }
     }
 }

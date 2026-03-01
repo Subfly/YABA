@@ -32,8 +32,15 @@ import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.state.creation.linkmark.LinkmarkCreationEvent
+import dev.subfly.yabacore.state.creation.linkmark.LinkmarkCreationToastMessages
 import dev.subfly.yabacore.unfurl.ConverterAssetInput
 import dev.subfly.yabacore.ui.webview.WebComponentUris
+import yaba.composeapp.generated.resources.Res
+import yaba.composeapp.generated.resources.generic_unfurl_error_text
+import yaba.composeapp.generated.resources.generic_unfurl_success_text
+import yaba.composeapp.generated.resources.ok
+import yaba.composeapp.generated.resources.unfurl_error_text
+import yaba.composeapp.generated.resources.url_error_text
 
 @Composable
 fun LinkmarkCreationContent(bookmarkId: String?, initialUrl: String? = null) {
@@ -48,7 +55,14 @@ fun LinkmarkCreationContent(bookmarkId: String?, initialUrl: String? = null) {
         vm.onEvent(
             LinkmarkCreationEvent.OnInit(
                 linkmarkIdString = bookmarkId,
-                initialUrl = initialUrl
+                initialUrl = initialUrl,
+                toastMessages = LinkmarkCreationToastMessages(
+                    unfurlSuccess = Res.string.generic_unfurl_success_text,
+                    invalidUrl = Res.string.url_error_text,
+                    unableToUnfurl = Res.string.unfurl_error_text,
+                    genericUnfurlError = Res.string.generic_unfurl_error_text,
+                    acceptLabel = Res.string.ok,
+                ),
             )
         )
     }

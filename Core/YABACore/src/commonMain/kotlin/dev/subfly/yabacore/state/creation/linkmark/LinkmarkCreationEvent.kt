@@ -3,7 +3,19 @@ package dev.subfly.yabacore.state.creation.linkmark
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.model.utils.LinkType
+import dev.subfly.yabacore.toast.PlatformToastText
 import dev.subfly.yabacore.unfurl.ConverterAssetInput
+
+/**
+ * Events for linkmark creation/editing state machine.
+ */
+data class LinkmarkCreationToastMessages(
+    val unfurlSuccess: PlatformToastText,
+    val invalidUrl: PlatformToastText,
+    val unableToUnfurl: PlatformToastText,
+    val genericUnfurlError: PlatformToastText,
+    val acceptLabel: PlatformToastText,
+)
 
 /**
  * Events for linkmark creation/editing state machine.
@@ -16,12 +28,14 @@ sealed class LinkmarkCreationEvent {
      * @param initialUrl If provided, pre-fills the URL field (e.g., from share extension).
      * @param initialFolderId If provided, pre-selects a folder.
      * @param initialTagIds If provided, pre-selects tags.
+     * @param toastMessages If provided, used for toast emission from state machine flows.
      */
     data class OnInit(
         val linkmarkIdString: String? = null,
         val initialUrl: String? = null,
         val initialFolderId: String? = null,
         val initialTagIds: List<String>? = null,
+        val toastMessages: LinkmarkCreationToastMessages? = null,
     ) : LinkmarkCreationEvent()
 
     /**

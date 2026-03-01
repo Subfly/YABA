@@ -7,6 +7,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -15,9 +17,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.rememberNavBackStack
 import dev.subfly.yaba.core.app.AppVM
+import dev.subfly.yaba.core.components.toast.YabaToastHost
 import dev.subfly.yaba.core.navigation.alert.DeletionVM
 import dev.subfly.yaba.core.navigation.creation.BookmarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.EmptyCretionRoute
@@ -243,7 +247,10 @@ private fun ShareActivityContent(
                 if (didOpenCreationSheet) onDismiss()
             }
 
-            YabaCreationSheet()
+            Box(modifier = Modifier.fillMaxSize()) {
+                YabaCreationSheet()
+                YabaToastHost()
+            }
         }
     }
 }

@@ -14,6 +14,9 @@ import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.CardImageSizing
 import dev.subfly.yabacore.preferences.SettingsStores
 import dev.subfly.yabacore.state.base.BaseStateMachine
+import dev.subfly.yabacore.toast.PlatformToastText
+import dev.subfly.yabacore.toast.ToastIconType
+import dev.subfly.yabacore.toast.ToastManager
 import dev.subfly.yabacore.unfurl.ConverterResultProcessor
 import dev.subfly.yabacore.unfurl.LinkCleaner
 import dev.subfly.yabacore.unfurl.UnfurlError
@@ -40,6 +43,7 @@ class LinkmarkCreationStateMachine :
     // Debounce flow for URL changes
     private val urlDebounceFlow = MutableSharedFlow<String>(extraBufferCapacity = 1)
     private var urlDebounceJob: Job? = null
+    private var toastMessages: LinkmarkCreationToastMessages? = null
 
     override fun onEvent(event: LinkmarkCreationEvent) {
         when (event) {
@@ -65,6 +69,7 @@ class LinkmarkCreationStateMachine :
     private fun onInit(event: LinkmarkCreationEvent.OnInit) {
         if (isInitialized) return
         isInitialized = true
+        toastMessages = event.toastMessages
 
         // Start URL debounce listener
         startUrlDebounceListener()
@@ -262,6 +267,10 @@ class LinkmarkCreationStateMachine :
                         )
                     }
                 }
+                if (!previewOnly) showUnfurlToast(
+                    message = toastMessages?.unfurlSuccess,
+                    iconType = ToastIconType.SUCCESS,
+                )
             } else {
                 updateState {
                     if (previewOnly) {
@@ -281,6 +290,10 @@ class LinkmarkCreationStateMachine :
                         )
                     }
                 }
+                if (!previewOnly) showUnfurlToast(
+                    message = toastMessages?.unableToUnfurl,
+                    iconType = ToastIconType.ERROR,
+                )
             }
         } catch (e: UnfurlError.CannotCreateUrl) {
             updateState {
@@ -289,6 +302,10 @@ class LinkmarkCreationStateMachine :
                     error = if (previewOnly) null else LinkmarkCreationError.InvalidUrl(e.raw),
                 )
             }
+            if (!previewOnly) showUnfurlToast(
+                message = toastMessages?.invalidUrl,
+                iconType = ToastIconType.ERROR,
+            )
         } catch (e: UnfurlError) {
             updateState {
                 if (previewOnly) {
@@ -307,6 +324,10 @@ class LinkmarkCreationStateMachine :
                     )
                 }
             }
+            if (!previewOnly) showUnfurlToast(
+                message = toastMessages?.unableToUnfurl,
+                iconType = ToastIconType.ERROR,
+            )
         } catch (e: Exception) {
             updateState {
                 if (previewOnly) {
@@ -325,7 +346,25 @@ class LinkmarkCreationStateMachine :
                     )
                 }
             }
+            if (!previewOnly) showUnfurlToast(
+                message = toastMessages?.genericUnfurlError,
+                iconType = ToastIconType.ERROR,
+            )
         }
+    }
+
+    private fun showUnfurlToast(
+        message: PlatformToastText?,
+        iconType: ToastIconType,
+    ) {
+        val toastMessage = message ?: return
+        val acceptLabel = toastMessages?.acceptLabel
+
+        ToastManager.show(
+            message = toastMessage,
+            acceptText = acceptLabel,
+            iconType = iconType,
+        )
     }
 
     /**
@@ -588,6 +627,7 @@ class LinkmarkCreationStateMachine :
 
     override fun clear() {
         isInitialized = false
+        toastMessages = null
         urlDebounceJob?.cancel()
         urlDebounceJob = null
         super.clear()
