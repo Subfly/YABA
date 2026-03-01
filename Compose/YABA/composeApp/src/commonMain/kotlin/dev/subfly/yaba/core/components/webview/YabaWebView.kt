@@ -2,6 +2,7 @@ package dev.subfly.yaba.core.components.webview
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import dev.subfly.yabacore.model.utils.ReaderPreferences
 
 /**
  * Mode for YabaWebView: viewer (read-only), editor (editable), or converter (HTML→markdown).
@@ -10,6 +11,22 @@ enum class YabaWebViewMode {
     Viewer,
     Editor,
     Converter,
+}
+
+enum class YabaWebPlatform {
+    Compose,
+    Darwin,
+}
+
+enum class YabaWebAppearance {
+    Auto,
+    Light,
+    Dark,
+}
+
+enum class YabaWebScrollDirection {
+    Up,
+    Down,
 }
 
 /**
@@ -46,7 +63,11 @@ internal expect fun YabaWebViewViewerInternal(
     baseUrl: String,
     markdown: String,
     assetsBaseUrl: String?,
+    platform: YabaWebPlatform,
+    appearance: YabaWebAppearance,
+    readerPreferences: ReaderPreferences,
     onUrlClick: (String) -> Boolean,
+    onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit,
     onReady: () -> Unit,
 )
 
@@ -79,7 +100,11 @@ fun YabaWebViewViewer(
     baseUrl: String,
     markdown: String = "",
     assetsBaseUrl: String? = null,
+    platform: YabaWebPlatform = YabaWebPlatform.Compose,
+    appearance: YabaWebAppearance = YabaWebAppearance.Auto,
+    readerPreferences: ReaderPreferences = ReaderPreferences(),
     onUrlClick: (String) -> Boolean = { false },
+    onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit = {},
     onReady: () -> Unit = {},
 ) {
     YabaWebViewViewerInternal(
@@ -87,7 +112,11 @@ fun YabaWebViewViewer(
         baseUrl = baseUrl,
         markdown = markdown,
         assetsBaseUrl = assetsBaseUrl,
+        platform = platform,
+        appearance = appearance,
+        readerPreferences = readerPreferences,
         onUrlClick = onUrlClick,
+        onScrollDirectionChanged = onScrollDirectionChanged,
         onReady = onReady,
     )
 }

@@ -6,7 +6,9 @@ import android.content.Context
 import android.graphics.Color
 import android.net.Uri
 import android.util.Log
+import android.view.MotionEvent
 import android.view.ViewGroup
+import android.view.ViewConfiguration
 import android.webkit.ConsoleMessage
 import android.webkit.GeolocationPermissions
 import android.webkit.PermissionRequest
@@ -24,17 +26,23 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
 import androidx.webkit.WebViewAssetLoader
+import dev.subfly.yabacore.model.utils.ReaderFontSize
+import dev.subfly.yabacore.model.utils.ReaderLineHeight
+import dev.subfly.yabacore.model.utils.ReaderPreferences
+import dev.subfly.yabacore.model.utils.ReaderTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.json.JSONArray
 import org.json.JSONObject
 import kotlin.coroutines.resume
+import kotlin.math.abs
 
 private const val TAG = "YabaWebView"
 private const val ASSET_LOADER_DOMAIN = "https://appassets.androidplatform.net"
@@ -96,6 +104,40 @@ private fun decodeJsStringResult(value: String?): String {
     }
     return trimmed
 }
+
+private fun ReaderTheme.toJsValue(): String =
+    when (this) {
+        ReaderTheme.SYSTEM -> "system"
+        ReaderTheme.DARK -> "dark"
+        ReaderTheme.LIGHT -> "light"
+        ReaderTheme.SEPIA -> "sepia"
+    }
+
+private fun ReaderFontSize.toJsValue(): String =
+    when (this) {
+        ReaderFontSize.SMALL -> "small"
+        ReaderFontSize.MEDIUM -> "medium"
+        ReaderFontSize.LARGE -> "large"
+    }
+
+private fun ReaderLineHeight.toJsValue(): String =
+    when (this) {
+        ReaderLineHeight.NORMAL -> "normal"
+        ReaderLineHeight.RELAXED -> "relaxed"
+    }
+
+private fun YabaWebPlatform.toJsValue(): String =
+    when (this) {
+        YabaWebPlatform.Compose -> "compose"
+        YabaWebPlatform.Darwin -> "darwin"
+    }
+
+private fun YabaWebAppearance.toJsValue(): String =
+    when (this) {
+        YabaWebAppearance.Auto -> "auto"
+        YabaWebAppearance.Light -> "light"
+        YabaWebAppearance.Dark -> "dark"
+    }
 
 private suspend fun evaluateJs(webView: WebView, script: String): String =
     suspendCancellableCoroutine { cont ->
@@ -180,12 +222,20 @@ actual fun YabaWebViewViewerInternal(
     baseUrl: String,
     markdown: String,
     assetsBaseUrl: String?,
+    platform: YabaWebPlatform,
+    appearance: YabaWebAppearance,
+    readerPreferences: ReaderPreferences,
     onUrlClick: (String) -> Boolean,
+    onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit,
     onReady: () -> Unit,
 ) {
     val context = LocalContext.current
     val webViewRef = remember { mutableStateOf<WebView?>(null) }
     var isPageReady by remember { mutableStateOf(false) }
+    val onScrollDirectionChangedState = rememberUpdatedState(onScrollDirectionChanged)
+    val gestureStartYRef = remember { floatArrayOf(0f) }
+    val lastGestureDirectionRef = remember { intArrayOf(0) }
+    val touchSlop = remember(context) { ViewConfiguration.get(context).scaledTouchSlop }
 
     val assetLoaderUrl = remember(baseUrl) { toAssetLoaderUrl(baseUrl) }
     val assetLoader = remember(context) {
@@ -206,6 +256,37 @@ actual fun YabaWebViewViewerInternal(
             webChromeClient = denyPermissionsChromeClient()
             settings.setSupportZoom(false)
             setBackgroundColor(Color.TRANSPARENT)
+            setOnTouchListener { _, motionEvent ->
+                when (motionEvent.actionMasked) {
+                    MotionEvent.ACTION_DOWN -> {
+                        gestureStartYRef[0] = motionEvent.y
+                        lastGestureDirectionRef[0] = 0
+                        false
+                    }
+                    MotionEvent.ACTION_MOVE -> {
+                        val deltaY = motionEvent.y - gestureStartYRef[0]
+                        val threshold = touchSlop * 2
+                        if (abs(deltaY) < threshold) return@setOnTouchListener false
+
+                        val gestureDirection = if (deltaY < 0f) 1 else -1
+                        if (gestureDirection == lastGestureDirectionRef[0]) return@setOnTouchListener false
+
+                        if (gestureDirection > 0) {
+                            onScrollDirectionChangedState.value(YabaWebScrollDirection.Down)
+                        } else {
+                            onScrollDirectionChangedState.value(YabaWebScrollDirection.Up)
+                        }
+                        lastGestureDirectionRef[0] = gestureDirection
+                        false
+                    }
+                    MotionEvent.ACTION_UP,
+                    MotionEvent.ACTION_CANCEL -> {
+                        lastGestureDirectionRef[0] = 0
+                        false
+                    }
+                    else -> false
+                }
+            }
         }
     }
     webViewRef.value = myWebView
@@ -264,6 +345,44 @@ actual fun YabaWebViewViewerInternal(
         val script = """
             (function() {
                 window.YabaEditorBridge.setMarkdown('$markdownEscaped', $opts);
+            })();
+        """.trimIndent()
+        evaluateJs(webView, script)
+    }
+
+    LaunchedEffect(isPageReady, readerPreferences, platform, appearance) {
+        if (!isPageReady) return@LaunchedEffect
+        val webView = webViewRef.value ?: return@LaunchedEffect
+        val ready = waitForBridgeReady(
+            webView,
+            "(function(){ try { return !!(window.YabaEditorBridge && window.YabaEditorBridge.isReady && window.YabaEditorBridge.isReady()); } catch(e){ return false; } })();",
+        )
+        if (!ready) {
+            Log.w(TAG, "Viewer bridge not ready before timeout")
+            return@LaunchedEffect
+        }
+
+        val readerTheme = readerPreferences.theme.toJsValue()
+        val readerFontSize = readerPreferences.fontSize.toJsValue()
+        val readerLineHeight = readerPreferences.lineHeight.toJsValue()
+        val themePlatform = platform.toJsValue()
+        val themeAppearance = appearance.toJsValue()
+        val script = """
+            (function() {
+                if (!window.YabaEditorBridge) return;
+                if (typeof window.YabaEditorBridge.setPlatform === "function") {
+                    window.YabaEditorBridge.setPlatform('$themePlatform');
+                }
+                if (typeof window.YabaEditorBridge.setAppearance === "function") {
+                    window.YabaEditorBridge.setAppearance('$themeAppearance');
+                }
+                if (typeof window.YabaEditorBridge.setReaderPreferences === "function") {
+                    window.YabaEditorBridge.setReaderPreferences({
+                        theme: '$readerTheme',
+                        fontSize: '$readerFontSize',
+                        lineHeight: '$readerLineHeight'
+                    });
+                }
             })();
         """.trimIndent()
         evaluateJs(webView, script)

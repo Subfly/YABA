@@ -18,6 +18,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,9 +26,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import dev.subfly.yaba.core.components.webview.YabaWebAppearance
+import dev.subfly.yaba.core.components.webview.YabaWebPlatform
+import dev.subfly.yaba.core.components.webview.YabaWebScrollDirection
 import dev.subfly.yaba.core.components.webview.YabaWebViewViewer
+import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkReaderFloatingToolbar
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.rememberUrlLauncher
+import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.detail.linkmark.LinkmarkDetailEvent
 import dev.subfly.yabacore.state.detail.linkmark.LinkmarkDetailUIState
 import dev.subfly.yabacore.ui.icon.YabaIcon
@@ -49,7 +55,10 @@ internal fun LinkmarkContentLayout(
 ) {
     val navigator = LocalContentNavigator.current
     val openUrl = rememberUrlLauncher()
-
+    val appearance = if (isSystemInDarkTheme()) YabaWebAppearance.Dark else YabaWebAppearance.Light
+    val hasReaderContent = !state.isLoading && !state.readableMarkdown.isNullOrBlank()
+    val readerFabColor = state.bookmark?.parentFolder?.color ?: YabaColor.BLUE
+    var isReaderToolbarVisible by remember(state.readableMarkdown, state.isLoading) { mutableStateOf(true) }
     var isMenuExpanded by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -93,13 +102,34 @@ internal fun LinkmarkContentLayout(
             }
         }
     ) { paddings ->
-        YabaWebViewViewer(
-            modifier = Modifier.fillMaxSize().padding(paddings),
-            baseUrl = WebComponentUris.getViewerUri(),
-            markdown = state.readableMarkdown ?: "",
-            assetsBaseUrl = state.assetsBaseUrl,
-            onUrlClick = openUrl,
-        )
+        Box(modifier = Modifier.fillMaxSize().padding(paddings)) {
+            if (hasReaderContent) {
+                LinkmarkReaderFloatingToolbar(
+                    isVisible = isReaderToolbarVisible,
+                    fabColor = readerFabColor,
+                    readerPreferences = state.readerPreferences,
+                    onEvent = onEvent,
+                    onFabClick = {
+                        // TODO: Wire FAB action for reader toolbar.
+                    },
+                )
+            }
+
+            YabaWebViewViewer(
+                modifier = Modifier.fillMaxSize(),
+                baseUrl = WebComponentUris.getViewerUri(),
+                markdown = state.readableMarkdown ?: "",
+                assetsBaseUrl = state.assetsBaseUrl,
+                platform = YabaWebPlatform.Compose,
+                appearance = appearance,
+                readerPreferences = state.readerPreferences,
+                onUrlClick = openUrl,
+                onScrollDirectionChanged = { direction ->
+                    if (direction == YabaWebScrollDirection.Down) isReaderToolbarVisible = false
+                    if (direction == YabaWebScrollDirection.Up) isReaderToolbarVisible = true
+                },
+            )
+        }
     }
 }
 

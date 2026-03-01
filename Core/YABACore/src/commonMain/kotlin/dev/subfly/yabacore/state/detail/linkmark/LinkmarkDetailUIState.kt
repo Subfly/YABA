@@ -5,6 +5,7 @@ import dev.subfly.yabacore.model.ui.BookmarkPreviewUiModel
 import dev.subfly.yabacore.model.ui.HighlightUiModel
 import dev.subfly.yabacore.model.ui.ReadableVersionUiModel
 import dev.subfly.yabacore.model.utils.LinkType
+import dev.subfly.yabacore.model.utils.ReaderPreferences
 
 @Immutable
 data class LinkmarkDetailUIState(
@@ -15,6 +16,7 @@ data class LinkmarkDetailUIState(
     val readableMarkdown: String? = null,
     /** Base URL for resolving ../assets/ in markdown (file://... with trailing slash). */
     val assetsBaseUrl: String? = null,
+    val readerPreferences: ReaderPreferences = ReaderPreferences(),
     val highlights: List<HighlightUiModel> = emptyList(),
     val isLoading: Boolean = false,
 )

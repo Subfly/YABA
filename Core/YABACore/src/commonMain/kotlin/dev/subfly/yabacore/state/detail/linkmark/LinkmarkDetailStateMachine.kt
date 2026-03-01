@@ -12,6 +12,9 @@ import dev.subfly.yabacore.managers.HighlightManager
 import dev.subfly.yabacore.managers.LinkmarkManager
 import dev.subfly.yabacore.managers.ReadableContentManager
 import dev.subfly.yabacore.model.ui.BookmarkPreviewUiModel
+import dev.subfly.yabacore.model.utils.ReaderFontSize
+import dev.subfly.yabacore.model.utils.ReaderLineHeight
+import dev.subfly.yabacore.model.utils.ReaderTheme
 import dev.subfly.yabacore.state.base.BaseStateMachine
 import dev.subfly.yabacore.unfurl.Unfurler
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -45,6 +48,12 @@ class LinkmarkDetailStateMachine :
             is LinkmarkDetailEvent.OnSaveReadableContent -> onSaveReadableContent(event)
             LinkmarkDetailEvent.OnFetchReadableContent -> onFetchReadableContent()
             LinkmarkDetailEvent.OnDeleteBookmark -> onDeleteBookmark()
+            LinkmarkDetailEvent.OnToggleReaderTheme -> onToggleReaderTheme()
+            LinkmarkDetailEvent.OnToggleReaderFontSize -> onToggleReaderFontSize()
+            LinkmarkDetailEvent.OnToggleReaderLineHeight -> onToggleReaderLineHeight()
+            is LinkmarkDetailEvent.OnSetReaderTheme -> onSetReaderTheme(event.theme)
+            is LinkmarkDetailEvent.OnSetReaderFontSize -> onSetReaderFontSize(event.fontSize)
+            is LinkmarkDetailEvent.OnSetReaderLineHeight -> onSetReaderLineHeight(event.lineHeight)
             is LinkmarkDetailEvent.OnCreateHighlight -> onCreateHighlight(event)
             is LinkmarkDetailEvent.OnUpdateHighlight -> onUpdateHighlight(event)
             is LinkmarkDetailEvent.OnDeleteHighlight -> onDeleteHighlight(event)
@@ -135,6 +144,75 @@ class LinkmarkDetailStateMachine :
     private fun onDeleteBookmark() {
         val bookmarkId = bookmarkIdFlow.value ?: return
         launch { AllBookmarksManager.deleteBookmarks(listOf(bookmarkId)) }
+    }
+
+    private fun onToggleReaderTheme() {
+        updateState { state ->
+            val currentPreferences = state.readerPreferences
+            state.copy(
+                readerPreferences = currentPreferences.copy(
+                    theme = when (currentPreferences.theme) {
+                        ReaderTheme.SYSTEM -> ReaderTheme.DARK
+                        ReaderTheme.DARK -> ReaderTheme.LIGHT
+                        ReaderTheme.LIGHT -> ReaderTheme.SEPIA
+                        ReaderTheme.SEPIA -> ReaderTheme.SYSTEM
+                    },
+                ),
+            )
+        }
+    }
+
+    private fun onToggleReaderFontSize() {
+        updateState { state ->
+            val currentPreferences = state.readerPreferences
+            state.copy(
+                readerPreferences = currentPreferences.copy(
+                    fontSize = when (currentPreferences.fontSize) {
+                        ReaderFontSize.SMALL -> ReaderFontSize.MEDIUM
+                        ReaderFontSize.MEDIUM -> ReaderFontSize.LARGE
+                        ReaderFontSize.LARGE -> ReaderFontSize.SMALL
+                    },
+                ),
+            )
+        }
+    }
+
+    private fun onToggleReaderLineHeight() {
+        updateState { state ->
+            val currentPreferences = state.readerPreferences
+            state.copy(
+                readerPreferences = currentPreferences.copy(
+                    lineHeight = when (currentPreferences.lineHeight) {
+                        ReaderLineHeight.NORMAL -> ReaderLineHeight.RELAXED
+                        ReaderLineHeight.RELAXED -> ReaderLineHeight.NORMAL
+                    },
+                ),
+            )
+        }
+    }
+
+    private fun onSetReaderTheme(theme: ReaderTheme) {
+        updateState { state ->
+            state.copy(
+                readerPreferences = state.readerPreferences.copy(theme = theme),
+            )
+        }
+    }
+
+    private fun onSetReaderFontSize(fontSize: ReaderFontSize) {
+        updateState { state ->
+            state.copy(
+                readerPreferences = state.readerPreferences.copy(fontSize = fontSize),
+            )
+        }
+    }
+
+    private fun onSetReaderLineHeight(lineHeight: ReaderLineHeight) {
+        updateState { state ->
+            state.copy(
+                readerPreferences = state.readerPreferences.copy(lineHeight = lineHeight),
+            )
+        }
     }
 
     private fun onCreateHighlight(event: LinkmarkDetailEvent.OnCreateHighlight) {

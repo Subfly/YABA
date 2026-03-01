@@ -11,6 +11,12 @@
   caret-color: var(--yaba-cursor, var(--yaba-primary));
 }
 
+body[data-yaba-page="viewer"] .yaba-editor-container {
+  font-size: var(--yaba-reader-font-size, 18px);
+  line-height: var(--yaba-reader-line-height, 1.6);
+  color: var(--yaba-reader-on-bg, var(--yaba-on-bg));
+}
+
 .yaba-editor-container [contenteditable="true"] {
   outline: none;
   min-height: 100%;
