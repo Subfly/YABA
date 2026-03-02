@@ -12,6 +12,16 @@ const turndown = new TurndownService({
 turndown.use(gfm)
 
 const ASSET_PLACEHOLDER_PREFIX = "yaba-asset://"
+const CODE_CLASS_HINT = /(language-|lang-|highlight|hljs|codehilite|prism|rouge|prettyprint|sourcecode|syntax)/i
+const INLINE_TEXT_CONTAINERS = new Set(["P", "LI", "TD", "TH", "A", "SPAN", "EM", "STRONG", "B", "I", "U", "S", "DEL"])
+const READABILITY_OPTIONS = {
+  // Keep CSS classes so code-related classnames survive extraction.
+  keepClasses: true,
+  // Allow shorter technical posts/snippets to still be considered as article content.
+  charThreshold: 20,
+  // Consider more candidates before settling on the main article body.
+  nbTopCandidates: 10,
+}
 
 export interface ConverterInput {
   html: string
@@ -44,9 +54,114 @@ function resolveUrl(baseUrl: string | undefined, src: string): string {
   }
 }
 
-function toReaderModeHtml(cleanHtml: string, baseUrl?: string): string {
+interface CodeNodeStats {
+  preCount: number
+  codeCount: number
+  blockCodeCount: number
+}
+
+function isLikelyBlockCodeNode(codeNode: Element): boolean {
+  const classText = `${codeNode.className || ""} ${codeNode.parentElement?.className || ""}`.trim()
+  if (CODE_CLASS_HINT.test(classText)) return true
+
+  if (codeNode.closest("pre")) return true
+
+  const parentTag = codeNode.parentElement?.tagName ?? ""
+  if (INLINE_TEXT_CONTAINERS.has(parentTag)) return false
+
+  const codeText = (codeNode.textContent || "").trim()
+  if (codeText.length <= 24) return false
+
+  return codeText.includes("\n")
+}
+
+function normalizeCodeWrappers(root: ParentNode): void {
+  const codeNodes = Array.from(root.querySelectorAll("code"))
+  codeNodes.forEach((codeNode) => {
+    if (codeNode.closest("pre")) return
+    if (!isLikelyBlockCodeNode(codeNode)) return
+
+    const pre = root.ownerDocument?.createElement("pre") ?? document.createElement("pre")
+    codeNode.parentNode?.insertBefore(pre, codeNode)
+    pre.appendChild(codeNode)
+  })
+}
+
+function getCodeNodeStats(html: string): CodeNodeStats {
   const doc = new DOMParser().parseFromString(
-    `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>${cleanHtml}</body></html>`,
+    `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>${html}</body></html>`,
+    "text/html"
+  )
+  normalizeCodeWrappers(doc.body)
+  const codeNodes = Array.from(doc.querySelectorAll("code"))
+  const blockCodeCount = codeNodes.filter((codeNode) => isLikelyBlockCodeNode(codeNode)).length
+  return {
+    preCount: doc.querySelectorAll("pre").length,
+    codeCount: codeNodes.length,
+    blockCodeCount,
+  }
+}
+
+function readabilityDroppedTooMuchCode(originalHtml: string, readerHtml: string): boolean {
+  const original = getCodeNodeStats(originalHtml)
+  if (original.preCount <= 0 && original.codeCount <= 0 && original.blockCodeCount <= 0) return false
+
+  const extracted = getCodeNodeStats(readerHtml)
+  if (original.blockCodeCount > 0 && extracted.blockCodeCount === 0) return true
+  if (original.preCount > 0 && extracted.preCount === 0) return true
+  if (
+    original.blockCodeCount >= 2 &&
+    extracted.blockCodeCount < Math.max(1, Math.floor(original.blockCodeCount * 0.5))
+  ) {
+    return true
+  }
+  if (original.codeCount >= 3 && extracted.codeCount === 0) return true
+  if (original.codeCount >= 6 && extracted.codeCount < Math.max(2, Math.floor(original.codeCount * 0.35)))
+    return true
+  return false
+}
+
+function extractSemanticMainHtml(html: string): string | null {
+  const doc = new DOMParser().parseFromString(
+    `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>${html}</body></html>`,
+    "text/html"
+  )
+  const candidates = Array.from(doc.querySelectorAll("article, main, [role='main']"))
+  if (candidates.length <= 0) return null
+
+  const bestCandidate = candidates
+    .map((candidate) => {
+      const candidateHtml = candidate.innerHTML
+      const stats = getCodeNodeStats(candidateHtml)
+      const textLength = (candidate.textContent || "").trim().length
+      const score = textLength + stats.blockCodeCount * 250 + stats.preCount * 200 + stats.codeCount * 40
+      return { candidateHtml, score, textLength, stats }
+    })
+    .sort((a, b) => b.score - a.score)
+    .find(({ textLength, stats }) => textLength >= 280 || stats.blockCodeCount > 0 || stats.preCount > 0)
+
+  return bestCandidate?.candidateHtml ?? null
+}
+
+const SANITIZE_OPTIONS = {
+  ALLOWED_TAGS: [
+    "h1", "h2", "h3", "h4", "h5", "h6",
+    "p", "br", "hr",
+    "strong", "b", "em", "i", "u", "s", "strike", "del",
+    "code", "pre",
+    "ul", "ol", "li",
+    "blockquote",
+    "a", "img",
+    "table", "thead", "tbody", "tr", "th", "td",
+    "div", "span", "section", "article", "main",
+    "figure", "figcaption", "time",
+  ],
+  ALLOWED_ATTR: ["href", "src", "alt", "title", "class", "datetime"],
+}
+
+function toReaderModeHtml(html: string, baseUrl?: string): string {
+  const doc = new DOMParser().parseFromString(
+    `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>${html}</body></html>`,
     "text/html"
   )
   if (baseUrl) {
@@ -54,13 +169,30 @@ function toReaderModeHtml(cleanHtml: string, baseUrl?: string): string {
     base.setAttribute("href", baseUrl)
     doc.head.appendChild(base)
   }
+  normalizeCodeWrappers(doc.body)
+  const normalizedOriginalHtml = doc.body.innerHTML
+
   const docClone = doc.cloneNode(true) as Document
-  const reader = new Readability(docClone)
+  const reader = new Readability(docClone, READABILITY_OPTIONS)
   const article = reader.parse()
   if (article?.content && article.content.trim().length > 0) {
-    return article.content
+    const readerDoc = new DOMParser().parseFromString(
+      `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>${article.content}</body></html>`,
+      "text/html"
+    )
+    normalizeCodeWrappers(readerDoc.body)
+    const normalizedReaderHtml = readerDoc.body.innerHTML
+
+    if (readabilityDroppedTooMuchCode(normalizedOriginalHtml, normalizedReaderHtml)) {
+      const semanticFallbackHtml = extractSemanticMainHtml(normalizedOriginalHtml)
+      if (semanticFallbackHtml) return semanticFallbackHtml
+      return normalizedOriginalHtml
+    }
+    return normalizedReaderHtml
   }
-  return cleanHtml
+  const semanticFallbackHtml = extractSemanticMainHtml(normalizedOriginalHtml)
+  if (semanticFallbackHtml) return semanticFallbackHtml
+  return normalizedOriginalHtml
 }
 
 function isImagePlaceholder(url: string): boolean {
@@ -77,26 +209,12 @@ function isImagePlaceholder(url: string): boolean {
 }
 
 function sanitizeAndConvertWithAssets(html: string, baseUrl?: string): ConverterOutput {
-  const clean = DOMPurify.sanitize(html, {
-    ALLOWED_TAGS: [
-      "h1", "h2", "h3", "h4", "h5", "h6",
-      "p", "br", "hr",
-      "strong", "b", "em", "i", "u", "s", "strike", "del",
-      "code", "pre",
-      "ul", "ol", "li",
-      "blockquote",
-      "a", "img",
-      "table", "thead", "tbody", "tr", "th", "td",
-      "div", "span", "section", "article", "main",
-      "figure", "figcaption", "time",
-    ],
-    ALLOWED_ATTR: ["href", "src", "alt", "title", "class", "datetime"],
-  })
-
-  const readerHtml = toReaderModeHtml(clean, baseUrl)
+  const readerHtml = toReaderModeHtml(html, baseUrl)
+  const clean = DOMPurify.sanitize(readerHtml, SANITIZE_OPTIONS)
 
   const wrapper = document.createElement("div")
-  wrapper.innerHTML = readerHtml
+  wrapper.innerHTML = clean
+  normalizeCodeWrappers(wrapper)
 
   if (baseUrl) {
     wrapper.querySelectorAll("a[href]").forEach((a) => {
