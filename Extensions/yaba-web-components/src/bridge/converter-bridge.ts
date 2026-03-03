@@ -3,6 +3,8 @@ import { Readability } from "@mozilla/readability"
 import TurndownService from "turndown"
 import { gfm } from "turndown-plugin-gfm"
 
+const YOUTUBE_URL_RE = /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]+)/i
+
 const turndown = new TurndownService({
   headingStyle: "atx",
   codeBlockStyle: "fenced",
@@ -10,6 +12,32 @@ const turndown = new TurndownService({
 })
 
 turndown.use(gfm)
+
+turndown.addRule("youtubeIframe", {
+  filter: (node: HTMLElement) => {
+    if (node.tagName !== "IFRAME") return false
+    const src = node.getAttribute("src") ?? ""
+    return YOUTUBE_URL_RE.test(src)
+  },
+  replacement: (_content: string, node: HTMLElement) => {
+    const src = node.getAttribute("src") ?? ""
+    return `\n\n\`\`\`yaba-youtube\n${src}\n\`\`\`\n\n`
+  },
+})
+
+turndown.addRule("youtubeWrapper", {
+  filter: (node: HTMLElement) => {
+    if (node.tagName !== "DIV") return false
+    return node.hasAttribute("data-youtube-video") || node.querySelector("iframe") !== null && YOUTUBE_URL_RE.test(node.querySelector("iframe")?.getAttribute("src") ?? "")
+  },
+  replacement: (_content: string, node: HTMLElement) => {
+    const iframe = node.querySelector("iframe")
+    if (!iframe) return _content
+    const src = iframe.getAttribute("src") ?? ""
+    if (!YOUTUBE_URL_RE.test(src)) return _content
+    return `\n\n\`\`\`yaba-youtube\n${src}\n\`\`\`\n\n`
+  },
+})
 
 const ASSET_PLACEHOLDER_PREFIX = "yaba-asset://"
 const CODE_CLASS_HINT = /(language-|lang-|highlight|hljs|codehilite|prism|rouge|prettyprint|sourcecode|syntax)/i
@@ -151,12 +179,15 @@ const SANITIZE_OPTIONS = {
     "code", "pre",
     "ul", "ol", "li",
     "blockquote",
-    "a", "img",
+    "a", "img", "iframe",
     "table", "thead", "tbody", "tr", "th", "td",
     "div", "span", "section", "article", "main",
     "figure", "figcaption", "time",
   ],
-  ALLOWED_ATTR: ["href", "src", "alt", "title", "class", "datetime"],
+  ALLOWED_ATTR: [
+    "href", "src", "alt", "title", "class", "datetime",
+    "allow", "allowfullscreen", "frameborder", "data-youtube-video",
+  ],
 }
 
 function toReaderModeHtml(html: string, baseUrl?: string): string {
@@ -208,13 +239,40 @@ function isImagePlaceholder(url: string): boolean {
   )
 }
 
+function extractYouTubeIframes(root: ParentNode): string[] {
+  const iframes = Array.from(root.querySelectorAll("iframe"))
+  const youtubeHtml: string[] = []
+  iframes.forEach((iframe) => {
+    const src = iframe.getAttribute("src") ?? ""
+    if (YOUTUBE_URL_RE.test(src)) {
+      youtubeHtml.push(`<div data-youtube-video><iframe src="${src}"></iframe></div>`)
+    }
+  })
+  return youtubeHtml
+}
+
 function sanitizeAndConvertWithAssets(html: string, baseUrl?: string): ConverterOutput {
+  const preDoc = new DOMParser().parseFromString(
+    `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>${html}</body></html>`,
+    "text/html"
+  )
+  const savedYouTubeHtml = extractYouTubeIframes(preDoc.body)
+
   const readerHtml = toReaderModeHtml(html, baseUrl)
   const clean = DOMPurify.sanitize(readerHtml, SANITIZE_OPTIONS)
 
   const wrapper = document.createElement("div")
   wrapper.innerHTML = clean
   normalizeCodeWrappers(wrapper)
+
+  const existingYouTube = extractYouTubeIframes(wrapper)
+  if (existingYouTube.length === 0 && savedYouTubeHtml.length > 0) {
+    savedYouTubeHtml.forEach((yt) => {
+      const div = document.createElement("div")
+      div.innerHTML = yt
+      wrapper.appendChild(div.firstElementChild!)
+    })
+  }
 
   if (baseUrl) {
     wrapper.querySelectorAll("a[href]").forEach((a) => {

@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.webview.YabaWebAppearance
 import dev.subfly.yaba.core.components.webview.YabaWebPlatform
 import dev.subfly.yaba.core.components.webview.YabaWebScrollDirection
@@ -65,6 +66,8 @@ import yaba.composeapp.generated.resources.edit
 import yaba.composeapp.generated.resources.move
 import yaba.composeapp.generated.resources.refresh
 import yaba.composeapp.generated.resources.remind_me
+import yaba.composeapp.generated.resources.reader_not_available_description
+import yaba.composeapp.generated.resources.reader_not_available_title
 import yaba.composeapp.generated.resources.share
 
 private data class DetailMenuAction(
@@ -325,22 +328,31 @@ internal fun LinkmarkContentLayout(
                         // TODO: Wire FAB action for reader toolbar.
                     },
                 )
-            }
 
-            YabaWebViewViewer(
-                modifier = Modifier.fillMaxSize(),
-                baseUrl = WebComponentUris.getViewerUri(),
-                markdown = state.readableMarkdown ?: "",
-                assetsBaseUrl = state.assetsBaseUrl,
-                platform = YabaWebPlatform.Compose,
-                appearance = appearance,
-                readerPreferences = state.readerPreferences,
-                onUrlClick = openUrl,
-                onScrollDirectionChanged = { direction ->
-                    if (direction == YabaWebScrollDirection.Down) isReaderToolbarVisible = false
-                    if (direction == YabaWebScrollDirection.Up) isReaderToolbarVisible = true
-                },
-            )
+                YabaWebViewViewer(
+                    modifier = Modifier.fillMaxSize(),
+                    baseUrl = WebComponentUris.getViewerUri(),
+                    markdown = state.readableMarkdown ?: "",
+                    assetsBaseUrl = state.assetsBaseUrl,
+                    platform = YabaWebPlatform.Compose,
+                    appearance = appearance,
+                    readerPreferences = state.readerPreferences,
+                    onUrlClick = openUrl,
+                    onScrollDirectionChanged = { direction ->
+                        if (direction == YabaWebScrollDirection.Down) isReaderToolbarVisible = false
+                        if (direction == YabaWebScrollDirection.Up) isReaderToolbarVisible = true
+                    },
+                )
+            } else if (!state.isLoading) {
+                NoContentView(
+                    modifier = Modifier.fillMaxSize()
+                        .wrapContentSize(Alignment.Center),
+                    iconName = "cancel-square",
+                    labelRes = Res.string.reader_not_available_title,
+                ) {
+                    Text(text = stringResource(Res.string.reader_not_available_description))
+                }
+            }
         }
     }
 }

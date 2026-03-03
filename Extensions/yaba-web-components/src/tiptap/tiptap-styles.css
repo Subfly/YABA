@@ -125,6 +125,37 @@ body[data-yaba-page="viewer"] .yaba-editor-container {
   margin: 0.5em 0;
 }
 
+/* Image not available fallback */
+.yaba-image-not-available {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px 16px;
+  margin: 0.5em 0;
+  border-radius: 8px;
+  background: var(--yaba-surface-variant);
+  color: var(--yaba-on-surface-variant);
+}
+
+.yaba-image-not-available-icon {
+  width: 36px;
+  height: 36px;
+  opacity: 0.6;
+  color: var(--yaba-on-surface-variant);
+}
+
+.yaba-image-not-available-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.yaba-image-not-available-label {
+  font-size: 0.85em;
+  opacity: 0.7;
+}
+
 .yaba-editor-container .ProseMirror pre {
   font-family: ui-monospace, monospace;
   background: var(--yaba-surface-variant);

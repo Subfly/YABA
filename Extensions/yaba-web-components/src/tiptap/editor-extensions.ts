@@ -5,7 +5,7 @@ import Subscript from "@tiptap/extension-subscript"
 import Superscript from "@tiptap/extension-superscript"
 import Link from "@tiptap/extension-link"
 import Image from "@tiptap/extension-image"
-import Youtube from "@tiptap/extension-youtube"
+import BaseYoutube from "@tiptap/extension-youtube"
 import { Mathematics } from "@tiptap/extension-mathematics"
 import { Table } from "@tiptap/extension-table"
 import TableRow from "@tiptap/extension-table-row"
@@ -15,11 +15,25 @@ import TaskList from "@tiptap/extension-task-list"
 import TaskItem from "@tiptap/extension-task-item"
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight"
 import { Markdown } from "@tiptap/markdown"
-import { common, createLowlight } from "lowlight"
+import { all, createLowlight } from "lowlight"
 import type { Extensions } from "@tiptap/core"
 import { Excalidraw } from "./extensions/excalidraw"
 
-const lowlight = createLowlight(common)
+const lowlight = createLowlight(all)
+
+const Youtube = BaseYoutube.extend({
+  parseMarkdown(token: any, helpers: any) {
+    if (token.type !== "code" || token.lang !== "yaba-youtube") return null
+    const url = (typeof token.text === "string" ? token.text : token.raw ?? "").trim()
+    if (!url) return null
+    return helpers.createNode("youtube", { src: url })
+  },
+
+  renderMarkdown(node: any) {
+    const src = node.attrs?.src ?? ""
+    return `\`\`\`yaba-youtube\n${src}\n\`\`\`\n\n`
+  },
+})
 
 export function createEditorExtensions(): Extensions {
   return [

@@ -18,6 +18,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -25,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.core.components.NoContentView
-import dev.subfly.yaba.core.components.RecentBookmarksGridSection
 import dev.subfly.yaba.core.components.item.bookmark.BookmarkItemView
 import dev.subfly.yaba.core.components.item.folder.FolderItemView
 import dev.subfly.yaba.core.components.item.tag.TagItemView
@@ -48,7 +48,6 @@ import dev.subfly.yabacore.model.utils.FabPosition
 import dev.subfly.yabacore.state.home.HomeEvent
 import dev.subfly.yabacore.ui.layout.YabaContentLayout
 import kotlinx.coroutines.launch
-import androidx.compose.runtime.rememberCoroutineScope
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.folders_title
@@ -150,65 +149,32 @@ fun HomeView(modifier: Modifier = Modifier) {
                             }
 
                             else -> {
-                                // For GRID appearance, render all bookmarks in a single grid item
-                                if (state.bookmarkAppearance == BookmarkAppearance.GRID) {
-                                    item(key = "RECENTS_GRID") {
-                                        RecentBookmarksGridSection(
-                                            bookmarks = state.recentBookmarks,
-                                            appearance = state.bookmarkAppearance,
-                                            cardImageSizing = state.cardImageSizing,
-                                            onClickBookmark = { bookmark ->
-                                                navigator.add(
-                                                    LinkDetailRoute(bookmarkId = bookmark.id)
-                                                )
-                                            },
-                                            onDeleteBookmark = { bookmark ->
-                                                vm.onEvent(HomeEvent.OnDeleteBookmark(bookmark))
-                                            },
-                                            onShareBookmark = { bookmark ->
-                                                if (bookmark.kind == BookmarkKind.LINK) {
-                                                    shareScope.launch {
-                                                        LinkmarkManager.getBookmarkUrl(bookmark.id)?.let(shareUrl)
-                                                    }
+                                itemsIndexed(
+                                    items = state.recentBookmarks,
+                                    key = { _, it -> it.id },
+                                ) { index, bookmarkModel ->
+                                    BookmarkItemView(
+                                        model = bookmarkModel,
+                                        appearance = BookmarkAppearance.LIST,
+                                        cardImageSizing = state.cardImageSizing,
+                                        onClick = {
+                                            navigator.add(
+                                                LinkDetailRoute(bookmarkId = bookmarkModel.id)
+                                            )
+                                        },
+                                        onDeleteBookmark = { bookmark ->
+                                            vm.onEvent(HomeEvent.OnDeleteBookmark(bookmark))
+                                        },
+                                        onShareBookmark = { bookmark ->
+                                            if (bookmark.kind == BookmarkKind.LINK) {
+                                                shareScope.launch {
+                                                    LinkmarkManager.getBookmarkUrl(bookmark.id)?.let(shareUrl)
                                                 }
-                                            },
-                                        )
-                                    }
-                                } else {
-                                    // For LIST/CARD appearance, render each bookmark as a list item
-                                    itemsIndexed(
-                                        items = state.recentBookmarks,
-                                        key = { _, it -> it.id },
-                                    ) { index, bookmarkModel ->
-                                        BookmarkItemView(
-                                            modifier = Modifier
-                                                .padding(
-                                                    horizontal = if (state.bookmarkAppearance == BookmarkAppearance.CARD) {
-                                                        12.dp
-                                                    } else 0.dp
-                                                ),
-                                            model = bookmarkModel,
-                                            appearance = state.bookmarkAppearance,
-                                            cardImageSizing = state.cardImageSizing,
-                                            onClick = {
-                                                navigator.add(
-                                                    LinkDetailRoute(bookmarkId = bookmarkModel.id)
-                                                )
-                                            },
-                                            onDeleteBookmark = { bookmark ->
-                                                vm.onEvent(HomeEvent.OnDeleteBookmark(bookmark))
-                                            },
-                                            onShareBookmark = { bookmark ->
-                                                if (bookmark.kind == BookmarkKind.LINK) {
-                                                    shareScope.launch {
-                                                        LinkmarkManager.getBookmarkUrl(bookmark.id)?.let(shareUrl)
-                                                    }
-                                                }
-                                            },
-                                            index = index,
-                                            count = state.recentBookmarks.size,
-                                        )
-                                    }
+                                            }
+                                        },
+                                        index = index,
+                                        count = state.recentBookmarks.size,
+                                    )
                                 }
                             }
                         }
@@ -298,7 +264,7 @@ fun HomeView(modifier: Modifier = Modifier) {
                         state.tags.isEmpty() -> {
                             item(key = "NO_TAGS") {
                                 NoContentView(
-                                    iconName = "folder-01",
+                                    iconName = "tag-01",
                                     labelRes = Res.string.no_tags_message,
                                     message = { Text(text = stringResource(Res.string.no_tags_message)) },
                                 )
