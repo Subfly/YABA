@@ -8,10 +8,10 @@ import kotlin.time.Instant
 
 /**
  * Formats an Instant to a readable date and time string.
- * Format: "Jan 25, 2026 at 4:16"
+ * Format: "Jan 25, 2026 at 4:16 PM"
  */
 fun formatDateTime(instant: Instant): String {
-    val dateFormat = SimpleDateFormat("MMM d, yyyy 'at' h:mm", Locale.getDefault())
+    val dateFormat = SimpleDateFormat("MMM d, yyyy 'at' h:mm a", Locale.getDefault())
     dateFormat.timeZone = TimeZone.getDefault()
     val date = Date(instant.toEpochMilliseconds())
     return dateFormat.format(date)

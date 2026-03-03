@@ -6,6 +6,7 @@ internal actual fun initializePlatformNotifications(platformContext: Any?) {
 
 internal actual suspend fun platformScheduleReminder(
     bookmarkId: String,
+    bookmarkKindCode: Int,
     title: PlatformNotificationText,
     message: PlatformNotificationText,
     bookmarkLabel: String,

@@ -5,6 +5,7 @@ import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.foundation.layout.Box
@@ -21,7 +22,13 @@ import dev.subfly.yaba.core.navigation.creation.YabaCreationDialog
 import dev.subfly.yaba.core.navigation.creation.YabaCreationSheet
 import dev.subfly.yaba.core.navigation.creation.creationNavigationConfig
 import dev.subfly.yaba.core.navigation.creation.rememberResultStore
+import dev.subfly.yaba.core.deeplink.DeepLinkManager
+import dev.subfly.yaba.core.deeplink.DeepLinkTarget
+import dev.subfly.yaba.core.navigation.main.DocDetailRoute
 import dev.subfly.yaba.core.navigation.main.HomeRoute
+import dev.subfly.yaba.core.navigation.main.ImageDetailRoute
+import dev.subfly.yaba.core.navigation.main.LinkDetailRoute
+import dev.subfly.yaba.core.navigation.main.NoteDetailRoute
 import dev.subfly.yaba.core.navigation.main.YabaMainNavigationView
 import dev.subfly.yaba.core.navigation.main.detailNavigationConfig
 import dev.subfly.yaba.core.theme.YabaTheme
@@ -33,6 +40,7 @@ import dev.subfly.yaba.util.LocalPaneInfo
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.LocalUserPreferences
 import dev.subfly.yaba.util.rememberPaneLayoutInfo
+import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.preferences.SettingsStores
 import dev.subfly.yabacore.preferences.UserPreferences
 
@@ -61,6 +69,23 @@ fun App() {
 
     val currentWindowInfo = currentWindowAdaptiveInfo()
     val paneInfo = rememberPaneLayoutInfo()
+
+    val pendingTarget by DeepLinkManager.pendingTarget.collectAsState()
+    LaunchedEffect(pendingTarget) {
+        when (val target = pendingTarget) {
+            is DeepLinkTarget.BookmarkDetail -> {
+                val route = when (BookmarkKind.fromCode(target.bookmarkKindCode)) {
+                    BookmarkKind.LINK -> LinkDetailRoute(bookmarkId = target.bookmarkId)
+                    BookmarkKind.NOTE -> NoteDetailRoute(bookmarkId = target.bookmarkId)
+                    BookmarkKind.IMAGE -> ImageDetailRoute(bookmarkId = target.bookmarkId)
+                    BookmarkKind.FILE -> DocDetailRoute(bookmarkId = target.bookmarkId)
+                }
+                contentNavigator.add(route)
+                DeepLinkManager.consume()
+            }
+            null -> {}
+        }
+    }
 
     CompositionLocalProvider(
         LocalUserPreferences provides userPreferences,

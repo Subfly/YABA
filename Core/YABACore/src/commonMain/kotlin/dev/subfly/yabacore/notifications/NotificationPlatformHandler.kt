@@ -8,6 +8,7 @@ internal expect fun initializePlatformNotifications(platformContext: Any?)
 
 internal expect suspend fun platformScheduleReminder(
     bookmarkId: String,
+    bookmarkKindCode: Int,
     title: PlatformNotificationText,
     message: PlatformNotificationText,
     bookmarkLabel: String,

@@ -28,6 +28,7 @@ internal actual fun initializePlatformNotifications(platformContext: Any?) {
 
 internal actual suspend fun platformScheduleReminder(
     bookmarkId: String,
+    bookmarkKindCode: Int,
     title: PlatformNotificationText,
     message: PlatformNotificationText,
     bookmarkLabel: String,
@@ -43,7 +44,7 @@ internal actual suspend fun platformScheduleReminder(
         setTitle(resolvedTitle)
         setBody(resolvedMessage)
         setSound(UNNotificationSound.defaultSound())
-        setUserInfo(mapOf("id" to bookmarkId))
+        setUserInfo(mapOf("id" to bookmarkId, "kindCode" to bookmarkKindCode))
     }
 
     val date = Instant.fromEpochMilliseconds(triggerDateEpochMillis).toNSDate()

@@ -264,14 +264,15 @@ class LinkmarkDetailStateMachine :
 
     private fun onScheduleReminder(event: LinkmarkDetailEvent.OnScheduleReminder) {
         val bookmarkId = bookmarkIdFlow.value ?: return
-        val bookmarkLabel = currentState().bookmark?.label ?: return
+        val bookmark = currentState().bookmark ?: return
         launch {
             NotificationManager.cancelReminder(bookmarkId)
             NotificationManager.scheduleReminder(
                 bookmarkId = bookmarkId,
+                bookmarkKindCode = bookmark.kind.code,
                 title = event.title,
                 message = event.message,
-                bookmarkLabel = bookmarkLabel,
+                bookmarkLabel = bookmark.label,
                 triggerDateEpochMillis = event.triggerDateEpochMillis,
             )
             updateState { it.copy(reminderDateEpochMillis = event.triggerDateEpochMillis) }

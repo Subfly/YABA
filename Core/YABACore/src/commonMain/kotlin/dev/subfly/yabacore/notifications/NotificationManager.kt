@@ -14,6 +14,8 @@ object NotificationManager {
      * Schedules a one-time reminder notification for the given bookmark.
      *
      * @param bookmarkId  Used as the notification identifier (one reminder per bookmark).
+     * @param bookmarkKindCode  [dev.subfly.yabacore.model.utils.BookmarkKind.code] so the
+     *                          notification tap can deep-link to the correct detail view.
      * @param title       Platform-specific localized title (no format args needed).
      * @param message     Platform-specific localized message template (contains a
      *                    placeholder for [bookmarkLabel], e.g. `%s` / `%@`).
@@ -22,6 +24,7 @@ object NotificationManager {
      */
     suspend fun scheduleReminder(
         bookmarkId: String,
+        bookmarkKindCode: Int,
         title: PlatformNotificationText,
         message: PlatformNotificationText,
         bookmarkLabel: String,
@@ -29,6 +32,7 @@ object NotificationManager {
     ) {
         platformScheduleReminder(
             bookmarkId = bookmarkId,
+            bookmarkKindCode = bookmarkKindCode,
             title = title,
             message = message,
             bookmarkLabel = bookmarkLabel,

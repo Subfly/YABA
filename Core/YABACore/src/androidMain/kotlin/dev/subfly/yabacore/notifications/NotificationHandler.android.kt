@@ -99,6 +99,7 @@ internal actual fun initializePlatformNotifications(platformContext: Any?) {
 
 internal actual suspend fun platformScheduleReminder(
     bookmarkId: String,
+    bookmarkKindCode: Int,
     title: PlatformNotificationText,
     message: PlatformNotificationText,
     bookmarkLabel: String,
@@ -114,6 +115,7 @@ internal actual suspend fun platformScheduleReminder(
     val pendingIntent = buildPendingIntent(
         context = context,
         bookmarkId = bookmarkId,
+        bookmarkKindCode = bookmarkKindCode,
         title = resolvedTitle,
         message = resolvedMessage,
     )
@@ -193,6 +195,7 @@ internal actual suspend fun platformRequestPermission(): Boolean {
 private fun buildPendingIntent(
     context: Context,
     bookmarkId: String,
+    bookmarkKindCode: Int = 0,
     title: String,
     message: String,
     flags: Int = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
@@ -200,6 +203,7 @@ private fun buildPendingIntent(
     val intent = Intent(context, ReminderReceiver::class.java).apply {
         action = "dev.subfly.yabacore.REMINDER_$bookmarkId"
         putExtra(ReminderReceiver.EXTRA_BOOKMARK_ID, bookmarkId)
+        putExtra(ReminderReceiver.EXTRA_BOOKMARK_KIND_CODE, bookmarkKindCode)
         putExtra(ReminderReceiver.EXTRA_TITLE, title)
         putExtra(ReminderReceiver.EXTRA_MESSAGE, message)
     }
