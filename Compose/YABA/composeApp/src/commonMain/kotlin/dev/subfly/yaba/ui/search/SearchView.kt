@@ -44,9 +44,14 @@ import dev.subfly.yaba.core.components.item.bookmark.BookmarkItemView
 import dev.subfly.yaba.core.navigation.main.LinkDetailRoute
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalUserPreferences
+import dev.subfly.yaba.util.rememberShareHandler
 import dev.subfly.yaba.util.uiTitle
 import dev.subfly.yaba.util.yabaPointerEventSpy
+import dev.subfly.yabacore.managers.LinkmarkManager
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
+import dev.subfly.yabacore.model.utils.BookmarkKind
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
 import dev.subfly.yabacore.model.utils.CardImageSizing
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
@@ -74,6 +79,8 @@ fun SearchView(modifier: Modifier = Modifier) {
     val navigator = LocalContentNavigator.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
+    val shareUrl = rememberShareHandler()
+    val shareScope = rememberCoroutineScope()
 
     val searchBarState = rememberSearchBarState()
 
@@ -210,8 +217,12 @@ fun SearchView(modifier: Modifier = Modifier) {
                             onDeleteBookmark = { bookmark ->
                                 vm.onEvent(SearchEvent.OnDeleteBookmark(bookmark = bookmark))
                             },
-                            onShareBookmark = {
-                                // TODO: IMPLEMENT SHARE
+                            onShareBookmark = { bookmark ->
+                                if (bookmark.kind == BookmarkKind.LINK) {
+                                    shareScope.launch {
+                                        LinkmarkManager.getBookmarkUrl(bookmark.id)?.let(shareUrl)
+                                    }
+                                }
                             },
                             index = index,
                             count = count,

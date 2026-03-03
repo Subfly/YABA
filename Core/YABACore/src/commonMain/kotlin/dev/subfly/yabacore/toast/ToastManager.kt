@@ -43,6 +43,7 @@ object ToastManager {
 
     fun show(
         message: PlatformToastText,
+        messageFormatArgs: List<Any> = emptyList(),
         acceptText: PlatformToastText? = null,
         iconType: ToastIconType = ToastIconType.NONE,
         duration: ToastDuration = ToastDuration.SHORT,
@@ -52,6 +53,7 @@ object ToastManager {
         val toast = ToastItem(
             id = id,
             message = message,
+            messageFormatArgs = messageFormatArgs,
             acceptText = acceptText,
             iconType = iconType,
             duration = duration,

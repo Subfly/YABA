@@ -18,6 +18,7 @@ enum class ToastIconType(val iconName: String) {
 data class ToastItem(
     val id: ToastId,
     val message: PlatformToastText,
+    val messageFormatArgs: List<Any> = emptyList(),
     val acceptText: PlatformToastText? = null,
     val iconType: ToastIconType = ToastIconType.NONE,
     val duration: ToastDuration = ToastDuration.SHORT,

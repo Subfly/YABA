@@ -58,9 +58,14 @@ import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalDeletionDialogManager
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.LocalUserPreferences
+import dev.subfly.yaba.util.rememberShareHandler
 import dev.subfly.yaba.util.uiTitle
 import dev.subfly.yaba.util.yabaPointerEventSpy
+import dev.subfly.yabacore.managers.LinkmarkManager
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
+import dev.subfly.yabacore.model.utils.BookmarkKind
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
 import dev.subfly.yabacore.model.utils.CardImageSizing
 import dev.subfly.yabacore.model.utils.FolderSelectionMode
 import dev.subfly.yabacore.model.utils.SortOrderType
@@ -106,6 +111,8 @@ fun FolderDetailView(
     val resultStore = LocalResultStore.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
+    val shareUrl = rememberShareHandler()
+    val shareScope = rememberCoroutineScope()
 
     val searchBarState = rememberSearchBarState()
 
@@ -285,8 +292,12 @@ fun FolderDetailView(
                             onDeleteBookmark = { bookmark ->
                                 vm.onEvent(FolderDetailEvent.OnDeleteBookmark(bookmark = bookmark))
                             },
-                            onShareBookmark = {
-                                // TODO: IMPLEMENT SHARE
+                            onShareBookmark = { bookmark ->
+                                if (bookmark.kind == BookmarkKind.LINK) {
+                                    shareScope.launch {
+                                        LinkmarkManager.getBookmarkUrl(bookmark.id)?.let(shareUrl)
+                                    }
+                                }
                             },
                             index = index,
                             count = count,

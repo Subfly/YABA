@@ -18,6 +18,7 @@ import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailActionsC
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailFolderSectionContent
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailImageSectionContent
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailInfoSectionContent
+import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailReminderSectionContent
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailTagSectionContent
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yabacore.model.utils.YabaColor
@@ -87,6 +88,17 @@ internal fun LinkmarkDetailLayout(
                     tags = bookmarkDetails.tags,
                     onClickTag = { tag -> navigator.add(TagDetailRoute(tagId = tag.id)) }
                 )
+            }
+            state.reminderDateEpochMillis?.let { reminderMillis ->
+                item { Spacer(modifier = Modifier.height(24.dp)) }
+                item(key = "REMINDER") {
+                    LinkmarkDetailReminderSectionContent(
+                        modifier = Modifier.animateItem(),
+                        reminderDateEpochMillis = reminderMillis,
+                        mainColor = mainColor,
+                        onCancelReminder = { onEvent(LinkmarkDetailEvent.OnCancelReminder) },
+                    )
+                }
             }
             item(key = "EXTRA_SPACER") { Spacer(modifier = Modifier.height(56.dp)) }
         }

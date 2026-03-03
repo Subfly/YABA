@@ -11,6 +11,7 @@ import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
 import dev.subfly.yabacore.model.utils.YabaColor
+import dev.subfly.yabacore.notifications.NotificationManager
 import dev.subfly.yabacore.queue.CoreOperationQueue
 import dev.subfly.yabacore.sync.CRDTEngine
 import dev.subfly.yabacore.sync.FileTarget
@@ -420,7 +421,10 @@ object FolderManager {
             currentClock = existingClock,
         )
 
-        // 3. Remove all related SQLite cache rows
+        // 3. Cancel any pending reminder notification
+        NotificationManager.cancelReminder(bookmarkId)
+
+        // 4. Remove all related SQLite cache rows
         tagBookmarkDao.deleteForBookmark(bookmarkId)
         linkBookmarkDao.deleteById(bookmarkId)
         bookmarkDao.deleteByIds(listOf(bookmarkId))

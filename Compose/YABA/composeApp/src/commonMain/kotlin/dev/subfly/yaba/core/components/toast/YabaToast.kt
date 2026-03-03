@@ -109,7 +109,7 @@ fun YabaToast(
         ) {
             Text(
                 modifier = Modifier.weight(1f),
-                text = resolveToastText(toast.message),
+                text = resolveToastText(toast.message, toast.messageFormatArgs),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface,
             )

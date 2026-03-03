@@ -7,6 +7,7 @@ import dev.subfly.yabacore.database.entities.FolderEntity
 import dev.subfly.yabacore.database.events.EventsDatabaseProvider
 import dev.subfly.yabacore.filesystem.EntityFileManager
 import dev.subfly.yabacore.model.utils.YabaColor
+import dev.subfly.yabacore.notifications.NotificationManager
 import dev.subfly.yabacore.queue.CoreOperationQueue
 import dev.subfly.yabacore.sync.VectorClock
 import kotlin.time.Clock
@@ -85,16 +86,12 @@ object GlobalDataManager {
     }
 
     /**
-     * Wipe all local data and bookmark files, and clear platform notifications via the provided
-     * callback.
+     * Wipe all local data and bookmark files, including all pending reminder notifications.
      *
      * This marks all entities as deleted in the filesystem and clears the SQLite cache.
      */
-    suspend fun wipeAll(
-        clearNotifications: suspend () -> Unit = {},
-    ) {
-        // Clear platform notifications first (Darwin can pass its own)
-        clearNotifications()
+    suspend fun wipeAll() {
+        NotificationManager.cancelAllReminders()
 
         val deviceId = DeviceIdProvider.get()
 

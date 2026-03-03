@@ -19,6 +19,9 @@ data class LinkmarkDetailUIState(
     val readerPreferences: ReaderPreferences = ReaderPreferences(),
     val highlights: List<HighlightUiModel> = emptyList(),
     val isLoading: Boolean = false,
+    /** Scheduled reminder fire date as epoch millis, null when no reminder is pending. */
+    val reminderDateEpochMillis: Long? = null,
+    val hasNotificationPermission: Boolean = false,
 )
 
 @Immutable

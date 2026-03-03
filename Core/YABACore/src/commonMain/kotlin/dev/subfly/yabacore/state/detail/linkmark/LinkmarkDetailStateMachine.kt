@@ -11,6 +11,7 @@ import dev.subfly.yabacore.managers.AllBookmarksManager
 import dev.subfly.yabacore.managers.HighlightManager
 import dev.subfly.yabacore.managers.LinkmarkManager
 import dev.subfly.yabacore.managers.ReadableContentManager
+import dev.subfly.yabacore.notifications.NotificationManager
 import dev.subfly.yabacore.model.ui.BookmarkPreviewUiModel
 import dev.subfly.yabacore.model.utils.ReaderFontSize
 import dev.subfly.yabacore.model.utils.ReaderLineHeight
@@ -57,6 +58,9 @@ class LinkmarkDetailStateMachine :
             is LinkmarkDetailEvent.OnCreateHighlight -> onCreateHighlight(event)
             is LinkmarkDetailEvent.OnUpdateHighlight -> onUpdateHighlight(event)
             is LinkmarkDetailEvent.OnDeleteHighlight -> onDeleteHighlight(event)
+            LinkmarkDetailEvent.OnRequestNotificationPermission -> onRequestNotificationPermission()
+            is LinkmarkDetailEvent.OnScheduleReminder -> onScheduleReminder(event)
+            LinkmarkDetailEvent.OnCancelReminder -> onCancelReminder()
         }
     }
 
@@ -64,6 +68,13 @@ class LinkmarkDetailStateMachine :
         if (isInitialized) return
         isInitialized = true
         bookmarkIdFlow.value = bookmarkId
+
+        launch {
+            val reminderDate = NotificationManager.getPendingReminderDate(bookmarkId)
+            updateState {
+                it.copy(reminderDateEpochMillis = reminderDate)
+            }
+        }
 
         dataSubscriptionJob?.cancel()
         dataSubscriptionJob = launch {
@@ -242,6 +253,37 @@ class LinkmarkDetailStateMachine :
     private fun onDeleteHighlight(event: LinkmarkDetailEvent.OnDeleteHighlight) {
         val bookmarkId = bookmarkIdFlow.value ?: return
         HighlightManager.deleteHighlight(bookmarkId, event.highlightId)
+    }
+
+    private fun onRequestNotificationPermission() {
+        launch {
+            val granted = NotificationManager.requestPermission()
+            updateState { it.copy(hasNotificationPermission = granted) }
+        }
+    }
+
+    private fun onScheduleReminder(event: LinkmarkDetailEvent.OnScheduleReminder) {
+        val bookmarkId = bookmarkIdFlow.value ?: return
+        val bookmarkLabel = currentState().bookmark?.label ?: return
+        launch {
+            NotificationManager.cancelReminder(bookmarkId)
+            NotificationManager.scheduleReminder(
+                bookmarkId = bookmarkId,
+                title = event.title,
+                message = event.message,
+                bookmarkLabel = bookmarkLabel,
+                triggerDateEpochMillis = event.triggerDateEpochMillis,
+            )
+            updateState { it.copy(reminderDateEpochMillis = event.triggerDateEpochMillis) }
+        }
+    }
+
+    private fun onCancelReminder() {
+        val bookmarkId = bookmarkIdFlow.value ?: return
+        launch {
+            NotificationManager.cancelReminder(bookmarkId)
+        }
+        updateState { it.copy(reminderDateEpochMillis = null) }
     }
 
     override fun clear() {

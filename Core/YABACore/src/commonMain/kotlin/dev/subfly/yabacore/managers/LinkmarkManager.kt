@@ -39,6 +39,9 @@ object LinkmarkManager {
 
     // ==================== Query Operations ====================
 
+    suspend fun getBookmarkUrl(bookmarkId: String): String? =
+        linkBookmarkDao.getByBookmarkId(bookmarkId)?.url
+
     suspend fun getLinkmarkDetail(bookmarkId: String): LinkmarkUiModel? {
         val bookmarkMetaData = bookmarkDao.getById(bookmarkId) ?: return null
         val linkMetaData = linkBookmarkDao.getByBookmarkId(bookmarkId) ?: return null

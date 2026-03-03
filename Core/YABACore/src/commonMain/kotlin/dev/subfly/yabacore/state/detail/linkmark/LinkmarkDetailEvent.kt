@@ -4,6 +4,7 @@ import dev.subfly.yabacore.model.utils.ReaderFontSize
 import dev.subfly.yabacore.model.utils.ReaderLineHeight
 import dev.subfly.yabacore.model.utils.ReaderTheme
 import dev.subfly.yabacore.model.utils.YabaColor
+import dev.subfly.yabacore.notifications.PlatformNotificationText
 import dev.subfly.yabacore.unfurl.ReadableUnfurl
 
 sealed interface LinkmarkDetailEvent {
@@ -32,4 +33,12 @@ sealed interface LinkmarkDetailEvent {
         val note: String?,
     ) : LinkmarkDetailEvent
     data class OnDeleteHighlight(val highlightId: String) : LinkmarkDetailEvent
+
+    data object OnRequestNotificationPermission : LinkmarkDetailEvent
+    data class OnScheduleReminder(
+        val title: PlatformNotificationText,
+        val message: PlatformNotificationText,
+        val triggerDateEpochMillis: Long,
+    ) : LinkmarkDetailEvent
+    data object OnCancelReminder : LinkmarkDetailEvent
 }

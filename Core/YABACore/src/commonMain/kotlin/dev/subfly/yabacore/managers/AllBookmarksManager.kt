@@ -19,6 +19,7 @@ import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.BookmarkSearchFilters
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
+import dev.subfly.yabacore.notifications.NotificationManager
 import dev.subfly.yabacore.queue.CoreOperationQueue
 import dev.subfly.yabacore.sync.CRDTEngine
 import dev.subfly.yabacore.sync.FileTarget
@@ -436,7 +437,10 @@ object AllBookmarksManager {
             currentClock = existingClock,
         )
 
-        // 3. Remove all related SQLite cache rows
+        // 3. Cancel any pending reminder notification
+        NotificationManager.cancelReminder(bookmarkId)
+
+        // 4. Remove all related SQLite cache rows
         tagBookmarkDao.deleteForBookmark(bookmarkId)
         linkBookmarkDao.deleteById(bookmarkId)
         highlightDao.deleteByBookmarkId(bookmarkId)

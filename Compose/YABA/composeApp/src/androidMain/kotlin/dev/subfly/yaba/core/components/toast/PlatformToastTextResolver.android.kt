@@ -5,4 +5,6 @@ import dev.subfly.yabacore.toast.PlatformToastText
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-actual fun resolveToastText(text: PlatformToastText): String = stringResource(text)
+actual fun resolveToastText(text: PlatformToastText, formatArgs: List<Any>): String =
+    if (formatArgs.isEmpty()) stringResource(text)
+    else stringResource(text, *formatArgs.toTypedArray())

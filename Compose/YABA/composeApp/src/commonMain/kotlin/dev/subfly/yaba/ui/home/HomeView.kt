@@ -40,10 +40,15 @@ import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalUserPreferences
 import dev.subfly.yaba.util.Platform
 import dev.subfly.yaba.util.YabaPlatform
+import dev.subfly.yaba.util.rememberShareHandler
+import dev.subfly.yabacore.managers.LinkmarkManager
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
+import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.FabPosition
 import dev.subfly.yabacore.state.home.HomeEvent
 import dev.subfly.yabacore.ui.layout.YabaContentLayout
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.folders_title
@@ -63,6 +68,8 @@ import kotlin.uuid.ExperimentalUuidApi
 fun HomeView(modifier: Modifier = Modifier) {
     val userPreferences = LocalUserPreferences.current
     val navigator = LocalContentNavigator.current
+    val shareUrl = rememberShareHandler()
+    val shareScope = rememberCoroutineScope()
 
     val vm = viewModel { HomeVM() }
     val state by vm.state.collectAsStateWithLifecycle()
@@ -159,7 +166,11 @@ fun HomeView(modifier: Modifier = Modifier) {
                                                 vm.onEvent(HomeEvent.OnDeleteBookmark(bookmark))
                                             },
                                             onShareBookmark = { bookmark ->
-                                                // TODO: Implement share functionality
+                                                if (bookmark.kind == BookmarkKind.LINK) {
+                                                    shareScope.launch {
+                                                        LinkmarkManager.getBookmarkUrl(bookmark.id)?.let(shareUrl)
+                                                    }
+                                                }
                                             },
                                         )
                                     }
@@ -188,7 +199,11 @@ fun HomeView(modifier: Modifier = Modifier) {
                                                 vm.onEvent(HomeEvent.OnDeleteBookmark(bookmark))
                                             },
                                             onShareBookmark = { bookmark ->
-                                                // TODO: Implement share functionality
+                                                if (bookmark.kind == BookmarkKind.LINK) {
+                                                    shareScope.launch {
+                                                        LinkmarkManager.getBookmarkUrl(bookmark.id)?.let(shareUrl)
+                                                    }
+                                                }
                                             },
                                             index = index,
                                             count = state.recentBookmarks.size,

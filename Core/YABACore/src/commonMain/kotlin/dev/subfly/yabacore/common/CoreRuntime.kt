@@ -3,6 +3,7 @@ package dev.subfly.yabacore.common
 import dev.subfly.yabacore.database.DatabaseProvider
 import dev.subfly.yabacore.database.DeviceIdProvider
 import dev.subfly.yabacore.database.events.EventsDatabaseProvider
+import dev.subfly.yabacore.notifications.initializePlatformNotifications
 import dev.subfly.yabacore.preferences.SettingsStores
 import dev.subfly.yabacore.queue.CoreOperationQueue
 import kotlinx.coroutines.flow.first
@@ -59,7 +60,10 @@ object CoreRuntime {
         }
         DeviceIdProvider.initialize(preferences.deviceId)
 
-        // 3. Start the operation queue (app-lifetime worker)
+        // 3. Initialize platform notification support (Android stores the Context)
+        initializePlatformNotifications(platformContext)
+
+        // 4. Start the operation queue (app-lifetime worker)
         CoreOperationQueue.start()
 
         initialized = true
