@@ -347,6 +347,7 @@
     <string name="onboarding_start_button_label">Start 🚀</string>
     <string name="onboarding_welcome_page_message">Yet Another Bookmark Application</string>
     <string name="onboarding_welcome_page_title">Welcome to YABA 🎉</string>
+    <string name="open">Open</string>
     <string name="open_app_label">Open in YABA for more options</string>
     <string name="pick_icon_category_title">Icon Categories</string>
     <string name="pick_icon_variant">Pick a Variant</string>

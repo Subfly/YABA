@@ -7,8 +7,8 @@ import android.graphics.Color
 import android.net.Uri
 import android.util.Log
 import android.view.MotionEvent
-import android.view.ViewGroup
 import android.view.ViewConfiguration
+import android.view.ViewGroup
 import android.webkit.ConsoleMessage
 import android.webkit.GeolocationPermissions
 import android.webkit.PermissionRequest
@@ -215,7 +215,7 @@ private fun denyPermissionsChromeClient(): WebChromeClient = object : WebChromeC
     }
 }
 
-@SuppressLint("SetJavaScriptEnabled")
+@SuppressLint("SetJavaScriptEnabled", "ClickableViewAccessibility")
 @Composable
 actual fun YabaWebViewViewerInternal(
     modifier: Modifier,

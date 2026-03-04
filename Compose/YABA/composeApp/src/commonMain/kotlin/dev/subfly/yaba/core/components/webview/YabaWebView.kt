@@ -1,6 +1,7 @@
 package dev.subfly.yaba.core.components.webview
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import dev.subfly.yabacore.model.utils.ReaderPreferences
 
@@ -32,6 +33,7 @@ enum class YabaWebScrollDirection {
 /**
  * Input for the converter: HTML string and base URL for resolving relative links.
  */
+@Stable
 data class ConverterInput(
     val html: String,
     val baseUrl: String?,
@@ -40,6 +42,7 @@ data class ConverterInput(
 /**
  * Result from the converter: markdown plus asset placeholder mappings.
  */
+@Stable
 data class ConverterResult(
     val markdown: String,
     val assets: List<ConverterAsset>,
@@ -48,6 +51,7 @@ data class ConverterResult(
 /**
  * Asset mapping: placeholder string in markdown (e.g. yaba-asset://0) to remote URL.
  */
+@Stable
 data class ConverterAsset(
     val placeholder: String,
     val url: String,

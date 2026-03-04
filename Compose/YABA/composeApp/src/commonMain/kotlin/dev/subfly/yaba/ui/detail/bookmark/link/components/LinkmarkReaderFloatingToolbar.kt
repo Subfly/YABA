@@ -118,9 +118,7 @@ internal fun BoxScope.LinkmarkReaderFloatingToolbar(
                 FloatingActionButton(
                     onClick = onFabClick,
                     containerColor = Color(fabColor.iconTintArgb()),
-                ) {
-                    YabaIcon(name = "add-01", color = Color.White)
-                }
+                ) { YabaIcon(name = "highlighter", color = Color.White) }
             },
             colors = vibrantColors,
         ) {

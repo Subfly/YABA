@@ -24,6 +24,7 @@ import dev.subfly.yaba.util.LocalDeletionDialogManager
 import dev.subfly.yaba.util.Platform
 import dev.subfly.yaba.util.YabaPlatform
 import dev.subfly.yaba.util.rememberShareHandler
+import dev.subfly.yaba.util.rememberUrlLauncher
 import dev.subfly.yabacore.model.utils.FolderSelectionMode
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.detail.linkmark.LinkmarkDetailEvent
@@ -34,6 +35,7 @@ import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.delete
 import yaba.composeapp.generated.resources.edit
+import yaba.composeapp.generated.resources.open
 import yaba.composeapp.generated.resources.move
 import yaba.composeapp.generated.resources.refresh
 import yaba.composeapp.generated.resources.remind_me
@@ -60,7 +62,9 @@ internal fun LinkmarkContentDropdownMenu(
     val appStateManager = LocalAppStateManager.current
     val deletionDialogManager = LocalDeletionDialogManager.current
     val shareUrl = rememberShareHandler()
+    val openUrl = rememberUrlLauncher()
 
+    val openText = stringResource(Res.string.open)
     val editText = stringResource(Res.string.edit)
     val moveText = stringResource(Res.string.move)
     val remindMeText = stringResource(Res.string.remind_me)
@@ -74,6 +78,7 @@ internal fun LinkmarkContentDropdownMenu(
 
     val regularActions = remember(isAndroid, hasActiveReminder) {
         buildList {
+            add(DetailMenuAction(key = "open", icon = "link-04", text = openText, color = YabaColor.GREEN))
             add(DetailMenuAction(key = "edit", icon = "edit-02", text = editText, color = YabaColor.ORANGE))
             add(DetailMenuAction(key = "move", icon = "arrow-move-up-right", text = moveText, color = YabaColor.TEAL))
             if (isAndroid) {
@@ -102,6 +107,10 @@ internal fun LinkmarkContentDropdownMenu(
                     onCheckedChange = { _ ->
                         onDismissRequest()
                         when (action.key) {
+                            "open" -> {
+                                val url = state.linkDetails?.url ?: return@DropdownMenuItem
+                                openUrl(url)
+                            }
                             "edit" -> {
                                 val bookmarkId = state.bookmark?.id ?: return@DropdownMenuItem
                                 creationNavigator.add(LinkmarkCreationRoute(bookmarkId = bookmarkId))
