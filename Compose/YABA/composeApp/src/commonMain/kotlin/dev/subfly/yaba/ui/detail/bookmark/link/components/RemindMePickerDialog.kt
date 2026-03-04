@@ -28,13 +28,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import dev.subfly.yaba.util.formatDateTime
+import dev.subfly.yabacore.common.computeTriggerMillisFromDatePicker
 import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.state.detail.linkmark.LinkmarkDetailEvent
 import dev.subfly.yabacore.toast.ToastIconType
 import dev.subfly.yabacore.toast.ToastManager
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
-import kotlin.time.Instant
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.cancel
 import yaba.composeapp.generated.resources.done
@@ -50,9 +50,8 @@ import yaba.composeapp.generated.resources.notification_title_4
 import yaba.composeapp.generated.resources.notification_title_5
 import yaba.composeapp.generated.resources.setup_reminder_success_message
 import yaba.composeapp.generated.resources.setup_reminder_title
-import java.util.Calendar
-import java.util.TimeZone
 import kotlin.time.Clock
+import kotlin.time.Instant
 
 private val notificationTitlesByKind: Map<BookmarkKind, List<StringResource>> = mapOf(
     BookmarkKind.LINK to listOf(
@@ -133,14 +132,16 @@ internal fun RemindMePickerDialog(
 ) {
     var step by remember { mutableIntStateOf(STEP_DATE) }
 
-    val now = remember { Clock.System.now().toEpochMilliseconds() }
-    val todayStartUtc = remember { (now / 86_400_000L) * 86_400_000L }
-
     val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = now,
+        initialSelectedDateMillis = Clock.System.now().toEpochMilliseconds(),
         selectableDates = object : SelectableDates {
-            override fun isSelectableDate(utcTimeMillis: Long): Boolean =
-                utcTimeMillis >= todayStartUtc
+            override fun isSelectableDate(
+                utcTimeMillis: Long,
+            ): Boolean {
+                val now = Clock.System.now().toEpochMilliseconds()
+                val todayStartUtc = (now / 86_400_000L) * 86_400_000L
+                return utcTimeMillis >= todayStartUtc
+            }
         },
     )
 
@@ -204,43 +205,42 @@ internal fun RemindMePickerDialog(
                             TextButton(onClick = onDismiss) {
                                 Text(stringResource(Res.string.cancel))
                             }
-                            TextButton(onClick = {
-                                val selectedDateMillis = datePickerState.selectedDateMillis ?: return@TextButton
+                            TextButton(
+                                onClick = {
+                                    val selectedDateMillis =
+                                        datePickerState.selectedDateMillis ?: return@TextButton
 
-                                val utcCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-                                utcCal.timeInMillis = selectedDateMillis
-                                val year = utcCal.get(Calendar.YEAR)
-                                val month = utcCal.get(Calendar.MONTH)
-                                val day = utcCal.get(Calendar.DAY_OF_MONTH)
+                                    val titles = notificationTitlesByKind[bookmarkKind]
+                                        ?: notificationTitlesByKind.getValue(BookmarkKind.LINK)
+                                    val messages = notificationMessagesByKind[bookmarkKind]
+                                        ?: notificationMessagesByKind.getValue(BookmarkKind.LINK)
 
-                                val localCal = Calendar.getInstance()
-                                localCal.set(year, month, day, timePickerState.hour, timePickerState.minute, 0)
-                                localCal.set(Calendar.MILLISECOND, 0)
-                                val triggerMillis = localCal.timeInMillis
-
-                                val titles = notificationTitlesByKind[bookmarkKind]
-                                    ?: notificationTitlesByKind.getValue(BookmarkKind.LINK)
-                                val messages = notificationMessagesByKind[bookmarkKind]
-                                    ?: notificationMessagesByKind.getValue(BookmarkKind.LINK)
-
-                                onEvent(
-                                    LinkmarkDetailEvent.OnScheduleReminder(
-                                        title = titles.random(),
-                                        message = messages.random(),
-                                        triggerDateEpochMillis = triggerMillis,
+                                    onEvent(
+                                        LinkmarkDetailEvent.OnScheduleReminder(
+                                            selectedDateMillis = selectedDateMillis,
+                                            hour = timePickerState.hour,
+                                            minute = timePickerState.minute,
+                                            title = titles.random(),
+                                            message = messages.random(),
+                                        )
                                     )
-                                )
 
-                                val formattedDate = formatDateTime(
-                                    Instant.fromEpochMilliseconds(triggerMillis)
-                                )
-                                ToastManager.show(
-                                    message = Res.string.setup_reminder_success_message,
-                                    messageFormatArgs = listOf(formattedDate),
-                                    iconType = ToastIconType.SUCCESS,
-                                )
-                                onDismiss()
-                            }) {
+                                    val triggerMillis = computeTriggerMillisFromDatePicker(
+                                        selectedDateMillis,
+                                        timePickerState.hour,
+                                        timePickerState.minute,
+                                    )
+                                    val formattedDate = formatDateTime(
+                                        Instant.fromEpochMilliseconds(triggerMillis)
+                                    )
+                                    ToastManager.show(
+                                        message = Res.string.setup_reminder_success_message,
+                                        messageFormatArgs = listOf(formattedDate),
+                                        iconType = ToastIconType.SUCCESS,
+                                    )
+                                    onDismiss()
+                                }
+                            ) {
                                 Text(stringResource(Res.string.done))
                             }
                         }

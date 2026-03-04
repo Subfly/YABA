@@ -36,9 +36,11 @@ sealed interface LinkmarkDetailEvent {
 
     data object OnRequestNotificationPermission : LinkmarkDetailEvent
     data class OnScheduleReminder(
+        val selectedDateMillis: Long,
+        val hour: Int,
+        val minute: Int,
         val title: PlatformNotificationText,
         val message: PlatformNotificationText,
-        val triggerDateEpochMillis: Long,
     ) : LinkmarkDetailEvent
     data object OnCancelReminder : LinkmarkDetailEvent
 }

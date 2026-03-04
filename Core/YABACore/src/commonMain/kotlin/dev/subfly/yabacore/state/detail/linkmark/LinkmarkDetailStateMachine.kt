@@ -7,6 +7,7 @@ import dev.subfly.yabacore.database.mappers.toUiModel
 import dev.subfly.yabacore.database.models.BookmarkWithRelations
 import dev.subfly.yabacore.filesystem.BookmarkFileManager
 import dev.subfly.yabacore.common.CoreConstants
+import dev.subfly.yabacore.common.computeTriggerMillisFromDatePicker
 import dev.subfly.yabacore.managers.AllBookmarksManager
 import dev.subfly.yabacore.managers.HighlightManager
 import dev.subfly.yabacore.managers.LinkmarkManager
@@ -265,6 +266,11 @@ class LinkmarkDetailStateMachine :
     private fun onScheduleReminder(event: LinkmarkDetailEvent.OnScheduleReminder) {
         val bookmarkId = bookmarkIdFlow.value ?: return
         val bookmark = currentState().bookmark ?: return
+        val triggerMillis = computeTriggerMillisFromDatePicker(
+            selectedDateMillis = event.selectedDateMillis,
+            hour = event.hour,
+            minute = event.minute,
+        )
         launch {
             NotificationManager.cancelReminder(bookmarkId)
             NotificationManager.scheduleReminder(
@@ -273,9 +279,9 @@ class LinkmarkDetailStateMachine :
                 title = event.title,
                 message = event.message,
                 bookmarkLabel = bookmark.label,
-                triggerDateEpochMillis = event.triggerDateEpochMillis,
+                triggerDateEpochMillis = triggerMillis,
             )
-            updateState { it.copy(reminderDateEpochMillis = event.triggerDateEpochMillis) }
+            updateState { it.copy(reminderDateEpochMillis = triggerMillis) }
         }
     }
 

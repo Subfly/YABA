@@ -16,6 +16,7 @@ import dev.subfly.yaba.ui.detail.bookmark.link.layout.LinkmarkDetailLayout
 import dev.subfly.yaba.util.rememberNotificationPermissionRequester
 import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.state.detail.linkmark.LinkmarkDetailEvent
+import dev.subfly.yabacore.toast.ToastIconType
 import dev.subfly.yabacore.toast.ToastManager
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.notifications_disabled_message
@@ -33,7 +34,10 @@ fun LinkmarkDetailView(
         if (granted) {
             showRemindMePicker = true
         } else {
-            ToastManager.show(message = Res.string.notifications_disabled_message)
+            ToastManager.show(
+                message = Res.string.notifications_disabled_message,
+                iconType = ToastIconType.ERROR,
+            )
         }
     }
 
