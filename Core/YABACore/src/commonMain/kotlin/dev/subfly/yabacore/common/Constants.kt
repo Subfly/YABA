@@ -68,9 +68,6 @@ object CoreConstants {
     object FileSystem {
         const val ROOT_DIR = "YABA"
         const val BOOKMARKS_DIR = "bookmarks"
-        const val CONTENT_DIR = "content"
-
-        fun bookmarkPath(bookmarkId: String): String = join(BOOKMARKS_DIR, bookmarkId)
 
         object Linkmark {
             const val LINK_IMAGE_BASENAME = "link_image"
@@ -78,9 +75,9 @@ object CoreConstants {
             const val HTML_EXPORTS_DIR = "html_exports"
             const val READABLE_DIR = "readable"
             const val ASSETS_DIR = "assets"
-            const val ANNOTATIONS_DIR = "annotations"
 
-            fun bookmarkFolder(bookmarkId: String): String = bookmarkFolderPath(bookmarkId, CONTENT_DIR)
+            /** Bookmark root directory: bookmarks/<id>/ (all assets stored directly here) */
+            fun bookmarkFolder(bookmarkId: String): String = join(BOOKMARKS_DIR, bookmarkId)
 
             fun linkImagePath(
                 bookmarkId: String,
@@ -101,31 +98,17 @@ object CoreConstants {
             fun htmlExportsDir(bookmarkId: String): String =
                 join(bookmarkFolder(bookmarkId), HTML_EXPORTS_DIR)
 
-            fun htmlExportPath(
-                bookmarkId: String,
-                exportFileName: String,
-            ): String = join(htmlExportsDir(bookmarkId), exportFileName)
-
-            // Readable content paths (immutable versions)
             fun readableDir(bookmarkId: String): String =
                 join(bookmarkFolder(bookmarkId), READABLE_DIR)
 
             fun readableVersionPath(bookmarkId: String, contentVersion: Int): String =
                 join(readableDir(bookmarkId), "v$contentVersion.md")
 
-            // Asset paths (immutable, UUID-named)
             fun assetsDir(bookmarkId: String): String =
                 join(bookmarkFolder(bookmarkId), ASSETS_DIR)
 
             fun assetPath(bookmarkId: String, assetId: String, extension: String): String =
                 join(assetsDir(bookmarkId), "$assetId.$extension")
-
-            // Annotation paths
-            fun annotationsDir(bookmarkId: String): String =
-                join(bookmarkFolder(bookmarkId), ANNOTATIONS_DIR)
-
-            fun highlightPath(bookmarkId: String, highlightId: String): String =
-                join(annotationsDir(bookmarkId), "$highlightId.json")
         }
 
         fun bookmarkFolderPath(

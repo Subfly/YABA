@@ -9,12 +9,8 @@ import dev.subfly.yabacore.model.utils.YabaColor
 /**
  * Room entity for highlight annotations.
  *
- * Indexes mutable highlight data stored at
- * `/bookmarks/<id>/content/annotations/<highlightId>.json`.
- *
- * This is a derived cache - the filesystem is authoritative.
- * Highlights are CRDT-merged for conflict-free sync.
- * Section-anchored: startSectionKey, startOffsetInSection, endSectionKey, endOffsetInSection.
+ * Highlights are stored in DB only. Section-anchored:
+ * startSectionKey, startOffsetInSection, endSectionKey, endOffsetInSection.
  */
 @Entity(
     tableName = "highlights",
@@ -42,7 +38,6 @@ data class HighlightEntity(
     val endOffsetInSection: Int,
     val colorRole: YabaColor,
     val note: String?,
-    val relativePath: String,
     val createdAt: Long,
     val editedAt: Long,
 )

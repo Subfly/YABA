@@ -10,7 +10,7 @@ import dev.subfly.yabacore.model.utils.ReadableAssetRole
  * Room entity for readable content assets (images).
  *
  * Indexes immutable assets stored at
- * `/bookmarks/<id>/content/assets/<assetId>.<ext>`.
+ * `/bookmarks/<id>/assets/<assetId>.<ext>`.
  *
  * This is a derived cache - the filesystem is authoritative.
  */

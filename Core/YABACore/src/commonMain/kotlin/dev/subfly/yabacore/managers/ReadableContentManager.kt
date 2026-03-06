@@ -34,8 +34,8 @@ import kotlin.time.Clock
  * Content is never overwritten - new saves create new versions.
  *
  * File layout:
- * - /bookmarks/<id>/content/readable/v1.md, v2.md, ...
- * - /bookmarks/<id>/content/assets/<assetId>.<ext>
+ * - /bookmarks/<id>/readable/v1.md, v2.md, ...
+ * - /bookmarks/<id>/assets/<assetId>.<ext>
  */
 object ReadableContentManager {
     private val readableVersionDao get() = DatabaseProvider.readableVersionDao

@@ -27,7 +27,7 @@ object BookmarkFileManager {
      * Call this when deleting a bookmark to remove all assets (readable, images, etc.).
      */
     suspend fun deleteBookmarkFolder(bookmarkId: String) {
-        val path = CoreConstants.FileSystem.bookmarkPath(bookmarkId)
+        val path = CoreConstants.FileSystem.Linkmark.bookmarkFolder(bookmarkId)
         deleteDirectoryRecursive(path)
     }
 

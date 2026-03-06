@@ -1,6 +1,5 @@
 package dev.subfly.yabacore.managers
 
-import dev.subfly.yabacore.common.CoreConstants
 import dev.subfly.yabacore.common.IdGenerator
 import dev.subfly.yabacore.database.DatabaseProvider
 import dev.subfly.yabacore.database.entities.HighlightEntity
@@ -31,7 +30,6 @@ object HighlightManager {
         val now = Clock.System.now().toEpochMilliseconds()
 
         CoreOperationQueue.queue("CreateHighlight:$highlightId") {
-            val relativePath = CoreConstants.FileSystem.Linkmark.highlightPath(bookmarkId, highlightId)
             val entity = HighlightEntity(
                 id = highlightId,
                 bookmarkId = bookmarkId,
@@ -42,7 +40,6 @@ object HighlightManager {
                 endOffsetInSection = endOffsetInSection,
                 colorRole = colorRole,
                 note = note,
-                relativePath = relativePath,
                 createdAt = now,
                 editedAt = now,
             )

@@ -23,7 +23,7 @@ import dev.subfly.yabacore.database.entities.ReadableVersionEntity
 import dev.subfly.yabacore.database.entities.TagBookmarkCrossRef
 import dev.subfly.yabacore.database.entities.TagEntity
 
-const val YABA_DATABASE_VERSION = 2
+const val YABA_DATABASE_VERSION = 1
 const val YABA_DATABASE_FILE_NAME = "yaba.db"
 
 @Suppress("KotlinNoActualForExpect")
