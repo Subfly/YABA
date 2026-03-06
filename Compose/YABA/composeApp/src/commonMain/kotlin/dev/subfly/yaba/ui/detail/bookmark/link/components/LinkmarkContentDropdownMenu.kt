@@ -76,11 +76,17 @@ internal fun LinkmarkContentDropdownMenu(
     val isAndroid = Platform == YabaPlatform.ANDROID
     val hasActiveReminder = state.reminderDateEpochMillis != null
 
-    val regularActions = remember(isAndroid, hasActiveReminder) {
+    val primaryActions = remember(openText, editText, moveText, refreshText) {
+        listOf(
+            DetailMenuAction(key = "open", icon = "link-04", text = openText, color = YabaColor.GREEN),
+            DetailMenuAction(key = "edit", icon = "edit-02", text = editText, color = YabaColor.ORANGE),
+            DetailMenuAction(key = "move", icon = "arrow-move-up-right", text = moveText, color = YabaColor.TEAL),
+            DetailMenuAction(key = "refresh", icon = "refresh", text = refreshText, color = YabaColor.BLUE),
+        )
+    }
+
+    val secondaryActions = remember(isAndroid, hasActiveReminder, remindMeText, cancelReminderText, shareText) {
         buildList {
-            add(DetailMenuAction(key = "open", icon = "link-04", text = openText, color = YabaColor.GREEN))
-            add(DetailMenuAction(key = "edit", icon = "edit-02", text = editText, color = YabaColor.ORANGE))
-            add(DetailMenuAction(key = "move", icon = "arrow-move-up-right", text = moveText, color = YabaColor.TEAL))
             if (isAndroid) {
                 if (hasActiveReminder) {
                     add(DetailMenuAction(key = "cancel_reminder", icon = "notification-off-03", text = cancelReminderText, color = YabaColor.YELLOW))
@@ -88,21 +94,22 @@ internal fun LinkmarkContentDropdownMenu(
                     add(DetailMenuAction(key = "remind_me", icon = "notification-01", text = remindMeText, color = YabaColor.YELLOW))
                 }
             }
-            add(DetailMenuAction(key = "refresh", icon = "refresh", text = refreshText, color = YabaColor.BLUE))
             add(DetailMenuAction(key = "share", icon = "share-03", text = shareText, color = YabaColor.INDIGO))
         }
     }
+
+    val totalGroups = 3 // primary, secondary, delete
 
     DropdownMenuPopup(
         expanded = expanded,
         onDismissRequest = onDismissRequest,
     ) {
         DropdownMenuGroup(
-            shapes = MenuDefaults.groupShape(index = 0, count = 2)
+            shapes = MenuDefaults.groupShape(index = 0, count = totalGroups)
         ) {
-            regularActions.forEachIndexed { index, action ->
+            primaryActions.forEachIndexed { index, action ->
                 DropdownMenuItem(
-                    shapes = MenuDefaults.itemShape(index, regularActions.size),
+                    shapes = MenuDefaults.itemShape(index, primaryActions.size),
                     checked = false,
                     onCheckedChange = { _ ->
                         onDismissRequest()
@@ -127,11 +134,36 @@ internal fun LinkmarkContentDropdownMenu(
                                 )
                                 appStateManager.onShowCreationContent()
                             }
-                            "remind_me" -> onShowRemindMePicker()
-                            "cancel_reminder" -> onEvent(LinkmarkDetailEvent.OnCancelReminder)
                             "refresh" -> {
                                 // TODO: Implement refresh functionality
                             }
+                        }
+                    },
+                    leadingIcon = {
+                        YabaIcon(
+                            name = action.icon,
+                            color = Color(action.color.iconTintArgb()),
+                        )
+                    },
+                    text = { Text(text = action.text) }
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        DropdownMenuGroup(
+            shapes = MenuDefaults.groupShape(index = 1, count = totalGroups)
+        ) {
+            secondaryActions.forEachIndexed { index, action ->
+                DropdownMenuItem(
+                    shapes = MenuDefaults.itemShape(index, secondaryActions.size),
+                    checked = false,
+                    onCheckedChange = { _ ->
+                        onDismissRequest()
+                        when (action.key) {
+                            "remind_me" -> onShowRemindMePicker()
+                            "cancel_reminder" -> onEvent(LinkmarkDetailEvent.OnCancelReminder)
                             "share" -> {
                                 val url = state.linkDetails?.url ?: return@DropdownMenuItem
                                 shareUrl(url)
@@ -152,7 +184,7 @@ internal fun LinkmarkContentDropdownMenu(
         Spacer(modifier = Modifier.height(8.dp))
 
         DropdownMenuGroup(
-            shapes = MenuDefaults.groupShape(index = 1, count = 2)
+            shapes = MenuDefaults.groupShape(index = 2, count = totalGroups)
         ) {
             DropdownMenuItem(
                 shapes = MenuDefaults.itemShape(0, 1),
