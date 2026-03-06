@@ -38,7 +38,6 @@ import yaba.composeapp.generated.resources.delete
 import yaba.composeapp.generated.resources.edit
 import yaba.composeapp.generated.resources.move
 import yaba.composeapp.generated.resources.open
-import yaba.composeapp.generated.resources.refresh
 import yaba.composeapp.generated.resources.remind_me
 import yaba.composeapp.generated.resources.share
 
@@ -70,19 +69,19 @@ internal fun LinkmarkContentDropdownMenu(
     val moveText = stringResource(Res.string.move)
     val remindMeText = stringResource(Res.string.remind_me)
     val cancelReminderText = "Cancel Reminder" // TODO: LOCALIZATION
-    val refreshText = stringResource(Res.string.refresh)
+    val updateText = "Update" // TODO: LOCALIZATION
     val shareText = stringResource(Res.string.share)
     val deleteText = stringResource(Res.string.delete)
 
     val isAndroid = Platform == YabaPlatform.ANDROID
     val hasActiveReminder = state.reminderDateEpochMillis != null
 
-    val primaryActions = remember(openText, editText, moveText, refreshText) {
+    val primaryActions = remember(openText, editText, moveText, updateText) {
         listOf(
             DetailMenuAction(key = "open", icon = "link-04", text = openText, color = YabaColor.GREEN),
             DetailMenuAction(key = "edit", icon = "edit-02", text = editText, color = YabaColor.ORANGE),
             DetailMenuAction(key = "move", icon = "arrow-move-up-right", text = moveText, color = YabaColor.TEAL),
-            DetailMenuAction(key = "refresh", icon = "refresh", text = refreshText, color = YabaColor.BLUE),
+            DetailMenuAction(key = "update", icon = "arrow-reload-horizontal", text = updateText, color = YabaColor.BLUE),
         )
     }
 
