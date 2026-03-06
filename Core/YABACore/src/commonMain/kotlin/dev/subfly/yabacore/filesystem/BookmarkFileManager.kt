@@ -1,8 +1,12 @@
 package dev.subfly.yabacore.filesystem
 
+import dev.subfly.yabacore.common.CoreConstants
 import dev.subfly.yabacore.filesystem.access.FileAccessProvider
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.exists
+import io.github.vinceglb.filekit.isDirectory
+import io.github.vinceglb.filekit.list
+import io.github.vinceglb.filekit.name
 import io.github.vinceglb.filekit.path
 import io.github.vinceglb.filekit.readBytes
 import kotlinx.coroutines.Dispatchers
@@ -14,11 +18,30 @@ import kotlinx.coroutines.withContext
  *
  * Handles reading and writing binary content files within the bookmark directory
  * structure (e.g., preview images, icons, HTML exports).
- *
- * Note: Metadata operations are handled by [EntityFileManager].
  */
 object BookmarkFileManager {
     private val accessProvider = FileAccessProvider
+
+    /**
+     * Recursively deletes the entire bookmark folder and its contents.
+     * Call this when deleting a bookmark to remove all assets (readable, images, etc.).
+     */
+    suspend fun deleteBookmarkFolder(bookmarkId: String) {
+        val path = CoreConstants.FileSystem.bookmarkPath(bookmarkId)
+        deleteDirectoryRecursive(path)
+    }
+
+    private suspend fun deleteDirectoryRecursive(relativePath: String) {
+        val dir = accessProvider.resolveRelativePath(relativePath, ensureParentExists = false)
+        if (!dir.exists()) return
+        if (dir.isDirectory()) {
+            dir.list().forEach { child ->
+                val childPath = CoreConstants.FileSystem.join(relativePath, child.name)
+                deleteDirectoryRecursive(childPath)
+            }
+        }
+        accessProvider.delete(relativePath)
+    }
 
     suspend fun deleteRelativePath(relativePath: String) {
         accessProvider.delete(relativePath)

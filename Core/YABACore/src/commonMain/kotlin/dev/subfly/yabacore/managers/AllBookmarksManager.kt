@@ -3,16 +3,13 @@ package dev.subfly.yabacore.managers
 import dev.subfly.yabacore.common.CoreConstants
 import dev.subfly.yabacore.common.IdGenerator
 import dev.subfly.yabacore.database.DatabaseProvider
-import dev.subfly.yabacore.database.DeviceIdProvider
 import dev.subfly.yabacore.database.entities.BookmarkEntity
 import dev.subfly.yabacore.database.entities.TagBookmarkCrossRef
 import dev.subfly.yabacore.database.mappers.toPreviewUiModel
 import dev.subfly.yabacore.database.mappers.toUiModel
 import dev.subfly.yabacore.database.models.BookmarkWithRelations
 import dev.subfly.yabacore.filesystem.BookmarkFileManager
-import dev.subfly.yabacore.filesystem.EntityFileManager
 import dev.subfly.yabacore.filesystem.LinkmarkFileManager
-import dev.subfly.yabacore.filesystem.json.BookmarkMetaJson
 import dev.subfly.yabacore.model.ui.BookmarkPreviewUiModel
 import dev.subfly.yabacore.model.ui.BookmarkUiModel
 import dev.subfly.yabacore.model.utils.BookmarkKind
@@ -21,15 +18,8 @@ import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
 import dev.subfly.yabacore.notifications.NotificationManager
 import dev.subfly.yabacore.queue.CoreOperationQueue
-import dev.subfly.yabacore.sync.CRDTEngine
-import dev.subfly.yabacore.sync.FileTarget
-import dev.subfly.yabacore.sync.ObjectType
-import dev.subfly.yabacore.sync.VectorClock
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonPrimitive
 import kotlin.time.Clock
 
 private data class SavedPreviewAssets(
@@ -38,21 +28,19 @@ private data class SavedPreviewAssets(
 )
 
 /**
- * Filesystem-first bookmark manager.
+ * DB-first bookmark manager.
  *
- * All operations:
- * 1. Write to filesystem JSON first (authoritative)
- * 2. Generate CRDT events for sync
- * 3. Update SQLite cache for queries
+ * Metadata is stored in Room (bookmarkDao, linkBookmarkDao, tagBookmarkDao).
+ * Asset files (preview images, readable content) are stored on disk under bookmarks/<id>/.
  */
 object AllBookmarksManager {
     private val bookmarkDao get() = DatabaseProvider.bookmarkDao
     private val tagBookmarkDao get() = DatabaseProvider.tagBookmarkDao
     private val linkBookmarkDao get() = DatabaseProvider.linkBookmarkDao
     private val highlightDao get() = DatabaseProvider.highlightDao
-    private val entityFileManager get() = EntityFileManager
+    private val readableVersionDao get() = DatabaseProvider.readableVersionDao
+    private val readableAssetDao get() = DatabaseProvider.readableAssetDao
     private val bookmarkFileManager get() = BookmarkFileManager
-    private val crdtEngine get() = CRDTEngine
     private val clock = Clock.System
 
     // ==================== Query Operations (from SQLite cache) ====================
@@ -140,11 +128,9 @@ object AllBookmarksManager {
         previewImageExtension: String?,
         previewIconBytes: ByteArray?,
     ) {
-        val now = clock.now()
-        val deviceId = DeviceIdProvider.get()
-        val initialClock = VectorClock.of(deviceId, 1)
+        val now = clock.now().toEpochMilliseconds()
 
-        // Save preview assets first
+        // 1. Save preview assets to filesystem
         val preview = savePreviewAssets(
             bookmarkId = id,
             kind = kind,
@@ -153,40 +139,23 @@ object AllBookmarksManager {
             iconBytes = previewIconBytes,
         )
 
-        val bookmarkJson = BookmarkMetaJson(
+        // 2. Persist to DB
+        val entity = BookmarkEntity(
             id = id,
             folderId = folderId,
-            kind = kind.code,
+            kind = kind,
             label = label,
             description = description,
-            createdAt = now.toEpochMilliseconds(),
-            editedAt = now.toEpochMilliseconds(),
+            createdAt = now,
+            editedAt = now,
             viewCount = 0,
             isPrivate = isPrivate,
             isPinned = isPinned,
             localImagePath = preview.localImageRelativePath,
             localIconPath = preview.localIconRelativePath,
-            tagIds = tagIds,
-            clock = initialClock.toMap(),
         )
-
-        // 1. Write to filesystem (authoritative)
-        entityFileManager.writeBookmarkMeta(bookmarkJson)
-
-        // 2. Record CRDT CREATE event
-        crdtEngine.recordCreate(
-            objectId = id,
-            objectType = ObjectType.BOOKMARK,
-            file = FileTarget.META_JSON,
-            payload = buildBookmarkCreatePayload(bookmarkJson),
-            currentClock = VectorClock.empty(),
-        )
-
-        // 3. Update SQLite cache
-        val entity = bookmarkJson.toEntity()
         bookmarkDao.upsert(entity)
 
-        // 4. Update tag-bookmark relationships
         tagIds.forEach { tagId ->
             tagBookmarkDao.insert(
                 TagBookmarkCrossRef(
@@ -246,12 +215,9 @@ object AllBookmarksManager {
         previewImageExtension: String?,
         previewIconBytes: ByteArray?,
     ) {
-        val existingJson = entityFileManager.readBookmarkMeta(bookmarkId) ?: return
-        val existingClock = VectorClock.fromMap(existingJson.clock)
-        val deviceId = DeviceIdProvider.get()
-        val now = clock.now()
+        val existing = bookmarkDao.getById(bookmarkId) ?: return
+        val now = clock.now().toEpochMilliseconds()
 
-        // Save preview assets
         val preview = savePreviewAssets(
             bookmarkId = bookmarkId,
             kind = kind,
@@ -260,76 +226,27 @@ object AllBookmarksManager {
             iconBytes = previewIconBytes,
         )
 
-        // Detect changes
-        val changes = mutableMapOf<String, JsonElement>()
-        if (existingJson.folderId != folderId) {
-            changes["folderId"] = JsonPrimitive(folderId)
-        }
-        if (existingJson.label != label) {
-            changes["label"] = JsonPrimitive(label)
-        }
-        if (existingJson.description != description) {
-            changes["description"] = CRDTEngine.nullableStringValue(description)
-        }
-        if (existingJson.isPrivate != isPrivate) {
-            changes["isPrivate"] = JsonPrimitive(isPrivate)
-        }
-        if (existingJson.isPinned != isPinned) {
-            changes["isPinned"] = JsonPrimitive(isPinned)
-        }
-        if (preview.localImageRelativePath != null && existingJson.localImagePath != preview.localImageRelativePath) {
-            changes["localImagePath"] =
-                CRDTEngine.nullableStringValue(preview.localImageRelativePath)
-        }
-        if (preview.localIconRelativePath != null && existingJson.localIconPath != preview.localIconRelativePath) {
-            changes["localIconPath"] = CRDTEngine.nullableStringValue(preview.localIconRelativePath)
-        }
-
-        val newClock = existingClock.increment(deviceId)
-        val resolvedTagIds = tagIds ?: existingJson.tagIds
-
-        val updatedJson = existingJson.copy(
+        val updated = existing.copy(
             folderId = folderId,
-            kind = kind.code,
+            kind = kind,
             label = label,
             description = description,
-            editedAt = now.toEpochMilliseconds(),
+            editedAt = now,
             isPrivate = isPrivate,
             isPinned = isPinned,
-            localImagePath = preview.localImageRelativePath ?: existingJson.localImagePath,
-            localIconPath = preview.localIconRelativePath ?: existingJson.localIconPath,
-            tagIds = resolvedTagIds,
-            clock = newClock.toMap(),
+            localImagePath = preview.localImageRelativePath ?: existing.localImagePath,
+            localIconPath = preview.localIconRelativePath ?: existing.localIconPath,
         )
+        bookmarkDao.upsert(updated)
 
-        // 1. Write to filesystem (authoritative)
-        entityFileManager.writeBookmarkMeta(updatedJson)
-
-        // 2. Record CRDT UPDATE event (only if there are changes)
-        if (changes.isNotEmpty()) {
-            crdtEngine.recordUpdate(
-                objectId = bookmarkId,
-                objectType = ObjectType.BOOKMARK,
-                file = FileTarget.META_JSON,
-                changes = changes,
-                currentClock = existingClock,
-            )
-        }
-
-        // 3. Update SQLite cache
-        bookmarkDao.upsert(updatedJson.toEntity())
-
-        // 4. Update tag-bookmark relationships if tags changed
         if (tagIds != null) {
-            val currentTagIds = existingJson.tagIds.toSet()
+            val currentTagIds = tagBookmarkDao.getTagIdsForBookmark(bookmarkId).toSet()
             val newTagIds = tagIds.toSet()
 
-            // Remove old tags
             (currentTagIds - newTagIds).forEach { tagId ->
                 tagBookmarkDao.delete(bookmarkId, tagId)
             }
 
-            // Add new tags
             (newTagIds - currentTagIds).forEach { tagId ->
                 tagBookmarkDao.insert(
                     TagBookmarkCrossRef(
@@ -342,26 +259,10 @@ object AllBookmarksManager {
     }
 
     private suspend fun touchBookmarkEditedAtInternal(bookmarkId: String) {
-        val existingJson = entityFileManager.readBookmarkMeta(bookmarkId) ?: return
-        val existingClock = VectorClock.fromMap(existingJson.clock)
-        val deviceId = DeviceIdProvider.get()
-        val now = clock.now()
-        val newClock = existingClock.increment(deviceId)
+        val existing = bookmarkDao.getById(bookmarkId) ?: return
+        val now = clock.now().toEpochMilliseconds()
 
-        val updatedJson = existingJson.copy(
-            editedAt = now.toEpochMilliseconds(),
-            clock = newClock.toMap(),
-        )
-
-        entityFileManager.writeBookmarkMeta(updatedJson)
-        crdtEngine.recordUpdate(
-            objectId = bookmarkId,
-            objectType = ObjectType.BOOKMARK,
-            file = FileTarget.META_JSON,
-            changes = mapOf("editedAt" to JsonPrimitive(now.toEpochMilliseconds())),
-            currentClock = existingClock,
-        )
-        bookmarkDao.upsert(updatedJson.toEntity())
+        bookmarkDao.upsert(existing.copy(editedAt = now))
     }
 
     fun moveBookmarksToFolder(
@@ -378,34 +279,11 @@ object AllBookmarksManager {
         bookmarkIds: List<String>,
         targetFolderId: String,
     ) {
-        val deviceId = DeviceIdProvider.get()
-        val now = clock.now()
+        val now = clock.now().toEpochMilliseconds()
 
         bookmarkIds.forEach { bookmarkId ->
-            val existingJson = entityFileManager.readBookmarkMeta(bookmarkId) ?: return@forEach
-            val existingClock = VectorClock.fromMap(existingJson.clock)
-            val newClock = existingClock.increment(deviceId)
-
-            val updatedJson = existingJson.copy(
-                folderId = targetFolderId,
-                editedAt = now.toEpochMilliseconds(),
-                clock = newClock.toMap(),
-            )
-
-            // 1. Write to filesystem
-            entityFileManager.writeBookmarkMeta(updatedJson)
-
-            // 2. Record CRDT UPDATE event
-            crdtEngine.recordUpdate(
-                objectId = bookmarkId,
-                objectType = ObjectType.BOOKMARK,
-                file = FileTarget.META_JSON,
-                changes = mapOf("folderId" to JsonPrimitive(targetFolderId)),
-                currentClock = existingClock,
-            )
-
-            // 3. Update SQLite cache
-            bookmarkDao.upsert(updatedJson.toEntity())
+            val existing = bookmarkDao.getById(bookmarkId) ?: return@forEach
+            bookmarkDao.upsert(existing.copy(folderId = targetFolderId, editedAt = now))
         }
     }
 
@@ -416,6 +294,14 @@ object AllBookmarksManager {
         }
     }
 
+    /**
+     * Deletes a single bookmark by ID (content + DB).
+     * Used by FolderManager for cascade deletion.
+     */
+    suspend fun deleteBookmarkById(bookmarkId: String) {
+        deleteSingleBookmarkInternal(bookmarkId)
+    }
+
     private suspend fun deleteBookmarksInternal(bookmarkIds: List<String>) {
         bookmarkIds.forEach { bookmarkId ->
             deleteSingleBookmarkInternal(bookmarkId)
@@ -423,27 +309,18 @@ object AllBookmarksManager {
     }
 
     private suspend fun deleteSingleBookmarkInternal(bookmarkId: String) {
-        val existingJson = entityFileManager.readBookmarkMeta(bookmarkId)
-        val existingClock =
-            existingJson?.let { VectorClock.fromMap(it.clock) } ?: VectorClock.empty()
+        // 1. Delete bookmark folder (assets) from filesystem
+        bookmarkFileManager.deleteBookmarkFolder(bookmarkId)
 
-        // 1. Write deletion tombstone to filesystem and delete content recursively
-        entityFileManager.deleteBookmark(bookmarkId, existingClock)
-
-        // 2. Record CRDT DELETE event
-        crdtEngine.recordDelete(
-            objectId = bookmarkId,
-            objectType = ObjectType.BOOKMARK,
-            currentClock = existingClock,
-        )
-
-        // 3. Cancel any pending reminder notification
+        // 2. Cancel any pending reminder notification
         NotificationManager.cancelReminder(bookmarkId)
 
-        // 4. Remove all related SQLite cache rows
+        // 3. Remove all related SQLite cache rows
         tagBookmarkDao.deleteForBookmark(bookmarkId)
         linkBookmarkDao.deleteById(bookmarkId)
         highlightDao.deleteByBookmarkId(bookmarkId)
+        readableAssetDao.deleteByBookmarkId(bookmarkId)
+        readableVersionDao.deleteByBookmarkId(bookmarkId)
         bookmarkDao.deleteByIds(listOf(bookmarkId))
     }
 
@@ -454,40 +331,16 @@ object AllBookmarksManager {
     }
 
     private suspend fun addTagToBookmarkInternal(tagId: String, bookmarkId: String) {
-        val existingJson = entityFileManager.readBookmarkMeta(bookmarkId) ?: return
-        val existingClock = VectorClock.fromMap(existingJson.clock)
-        val deviceId = DeviceIdProvider.get()
-        val newClock = existingClock.increment(deviceId)
-        val now = clock.now()
+        val existing = bookmarkDao.getById(bookmarkId) ?: return
+        val now = clock.now().toEpochMilliseconds()
 
-        val newTagIds = (existingJson.tagIds + tagId).distinct()
-
-        val updatedJson = existingJson.copy(
-            tagIds = newTagIds,
-            editedAt = now.toEpochMilliseconds(),
-            clock = newClock.toMap(),
-        )
-
-        // 1. Write to filesystem (authoritative)
-        entityFileManager.writeBookmarkMeta(updatedJson)
-
-        // 2. Record CRDT UPDATE event for tagIds change
-        crdtEngine.recordUpdate(
-            objectId = bookmarkId,
-            objectType = ObjectType.BOOKMARK,
-            file = FileTarget.META_JSON,
-            changes = mapOf("tagIds" to JsonArray(newTagIds.map { JsonPrimitive(it) })),
-            currentClock = existingClock,
-        )
-
-        // 3. Update SQLite cache
         tagBookmarkDao.insert(
             TagBookmarkCrossRef(
                 tagId = tagId,
                 bookmarkId = bookmarkId,
             )
         )
-        bookmarkDao.upsert(updatedJson.toEntity())
+        bookmarkDao.upsert(existing.copy(editedAt = now))
     }
 
     fun removeTagFromBookmark(tagId: String, bookmarkId: String) {
@@ -497,35 +350,11 @@ object AllBookmarksManager {
     }
 
     private suspend fun removeTagFromBookmarkInternal(tagId: String, bookmarkId: String) {
-        val existingJson = entityFileManager.readBookmarkMeta(bookmarkId) ?: return
-        val existingClock = VectorClock.fromMap(existingJson.clock)
-        val deviceId = DeviceIdProvider.get()
-        val newClock = existingClock.increment(deviceId)
-        val now = clock.now()
+        val existing = bookmarkDao.getById(bookmarkId) ?: return
+        val now = clock.now().toEpochMilliseconds()
 
-        val newTagIds = existingJson.tagIds.filterNot { it == tagId }
-
-        val updatedJson = existingJson.copy(
-            tagIds = newTagIds,
-            editedAt = now.toEpochMilliseconds(),
-            clock = newClock.toMap(),
-        )
-
-        // 1. Write to filesystem (authoritative)
-        entityFileManager.writeBookmarkMeta(updatedJson)
-
-        // 2. Record CRDT UPDATE event for tagIds change
-        crdtEngine.recordUpdate(
-            objectId = bookmarkId,
-            objectType = ObjectType.BOOKMARK,
-            file = FileTarget.META_JSON,
-            changes = mapOf("tagIds" to JsonArray(newTagIds.map { JsonPrimitive(it) })),
-            currentClock = existingClock,
-        )
-
-        // 3. Update SQLite cache
         tagBookmarkDao.delete(bookmarkId, tagId)
-        bookmarkDao.upsert(updatedJson.toEntity())
+        bookmarkDao.upsert(existing.copy(editedAt = now))
     }
 
     // ==================== Private Helpers ====================
@@ -607,23 +436,6 @@ object AllBookmarksManager {
     private fun sanitizeExtension(rawExtension: String?): String =
         rawExtension.orEmpty().lowercase().removePrefix(".").ifBlank { "jpeg" }
 
-    private fun buildBookmarkCreatePayload(json: BookmarkMetaJson): Map<String, JsonElement> =
-        mapOf(
-            "id" to JsonPrimitive(json.id),
-            "folderId" to JsonPrimitive(json.folderId),
-            "kind" to JsonPrimitive(json.kind),
-            "label" to JsonPrimitive(json.label),
-            "description" to CRDTEngine.nullableStringValue(json.description),
-            "createdAt" to JsonPrimitive(json.createdAt),
-            "editedAt" to JsonPrimitive(json.editedAt),
-            "viewCount" to JsonPrimitive(json.viewCount),
-            "isPrivate" to JsonPrimitive(json.isPrivate),
-            "isPinned" to JsonPrimitive(json.isPinned),
-            "localImagePath" to CRDTEngine.nullableStringValue(json.localImagePath),
-            "localIconPath" to CRDTEngine.nullableStringValue(json.localIconPath),
-            "tagIds" to JsonArray(json.tagIds.map { JsonPrimitive(it) }),
-        )
-
     private data class BookmarkQueryParams(
         val folderIds: List<String>,
         val applyFolderFilter: Boolean,
@@ -642,20 +454,4 @@ object AllBookmarksManager {
         )
     }
 
-    // ==================== Mappers ====================
-
-    private fun BookmarkMetaJson.toEntity(): BookmarkEntity = BookmarkEntity(
-        id = id,
-        folderId = folderId,
-        kind = BookmarkKind.fromCode(kind),
-        label = label,
-        description = description,
-        createdAt = createdAt,
-        editedAt = editedAt,
-        viewCount = viewCount,
-        isPrivate = isPrivate,
-        isPinned = isPinned,
-        localImagePath = localImagePath,
-        localIconPath = localIconPath,
-    )
 }

@@ -1,25 +1,16 @@
 package dev.subfly.yabacore.common
 
 import dev.subfly.yabacore.database.DatabaseProvider
-import dev.subfly.yabacore.database.DeviceIdProvider
-import dev.subfly.yabacore.database.events.EventsDatabaseProvider
 import dev.subfly.yabacore.notifications.initializePlatformNotifications
-import dev.subfly.yabacore.preferences.SettingsStores
 import dev.subfly.yabacore.queue.CoreOperationQueue
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 import kotlin.concurrent.Volatile
 
 /**
  * Unified initialization for YABACore.
  *
  * Call [initialize] once at app startup to set up all core systems:
- * - SQLite databases (main + events)
- * - DeviceIdProvider with stable deviceId from preferences
+ * - SQLite database (main)
  * - CoreOperationQueue for sequential persistence operations
- *
- * This ensures consistent initialization across all platforms and prevents
- * issues like unstable deviceIds breaking vector clocks.
  *
  * Usage:
  * ```kotlin
@@ -48,22 +39,13 @@ object CoreRuntime {
     fun initialize(platformContext: Any? = null) {
         if (initialized) return
 
-        // 1. Initialize databases
+        // 1. Initialize database
         DatabaseProvider.initialize(platformContext)
-        EventsDatabaseProvider.initialize(platformContext)
 
-        // 2. Initialize DeviceIdProvider with persisted deviceId
-        // UserPreferencesStore.ensureDefaults() is called during lazy init,
-        // which generates a deviceId if not already present
-        val preferences = runBlocking {
-            SettingsStores.userPreferences.preferencesFlow.first()
-        }
-        DeviceIdProvider.initialize(preferences.deviceId)
-
-        // 3. Initialize platform notification support (Android stores the Context)
+        // 2. Initialize platform notification support (Android stores the Context)
         initializePlatformNotifications(platformContext)
 
-        // 4. Start the operation queue (app-lifetime worker)
+        // 3. Start the operation queue (app-lifetime worker)
         CoreOperationQueue.start()
 
         initialized = true
@@ -79,6 +61,5 @@ object CoreRuntime {
      */
     internal fun reset() {
         initialized = false
-        DeviceIdProvider.reset()
     }
 }

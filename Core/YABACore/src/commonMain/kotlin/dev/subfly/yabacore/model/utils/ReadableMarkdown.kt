@@ -2,7 +2,7 @@ package dev.subfly.yabacore.model.utils
 
 /**
  * Readable .md files may start with YAML frontmatter for title and author.
- * When saving we write frontmatter so CacheRebuilder can restore title/author when rebuilding.
+ * When saving we write frontmatter for title and author.
  */
 
 private const val FRONTMATTER_START = "---"

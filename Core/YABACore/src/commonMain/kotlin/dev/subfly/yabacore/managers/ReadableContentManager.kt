@@ -89,7 +89,7 @@ object ReadableContentManager {
 
     /**
      * Saves the markdown content to filesystem with optional YAML frontmatter (title, author).
-     * Frontmatter allows CacheRebuilder to restore title/author when rebuilding from .md.
+     * Frontmatter stores title/author for display.
      */
     private suspend fun saveMarkdownVersion(
         bookmarkId: String,
@@ -201,7 +201,7 @@ object ReadableContentManager {
     ): ReadableVersionUiModel {
         val markdownContent = readVersion(bookmarkId, versionEntity.contentVersion)
         val assets = readableAssetDao.getByBookmarkId(bookmarkId)
-        val highlights = highlightDao.getById(bookmarkId)
+        val highlights = highlightDao.getByBookmarkId(bookmarkId, version = versionEntity.contentVersion)
 
         val assetsUi = mutableListOf<ReadableAssetUiModel>()
         assets.forEach { entity ->
@@ -214,10 +214,7 @@ object ReadableContentManager {
             )
         }
 
-        val highlightsUi = mutableListOf<HighlightUiModel>()
-        highlights?.let { nonNullHighlights ->
-            highlightsUi.add(nonNullHighlights.toUiModel())
-        }
+        val highlightsUi = highlights.map { it.toHighlightUiModel() }
 
         return ReadableVersionUiModel(
             contentVersion = versionEntity.contentVersion,
@@ -230,7 +227,7 @@ object ReadableContentManager {
         )
     }
 
-    private suspend fun HighlightEntity.toUiModel(): HighlightUiModel =
+    private fun HighlightEntity.toHighlightUiModel(): HighlightUiModel =
         HighlightUiModel(
             id = id,
             startSectionKey = startSectionKey,
@@ -239,7 +236,7 @@ object ReadableContentManager {
             endOffsetInSection = endOffsetInSection,
             colorRole = colorRole,
             note = note,
-            absolutePath = BookmarkFileManager.getAbsolutePath(relativePath),
+            absolutePath = null,
             createdAt = createdAt,
             editedAt = editedAt,
         )

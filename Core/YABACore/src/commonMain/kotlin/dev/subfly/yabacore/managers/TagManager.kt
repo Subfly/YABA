@@ -2,49 +2,29 @@ package dev.subfly.yabacore.managers
 
 import dev.subfly.yabacore.common.CoreConstants
 import dev.subfly.yabacore.database.DatabaseProvider
-import dev.subfly.yabacore.database.DeviceIdProvider
-import dev.subfly.yabacore.database.entities.BookmarkEntity
 import dev.subfly.yabacore.database.entities.TagEntity
 import dev.subfly.yabacore.database.mappers.toUiModel
-import dev.subfly.yabacore.filesystem.EntityFileManager
-import dev.subfly.yabacore.filesystem.json.BookmarkMetaJson
-import dev.subfly.yabacore.filesystem.json.TagMetaJson
-import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.queue.CoreOperationQueue
-import dev.subfly.yabacore.sync.CRDTEngine
-import dev.subfly.yabacore.sync.FileTarget
-import dev.subfly.yabacore.sync.ObjectType
-import dev.subfly.yabacore.sync.VectorClock
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonPrimitive
 import kotlin.time.Clock
 
 /**
- * Filesystem-first tag manager.
+ * DB-first tag manager.
  *
- * All operations:
- * 1. Write to filesystem JSON first (authoritative)
- * 2. Generate CRDT events for sync
- * 3. Update SQLite cache for queries
+ * All tag metadata is stored in Room. No filesystem metadata.
  */
 object TagManager {
     private val tagDao get() = DatabaseProvider.tagDao
     private val bookmarkDao get() = DatabaseProvider.bookmarkDao
     private val tagBookmarkDao get() = DatabaseProvider.tagBookmarkDao
-    private val entityFileManager get() = EntityFileManager
-    private val crdtEngine get() = CRDTEngine
     private val clock = Clock.System
     private const val PINNED_TAG_ID = CoreConstants.Tag.Pinned.ID
     private const val PRIVATE_TAG_ID = CoreConstants.Tag.Private.ID
-
-    // ==================== Query Operations (from SQLite cache) ====================
 
     fun observeTags(
         sortType: SortType = SortType.LABEL,
@@ -62,11 +42,6 @@ object TagManager {
             entity?.toUiModel()
         }
 
-    // ==================== Write Operations (Enqueued) ====================
-
-    /**
-     * Enqueues tag creation. Returns immediately with the tag model.
-     */
     fun createTag(tag: TagUiModel): TagUiModel {
         CoreOperationQueue.queue("CreateTag:${tag.id}") {
             createTagInternal(tag)
@@ -75,47 +50,20 @@ object TagManager {
     }
 
     private suspend fun createTagInternal(tag: TagUiModel) {
-        val now = clock.now()
-        val deviceId = DeviceIdProvider.get()
-        val initialClock = VectorClock.of(deviceId, 1)
+        val now = clock.now().toEpochMilliseconds()
 
-        val tagJson = TagMetaJson(
+        val entity = TagEntity(
             id = tag.id,
             label = tag.label,
             icon = tag.icon,
-            colorCode = tag.color.code,
-            createdAt = now.toEpochMilliseconds(),
-            editedAt = now.toEpochMilliseconds(),
-            clock = initialClock.toMap(),
+            color = tag.color,
+            createdAt = now,
+            editedAt = now,
+            isHidden = false,
         )
-
-        // 1. Write to filesystem (authoritative)
-        entityFileManager.writeTagMeta(tagJson)
-
-        // 2. Record CRDT CREATE event
-        crdtEngine.recordCreate(
-            objectId = tag.id,
-            objectType = ObjectType.TAG,
-            file = FileTarget.META_JSON,
-            payload = buildTagCreatePayload(tagJson),
-            currentClock = VectorClock.empty(),
-        )
-
-        // 3. Update SQLite cache
-        val entity = tagJson.toEntity()
         tagDao.upsert(entity)
-
-        // 4. Verify write succeeded - if not, retry once
-        val verification = tagDao.getById(tag.id)
-        if (verification == null) {
-            // Retry the upsert
-            tagDao.upsert(entity)
-        }
     }
 
-    /**
-     * Enqueues tag update. Returns immediately with the tag model.
-     */
     fun updateTag(tag: TagUiModel): TagUiModel {
         CoreOperationQueue.queue("UpdateTag:${tag.id}") {
             updateTagInternal(tag)
@@ -124,66 +72,20 @@ object TagManager {
     }
 
     private suspend fun updateTagInternal(tag: TagUiModel) {
-        val existingJson = entityFileManager.readTagMeta(tag.id) ?: return
-        val existingClock = VectorClock.fromMap(existingJson.clock)
-        val deviceId = DeviceIdProvider.get()
-        val now = clock.now()
+        val existing = tagDao.getById(tag.id) ?: return
+        val now = clock.now().toEpochMilliseconds()
 
-        // Detect changes
-        val changes = mutableMapOf<String, JsonElement>()
-        if (existingJson.label != tag.label) {
-            changes["label"] = JsonPrimitive(tag.label)
-        }
-        if (existingJson.icon != tag.icon) {
-            changes["icon"] = JsonPrimitive(tag.icon)
-        }
-        if (existingJson.colorCode != tag.color.code) {
-            changes["colorCode"] = JsonPrimitive(tag.color.code)
-        }
-
-        if (changes.isEmpty()) {
-            return
-        }
-
-        val newClock = existingClock.increment(deviceId)
-
-        val updatedJson = existingJson.copy(
-            label = tag.label,
-            icon = tag.icon,
-            colorCode = tag.color.code,
-            editedAt = now.toEpochMilliseconds(),
-            clock = newClock.toMap(),
+        tagDao.upsert(
+            existing.copy(
+                label = tag.label,
+                icon = tag.icon,
+                color = tag.color,
+                editedAt = now,
+            )
         )
-
-        // 1. Write to filesystem (authoritative)
-        entityFileManager.writeTagMeta(updatedJson)
-
-        // 2. Record CRDT UPDATE event
-        crdtEngine.recordUpdate(
-            objectId = tag.id,
-            objectType = ObjectType.TAG,
-            file = FileTarget.META_JSON,
-            changes = changes,
-            currentClock = existingClock,
-        )
-
-        // 3. Update SQLite cache
-        tagDao.upsert(updatedJson.toEntity())
     }
 
-
-    /**
-     * Deletes a tag and removes it from all bookmarks that reference it.
-     *
-     * This cascades the deletion by:
-     * 1. Finding all bookmarks that have this tag in their tagIds
-     * 2. Removing the tag from each bookmark's meta.json (filesystem-first)
-     * 3. Writing the tag tombstone
-     * 4. Recording CRDT events for sync
-     * 5. Updating SQLite cache
-     */
     fun deleteTag(tag: TagUiModel) {
-        // System tags are never deleted as CRDT entities; they are hidden via UPDATE.
         if (CoreConstants.Tag.isSystemTag(tag.id)) {
             CoreOperationQueue.queue("HideSystemTag:${tag.id}") {
                 setSystemTagHiddenStateInternal(tagId = tag.id, isHidden = true)
@@ -200,198 +102,60 @@ object TagManager {
         isHidden: Boolean,
     ) {
         if (!CoreConstants.Tag.isSystemTag(tagId)) return
-        val existingJson = entityFileManager.readTagMeta(tagId) ?: return
-        val now = clock.now()
+        val existing = tagDao.getById(tagId) ?: return
 
-        if (existingJson.isHidden == isHidden) {
-            tagDao.upsert(existingJson.toEntity())
-            return
-        }
+        if (existing.isHidden == isHidden) return
 
-        val existingClock = VectorClock.fromMap(existingJson.clock)
-        val deviceId = DeviceIdProvider.get()
-        val newClock = existingClock.increment(deviceId)
-
-        val changes = mapOf(
-            "isHidden" to JsonPrimitive(isHidden),
-            "editedAt" to JsonPrimitive(now.toEpochMilliseconds()),
+        tagDao.upsert(
+            existing.copy(
+                isHidden = isHidden,
+                editedAt = clock.now().toEpochMilliseconds(),
+            )
         )
-
-        val updatedJson = existingJson.copy(
-            isHidden = isHidden,
-            editedAt = now.toEpochMilliseconds(),
-            clock = newClock.toMap(),
-        )
-
-        // 1) Write to filesystem
-        entityFileManager.writeTagMeta(updatedJson)
-
-        // 2) Record CRDT UPDATE event (never DELETE for system tags)
-        crdtEngine.recordUpdate(
-            objectId = tagId,
-            objectType = ObjectType.TAG,
-            file = FileTarget.META_JSON,
-            changes = changes,
-            currentClock = existingClock,
-        )
-
-        // 3) Update cache
-        tagDao.upsert(updatedJson.toEntity())
     }
 
     private suspend fun deleteTagInternal(tag: TagUiModel) {
-        val existingJson = entityFileManager.readTagMeta(tag.id) ?: return
-        val existingClock = VectorClock.fromMap(existingJson.clock)
-        val now = clock.now()
-
-        // 1. CASCADE: Remove this tag from all bookmarks that reference it
-        // Handle this inline to avoid cross-manager dependencies
         removeTagFromAllBookmarksInternal(tag.id)
-
-        // 2. Write deletion tombstone to filesystem
-        entityFileManager.deleteTag(tag.id, existingClock)
-
-        // 3. Record CRDT DELETE event
-        crdtEngine.recordDelete(
-            objectId = tag.id,
-            objectType = ObjectType.TAG,
-            currentClock = existingClock,
-        )
-
-        // 4. Remove from SQLite cache (tag_bookmarks will cascade due to foreign key)
         tagDao.deleteById(tag.id)
     }
 
-    /**
-     * Removes a tag from all bookmarks that reference it.
-     * Used during tag deletion for cascade cleanup.
-     * TagManager handles this inline to avoid cross-manager dependencies.
-     */
     private suspend fun removeTagFromAllBookmarksInternal(tagId: String) {
-        val allBookmarkIds = entityFileManager.scanAllBookmarks()
-        allBookmarkIds.forEach { bookmarkId ->
-            if (entityFileManager.isBookmarkDeleted(bookmarkId)) return@forEach
-            val bookmarkMeta = entityFileManager.readBookmarkMeta(bookmarkId) ?: return@forEach
-
-            // Check if this bookmark has the tag
-            if (bookmarkMeta.tagIds.contains(tagId)) {
-                removeTagFromSingleBookmarkInternal(tagId, bookmarkId)
-            }
+        val bookmarkIds = tagBookmarkDao.getBookmarkIdsForTag(tagId)
+        bookmarkIds.forEach { bookmarkId ->
+            val existing = bookmarkDao.getById(bookmarkId) ?: return@forEach
+            val now = clock.now().toEpochMilliseconds()
+            tagBookmarkDao.delete(bookmarkId, tagId)
+            bookmarkDao.upsert(existing.copy(editedAt = now))
         }
     }
 
-    /**
-     * Removes a tag from a single bookmark.
-     * TagManager handles this inline for cascade deletion.
-     */
-    private suspend fun removeTagFromSingleBookmarkInternal(tagId: String, bookmarkId: String) {
-        val existingJson = entityFileManager.readBookmarkMeta(bookmarkId) ?: return
-        val existingClock = VectorClock.fromMap(existingJson.clock)
-        val deviceId = DeviceIdProvider.get()
-        val newClock = existingClock.increment(deviceId)
-        val now = clock.now()
-
-        val newTagIds = existingJson.tagIds.filterNot { it == tagId }
-
-        val updatedJson = existingJson.copy(
-            tagIds = newTagIds,
-            editedAt = now.toEpochMilliseconds(),
-            clock = newClock.toMap(),
-        )
-
-        // 1. Write to filesystem
-        entityFileManager.writeBookmarkMeta(updatedJson)
-
-        // 2. Record CRDT UPDATE event
-        crdtEngine.recordUpdate(
-            objectId = bookmarkId,
-            objectType = ObjectType.BOOKMARK,
-            file = FileTarget.META_JSON,
-            changes = mapOf("tagIds" to JsonArray(newTagIds.map { JsonPrimitive(it) })),
-            currentClock = existingClock,
-        )
-
-        // 3. Update SQLite cache
-        tagBookmarkDao.delete(bookmarkId, tagId)
-        bookmarkDao.upsert(updatedJson.toEntity())
-    }
-
-    // ==================== Mappers ====================
-
-    private fun BookmarkMetaJson.toEntity(): BookmarkEntity = BookmarkEntity(
-        id = id,
-        folderId = folderId,
-        kind = BookmarkKind.fromCode(kind),
-        label = label,
-        description = description,
-        createdAt = createdAt,
-        editedAt = editedAt,
-        viewCount = viewCount,
-        isPrivate = isPrivate,
-        isPinned = isPinned,
-        localImagePath = localImagePath,
-        localIconPath = localIconPath,
-    )
-
-    /**
-     * Ensures the Pinned system tag exists.
-     * Uses queueAndAwait to serialize with other operations.
-     */
     suspend fun ensurePinnedTag(): TagUiModel {
-        // Check if already exists in cache first (fast path, no queueing needed)
         tagDao.getTagWithBookmarkCount(PINNED_TAG_ID)?.let {
             return it.toUiModel()
         }
 
-        // Need to create - queue the operation
         CoreOperationQueue.queueAndAwait("EnsurePinnedTag") {
             ensurePinnedTagInternal()
         }
 
-        // Return the tag after creation
         return tagDao.getTagWithBookmarkCount(PINNED_TAG_ID)?.toUiModel()
             ?: createPinnedTagModel()
     }
 
     private suspend fun ensurePinnedTagInternal() {
-        // Re-check inside queue
-        if (tagDao.getById(PINNED_TAG_ID) != null) {
-            return
-        }
+        if (tagDao.getById(PINNED_TAG_ID) != null) return
 
-        // SELF-HEALING: Remove any tombstone for system tag
-        if (entityFileManager.isTagDeleted(PINNED_TAG_ID)) {
-            entityFileManager.removeTagTombstone(PINNED_TAG_ID)
-        }
-
-        val now = clock.now()
-        val deviceId = DeviceIdProvider.get()
-        val initialClock = VectorClock.of(deviceId, 1)
-
-        val tagJson = TagMetaJson(
+        val now = clock.now().toEpochMilliseconds()
+        val entity = TagEntity(
             id = PINNED_TAG_ID,
             label = CoreConstants.Tag.Pinned.NAME,
             icon = CoreConstants.Tag.Pinned.ICON,
-            colorCode = YabaColor.YELLOW.code,
-            createdAt = now.toEpochMilliseconds(),
-            editedAt = now.toEpochMilliseconds(),
-            clock = initialClock.toMap(),
+            color = YabaColor.YELLOW,
+            createdAt = now,
+            editedAt = now,
+            isHidden = false,
         )
-
-        // 1. Write to filesystem
-        entityFileManager.writeTagMeta(tagJson)
-
-        // 2. Record CRDT CREATE event
-        crdtEngine.recordCreate(
-            objectId = PINNED_TAG_ID,
-            objectType = ObjectType.TAG,
-            file = FileTarget.META_JSON,
-            payload = buildTagCreatePayload(tagJson),
-            currentClock = VectorClock.empty(),
-        )
-
-        // 3. Update SQLite cache
-        tagDao.upsert(tagJson.toEntity())
+        tagDao.upsert(entity)
     }
 
     private fun createPinnedTagModel(): TagUiModel {
@@ -407,65 +171,33 @@ object TagManager {
         )
     }
 
-    /**
-     * Ensures the Private system tag exists.
-     * Uses queueAndAwait to serialize with other operations.
-     */
     suspend fun ensurePrivateTag(): TagUiModel {
-        // Check if already exists in cache first (fast path, no queueing needed)
         tagDao.getTagWithBookmarkCount(PRIVATE_TAG_ID)?.let {
             return it.toUiModel()
         }
 
-        // Need to create - queue the operation
         CoreOperationQueue.queueAndAwait("EnsurePrivateTag") {
             ensurePrivateTagInternal()
         }
 
-        // Return the tag after creation
         return tagDao.getTagWithBookmarkCount(PRIVATE_TAG_ID)?.toUiModel()
             ?: createPrivateTagModel()
     }
 
     private suspend fun ensurePrivateTagInternal() {
-        // Re-check inside queue
-        if (tagDao.getById(PRIVATE_TAG_ID) != null) {
-            return
-        }
+        if (tagDao.getById(PRIVATE_TAG_ID) != null) return
 
-        // SELF-HEALING: Remove any tombstone for system tag
-        if (entityFileManager.isTagDeleted(PRIVATE_TAG_ID)) {
-            entityFileManager.removeTagTombstone(PRIVATE_TAG_ID)
-        }
-
-        val now = clock.now()
-        val deviceId = DeviceIdProvider.get()
-        val initialClock = VectorClock.of(deviceId, 1)
-
-        val tagJson = TagMetaJson(
+        val now = clock.now().toEpochMilliseconds()
+        val entity = TagEntity(
             id = PRIVATE_TAG_ID,
             label = CoreConstants.Tag.Private.NAME,
             icon = CoreConstants.Tag.Private.ICON,
-            colorCode = YabaColor.RED.code,
-            createdAt = now.toEpochMilliseconds(),
-            editedAt = now.toEpochMilliseconds(),
-            clock = initialClock.toMap(),
+            color = YabaColor.RED,
+            createdAt = now,
+            editedAt = now,
+            isHidden = false,
         )
-
-        // 1. Write to filesystem
-        entityFileManager.writeTagMeta(tagJson)
-
-        // 2. Record CRDT CREATE event
-        crdtEngine.recordCreate(
-            objectId = PRIVATE_TAG_ID,
-            objectType = ObjectType.TAG,
-            file = FileTarget.META_JSON,
-            payload = buildTagCreatePayload(tagJson),
-            currentClock = VectorClock.empty(),
-        )
-
-        // 3. Update SQLite cache
-        tagDao.upsert(tagJson.toEntity())
+        tagDao.upsert(entity)
     }
 
     private fun createPrivateTagModel(): TagUiModel {
@@ -480,28 +212,4 @@ object TagManager {
             bookmarkCount = 0,
         )
     }
-
-    // ==================== Private Helpers ====================
-
-    private fun buildTagCreatePayload(json: TagMetaJson): Map<String, JsonElement> =
-        mapOf(
-            "id" to JsonPrimitive(json.id),
-            "label" to JsonPrimitive(json.label),
-            "icon" to JsonPrimitive(json.icon),
-            "colorCode" to JsonPrimitive(json.colorCode),
-            "createdAt" to JsonPrimitive(json.createdAt),
-            "editedAt" to JsonPrimitive(json.editedAt),
-        )
-
-    // ==================== Mappers ====================
-
-    private fun TagMetaJson.toEntity(): TagEntity = TagEntity(
-        id = id,
-        label = label,
-        icon = icon,
-        color = YabaColor.fromCode(colorCode),
-        createdAt = createdAt,
-        editedAt = editedAt,
-        isHidden = isHidden,
-    )
 }

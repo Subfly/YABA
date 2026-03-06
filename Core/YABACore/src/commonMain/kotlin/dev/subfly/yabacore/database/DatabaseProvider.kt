@@ -16,8 +16,7 @@ import kotlin.concurrent.Volatile
  * Call [initialize] once (pass Android context when needed) and use the exposed
  * properties everywhere instead of threading dependencies through constructors.
  *
- * Note: This database is a derived cache. The filesystem JSON files are the
- * authoritative source of truth. Use [CacheRebuilder] to rebuild from filesystem.
+ * Room is the single source of truth for metadata.
  */
 expect fun buildDatabase(platformContext: Any? = null): YabaDatabase
 

@@ -22,6 +22,12 @@ interface TagBookmarkDao {
     @Query("DELETE FROM tag_bookmarks WHERE tagId = :tagId")
     suspend fun deleteForTag(tagId: String)
 
+    @Query("SELECT tagId FROM tag_bookmarks WHERE bookmarkId = :bookmarkId")
+    suspend fun getTagIdsForBookmark(bookmarkId: String): List<String>
+
+    @Query("SELECT bookmarkId FROM tag_bookmarks WHERE tagId = :tagId")
+    suspend fun getBookmarkIdsForTag(tagId: String): List<String>
+
     @Query("DELETE FROM tag_bookmarks")
     suspend fun deleteAll()
 }

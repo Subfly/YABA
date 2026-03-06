@@ -31,6 +31,19 @@ interface HighlightDao {
         ORDER BY createdAt ASC
         """
     )
+    suspend fun getByBookmarkId(
+        bookmarkId: String,
+        version: Int? = null,
+    ): List<HighlightEntity>
+
+    @Query(
+        """
+        SELECT * FROM highlights 
+        WHERE bookmarkId = :bookmarkId 
+        AND (:version IS NULL OR contentVersion = :version)
+        ORDER BY createdAt ASC
+        """
+    )
     fun observeByBookmarkId(
         bookmarkId: String,
         version: Int? = null,

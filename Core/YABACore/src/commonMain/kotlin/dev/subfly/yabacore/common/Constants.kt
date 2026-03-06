@@ -68,41 +68,9 @@ object CoreConstants {
     object FileSystem {
         const val ROOT_DIR = "YABA"
         const val BOOKMARKS_DIR = "bookmarks"
-        const val FOLDERS_DIR = "folders"
-        const val TAGS_DIR = "tags"
-        const val SYNC_DIR = "sync"
         const val CONTENT_DIR = "content"
 
-        // JSON file names
-        const val META_JSON = "meta.json"
-        const val LINK_JSON = "link.json"
-        const val DELETED_JSON = "deleted.json"
-
-        // Events database
-        const val EVENTS_DB = "events.sqlite"
-
-        // Entity folder paths
-        fun folderPath(folderId: String): String = join(FOLDERS_DIR, folderId)
-        fun tagPath(tagId: String): String = join(TAGS_DIR, tagId)
         fun bookmarkPath(bookmarkId: String): String = join(BOOKMARKS_DIR, bookmarkId)
-
-        // JSON file paths for folders
-        fun folderMetaPath(folderId: String): String = join(folderPath(folderId), META_JSON)
-        fun folderDeletedPath(folderId: String): String = join(folderPath(folderId), DELETED_JSON)
-
-        // JSON file paths for tags
-        fun tagMetaPath(tagId: String): String = join(tagPath(tagId), META_JSON)
-        fun tagDeletedPath(tagId: String): String = join(tagPath(tagId), DELETED_JSON)
-
-        // JSON file paths for bookmarks
-        fun bookmarkMetaPath(bookmarkId: String): String = join(bookmarkPath(bookmarkId), META_JSON)
-        fun bookmarkLinkPath(bookmarkId: String): String = join(bookmarkPath(bookmarkId), LINK_JSON)
-        fun bookmarkDeletedPath(bookmarkId: String): String = join(bookmarkPath(bookmarkId), DELETED_JSON)
-        fun bookmarkContentPath(bookmarkId: String): String = join(bookmarkPath(bookmarkId), CONTENT_DIR)
-
-        // Sync directory path
-        fun syncPath(): String = SYNC_DIR
-        fun eventsDbPath(): String = join(SYNC_DIR, EVENTS_DB)
 
         object Linkmark {
             const val LINK_IMAGE_BASENAME = "link_image"
@@ -152,7 +120,7 @@ object CoreConstants {
             fun assetPath(bookmarkId: String, assetId: String, extension: String): String =
                 join(assetsDir(bookmarkId), "$assetId.$extension")
 
-            // Annotation paths (mutable, CRDT-merged highlights)
+            // Annotation paths
             fun annotationsDir(bookmarkId: String): String =
                 join(bookmarkFolder(bookmarkId), ANNOTATIONS_DIR)
 
