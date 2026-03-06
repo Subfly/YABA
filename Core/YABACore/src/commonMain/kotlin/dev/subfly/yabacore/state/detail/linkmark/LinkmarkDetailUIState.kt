@@ -12,6 +12,8 @@ data class LinkmarkDetailUIState(
     val bookmark: BookmarkPreviewUiModel? = null,
     val linkDetails: LinkmarkLinkDetailsUiModel? = null,
     val readableVersions: List<ReadableVersionUiModel> = emptyList(),
+    /** Currently selected version ID; null means use newest (first). */
+    val selectedReadableVersionId: String? = null,
     /** Raw markdown for WebView viewer. */
     val readableMarkdown: String? = null,
     /** Base URL for resolving ../assets/ in markdown (file://... with trailing slash). */
@@ -19,6 +21,11 @@ data class LinkmarkDetailUIState(
     val readerPreferences: ReaderPreferences = ReaderPreferences(),
     val highlights: List<HighlightUiModel> = emptyList(),
     val isLoading: Boolean = false,
+    val isUpdatingReadable: Boolean = false,
+    /** Converter flow: raw HTML to be converted by WebView. */
+    val converterHtml: String? = null,
+    val converterBaseUrl: String? = null,
+    val converterError: String? = null,
     /** Scheduled reminder fire date as epoch millis, null when no reminder is pending. */
     val reminderDateEpochMillis: Long? = null,
     val hasNotificationPermission: Boolean = false,

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -27,9 +28,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.components.NoContentView
+import dev.subfly.yaba.core.components.webview.ConverterInput
 import dev.subfly.yaba.core.components.webview.YabaWebAppearance
 import dev.subfly.yaba.core.components.webview.YabaWebPlatform
 import dev.subfly.yaba.core.components.webview.YabaWebScrollDirection
+import dev.subfly.yaba.core.components.webview.YabaWebViewConverter
 import dev.subfly.yaba.core.components.webview.YabaWebViewViewer
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkContentDropdownMenu
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkReaderFloatingToolbar
@@ -40,6 +43,7 @@ import dev.subfly.yabacore.state.detail.linkmark.LinkmarkDetailEvent
 import dev.subfly.yabacore.state.detail.linkmark.LinkmarkDetailUIState
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.webview.WebComponentUris
+import dev.subfly.yabacore.unfurl.ConverterAssetInput
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.bookmark_detail_title
@@ -68,6 +72,35 @@ internal fun LinkmarkContentLayout(
         state.isLoading
     ) { mutableStateOf(true) }
     var isMenuExpanded by remember { mutableStateOf(false) }
+
+    val converterInput = state.converterHtml?.let { html ->
+        ConverterInput(html = html, baseUrl = state.converterBaseUrl)
+    }
+
+    YabaWebViewConverter(
+        modifier = Modifier.size(0.dp),
+        baseUrl = WebComponentUris.getConverterUri(),
+        input = converterInput,
+        onConverterResult = { result ->
+            onEvent(
+                LinkmarkDetailEvent.OnConverterSucceeded(
+                    markdown = result.markdown,
+                    assets = result.assets.map { a ->
+                        ConverterAssetInput(
+                            placeholder = a.placeholder,
+                            url = a.url,
+                            alt = a.alt,
+                        )
+                    },
+                    title = state.bookmark?.label?.takeIf { it.isNotBlank() },
+                    author = null,
+                ),
+            )
+        },
+        onConverterError = { error ->
+            onEvent(LinkmarkDetailEvent.OnConverterFailed(error = error))
+        },
+    )
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -103,7 +136,7 @@ internal fun LinkmarkContentLayout(
                         }
                     }
                 )
-                AnimatedContent(state.isLoading) { loading ->
+                AnimatedContent(state.isLoading || state.isUpdatingReadable) { loading ->
                     if (loading) {
                         Box(
                             modifier = Modifier
@@ -144,7 +177,7 @@ internal fun LinkmarkContentLayout(
                         if (direction == YabaWebScrollDirection.Up) isReaderToolbarVisible = true
                     },
                 )
-            } else if (!state.isLoading) {
+            } else if (!state.isLoading && !state.isUpdatingReadable) {
                 NoContentView(
                     modifier = Modifier.fillMaxSize()
                         .wrapContentSize(Alignment.Center),

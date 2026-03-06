@@ -4,7 +4,7 @@ package dev.subfly.yabacore.unfurl
  * Result of readable content extraction, ready for persistence.
  *
  * This is returned by the Unfurler and contains markdown plus downloaded asset bytes.
- * contentVersion and createdAt are set by ReadableContentManager when saving.
+ * versionId and createdAt are set by ReadableContentManager when saving.
  */
 data class ReadableUnfurl(
     val markdown: String,

@@ -6,11 +6,22 @@ import dev.subfly.yabacore.model.utils.ReaderTheme
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.notifications.PlatformNotificationText
 import dev.subfly.yabacore.unfurl.ReadableUnfurl
+import dev.subfly.yabacore.unfurl.ConverterAssetInput
 
 sealed interface LinkmarkDetailEvent {
     data class OnInit(val bookmarkId: String) : LinkmarkDetailEvent
     data class OnSaveReadableContent(val readable: ReadableUnfurl) : LinkmarkDetailEvent
     data object OnFetchReadableContent : LinkmarkDetailEvent
+    data object OnUpdateReadableRequested : LinkmarkDetailEvent
+    data class OnConverterSucceeded(
+        val markdown: String,
+        val assets: List<ConverterAssetInput>,
+        val title: String?,
+        val author: String?,
+    ) : LinkmarkDetailEvent
+    data class OnConverterFailed(val error: Throwable) : LinkmarkDetailEvent
+    data class OnSelectReadableVersion(val versionId: String) : LinkmarkDetailEvent
+    data class OnDeleteReadableVersion(val versionId: String) : LinkmarkDetailEvent
     data object OnDeleteBookmark : LinkmarkDetailEvent
     data object OnToggleReaderTheme : LinkmarkDetailEvent
     data object OnToggleReaderFontSize : LinkmarkDetailEvent
@@ -19,7 +30,7 @@ sealed interface LinkmarkDetailEvent {
     data class OnSetReaderFontSize(val fontSize: ReaderFontSize) : LinkmarkDetailEvent
     data class OnSetReaderLineHeight(val lineHeight: ReaderLineHeight) : LinkmarkDetailEvent
     data class OnCreateHighlight(
-        val contentVersion: Int,
+        val readableVersionId: String,
         val startSectionKey: String,
         val startOffsetInSection: Int,
         val endSectionKey: String,

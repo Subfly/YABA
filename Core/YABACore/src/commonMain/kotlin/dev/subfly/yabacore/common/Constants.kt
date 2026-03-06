@@ -95,14 +95,12 @@ object CoreConstants {
                 "$DOMAIN_ICON_BASENAME.$extension",
             )
 
-            fun htmlExportsDir(bookmarkId: String): String =
-                join(bookmarkFolder(bookmarkId), HTML_EXPORTS_DIR)
-
             fun readableDir(bookmarkId: String): String =
                 join(bookmarkFolder(bookmarkId), READABLE_DIR)
 
-            fun readableVersionPath(bookmarkId: String, contentVersion: Int): String =
-                join(readableDir(bookmarkId), "v$contentVersion.md")
+            /** Path for a readable version file: readable/<versionId>.md */
+            fun readableVersionPath(bookmarkId: String, versionId: String): String =
+                join(readableDir(bookmarkId), "$versionId.md")
 
             fun assetsDir(bookmarkId: String): String =
                 join(bookmarkFolder(bookmarkId), ASSETS_DIR)

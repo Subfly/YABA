@@ -27,7 +27,7 @@ data class LinkmarkUiModel(
     override val localIconPath: String? = null,
     override val parentFolder: FolderUiModel?,
     override val tags: List<TagUiModel> = emptyList(),
-    /** Readable versions ordered by contentVersion DESC (newest first) for "Time Machine" */
+    /** Readable versions ordered by createdAt DESC (newest first) for "Time Machine" */
     val readableVersions: List<ReadableVersionUiModel> = emptyList(),
 ) : BookmarkUiModel {
     /** The latest readable version, or null if no versions exist */

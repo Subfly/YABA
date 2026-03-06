@@ -21,17 +21,23 @@ import dev.subfly.yabacore.model.utils.YabaColor
             childColumns = ["bookmarkId"],
             onDelete = ForeignKey.CASCADE,
         ),
+        ForeignKey(
+            entity = ReadableVersionEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["readableVersionId"],
+            onDelete = ForeignKey.CASCADE,
+        ),
     ],
     indices = [
         Index(value = ["bookmarkId"]),
-        Index(value = ["bookmarkId", "contentVersion"]),
+        Index(value = ["bookmarkId", "readableVersionId"]),
         Index(value = ["editedAt"]),
     ],
 )
 data class HighlightEntity(
     @PrimaryKey val id: String,
     val bookmarkId: String,
-    val contentVersion: Int,
+    val readableVersionId: String,
     val startSectionKey: String,
     val startOffsetInSection: Int,
     val endSectionKey: String,

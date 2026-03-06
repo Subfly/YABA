@@ -132,9 +132,7 @@ internal fun LinkmarkContentDropdownMenu(
                                 )
                                 appStateManager.onShowCreationContent()
                             }
-                            "refresh" -> {
-                                // TODO: Implement refresh functionality
-                            }
+                            "update" -> onEvent(LinkmarkDetailEvent.OnUpdateReadableRequested)
                         }
                     },
                     leadingIcon = {

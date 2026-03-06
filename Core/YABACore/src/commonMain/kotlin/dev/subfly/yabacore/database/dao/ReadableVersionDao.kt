@@ -17,9 +17,15 @@ interface ReadableVersionDao {
     @Query("DELETE FROM readable_versions WHERE bookmarkId = :bookmarkId")
     suspend fun deleteByBookmarkId(bookmarkId: String)
 
-    @Query("SELECT * FROM readable_versions WHERE bookmarkId = :bookmarkId ORDER BY contentVersion DESC")
+    @Query("DELETE FROM readable_versions WHERE id = :versionId")
+    suspend fun deleteById(versionId: String)
+
+    @Query("SELECT * FROM readable_versions WHERE id = :versionId LIMIT 1")
+    suspend fun getById(versionId: String): ReadableVersionEntity?
+
+    @Query("SELECT * FROM readable_versions WHERE bookmarkId = :bookmarkId ORDER BY createdAt DESC")
     suspend fun getByBookmarkId(bookmarkId: String): List<ReadableVersionEntity>
 
-    @Query("SELECT * FROM readable_versions WHERE bookmarkId = :bookmarkId ORDER BY contentVersion DESC")
+    @Query("SELECT * FROM readable_versions WHERE bookmarkId = :bookmarkId ORDER BY createdAt DESC")
     fun observeByBookmarkId(bookmarkId: String): Flow<List<ReadableVersionEntity>>
 }

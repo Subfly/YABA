@@ -18,7 +18,7 @@ object HighlightManager {
 
     fun createHighlight(
         bookmarkId: String,
-        contentVersion: Int,
+        readableVersionId: String,
         startSectionKey: String,
         startOffsetInSection: Int,
         endSectionKey: String,
@@ -33,7 +33,7 @@ object HighlightManager {
             val entity = HighlightEntity(
                 id = highlightId,
                 bookmarkId = bookmarkId,
-                contentVersion = contentVersion,
+                readableVersionId = readableVersionId,
                 startSectionKey = startSectionKey,
                 startOffsetInSection = startOffsetInSection,
                 endSectionKey = endSectionKey,
@@ -80,9 +80,9 @@ object HighlightManager {
 
     suspend fun getHighlightsForVersion(
         bookmarkId: String,
-        contentVersion: Int,
+        readableVersionId: String,
     ): List<HighlightEntity> =
-        highlightDao.getByBookmarkId(bookmarkId, version = contentVersion)
+        highlightDao.getByBookmarkId(bookmarkId, readableVersionId = readableVersionId)
 
     suspend fun getHighlight(bookmarkId: String, highlightId: String): HighlightEntity? =
         highlightDao.getById(highlightId)

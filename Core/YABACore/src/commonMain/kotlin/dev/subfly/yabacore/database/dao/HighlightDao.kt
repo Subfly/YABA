@@ -27,25 +27,25 @@ interface HighlightDao {
         """
         SELECT * FROM highlights 
         WHERE bookmarkId = :bookmarkId 
-        AND (:version IS NULL OR contentVersion = :version)
+        AND (:readableVersionId IS NULL OR readableVersionId = :readableVersionId)
         ORDER BY createdAt ASC
         """
     )
     suspend fun getByBookmarkId(
         bookmarkId: String,
-        version: Int? = null,
+        readableVersionId: String? = null,
     ): List<HighlightEntity>
 
     @Query(
         """
         SELECT * FROM highlights 
         WHERE bookmarkId = :bookmarkId 
-        AND (:version IS NULL OR contentVersion = :version)
+        AND (:readableVersionId IS NULL OR readableVersionId = :readableVersionId)
         ORDER BY createdAt ASC
         """
     )
     fun observeByBookmarkId(
         bookmarkId: String,
-        version: Int? = null,
+        readableVersionId: String? = null,
     ): Flow<List<HighlightEntity>>
 }

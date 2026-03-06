@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey
  * Room entity for readable content versions.
  *
  * Indexes immutable readable content stored at
- * `/bookmarks/<id>/readable/vN.md`.
+ * `/bookmarks/<id>/readable/<versionId>.md`.
  *
  * This is a derived cache - the filesystem is authoritative.
  */
@@ -25,14 +25,12 @@ import androidx.room.PrimaryKey
     ],
     indices = [
         Index(value = ["bookmarkId"]),
-        Index(value = ["bookmarkId", "contentVersion"], unique = true),
         Index(value = ["createdAt"]),
     ],
 )
 data class ReadableVersionEntity(
     @PrimaryKey val id: String,
     val bookmarkId: String,
-    val contentVersion: Int,
     val createdAt: Long,
     val relativePath: String,
     val title: String?,

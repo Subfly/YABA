@@ -1,6 +1,7 @@
 package dev.subfly.yabacore.managers
 
 import dev.subfly.yabacore.common.CoreConstants
+import dev.subfly.yabacore.common.IdGenerator
 import dev.subfly.yabacore.model.utils.parseReadableMarkdownFrontmatter
 import dev.subfly.yabacore.model.utils.writeReadableMarkdownWithFrontmatter
 import dev.subfly.yabacore.database.DatabaseProvider
@@ -17,8 +18,6 @@ import dev.subfly.yabacore.queue.CoreOperationQueue
 import dev.subfly.yabacore.unfurl.ReadableAsset
 import dev.subfly.yabacore.unfurl.ReadableUnfurl
 import io.github.vinceglb.filekit.exists
-import io.github.vinceglb.filekit.list
-import io.github.vinceglb.filekit.name
 import io.github.vinceglb.filekit.write
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -34,7 +33,7 @@ import kotlin.time.Clock
  * Content is never overwritten - new saves create new versions.
  *
  * File layout:
- * - /bookmarks/<id>/readable/v1.md, v2.md, ...
+ * - /bookmarks/<id>/readable/<versionId>.md
  * - /bookmarks/<id>/assets/<assetId>.<ext>
  */
 object ReadableContentManager {
@@ -59,32 +58,16 @@ object ReadableContentManager {
 
     /**
      * Internal implementation for saving readable content.
+     * @return The created version ID
      */
-    internal suspend fun saveReadableContentInternal(bookmarkId: String, readable: ReadableUnfurl) {
-        val nextVersion = getNextContentVersion(bookmarkId)
+    internal suspend fun saveReadableContentInternal(bookmarkId: String, readable: ReadableUnfurl): String {
+        val versionId = IdGenerator.newId()
         val createdAt = Clock.System.now().toEpochMilliseconds()
 
         val savedAssets = saveAssets(bookmarkId, readable.assets)
-        saveMarkdownVersion(bookmarkId, nextVersion, readable.markdown, readable.title, readable.author)
-        updateRoomIndex(bookmarkId, nextVersion, createdAt, readable.title, readable.author, savedAssets)
-    }
-
-    /**
-     * Gets the next content version by scanning existing versions.
-     */
-    private suspend fun getNextContentVersion(bookmarkId: String): Int {
-        val readableDir = CoreConstants.FileSystem.Linkmark.readableDir(bookmarkId)
-        val dir = accessProvider.resolveRelativePath(readableDir, ensureParentExists = false)
-
-        if (!dir.exists()) return 1
-
-        val existingVersions = dir.list()
-            .filter { it.name.startsWith("v") && it.name.endsWith(".md") }
-            .mapNotNull { file ->
-                file.name.removePrefix("v").removeSuffix(".md").toIntOrNull()
-            }
-
-        return (existingVersions.maxOrNull() ?: 0) + 1
+        saveMarkdownVersion(bookmarkId, versionId, readable.markdown, readable.title, readable.author)
+        updateRoomIndex(bookmarkId, versionId, createdAt, readable.title, readable.author, savedAssets)
+        return versionId
     }
 
     /**
@@ -93,15 +76,12 @@ object ReadableContentManager {
      */
     private suspend fun saveMarkdownVersion(
         bookmarkId: String,
-        contentVersion: Int,
+        versionId: String,
         markdown: String,
         title: String?,
         author: String?,
     ) {
-        val relativePath = CoreConstants.FileSystem.Linkmark.readableVersionPath(
-            bookmarkId,
-            contentVersion,
-        )
+        val relativePath = CoreConstants.FileSystem.Linkmark.readableVersionPath(bookmarkId, versionId)
 
         val file = accessProvider.resolveRelativePath(relativePath, ensureParentExists = true)
         if (file.exists()) return
@@ -143,21 +123,18 @@ object ReadableContentManager {
      */
     private suspend fun updateRoomIndex(
         bookmarkId: String,
-        contentVersion: Int,
+        versionId: String,
         createdAt: Long,
         title: String?,
         author: String?,
         savedAssets: List<SavedAssetInfo>,
     ) {
+        val relativePath = CoreConstants.FileSystem.Linkmark.readableVersionPath(bookmarkId, versionId)
         val versionEntity = ReadableVersionEntity(
-            id = "${bookmarkId}_v$contentVersion",
+            id = versionId,
             bookmarkId = bookmarkId,
-            contentVersion = contentVersion,
             createdAt = createdAt,
-            relativePath = CoreConstants.FileSystem.Linkmark.readableVersionPath(
-                bookmarkId,
-                contentVersion,
-            ),
+            relativePath = relativePath,
             title = title,
             author = author,
         )
@@ -178,11 +155,25 @@ object ReadableContentManager {
      * Reads a specific readable version from filesystem as raw markdown.
      * Strips YAML frontmatter so the UI receives only the body.
      */
-    suspend fun readVersion(bookmarkId: String, contentVersion: Int): String? {
-        val relativePath =
-            CoreConstants.FileSystem.Linkmark.readableVersionPath(bookmarkId, contentVersion)
+    suspend fun readVersionByPath(relativePath: String): String? {
         val raw = accessProvider.readText(relativePath) ?: return null
         return parseReadableMarkdownFrontmatter(raw).body
+    }
+
+    /**
+     * Deletes a readable version and its markdown file.
+     * Highlights for this version are cascade-deleted via FK.
+     */
+    fun deleteVersion(versionId: String) {
+        CoreOperationQueue.queue("DeleteReadableVersion:$versionId") {
+            deleteVersionInternal(versionId)
+        }
+    }
+
+    internal suspend fun deleteVersionInternal(versionId: String) {
+        val entity = readableVersionDao.getById(versionId) ?: return
+        accessProvider.delete(entity.relativePath)
+        readableVersionDao.deleteById(versionId)
     }
 
     fun observeReadableVersions(bookmarkId: String): Flow<List<ReadableVersionUiModel>> {
@@ -199,9 +190,9 @@ object ReadableContentManager {
         bookmarkId: String,
         versionEntity: ReadableVersionEntity,
     ): ReadableVersionUiModel {
-        val markdownContent = readVersion(bookmarkId, versionEntity.contentVersion)
+        val markdownContent = readVersionByPath(versionEntity.relativePath)
         val assets = readableAssetDao.getByBookmarkId(bookmarkId)
-        val highlights = highlightDao.getByBookmarkId(bookmarkId, version = versionEntity.contentVersion)
+        val highlights = highlightDao.getByBookmarkId(bookmarkId, readableVersionId = versionEntity.id)
 
         val assetsUi = mutableListOf<ReadableAssetUiModel>()
         assets.forEach { entity ->
@@ -217,7 +208,7 @@ object ReadableContentManager {
         val highlightsUi = highlights.map { it.toHighlightUiModel() }
 
         return ReadableVersionUiModel(
-            contentVersion = versionEntity.contentVersion,
+            versionId = versionEntity.id,
             createdAt = versionEntity.createdAt,
             title = versionEntity.title,
             author = versionEntity.author,

@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -21,6 +23,7 @@ import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailImageSec
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailInfoSectionContent
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailReminderSectionContent
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailTagSectionContent
+import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailVersionItemContent
 import dev.subfly.yaba.ui.detail.bookmark.link.models.DetailPage
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yabacore.model.utils.YabaColor
@@ -110,7 +113,27 @@ internal fun LinkmarkDetailLayout(
                 }
 
                 DetailPage.VERSIONS -> {
-
+                    itemsIndexed(
+                        items = state.readableVersions,
+                        key = { _, version -> version.versionId },
+                    ) { index, version ->
+                        LinkmarkDetailVersionItemContent(
+                            modifier = Modifier
+                                .animateItem()
+                                .padding(vertical = 4.dp),
+                            version = version,
+                            mainColor = mainColor,
+                            index = index,
+                            count = state.readableVersions.size,
+                            isSelected = if (state.selectedReadableVersionId != null) {
+                                version.versionId == state.selectedReadableVersionId
+                            } else {
+                                index == 0
+                            },
+                            onClick = { onEvent(LinkmarkDetailEvent.OnSelectReadableVersion(version.versionId)) },
+                            onDelete = { onEvent(LinkmarkDetailEvent.OnDeleteReadableVersion(version.versionId)) },
+                        )
+                    }
                 }
 
                 DetailPage.HIGHLIGHTS -> {

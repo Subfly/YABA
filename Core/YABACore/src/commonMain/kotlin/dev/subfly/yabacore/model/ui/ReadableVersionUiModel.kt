@@ -10,7 +10,7 @@ import androidx.compose.runtime.Stable
  */
 @Stable
 data class ReadableVersionUiModel(
-    val contentVersion: Int,
+    val versionId: String,
     val createdAt: Long,
     val title: String?,
     val author: String?,
