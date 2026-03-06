@@ -12,7 +12,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.DropdownMenuPopup
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.ListItemDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Surface
@@ -90,13 +89,6 @@ internal fun LinkmarkDetailVersionItemContent(
                     .yabaRightClick(onRightClick = { isDeleteMenuExpanded = true }),
                 onClick = onClick,
                 onLongClick = { isDeleteMenuExpanded = true },
-                colors = ListItemDefaults.colors(
-                    containerColor = if (isSelected) {
-                        Color(mainColor.iconTintArgb()).copy(alpha = 0.12f)
-                    } else {
-                        MaterialTheme.colorScheme.surfaceContainer
-                    },
-                ),
                 shapes = ListItemDefaults.segmentedShapes(index = index, count = count),
                 content = { Text(formattedDate) },
                 leadingContent = {
@@ -109,10 +101,7 @@ internal fun LinkmarkDetailVersionItemContent(
                                 color = mainColor,
                             )
                         } else {
-                            YabaIcon(
-                                name = "clock-02",
-                                color = mainColor,
-                            )
+                            YabaIcon(name = "clock-02")
                         }
                     }
                 },
