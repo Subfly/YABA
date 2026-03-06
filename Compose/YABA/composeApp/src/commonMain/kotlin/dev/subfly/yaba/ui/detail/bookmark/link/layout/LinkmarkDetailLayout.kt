@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.navigation.main.FolderDetailRoute
@@ -20,6 +21,7 @@ import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailImageSec
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailInfoSectionContent
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailReminderSectionContent
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailTagSectionContent
+import dev.subfly.yaba.ui.detail.bookmark.link.models.DetailPage
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.detail.linkmark.LinkmarkDetailEvent
@@ -38,66 +40,81 @@ internal fun LinkmarkDetailLayout(
         mutableStateOf(state.bookmark?.parentFolder?.color ?: YabaColor.BLUE)
     }
 
+    var currentPage by remember { mutableStateOf(DetailPage.INFO) }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxSize(0.9F),
     ) {
-        item (key = "ACTIONS") {
+        stickyHeader(key = "ACTIONS") {
             LinkmarkDetailActionsContent(
                 modifier = Modifier.animateItem(),
+                currentPage = currentPage,
+                onPageChange = { currentPage = it },
                 mainColor = mainColor,
                 onHide = onHide,
             )
         }
         item { Spacer(modifier = Modifier.height(18.dp)) }
-        // TODO: ADD HIGHLIGHTS SEGMENTED SWITCH HERE :)
         state.bookmark?.let { bookmarkDetails ->
-            item(key = "LINK_IMAGE") {
-                LinkmarkDetailImageSectionContent(
-                    modifier = Modifier.animateItem(),
-                    bookmarkDetails = bookmarkDetails,
-                    linkDetails = state.linkDetails,
-                    mainColor = mainColor,
-                )
-            }
-            item { Spacer(modifier = Modifier.height(24.dp)) }
-            item(key = "LINK_INFO") {
-                LinkmarkDetailInfoSectionContent(
-                    modifier = Modifier.animateItem(),
-                    bookmarkDetails = bookmarkDetails,
-                    linkDetails = state.linkDetails,
-                    mainColor = mainColor,
-                )
-            }
-            item { Spacer(modifier = Modifier.height(24.dp)) }
-            bookmarkDetails.parentFolder?.let { folder ->
-                item(key = "FOLDER") {
-                    LinkmarkDetailFolderSectionContent(
-                        modifier = Modifier.animateItem(),
-                        folder = folder,
-                        mainColor = mainColor,
-                        onClickFolder = { navigator.add(FolderDetailRoute(folderId = folder.id)) }
-                    )
+            when (currentPage) {
+                DetailPage.INFO -> {
+                    item(key = "LINK_IMAGE") {
+                        LinkmarkDetailImageSectionContent(
+                            modifier = Modifier.animateItem(),
+                            bookmarkDetails = bookmarkDetails,
+                            linkDetails = state.linkDetails,
+                            mainColor = mainColor,
+                        )
+                    }
+                    item { Spacer(modifier = Modifier.height(24.dp)) }
+                    item(key = "LINK_INFO") {
+                        LinkmarkDetailInfoSectionContent(
+                            modifier = Modifier.animateItem(),
+                            bookmarkDetails = bookmarkDetails,
+                            linkDetails = state.linkDetails,
+                            mainColor = mainColor,
+                        )
+                    }
+                    item { Spacer(modifier = Modifier.height(24.dp)) }
+                    bookmarkDetails.parentFolder?.let { folder ->
+                        item(key = "FOLDER") {
+                            LinkmarkDetailFolderSectionContent(
+                                modifier = Modifier.animateItem(),
+                                folder = folder,
+                                mainColor = mainColor,
+                                onClickFolder = { navigator.add(FolderDetailRoute(folderId = folder.id)) }
+                            )
+                        }
+                    }
+                    item { Spacer(modifier = Modifier.height(24.dp)) }
+                    item(key = "TAGS") {
+                        LinkmarkDetailTagSectionContent(
+                            modifier = Modifier.animateItem(),
+                            tags = bookmarkDetails.tags,
+                            onClickTag = { tag -> navigator.add(TagDetailRoute(tagId = tag.id)) }
+                        )
+                    }
+                    state.reminderDateEpochMillis?.let { reminderMillis ->
+                        item { Spacer(modifier = Modifier.height(24.dp)) }
+                        item(key = "REMINDER") {
+                            LinkmarkDetailReminderSectionContent(
+                                modifier = Modifier.animateItem(),
+                                reminderDateEpochMillis = reminderMillis,
+                                mainColor = mainColor,
+                                onCancelReminder = { onEvent(LinkmarkDetailEvent.OnCancelReminder) },
+                            )
+                        }
+                    }
                 }
-            }
-            item { Spacer(modifier = Modifier.height(24.dp)) }
-            item(key = "TAGS") {
-                LinkmarkDetailTagSectionContent(
-                    modifier = Modifier.animateItem(),
-                    tags = bookmarkDetails.tags,
-                    onClickTag = { tag -> navigator.add(TagDetailRoute(tagId = tag.id)) }
-                )
-            }
-            state.reminderDateEpochMillis?.let { reminderMillis ->
-                item { Spacer(modifier = Modifier.height(24.dp)) }
-                item(key = "REMINDER") {
-                    LinkmarkDetailReminderSectionContent(
-                        modifier = Modifier.animateItem(),
-                        reminderDateEpochMillis = reminderMillis,
-                        mainColor = mainColor,
-                        onCancelReminder = { onEvent(LinkmarkDetailEvent.OnCancelReminder) },
-                    )
+
+                DetailPage.VERSIONS -> {
+
+                }
+
+                DetailPage.HIGHLIGHTS -> {
+
                 }
             }
             item(key = "EXTRA_SPACER") { Spacer(modifier = Modifier.height(56.dp)) }

@@ -1,18 +1,19 @@
 package dev.subfly.yaba.ui.detail.bookmark.link.components
 
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.foundation.layout.height
-import androidx.compose.ui.Modifier
 import androidx.compose.material3.DropdownMenuGroup
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.DropdownMenuPopup
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEachIndexed
 import dev.subfly.yaba.core.navigation.alert.DeletionState
 import dev.subfly.yaba.core.navigation.alert.DeletionType
 import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
@@ -35,8 +36,8 @@ import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.delete
 import yaba.composeapp.generated.resources.edit
-import yaba.composeapp.generated.resources.open
 import yaba.composeapp.generated.resources.move
+import yaba.composeapp.generated.resources.open
 import yaba.composeapp.generated.resources.refresh
 import yaba.composeapp.generated.resources.remind_me
 import yaba.composeapp.generated.resources.share
@@ -98,16 +99,14 @@ internal fun LinkmarkContentDropdownMenu(
         }
     }
 
-    val totalGroups = 3 // primary, secondary, delete
-
     DropdownMenuPopup(
         expanded = expanded,
         onDismissRequest = onDismissRequest,
     ) {
         DropdownMenuGroup(
-            shapes = MenuDefaults.groupShape(index = 0, count = totalGroups)
+            shapes = MenuDefaults.groupShape(index = 0, count = 3)
         ) {
-            primaryActions.forEachIndexed { index, action ->
+            primaryActions.fastForEachIndexed { index, action ->
                 DropdownMenuItem(
                     shapes = MenuDefaults.itemShape(index, primaryActions.size),
                     checked = false,
@@ -153,9 +152,9 @@ internal fun LinkmarkContentDropdownMenu(
         Spacer(modifier = Modifier.height(8.dp))
 
         DropdownMenuGroup(
-            shapes = MenuDefaults.groupShape(index = 1, count = totalGroups)
+            shapes = MenuDefaults.groupShape(index = 1, count = 3)
         ) {
-            secondaryActions.forEachIndexed { index, action ->
+            secondaryActions.fastForEachIndexed { index, action ->
                 DropdownMenuItem(
                     shapes = MenuDefaults.itemShape(index, secondaryActions.size),
                     checked = false,
@@ -184,7 +183,7 @@ internal fun LinkmarkContentDropdownMenu(
         Spacer(modifier = Modifier.height(8.dp))
 
         DropdownMenuGroup(
-            shapes = MenuDefaults.groupShape(index = 2, count = totalGroups)
+            shapes = MenuDefaults.groupShape(index = 2, count = 3)
         ) {
             DropdownMenuItem(
                 shapes = MenuDefaults.itemShape(0, 1),
