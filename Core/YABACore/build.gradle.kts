@@ -32,6 +32,12 @@ kotlin {
             isStatic = true
         }
     }
+    iosSimulatorArm64 {
+        binaries.framework {
+            baseName = xcfName
+            isStatic = true
+        }
+    }
 
     sourceSets {
         all {
@@ -118,6 +124,7 @@ dependencies {
     // add("kspMacosArm64", libs.room.compiler)
     // iOS
     add("kspIosArm64", libs.room.compiler)
+    add("kspIosSimulatorArm64", libs.room.compiler)
 }
 
 room {
