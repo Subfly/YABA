@@ -103,6 +103,7 @@ object LinkmarkManager {
             endOffsetInSection = endOffsetInSection,
             colorRole = colorRole,
             note = note,
+            quoteText = quoteText,
             absolutePath = null,
             createdAt = createdAt,
             editedAt = editedAt,

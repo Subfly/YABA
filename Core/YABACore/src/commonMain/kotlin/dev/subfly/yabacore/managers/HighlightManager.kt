@@ -25,6 +25,7 @@ object HighlightManager {
         endOffsetInSection: Int,
         colorRole: YabaColor = YabaColor.NONE,
         note: String? = null,
+        quoteText: String? = null,
     ): String {
         val highlightId = IdGenerator.newId()
         val now = Clock.System.now().toEpochMilliseconds()
@@ -40,6 +41,7 @@ object HighlightManager {
                 endOffsetInSection = endOffsetInSection,
                 colorRole = colorRole,
                 note = note,
+                quoteText = quoteText,
                 createdAt = now,
                 editedAt = now,
             )

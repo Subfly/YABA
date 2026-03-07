@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import dev.subfly.yabacore.model.ui.HighlightUiModel
 import dev.subfly.yabacore.model.utils.ReaderPreferences
 
 /**
@@ -26,6 +27,9 @@ actual fun YabaWebViewViewerInternal(
     onUrlClick: (String) -> Boolean,
     onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit,
     onReady: () -> Unit,
+    onBridgeReady: (WebViewReaderBridge) -> Unit,
+    onHighlightTap: (String) -> Unit,
+    highlights: List<HighlightUiModel>,
 ) {
     Box(
         modifier = modifier

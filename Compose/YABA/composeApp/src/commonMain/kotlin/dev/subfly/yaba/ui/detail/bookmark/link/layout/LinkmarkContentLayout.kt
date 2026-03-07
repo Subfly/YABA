@@ -20,14 +20,19 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.components.NoContentView
+import dev.subfly.yaba.core.components.webview.WebViewReaderBridge
 import dev.subfly.yaba.core.components.webview.ConverterInput
 import dev.subfly.yaba.core.components.webview.YabaWebAppearance
 import dev.subfly.yaba.core.components.webview.YabaWebPlatform
@@ -36,9 +41,11 @@ import dev.subfly.yaba.core.components.webview.YabaWebViewConverter
 import dev.subfly.yaba.core.components.webview.YabaWebViewViewer
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkContentDropdownMenu
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkReaderFloatingToolbar
+import dev.subfly.yaba.core.navigation.creation.HighlightCreationRoute
+import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalContentNavigator
+import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.rememberUrlLauncher
-import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.detail.linkmark.LinkmarkDetailEvent
 import dev.subfly.yabacore.state.detail.linkmark.LinkmarkDetailUIState
 import dev.subfly.yabacore.ui.icon.YabaIcon
@@ -63,15 +70,34 @@ internal fun LinkmarkContentLayout(
     onShowRemindMePicker: () -> Unit = {},
 ) {
     val navigator = LocalContentNavigator.current
+    val creationNavigator = LocalCreationContentNavigator.current
+    val appStateManager = LocalAppStateManager.current
+
+    val scope = rememberCoroutineScope()
     val openUrl = rememberUrlLauncher()
+
+    var readerBridge by remember { mutableStateOf<WebViewReaderBridge?>(null) }
     val appearance = if (isSystemInDarkTheme()) YabaWebAppearance.Dark else YabaWebAppearance.Light
+
     val hasReaderContent = !state.isLoading && !state.readableMarkdown.isNullOrBlank()
-    val readerFabColor = state.bookmark?.parentFolder?.color ?: YabaColor.BLUE
     var isReaderToolbarVisible by remember(
         state.readableMarkdown,
         state.isLoading
     ) { mutableStateOf(true) }
     var isMenuExpanded by remember { mutableStateOf(false) }
+    var hasSelection by remember { mutableStateOf(false) }
+
+    LaunchedEffect(readerBridge, isReaderToolbarVisible, hasReaderContent) {
+        if (!hasReaderContent || !isReaderToolbarVisible) {
+            hasSelection = false
+            return@LaunchedEffect
+        }
+        val bridge = readerBridge ?: return@LaunchedEffect
+        while (true) {
+            hasSelection = bridge.getCanCreateHighlight()
+            delay(200)
+        }
+    }
 
     val converterInput = state.converterHtml?.let { html ->
         ConverterInput(html = html, baseUrl = state.converterBaseUrl)
@@ -153,13 +179,35 @@ internal fun LinkmarkContentLayout(
     ) { paddings ->
         Box(modifier = Modifier.fillMaxSize().padding(paddings)) {
             if (hasReaderContent) {
+                LaunchedEffect(state.scrollToHighlightId) {
+                    val highlightId = state.scrollToHighlightId ?: return@LaunchedEffect
+                    val bridge = readerBridge ?: return@LaunchedEffect
+                    bridge.scrollToHighlight(highlightId)
+                    onEvent(LinkmarkDetailEvent.OnClearScrollToHighlight)
+                }
+
                 LinkmarkReaderFloatingToolbar(
                     isVisible = isReaderToolbarVisible,
-                    fabColor = readerFabColor,
                     readerPreferences = state.readerPreferences,
+                    hasSelection = hasSelection,
                     onEvent = onEvent,
-                    onFabClick = {
-                        // TODO: Wire FAB action for reader toolbar.
+                    onHighlightClick = {
+                        val bridge = readerBridge ?: return@LinkmarkReaderFloatingToolbar
+                        val bookmarkId = state.bookmark?.id ?: return@LinkmarkReaderFloatingToolbar
+                        val versionId = state.selectedReadableVersionId
+                            ?: state.readableVersions.firstOrNull()?.versionId
+                            ?: return@LinkmarkReaderFloatingToolbar
+                        scope.launch {
+                            val draft = bridge.getSelectionSnapshot(bookmarkId, versionId)
+                            creationNavigator.add(
+                                HighlightCreationRoute(
+                                    bookmarkId = bookmarkId,
+                                    selectionDraft = draft,
+                                    highlightId = null,
+                                ),
+                            )
+                            appStateManager.onShowCreationContent()
+                        }
                     },
                 )
 
@@ -176,6 +224,19 @@ internal fun LinkmarkContentLayout(
                         if (direction == YabaWebScrollDirection.Down) isReaderToolbarVisible = false
                         if (direction == YabaWebScrollDirection.Up) isReaderToolbarVisible = true
                     },
+                    onBridgeReady = { bridge -> readerBridge = bridge },
+                    onHighlightTap = { highlightId ->
+                        val bookmarkId = state.bookmark?.id ?: return@YabaWebViewViewer
+                        creationNavigator.add(
+                            HighlightCreationRoute(
+                                bookmarkId = bookmarkId,
+                                selectionDraft = null,
+                                highlightId = highlightId,
+                            ),
+                        )
+                        appStateManager.onShowCreationContent()
+                    },
+                    highlights = state.highlights,
                 )
             } else if (!state.isLoading && !state.isUpdatingReadable) {
                 NoContentView(

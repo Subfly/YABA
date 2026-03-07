@@ -25,6 +25,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -45,12 +46,21 @@ import yaba.composeapp.generated.resources.done
 import yaba.composeapp.generated.resources.select_color_title
 
 @Composable
-fun ColorSelectionContent(currentSelectedColor: YabaColor?) {
+fun ColorSelectionContent(
+    currentSelectedColor: YabaColor?,
+    allowTransparent: Boolean = true,
+) {
     val creationNavigator = LocalCreationContentNavigator.current
     val resultStore = LocalResultStore.current
 
     var selectedColor by rememberSaveable(currentSelectedColor) {
-        mutableStateOf(currentSelectedColor ?: YabaColor.NONE)
+        mutableStateOf(
+            when {
+                currentSelectedColor != null -> currentSelectedColor
+                allowTransparent -> YabaColor.NONE
+                else -> YabaColor.YELLOW
+            }
+        )
     }
 
     Column(
@@ -72,7 +82,8 @@ fun ColorSelectionContent(currentSelectedColor: YabaColor?) {
         Spacer(modifier = Modifier.height(12.dp))
         SelectionContent(
             selectedColor = selectedColor,
-            onSelectColor = { newColor -> selectedColor = newColor }
+            onSelectColor = { newColor -> selectedColor = newColor },
+            allowTransparent = allowTransparent,
         )
         Spacer(modifier = Modifier.height(36.dp))
     }
@@ -112,7 +123,13 @@ private fun TopBar(
 private fun SelectionContent(
     selectedColor: YabaColor?,
     onSelectColor: (YabaColor) -> Unit,
+    allowTransparent: Boolean = true,
 ) {
+    val colorsToShow = remember(allowTransparent) {
+        if (allowTransparent) YabaColor.entries.toList()
+        else YabaColor.entries.filter { it != YabaColor.NONE }
+    }
+
     FlowRow(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly,
@@ -120,7 +137,7 @@ private fun SelectionContent(
         itemVerticalAlignment = Alignment.CenterVertically,
         maxItemsInEachRow = 5,
     ) {
-        YabaColor.entries.fastForEach { color ->
+        colorsToShow.fastForEach { color ->
             Box(
                 modifier = Modifier
                     .size(48.dp)

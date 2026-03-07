@@ -65,6 +65,8 @@ class LinkmarkDetailStateMachine :
             is LinkmarkDetailEvent.OnCreateHighlight -> onCreateHighlight(event)
             is LinkmarkDetailEvent.OnUpdateHighlight -> onUpdateHighlight(event)
             is LinkmarkDetailEvent.OnDeleteHighlight -> onDeleteHighlight(event)
+            is LinkmarkDetailEvent.OnScrollToHighlight -> onScrollToHighlight(event)
+            LinkmarkDetailEvent.OnClearScrollToHighlight -> onClearScrollToHighlight()
             LinkmarkDetailEvent.OnRequestNotificationPermission -> onRequestNotificationPermission()
             is LinkmarkDetailEvent.OnScheduleReminder -> onScheduleReminder(event)
             LinkmarkDetailEvent.OnCancelReminder -> onCancelReminder()
@@ -317,6 +319,7 @@ class LinkmarkDetailStateMachine :
             endOffsetInSection = event.endOffsetInSection,
             colorRole = event.colorRole,
             note = event.note,
+            quoteText = event.quoteText,
         )
     }
 
@@ -333,6 +336,14 @@ class LinkmarkDetailStateMachine :
     private fun onDeleteHighlight(event: LinkmarkDetailEvent.OnDeleteHighlight) {
         val bookmarkId = bookmarkIdFlow.value ?: return
         HighlightManager.deleteHighlight(bookmarkId, event.highlightId)
+    }
+
+    private fun onScrollToHighlight(event: LinkmarkDetailEvent.OnScrollToHighlight) {
+        updateState { it.copy(scrollToHighlightId = event.highlightId) }
+    }
+
+    private fun onClearScrollToHighlight() {
+        updateState { it.copy(scrollToHighlightId = null) }
     }
 
     private fun onRequestNotificationPermission() {

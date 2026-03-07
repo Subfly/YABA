@@ -3,6 +3,7 @@ package dev.subfly.yaba.ui.detail.bookmark.link.components
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -13,6 +14,7 @@ import androidx.compose.material3.DropdownMenuPopup
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MenuDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -90,7 +92,21 @@ internal fun LinkmarkDetailVersionItemContent(
                 onClick = onClick,
                 onLongClick = { isDeleteMenuExpanded = true },
                 shapes = ListItemDefaults.segmentedShapes(index = index, count = count),
-                content = { Text(formattedDate) },
+                content = {
+                    Column {
+                        Text(formattedDate)
+                        val count = version.highlights.size
+                        Text(
+                            text = when (count) {
+                                0 -> "No Highlights"
+                                1 -> "1 Highlight"
+                                else -> "$count Highlights"
+                            },
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                },
                 leadingContent = {
                     AnimatedContent(
                         targetState = isSelected,

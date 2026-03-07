@@ -1,6 +1,17 @@
 import type { Editor } from "@tiptap/core"
 import type { Platform, AppearanceMode } from "@/theme"
 import { applyTheme } from "@/theme"
+import {
+  getSelectionSnapshot,
+  type SelectionSnapshot,
+} from "./selection-extractor"
+import {
+  getHighlightRanges,
+  getStoredHighlights,
+  HIGHLIGHTS_META_KEY,
+  setStoredHighlights,
+  type HighlightForRendering,
+} from "@/tiptap/extensions/highlight-decorations"
 
 export type ReaderTheme = "system" | "dark" | "light" | "sepia"
 export type ReaderFontSize = "small" | "medium" | "large"
@@ -14,6 +25,10 @@ export interface ReaderPreferences {
 
 export interface YabaEditorBridge {
   isReady: () => boolean
+  getSelectionSnapshot: () => SelectionSnapshot | null
+  getCanCreateHighlight: () => boolean
+  setHighlights: (highlightsJson: string) => void
+  scrollToHighlight: (highlightId: string) => void
   setPlatform: (platform: Platform) => void
   setAppearance: (mode: AppearanceMode) => void
   setCursorColor: (color: string) => void
@@ -150,6 +165,40 @@ export function initEditorBridge(editor: Editor): void {
   const win = window as Window & { YabaEditorBridge?: YabaEditorBridge }
   win.YabaEditorBridge = {
     isReady: () => !!editorInstance,
+    getSelectionSnapshot: () => getSelectionSnapshot(editorInstance),
+    getCanCreateHighlight: () => {
+      const snap = getSelectionSnapshot(editorInstance)
+      if (!snap) return false
+      const ed = editorInstance
+      if (!ed) return false
+      const { from, to } = ed.state.selection
+      if (from === to) return false
+      const ranges = getHighlightRanges(ed.state.doc, getStoredHighlights())
+      const overlaps = ranges.some((r) => from < r.to && to > r.from)
+      return !overlaps
+    },
+    setHighlights: (highlightsJson: string) => {
+      try {
+        const highlights: HighlightForRendering[] =
+          highlightsJson && highlightsJson.trim()
+            ? JSON.parse(highlightsJson)
+            : []
+        setStoredHighlights(highlights)
+        if (editorInstance) {
+          const tr = editorInstance.state.tr
+          tr.setMeta(HIGHLIGHTS_META_KEY, highlights)
+          editorInstance.view.dispatch(tr)
+        }
+      } catch {
+        setStoredHighlights([])
+      }
+    },
+    scrollToHighlight: (highlightId: string) => {
+      const el = document.querySelector(
+        `.yaba-highlight[data-highlight-id="${highlightId}"]`
+      ) as HTMLElement | null
+      el?.scrollIntoView({ behavior: "smooth", block: "center" })
+    },
     setPlatform: (p: Platform) => {
       platform = p
       applyReaderPreferences()

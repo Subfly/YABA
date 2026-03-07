@@ -3,16 +3,8 @@ package dev.subfly.yaba.core.components.webview
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
+import dev.subfly.yabacore.model.ui.HighlightUiModel
 import dev.subfly.yabacore.model.utils.ReaderPreferences
-
-/**
- * Mode for YabaWebView: viewer (read-only), editor (editable), or converter (HTML→markdown).
- */
-enum class YabaWebViewMode {
-    Viewer,
-    Editor,
-    Converter,
-}
 
 enum class YabaWebPlatform {
     Compose,
@@ -73,6 +65,9 @@ internal expect fun YabaWebViewViewerInternal(
     onUrlClick: (String) -> Boolean,
     onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit,
     onReady: () -> Unit,
+    onBridgeReady: (WebViewReaderBridge) -> Unit,
+    onHighlightTap: (String) -> Unit,
+    highlights: List<HighlightUiModel>,
 )
 
 @Composable
@@ -97,6 +92,11 @@ internal expect fun YabaWebViewConverterInternal(
 
 /**
  * Viewer: displays markdown read-only. Links open via [onUrlClick].
+ *
+ * @param onBridgeReady Called when the viewer is ready; provides a bridge for
+ *   [WebViewReaderBridge.getSelectionSnapshot] and [WebViewReaderBridge.setHighlights].
+ * @param onHighlightTap Called when user taps a highlight; opens edit sheet.
+ * @param highlights Saved highlights to render in the viewer.
  */
 @Composable
 fun YabaWebViewViewer(
@@ -110,6 +110,9 @@ fun YabaWebViewViewer(
     onUrlClick: (String) -> Boolean = { false },
     onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit = {},
     onReady: () -> Unit = {},
+    onBridgeReady: (WebViewReaderBridge) -> Unit = {},
+    onHighlightTap: (String) -> Unit = {},
+    highlights: List<HighlightUiModel> = emptyList(),
 ) {
     YabaWebViewViewerInternal(
         modifier = modifier,
@@ -122,6 +125,9 @@ fun YabaWebViewViewer(
         onUrlClick = onUrlClick,
         onScrollDirectionChanged = onScrollDirectionChanged,
         onReady = onReady,
+        onBridgeReady = onBridgeReady,
+        onHighlightTap = onHighlightTap,
+        highlights = highlights,
     )
 }
 

@@ -33,6 +33,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
 import androidx.webkit.WebViewAssetLoader
+import dev.subfly.yabacore.model.ui.HighlightUiModel
+import dev.subfly.yabacore.model.highlight.HighlightQuoteSnapshot
+import dev.subfly.yabacore.model.highlight.HighlightSourceContext
+import dev.subfly.yabacore.model.highlight.ReadableAnchor
+import dev.subfly.yabacore.model.highlight.ReadableSelectionDraft
 import dev.subfly.yabacore.model.utils.ReaderFontSize
 import dev.subfly.yabacore.model.utils.ReaderLineHeight
 import dev.subfly.yabacore.model.utils.ReaderPreferences
@@ -160,6 +165,7 @@ private fun defaultWebViewClient(
     assetLoader: WebViewAssetLoader,
     onPageFinished: () -> Unit,
     onUrlClick: ((String) -> Boolean)?,
+    onHighlightTap: ((String) -> Unit)? = null,
 ): WebViewClient = object : WebViewClient() {
     override fun onPageFinished(view: WebView?, url: String?) {
         onPageFinished()
@@ -188,6 +194,13 @@ private fun defaultWebViewClient(
         request: WebResourceRequest?,
     ): Boolean {
         val url = request?.url?.toString() ?: return false
+        if (url.startsWith("yaba://highlight-tap?")) {
+            val id = try {
+                url.toUri().getQueryParameter("id") ?: ""
+            } catch (_: Exception) { "" }
+            if (id.isNotBlank()) onHighlightTap?.invoke(id)
+            return true
+        }
         return onUrlClick?.invoke(url) ?: false
     }
 }
@@ -228,6 +241,9 @@ actual fun YabaWebViewViewerInternal(
     onUrlClick: (String) -> Boolean,
     onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit,
     onReady: () -> Unit,
+    onBridgeReady: (WebViewReaderBridge) -> Unit,
+    onHighlightTap: (String) -> Unit,
+    highlights: List<HighlightUiModel>,
 ) {
     val context = LocalContext.current
     val webViewRef = remember { mutableStateOf<WebView?>(null) }
@@ -294,6 +310,7 @@ actual fun YabaWebViewViewerInternal(
         assetLoader = assetLoader,
         onPageFinished = { isPageReady = true; onReady() },
         onUrlClick = onUrlClick,
+        onHighlightTap = onHighlightTap,
     )
 
     AndroidView(
@@ -383,6 +400,192 @@ actual fun YabaWebViewViewerInternal(
                         lineHeight: '$readerLineHeight'
                     });
                 }
+            })();
+        """.trimIndent()
+        evaluateJs(webView, script)
+    }
+
+    val readerBridge = remember(webViewRef) {
+        object : WebViewReaderBridge {
+            override suspend fun getSelectionSnapshot(
+                bookmarkId: String,
+                readableVersionId: String,
+            ): ReadableSelectionDraft? {
+                val webView = webViewRef.value ?: return null
+                val ready = waitForBridgeReady(
+                    webView,
+                    "(function(){ try { return !!(window.YabaEditorBridge && window.YabaEditorBridge.isReady && window.YabaEditorBridge.isReady()); } catch(e){ return false; } })();",
+                )
+                if (!ready) return null
+                val script = """
+                    (function() {
+                        try {
+                            var snap = window.YabaEditorBridge.getSelectionSnapshot();
+                            if (!snap) return null;
+                            return JSON.stringify(snap);
+                        } catch(e) { return null; }
+                    })();
+                """.trimIndent()
+                val raw = evaluateJs(webView, script)
+                val jsonStr = decodeJsStringResult(raw)
+                if (jsonStr == "null" || jsonStr.isBlank()) return null
+                return runCatching {
+                    val json = JSONObject(jsonStr)
+                    val startSectionKey = json.optString("startSectionKey", "")
+                    val startOffsetInSection = json.optInt("startOffsetInSection", 0)
+                    val endSectionKey = json.optString("endSectionKey", "")
+                    val endOffsetInSection = json.optInt("endOffsetInSection", 0)
+                    val selectedText = json.optString("selectedText", "")
+                    val prefixText = json.optString("prefixText").takeIf { it.isNotBlank() }
+                    val suffixText = json.optString("suffixText").takeIf { it.isNotBlank() }
+
+                    if (startSectionKey.isBlank() || endSectionKey.isBlank() || selectedText.isBlank()) return@runCatching null
+
+                    ReadableSelectionDraft(
+                        sourceContext = HighlightSourceContext.readable(bookmarkId, readableVersionId),
+                        anchor = ReadableAnchor(
+                            readableVersionId = readableVersionId,
+                            startSectionKey = startSectionKey,
+                            startOffsetInSection = startOffsetInSection,
+                            endSectionKey = endSectionKey,
+                            endOffsetInSection = endOffsetInSection,
+                        ),
+                        quote = HighlightQuoteSnapshot(
+                            selectedText = selectedText,
+                            prefixText = prefixText,
+                            suffixText = suffixText,
+                        ),
+                    )
+                }.getOrNull()
+            }
+
+            override suspend fun getCanCreateHighlight(): Boolean {
+                val webView = webViewRef.value ?: return false
+                val ready = waitForBridgeReady(
+                    webView,
+                    "(function(){ try { return !!(window.YabaEditorBridge && window.YabaEditorBridge.isReady); } catch(e){ return false; } })();",
+                )
+                if (!ready) return false
+                val script = """
+                    (function() {
+                        try {
+                            return !!(window.YabaEditorBridge && window.YabaEditorBridge.getCanCreateHighlight && window.YabaEditorBridge.getCanCreateHighlight());
+                        } catch(e) { return false; }
+                    })();
+                """.trimIndent()
+                return evaluateJs(webView, script).trim() == "true"
+            }
+
+            override suspend fun setHighlights(highlights: List<HighlightUiModel>) {
+                val webView = webViewRef.value ?: return
+                val ready = waitForBridgeReady(
+                    webView,
+                    "(function(){ try { return !!(window.YabaEditorBridge && window.YabaEditorBridge.isReady); } catch(e){ return false; } })();",
+                )
+                if (!ready) return
+                val arr = JSONArray()
+                for (h in highlights) {
+                    val obj = JSONObject().apply {
+                        put("id", h.id)
+                        put("startSectionKey", h.startSectionKey)
+                        put("startOffsetInSection", h.startOffsetInSection)
+                        put("endSectionKey", h.endSectionKey)
+                        put("endOffsetInSection", h.endOffsetInSection)
+                        put("colorRole", h.colorRole.name)
+                    }
+                    arr.put(obj)
+                }
+                val jsonStr = arr.toString()
+                val escaped = escapeJsString(jsonStr)
+                val script = """
+                    (function() {
+                        try {
+                            var json = JSON.parse('$escaped');
+                            if (window.YabaEditorBridge && window.YabaEditorBridge.setHighlights) {
+                                window.YabaEditorBridge.setHighlights(JSON.stringify(json));
+                            }
+                        } catch(e) {}
+                    })();
+                """.trimIndent()
+                evaluateJs(webView, script)
+            }
+
+            override suspend fun scrollToHighlight(highlightId: String) {
+                val webView = webViewRef.value ?: return
+                val ready = waitForBridgeReady(
+                    webView,
+                    "(function(){ try { return !!(window.YabaEditorBridge && window.YabaEditorBridge.isReady); } catch(e){ return false; } })();",
+                )
+                if (!ready) return
+                val escaped = escapeJsString(highlightId)
+                val script = """
+                    (function() {
+                        try {
+                            if (window.YabaEditorBridge && window.YabaEditorBridge.scrollToHighlight) {
+                                window.YabaEditorBridge.scrollToHighlight('$escaped');
+                            }
+                        } catch(e) {}
+                    })();
+                """.trimIndent()
+                evaluateJs(webView, script)
+            }
+        }
+    }
+
+    LaunchedEffect(isPageReady, readerBridge) {
+        if (isPageReady) onBridgeReady(readerBridge)
+    }
+
+    LaunchedEffect(isPageReady) {
+        if (!isPageReady) return@LaunchedEffect
+        val webView = webViewRef.value ?: return@LaunchedEffect
+        val ready = waitForBridgeReady(
+            webView,
+            "(function(){ try { return !!(window.YabaEditorBridge && window.YabaEditorBridge.isReady); } catch(e){ return false; } })();",
+        )
+        if (!ready) return@LaunchedEffect
+        val script = """
+            (function() {
+                if (window.YabaEditorBridge) {
+                    window.YabaEditorBridge.onHighlightTap = function(id) {
+                        if (id) window.location = "yaba://highlight-tap?id=" + encodeURIComponent(id);
+                    };
+                }
+            })();
+        """.trimIndent()
+        evaluateJs(webView, script)
+    }
+
+    LaunchedEffect(isPageReady, highlights) {
+        if (!isPageReady) return@LaunchedEffect
+        val webView = webViewRef.value ?: return@LaunchedEffect
+        val ready = waitForBridgeReady(
+            webView,
+            "(function(){ try { return !!(window.YabaEditorBridge && window.YabaEditorBridge.isReady); } catch(e){ return false; } })();",
+        )
+        if (!ready) return@LaunchedEffect
+        val arr = JSONArray()
+        for (h in highlights) {
+            val obj = JSONObject().apply {
+                put("id", h.id)
+                put("startSectionKey", h.startSectionKey)
+                put("startOffsetInSection", h.startOffsetInSection)
+                put("endSectionKey", h.endSectionKey)
+                put("endOffsetInSection", h.endOffsetInSection)
+                put("colorRole", h.colorRole.name)
+            }
+            arr.put(obj)
+        }
+        val jsonStr = arr.toString()
+        val escaped = escapeJsString(jsonStr)
+        val script = """
+            (function() {
+                try {
+                    var json = JSON.parse('$escaped');
+                    if (window.YabaEditorBridge && window.YabaEditorBridge.setHighlights) {
+                        window.YabaEditorBridge.setHighlights(JSON.stringify(json));
+                    }
+                } catch(e) {}
             })();
         """.trimIndent()
         evaluateJs(webView, script)

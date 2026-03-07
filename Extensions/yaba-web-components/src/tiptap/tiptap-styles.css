@@ -290,6 +290,51 @@ body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-attribut
   color: var(--yaba-on-primary-container);
 }
 
+/* Saved highlight decorations */
+.yaba-editor-container .ProseMirror .yaba-highlight {
+  border-radius: 2px;
+  cursor: pointer;
+}
+.yaba-editor-container .ProseMirror .yaba-highlight-yellow {
+  background: rgba(255, 235, 59, 0.45);
+}
+.yaba-editor-container .ProseMirror .yaba-highlight-blue {
+  background: rgba(33, 150, 243, 0.35);
+}
+.yaba-editor-container .ProseMirror .yaba-highlight-green {
+  background: rgba(76, 175, 80, 0.35);
+}
+.yaba-editor-container .ProseMirror .yaba-highlight-pink {
+  background: rgba(233, 30, 99, 0.35);
+}
+.yaba-editor-container .ProseMirror .yaba-highlight-purple {
+  background: rgba(156, 39, 176, 0.35);
+}
+.yaba-editor-container .ProseMirror .yaba-highlight-orange {
+  background: rgba(255, 152, 0, 0.45);
+}
+.yaba-editor-container .ProseMirror .yaba-highlight-red {
+  background: rgba(244, 67, 54, 0.35);
+}
+.yaba-editor-container .ProseMirror .yaba-highlight-teal {
+  background: rgba(0, 150, 136, 0.35);
+}
+.yaba-editor-container .ProseMirror .yaba-highlight-cyan {
+  background: rgba(0, 188, 212, 0.35);
+}
+.yaba-editor-container .ProseMirror .yaba-highlight-mint {
+  background: rgba(129, 199, 132, 0.4);
+}
+.yaba-editor-container .ProseMirror .yaba-highlight-indigo {
+  background: rgba(63, 81, 181, 0.35);
+}
+.yaba-editor-container .ProseMirror .yaba-highlight-brown {
+  background: rgba(121, 85, 72, 0.35);
+}
+.yaba-editor-container .ProseMirror .yaba-highlight-gray {
+  background: rgba(158, 158, 158, 0.4);
+}
+
 /* Excalidraw */
 .yaba-excalidraw-wrapper {
   position: relative;

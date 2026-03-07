@@ -9,8 +9,9 @@ import dev.subfly.yabacore.model.utils.YabaColor
 /**
  * Room entity for highlight annotations.
  *
- * Highlights are stored in DB only. Section-anchored:
+ * Highlights are stored in DB only. Section-anchored for readable content:
  * startSectionKey, startOffsetInSection, endSectionKey, endOffsetInSection.
+ * quoteText stores best-effort selected text for UI preview.
  */
 @Entity(
     tableName = "highlights",
@@ -44,6 +45,7 @@ data class HighlightEntity(
     val endOffsetInSection: Int,
     val colorRole: YabaColor,
     val note: String?,
+    val quoteText: String?,
     val createdAt: Long,
     val editedAt: Long,
 )

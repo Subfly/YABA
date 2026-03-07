@@ -23,6 +23,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlin.time.Clock
 
@@ -177,7 +178,11 @@ object ReadableContentManager {
     }
 
     fun observeReadableVersions(bookmarkId: String): Flow<List<ReadableVersionUiModel>> {
-        return readableVersionDao.observeByBookmarkId(bookmarkId).map { versions ->
+        val versionsFlow = readableVersionDao.observeByBookmarkId(bookmarkId)
+        val highlightsFlow = highlightDao.observeByBookmarkId(bookmarkId, readableVersionId = null)
+        return combine(versionsFlow, highlightsFlow) { versions, _ ->
+            versions
+        }.map { versions ->
             coroutineScope {
                 versions.map { versionEntity ->
                     async { buildReadableVersionUiModel(bookmarkId, versionEntity) }
@@ -227,6 +232,7 @@ object ReadableContentManager {
             endOffsetInSection = endOffsetInSection,
             colorRole = colorRole,
             note = note,
+            quoteText = quoteText,
             absolutePath = null,
             createdAt = createdAt,
             editedAt = editedAt,

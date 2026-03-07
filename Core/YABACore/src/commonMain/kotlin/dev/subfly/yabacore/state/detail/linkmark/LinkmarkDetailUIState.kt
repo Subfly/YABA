@@ -29,6 +29,8 @@ data class LinkmarkDetailUIState(
     /** Scheduled reminder fire date as epoch millis, null when no reminder is pending. */
     val reminderDateEpochMillis: Long? = null,
     val hasNotificationPermission: Boolean = false,
+    /** When set, the reader should scroll to this highlight and then clear. */
+    val scrollToHighlightId: String? = null,
 )
 
 @Immutable

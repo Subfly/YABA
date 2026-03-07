@@ -15,6 +15,8 @@ data class HighlightUiModel(
     val endOffsetInSection: Int,
     val colorRole: YabaColor,
     val note: String?,
+    /** Best-effort selected text for UI preview in creation sheet and overview. */
+    val quoteText: String?,
     /** Absolute path to the highlight JSON file */
     val absolutePath: String?,
     val createdAt: Long,

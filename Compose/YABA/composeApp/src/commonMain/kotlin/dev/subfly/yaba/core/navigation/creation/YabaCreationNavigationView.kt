@@ -15,6 +15,7 @@ import androidx.navigation3.ui.NavDisplay
 import dev.subfly.yaba.ui.creation.bookmark.BookmarkCreationRouteSelectionContent
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.LinkmarkCreationContent
 import dev.subfly.yaba.ui.creation.folder.FolderCreationContent
+import dev.subfly.yaba.ui.creation.highlight.HighlightCreationContent
 import dev.subfly.yaba.ui.creation.tag.TagCreationContent
 import dev.subfly.yaba.ui.selection.color.ColorSelectionContent
 import dev.subfly.yaba.ui.selection.folder.FolderSelectionContent
@@ -64,7 +65,10 @@ fun YabaCreationNavigationView(
                 FolderCreationContent(folderId = key.folderId)
             }
             entry<ColorSelectionRoute> { key ->
-                ColorSelectionContent(currentSelectedColor = key.selectedColor)
+                ColorSelectionContent(
+                    currentSelectedColor = key.selectedColor,
+                    allowTransparent = key.allowTransparent,
+                )
             }
             entry<IconCategorySelectionRoute> { key ->
                 IconCategorySelectionContent(currentSelectedIcon = key.selectedIcon)
@@ -98,6 +102,13 @@ fun YabaCreationNavigationView(
                 ImageSelectionContent(
                     currentSelectedImageURL = key.selectedImage,
                     imageDataMap = key.imageDataMap,
+                )
+            }
+            entry<HighlightCreationRoute> { key ->
+                HighlightCreationContent(
+                    bookmarkId = key.bookmarkId,
+                    selectionDraft = key.selectionDraft,
+                    highlightId = key.highlightId,
                 )
             }
             entry<EmptyCretionRoute> {

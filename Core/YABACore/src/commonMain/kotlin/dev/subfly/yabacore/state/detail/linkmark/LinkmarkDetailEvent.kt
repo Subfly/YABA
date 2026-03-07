@@ -37,6 +37,7 @@ sealed interface LinkmarkDetailEvent {
         val endOffsetInSection: Int,
         val colorRole: YabaColor = YabaColor.NONE,
         val note: String? = null,
+        val quoteText: String? = null,
     ) : LinkmarkDetailEvent
     data class OnUpdateHighlight(
         val highlightId: String,
@@ -44,6 +45,8 @@ sealed interface LinkmarkDetailEvent {
         val note: String?,
     ) : LinkmarkDetailEvent
     data class OnDeleteHighlight(val highlightId: String) : LinkmarkDetailEvent
+    data class OnScrollToHighlight(val highlightId: String) : LinkmarkDetailEvent
+    data object OnClearScrollToHighlight : LinkmarkDetailEvent
 
     data object OnRequestNotificationPermission : LinkmarkDetailEvent
     data class OnScheduleReminder(
