@@ -39,6 +39,7 @@ object AllBookmarksManager {
     private val tagBookmarkDao get() = DatabaseProvider.tagBookmarkDao
     private val linkBookmarkDao get() = DatabaseProvider.linkBookmarkDao
     private val imageBookmarkDao get() = DatabaseProvider.imageBookmarkDao
+    private val docBookmarkDao get() = DatabaseProvider.docBookmarkDao
     private val highlightDao get() = DatabaseProvider.highlightDao
     private val readableVersionDao get() = DatabaseProvider.readableVersionDao
     private val readableAssetDao get() = DatabaseProvider.readableAssetDao
@@ -321,6 +322,7 @@ object AllBookmarksManager {
         tagBookmarkDao.deleteForBookmark(bookmarkId)
         linkBookmarkDao.deleteById(bookmarkId)
         imageBookmarkDao.deleteById(bookmarkId)
+        docBookmarkDao.deleteById(bookmarkId)
         highlightDao.deleteByBookmarkId(bookmarkId)
         readableAssetDao.deleteByBookmarkId(bookmarkId)
         readableVersionDao.deleteByBookmarkId(bookmarkId)

@@ -93,3 +93,55 @@ actual fun YabaWebViewConverterInternal(
     }
     onReady()
 }
+
+@Composable
+actual fun YabaWebViewPdfConverterInternal(
+    modifier: Modifier,
+    baseUrl: String,
+    input: PdfConverterInput?,
+    onPdfConverterResult: (PdfConverterResult) -> Unit,
+    onPdfConverterError: (Throwable) -> Unit,
+    onReady: () -> Unit,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = "WebView not available on desktop yet",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+    onReady()
+}
+
+@Composable
+actual fun YabaPdfWebViewViewerInternal(
+    modifier: Modifier,
+    baseUrl: String,
+    pdfUrl: String,
+    platform: YabaWebPlatform,
+    appearance: YabaWebAppearance,
+    onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit,
+    onReady: () -> Unit,
+    onBridgeReady: (WebViewReaderBridge) -> Unit,
+    onHighlightTap: (String) -> Unit,
+    highlights: List<HighlightUiModel>,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = "WebView not available on desktop yet",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+    onReady()
+}

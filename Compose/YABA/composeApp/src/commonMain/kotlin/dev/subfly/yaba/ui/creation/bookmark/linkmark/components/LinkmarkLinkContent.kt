@@ -54,6 +54,7 @@ internal fun LinkmarkLinkContent(
         ),
         value = state.url,
         onValueChange = onChangeUrl,
+        enabled = state.isInEditMode.not(),
         shape = RoundedCornerShape(12.dp),
         placeholder = {
             Text(text = stringResource(Res.string.create_bookmark_url_placeholder))

@@ -12,6 +12,7 @@ export default defineConfig({
         editor: resolve(__dirname, "editor.html"),
         viewer: resolve(__dirname, "viewer.html"),
         converter: resolve(__dirname, "converter.html"),
+        "pdf-viewer": resolve(__dirname, "pdf-viewer.html"),
       },
       output: {
         entryFileNames: "[name].js",

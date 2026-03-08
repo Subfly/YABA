@@ -89,6 +89,7 @@ class ImagemarkCreationStateMachine :
     }
 
     private fun onImageFromShare(event: ImagemarkCreationEvent.OnImageFromShare) {
+        if (currentState().isInEditMode) return
         updateState {
             it.copy(
                 imageBytes = event.bytes,
@@ -99,6 +100,7 @@ class ImagemarkCreationStateMachine :
     }
 
     private fun onPickFromGallery() {
+        if (currentState().isInEditMode) return
         launch {
             updateState { it.copy(isLoading = true, error = null) }
             try {
@@ -134,6 +136,7 @@ class ImagemarkCreationStateMachine :
     }
 
     private fun onCaptureFromCamera() {
+        if (currentState().isInEditMode) return
         launch {
             updateState { it.copy(isLoading = true, error = null) }
             try {
@@ -169,6 +172,7 @@ class ImagemarkCreationStateMachine :
     }
 
     private fun onClearImage() {
+        if (currentState().isInEditMode) return
         updateState {
             it.copy(
                 imageBytes = null,
@@ -206,7 +210,7 @@ class ImagemarkCreationStateMachine :
         val state = currentState()
         var selectedFolder = state.selectedFolder ?: return
 
-        if (state.imageBytes == null) {
+        if (state.imageBytes == null && state.isInEditMode.not()) {
             updateState { it.copy(error = ImagemarkCreationError.NoImage) }
             event.onErrorCallback()
             return
@@ -226,9 +230,6 @@ class ImagemarkCreationStateMachine :
                     IdGenerator.newId()
                 }
 
-                val imageBytes = state.imageBytes!!
-                val imageExtension = state.imageExtension
-
                 if (state.editingImagemark != null) {
                     AllBookmarksManager.updateBookmarkMetadata(
                         bookmarkId = bookmarkId,
@@ -237,8 +238,8 @@ class ImagemarkCreationStateMachine :
                         label = state.label,
                         description = state.description.ifBlank { null },
                         tagIds = state.selectedTags.map { it.id },
-                        previewImageBytes = imageBytes,
-                        previewImageExtension = imageExtension,
+                        previewImageBytes = null,
+                        previewImageExtension = null,
                         previewIconBytes = null,
                     )
 
@@ -253,6 +254,8 @@ class ImagemarkCreationStateMachine :
                         AllBookmarksManager.removeTagFromBookmark(tag.id, bookmarkId)
                     }
                 } else {
+                    val imageBytes = state.imageBytes ?: error("Missing image bytes")
+                    val imageExtension = state.imageExtension
                     AllBookmarksManager.createBookmarkMetadata(
                         id = bookmarkId,
                         folderId = selectedFolder.id,

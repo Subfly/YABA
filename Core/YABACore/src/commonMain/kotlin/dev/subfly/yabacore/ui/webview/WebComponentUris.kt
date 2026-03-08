@@ -17,6 +17,8 @@ object WebComponentUris {
 
     fun getConverterUri(): String = Res.getUri("$WEB_COMPONENTS_BASE/converter.html")
 
+    fun getPdfViewerUri(): String = Res.getUri("$WEB_COMPONENTS_BASE/pdf-viewer.html")
+
     /**
      * Base URL for loading web-component assets (chunks, CSS, etc.).
      * Use this as the base URL when loading the HTML so relative paths resolve.

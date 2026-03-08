@@ -92,6 +92,22 @@ private fun toInternalStorageAssetLoaderBaseUrl(
     return normalizeTrailingSlash("$ASSET_LOADER_DOMAIN/local/$relativePath")
 }
 
+private fun toInternalStorageAssetLoaderFileUrl(
+    context: Context,
+    rawFileUrl: String?,
+): String? {
+    if (rawFileUrl.isNullOrBlank()) return null
+    val uri = runCatching { rawFileUrl.toUri() }.getOrNull() ?: return null
+    if (uri.scheme != "file") return null
+    val rawPath = uri.path ?: return null
+    val filesRoot = context.filesDir.absolutePath.trimEnd('/')
+    if (!rawPath.startsWith(filesRoot)) return null
+
+    val relativePath = rawPath.removePrefix(filesRoot).trimStart('/')
+    if (relativePath.isBlank()) return null
+    return "$ASSET_LOADER_DOMAIN/local/$relativePath"
+}
+
 private fun escapeJsString(s: String): String =
     s.replace("\\", "\\\\")
         .replace("'", "\\'")
@@ -853,5 +869,529 @@ actual fun YabaWebViewConverterInternal(
         } catch (e: Exception) {
             onConverterError(e)
         }
+    }
+}
+
+@SuppressLint("SetJavaScriptEnabled")
+@Composable
+actual fun YabaWebViewPdfConverterInternal(
+    modifier: Modifier,
+    baseUrl: String,
+    input: PdfConverterInput?,
+    onPdfConverterResult: (PdfConverterResult) -> Unit,
+    onPdfConverterError: (Throwable) -> Unit,
+    onReady: () -> Unit,
+) {
+    val context = LocalContext.current
+    val webViewRef = remember { mutableStateOf<WebView?>(null) }
+    var isPageReady by remember { mutableStateOf(false) }
+
+    val assetLoaderUrl = remember(baseUrl) { toAssetLoaderUrl(baseUrl) }
+    val assetLoader = remember(context) {
+        WebViewAssetLoader.Builder()
+            .addPathHandler(
+                "/local/",
+                WebViewAssetLoader.InternalStoragePathHandler(context, context.filesDir),
+            )
+            .addPathHandler("/", WebViewAssetLoader.AssetsPathHandler(context))
+            .build()
+    }
+    val loadUrl = remember(baseUrl, assetLoaderUrl) { assetLoaderUrl ?: baseUrl }
+
+    AndroidView(
+        modifier = modifier,
+        factory = { ctx ->
+            val webView = WebView(ctx).apply {
+                settings.javaScriptEnabled = true
+                settings.allowFileAccess = true
+                webChromeClient = denyPermissionsChromeClient()
+                webViewClient = defaultWebViewClient(
+                    assetLoader = assetLoader,
+                    onPageFinished = {
+                        isPageReady = true
+                        onReady()
+                    },
+                    onUrlClick = null,
+                )
+                webViewRef.value = this
+            }
+            FrameLayout(ctx).apply {
+                addView(
+                    webView,
+                    FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                    ),
+                )
+            }
+        },
+        update = {
+            val webView = webViewRef.value ?: return@AndroidView
+            val lastLoadedUrl = webView.tag as? String
+            if (lastLoadedUrl != loadUrl) {
+                isPageReady = false
+                webView.loadUrl(loadUrl)
+                webView.tag = loadUrl
+            }
+        },
+    )
+
+    DisposableEffect(Unit) {
+        onDispose { webViewRef.value = null }
+    }
+
+    LaunchedEffect(isPageReady, input?.pdfUrl, input?.renderScale) {
+        if (!isPageReady) return@LaunchedEffect
+        val request = input ?: return@LaunchedEffect
+        val webView = webViewRef.value ?: return@LaunchedEffect
+
+        val bridgeReady = waitForBridgeReady(
+            webView,
+            "(function(){ try { return typeof window.YabaConverterBridge !== 'undefined'; } catch(e){ return false; } })();",
+        )
+        if (!bridgeReady) {
+            onPdfConverterError(IllegalStateException("Converter bridge not ready"))
+            return@LaunchedEffect
+        }
+
+        val resolvedPdfUrl = toInternalStorageAssetLoaderFileUrl(context, request.pdfUrl) ?: request.pdfUrl
+        val pdfUrlEscaped = escapeJsString(resolvedPdfUrl)
+        val renderScale = request.renderScale
+        val startScript = """
+            (function() {
+                try {
+                    return window.YabaConverterBridge.startPdfExtraction({
+                        pdfUrl: '$pdfUrlEscaped',
+                        renderScale: $renderScale
+                    });
+                } catch (e) {
+                    return "";
+                }
+            })();
+        """.trimIndent()
+        val rawJobId = evaluateJs(webView, startScript)
+        val jobId = decodeJsStringResult(rawJobId)
+        if (jobId.isBlank()) {
+            onPdfConverterError(IllegalStateException("Failed to start PDF extraction job"))
+            return@LaunchedEffect
+        }
+
+        var attempts = 0
+        while (attempts < 300) {
+            attempts += 1
+            val statusScript = """
+                (function() {
+                    try {
+                        var state = window.YabaConverterBridge.getPdfExtractionJob('$jobId');
+                        return JSON.stringify(state);
+                    } catch (e) {
+                        return JSON.stringify({ status: "error", error: e.message });
+                    }
+                })();
+            """.trimIndent()
+            val rawStatus = evaluateJs(webView, statusScript)
+            val statusStr = decodeJsStringResult(rawStatus)
+            if (statusStr.isBlank() || statusStr == "null") {
+                delay(100)
+                continue
+            }
+
+            try {
+                val state = JSONObject(statusStr)
+                val status = state.optString("status")
+                if (status == "pending") {
+                    delay(100)
+                    continue
+                }
+
+                evaluateJs(
+                    webView,
+                    "(function(){ try { window.YabaConverterBridge.deletePdfExtractionJob('$jobId'); } catch(e){} })();",
+                )
+
+                if (status == "error") {
+                    val errorMessage = state.optString("error", "PDF extraction failed")
+                    onPdfConverterError(IllegalStateException(errorMessage))
+                    return@LaunchedEffect
+                }
+
+                val output = state.optJSONObject("output") ?: JSONObject()
+                val sectionsJson = output.optJSONArray("sections") ?: JSONArray()
+                val sections = buildList {
+                    for (index in 0 until sectionsJson.length()) {
+                        val section = sectionsJson.optJSONObject(index) ?: continue
+                        add(
+                            PdfTextSection(
+                                sectionKey = section.optString("sectionKey", ""),
+                                text = section.optString("text", ""),
+                            ),
+                        )
+                    }
+                }
+                onPdfConverterResult(
+                    PdfConverterResult(
+                        title = output.optString("title").takeIf { it.isNotBlank() },
+                        pageCount = output.optInt("pageCount", 0),
+                        firstPagePngDataUrl = output.optString("firstPagePngDataUrl").takeIf { it.isNotBlank() },
+                        sections = sections,
+                    ),
+                )
+                return@LaunchedEffect
+            } catch (error: Exception) {
+                onPdfConverterError(error)
+                return@LaunchedEffect
+            }
+        }
+
+        onPdfConverterError(IllegalStateException("PDF extraction timed out"))
+    }
+}
+
+@SuppressLint("SetJavaScriptEnabled", "ClickableViewAccessibility")
+@Composable
+actual fun YabaPdfWebViewViewerInternal(
+    modifier: Modifier,
+    baseUrl: String,
+    pdfUrl: String,
+    platform: YabaWebPlatform,
+    appearance: YabaWebAppearance,
+    onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit,
+    onReady: () -> Unit,
+    onBridgeReady: (WebViewReaderBridge) -> Unit,
+    onHighlightTap: (String) -> Unit,
+    highlights: List<HighlightUiModel>,
+) {
+    val context = LocalContext.current
+    val webViewRef = remember { mutableStateOf<WebView?>(null) }
+    var isPageReady by remember { mutableStateOf(false) }
+    val onScrollDirectionChangedState = rememberUpdatedState(onScrollDirectionChanged)
+    val gestureStartYRef = remember { floatArrayOf(0f) }
+    val lastGestureDirectionRef = remember { intArrayOf(0) }
+    val touchSlop = remember(context) { ViewConfiguration.get(context).scaledTouchSlop }
+
+    val assetLoaderUrl = remember(baseUrl) { toAssetLoaderUrl(baseUrl) }
+    val assetLoader = remember(context) {
+        WebViewAssetLoader.Builder()
+            .addPathHandler(
+                "/local/",
+                WebViewAssetLoader.InternalStoragePathHandler(context, context.filesDir),
+            )
+            .addPathHandler("/", WebViewAssetLoader.AssetsPathHandler(context))
+            .build()
+    }
+    val loadUrl = remember(baseUrl, assetLoaderUrl) { assetLoaderUrl ?: baseUrl }
+
+    val myWebView = remember(context) {
+        WebView(context).apply {
+            settings.javaScriptEnabled = true
+            settings.allowFileAccess = true
+            settings.setSupportZoom(true)
+            settings.builtInZoomControls = true
+            settings.displayZoomControls = false
+            webChromeClient = denyPermissionsChromeClient()
+            setBackgroundColor(Color.TRANSPARENT)
+            setOnTouchListener { _, motionEvent ->
+                when (motionEvent.actionMasked) {
+                    MotionEvent.ACTION_DOWN -> {
+                        gestureStartYRef[0] = motionEvent.y
+                        lastGestureDirectionRef[0] = 0
+                        false
+                    }
+
+                    MotionEvent.ACTION_MOVE -> {
+                        val deltaY = motionEvent.y - gestureStartYRef[0]
+                        val threshold = touchSlop * 2
+                        if (abs(deltaY) < threshold) return@setOnTouchListener false
+
+                        val gestureDirection = if (deltaY < 0f) 1 else -1
+                        if (gestureDirection == lastGestureDirectionRef[0]) return@setOnTouchListener false
+
+                        if (gestureDirection > 0) {
+                            onScrollDirectionChangedState.value(YabaWebScrollDirection.Down)
+                        } else {
+                            onScrollDirectionChangedState.value(YabaWebScrollDirection.Up)
+                        }
+                        lastGestureDirectionRef[0] = gestureDirection
+                        false
+                    }
+
+                    MotionEvent.ACTION_UP,
+                    MotionEvent.ACTION_CANCEL -> {
+                        lastGestureDirectionRef[0] = 0
+                        false
+                    }
+
+                    else -> false
+                }
+            }
+        }
+    }
+    webViewRef.value = myWebView
+    myWebView.webViewClient = defaultWebViewClient(
+        assetLoader = assetLoader,
+        onPageFinished = { isPageReady = true; onReady() },
+        onUrlClick = null,
+        onHighlightTap = onHighlightTap,
+    )
+
+    AndroidView(
+        modifier = modifier,
+        factory = { ctx ->
+            FrameLayout(ctx).apply {
+                if (myWebView.parent != null) {
+                    (myWebView.parent as ViewGroup).removeView(myWebView)
+                }
+                addView(
+                    myWebView,
+                    FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                    ),
+                )
+            }
+        },
+        update = {
+            val lastLoadedUrl = myWebView.tag as? String
+            if (lastLoadedUrl != loadUrl) {
+                isPageReady = false
+                myWebView.loadUrl(loadUrl)
+                myWebView.tag = loadUrl
+            }
+        },
+    )
+
+    DisposableEffect(Unit) {
+        onDispose { webViewRef.value = null }
+    }
+
+    LaunchedEffect(isPageReady, pdfUrl) {
+        if (!isPageReady) return@LaunchedEffect
+        val webView = webViewRef.value ?: return@LaunchedEffect
+        val ready = waitForBridgeReady(
+            webView,
+            "(function(){ try { return !!(window.YabaPdfBridge && window.YabaPdfBridge.isReady && window.YabaPdfBridge.isReady()); } catch(e){ return false; } })();",
+        )
+        if (!ready) {
+            Log.w(TAG, "PDF bridge not ready before timeout")
+            return@LaunchedEffect
+        }
+
+        val resolvedPdfUrl = toInternalStorageAssetLoaderFileUrl(context, pdfUrl) ?: pdfUrl
+        val escapedPdfUrl = escapeJsString(resolvedPdfUrl)
+        val script = """
+            (function() {
+                try {
+                    if (window.YabaPdfBridge && window.YabaPdfBridge.setPdfUrl) {
+                        window.YabaPdfBridge.setPdfUrl('$escapedPdfUrl');
+                    }
+                } catch(e) {}
+            })();
+        """.trimIndent()
+        evaluateJs(webView, script)
+    }
+
+    LaunchedEffect(isPageReady, platform, appearance) {
+        if (!isPageReady) return@LaunchedEffect
+        val webView = webViewRef.value ?: return@LaunchedEffect
+        val ready = waitForBridgeReady(
+            webView,
+            "(function(){ try { return !!(window.YabaPdfBridge && window.YabaPdfBridge.isReady && window.YabaPdfBridge.isReady()); } catch(e){ return false; } })();",
+        )
+        if (!ready) return@LaunchedEffect
+        val script = """
+            (function() {
+                try {
+                    if (window.YabaPdfBridge && window.YabaPdfBridge.setPlatform) {
+                        window.YabaPdfBridge.setPlatform('${platform.toJsValue()}');
+                    }
+                    if (window.YabaPdfBridge && window.YabaPdfBridge.setAppearance) {
+                        window.YabaPdfBridge.setAppearance('${appearance.toJsValue()}');
+                    }
+                } catch(e) {}
+            })();
+        """.trimIndent()
+        evaluateJs(webView, script)
+    }
+
+    val readerBridge = remember(webViewRef) {
+        object : WebViewReaderBridge {
+            override suspend fun getSelectionSnapshot(
+                bookmarkId: String,
+                readableVersionId: String,
+            ): ReadableSelectionDraft? {
+                val webView = webViewRef.value ?: return null
+                val ready = waitForBridgeReady(
+                    webView,
+                    "(function(){ try { return !!(window.YabaPdfBridge && window.YabaPdfBridge.isReady && window.YabaPdfBridge.isReady()); } catch(e){ return false; } })();",
+                )
+                if (!ready) return null
+                val script = """
+                    (function() {
+                        try {
+                            var snap = window.YabaPdfBridge.getSelectionSnapshot();
+                            if (!snap) return null;
+                            return JSON.stringify(snap);
+                        } catch(e) { return null; }
+                    })();
+                """.trimIndent()
+                val raw = evaluateJs(webView, script)
+                val jsonStr = decodeJsStringResult(raw)
+                if (jsonStr == "null" || jsonStr.isBlank()) return null
+                return runCatching {
+                    val json = JSONObject(jsonStr)
+                    val startSectionKey = json.optString("startSectionKey", "")
+                    val startOffsetInSection = json.optInt("startOffsetInSection", 0)
+                    val endSectionKey = json.optString("endSectionKey", "")
+                    val endOffsetInSection = json.optInt("endOffsetInSection", 0)
+                    val selectedText = json.optString("selectedText", "")
+                    val prefixText = json.optString("prefixText").takeIf { it.isNotBlank() }
+                    val suffixText = json.optString("suffixText").takeIf { it.isNotBlank() }
+                    if (startSectionKey.isBlank() || endSectionKey.isBlank() || selectedText.isBlank()) return@runCatching null
+                    ReadableSelectionDraft(
+                        sourceContext = HighlightSourceContext.readable(bookmarkId, readableVersionId),
+                        anchor = ReadableAnchor(
+                            readableVersionId = readableVersionId,
+                            startSectionKey = startSectionKey,
+                            startOffsetInSection = startOffsetInSection,
+                            endSectionKey = endSectionKey,
+                            endOffsetInSection = endOffsetInSection,
+                        ),
+                        quote = HighlightQuoteSnapshot(
+                            selectedText = selectedText,
+                            prefixText = prefixText,
+                            suffixText = suffixText,
+                        ),
+                    )
+                }.getOrNull()
+            }
+
+            override suspend fun getCanCreateHighlight(): Boolean {
+                val webView = webViewRef.value ?: return false
+                val ready = waitForBridgeReady(
+                    webView,
+                    "(function(){ try { return !!(window.YabaPdfBridge && window.YabaPdfBridge.isReady); } catch(e){ return false; } })();",
+                )
+                if (!ready) return false
+                val script = """
+                    (function() {
+                        try {
+                            return !!(window.YabaPdfBridge && window.YabaPdfBridge.getCanCreateHighlight && window.YabaPdfBridge.getCanCreateHighlight());
+                        } catch(e) { return false; }
+                    })();
+                """.trimIndent()
+                return evaluateJs(webView, script).trim() == "true"
+            }
+
+            override suspend fun setHighlights(highlights: List<HighlightUiModel>) {
+                val webView = webViewRef.value ?: return
+                val ready = waitForBridgeReady(
+                    webView,
+                    "(function(){ try { return !!(window.YabaPdfBridge && window.YabaPdfBridge.isReady); } catch(e){ return false; } })();",
+                )
+                if (!ready) return
+                val arr = JSONArray()
+                highlights.forEach { highlight ->
+                    arr.put(
+                        JSONObject().apply {
+                            put("id", highlight.id)
+                            put("startSectionKey", highlight.startSectionKey)
+                            put("startOffsetInSection", highlight.startOffsetInSection)
+                            put("endSectionKey", highlight.endSectionKey)
+                            put("endOffsetInSection", highlight.endOffsetInSection)
+                            put("colorRole", highlight.colorRole.name)
+                        },
+                    )
+                }
+                val escaped = escapeJsString(arr.toString())
+                val script = """
+                    (function() {
+                        try {
+                            if (window.YabaPdfBridge && window.YabaPdfBridge.setHighlights) {
+                                window.YabaPdfBridge.setHighlights('$escaped');
+                            }
+                        } catch(e) {}
+                    })();
+                """.trimIndent()
+                evaluateJs(webView, script)
+            }
+
+            override suspend fun scrollToHighlight(highlightId: String) {
+                val webView = webViewRef.value ?: return
+                val ready = waitForBridgeReady(
+                    webView,
+                    "(function(){ try { return !!(window.YabaPdfBridge && window.YabaPdfBridge.isReady); } catch(e){ return false; } })();",
+                )
+                if (!ready) return
+                val escaped = escapeJsString(highlightId)
+                val script = """
+                    (function() {
+                        try {
+                            if (window.YabaPdfBridge && window.YabaPdfBridge.scrollToHighlight) {
+                                window.YabaPdfBridge.scrollToHighlight('$escaped');
+                            }
+                        } catch(e) {}
+                    })();
+                """.trimIndent()
+                evaluateJs(webView, script)
+            }
+        }
+    }
+
+    LaunchedEffect(isPageReady, readerBridge) {
+        if (isPageReady) onBridgeReady(readerBridge)
+    }
+
+    LaunchedEffect(isPageReady) {
+        if (!isPageReady) return@LaunchedEffect
+        val webView = webViewRef.value ?: return@LaunchedEffect
+        val ready = waitForBridgeReady(
+            webView,
+            "(function(){ try { return !!(window.YabaPdfBridge && window.YabaPdfBridge.isReady); } catch(e){ return false; } })();",
+        )
+        if (!ready) return@LaunchedEffect
+        val script = """
+            (function() {
+                if (window.YabaPdfBridge) {
+                    window.YabaPdfBridge.onHighlightTap = function(id) {
+                        if (id) window.location = "yaba://highlight-tap?id=" + encodeURIComponent(id);
+                    };
+                }
+            })();
+        """.trimIndent()
+        evaluateJs(webView, script)
+    }
+
+    LaunchedEffect(isPageReady, highlights) {
+        if (!isPageReady) return@LaunchedEffect
+        val webView = webViewRef.value ?: return@LaunchedEffect
+        val ready = waitForBridgeReady(
+            webView,
+            "(function(){ try { return !!(window.YabaPdfBridge && window.YabaPdfBridge.isReady); } catch(e){ return false; } })();",
+        )
+        if (!ready) return@LaunchedEffect
+        val arr = JSONArray()
+        highlights.forEach { highlight ->
+            arr.put(
+                JSONObject().apply {
+                    put("id", highlight.id)
+                    put("startSectionKey", highlight.startSectionKey)
+                    put("startOffsetInSection", highlight.startOffsetInSection)
+                    put("endSectionKey", highlight.endSectionKey)
+                    put("endOffsetInSection", highlight.endOffsetInSection)
+                    put("colorRole", highlight.colorRole.name)
+                },
+            )
+        }
+        val escaped = escapeJsString(arr.toString())
+        val script = """
+            (function() {
+                try {
+                    if (window.YabaPdfBridge && window.YabaPdfBridge.setHighlights) {
+                        window.YabaPdfBridge.setHighlights('$escaped');
+                    }
+                } catch(e) {}
+            })();
+        """.trimIndent()
+        evaluateJs(webView, script)
     }
 }

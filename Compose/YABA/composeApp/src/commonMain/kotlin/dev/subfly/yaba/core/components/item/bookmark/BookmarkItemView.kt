@@ -42,6 +42,7 @@ import dev.subfly.yaba.core.components.item.base.BookmarkOptionsMenu
 import dev.subfly.yaba.core.navigation.alert.DeletionState
 import dev.subfly.yaba.core.navigation.alert.DeletionType
 import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
+import dev.subfly.yaba.core.navigation.creation.DocmarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.ImagemarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.LinkmarkCreationRoute
 import dev.subfly.yaba.util.LocalAppStateManager
@@ -137,7 +138,7 @@ fun BookmarkItemView(
                         }
 
                         BookmarkKind.FILE -> {
-
+                            creationNavigator.add(DocmarkCreationRoute(bookmarkId = model.id))
                         }
                     }
                     appStateManager.onShowCreationContent()
@@ -233,7 +234,7 @@ fun BookmarkItemView(
                         }
 
                         BookmarkKind.FILE -> {
-
+                            creationNavigator.add(DocmarkCreationRoute(bookmarkId = model.id))
                         }
                     }
                     appStateManager.onShowCreationContent()

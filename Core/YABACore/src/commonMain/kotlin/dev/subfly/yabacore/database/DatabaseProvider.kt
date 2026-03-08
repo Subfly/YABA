@@ -1,6 +1,7 @@
 package dev.subfly.yabacore.database
 
 import dev.subfly.yabacore.database.dao.BookmarkDao
+import dev.subfly.yabacore.database.dao.DocBookmarkDao
 import dev.subfly.yabacore.database.dao.FolderDao
 import dev.subfly.yabacore.database.dao.HighlightDao
 import dev.subfly.yabacore.database.dao.ImageBookmarkDao
@@ -51,6 +52,9 @@ object DatabaseProvider {
 
     val imageBookmarkDao: ImageBookmarkDao
         get() = database().imageBookmarkDao()
+
+    val docBookmarkDao: DocBookmarkDao
+        get() = database().docBookmarkDao()
 
     val tagBookmarkDao: TagBookmarkDao
         get() = database().tagBookmarkDao()

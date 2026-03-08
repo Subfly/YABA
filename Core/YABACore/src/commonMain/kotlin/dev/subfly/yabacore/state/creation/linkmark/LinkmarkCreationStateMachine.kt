@@ -119,14 +119,6 @@ class LinkmarkCreationStateMachine :
                         }
                     }
 
-                    // Always run unfurler on init to populate selectable images and readable HTML.
-                    // In edit mode we DO NOT overwrite user-editable fields
-                    // (label/description/url/etc).
-                    fetchLinkData(
-                        urlString = existing.url,
-                        force = true,
-                        previewOnly = true,
-                    )
                 }
             }
 
@@ -396,6 +388,7 @@ class LinkmarkCreationStateMachine :
     }
 
     private fun onSelectImage(event: LinkmarkCreationEvent.OnSelectImage) {
+        if (currentState().isInEditMode) return
         val state = currentState()
         // If imageData is not provided, try to look it up from selectableImages
         val imageData = event.imageData ?: event.imageUrl.let { url -> state.selectableImages[url] }
@@ -409,6 +402,7 @@ class LinkmarkCreationStateMachine :
     }
 
     private fun onChangeUrl(event: LinkmarkCreationEvent.OnChangeUrl) {
+        if (currentState().isInEditMode) return
         updateState { it.copy(url = event.newUrl) }
         // Emit to debounce flow
         launch { urlDebounceFlow.emit(event.newUrl) }
@@ -423,6 +417,7 @@ class LinkmarkCreationStateMachine :
     }
 
     private fun onChangeLinkType(event: LinkmarkCreationEvent.OnChangeLinkType) {
+        if (currentState().isInEditMode) return
         updateState { it.copy(selectedLinkType = event.linkType) }
     }
 
@@ -445,6 +440,7 @@ class LinkmarkCreationStateMachine :
     }
 
     private fun onRefetch() {
+        if (currentState().isInEditMode) return
         val currentUrl = currentState().url
         if (currentUrl.isNotBlank()) {
             // Reset lastFetchedUrl to force re-fetch
@@ -461,6 +457,7 @@ class LinkmarkCreationStateMachine :
     }
 
     private fun onConverterSucceeded(event: LinkmarkCreationEvent.OnConverterSucceeded) {
+        if (currentState().isInEditMode) return
         launch {
             val readable = ConverterResultProcessor.process(
                 markdown = event.markdown,
@@ -505,6 +502,7 @@ class LinkmarkCreationStateMachine :
 
     private fun onApplyContentUpdates() {
         val state = currentState()
+        if (state.isInEditMode) return
         if (!state.hasContentUpdates) return
 
         updateState {
@@ -554,18 +552,18 @@ class LinkmarkCreationStateMachine :
                         kind = BookmarkKind.LINK,
                         label = state.label.ifBlank { state.cleanedUrl },
                         description = state.description.ifBlank { null },
-                        previewImageBytes = state.imageData,
-                        previewImageExtension = "jpeg",
-                        previewIconBytes = state.iconData,
+                        previewImageBytes = null,
+                        previewImageExtension = null,
+                        previewIconBytes = null,
                     )
 
                     // Then upsert link-specific details (detail screen extras)
                     LinkmarkManager.createOrUpdateLinkDetails(
                         bookmarkId = bookmarkId,
-                        url = state.cleanedUrl,
-                        domain = state.host,
-                        linkType = state.selectedLinkType,
-                        videoUrl = state.videoUrl,
+                        url = state.editingLinkmark.url,
+                        domain = state.editingLinkmark.domain,
+                        linkType = state.editingLinkmark.linkType,
+                        videoUrl = state.editingLinkmark.videoUrl,
                     )
 
                     // Handle tag changes

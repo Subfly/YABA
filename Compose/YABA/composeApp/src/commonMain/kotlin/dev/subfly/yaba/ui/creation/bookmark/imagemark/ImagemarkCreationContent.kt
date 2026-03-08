@@ -209,7 +209,7 @@ private fun ImagemarkImagePickerContent(
         label = stringResource(Res.string.bookmark_type_image),
         iconName = "image-03",
         extraContent = {
-            if (state.imageBytes != null) {
+            if (state.imageBytes != null && state.isInEditMode.not()) {
                 TextButton(
                     onClick = onClearImage,
                     shapes = ButtonDefaults.shapes(),
@@ -246,7 +246,7 @@ private fun ImagemarkImagePickerContent(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
         onClick = onPickFromGallery,
         shapes = ButtonDefaults.shapes(),
-        enabled = state.isLoading.not(),
+        enabled = state.isLoading.not() && state.isInEditMode.not(),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(color.iconTintArgb()),
         ),
@@ -268,7 +268,7 @@ private fun ImagemarkImagePickerContent(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
         onClick = onCaptureFromCamera,
         shapes = ButtonDefaults.shapes(),
-        enabled = state.isLoading.not(),
+        enabled = state.isLoading.not() && state.isInEditMode.not(),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(color.iconTintArgb()),
         ),

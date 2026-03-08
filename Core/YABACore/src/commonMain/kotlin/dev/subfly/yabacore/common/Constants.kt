@@ -121,6 +121,21 @@ object CoreConstants {
             )
         }
 
+        object Docmark {
+            private const val DOC_SUBDIR = "file"
+            private const val DOC_BASENAME = "document"
+            private const val DEFAULT_DOC_EXTENSION = "pdf"
+
+            fun pdfPath(
+                bookmarkId: String,
+                extension: String = DEFAULT_DOC_EXTENSION,
+            ): String = join(
+                bookmarkFolder(bookmarkId),
+                DOC_SUBDIR,
+                "$DOC_BASENAME.$extension",
+            )
+        }
+
         fun bookmarkFolderPath(
             bookmarkId: String,
             subtypeDirectory: String? = null,

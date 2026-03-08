@@ -1,9 +1,12 @@
 import DOMPurify from "dompurify"
 import { Readability } from "@mozilla/readability"
+import { GlobalWorkerOptions, getDocument } from "pdfjs-dist"
+import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url"
 import TurndownService from "turndown"
 import { gfm } from "turndown-plugin-gfm"
 
 const YOUTUBE_URL_RE = /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]+)/i
+GlobalWorkerOptions.workerSrc = pdfWorkerUrl
 
 const turndown = new TurndownService({
   headingStyle: "atx",
@@ -69,7 +72,37 @@ export interface ConverterOutput {
 
 export interface YabaConverterBridge {
   sanitizeAndConvertHtmlToMarkdown: (input: ConverterInput) => ConverterOutput
+  startPdfExtraction: (input: PdfExtractionInput) => string
+  getPdfExtractionJob: (jobId: string) => PdfExtractionJobState | null
+  deletePdfExtractionJob: (jobId: string) => void
 }
+
+export interface PdfExtractionInput {
+  pdfUrl: string
+  renderScale?: number
+}
+
+export interface PdfTextSection {
+  sectionKey: string
+  text: string
+}
+
+export interface PdfExtractionOutput {
+  title: StringOrNull
+  pageCount: number
+  firstPagePngDataUrl: StringOrNull
+  sections: PdfTextSection[]
+}
+
+export type StringOrNull = string | null
+
+export interface PdfExtractionJobState {
+  status: "pending" | "done" | "error"
+  output?: PdfExtractionOutput
+  error?: string
+}
+
+const pdfExtractionJobs = new Map<string, PdfExtractionJobState>()
 
 function resolveUrl(baseUrl: string | undefined, src: string): string {
   if (!baseUrl || src.startsWith("data:") || src.startsWith("http://") || src.startsWith("https://")) {
@@ -310,11 +343,103 @@ function sanitizeAndConvertWithAssets(html: string, baseUrl?: string): Converter
   return { markdown, assets }
 }
 
+function createPdfExtractionJobId(): string {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID()
+  }
+  return `pdf-job-${Date.now()}-${Math.random().toString(36).slice(2)}`
+}
+
+async function extractPdfPreviewAndText(input: PdfExtractionInput): Promise<PdfExtractionOutput> {
+  const response = await fetch(input.pdfUrl)
+  if (!response.ok) throw new Error(`Failed to fetch PDF: ${response.status}`)
+  const data = await response.arrayBuffer()
+  const loadingTask = getDocument({ data })
+  const pdfDocument = await loadingTask.promise
+
+  try {
+    const metadata = await pdfDocument.getMetadata().catch(() => null)
+    const info = metadata?.info as { Title?: string } | undefined
+    const titleCandidate = info?.Title ?? null
+    const title = titleCandidate && titleCandidate.trim().length > 0 ? titleCandidate.trim() : null
+    const sections: PdfTextSection[] = []
+    const pageCount = pdfDocument.numPages
+    const renderScale = input.renderScale && input.renderScale > 0 ? input.renderScale : 1.2
+    let firstPagePngDataUrl: StringOrNull = null
+
+    for (let pageNumber = 1; pageNumber <= pageCount; pageNumber++) {
+      const page = await pdfDocument.getPage(pageNumber)
+      const textContent = await page.getTextContent()
+      const text = textContent.items
+        .map((item) => ("str" in item ? item.str : ""))
+        .join(" ")
+        .replace(/\s+/g, " ")
+        .trim()
+      sections.push({
+        sectionKey: `page-${pageNumber - 1}`,
+        text,
+      })
+
+      if (pageNumber === 1) {
+        const viewport = page.getViewport({ scale: renderScale })
+        const canvas = document.createElement("canvas")
+        const context = canvas.getContext("2d")
+        if (!context) throw new Error("Failed to create canvas context for PDF preview")
+
+        canvas.width = Math.max(1, Math.floor(viewport.width))
+        canvas.height = Math.max(1, Math.floor(viewport.height))
+
+        await page.render({
+          canvas,
+          canvasContext: context,
+          viewport,
+        }).promise
+        firstPagePngDataUrl = canvas.toDataURL("image/png")
+      }
+    }
+
+    return {
+      title,
+      pageCount,
+      firstPagePngDataUrl,
+      sections,
+    }
+  } finally {
+    await pdfDocument.destroy().catch(() => undefined)
+  }
+}
+
 export function initConverterBridge(): void {
   const win = window as Window & { YabaConverterBridge?: YabaConverterBridge }
   win.YabaConverterBridge = {
     sanitizeAndConvertHtmlToMarkdown(input: ConverterInput): ConverterOutput {
       return sanitizeAndConvertWithAssets(input.html, input.baseUrl)
+    },
+    startPdfExtraction(input: PdfExtractionInput): string {
+      const jobId = createPdfExtractionJobId()
+      pdfExtractionJobs.set(jobId, { status: "pending" })
+
+      void extractPdfPreviewAndText(input)
+        .then((output) => {
+          pdfExtractionJobs.set(jobId, {
+            status: "done",
+            output,
+          })
+        })
+        .catch((error) => {
+          pdfExtractionJobs.set(jobId, {
+            status: "error",
+            error: error instanceof Error ? error.message : "Unknown PDF extraction error",
+          })
+        })
+
+      return jobId
+    },
+    getPdfExtractionJob(jobId: string): PdfExtractionJobState | null {
+      return pdfExtractionJobs.get(jobId) ?? null
+    },
+    deletePdfExtractionJob(jobId: string): void {
+      pdfExtractionJobs.delete(jobId)
     },
   }
 }

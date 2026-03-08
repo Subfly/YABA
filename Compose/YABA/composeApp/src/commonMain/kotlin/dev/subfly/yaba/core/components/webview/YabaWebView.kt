@@ -50,6 +50,26 @@ data class ConverterAsset(
     val alt: String? = null,
 )
 
+@Stable
+data class PdfConverterInput(
+    val pdfUrl: String,
+    val renderScale: Float = 1.2f,
+)
+
+@Stable
+data class PdfTextSection(
+    val sectionKey: String,
+    val text: String,
+)
+
+@Stable
+data class PdfConverterResult(
+    val title: String?,
+    val pageCount: Int,
+    val firstPagePngDataUrl: String?,
+    val sections: List<PdfTextSection>,
+)
+
 /**
  * Internal expect-actual: mode-specific WebView implementations.
  */
@@ -87,6 +107,16 @@ internal expect fun YabaWebViewConverterInternal(
     input: ConverterInput?,
     onConverterResult: (ConverterResult) -> Unit,
     onConverterError: (Throwable) -> Unit,
+    onReady: () -> Unit,
+)
+
+@Composable
+internal expect fun YabaWebViewPdfConverterInternal(
+    modifier: Modifier,
+    baseUrl: String,
+    input: PdfConverterInput?,
+    onPdfConverterResult: (PdfConverterResult) -> Unit,
+    onPdfConverterError: (Throwable) -> Unit,
     onReady: () -> Unit,
 )
 
@@ -171,6 +201,25 @@ fun YabaWebViewConverter(
         input = input,
         onConverterResult = onConverterResult,
         onConverterError = onConverterError,
+        onReady = onReady,
+    )
+}
+
+@Composable
+fun YabaWebViewPdfConverter(
+    modifier: Modifier = Modifier,
+    baseUrl: String,
+    input: PdfConverterInput?,
+    onPdfConverterResult: (PdfConverterResult) -> Unit,
+    onPdfConverterError: (Throwable) -> Unit = {},
+    onReady: () -> Unit = {},
+) {
+    YabaWebViewPdfConverterInternal(
+        modifier = modifier,
+        baseUrl = baseUrl,
+        input = input,
+        onPdfConverterResult = onPdfConverterResult,
+        onPdfConverterError = onPdfConverterError,
         onReady = onReady,
     )
 }

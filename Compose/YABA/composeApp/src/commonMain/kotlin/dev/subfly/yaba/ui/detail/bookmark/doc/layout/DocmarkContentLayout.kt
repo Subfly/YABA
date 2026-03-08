@@ -1,0 +1,214 @@
+package dev.subfly.yaba.ui.detail.bookmark.doc.layout
+
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import dev.subfly.yaba.core.components.NoContentView
+import dev.subfly.yaba.core.components.webview.WebViewReaderBridge
+import dev.subfly.yaba.core.components.webview.YabaPdfWebViewViewer
+import dev.subfly.yaba.core.components.webview.YabaWebAppearance
+import dev.subfly.yaba.core.components.webview.YabaWebPlatform
+import dev.subfly.yaba.core.components.webview.YabaWebScrollDirection
+import dev.subfly.yaba.core.navigation.creation.HighlightCreationRoute
+import dev.subfly.yaba.ui.detail.bookmark.doc.components.DocmarkContentDropdownMenu
+import dev.subfly.yaba.util.LocalAppStateManager
+import dev.subfly.yaba.util.LocalContentNavigator
+import dev.subfly.yaba.util.LocalCreationContentNavigator
+import dev.subfly.yabacore.state.detail.docmark.DocmarkDetailEvent
+import dev.subfly.yabacore.state.detail.docmark.DocmarkDetailUIState
+import dev.subfly.yabacore.ui.icon.YabaIcon
+import dev.subfly.yabacore.ui.webview.WebComponentUris
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
+import yaba.composeapp.generated.resources.Res
+import yaba.composeapp.generated.resources.bookmark_detail_title
+import yaba.composeapp.generated.resources.reader_not_available_description
+import yaba.composeapp.generated.resources.reader_not_available_title
+
+@OptIn(
+    ExperimentalMaterial3Api::class,
+)
+@Composable
+internal fun DocmarkContentLayout(
+    modifier: Modifier = Modifier,
+    state: DocmarkDetailUIState,
+    onShowDetail: () -> Unit,
+    onEvent: (DocmarkDetailEvent) -> Unit,
+    onShowRemindMePicker: () -> Unit = {},
+) {
+    val navigator = LocalContentNavigator.current
+    val creationNavigator = LocalCreationContentNavigator.current
+    val appStateManager = LocalAppStateManager.current
+    val scope = rememberCoroutineScope()
+
+    var readerBridge by remember { mutableStateOf<WebViewReaderBridge?>(null) }
+    val appearance = if (isSystemInDarkTheme()) YabaWebAppearance.Dark else YabaWebAppearance.Light
+    val hasReaderContent = !state.isLoading && !state.pdfAbsolutePath.isNullOrBlank()
+    var isMenuExpanded by remember { mutableStateOf(false) }
+    var hasSelection by remember { mutableStateOf(false) }
+    var isFabVisible by remember(hasReaderContent) { mutableStateOf(true) }
+
+    LaunchedEffect(readerBridge, hasReaderContent, isFabVisible) {
+        if (!hasReaderContent || !isFabVisible) {
+            hasSelection = false
+            return@LaunchedEffect
+        }
+        val bridge = readerBridge ?: return@LaunchedEffect
+        while (true) {
+            hasSelection = bridge.getCanCreateHighlight()
+            delay(200)
+        }
+    }
+
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                TopAppBar(
+                    modifier = Modifier.fillMaxWidth(),
+                    title = { Text(text = stringResource(Res.string.bookmark_detail_title)) },
+                    navigationIcon = {
+                        IconButton(onClick = navigator::removeLastOrNull) {
+                            YabaIcon(name = "arrow-left-01")
+                        }
+                    },
+                    actions = {
+                        IconButton(
+                            onClick = onShowDetail,
+                            content = { YabaIcon(name = "information-circle") },
+                        )
+                        Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
+                            IconButton(
+                                onClick = { isMenuExpanded = !isMenuExpanded },
+                            ) { YabaIcon(name = "more-horizontal-circle-02") }
+
+                            DocmarkContentDropdownMenu(
+                                expanded = isMenuExpanded,
+                                onDismissRequest = { isMenuExpanded = false },
+                                state = state,
+                                onEvent = onEvent,
+                                onShowRemindMePicker = onShowRemindMePicker,
+                            )
+                        }
+                    },
+                )
+                AnimatedContent(state.isLoading) { loading ->
+                    if (loading) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 4.dp)
+                                .background(color = MaterialTheme.colorScheme.surface),
+                        ) { LinearProgressIndicator(modifier = Modifier.fillMaxWidth()) }
+                    } else {
+                        Box(modifier = Modifier.fillMaxWidth())
+                    }
+                }
+            }
+        },
+    ) { paddings ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddings),
+        ) {
+            if (hasReaderContent) {
+                LaunchedEffect(state.scrollToHighlightId) {
+                    val highlightId = state.scrollToHighlightId ?: return@LaunchedEffect
+                    val bridge = readerBridge ?: return@LaunchedEffect
+                    bridge.scrollToHighlight(highlightId)
+                    onEvent(DocmarkDetailEvent.OnClearScrollToHighlight)
+                }
+
+                YabaPdfWebViewViewer(
+                    modifier = Modifier.fillMaxSize(),
+                    baseUrl = WebComponentUris.getPdfViewerUri(),
+                    pdfUrl = state.pdfAbsolutePath ?: "",
+                    platform = YabaWebPlatform.Compose,
+                    appearance = appearance,
+                    onScrollDirectionChanged = { direction ->
+                        if (direction == YabaWebScrollDirection.Down) isFabVisible = false
+                        if (direction == YabaWebScrollDirection.Up) isFabVisible = true
+                    },
+                    onBridgeReady = { bridge -> readerBridge = bridge },
+                    onHighlightTap = { highlightId ->
+                        val bookmarkId = state.bookmark?.id ?: return@YabaPdfWebViewViewer
+                        creationNavigator.add(
+                            HighlightCreationRoute(
+                                bookmarkId = bookmarkId,
+                                selectionDraft = null,
+                                highlightId = highlightId,
+                            ),
+                        )
+                        appStateManager.onShowCreationContent()
+                    },
+                    highlights = state.highlights,
+                )
+
+                if (isFabVisible) {
+                    FloatingActionButton(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(16.dp),
+                        onClick = {
+                            if (!hasSelection) return@FloatingActionButton
+                            val bridge = readerBridge ?: return@FloatingActionButton
+                            val bookmarkId = state.bookmark?.id ?: return@FloatingActionButton
+                            val readableVersionId = state.selectedReadableVersionId ?: return@FloatingActionButton
+                            scope.launch {
+                                val draft = bridge.getSelectionSnapshot(bookmarkId, readableVersionId)
+                                creationNavigator.add(
+                                    HighlightCreationRoute(
+                                        bookmarkId = bookmarkId,
+                                        selectionDraft = draft,
+                                        highlightId = null,
+                                    ),
+                                )
+                                appStateManager.onShowCreationContent()
+                            }
+                        },
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                    ) {
+                        YabaIcon(name = "highlighter")
+                    }
+                }
+            } else if (!state.isLoading) {
+                NoContentView(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .wrapContentSize(Alignment.Center),
+                    iconName = "cancel-square",
+                    labelRes = Res.string.reader_not_available_title,
+                ) {
+                    Text(text = stringResource(Res.string.reader_not_available_description))
+                }
+            }
+        }
+    }
+}

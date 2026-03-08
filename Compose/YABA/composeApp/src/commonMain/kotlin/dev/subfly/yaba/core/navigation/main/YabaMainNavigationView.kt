@@ -21,6 +21,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import dev.subfly.yaba.ui.detail.EmptyDetailView
+import dev.subfly.yaba.ui.detail.bookmark.doc.DocmarkDetailView
 import dev.subfly.yaba.ui.detail.bookmark.image.ImagemarkDetailView
 import dev.subfly.yaba.ui.detail.bookmark.link.LinkmarkDetailView
 import dev.subfly.yaba.ui.detail.folder.FolderDetailView
@@ -101,6 +102,9 @@ fun YabaMainNavigationView(
             }
             entry<ImageDetailRoute>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
                 ImagemarkDetailView(bookmarkId = key.bookmarkId)
+            }
+            entry<DocDetailRoute>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
+                DocmarkDetailView(bookmarkId = key.bookmarkId)
             }
         }
     )
