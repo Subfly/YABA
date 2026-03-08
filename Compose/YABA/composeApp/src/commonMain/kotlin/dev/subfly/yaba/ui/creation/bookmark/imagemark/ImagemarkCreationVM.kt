@@ -12,14 +12,6 @@ class ImagemarkCreationVM : ViewModel() {
         stateMachine.onEvent(event)
     }
 
-    fun pickFromGallery() {
-        stateMachine.onEvent(ImagemarkCreationEvent.OnPickFromGallery)
-    }
-
-    fun captureFromCamera() {
-        stateMachine.onEvent(ImagemarkCreationEvent.OnCaptureFromCamera)
-    }
-
     override fun onCleared() {
         stateMachine.clear()
         super.onCleared()

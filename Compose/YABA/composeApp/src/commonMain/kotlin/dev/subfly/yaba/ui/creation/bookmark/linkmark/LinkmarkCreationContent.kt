@@ -19,7 +19,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.core.components.webview.ConverterInput
 import dev.subfly.yaba.core.components.webview.YabaWebViewConverter
-import dev.subfly.yaba.core.navigation.creation.ResultStoreKeys
+import dev.subfly.yaba.util.ResultStoreKeys
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkFolderSelectionContent
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkInfoContent
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkLinkContent

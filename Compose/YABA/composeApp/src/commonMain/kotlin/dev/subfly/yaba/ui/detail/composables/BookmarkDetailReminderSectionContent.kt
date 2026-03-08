@@ -1,4 +1,4 @@
-package dev.subfly.yaba.ui.detail.bookmark.link.components
+package dev.subfly.yaba.ui.detail.composables
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -31,7 +31,7 @@ import kotlin.time.Instant
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalFoundationApi::class)
 @Composable
-internal fun LinkmarkDetailReminderSectionContent(
+internal fun BookmarkDetailReminderSectionContent(
     modifier: Modifier = Modifier,
     reminderDateEpochMillis: Long,
     mainColor: YabaColor,
@@ -66,7 +66,7 @@ internal fun LinkmarkDetailReminderSectionContent(
         modifier = modifier.padding(horizontal = 12.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        LinkmarkDetailLabel(
+        BookmarkDetailLabel(
             modifier = Modifier.padding(bottom = 8.dp),
             iconName = "notification-01",
             label = stringResource(Res.string.bookmark_detail_remind_me_title),

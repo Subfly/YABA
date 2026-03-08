@@ -39,25 +39,3 @@ class ResultStore {
 fun rememberResultStore() = rememberSaveable(saver = ResultStore.Saver) {
     ResultStore()
 }
-
-object ResultStoreKeys {
-    const val SELECTED_COLOR = "selected_color"
-    const val SELECTED_ICON = "selected_icon"
-    const val SELECTED_FOLDER = "selected_folder"
-    const val SELECTED_TAGS = "selected_tags"
-    const val SELECTED_IMAGE = "selected_image"
-    const val SHARED_IMAGE_DATA = "shared_image_data"
-}
-
-/**
- * Image data passed from share extension to Imagemark creation.
- */
-data class SharedImageData(
-    val bytes: ByteArray,
-    val extension: String,
-) {
-    override fun equals(other: Any?): Boolean =
-        other is SharedImageData && bytes.contentEquals(other.bytes) && extension == other.extension
-
-    override fun hashCode(): Int = bytes.contentHashCode() * 31 + extension.hashCode()
-}

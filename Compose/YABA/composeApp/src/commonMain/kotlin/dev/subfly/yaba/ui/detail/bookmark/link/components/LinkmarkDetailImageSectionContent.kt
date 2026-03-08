@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.components.NoContentView
+import dev.subfly.yaba.ui.detail.composables.BookmarkDetailLabel
 import dev.subfly.yaba.util.rememberUrlLauncher
 import dev.subfly.yabacore.model.ui.BookmarkPreviewUiModel
 import dev.subfly.yabacore.model.utils.YabaColor
@@ -58,7 +59,7 @@ internal fun LinkmarkDetailImageSectionContent(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            LinkmarkDetailLabel(
+            BookmarkDetailLabel(
                 iconName = "image-03",
                 label = stringResource(Res.string.bookmark_detail_image_header_title)
             )

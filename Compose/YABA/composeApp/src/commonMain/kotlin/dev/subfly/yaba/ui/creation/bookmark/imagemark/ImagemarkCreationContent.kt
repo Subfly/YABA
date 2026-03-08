@@ -36,8 +36,8 @@ import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.item.folder.PresentableFolderItemView
 import dev.subfly.yaba.core.components.item.tag.PresentableTagItemView
 import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
-import dev.subfly.yaba.core.navigation.creation.ResultStoreKeys
-import dev.subfly.yaba.core.navigation.creation.SharedImageData
+import dev.subfly.yaba.util.ResultStoreKeys
+import dev.subfly.yaba.util.SharedImageData
 import dev.subfly.yaba.core.navigation.creation.TagCreationRoute
 import dev.subfly.yaba.core.navigation.creation.TagSelectionRoute
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkLabel
@@ -62,8 +62,6 @@ import yaba.composeapp.generated.resources.create_bookmark_edit_tags
 import yaba.composeapp.generated.resources.create_bookmark_no_tags_selected_description
 import yaba.composeapp.generated.resources.create_bookmark_no_tags_selected_title
 import yaba.composeapp.generated.resources.create_bookmark_title_placeholder
-import yaba.composeapp.generated.resources.create_imagemark_capture_from_camera
-import yaba.composeapp.generated.resources.create_imagemark_pick_from_gallery
 import yaba.composeapp.generated.resources.folder
 import yaba.composeapp.generated.resources.info
 import yaba.composeapp.generated.resources.tags_title
@@ -153,8 +151,8 @@ fun ImagemarkCreationContent(bookmarkId: String?) {
             item {
                 ImagemarkImagePickerContent(
                     state = state,
-                    onPickFromGallery = { vm.pickFromGallery() },
-                    onCaptureFromCamera = { vm.captureFromCamera() },
+                    onPickFromGallery = { vm.onEvent(ImagemarkCreationEvent.OnPickFromGallery) },
+                    onCaptureFromCamera = { vm.onEvent(ImagemarkCreationEvent.OnCaptureFromCamera) },
                     onClearImage = { vm.onEvent(ImagemarkCreationEvent.OnClearImage) },
                 )
             }
@@ -259,7 +257,7 @@ private fun ImagemarkImagePickerContent(
             color = Color.White,
         )
         Text(
-            text = stringResource(Res.string.create_imagemark_pick_from_gallery),
+            text = "Pick From Gallery",
             color = Color.White,
         )
     }
@@ -281,7 +279,7 @@ private fun ImagemarkImagePickerContent(
             color = Color.White,
         )
         Text(
-            text = stringResource(Res.string.create_imagemark_capture_from_camera),
+            text = "Take Photo",
             color = Color.White,
         )
     }

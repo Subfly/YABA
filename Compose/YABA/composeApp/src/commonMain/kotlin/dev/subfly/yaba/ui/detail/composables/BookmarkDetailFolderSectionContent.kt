@@ -1,4 +1,4 @@
-package dev.subfly.yaba.ui.detail.bookmark.link.components
+package dev.subfly.yaba.ui.detail.composables
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,7 +15,7 @@ import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.folder
 
 @Composable
-internal fun LinkmarkDetailFolderSectionContent(
+internal fun BookmarkDetailFolderSectionContent(
     modifier: Modifier = Modifier,
     folder: FolderUiModel,
     mainColor: YabaColor,
@@ -25,7 +25,7 @@ internal fun LinkmarkDetailFolderSectionContent(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        LinkmarkDetailLabel(
+        BookmarkDetailLabel(
             modifier = Modifier.padding(bottom = 8.dp).padding(horizontal = 12.dp),
             iconName = "folder-01",
             label = stringResource(Res.string.folder)

@@ -28,8 +28,8 @@ import dev.subfly.yaba.core.navigation.creation.BookmarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.EmptyCretionRoute
 import dev.subfly.yaba.core.navigation.creation.ImagemarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.LinkmarkCreationRoute
-import dev.subfly.yaba.core.navigation.creation.ResultStoreKeys
-import dev.subfly.yaba.core.navigation.creation.SharedImageData
+import dev.subfly.yaba.util.ResultStoreKeys
+import dev.subfly.yaba.util.SharedImageData
 import dev.subfly.yaba.core.navigation.creation.YabaCreationSheet
 import dev.subfly.yaba.core.navigation.creation.creationNavigationConfig
 import dev.subfly.yaba.core.navigation.creation.rememberResultStore

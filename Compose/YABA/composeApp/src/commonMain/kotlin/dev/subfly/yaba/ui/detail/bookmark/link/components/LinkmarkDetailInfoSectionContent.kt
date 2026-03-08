@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
+import dev.subfly.yaba.ui.detail.composables.BookmarkDetailLabel
 import dev.subfly.yaba.util.formatDateTime
 import dev.subfly.yaba.util.uiTitle
 import dev.subfly.yabacore.model.ui.BookmarkPreviewUiModel
@@ -47,7 +48,7 @@ internal fun LinkmarkDetailInfoSectionContent(
         modifier = modifier.padding(horizontal = 12.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        LinkmarkDetailLabel(
+        BookmarkDetailLabel(
             modifier = Modifier.padding(bottom = 8.dp),
             iconName = "information-circle",
             label = stringResource(Res.string.info)

@@ -26,12 +26,12 @@ import dev.subfly.yaba.core.navigation.creation.HighlightCreationRoute
 import dev.subfly.yaba.core.navigation.main.FolderDetailRoute
 import dev.subfly.yaba.core.navigation.main.TagDetailRoute
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailActionsContent
-import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailFolderSectionContent
+import dev.subfly.yaba.ui.detail.composables.BookmarkDetailFolderSectionContent
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailHighlightItemContent
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailImageSectionContent
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailInfoSectionContent
-import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailReminderSectionContent
-import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailTagSectionContent
+import dev.subfly.yaba.ui.detail.composables.BookmarkDetailReminderSectionContent
+import dev.subfly.yaba.ui.detail.composables.BookmarkDetailTagSectionContent
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailVersionItemContent
 import dev.subfly.yaba.ui.detail.bookmark.link.models.DetailPage
 import dev.subfly.yaba.util.LocalAppStateManager
@@ -100,7 +100,7 @@ internal fun LinkmarkDetailLayout(
                     item { Spacer(modifier = Modifier.height(24.dp)) }
                     bookmarkDetails.parentFolder?.let { folder ->
                         item(key = "FOLDER") {
-                            LinkmarkDetailFolderSectionContent(
+                            BookmarkDetailFolderSectionContent(
                                 modifier = Modifier.animateItem(),
                                 folder = folder,
                                 mainColor = mainColor,
@@ -110,7 +110,7 @@ internal fun LinkmarkDetailLayout(
                     }
                     item { Spacer(modifier = Modifier.height(24.dp)) }
                     item(key = "TAGS") {
-                        LinkmarkDetailTagSectionContent(
+                        BookmarkDetailTagSectionContent(
                             modifier = Modifier.animateItem(),
                             tags = bookmarkDetails.tags,
                             onClickTag = { tag -> navigator.add(TagDetailRoute(tagId = tag.id)) }
@@ -119,7 +119,7 @@ internal fun LinkmarkDetailLayout(
                     state.reminderDateEpochMillis?.let { reminderMillis ->
                         item { Spacer(modifier = Modifier.height(24.dp)) }
                         item(key = "REMINDER") {
-                            LinkmarkDetailReminderSectionContent(
+                            BookmarkDetailReminderSectionContent(
                                 modifier = Modifier.animateItem(),
                                 reminderDateEpochMillis = reminderMillis,
                                 mainColor = mainColor,

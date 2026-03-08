@@ -28,10 +28,10 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.navigation.main.FolderDetailRoute
 import dev.subfly.yaba.core.navigation.main.TagDetailRoute
-import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailFolderSectionContent
-import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailLabel
-import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailReminderSectionContent
-import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailTagSectionContent
+import dev.subfly.yaba.ui.detail.composables.BookmarkDetailFolderSectionContent
+import dev.subfly.yaba.ui.detail.composables.BookmarkDetailLabel
+import dev.subfly.yaba.ui.detail.composables.BookmarkDetailReminderSectionContent
+import dev.subfly.yaba.ui.detail.composables.BookmarkDetailTagSectionContent
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.formatDateTime
 import dev.subfly.yabacore.model.utils.YabaColor
@@ -89,7 +89,7 @@ internal fun ImagemarkDetailLayout(
                     modifier = Modifier.padding(horizontal = 12.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    LinkmarkDetailLabel(
+                    BookmarkDetailLabel(
                         modifier = Modifier.padding(bottom = 8.dp),
                         iconName = "information-circle",
                         label = stringResource(Res.string.info)
@@ -151,7 +151,7 @@ internal fun ImagemarkDetailLayout(
             item { Spacer(modifier = Modifier.height(24.dp)) }
             bookmark.parentFolder?.let { folder ->
                 item {
-                    LinkmarkDetailFolderSectionContent(
+                    BookmarkDetailFolderSectionContent(
                         folder = folder,
                         mainColor = mainColor,
                         onClickFolder = { navigator.add(FolderDetailRoute(folderId = it.id)) }
@@ -160,7 +160,7 @@ internal fun ImagemarkDetailLayout(
             }
             item { Spacer(modifier = Modifier.height(24.dp)) }
             item {
-                LinkmarkDetailTagSectionContent(
+                BookmarkDetailTagSectionContent(
                     tags = bookmark.tags,
                     onClickTag = { tag -> navigator.add(TagDetailRoute(tagId = tag.id)) }
                 )
@@ -168,7 +168,7 @@ internal fun ImagemarkDetailLayout(
             state.reminderDateEpochMillis?.let { reminderMillis ->
                 item { Spacer(modifier = Modifier.height(24.dp)) }
                 item {
-                    LinkmarkDetailReminderSectionContent(
+                    BookmarkDetailReminderSectionContent(
                         reminderDateEpochMillis = reminderMillis,
                         mainColor = mainColor,
                         onCancelReminder = { onEvent(ImagemarkDetailEvent.OnCancelReminder) },

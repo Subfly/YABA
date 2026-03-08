@@ -1,4 +1,4 @@
-package dev.subfly.yaba.ui.detail.bookmark.link.components
+package dev.subfly.yaba.ui.detail.composables
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +24,7 @@ import yaba.composeapp.generated.resources.bookmark_detail_no_tags_added_title
 import yaba.composeapp.generated.resources.tags_title
 
 @Composable
-internal fun LinkmarkDetailTagSectionContent(
+internal fun BookmarkDetailTagSectionContent(
     modifier: Modifier = Modifier,
     tags: List<TagUiModel>,
     onClickTag: (TagUiModel) -> Unit,
@@ -33,7 +33,7 @@ internal fun LinkmarkDetailTagSectionContent(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        LinkmarkDetailLabel(
+        BookmarkDetailLabel(
             modifier = Modifier.padding(bottom = 8.dp).padding(horizontal = 12.dp),
             iconName = "tag-01",
             label = stringResource(Res.string.tags_title)
