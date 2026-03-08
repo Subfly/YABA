@@ -1,4 +1,4 @@
-package dev.subfly.yaba.ui.detail.bookmark.link
+package dev.subfly.yaba.ui.detail.bookmark.image
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -10,23 +10,24 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.ui.detail.bookmark.components.BookmarkContentDetailLayout
+import dev.subfly.yaba.ui.detail.bookmark.image.layout.ImagemarkContentLayout
+import dev.subfly.yaba.ui.detail.bookmark.image.layout.ImagemarkDetailLayout
 import dev.subfly.yaba.ui.detail.bookmark.link.components.RemindMePickerDialog
-import dev.subfly.yaba.ui.detail.bookmark.link.layout.LinkmarkContentLayout
-import dev.subfly.yaba.ui.detail.bookmark.link.layout.LinkmarkDetailLayout
 import dev.subfly.yaba.util.rememberNotificationPermissionRequester
+import dev.subfly.yabacore.common.computeTriggerMillisFromDatePicker
 import dev.subfly.yabacore.model.utils.BookmarkKind
-import dev.subfly.yabacore.state.detail.linkmark.LinkmarkDetailEvent
+import dev.subfly.yabacore.state.detail.imagemark.ImagemarkDetailEvent
 import dev.subfly.yabacore.toast.ToastIconType
 import dev.subfly.yabacore.toast.ToastManager
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.notifications_disabled_message
 
 @Composable
-fun LinkmarkDetailView(
+fun ImagemarkDetailView(
     modifier: Modifier = Modifier,
     bookmarkId: String,
 ) {
-    val vm = viewModel { LinkmarkDetailVM() }
+    val vm = viewModel { ImagemarkDetailVM() }
     val state by vm.state.collectAsStateWithLifecycle()
     var showRemindMePicker by remember { mutableStateOf(false) }
 
@@ -42,13 +43,13 @@ fun LinkmarkDetailView(
     }
 
     LaunchedEffect(bookmarkId) {
-        vm.onEvent(LinkmarkDetailEvent.OnInit(bookmarkId = bookmarkId))
+        vm.onEvent(ImagemarkDetailEvent.OnInit(bookmarkId = bookmarkId))
     }
 
     BookmarkContentDetailLayout(
         modifier = modifier,
         contentLayout = { onExpand ->
-            LinkmarkContentLayout(
+            ImagemarkContentLayout(
                 state = state,
                 onShowDetail = onExpand,
                 onEvent = vm::onEvent,
@@ -62,7 +63,7 @@ fun LinkmarkDetailView(
             )
         },
         detailLayout = { onHide ->
-            LinkmarkDetailLayout(
+            ImagemarkDetailLayout(
                 state = state,
                 onHide = onHide,
                 onEvent = vm::onEvent,
@@ -72,15 +73,17 @@ fun LinkmarkDetailView(
 
     if (showRemindMePicker) {
         RemindMePickerDialog(
-            bookmarkKind = state.bookmark?.kind ?: BookmarkKind.LINK,
+            bookmarkKind = state.bookmark?.kind ?: BookmarkKind.IMAGE,
             onScheduleReminder = { selectedDateMillis, hour, minute, title, message ->
                 vm.onEvent(
-                    LinkmarkDetailEvent.OnScheduleReminder(
-                        selectedDateMillis = selectedDateMillis,
-                        hour = hour,
-                        minute = minute,
+                    ImagemarkDetailEvent.OnScheduleReminder(
                         title = title,
                         message = message,
+                        triggerAtEpochMillis = computeTriggerMillisFromDatePicker(
+                            selectedDateMillis = selectedDateMillis,
+                            hour = hour,
+                            minute = minute,
+                        ),
                     ),
                 )
             },

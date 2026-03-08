@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import java.io.InputStream
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -25,7 +26,10 @@ import dev.subfly.yaba.core.components.toast.YabaToastHost
 import dev.subfly.yaba.core.navigation.alert.DeletionVM
 import dev.subfly.yaba.core.navigation.creation.BookmarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.EmptyCretionRoute
+import dev.subfly.yaba.core.navigation.creation.ImagemarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.LinkmarkCreationRoute
+import dev.subfly.yaba.core.navigation.creation.ResultStoreKeys
+import dev.subfly.yaba.core.navigation.creation.SharedImageData
 import dev.subfly.yaba.core.navigation.creation.YabaCreationSheet
 import dev.subfly.yaba.core.navigation.creation.creationNavigationConfig
 import dev.subfly.yaba.core.navigation.creation.rememberResultStore
@@ -77,6 +81,13 @@ class ShareActivity : ComponentActivity() {
                             intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
                         }
                     if (uri != null) {
+                        // For images, read bytes immediately so we can pass to Imagemark creation
+                        if (type != null && type.startsWith("image/")) {
+                            readImageBytesFromUri(uri, type)?.let { (bytes, ext) ->
+                                return SharedContent.ImageBytes(bytes, ext)
+                            }
+                            return null
+                        }
                         return SharedContent.Uri(uri, type)
                     }
                 }
@@ -90,16 +101,6 @@ class ShareActivity : ComponentActivity() {
             }
 
             Intent.ACTION_SEND_MULTIPLE -> {
-                // Multiple items share - only accept if NOT image or PDF
-                // For images and PDFs, reject multiple shares to avoid user confusion
-                val isImageOrPdf = type != null &&
-                        (type.startsWith("image/") || type == "application/pdf")
-                if (isImageOrPdf) {
-                    // Reject multiple images/PDFs - return null to close activity
-                    return null
-                }
-
-                // For text/other types, take first item
                 val uris =
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                         intent.getParcelableArrayListExtra(
@@ -111,18 +112,47 @@ class ShareActivity : ComponentActivity() {
                         intent.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM)
                     }
                 if (uris.isNullOrEmpty().not()) {
-                    return SharedContent.Uri(uris[0], type)
+                    val firstUri = uris[0]
+                    // For images, take first and read bytes (same as single share)
+                    if (type != null && type.startsWith("image/")) {
+                        readImageBytesFromUri(firstUri, type)?.let { (bytes, ext) ->
+                            return SharedContent.ImageBytes(bytes, ext)
+                        }
+                        return null
+                    }
+                    // For PDF, reject multiple
+                    if (type == "application/pdf") return null
+                    return SharedContent.Uri(firstUri, type)
                 }
             }
         }
 
         return null
     }
+
+    private fun readImageBytesFromUri(uri: Uri, mimeType: String?): Pair<ByteArray, String>? {
+        return try {
+            contentResolver.openInputStream(uri)?.use { stream: InputStream ->
+                val bytes = stream.readBytes()
+                val ext = mimeType?.substringAfterLast("/")?.lowercase()?.takeIf { it.isNotBlank() }
+                    ?: "jpeg"
+                Pair(bytes, if (ext == "jpeg" || ext == "jpg") "jpeg" else ext)
+            }
+        } catch (_: Exception) {
+            null
+        }
+    }
 }
 
 sealed class SharedContent {
     data class Text(val text: String, val mimeType: String?) : SharedContent()
     data class Uri(val uri: android.net.Uri, val mimeType: String?) : SharedContent()
+    data class ImageBytes(val bytes: ByteArray, val extension: String) : SharedContent() {
+        override fun equals(other: Any?): Boolean =
+            other is ImageBytes && bytes.contentEquals(other.bytes) && extension == other.extension
+
+        override fun hashCode(): Int = bytes.contentHashCode() * 31 + extension.hashCode()
+    }
 }
 
 private fun extractUrlFromText(text: String): String? {
@@ -140,12 +170,20 @@ private fun isValidUrl(text: String): Boolean {
 private fun handleSharedContent(
     sharedContent: SharedContent?,
     onNavigateToLinkmark: (String) -> Unit,
+    onNavigateToImagemark: (SharedImageData) -> Unit,
     onNavigateToBookmarkSelection: () -> Unit,
     onShowCreation: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     if (sharedContent == null) {
         onDismiss()
+        return
+    }
+
+    // Image bytes from share - go directly to Imagemark creation
+    if (sharedContent is SharedContent.ImageBytes) {
+        onNavigateToImagemark(SharedImageData(sharedContent.bytes, sharedContent.extension))
+        onShowCreation()
         return
     }
 
@@ -172,6 +210,8 @@ private fun handleSharedContent(
                     null
                 }
             }
+
+            is SharedContent.ImageBytes -> null
         }
 
     // Navigate to appropriate route
@@ -226,6 +266,10 @@ private fun ShareActivityContent(
                                 initialUrl = url,
                             )
                         )
+                    },
+                    onNavigateToImagemark = { imageData ->
+                        navigationResultStore.setResult(ResultStoreKeys.SHARED_IMAGE_DATA, imageData)
+                        creationNavigator.add(ImagemarkCreationRoute(bookmarkId = null))
                     },
                     onNavigateToBookmarkSelection = {
                         creationNavigator.add(BookmarkCreationRoute())

@@ -61,6 +61,7 @@ kotlin {
             implementation(libs.androidx.datastore.preferences)
             implementation(libs.filekit.core)
             implementation(libs.filekit.coil)
+            implementation(libs.filekit.dialogs)
             implementation(libs.okio)
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -78,6 +79,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.ktor.client.okhttp)
             implementation(libs.androidx.core)
+            implementation(libs.androidx.activity.ktx)
         }
 
         jvmMain.dependencies {

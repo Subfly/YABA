@@ -3,6 +3,7 @@ package dev.subfly.yabacore.common
 import dev.subfly.yabacore.database.DatabaseProvider
 import dev.subfly.yabacore.notifications.initializePlatformNotifications
 import dev.subfly.yabacore.queue.CoreOperationQueue
+import dev.subfly.yabacore.util.FileKitHelper
 import kotlin.concurrent.Volatile
 
 /**
@@ -39,13 +40,16 @@ object CoreRuntime {
     fun initialize(platformContext: Any? = null) {
         if (initialized) return
 
-        // 1. Initialize database
+        // 1. Initialize FileKit (platform-specific: Android dialogs, JVM app dir, Apple no-op)
+        FileKitHelper.init(platformContext)
+
+        // 2. Initialize database
         DatabaseProvider.initialize(platformContext)
 
-        // 2. Initialize platform notification support (Android stores the Context)
+        // 3. Initialize platform notification support (Android stores the Context)
         initializePlatformNotifications(platformContext)
 
-        // 3. Start the operation queue (app-lifetime worker)
+        // 4. Start the operation queue (app-lifetime worker)
         CoreOperationQueue.start()
 
         initialized = true

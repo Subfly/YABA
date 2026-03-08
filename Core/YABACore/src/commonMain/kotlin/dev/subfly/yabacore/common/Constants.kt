@@ -69,15 +69,15 @@ object CoreConstants {
         const val ROOT_DIR = "YABA"
         const val BOOKMARKS_DIR = "bookmarks"
 
+        /** Bookmark-kind-neutral root: bookmarks/<id>/ */
+        fun bookmarkFolder(bookmarkId: String): String = join(BOOKMARKS_DIR, bookmarkId)
+
         object Linkmark {
             const val LINK_IMAGE_BASENAME = "link_image"
             const val DOMAIN_ICON_BASENAME = "domain_icon"
             const val HTML_EXPORTS_DIR = "html_exports"
             const val READABLE_DIR = "readable"
             const val ASSETS_DIR = "assets"
-
-            /** Bookmark root directory: bookmarks/<id>/ (all assets stored directly here) */
-            fun bookmarkFolder(bookmarkId: String): String = join(BOOKMARKS_DIR, bookmarkId)
 
             fun linkImagePath(
                 bookmarkId: String,
@@ -107,6 +107,18 @@ object CoreConstants {
 
             fun assetPath(bookmarkId: String, assetId: String, extension: String): String =
                 join(assetsDir(bookmarkId), "$assetId.$extension")
+        }
+
+        object Imagemark {
+            const val IMAGE_BASENAME = "image"
+
+            fun imagePath(
+                bookmarkId: String,
+                extension: String = "jpeg",
+            ): String = join(
+                bookmarkFolder(bookmarkId),
+                "$IMAGE_BASENAME.$extension",
+            )
         }
 
         fun bookmarkFolderPath(

@@ -41,12 +41,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.item.bookmark.BookmarkItemView
+import dev.subfly.yaba.core.navigation.main.DocDetailRoute
+import dev.subfly.yaba.core.navigation.main.ImageDetailRoute
 import dev.subfly.yaba.core.navigation.main.LinkDetailRoute
+import dev.subfly.yaba.core.navigation.main.NoteDetailRoute
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalUserPreferences
 import dev.subfly.yaba.util.rememberShareHandler
 import dev.subfly.yaba.util.uiTitle
 import dev.subfly.yaba.util.yabaPointerEventSpy
+import dev.subfly.yabacore.filesystem.access.YabaFileAccessor
 import dev.subfly.yabacore.managers.LinkmarkManager
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.BookmarkKind
@@ -213,15 +217,28 @@ fun SearchView(modifier: Modifier = Modifier) {
                             model = model,
                             appearance = appearance,
                             cardImageSizing = cardImageSizing,
-                            onClick = { navigator.add(LinkDetailRoute(bookmarkId = model.id)) },
+                            onClick = {
+                                navigator.add(
+                                    when (model.kind) {
+                                        BookmarkKind.LINK -> LinkDetailRoute(bookmarkId = model.id)
+                                        BookmarkKind.NOTE -> NoteDetailRoute(bookmarkId = model.id)
+                                        BookmarkKind.IMAGE -> ImageDetailRoute(bookmarkId = model.id)
+                                        BookmarkKind.FILE -> DocDetailRoute(bookmarkId = model.id)
+                                    }
+                                )
+                            },
                             onDeleteBookmark = { bookmark ->
                                 vm.onEvent(SearchEvent.OnDeleteBookmark(bookmark = bookmark))
                             },
                             onShareBookmark = { bookmark ->
-                                if (bookmark.kind == BookmarkKind.LINK) {
-                                    shareScope.launch {
+                                when (bookmark.kind) {
+                                    BookmarkKind.LINK -> shareScope.launch {
                                         LinkmarkManager.getBookmarkUrl(bookmark.id)?.let(shareUrl)
                                     }
+                                    BookmarkKind.IMAGE -> shareScope.launch {
+                                        YabaFileAccessor.shareImageBookmark(bookmark.id)
+                                    }
+                                    else -> {}
                                 }
                             },
                             index = index,

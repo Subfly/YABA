@@ -30,7 +30,7 @@ import androidx.compose.ui.window.Dialog
 import dev.subfly.yaba.util.formatDateTime
 import dev.subfly.yabacore.common.computeTriggerMillisFromDatePicker
 import dev.subfly.yabacore.model.utils.BookmarkKind
-import dev.subfly.yabacore.state.detail.linkmark.LinkmarkDetailEvent
+import dev.subfly.yabacore.notifications.PlatformNotificationText
 import dev.subfly.yabacore.toast.ToastIconType
 import dev.subfly.yabacore.toast.ToastManager
 import org.jetbrains.compose.resources.StringResource
@@ -121,13 +121,18 @@ private const val STEP_TIME = 1
 /**
  * Two-step reminder picker: first selects a date, then selects a time.
  * Permission is verified by the caller before this dialog is shown.
- * Dispatches [LinkmarkDetailEvent.OnScheduleReminder] with a randomly chosen title/message
- * selected from the pool matching [bookmarkKind].
+ * Invokes [onScheduleReminder] with a randomly chosen title/message from the pool matching [bookmarkKind].
  */
 @Composable
 internal fun RemindMePickerDialog(
     bookmarkKind: BookmarkKind,
-    onEvent: (LinkmarkDetailEvent) -> Unit,
+    onScheduleReminder: (
+        selectedDateMillis: Long,
+        hour: Int,
+        minute: Int,
+        title: PlatformNotificationText,
+        message: PlatformNotificationText,
+    ) -> Unit,
     onDismiss: () -> Unit,
 ) {
     var step by remember { mutableIntStateOf(STEP_DATE) }
@@ -215,14 +220,12 @@ internal fun RemindMePickerDialog(
                                     val messages = notificationMessagesByKind[bookmarkKind]
                                         ?: notificationMessagesByKind.getValue(BookmarkKind.LINK)
 
-                                    onEvent(
-                                        LinkmarkDetailEvent.OnScheduleReminder(
-                                            selectedDateMillis = selectedDateMillis,
-                                            hour = timePickerState.hour,
-                                            minute = timePickerState.minute,
-                                            title = titles.random(),
-                                            message = messages.random(),
-                                        )
+                                    onScheduleReminder(
+                                        selectedDateMillis,
+                                        timePickerState.hour,
+                                        timePickerState.minute,
+                                        titles.random(),
+                                        messages.random(),
                                     )
 
                                     val triggerMillis = computeTriggerMillisFromDatePicker(
@@ -240,9 +243,7 @@ internal fun RemindMePickerDialog(
                                     )
                                     onDismiss()
                                 }
-                            ) {
-                                Text(stringResource(Res.string.done))
-                            }
+                            ) { Text(stringResource(Res.string.done)) }
                         }
                     }
                 }

@@ -13,6 +13,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import dev.subfly.yaba.ui.creation.bookmark.BookmarkCreationRouteSelectionContent
+import dev.subfly.yaba.ui.creation.bookmark.imagemark.ImagemarkCreationContent
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.LinkmarkCreationContent
 import dev.subfly.yaba.ui.creation.folder.FolderCreationContent
 import dev.subfly.yaba.ui.creation.highlight.HighlightCreationContent
@@ -87,6 +88,9 @@ fun YabaCreationNavigationView(
                     bookmarkId = key.bookmarkId,
                     initialUrl = key.initialUrl,
                 )
+            }
+            entry<ImagemarkCreationRoute> { key ->
+                ImagemarkCreationContent(bookmarkId = key.bookmarkId)
             }
             entry<FolderSelectionRoute> { key ->
                 FolderSelectionContent(

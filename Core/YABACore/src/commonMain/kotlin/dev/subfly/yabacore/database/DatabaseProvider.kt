@@ -3,6 +3,7 @@ package dev.subfly.yabacore.database
 import dev.subfly.yabacore.database.dao.BookmarkDao
 import dev.subfly.yabacore.database.dao.FolderDao
 import dev.subfly.yabacore.database.dao.HighlightDao
+import dev.subfly.yabacore.database.dao.ImageBookmarkDao
 import dev.subfly.yabacore.database.dao.LinkBookmarkDao
 import dev.subfly.yabacore.database.dao.ReadableAssetDao
 import dev.subfly.yabacore.database.dao.ReadableVersionDao
@@ -47,6 +48,9 @@ object DatabaseProvider {
 
     val linkBookmarkDao: LinkBookmarkDao
         get() = database().linkBookmarkDao()
+
+    val imageBookmarkDao: ImageBookmarkDao
+        get() = database().imageBookmarkDao()
 
     val tagBookmarkDao: TagBookmarkDao
         get() = database().tagBookmarkDao()

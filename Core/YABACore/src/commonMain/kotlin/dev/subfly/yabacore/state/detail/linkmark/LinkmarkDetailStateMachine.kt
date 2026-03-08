@@ -121,7 +121,7 @@ class LinkmarkDetailStateMachine :
                             val assetsBaseUrl = if (markdown != null) {
                                 val folderPath =
                                     BookmarkFileManager.getAbsolutePath(
-                                        CoreConstants.FileSystem.Linkmark.bookmarkFolder(id),
+                                        CoreConstants.FileSystem.bookmarkFolder(id),
                                     )
                                 val base =
                                     if (folderPath.startsWith("file://")) folderPath else "file://$folderPath"

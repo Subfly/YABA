@@ -125,7 +125,7 @@ object LinkmarkFileManager {
     }
 
     suspend fun purgeLinkmarkFolder(bookmarkId: String) {
-        val relativePath = CoreConstants.FileSystem.Linkmark.bookmarkFolder(bookmarkId)
+        val relativePath = CoreConstants.FileSystem.bookmarkFolder(bookmarkId)
         BookmarkFileManager.deleteRelativePath(
             relativePath = relativePath,
         )

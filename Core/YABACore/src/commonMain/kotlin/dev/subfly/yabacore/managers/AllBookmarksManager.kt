@@ -9,6 +9,7 @@ import dev.subfly.yabacore.database.mappers.toPreviewUiModel
 import dev.subfly.yabacore.database.mappers.toUiModel
 import dev.subfly.yabacore.database.models.BookmarkWithRelations
 import dev.subfly.yabacore.filesystem.BookmarkFileManager
+import dev.subfly.yabacore.filesystem.ImagemarkFileManager
 import dev.subfly.yabacore.filesystem.LinkmarkFileManager
 import dev.subfly.yabacore.model.ui.BookmarkPreviewUiModel
 import dev.subfly.yabacore.model.ui.BookmarkUiModel
@@ -37,6 +38,7 @@ object AllBookmarksManager {
     private val bookmarkDao get() = DatabaseProvider.bookmarkDao
     private val tagBookmarkDao get() = DatabaseProvider.tagBookmarkDao
     private val linkBookmarkDao get() = DatabaseProvider.linkBookmarkDao
+    private val imageBookmarkDao get() = DatabaseProvider.imageBookmarkDao
     private val highlightDao get() = DatabaseProvider.highlightDao
     private val readableVersionDao get() = DatabaseProvider.readableVersionDao
     private val readableAssetDao get() = DatabaseProvider.readableAssetDao
@@ -53,7 +55,7 @@ object AllBookmarksManager {
         val kindSet = kinds?.takeIf { it.isNotEmpty() }
         return bookmarkDao
             .observeAll(
-                kinds = kindSet ?: listOf(BookmarkKind.LINK),
+                kinds = kindSet ?: BookmarkKind.entries,
                 applyKindFilter = kindSet != null,
                 sortType = sortType.name,
                 sortOrder = sortOrder.name,
@@ -318,6 +320,7 @@ object AllBookmarksManager {
         // 3. Remove all related SQLite cache rows
         tagBookmarkDao.deleteForBookmark(bookmarkId)
         linkBookmarkDao.deleteById(bookmarkId)
+        imageBookmarkDao.deleteById(bookmarkId)
         highlightDao.deleteByBookmarkId(bookmarkId)
         readableAssetDao.deleteByBookmarkId(bookmarkId)
         readableVersionDao.deleteByBookmarkId(bookmarkId)
@@ -394,6 +397,12 @@ object AllBookmarksManager {
                     CoreConstants.FileSystem.Linkmark.linkImagePath(bookmarkId, ext)
                 }
 
+                BookmarkKind.IMAGE -> {
+                    val ext = sanitizeExtension(imageExtension)
+                    ImagemarkFileManager.saveImageBytes(bookmarkId, bytes, ext)
+                    CoreConstants.FileSystem.Imagemark.imagePath(bookmarkId, ext)
+                }
+
                 else -> {
                     val ext = sanitizeExtension(imageExtension)
                     val kindDir = kind.name.lowercase()
@@ -413,6 +422,8 @@ object AllBookmarksManager {
                     LinkmarkFileManager.saveDomainIconBytes(bookmarkId, bytes)
                     CoreConstants.FileSystem.Linkmark.domainIconPath(bookmarkId, "png")
                 }
+
+                BookmarkKind.IMAGE -> null
 
                 else -> {
                     val ext = "png"
