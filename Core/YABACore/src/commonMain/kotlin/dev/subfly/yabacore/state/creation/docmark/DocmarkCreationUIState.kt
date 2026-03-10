@@ -4,6 +4,8 @@ import androidx.compose.runtime.Stable
 import dev.subfly.yabacore.model.ui.DocmarkUiModel
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.ui.TagUiModel
+import dev.subfly.yabacore.model.utils.BookmarkAppearance
+import dev.subfly.yabacore.model.utils.CardImageSizing
 
 @Stable
 data class DocmarkCreationUIState(
@@ -12,6 +14,9 @@ data class DocmarkCreationUIState(
     val label: String = "",
     val description: String = "",
     val summary: String = "",
+    val bookmarkAppearance: BookmarkAppearance = BookmarkAppearance.LIST,
+    val cardImageSizing: CardImageSizing = CardImageSizing.SMALL,
+
     val previewImageBytes: ByteArray? = null,
     val previewImageExtension: String = "png",
     val internalReadableMarkdown: String? = null,
@@ -41,6 +46,8 @@ data class DocmarkCreationUIState(
         } else if (other.pdfBytes != null) return false
 
         if (sourceFileName != other.sourceFileName) return false
+        if (bookmarkAppearance != other.bookmarkAppearance) return false
+        if (cardImageSizing != other.cardImageSizing) return false
         if (label != other.label) return false
         if (description != other.description) return false
         if (summary != other.summary) return false
@@ -62,6 +69,8 @@ data class DocmarkCreationUIState(
     override fun hashCode(): Int {
         var result = pdfBytes?.contentHashCode() ?: 0
         result = 31 * result + (sourceFileName?.hashCode() ?: 0)
+        result = 31 * result + bookmarkAppearance.hashCode()
+        result = 31 * result + cardImageSizing.hashCode()
         result = 31 * result + label.hashCode()
         result = 31 * result + description.hashCode()
         result = 31 * result + summary.hashCode()

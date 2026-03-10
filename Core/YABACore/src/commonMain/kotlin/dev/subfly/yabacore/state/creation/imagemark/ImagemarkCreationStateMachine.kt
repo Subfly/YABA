@@ -7,7 +7,10 @@ import dev.subfly.yabacore.managers.FolderManager
 import dev.subfly.yabacore.managers.ImagemarkManager
 import dev.subfly.yabacore.filesystem.access.YabaFileAccessor
 import dev.subfly.yabacore.managers.TagManager
+import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.BookmarkKind
+import dev.subfly.yabacore.model.utils.CardImageSizing
+import dev.subfly.yabacore.preferences.SettingsStores
 import dev.subfly.yabacore.state.base.BaseStateMachine
 import io.github.vinceglb.filekit.extension
 import io.github.vinceglb.filekit.readBytes
@@ -20,10 +23,12 @@ class ImagemarkCreationStateMachine :
         initialState = ImagemarkCreationUIState(),
     ) {
     private var isInitialized = false
+    private val preferencesStore get() = SettingsStores.userPreferences
 
     override fun onEvent(event: ImagemarkCreationEvent) {
         when (event) {
             is ImagemarkCreationEvent.OnInit -> onInit(event)
+            ImagemarkCreationEvent.OnCyclePreviewAppearance -> onCyclePreviewAppearance()
             ImagemarkCreationEvent.OnPickFromGallery -> onPickFromGallery()
             is ImagemarkCreationEvent.OnImageFromShare -> onImageFromShare(event)
             ImagemarkCreationEvent.OnCaptureFromCamera -> onCaptureFromCamera()
@@ -42,6 +47,14 @@ class ImagemarkCreationStateMachine :
         isInitialized = true
 
         launch {
+            val preferences = preferencesStore.get()
+            updateState {
+                it.copy(
+                    bookmarkAppearance = preferences.preferredBookmarkAppearance,
+                    cardImageSizing = preferences.preferredCardImageSizing,
+                )
+            }
+
             event.imagemarkIdString?.let { imagemarkId ->
                 val existing = ImagemarkManager.getImagemarkDetail(imagemarkId)
                 if (existing != null) {
@@ -177,6 +190,24 @@ class ImagemarkCreationStateMachine :
             it.copy(
                 imageBytes = null,
                 imageExtension = "jpeg",
+            )
+        }
+    }
+
+    private fun onCyclePreviewAppearance() {
+        val state = currentState()
+        val (nextAppearance, nextSizing) = when (state.bookmarkAppearance) {
+            BookmarkAppearance.LIST -> BookmarkAppearance.CARD to CardImageSizing.SMALL
+            BookmarkAppearance.CARD -> when (state.cardImageSizing) {
+                CardImageSizing.SMALL -> BookmarkAppearance.CARD to CardImageSizing.BIG
+                CardImageSizing.BIG -> BookmarkAppearance.GRID to state.cardImageSizing
+            }
+            BookmarkAppearance.GRID -> BookmarkAppearance.LIST to state.cardImageSizing
+        }
+        updateState {
+            it.copy(
+                bookmarkAppearance = nextAppearance,
+                cardImageSizing = nextSizing,
             )
         }
     }

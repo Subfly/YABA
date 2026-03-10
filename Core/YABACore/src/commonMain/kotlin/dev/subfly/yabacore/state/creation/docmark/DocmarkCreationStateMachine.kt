@@ -8,7 +8,10 @@ import dev.subfly.yabacore.managers.DocmarkManager
 import dev.subfly.yabacore.managers.FolderManager
 import dev.subfly.yabacore.managers.ReadableContentManager
 import dev.subfly.yabacore.managers.TagManager
+import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.BookmarkKind
+import dev.subfly.yabacore.model.utils.CardImageSizing
+import dev.subfly.yabacore.preferences.SettingsStores
 import dev.subfly.yabacore.state.base.BaseStateMachine
 import dev.subfly.yabacore.unfurl.ReadableUnfurl
 import io.github.vinceglb.filekit.name
@@ -22,12 +25,14 @@ class DocmarkCreationStateMachine :
         initialState = DocmarkCreationUIState(),
     ) {
     private var isInitialized = false
+    private val preferencesStore get() = SettingsStores.userPreferences
 
     override fun onEvent(event: DocmarkCreationEvent) {
         when (event) {
             is DocmarkCreationEvent.OnInit -> onInit(event)
             DocmarkCreationEvent.OnPickPdf -> onPickPdf()
             DocmarkCreationEvent.OnClearPdf -> onClearPdf()
+            DocmarkCreationEvent.OnCyclePreviewAppearance -> onCyclePreviewAppearance()
             is DocmarkCreationEvent.OnSetGeneratedPreview -> onSetGeneratedPreview(event)
             is DocmarkCreationEvent.OnSetInternalReadableMarkdown -> onSetInternalReadableMarkdown(event)
             is DocmarkCreationEvent.OnChangeLabel -> onChangeLabel(event)
@@ -44,6 +49,14 @@ class DocmarkCreationStateMachine :
         isInitialized = true
 
         launch {
+            val preferences = preferencesStore.get()
+            updateState {
+                it.copy(
+                    bookmarkAppearance = preferences.preferredBookmarkAppearance,
+                    cardImageSizing = preferences.preferredCardImageSizing,
+                )
+            }
+
             event.docmarkIdString?.let { docmarkId ->
                 val existing = DocmarkManager.getDocmarkDetail(docmarkId)
                 if (existing != null) {
@@ -123,6 +136,24 @@ class DocmarkCreationStateMachine :
                 sourceFileName = null,
                 previewImageBytes = null,
                 internalReadableMarkdown = null,
+            )
+        }
+    }
+
+    private fun onCyclePreviewAppearance() {
+        val state = currentState()
+        val (nextAppearance, nextSizing) = when (state.bookmarkAppearance) {
+            BookmarkAppearance.LIST -> BookmarkAppearance.CARD to CardImageSizing.SMALL
+            BookmarkAppearance.CARD -> when (state.cardImageSizing) {
+                CardImageSizing.SMALL -> BookmarkAppearance.CARD to CardImageSizing.BIG
+                CardImageSizing.BIG -> BookmarkAppearance.GRID to state.cardImageSizing
+            }
+            BookmarkAppearance.GRID -> BookmarkAppearance.LIST to state.cardImageSizing
+        }
+        updateState {
+            it.copy(
+                bookmarkAppearance = nextAppearance,
+                cardImageSizing = nextSizing,
             )
         }
     }

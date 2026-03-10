@@ -1,4 +1,4 @@
-package dev.subfly.yaba.ui.creation.bookmark.linkmark.components
+package dev.subfly.yaba.ui.creation.bookmark.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,11 +22,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.item.tag.PresentableTagItemView
-import dev.subfly.yaba.core.navigation.creation.TagCreationRoute
-import dev.subfly.yaba.core.navigation.creation.TagSelectionRoute
-import dev.subfly.yaba.util.LocalCreationContentNavigator
+import dev.subfly.yabacore.model.ui.FolderUiModel
+import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.model.utils.YabaColor
-import dev.subfly.yabacore.state.creation.linkmark.LinkmarkCreationUIState
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.icon.iconTintArgb
 import org.jetbrains.compose.resources.stringResource
@@ -36,33 +34,28 @@ import yaba.composeapp.generated.resources.create_bookmark_edit_tags
 import yaba.composeapp.generated.resources.create_bookmark_no_tags_selected_description
 import yaba.composeapp.generated.resources.create_bookmark_no_tags_selected_title
 import yaba.composeapp.generated.resources.tags_title
-import kotlin.uuid.ExperimentalUuidApi
 
-@OptIn(ExperimentalUuidApi::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-internal fun LinkmarkTagSelectionContent(
-    state: LinkmarkCreationUIState,
+fun BookmarkTagSelectionContent(
+    selectedFolder: FolderUiModel?,
+    selectedTags: List<TagUiModel>,
+    onSelectTags: () -> Unit,
+    onNavigateToEdit: (TagUiModel) -> Unit,
+    nullModelPresentableColor: YabaColor = YabaColor.BLUE,
 ) {
-    val creationNavigator = LocalCreationContentNavigator.current
+    val color = selectedFolder?.color ?: nullModelPresentableColor
 
     Spacer(modifier = Modifier.height(4.dp))
-    LinkmarkLabel(
+    BookmarkCreationLabel(
         label = stringResource(Res.string.tags_title),
         iconName = "tag-01",
         extraContent = {
             TextButton(
                 shapes = ButtonDefaults.shapes(),
-                onClick = {
-                    creationNavigator.add(
-                        TagSelectionRoute(
-                            selectedTagIds = state.selectedTags.map { it.id }
-                        )
-                    )
-                },
+                onClick = onSelectTags,
                 colors = ButtonDefaults.textButtonColors(
-                    contentColor = Color(
-                        (state.selectedFolder?.color ?: YabaColor.BLUE).iconTintArgb()
-                    )
+                    contentColor = Color(color.iconTintArgb())
                 )
             ) {
                 Row(
@@ -70,16 +63,16 @@ internal fun LinkmarkTagSelectionContent(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     YabaIcon(
-                        name = if (state.selectedTags.isEmpty()) {
+                        name = if (selectedTags.isEmpty()) {
                             "plus-sign"
                         } else {
                             "edit-02"
                         },
-                        color = state.selectedFolder?.color ?: YabaColor.BLUE,
+                        color = color,
                     )
                     Text(
                         text = stringResource(
-                            resource = if (state.selectedTags.isEmpty()) {
+                            resource = if (selectedTags.isEmpty()) {
                                 Res.string.create_bookmark_add_tags
                             } else {
                                 Res.string.create_bookmark_edit_tags
@@ -90,7 +83,7 @@ internal fun LinkmarkTagSelectionContent(
             }
         }
     )
-    if (state.selectedTags.isEmpty()) {
+    if (selectedTags.isEmpty()) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -109,20 +102,18 @@ internal fun LinkmarkTagSelectionContent(
             )
         }
     } else {
-        state.selectedTags.fastForEachIndexed { index, tag ->
+        selectedTags.fastForEachIndexed { index, tag ->
             PresentableTagItemView(
                 modifier = Modifier.padding(horizontal = 12.dp),
                 model = tag,
-                nullModelPresentableColor = YabaColor.BLUE,
+                nullModelPresentableColor = nullModelPresentableColor,
                 cornerSize = 12.dp,
                 onPressed = {
                     // TODO: NAVIGATE TO PARENT SELECTION
                 },
-                onNavigateToEdit = {
-                    creationNavigator.add(TagCreationRoute(tagId = tag.id))
-                },
+                onNavigateToEdit = { onNavigateToEdit(tag) },
                 index = index,
-                count = state.selectedTags.size,
+                count = selectedTags.size,
             )
         }
     }

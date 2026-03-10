@@ -14,6 +14,8 @@ sealed class DocmarkCreationEvent {
 
     data object OnClearPdf : DocmarkCreationEvent()
 
+    data object OnCyclePreviewAppearance : DocmarkCreationEvent()
+
     data class OnSetGeneratedPreview(
         val imageBytes: ByteArray?,
         val extension: String = "png",

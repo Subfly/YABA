@@ -4,6 +4,8 @@ import androidx.compose.runtime.Stable
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.ui.ImagemarkUiModel
 import dev.subfly.yabacore.model.ui.TagUiModel
+import dev.subfly.yabacore.model.utils.BookmarkAppearance
+import dev.subfly.yabacore.model.utils.CardImageSizing
 
 /**
  * UI state for imagemark creation/editing.
@@ -12,6 +14,9 @@ import dev.subfly.yabacore.model.ui.TagUiModel
 data class ImagemarkCreationUIState(
     val imageBytes: ByteArray? = null,
     val imageExtension: String = "jpeg",
+
+    val bookmarkAppearance: BookmarkAppearance = BookmarkAppearance.LIST,
+    val cardImageSizing: CardImageSizing = CardImageSizing.SMALL,
 
     val label: String = "",
     val description: String = "",
@@ -48,6 +53,8 @@ data class ImagemarkCreationUIState(
             if (!imageBytes.contentEquals(other.imageBytes)) return false
         } else if (other.imageBytes != null) return false
         if (imageExtension != other.imageExtension) return false
+        if (bookmarkAppearance != other.bookmarkAppearance) return false
+        if (cardImageSizing != other.cardImageSizing) return false
         if (label != other.label) return false
         if (description != other.description) return false
         if (summary != other.summary) return false
@@ -64,6 +71,8 @@ data class ImagemarkCreationUIState(
     override fun hashCode(): Int {
         var result = imageBytes?.contentHashCode() ?: 0
         result = 31 * result + imageExtension.hashCode()
+        result = 31 * result + bookmarkAppearance.hashCode()
+        result = 31 * result + cardImageSizing.hashCode()
         result = 31 * result + label.hashCode()
         result = 31 * result + description.hashCode()
         result = 31 * result + summary.hashCode()

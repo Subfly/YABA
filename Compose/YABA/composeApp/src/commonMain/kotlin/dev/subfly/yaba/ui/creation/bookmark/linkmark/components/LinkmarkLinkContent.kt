@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkCreationLabel
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.creation.linkmark.LinkmarkCreationUIState
 import dev.subfly.yabacore.ui.icon.YabaIcon
@@ -39,7 +40,7 @@ internal fun LinkmarkLinkContent(
     }
 
     Spacer(modifier = Modifier.height(24.dp))
-    LinkmarkLabel(
+    BookmarkCreationLabel(
         label = stringResource(Res.string.link),
         iconName = "link-04"
     )

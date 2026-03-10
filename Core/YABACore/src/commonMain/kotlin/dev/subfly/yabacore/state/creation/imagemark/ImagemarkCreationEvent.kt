@@ -21,6 +21,11 @@ sealed class ImagemarkCreationEvent {
     ) : ImagemarkCreationEvent()
 
     /**
+     * Cycle through preview appearances: LIST -> CARD (SMALL) -> CARD (BIG) -> GRID -> LIST...
+     */
+    data object OnCyclePreviewAppearance : ImagemarkCreationEvent()
+
+    /**
      * User requested to pick an image from gallery.
      * The state machine will open the picker, read bytes, and update state.
      */

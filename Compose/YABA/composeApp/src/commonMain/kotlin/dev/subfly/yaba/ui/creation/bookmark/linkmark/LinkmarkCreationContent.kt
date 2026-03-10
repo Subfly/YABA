@@ -20,12 +20,24 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.core.components.webview.ConverterInput
 import dev.subfly.yaba.core.components.webview.YabaWebViewConverter
 import dev.subfly.yaba.util.ResultStoreKeys
-import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkFolderSelectionContent
+import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
+import dev.subfly.yaba.core.navigation.creation.ImageSelectionRoute
+import dev.subfly.yaba.core.navigation.creation.TagCreationRoute
+import dev.subfly.yaba.core.navigation.creation.TagSelectionRoute
+import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkFolderSelectionContent
+import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewAppearanceSwitcher
+import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewCard
+import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewContent
+import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkTagSelectionContent
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkInfoContent
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkLinkContent
-import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkPreviewContent
-import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkTagSelectionContent
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkTopBar
+import dev.subfly.yaba.ui.creation.bookmark.model.BookmarkPreviewData
+import dev.subfly.yabacore.model.utils.FolderSelectionMode
+import dev.subfly.yabacore.model.utils.YabaColor
+import dev.subfly.yabacore.model.utils.uiIconName
+import org.jetbrains.compose.resources.stringResource
+import yaba.composeapp.generated.resources.Res
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
@@ -35,10 +47,10 @@ import dev.subfly.yabacore.state.creation.linkmark.LinkmarkCreationEvent
 import dev.subfly.yabacore.state.creation.linkmark.LinkmarkCreationToastMessages
 import dev.subfly.yabacore.unfurl.ConverterAssetInput
 import dev.subfly.yabacore.ui.webview.WebComponentUris
-import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.generic_unfurl_error_text
 import yaba.composeapp.generated.resources.generic_unfurl_success_text
 import yaba.composeapp.generated.resources.ok
+import yaba.composeapp.generated.resources.preview
 import yaba.composeapp.generated.resources.unfurl_error_text
 import yaba.composeapp.generated.resources.url_error_text
 
@@ -154,10 +166,41 @@ fun LinkmarkCreationContent(bookmarkId: String?, initialUrl: String? = null) {
         )
         LazyColumn {
             item {
-                LinkmarkPreviewContent(
-                    state = state,
-                    onChangePreviewType = { vm.onEvent(LinkmarkCreationEvent.OnCyclePreviewAppearance) },
-                    onUpdateAccepted = { vm.onEvent(LinkmarkCreationEvent.OnApplyContentUpdates )},
+                BookmarkPreviewContent(
+                    label = stringResource(Res.string.preview),
+                    iconName = "image-03",
+                    extraContent = {
+                        BookmarkPreviewAppearanceSwitcher(
+                            bookmarkAppearance = state.bookmarkAppearance,
+                            cardImageSizing = state.cardImageSizing,
+                            color = state.selectedFolder?.color ?: YabaColor.BLUE,
+                            onClick = { vm.onEvent(LinkmarkCreationEvent.OnCyclePreviewAppearance) },
+                        )
+                    },
+                    content = {
+                        BookmarkPreviewCard(
+                            data = BookmarkPreviewData(
+                                imageData = state.imageData,
+                                domainImageData = state.iconData,
+                                label = state.label,
+                                description = state.description,
+                                selectedFolder = state.selectedFolder,
+                                selectedTags = state.selectedTags,
+                                isLoading = state.isLoading,
+                                emptyImageIconName = state.selectedLinkType.uiIconName(),
+                            ),
+                            bookmarkAppearance = state.bookmarkAppearance,
+                            cardImageSizing = state.cardImageSizing,
+                            onClick = {
+                                creationNavigator.add(
+                                    ImageSelectionRoute(
+                                        selectedImage = state.imageUrl,
+                                        imageDataMap = state.selectableImages,
+                                    )
+                                )
+                            },
+                        )
+                    },
                 )
             }
             item {
@@ -187,8 +230,38 @@ fun LinkmarkCreationContent(bookmarkId: String?, initialUrl: String? = null) {
                     }
                 )
             }
-            item { LinkmarkFolderSelectionContent(state = state) }
-            item { LinkmarkTagSelectionContent(state = state) }
+            item {
+                BookmarkFolderSelectionContent(
+                    selectedFolder = state.selectedFolder,
+                    onSelectFolder = {
+                        creationNavigator.add(
+                            FolderSelectionRoute(
+                                mode = FolderSelectionMode.FOLDER_SELECTION,
+                                contextFolderId = null,
+                                contextBookmarkIds = null,
+                            )
+                        )
+                    },
+                    nullModelPresentableColor = YabaColor.BLUE,
+                )
+            }
+            item {
+                BookmarkTagSelectionContent(
+                    selectedFolder = state.selectedFolder,
+                    selectedTags = state.selectedTags,
+                    onSelectTags = {
+                        creationNavigator.add(
+                            TagSelectionRoute(
+                                selectedTagIds = state.selectedTags.map { it.id }
+                            )
+                        )
+                    },
+                    onNavigateToEdit = { tag ->
+                        creationNavigator.add(TagCreationRoute(tagId = tag.id))
+                    },
+                    nullModelPresentableColor = YabaColor.BLUE,
+                )
+            }
             item { Spacer(modifier = Modifier.height(36.dp)) }
         }
     }

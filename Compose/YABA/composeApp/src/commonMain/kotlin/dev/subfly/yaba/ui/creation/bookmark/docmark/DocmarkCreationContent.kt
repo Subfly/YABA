@@ -3,26 +3,19 @@
 package dev.subfly.yaba.ui.creation.bookmark.docmark
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -33,40 +26,39 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import dev.subfly.yaba.core.components.NoContentView
-import dev.subfly.yaba.core.components.item.folder.PresentableFolderItemView
-import dev.subfly.yaba.core.components.item.tag.PresentableTagItemView
 import dev.subfly.yaba.core.components.webview.PdfConverterInput
 import dev.subfly.yaba.core.components.webview.PdfTextSection
 import dev.subfly.yaba.core.components.webview.YabaWebViewPdfConverter
 import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
+import dev.subfly.yaba.core.navigation.creation.TagCreationRoute
 import dev.subfly.yaba.core.navigation.creation.TagSelectionRoute
-import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkLabel
+import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkFolderSelectionContent
+import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkInfoContent
+import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewAppearanceSwitcher
+import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewCard
+import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewContent
+import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkTagSelectionContent
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkTopBar
+import dev.subfly.yaba.ui.creation.bookmark.model.BookmarkPreviewData
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.ResultStoreKeys
+import dev.subfly.yaba.util.uiTitle
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.model.utils.FolderSelectionMode
 import dev.subfly.yabacore.model.utils.YabaColor
+import dev.subfly.yabacore.model.utils.uiIconName
 import dev.subfly.yabacore.state.creation.docmark.DocmarkCreationEvent
 import dev.subfly.yabacore.state.creation.docmark.DocmarkCreationUIState
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.icon.iconTintArgb
-import dev.subfly.yabacore.ui.image.YabaImage
 import dev.subfly.yabacore.ui.webview.WebComponentUris
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
-import yaba.composeapp.generated.resources.create_bookmark_add_tags
-import yaba.composeapp.generated.resources.create_bookmark_description_placeholder
-import yaba.composeapp.generated.resources.create_bookmark_edit_tags
-import yaba.composeapp.generated.resources.create_bookmark_no_tags_selected_description
-import yaba.composeapp.generated.resources.create_bookmark_no_tags_selected_title
-import yaba.composeapp.generated.resources.create_bookmark_url_placeholder
-import yaba.composeapp.generated.resources.folder
-import yaba.composeapp.generated.resources.tags_title
+import yaba.composeapp.generated.resources.create_bookmark_title_placeholder
+import yaba.composeapp.generated.resources.preview
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
@@ -161,22 +153,27 @@ fun DocmarkCreationContent(bookmarkId: String?) {
 
         LazyColumn {
             item {
-                DocmarkFilePickerContent(
+                DocmarkPreviewContent(
                     state = state,
+                    onChangePreviewType = { vm.onEvent(DocmarkCreationEvent.OnCyclePreviewAppearance) },
                     onPickPdf = { vm.onEvent(DocmarkCreationEvent.OnPickPdf) },
-                    onClearPdf = { vm.onEvent(DocmarkCreationEvent.OnClearPdf) },
                 )
             }
             item {
-                DocmarkInfoContent(
-                    state = state,
+                BookmarkInfoContent(
+                    label = state.label,
+                    description = state.description,
                     onChangeLabel = { vm.onEvent(DocmarkCreationEvent.OnChangeLabel(it)) },
                     onChangeDescription = { vm.onEvent(DocmarkCreationEvent.OnChangeDescription(it)) },
+                    selectedFolder = state.selectedFolder,
+                    enabled = state.isLoading.not(),
+                    labelPlaceholder = Res.string.create_bookmark_title_placeholder,
+                    nullModelPresentableColor = YabaColor.BLUE,
                 )
             }
             item {
-                DocmarkFolderSelectionContent(
-                    state = state,
+                BookmarkFolderSelectionContent(
+                    selectedFolder = state.selectedFolder,
                     onSelectFolder = {
                         creationNavigator.add(
                             FolderSelectionRoute(
@@ -186,11 +183,13 @@ fun DocmarkCreationContent(bookmarkId: String?) {
                             ),
                         )
                     },
+                    nullModelPresentableColor = YabaColor.BLUE,
                 )
             }
             item {
-                DocmarkTagSelectionContent(
-                    state = state,
+                BookmarkTagSelectionContent(
+                    selectedFolder = state.selectedFolder,
+                    selectedTags = state.selectedTags,
                     onSelectTags = {
                         creationNavigator.add(
                             TagSelectionRoute(
@@ -198,6 +197,10 @@ fun DocmarkCreationContent(bookmarkId: String?) {
                             ),
                         )
                     },
+                    onNavigateToEdit = { tag ->
+                        creationNavigator.add(TagCreationRoute(tagId = tag.id))
+                    },
+                    nullModelPresentableColor = YabaColor.BLUE,
                 )
             }
             item { Spacer(modifier = Modifier.height(36.dp)) }
@@ -205,245 +208,60 @@ fun DocmarkCreationContent(bookmarkId: String?) {
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun DocmarkFilePickerContent(
+private fun DocmarkPreviewContent(
     state: DocmarkCreationUIState,
+    onChangePreviewType: () -> Unit,
     onPickPdf: () -> Unit,
-    onClearPdf: () -> Unit,
 ) {
-    val color = state.selectedFolder?.color ?: YabaColor.RED
-    Spacer(modifier = Modifier.height(12.dp))
-    LinkmarkLabel(
-        label = "PDF",
-        iconName = "doc-02",
+    val color = state.selectedFolder?.color ?: YabaColor.BLUE
+
+    BookmarkPreviewContent(
+        label = stringResource(Res.string.preview),
+        iconName = "image-03",
         extraContent = {
-            if (state.pdfBytes != null && state.isInEditMode.not()) {
-                TextButton(
-                    onClick = onClearPdf,
-                    colors = ButtonDefaults.textButtonColors()
-                        .copy(contentColor = MaterialTheme.colorScheme.error),
-                ) {
-                    Text("Remove", color = Color(YabaColor.RED.iconTintArgb()))
-                    YabaIcon(
-                        modifier = Modifier.padding(start = 8.dp),
-                        name = "cancel-01",
-                        color = YabaColor.RED,
-                    )
-                }
-            }
-        },
-    )
-    Spacer(modifier = Modifier.height(12.dp))
-
-    if (state.previewImageBytes != null) {
-        YabaImage(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(220.dp)
-                .padding(horizontal = 12.dp),
-            bytes = state.previewImageBytes,
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-    } else if (state.pdfBytes == null && state.isInEditMode.not()) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp),
-            contentAlignment = Alignment.CenterStart,
-        ) {
-            Text(
-                text = "No PDF selected",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-    }
-
-    if (state.sourceFileName != null || state.isInEditMode) {
-        val caption = state.sourceFileName ?: "PDF file is locked in edit mode"
-        Text(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            text = caption,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-    }
-
-    Button(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 12.dp),
-        onClick = onPickPdf,
-        enabled = state.isLoading.not() && state.isInEditMode.not(),
-        colors = ButtonDefaults.buttonColors(containerColor = Color(color.iconTintArgb())),
-    ) {
-        YabaIcon(
-            modifier = Modifier.padding(end = 8.dp),
-            name = "add-circle",
-            color = Color.White,
-        )
-        Text(
-            text = if (state.pdfBytes == null) "Pick PDF" else "Pick Another PDF",
-            color = Color.White,
-        )
-    }
-    Spacer(modifier = Modifier.height(24.dp))
-}
-
-@Composable
-private fun DocmarkInfoContent(
-    state: DocmarkCreationUIState,
-    onChangeLabel: (String) -> Unit,
-    onChangeDescription: (String) -> Unit,
-) {
-    val color = state.selectedFolder?.color ?: YabaColor.RED
-    Spacer(modifier = Modifier.height(12.dp))
-    LinkmarkLabel(label = "Info", iconName = "information-circle")
-    Spacer(modifier = Modifier.height(12.dp))
-    OutlinedTextField(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 12.dp),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = Color(color.iconTintArgb()),
-            unfocusedBorderColor = Color(color.iconTintArgb()).copy(alpha = 0.5F),
-        ),
-        enabled = state.isLoading.not(),
-        value = state.label,
-        onValueChange = onChangeLabel,
-        shape = RoundedCornerShape(12.dp),
-        placeholder = {
-            Text(text = stringResource(Res.string.create_bookmark_url_placeholder))
-        },
-        leadingIcon = {
-            YabaIcon(
-                name = "text",
+            BookmarkPreviewAppearanceSwitcher(
+                bookmarkAppearance = state.bookmarkAppearance,
+                cardImageSizing = state.cardImageSizing,
                 color = color,
+                onClick = onChangePreviewType,
             )
         },
-    )
-    Spacer(modifier = Modifier.height(8.dp))
-    OutlinedTextField(
-        modifier = Modifier
-            .heightIn(min = 120.dp, max = 240.dp)
-            .fillMaxWidth()
-            .padding(horizontal = 12.dp),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = Color(color.iconTintArgb()),
-            unfocusedBorderColor = Color(color.iconTintArgb()).copy(alpha = 0.5F),
-        ),
-        enabled = state.isLoading.not(),
-        value = state.description,
-        onValueChange = onChangeDescription,
-        shape = RoundedCornerShape(12.dp),
-        placeholder = {
-            Text(text = stringResource(Res.string.create_bookmark_description_placeholder))
-        },
-        leadingIcon = {
-            YabaIcon(
-                name = "paragraph",
-                color = color,
-            )
-        }
-    )
-    Spacer(modifier = Modifier.height(24.dp))
-}
-
-@Composable
-private fun DocmarkFolderSelectionContent(
-    state: DocmarkCreationUIState,
-    onSelectFolder: () -> Unit,
-) {
-    Spacer(modifier = Modifier.height(12.dp))
-    LinkmarkLabel(label = stringResource(Res.string.folder), iconName = "folder-02")
-    Spacer(modifier = Modifier.height(12.dp))
-    state.selectedFolder?.let { folder ->
-        PresentableFolderItemView(
-            modifier = Modifier.padding(horizontal = 12.dp),
-            model = folder,
-            nullModelPresentableColor = YabaColor.RED,
-            onPressed = onSelectFolder,
-            cornerSize = 12.dp,
-        )
-    }
-    Spacer(modifier = Modifier.height(8.dp))
-    TextButton(
-        modifier = Modifier.padding(horizontal = 12.dp),
-        onClick = onSelectFolder,
-    ) {
-        Text("Select Folder")
-    }
-    Spacer(modifier = Modifier.height(24.dp))
-}
-
-@Composable
-private fun DocmarkTagSelectionContent(
-    state: DocmarkCreationUIState,
-    onSelectTags: () -> Unit,
-) {
-    Spacer(modifier = Modifier.height(12.dp))
-    LinkmarkLabel(label = stringResource(Res.string.tags_title), iconName = "tag-02")
-    Spacer(modifier = Modifier.height(12.dp))
-
-    if (state.selectedTags.isEmpty()) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 4.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.surface,
-                    shape = RoundedCornerShape(12.dp),
+        content = {
+            BookmarkPreviewCard(
+                data = BookmarkPreviewData(
+                    imageData = state.previewImageBytes,
+                    label = state.label,
+                    description = state.description,
+                    selectedFolder = state.selectedFolder,
+                    selectedTags = state.selectedTags,
+                    isLoading = state.isLoading,
+                    emptyImageIconName = "doc-02",
                 ),
-            contentAlignment = Alignment.Center,
-        ) {
-            NoContentView(
-                modifier = Modifier
-                    .padding(12.dp)
-                    .padding(vertical = 24.dp),
-                iconName = "tag-03",
-                labelRes = Res.string.create_bookmark_no_tags_selected_title,
-                message = {
-                    Text(
-                        text = stringResource(Res.string.create_bookmark_no_tags_selected_description),
-                    )
-                },
+                bookmarkAppearance = state.bookmarkAppearance,
+                cardImageSizing = state.cardImageSizing,
+                onClick = {},
             )
-        }
-    } else {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            state.selectedTags.forEach { tag ->
-                PresentableTagItemView(
-                    model = tag,
-                    nullModelPresentableColor = YabaColor.RED,
-                    onPressed = onSelectTags,
-                    onNavigateToEdit = onSelectTags,
+            Spacer(modifier = Modifier.height(12.dp))
+            Button(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
+                onClick = onPickPdf,
+                enabled = state.isLoading.not() && state.isInEditMode.not(),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(color.iconTintArgb())),
+            ) {
+                YabaIcon(
+                    modifier = Modifier.padding(end = 8.dp),
+                    name = "add-circle",
+                    color = Color.White,
+                )
+                Text(
+                    text = if (state.pdfBytes == null) "Pick PDF" else "Pick Another PDF",
+                    color = Color.White,
                 )
             }
-        }
-    }
-
-    Spacer(modifier = Modifier.height(8.dp))
-    TextButton(
-        modifier = Modifier.padding(horizontal = 12.dp),
-        onClick = onSelectTags,
-    ) {
-        Text(
-            text = stringResource(
-                if (state.selectedTags.isEmpty()) {
-                    Res.string.create_bookmark_add_tags
-                } else {
-                    Res.string.create_bookmark_edit_tags
-                },
-            ),
-        )
-    }
-    Spacer(modifier = Modifier.height(24.dp))
+        },
+    )
 }
 
 private fun decodeDataUrlToBytes(dataUrl: String): ByteArray? {

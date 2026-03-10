@@ -1,4 +1,4 @@
-package dev.subfly.yaba.ui.creation.bookmark.linkmark.components
+package dev.subfly.yaba.ui.creation.bookmark.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import dev.subfly.yabacore.ui.icon.YabaIcon
 
 @Composable
-internal fun LinkmarkLabel(
+fun BookmarkCreationLabel(
     modifier: Modifier = Modifier,
     iconName: String,
     label: String,
