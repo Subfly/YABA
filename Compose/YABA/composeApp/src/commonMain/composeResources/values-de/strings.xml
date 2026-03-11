@@ -32,18 +32,6 @@
     <string name="bookmark_selection_enable">Auswählen</string>
     <string name="bookmark_selection_move">Auswahl verschieben</string>
     <string name="bookmark_title_placeholder">Titel</string>
-    <string name="bookmark_type_audio">Audio</string>
-    <string name="bookmark_type_audio_description">Ein Podcast oder eine andere Audiodatei.</string>
-    <string name="bookmark_type_image">Bild</string>
-    <string name="bookmark_type_image_description">Ein direkter Link zu einer Bilddatei.</string>
-    <string name="bookmark_type_link">Weblink</string>
-    <string name="bookmark_type_link_description">Eine normale Webseite oder ein Artikel.</string>
-    <string name="bookmark_type_music">Musik</string>
-    <string name="bookmark_type_music_description">Ein Musikstück oder Album, zum Beispiel von Spotify oder Apple Music.</string>
-    <string name="bookmark_type_none">Andere</string>
-    <string name="bookmark_type_none_description">Kein spezifischer Typ zugewiesen.</string>
-    <string name="bookmark_type_video">Video</string>
-    <string name="bookmark_type_video_description">Ein Link zu einem Video, zum Beispiel auf YouTube oder Vimeo.</string>
     <string name="bookmark_url_placeholder">URL</string>
     <string name="cancel">Abbrechen</string>
     <string name="card_image_sizing_big">Großes Bild</string>
@@ -66,7 +54,6 @@
     <string name="create_bookmark_no_tags_selected_title">Keine Tags ausgewählt</string>
     <string name="create_bookmark_title">Lesezeichen erstellen</string>
     <string name="create_bookmark_title_placeholder">Benenne dein Lesezeichen</string>
-    <string name="create_bookmark_type_placeholder">Lesezeichenart</string>
     <string name="create_bookmark_url_placeholder">URL deines Lesezeichens</string>
     <string name="create_folder">Ordner</string>
     <string name="create_folder_placeholder">Benenne deinen Ordner</string>
@@ -81,7 +68,6 @@
     <string name="csv_notes_label">Optional – Standard ist der Link, falls nicht angegeben</string>
     <string name="csv_notes_link">Pflicht – Muss eine gültige URL sein</string>
     <string name="csv_notes_optional">Optional</string>
-    <string name="csv_notes_type">Optional – Entspricht dem BookmarkType enum: 1 (Andere), 2 (Weblink), etc.</string>
     <string name="data_manager_bookmark_url_column_not_selected_message">Spalte mit Bookmark-URL nicht ausgewählt. Bitte wähle sie aus und versuche es erneut.</string>
     <string name="data_manager_empty_csv_message">Die ausgewählte CSV enthält keine Lesezeichen.</string>
     <string name="data_manager_empty_html_message">Die ausgewählte HTML-Datei enthält keine Lesezeichen.</string>

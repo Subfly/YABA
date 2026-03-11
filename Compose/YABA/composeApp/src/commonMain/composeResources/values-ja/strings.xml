@@ -32,18 +32,6 @@
     <string name="bookmark_selection_enable">選択</string>
     <string name="bookmark_selection_move">選択を移動</string>
     <string name="bookmark_title_placeholder">タイトル</string>
-    <string name="bookmark_type_audio">オーディオ</string>
-    <string name="bookmark_type_audio_description">ポッドキャストなどのオーディオファイル</string>
-    <string name="bookmark_type_image">画像</string>
-    <string name="bookmark_type_image_description">画像ファイルへの直接リンクです。</string>
-    <string name="bookmark_type_link">ウェブリンク</string>
-    <string name="bookmark_type_link_description">通常のウェブページや記事です。</string>
-    <string name="bookmark_type_music">音楽</string>
-    <string name="bookmark_type_music_description">SpotifyやApple Musicのような音楽トラックやアルバムです。</string>
-    <string name="bookmark_type_none">その他</string>
-    <string name="bookmark_type_none_description">特定のタイプは割り当てられていません。</string>
-    <string name="bookmark_type_video">ビデオ</string>
-    <string name="bookmark_type_video_description">YouTubeやVimeoのような動画へのリンクです。</string>
     <string name="bookmark_url_placeholder">URL</string>
     <string name="cancel">キャンセル</string>
     <string name="card_image_sizing_big">大きい画像</string>
@@ -66,7 +54,6 @@
     <string name="create_bookmark_no_tags_selected_title">タグが選択されていません</string>
     <string name="create_bookmark_title">ブックマークを作成</string>
     <string name="create_bookmark_title_placeholder">ブックマークの名前を付けてください</string>
-    <string name="create_bookmark_type_placeholder">ブックマークタイプ</string>
     <string name="create_bookmark_url_placeholder">ブックマークのURL</string>
     <string name="create_folder">フォルダ</string>
     <string name="create_folder_placeholder">フォルダ名を付けてください</string>
@@ -81,7 +68,6 @@
     <string name="csv_notes_label">任意です。指定されていない場合はリンクがデフォルトとなります</string>
     <string name="csv_notes_link">必須です。有効なURLでなければなりません</string>
     <string name="csv_notes_optional">任意</string>
-    <string name="csv_notes_type">任意です。BookmarkType列挙型に従います：1（その他）、2（ウェブリンク）など</string>
     <string name="data_manager_bookmark_url_column_not_selected_message">ブックマークURLを含む列が選択されていません。列を選択して再度お試しください</string>
     <string name="data_manager_empty_csv_message">選択したCSVにブックマークが含まれていません</string>
     <string name="data_manager_empty_html_message">選択したHTMLにブックマークが含まれていません</string>

@@ -32,18 +32,6 @@
     <string name="bookmark_selection_enable">Sélectionner</string>
     <string name="bookmark_selection_move">Déplacer la sélection</string>
     <string name="bookmark_title_placeholder">Titre</string>
-    <string name="bookmark_type_audio">Audio</string>
-    <string name="bookmark_type_audio_description">Un podcast ou un autre fichier audio.</string>
-    <string name="bookmark_type_image">Image</string>
-    <string name="bookmark_type_image_description">Un lien direct vers un fichier image.</string>
-    <string name="bookmark_type_link">Lien web</string>
-    <string name="bookmark_type_link_description">Une page web ou un article ordinaire.</string>
-    <string name="bookmark_type_music">Musique</string>
-    <string name="bookmark_type_music_description">Une piste ou un album musical, comme sur Spotify ou Apple Music.</string>
-    <string name="bookmark_type_none">Autre</string>
-    <string name="bookmark_type_none_description">Aucun type spécifique assigné.</string>
-    <string name="bookmark_type_video">Vidéo</string>
-    <string name="bookmark_type_video_description">Un lien vers une vidéo, par exemple sur YouTube ou Vimeo.</string>
     <string name="bookmark_url_placeholder">URL</string>
     <string name="cancel">Annuler</string>
     <string name="card_image_sizing_big">Grande image</string>
@@ -66,7 +54,6 @@
     <string name="create_bookmark_no_tags_selected_title">Aucun tag sélectionné</string>
     <string name="create_bookmark_title">Créer un favori</string>
     <string name="create_bookmark_title_placeholder">Nomme ton favori</string>
-    <string name="create_bookmark_type_placeholder">Type de favori</string>
     <string name="create_bookmark_url_placeholder">URL de ton favori</string>
     <string name="create_folder">Dossier</string>
     <string name="create_folder_placeholder">Nomme ton dossier</string>
@@ -81,7 +68,6 @@
     <string name="csv_notes_label">Optionnel – Par défaut, le lien sera utilisé si aucune valeur n'est fournie</string>
     <string name="csv_notes_link">Obligatoire – Doit être une URL valide</string>
     <string name="csv_notes_optional">Optionnel</string>
-    <string name="csv_notes_type">Optionnel – Suit l’énumération BookmarkType : 1 (Autre), 2 (Lien Web), etc.</string>
     <string name="data_manager_bookmark_url_column_not_selected_message">Colonne contenant l’URL du signet non sélectionnée. Veuillez sélectionner et réessayer.</string>
     <string name="data_manager_empty_csv_message">Le CSV sélectionné ne contient aucun signet.</string>
     <string name="data_manager_empty_html_message">Le HTML sélectionné ne contient aucun signet.</string>

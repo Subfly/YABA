@@ -7,7 +7,6 @@ import dev.subfly.yabacore.database.mappers.toUiModel
 import dev.subfly.yabacore.filesystem.BookmarkFileManager
 import dev.subfly.yabacore.model.ui.HighlightUiModel
 import dev.subfly.yabacore.model.ui.LinkmarkUiModel
-import dev.subfly.yabacore.model.utils.LinkType
 import dev.subfly.yabacore.queue.CoreOperationQueue
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -54,7 +53,6 @@ object LinkmarkManager {
             isPinned = bookmarkMetaData.isPinned,
             url = linkMetaData.url,
             domain = linkMetaData.domain,
-            linkType = linkMetaData.linkType,
             videoUrl = linkMetaData.videoUrl,
             localImagePath = localImageAbsolutePath,
             localIconPath = localIconAbsolutePath,
@@ -72,7 +70,6 @@ object LinkmarkManager {
         bookmarkId: String,
         url: String,
         domain: String? = null,
-        linkType: LinkType,
         videoUrl: String?,
     ) {
         CoreOperationQueue.queue("CreateOrUpdateLinkDetails:$bookmarkId") {
@@ -81,7 +78,6 @@ object LinkmarkManager {
                 bookmarkId = bookmarkId,
                 url = url,
                 domain = resolvedDomain,
-                linkType = linkType,
                 videoUrl = videoUrl,
             )
             linkBookmarkDao.upsert(entity)

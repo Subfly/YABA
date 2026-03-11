@@ -11,7 +11,6 @@ import dev.subfly.yabacore.database.entities.TagBookmarkCrossRef
 import dev.subfly.yabacore.database.entities.TagEntity
 import dev.subfly.yabacore.filesystem.LinkmarkFileManager
 import dev.subfly.yabacore.model.utils.BookmarkKind
-import dev.subfly.yabacore.model.utils.LinkType
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.preferences.PreferencesMigration
 import kotlin.uuid.ExperimentalUuidApi
@@ -67,7 +66,6 @@ object MigrationManager {
                     bookmarkId = bookmark.id,
                     url = legacy.url,
                     domain = legacy.domain,
-                    linkType = LinkType.fromCode(legacy.linkTypeCode),
                     videoUrl = legacy.videoUrl,
                 )
             )

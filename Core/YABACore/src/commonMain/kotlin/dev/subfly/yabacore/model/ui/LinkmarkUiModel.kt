@@ -2,7 +2,6 @@ package dev.subfly.yabacore.model.ui
 
 import androidx.compose.runtime.Stable
 import dev.subfly.yabacore.model.utils.BookmarkKind
-import dev.subfly.yabacore.model.utils.LinkType
 import kotlin.time.Instant
 
 @Stable
@@ -19,7 +18,6 @@ data class LinkmarkUiModel(
     override val isPinned: Boolean = false,
     val url: String,
     val domain: String,
-    val linkType: LinkType,
     val videoUrl: String?,
     /** Local file path for the bookmark's preview image, if saved to disk. */
     override val localImagePath: String? = null,

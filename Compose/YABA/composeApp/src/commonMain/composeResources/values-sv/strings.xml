@@ -32,18 +32,6 @@
     <string name="bookmark_selection_enable">Välj</string>
     <string name="bookmark_selection_move">Flytta valda</string>
     <string name="bookmark_title_placeholder">Titel</string>
-    <string name="bookmark_type_audio">Ljud</string>
-    <string name="bookmark_type_audio_description">En podcast eller annan ljudfil.</string>
-    <string name="bookmark_type_image">Bild</string>
-    <string name="bookmark_type_image_description">En direktlänk till en bildfil.</string>
-    <string name="bookmark_type_link">Webblänk</string>
-    <string name="bookmark_type_link_description">En vanlig webbsida eller artikel.</string>
-    <string name="bookmark_type_music">Musik</string>
-    <string name="bookmark_type_music_description">Ett musikspår eller album, som från Spotify eller Apple Music.</string>
-    <string name="bookmark_type_none">Annan</string>
-    <string name="bookmark_type_none_description">Ingen specifik typ tilldelad.</string>
-    <string name="bookmark_type_video">Video</string>
-    <string name="bookmark_type_video_description">En länk till en video, som på YouTube eller Vimeo.</string>
     <string name="bookmark_url_placeholder">URL</string>
     <string name="cancel">Avbryt</string>
     <string name="card_image_sizing_big">Stor bild</string>
@@ -66,7 +54,6 @@
     <string name="create_bookmark_no_tags_selected_title">Inga taggar valda</string>
     <string name="create_bookmark_title">Skapa bokmärke</string>
     <string name="create_bookmark_title_placeholder">Ge bokmärket ett namn</string>
-    <string name="create_bookmark_type_placeholder">Bokmärkestyp</string>
     <string name="create_bookmark_url_placeholder">URL till ditt bokmärke</string>
     <string name="create_folder">Mapp</string>
     <string name="create_folder_placeholder">Ge din mapp ett namn</string>
@@ -81,7 +68,6 @@
     <string name="csv_notes_label">Valfritt – Förvaltar till länken om inget anges</string>
     <string name="csv_notes_link">Obligatoriskt – Måste vara en giltig URL</string>
     <string name="csv_notes_optional">Valfritt</string>
-    <string name="csv_notes_type">Valfritt – Följer BookmarkType enum: 1 (Övrigt), 2 (Webblänk) osv.</string>
     <string name="data_manager_bookmark_url_column_not_selected_message">Kolumn med bokmärkes-URL är inte vald. Vänligen välj och försök igen.</string>
     <string name="data_manager_empty_csv_message">Det valda CSV-filen innehåller inga bokmärken.</string>
     <string name="data_manager_empty_html_message">Det valda HTML-innehållet innehåller inga bokmärken.</string>

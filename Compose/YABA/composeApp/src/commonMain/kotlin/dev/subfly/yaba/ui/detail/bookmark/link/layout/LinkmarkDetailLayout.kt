@@ -93,7 +93,6 @@ internal fun LinkmarkDetailLayout(
                         LinkmarkDetailInfoSectionContent(
                             modifier = Modifier.animateItem(),
                             bookmarkDetails = bookmarkDetails,
-                            linkDetails = state.linkDetails,
                             mainColor = mainColor,
                         )
                     }

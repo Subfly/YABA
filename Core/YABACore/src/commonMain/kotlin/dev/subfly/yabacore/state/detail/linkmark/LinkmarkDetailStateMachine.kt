@@ -416,7 +416,6 @@ class LinkmarkDetailStateMachine :
         LinkmarkLinkDetailsUiModel(
             url = url,
             domain = domain,
-            linkType = linkType,
             videoUrl = videoUrl,
         )
 }

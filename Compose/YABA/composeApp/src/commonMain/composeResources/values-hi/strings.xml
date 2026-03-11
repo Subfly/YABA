@@ -32,18 +32,6 @@
     <string name="bookmark_selection_enable">चयन करें</string>
     <string name="bookmark_selection_move">चयन स्थानांतरित करें</string>
     <string name="bookmark_title_placeholder">शीर्षक</string>
-    <string name="bookmark_type_audio">ऑडियो</string>
-    <string name="bookmark_type_audio_description">एक पॉडकास्ट या अन्य ऑडियो फ़ाइल।</string>
-    <string name="bookmark_type_image">छवि</string>
-    <string name="bookmark_type_image_description">चित्र फ़ाइल के लिए सीधा लिंक।</string>
-    <string name="bookmark_type_link">वेब लिंक</string>
-    <string name="bookmark_type_link_description">एक सामान्य वेबपेज या लेख।</string>
-    <string name="bookmark_type_music">संगीत</string>
-    <string name="bookmark_type_music_description">एक संगीत ट्रैक या एल्बम, जैसे Spotify या Apple Music से।</string>
-    <string name="bookmark_type_none">अन्य</string>
-    <string name="bookmark_type_none_description">कोई विशिष्ट प्रकार निर्दिष्ट नहीं किया गया है।</string>
-    <string name="bookmark_type_video">वीडियो</string>
-    <string name="bookmark_type_video_description">वीडियो के लिए लिंक, जैसे YouTube या Vimeo पर।</string>
     <string name="bookmark_url_placeholder">URL</string>
     <string name="cancel">रद्द करें</string>
     <string name="card_image_sizing_big">बड़ा चित्र</string>
@@ -66,7 +54,6 @@
     <string name="create_bookmark_no_tags_selected_title">कोई टैग चयनित नहीं</string>
     <string name="create_bookmark_title">बुकमार्क बनाएँ</string>
     <string name="create_bookmark_title_placeholder">अपने बुकमार्क का नाम दें</string>
-    <string name="create_bookmark_type_placeholder">बुकमार्क प्रकार</string>
     <string name="create_bookmark_url_placeholder">अपने बुकमार्क का URL</string>
     <string name="create_folder">फ़ोल्डर</string>
     <string name="create_folder_placeholder">अपने फ़ोल्डर का नाम दें</string>
@@ -81,7 +68,6 @@
     <string name="csv_notes_label">वैकल्पिक – यदि प्रदान नहीं किया गया है तो लिंक को डिफ़ॉल्ट मान के रूप में लिया जाएगा</string>
     <string name="csv_notes_link">आवश्यक – मान्य URL होना चाहिए</string>
     <string name="csv_notes_optional">वैकल्पिक</string>
-    <string name="csv_notes_type">वैकल्पिक – BookmarkType enum का पालन करता है: 1 (अन्य), 2 (वेब लिंक), आदि</string>
     <string name="data_manager_bookmark_url_column_not_selected_message">बुकमार्क URL वाली कॉलम चयनित नहीं है। कृपया चयन करें और पुनः प्रयास करें।</string>
     <string name="data_manager_empty_csv_message">चयनित CSV में कोई बुकमार्क नहीं है।</string>
     <string name="data_manager_empty_html_message">चयनित HTML में कोई बुकमार्क मौजूद नहीं है।</string>

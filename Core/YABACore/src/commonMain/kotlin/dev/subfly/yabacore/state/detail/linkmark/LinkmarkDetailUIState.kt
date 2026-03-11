@@ -4,7 +4,6 @@ import androidx.compose.runtime.Immutable
 import dev.subfly.yabacore.model.ui.BookmarkPreviewUiModel
 import dev.subfly.yabacore.model.ui.HighlightUiModel
 import dev.subfly.yabacore.model.ui.ReadableVersionUiModel
-import dev.subfly.yabacore.model.utils.LinkType
 import dev.subfly.yabacore.model.utils.ReaderPreferences
 
 @Immutable
@@ -37,6 +36,5 @@ data class LinkmarkDetailUIState(
 data class LinkmarkLinkDetailsUiModel(
     val url: String,
     val domain: String,
-    val linkType: LinkType,
     val videoUrl: String?,
 )

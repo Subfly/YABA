@@ -32,18 +32,6 @@
     <string name="bookmark_selection_enable">Vybrať</string>
     <string name="bookmark_selection_move">Presunúť výber</string>
     <string name="bookmark_title_placeholder">Názov</string>
-    <string name="bookmark_type_audio">Zvuk</string>
-    <string name="bookmark_type_audio_description">Podcast alebo iný audio súbor.</string>
-    <string name="bookmark_type_image">Obrázok</string>
-    <string name="bookmark_type_image_description">Priamy odkaz na obrázkový súbor.</string>
-    <string name="bookmark_type_link">Webový odkaz</string>
-    <string name="bookmark_type_link_description">Bežná webová stránka alebo článok.</string>
-    <string name="bookmark_type_music">Hudba</string>
-    <string name="bookmark_type_music_description">Hudobný track alebo album, napríklad zo Spotify alebo Apple Music.</string>
-    <string name="bookmark_type_none">Iné</string>
-    <string name="bookmark_type_none_description">Nie je priradený žiadny konkrétny typ.</string>
-    <string name="bookmark_type_video">Video</string>
-    <string name="bookmark_type_video_description">Odkaz na video, napríklad na YouTube alebo Vimeo.</string>
     <string name="bookmark_url_placeholder">URL</string>
     <string name="cancel">Zrušiť</string>
     <string name="card_image_sizing_big">Veľký obrázok</string>
@@ -66,7 +54,6 @@
     <string name="create_bookmark_no_tags_selected_title">Nie sú vybraté žiadne značky</string>
     <string name="create_bookmark_title">Vytvoriť záložku</string>
     <string name="create_bookmark_title_placeholder">Pomenuj svoju záložku</string>
-    <string name="create_bookmark_type_placeholder">Typ záložky</string>
     <string name="create_bookmark_url_placeholder">URL tvojej záložky</string>
     <string name="create_folder">Priečinok</string>
     <string name="create_folder_placeholder">Pomenuj svoj priečinok</string>
@@ -81,7 +68,6 @@
     <string name="csv_notes_label">Voliteľné – predvolene odkaz, ak nie je uvedené</string>
     <string name="csv_notes_link">Povinné – musí byť platná URL adresa</string>
     <string name="csv_notes_optional">Voliteľné</string>
-    <string name="csv_notes_type">Voliteľné – nasleduje enum BookmarkType: 1 (Iné), 2 (Webový odkaz) atď.</string>
     <string name="data_manager_bookmark_url_column_not_selected_message">Stĺpec obsahujúci URL záložky nie je vybraný. Prosím, vyber ho a skúsi to znova.</string>
     <string name="data_manager_empty_csv_message">Vybrané CSV neobsahuje žiadne záložky.</string>
     <string name="data_manager_empty_html_message">Vybraná HTML neobsahuje žiadne záložky.</string>

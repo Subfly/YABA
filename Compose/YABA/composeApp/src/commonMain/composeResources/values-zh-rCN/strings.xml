@@ -32,18 +32,6 @@
     <string name="bookmark_selection_enable">选择</string>
     <string name="bookmark_selection_move">移动所选</string>
     <string name="bookmark_title_placeholder">标题</string>
-    <string name="bookmark_type_audio">音频</string>
-    <string name="bookmark_type_audio_description">播客或其它音频文件。</string>
-    <string name="bookmark_type_image">图片</string>
-    <string name="bookmark_type_image_description">指向图像文件的直接链接。</string>
-    <string name="bookmark_type_link">网页链接</string>
-    <string name="bookmark_type_link_description">普通网页或文章。</string>
-    <string name="bookmark_type_music">音乐</string>
-    <string name="bookmark_type_music_description">音乐曲目或专辑，例如来自 Spotify 或 Apple Music。</string>
-    <string name="bookmark_type_none">其他</string>
-    <string name="bookmark_type_none_description">未指定具体类型。</string>
-    <string name="bookmark_type_video">视频</string>
-    <string name="bookmark_type_video_description">指向视频的链接，例如 YouTube 或 Vimeo 上的视频。</string>
     <string name="bookmark_url_placeholder">URL</string>
     <string name="cancel">取消</string>
     <string name="card_image_sizing_big">大图像</string>
@@ -66,7 +54,6 @@
     <string name="create_bookmark_no_tags_selected_title">未选择标签</string>
     <string name="create_bookmark_title">创建书签</string>
     <string name="create_bookmark_title_placeholder">为你的书签命名</string>
-    <string name="create_bookmark_type_placeholder">书签类型</string>
     <string name="create_bookmark_url_placeholder">书签的 URL</string>
     <string name="create_folder">文件夹</string>
     <string name="create_folder_placeholder">为你的文件夹命名</string>
@@ -81,7 +68,6 @@
     <string name="csv_notes_label">可选 – 如果未提供，则默认为链接</string>
     <string name="csv_notes_link">必填 – 必须是有效的 URL</string>
     <string name="csv_notes_optional">可选</string>
-    <string name="csv_notes_type">可选 – 遵循 BookmarkType 枚举：1（其他），2（网页链接）等</string>
     <string name="data_manager_bookmark_url_column_not_selected_message">未选择包含书签 URL 的列。请选择后再试。</string>
     <string name="data_manager_empty_csv_message">所选 CSV 不包含任何书签。</string>
     <string name="data_manager_empty_html_message">所选 HTML 不包含任何书签。</string>

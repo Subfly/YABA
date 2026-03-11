@@ -53,7 +53,6 @@ class LinkmarkCreationStateMachine :
             is LinkmarkCreationEvent.OnChangeUrl -> onChangeUrl(event)
             is LinkmarkCreationEvent.OnChangeLabel -> onChangeLabel(event)
             is LinkmarkCreationEvent.OnChangeDescription -> onChangeDescription(event)
-            is LinkmarkCreationEvent.OnChangeLinkType -> onChangeLinkType(event)
             is LinkmarkCreationEvent.OnSelectFolder -> onSelectFolder(event)
             is LinkmarkCreationEvent.OnSelectTags -> onSelectTags(event)
             is LinkmarkCreationEvent.OnSave -> onSave(event)
@@ -98,7 +97,6 @@ class LinkmarkCreationStateMachine :
                             iconUrl = null,
                             imageUrl = null,
                             videoUrl = existing.videoUrl,
-                            selectedLinkType = existing.linkType,
                             selectedFolder = existing.parentFolder,
                             selectedTags = existing.tags,
                             editingLinkmark = existing,
@@ -416,11 +414,6 @@ class LinkmarkCreationStateMachine :
         updateState { it.copy(description = event.newDescription) }
     }
 
-    private fun onChangeLinkType(event: LinkmarkCreationEvent.OnChangeLinkType) {
-        if (currentState().isInEditMode) return
-        updateState { it.copy(selectedLinkType = event.linkType) }
-    }
-
     private fun onSelectFolder(event: LinkmarkCreationEvent.OnSelectFolder) {
         updateState {
             it.copy(selectedFolder = event.folder, uncategorizedFolderCreationRequired = false)
@@ -562,7 +555,6 @@ class LinkmarkCreationStateMachine :
                         bookmarkId = bookmarkId,
                         url = state.editingLinkmark.url,
                         domain = state.editingLinkmark.domain,
-                        linkType = state.editingLinkmark.linkType,
                         videoUrl = state.editingLinkmark.videoUrl,
                     )
 
@@ -599,7 +591,6 @@ class LinkmarkCreationStateMachine :
                         bookmarkId = bookmarkId,
                         url = state.cleanedUrl,
                         domain = state.host,
-                        linkType = state.selectedLinkType,
                         videoUrl = state.videoUrl,
                     )
                 }

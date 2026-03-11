@@ -32,18 +32,6 @@
     <string name="bookmark_selection_enable">선택</string>
     <string name="bookmark_selection_move">선택 항목 이동</string>
     <string name="bookmark_title_placeholder">제목</string>
-    <string name="bookmark_type_audio">오디오</string>
-    <string name="bookmark_type_audio_description">팟캐스트 또는 기타 오디오 파일입니다.</string>
-    <string name="bookmark_type_image">이미지</string>
-    <string name="bookmark_type_image_description">이미지 파일에 직접 연결합니다.</string>
-    <string name="bookmark_type_link">웹 링크</string>
-    <string name="bookmark_type_link_description">일반적인 웹페이지나 기사입니다.</string>
-    <string name="bookmark_type_music">음악</string>
-    <string name="bookmark_type_music_description">Spotify나 Apple Music과 같은 음악 트랙이나 앨범입니다.</string>
-    <string name="bookmark_type_none">기타</string>
-    <string name="bookmark_type_none_description">특정 유형이 할당되지 않았습니다.</string>
-    <string name="bookmark_type_video">비디오</string>
-    <string name="bookmark_type_video_description">YouTube나 Vimeo와 같은 비디오로 연결되는 링크입니다.</string>
     <string name="bookmark_url_placeholder">URL</string>
     <string name="cancel">취소</string>
     <string name="card_image_sizing_big">큰 이미지</string>
@@ -66,7 +54,6 @@
     <string name="create_bookmark_no_tags_selected_title">선택된 태그가 없습니다.</string>
     <string name="create_bookmark_title">북마크 생성</string>
     <string name="create_bookmark_title_placeholder">북마크 이름을 지정하세요.</string>
-    <string name="create_bookmark_type_placeholder">북마크 유형</string>
     <string name="create_bookmark_url_placeholder">북마크의 URL</string>
     <string name="create_folder">폴더</string>
     <string name="create_folder_placeholder">폴더 이름을 지정하세요.</string>
@@ -81,7 +68,6 @@
     <string name="csv_notes_label">선택 사항 – 제공되지 않으면 링크가 기본값입니다</string>
     <string name="csv_notes_link">필수 – 유효한 URL이어야 합니다</string>
     <string name="csv_notes_optional">선택 사항</string>
-    <string name="csv_notes_type">선택 사항 – BookmarkType 열거형을 따릅니다: 1 (기타), 2 (웹 링크) 등</string>
     <string name="data_manager_bookmark_url_column_not_selected_message">북마크 URL이 포함된 열이 선택되지 않았습니다. 선택 후 다시 시도하세요.</string>
     <string name="data_manager_empty_csv_message">선택한 CSV에는 북마크가 포함되어 있지 않습니다.</string>
     <string name="data_manager_empty_html_message">선택한 HTML에는 북마크가 포함되어 있지 않습니다.</string>

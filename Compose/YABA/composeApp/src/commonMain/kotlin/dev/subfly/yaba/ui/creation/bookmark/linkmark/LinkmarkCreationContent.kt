@@ -25,17 +25,16 @@ import dev.subfly.yaba.core.navigation.creation.ImageSelectionRoute
 import dev.subfly.yaba.core.navigation.creation.TagCreationRoute
 import dev.subfly.yaba.core.navigation.creation.TagSelectionRoute
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkFolderSelectionContent
+import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkInfoContent
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewAppearanceSwitcher
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewCard
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewContent
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkTagSelectionContent
-import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkInfoContent
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkLinkContent
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkTopBar
 import dev.subfly.yaba.ui.creation.bookmark.model.BookmarkPreviewData
 import dev.subfly.yabacore.model.utils.FolderSelectionMode
 import dev.subfly.yabacore.model.utils.YabaColor
-import dev.subfly.yabacore.model.utils.uiIconName
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import dev.subfly.yaba.util.LocalAppStateManager
@@ -47,6 +46,7 @@ import dev.subfly.yabacore.state.creation.linkmark.LinkmarkCreationEvent
 import dev.subfly.yabacore.state.creation.linkmark.LinkmarkCreationToastMessages
 import dev.subfly.yabacore.unfurl.ConverterAssetInput
 import dev.subfly.yabacore.ui.webview.WebComponentUris
+import yaba.composeapp.generated.resources.create_bookmark_url_placeholder
 import yaba.composeapp.generated.resources.generic_unfurl_error_text
 import yaba.composeapp.generated.resources.generic_unfurl_success_text
 import yaba.composeapp.generated.resources.ok
@@ -187,7 +187,7 @@ fun LinkmarkCreationContent(bookmarkId: String?, initialUrl: String? = null) {
                                 selectedFolder = state.selectedFolder,
                                 selectedTags = state.selectedTags,
                                 isLoading = state.isLoading,
-                                emptyImageIconName = state.selectedLinkType.uiIconName(),
+                                emptyImageIconName = "bookmark-02",
                             ),
                             bookmarkAppearance = state.bookmarkAppearance,
                             cardImageSizing = state.cardImageSizing,
@@ -212,22 +212,25 @@ fun LinkmarkCreationContent(bookmarkId: String?, initialUrl: String? = null) {
                 )
             }
             item {
-                LinkmarkInfoContent(
-                    state = state,
+                BookmarkInfoContent(
+                    label = state.label,
+                    description = state.description,
                     onChangeLabel = { newLabel ->
                         vm.onEvent(LinkmarkCreationEvent.OnChangeLabel(newLabel = newLabel))
-                    },
-                    onClearLabel = {
-                        vm.onEvent(LinkmarkCreationEvent.OnClearLabel)
                     },
                     onChangeDescription = { newDescription ->
                         vm.onEvent(
                             LinkmarkCreationEvent.OnChangeDescription(newDescription = newDescription)
                         )
                     },
-                    onChangeType = { newType ->
-                        vm.onEvent(LinkmarkCreationEvent.OnChangeLinkType(linkType = newType))
-                    }
+                    selectedFolder = state.selectedFolder,
+                    enabled = state.isLoading.not(),
+                    labelPlaceholder = Res.string.create_bookmark_url_placeholder,
+                    showClearLabelButton = true,
+                    onClearLabel = {
+                        vm.onEvent(LinkmarkCreationEvent.OnClearLabel)
+                    },
+                    nullModelPresentableColor = YabaColor.BLUE,
                 )
             }
             item {

@@ -32,18 +32,6 @@
     <string name="bookmark_selection_enable">Velg</string>
     <string name="bookmark_selection_move">Flytt markerte</string>
     <string name="bookmark_title_placeholder">Tittel</string>
-    <string name="bookmark_type_audio">Lyd</string>
-    <string name="bookmark_type_audio_description">En podcast eller annen lydfil.</string>
-    <string name="bookmark_type_image">Bilde</string>
-    <string name="bookmark_type_image_description">En direkte lenke til en bildefil.</string>
-    <string name="bookmark_type_link">Nettlenke</string>
-    <string name="bookmark_type_link_description">En vanlig nettside eller artikkel.</string>
-    <string name="bookmark_type_music">Musikk</string>
-    <string name="bookmark_type_music_description">En musikkspor eller album, som fra Spotify eller Apple Music.</string>
-    <string name="bookmark_type_none">Annet</string>
-    <string name="bookmark_type_none_description">Ingen spesifikk type tildelt.</string>
-    <string name="bookmark_type_video">Video</string>
-    <string name="bookmark_type_video_description">En lenke til en video, for eksempel på YouTube eller Vimeo.</string>
     <string name="bookmark_url_placeholder">URL</string>
     <string name="cancel">Avbryt</string>
     <string name="card_image_sizing_big">Stor bilde</string>
@@ -66,7 +54,6 @@
     <string name="create_bookmark_no_tags_selected_title">Ingen merkelapper valgt</string>
     <string name="create_bookmark_title">Opprett bokmerke</string>
     <string name="create_bookmark_title_placeholder">Navngi bokmerket ditt</string>
-    <string name="create_bookmark_type_placeholder">Bokmerketype</string>
     <string name="create_bookmark_url_placeholder">URL til bokmerket ditt</string>
     <string name="create_folder">Mappe</string>
     <string name="create_folder_placeholder">Navngi mappen din</string>
@@ -81,7 +68,6 @@
     <string name="csv_notes_label">Valgfritt – Standardverdi er linken hvis ikke oppgitt</string>
     <string name="csv_notes_link">Påkrevd – Må være en gyldig URL</string>
     <string name="csv_notes_optional">Valgfritt</string>
-    <string name="csv_notes_type">Valgfritt – Følger BookmarkType enum: 1 (Annet), 2 (Nettlenke), osv.</string>
     <string name="data_manager_bookmark_url_column_not_selected_message">Kolonne som inneholder bokmerke-URL er ikke valgt. Velg en kolonne og prøv igjen.</string>
     <string name="data_manager_empty_csv_message">Valgt CSV inneholder ingen bokmerker.</string>
     <string name="data_manager_empty_html_message">Valgt HTML inneholder ingen bokmerker.</string>

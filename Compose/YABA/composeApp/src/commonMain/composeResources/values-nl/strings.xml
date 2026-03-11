@@ -32,18 +32,6 @@
     <string name="bookmark_selection_enable">Selecteer</string>
     <string name="bookmark_selection_move">Verplaats selectie</string>
     <string name="bookmark_title_placeholder">Titel</string>
-    <string name="bookmark_type_audio">Audio</string>
-    <string name="bookmark_type_audio_description">Een podcast of ander audiobestand.</string>
-    <string name="bookmark_type_image">Afbeelding</string>
-    <string name="bookmark_type_image_description">Een directe link naar een afbeeldingbestand.</string>
-    <string name="bookmark_type_link">Weblink</string>
-    <string name="bookmark_type_link_description">Een gewone webpagina of artikel.</string>
-    <string name="bookmark_type_music">Muziek</string>
-    <string name="bookmark_type_music_description">Een muzieknummer of album, bijvoorbeeld van Spotify of Apple Music.</string>
-    <string name="bookmark_type_none">Overig</string>
-    <string name="bookmark_type_none_description">Geen specifiek type toegewezen.</string>
-    <string name="bookmark_type_video">Video</string>
-    <string name="bookmark_type_video_description">Een link naar een video, bijvoorbeeld op YouTube of Vimeo.</string>
     <string name="bookmark_url_placeholder">URL</string>
     <string name="cancel">Annuleren</string>
     <string name="card_image_sizing_big">Grote afbeelding</string>
@@ -66,7 +54,6 @@
     <string name="create_bookmark_no_tags_selected_title">Geen tags geselecteerd</string>
     <string name="create_bookmark_title">Bladwijzer aanmaken</string>
     <string name="create_bookmark_title_placeholder">Geef je bladwijzer een naam</string>
-    <string name="create_bookmark_type_placeholder">Type bladwijzer</string>
     <string name="create_bookmark_url_placeholder">URL van je bladwijzer</string>
     <string name="create_folder">Map</string>
     <string name="create_folder_placeholder">Geef je map een naam</string>
@@ -81,7 +68,6 @@
     <string name="csv_notes_label">Optioneel – Standaard de link als deze niet is opgegeven</string>
     <string name="csv_notes_link">Verplicht – Moet een geldige URL zijn</string>
     <string name="csv_notes_optional">Optioneel</string>
-    <string name="csv_notes_type">Optioneel – Volgt BookmarkType enum: 1 (Overig), 2 (Weblink), enz.</string>
     <string name="data_manager_bookmark_url_column_not_selected_message">Kolom met de Bookmark URL is niet geselecteerd. Selecteer deze en probeer het opnieuw.</string>
     <string name="data_manager_empty_csv_message">Geselecteerd CSV-bestand bevat geen bladwijzers.</string>
     <string name="data_manager_empty_html_message">Geselecteerd HTML-bestand bevat geen bladwijzers.</string>

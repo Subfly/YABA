@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import dev.subfly.yabacore.model.utils.LinkType
+
 @Entity(
     tableName = "link_bookmarks",
     foreignKeys = [
@@ -17,13 +17,11 @@ import dev.subfly.yabacore.model.utils.LinkType
     ],
     indices = [
         Index(value = ["bookmarkId"], unique = true),
-        Index(value = ["linkType"]),
     ],
 )
 data class LinkBookmarkEntity(
     @PrimaryKey val bookmarkId: String,
     val url: String,
     val domain: String,
-    val linkType: LinkType,
     val videoUrl: String?,
 )

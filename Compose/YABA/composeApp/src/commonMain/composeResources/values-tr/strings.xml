@@ -32,18 +32,6 @@
     <string name="bookmark_selection_enable">Seç</string>
     <string name="bookmark_selection_move">Seçimi Taşı</string>
     <string name="bookmark_title_placeholder">Başlık</string>
-    <string name="bookmark_type_audio">Ses</string>
-    <string name="bookmark_type_audio_description">Bir podcast veya başka bir ses dosyası.</string>
-    <string name="bookmark_type_image">Görüntü</string>
-    <string name="bookmark_type_image_description">Bir görüntü dosyasına doğrudan bağlantı.</string>
-    <string name="bookmark_type_link">Web Bağlantısı</string>
-    <string name="bookmark_type_link_description">Normal bir web sayfası veya makale.</string>
-    <string name="bookmark_type_music">Müzik</string>
-    <string name="bookmark_type_music_description">Spotify veya Apple Music gibi bir müzik parçası veya albüm.</string>
-    <string name="bookmark_type_none">Diğer</string>
-    <string name="bookmark_type_none_description">Belirli bir tür atanmadı.</string>
-    <string name="bookmark_type_video">Video</string>
-    <string name="bookmark_type_video_description">YouTube veya Vimeo gibi bir videoya bağlantı.</string>
     <string name="bookmark_url_placeholder">URL</string>
     <string name="cancel">İptal</string>
     <string name="card_image_sizing_big">Büyük Resim</string>
@@ -66,7 +54,6 @@
     <string name="create_bookmark_no_tags_selected_title">Hiç Etiket Seçilmedi</string>
     <string name="create_bookmark_title">Yer İmi Oluştur</string>
     <string name="create_bookmark_title_placeholder">Yer iminizin adını yazın</string>
-    <string name="create_bookmark_type_placeholder">Yer imi türü</string>
     <string name="create_bookmark_url_placeholder">Yer iminizin URL'si</string>
     <string name="create_folder">Klasör</string>
     <string name="create_folder_placeholder">Klasörünüzün adını yazın</string>
@@ -81,7 +68,6 @@
     <string name="csv_notes_label">İsteğe bağlı – Sağlanmazsa varsayılan bağlantı olarak kullanılır</string>
     <string name="csv_notes_link">Zorunlu – Geçerli bir URL olmalıdır</string>
     <string name="csv_notes_optional">İsteğe bağlı</string>
-    <string name="csv_notes_type">İsteğe bağlı – BookmarkType enum değerlerini takip eder: 1 (Diğer), 2 (Web Bağlantısı), vb.</string>
     <string name="data_manager_bookmark_url_column_not_selected_message">Yer imi URL’sini içeren sütun seçilmedi. Lütfen seç ve tekrar dene.</string>
     <string name="data_manager_empty_csv_message">Seçilen CSV dosyası herhangi bir yer imi içermiyor.</string>
     <string name="data_manager_empty_html_message">Seçilen HTML dosyası herhangi bir yer imi içermiyor.</string>

@@ -32,18 +32,6 @@
     <string name="bookmark_selection_enable">Seleccionar</string>
     <string name="bookmark_selection_move">Mover selección</string>
     <string name="bookmark_title_placeholder">Título</string>
-    <string name="bookmark_type_audio">Audio</string>
-    <string name="bookmark_type_audio_description">Un podcast u otro archivo de audio.</string>
-    <string name="bookmark_type_image">Imagen</string>
-    <string name="bookmark_type_image_description">Un enlace directo a un archivo de imagen.</string>
-    <string name="bookmark_type_link">Enlace web</string>
-    <string name="bookmark_type_link_description">Una página web o artículo normal.</string>
-    <string name="bookmark_type_music">Música</string>
-    <string name="bookmark_type_music_description">Una pista o álbum de música, como de Spotify o Apple Music.</string>
-    <string name="bookmark_type_none">Otro</string>
-    <string name="bookmark_type_none_description">No se ha asignado un tipo específico.</string>
-    <string name="bookmark_type_video">Vídeo</string>
-    <string name="bookmark_type_video_description">Un enlace a un vídeo, como en YouTube o Vimeo.</string>
     <string name="bookmark_url_placeholder">URL</string>
     <string name="cancel">Cancelar</string>
     <string name="card_image_sizing_big">Imagen grande</string>
@@ -66,7 +54,6 @@
     <string name="create_bookmark_no_tags_selected_title">No hay etiquetas seleccionadas</string>
     <string name="create_bookmark_title">Crear marcador</string>
     <string name="create_bookmark_title_placeholder">Nombra tu marcador</string>
-    <string name="create_bookmark_type_placeholder">Tipo de marcador</string>
     <string name="create_bookmark_url_placeholder">URL de tu marcador</string>
     <string name="create_folder">Carpeta</string>
     <string name="create_folder_placeholder">Nombra tu carpeta</string>
@@ -81,7 +68,6 @@
     <string name="csv_notes_label">Opcional: por defecto, se usará el enlace si no se proporciona</string>
     <string name="csv_notes_link">Requerido: debe ser una URL válida</string>
     <string name="csv_notes_optional">Opcional</string>
-    <string name="csv_notes_type">Opcional: sigue la enumeración BookmarkType: 1 (Otro), 2 (Enlace web), etc.</string>
     <string name="data_manager_bookmark_url_column_not_selected_message">No se ha seleccionado la columna que contiene la URL del marcador. Por favor, selecciona una e inténtalo de nuevo.</string>
     <string name="data_manager_empty_csv_message">El CSV seleccionado no contiene ningún marcador.</string>
     <string name="data_manager_empty_html_message">El HTML seleccionado no contiene ningún marcador.</string>

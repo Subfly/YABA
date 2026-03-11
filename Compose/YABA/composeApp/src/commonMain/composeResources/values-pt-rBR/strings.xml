@@ -32,18 +32,6 @@
     <string name="bookmark_selection_enable">Selecionar</string>
     <string name="bookmark_selection_move">Mover seleção</string>
     <string name="bookmark_title_placeholder">Título</string>
-    <string name="bookmark_type_audio">Áudio</string>
-    <string name="bookmark_type_audio_description">Um podcast ou outro arquivo de áudio.</string>
-    <string name="bookmark_type_image">Imagem</string>
-    <string name="bookmark_type_image_description">Um link direto para um arquivo de imagem.</string>
-    <string name="bookmark_type_link">Link da Web</string>
-    <string name="bookmark_type_link_description">Uma página ou artigo comum na web.</string>
-    <string name="bookmark_type_music">Música</string>
-    <string name="bookmark_type_music_description">Uma faixa ou álbum de música, como do Spotify ou Apple Music.</string>
-    <string name="bookmark_type_none">Outro</string>
-    <string name="bookmark_type_none_description">Nenhum tipo específico atribuído.</string>
-    <string name="bookmark_type_video">Vídeo</string>
-    <string name="bookmark_type_video_description">Um link para um vídeo, como no YouTube ou Vimeo.</string>
     <string name="bookmark_url_placeholder">URL</string>
     <string name="cancel">Cancelar</string>
     <string name="card_image_sizing_big">Imagem Grande</string>
@@ -66,7 +54,6 @@
     <string name="create_bookmark_no_tags_selected_title">Nenhuma tag selecionada</string>
     <string name="create_bookmark_title">Criar Favorito</string>
     <string name="create_bookmark_title_placeholder">Nomeie seu favorito</string>
-    <string name="create_bookmark_type_placeholder">Tipo de favorito</string>
     <string name="create_bookmark_url_placeholder">URL do seu favorito</string>
     <string name="create_folder">Pasta</string>
     <string name="create_folder_placeholder">Nomeie sua pasta</string>
@@ -81,7 +68,6 @@
     <string name="csv_notes_label">Opcional – Padrão para o link se não fornecido</string>
     <string name="csv_notes_link">Obrigatório – Deve ser uma URL válida</string>
     <string name="csv_notes_optional">Opcional</string>
-    <string name="csv_notes_type">Opcional – Segue enum BookmarkType: 1 (Outro), 2 (Link Web), etc.</string>
     <string name="data_manager_bookmark_url_column_not_selected_message">Coluna contendo URL do favorito não selecionada. Por favor, selecione e tente novamente.</string>
     <string name="data_manager_empty_csv_message">O CSV selecionado não contém favoritos.</string>
     <string name="data_manager_empty_html_message">O HTML selecionado não contém favoritos.</string>

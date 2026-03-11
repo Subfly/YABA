@@ -2,7 +2,6 @@ package dev.subfly.yabacore.state.creation.linkmark
 
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.ui.TagUiModel
-import dev.subfly.yabacore.model.utils.LinkType
 import dev.subfly.yabacore.toast.PlatformToastText
 import dev.subfly.yabacore.unfurl.ConverterAssetInput
 
@@ -69,11 +68,6 @@ sealed class LinkmarkCreationEvent {
      * Change the description of the linkmark.
      */
     data class OnChangeDescription(val newDescription: String) : LinkmarkCreationEvent()
-
-    /**
-     * Change the link type classification.
-     */
-    data class OnChangeLinkType(val linkType: LinkType) : LinkmarkCreationEvent()
 
     /**
      * Select the folder for this bookmark (from folder selection screen).

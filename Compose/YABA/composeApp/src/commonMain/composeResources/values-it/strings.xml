@@ -32,18 +32,6 @@
     <string name="bookmark_selection_enable">Seleziona</string>
     <string name="bookmark_selection_move">Sposta selezione</string>
     <string name="bookmark_title_placeholder">Titolo</string>
-    <string name="bookmark_type_audio">Audio</string>
-    <string name="bookmark_type_audio_description">Un podcast o altro file audio.</string>
-    <string name="bookmark_type_image">Immagine</string>
-    <string name="bookmark_type_image_description">Un collegamento diretto a un file immagine.</string>
-    <string name="bookmark_type_link">Collegamento Web</string>
-    <string name="bookmark_type_link_description">Una pagina web o articolo normale.</string>
-    <string name="bookmark_type_music">Musica</string>
-    <string name="bookmark_type_music_description">Una traccia musicale o un album, come quelli di Spotify o Apple Music.</string>
-    <string name="bookmark_type_none">Altro</string>
-    <string name="bookmark_type_none_description">Nessun tipo specifico assegnato.</string>
-    <string name="bookmark_type_video">Video</string>
-    <string name="bookmark_type_video_description">Un collegamento a un video, come su YouTube o Vimeo.</string>
     <string name="bookmark_url_placeholder">URL</string>
     <string name="cancel">Annulla</string>
     <string name="card_image_sizing_big">Immagine grande</string>
@@ -66,7 +54,6 @@
     <string name="create_bookmark_no_tags_selected_title">Nessun tag selezionato</string>
     <string name="create_bookmark_title">Crea segnalibro</string>
     <string name="create_bookmark_title_placeholder">Dai un nome al tuo segnalibro</string>
-    <string name="create_bookmark_type_placeholder">Tipo di segnalibro</string>
     <string name="create_bookmark_url_placeholder">URL del tuo segnalibro</string>
     <string name="create_folder">Cartella</string>
     <string name="create_folder_placeholder">Dai un nome alla tua cartella</string>
@@ -81,7 +68,6 @@
     <string name="csv_notes_label">Facoltativo – Se non fornito, predefinito al link</string>
     <string name="csv_notes_link">Obbligatorio – Deve essere un URL valido</string>
     <string name="csv_notes_optional">Facoltativo</string>
-    <string name="csv_notes_type">Facoltativo – Segue l'enum BookmarkType: 1 (Altro), 2 (Collegamento web), ecc.</string>
     <string name="data_manager_bookmark_url_column_not_selected_message">Colonna contenente l’URL del segnalibro non selezionata. Seleziona e riprova.</string>
     <string name="data_manager_empty_csv_message">Il CSV selezionato non contiene segnalibri.</string>
     <string name="data_manager_empty_html_message">L’HTML selezionato non contiene segnalibri.</string>

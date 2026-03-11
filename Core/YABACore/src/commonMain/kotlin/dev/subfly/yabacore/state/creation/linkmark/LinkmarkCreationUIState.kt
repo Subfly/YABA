@@ -1,13 +1,11 @@
 package dev.subfly.yabacore.state.creation.linkmark
 
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.ui.LinkmarkUiModel
 import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.CardImageSizing
-import dev.subfly.yabacore.model.utils.LinkType
 import dev.subfly.yabacore.unfurl.ReadableUnfurl
 import kotlin.collections.iterator
 
@@ -51,9 +49,6 @@ data class LinkmarkCreationUIState(
         val updateVideoUrl: String? = null,
         val shouldUpdateReadable: Boolean = false,
         val updateReadable: ReadableUnfurl? = null,
-
-        // Link type classification
-        val selectedLinkType: LinkType = LinkType.NONE,
 
         // Collection associations
         val selectedFolder: FolderUiModel? = null,
@@ -131,7 +126,6 @@ data class LinkmarkCreationUIState(
         if (updateVideoUrl != other.updateVideoUrl) return false
         if (shouldUpdateReadable != other.shouldUpdateReadable) return false
         if (updateReadable != other.updateReadable) return false
-        if (selectedLinkType != other.selectedLinkType) return false
         if (selectedFolder != other.selectedFolder) return false
         if (selectedTags != other.selectedTags) return false
         if (converterHtml != other.converterHtml) return false
@@ -169,7 +163,6 @@ data class LinkmarkCreationUIState(
         result = 31 * result + (updateVideoUrl?.hashCode() ?: 0)
         result = 31 * result + shouldUpdateReadable.hashCode()
         result = 31 * result + (updateReadable?.hashCode() ?: 0)
-        result = 31 * result + selectedLinkType.hashCode()
         result = 31 * result + (selectedFolder?.hashCode() ?: 0)
         result = 31 * result + selectedTags.hashCode()
         result = 31 * result + (converterHtml?.hashCode() ?: 0)

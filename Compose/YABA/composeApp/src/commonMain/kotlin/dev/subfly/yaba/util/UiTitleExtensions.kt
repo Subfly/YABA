@@ -5,18 +5,11 @@ import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.CardImageSizing
 import dev.subfly.yabacore.model.utils.ContentAppearance
 import dev.subfly.yabacore.model.utils.FabPosition
-import dev.subfly.yabacore.model.utils.LinkType
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
 import dev.subfly.yabacore.model.utils.ThemePreference
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
-import yaba.composeapp.generated.resources.bookmark_type_audio
-import yaba.composeapp.generated.resources.bookmark_type_image
-import yaba.composeapp.generated.resources.bookmark_type_link
-import yaba.composeapp.generated.resources.bookmark_type_music
-import yaba.composeapp.generated.resources.bookmark_type_none
-import yaba.composeapp.generated.resources.bookmark_type_video
 import yaba.composeapp.generated.resources.card_image_sizing_big
 import yaba.composeapp.generated.resources.card_image_sizing_small
 import yaba.composeapp.generated.resources.fab_centered
@@ -93,15 +86,4 @@ fun CardImageSizing.uiTitle(): String =
     when (this) {
         CardImageSizing.BIG -> stringResource(Res.string.card_image_sizing_big)
         CardImageSizing.SMALL -> stringResource(Res.string.card_image_sizing_small)
-    }
-
-@Composable
-fun LinkType.uiTitle(): String =
-    when (this) {
-        LinkType.NONE -> stringResource(Res.string.bookmark_type_none)
-        LinkType.WEB_LINK -> stringResource(Res.string.bookmark_type_link)
-        LinkType.VIDEO -> stringResource(Res.string.bookmark_type_video)
-        LinkType.IMAGE -> stringResource(Res.string.bookmark_type_image)
-        LinkType.AUDIO -> stringResource(Res.string.bookmark_type_audio)
-        LinkType.MUSIC -> stringResource(Res.string.bookmark_type_music)
     }

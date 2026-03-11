@@ -31,7 +31,6 @@ data class LegacyBookmark(
     val description: String?,
     val url: String,
     val domain: String,
-    val linkTypeCode: Int,
     val createdAt: Instant,
     val editedAt: Instant,
     val previewImageUrl: String? = null,

@@ -32,18 +32,6 @@
     <string name="bookmark_selection_enable">Select</string>
     <string name="bookmark_selection_move">Move Selection</string>
     <string name="bookmark_title_placeholder">Title</string>
-    <string name="bookmark_type_audio">Audio</string>
-    <string name="bookmark_type_audio_description">A podcast or other audio file.</string>
-    <string name="bookmark_type_image">Image</string>
-    <string name="bookmark_type_image_description">A direct link to an image file.</string>
-    <string name="bookmark_type_link">Web Link</string>
-    <string name="bookmark_type_link_description">A regular webpage or article.</string>
-    <string name="bookmark_type_music">Music</string>
-    <string name="bookmark_type_music_description">A music track or album, like from Spotify or Apple Music. </string>
-    <string name="bookmark_type_none">Other</string>
-    <string name="bookmark_type_none_description">No specific type assigned.</string>
-    <string name="bookmark_type_video">Video</string>
-    <string name="bookmark_type_video_description">A link to a video, like on YouTube or Vimeo.</string>
     <string name="bookmark_url_placeholder">URL</string>
     <string name="cancel">Cancel</string>
     <string name="card_image_sizing_big">Big Image</string>
@@ -66,7 +54,6 @@
     <string name="create_bookmark_no_tags_selected_title">No Tags Selected</string>
     <string name="create_bookmark_title">Create Bookmark</string>
     <string name="create_bookmark_title_placeholder">Name your bookmark</string>
-    <string name="create_bookmark_type_placeholder">Bookmark type</string>
     <string name="create_bookmark_url_placeholder">URL of your bookmark</string>
     <string name="create_folder">Folder</string>
     <string name="create_folder_placeholder">Name your folder</string>
@@ -81,7 +68,6 @@
     <string name="csv_notes_label">Optional – Defaults to the link if not provided</string>
     <string name="csv_notes_link">Required – Must be a valid URL</string>
     <string name="csv_notes_optional">Optional</string>
-    <string name="csv_notes_type">Optional – Follows BookmarkType enum: 1 (Other), 2 (Web Link), etc.</string>
     <string name="data_manager_bookmark_url_column_not_selected_message">Column containing Bookmark URL not selected. Please select and try again.</string>
     <string name="data_manager_empty_csv_message">Selected CSV does not contain any bookmarks.</string>
     <string name="data_manager_empty_html_message">Selected HTML does not contain any bookmarks.</string>
