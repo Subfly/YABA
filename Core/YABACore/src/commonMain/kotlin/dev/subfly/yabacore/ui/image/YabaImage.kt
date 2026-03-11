@@ -37,15 +37,15 @@ fun rememberYabaImageLoader(): ImageLoader {
  */
 @Composable
 fun YabaImage(
-    filePath: String?,
-    modifier: Modifier = Modifier,
-    contentDescription: String? = null,
-    contentScale: ContentScale = ContentScale.Crop,
-    placeholder: @Composable () -> Unit = {},
-    error: Painter? = null,
-    fallback: Painter? = null,
-    imageLoader: ImageLoader = rememberYabaImageLoader(),
-    onState: ((AsyncImagePainter.State) -> Unit)? = null,
+        filePath: String?,
+        modifier: Modifier = Modifier,
+        contentDescription: String? = null,
+        contentScale: ContentScale = ContentScale.Crop,
+        placeholder: @Composable () -> Unit = {},
+        error: Painter? = null,
+        fallback: Painter? = null,
+        imageLoader: ImageLoader = rememberYabaImageLoader(),
+        onState: ((AsyncImagePainter.State) -> Unit)? = null,
 ) {
     // Convert file path to file:// URI for Coil
     val model = filePath?.let { path -> if (path.startsWith("file://")) path else "file://$path" }
@@ -54,25 +54,25 @@ fun YabaImage(
 
     Box(modifier = modifier) {
         AsyncImage(
-            modifier = Modifier.fillMaxSize(),
-            model = model,
-            imageLoader = imageLoader,
-            contentDescription = contentDescription,
-            contentScale = contentScale,
-            error = error,
-            fallback = fallback,
-            onLoading = { state ->
-                imageState = state
-                onState?.invoke(state)
-            },
-            onSuccess = { state ->
-                imageState = state
-                onState?.invoke(state)
-            },
-            onError = { state ->
-                imageState = state
-                onState?.invoke(state)
-            },
+                modifier = Modifier.fillMaxSize(),
+                model = model,
+                imageLoader = imageLoader,
+                contentDescription = contentDescription,
+                contentScale = contentScale,
+                error = error,
+                fallback = fallback,
+                onLoading = { state ->
+                    imageState = state
+                    onState?.invoke(state)
+                },
+                onSuccess = { state ->
+                    imageState = state
+                    onState?.invoke(state)
+                },
+                onError = { state ->
+                    imageState = state
+                    onState?.invoke(state)
+                },
         )
 
         if (imageState is AsyncImagePainter.State.Loading) {
@@ -98,39 +98,39 @@ fun YabaImage(
  */
 @Composable
 fun YabaImage(
-    bytes: ByteArray?,
-    modifier: Modifier = Modifier,
-    contentDescription: String? = null,
-    contentScale: ContentScale = ContentScale.Crop,
-    placeholder: @Composable () -> Unit = {},
-    error: Painter? = null,
-    fallback: Painter? = null,
-    imageLoader: ImageLoader = rememberYabaImageLoader(),
-    onState: ((AsyncImagePainter.State) -> Unit)? = null,
+        bytes: ByteArray?,
+        modifier: Modifier = Modifier,
+        contentDescription: String? = null,
+        contentScale: ContentScale = ContentScale.Crop,
+        placeholder: @Composable () -> Unit = {},
+        error: Painter? = null,
+        fallback: Painter? = null,
+        imageLoader: ImageLoader = rememberYabaImageLoader(),
+        onState: ((AsyncImagePainter.State) -> Unit)? = null,
 ) {
     var imageState by remember { mutableStateOf<AsyncImagePainter.State?>(null) }
 
     Box(modifier = modifier) {
         AsyncImage(
-            modifier = Modifier.fillMaxSize(),
-            model = bytes,
-            imageLoader = imageLoader,
-            contentDescription = contentDescription,
-            contentScale = contentScale,
-            error = error,
-            fallback = fallback,
-            onLoading = { state ->
-                imageState = state
-                onState?.invoke(state)
-            },
-            onSuccess = { state ->
-                imageState = state
-                onState?.invoke(state)
-            },
-            onError = { state ->
-                imageState = state
-                onState?.invoke(state)
-            },
+                modifier = Modifier.fillMaxSize(),
+                model = bytes,
+                imageLoader = imageLoader,
+                contentDescription = contentDescription,
+                contentScale = contentScale,
+                error = error,
+                fallback = fallback,
+                onLoading = { state ->
+                    imageState = state
+                    onState?.invoke(state)
+                },
+                onSuccess = { state ->
+                    imageState = state
+                    onState?.invoke(state)
+                },
+                onError = { state ->
+                    imageState = state
+                    onState?.invoke(state)
+                },
         )
 
         if (imageState is AsyncImagePainter.State.Loading) {
@@ -156,39 +156,39 @@ fun YabaImage(
  */
 @Composable
 fun YabaImageFromUrl(
-    url: String?,
-    modifier: Modifier = Modifier,
-    contentDescription: String? = null,
-    contentScale: ContentScale = ContentScale.Crop,
-    placeholder: @Composable () -> Unit = {},
-    error: Painter? = null,
-    fallback: Painter? = null,
-    imageLoader: ImageLoader = rememberYabaImageLoader(),
-    onState: ((AsyncImagePainter.State) -> Unit)? = null,
+        url: String?,
+        modifier: Modifier = Modifier,
+        contentDescription: String? = null,
+        contentScale: ContentScale = ContentScale.Crop,
+        placeholder: @Composable () -> Unit = {},
+        error: Painter? = null,
+        fallback: Painter? = null,
+        imageLoader: ImageLoader = rememberYabaImageLoader(),
+        onState: ((AsyncImagePainter.State) -> Unit)? = null,
 ) {
     var imageState by remember { mutableStateOf<AsyncImagePainter.State?>(null) }
 
     Box(modifier = modifier) {
         AsyncImage(
-            modifier = Modifier.fillMaxSize(),
-            model = url,
-            imageLoader = imageLoader,
-            contentDescription = contentDescription,
-            contentScale = contentScale,
-            error = error,
-            fallback = fallback,
-            onLoading = { state ->
-                imageState = state
-                onState?.invoke(state)
-            },
-            onSuccess = { state ->
-                imageState = state
-                onState?.invoke(state)
-            },
-            onError = { state ->
-                imageState = state
-                onState?.invoke(state)
-            },
+                modifier = Modifier.fillMaxSize(),
+                model = url,
+                imageLoader = imageLoader,
+                contentDescription = contentDescription,
+                contentScale = contentScale,
+                error = error,
+                fallback = fallback,
+                onLoading = { state ->
+                    imageState = state
+                    onState?.invoke(state)
+                },
+                onSuccess = { state ->
+                    imageState = state
+                    onState?.invoke(state)
+                },
+                onError = { state ->
+                    imageState = state
+                    onState?.invoke(state)
+                },
         )
 
         if (imageState is AsyncImagePainter.State.Loading) {

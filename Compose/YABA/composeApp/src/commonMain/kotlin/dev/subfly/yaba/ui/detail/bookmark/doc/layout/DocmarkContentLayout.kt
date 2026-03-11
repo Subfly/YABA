@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -35,6 +34,7 @@ import dev.subfly.yaba.core.components.webview.YabaWebPlatform
 import dev.subfly.yaba.core.components.webview.YabaWebScrollDirection
 import dev.subfly.yaba.core.navigation.creation.HighlightCreationRoute
 import dev.subfly.yaba.ui.detail.bookmark.doc.components.DocmarkContentDropdownMenu
+import dev.subfly.yaba.ui.detail.bookmark.doc.components.DocmarkReaderFloatingToolbar
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalCreationContentNavigator
@@ -71,16 +71,20 @@ internal fun DocmarkContentLayout(
     val hasReaderContent = !state.isLoading && !state.pdfAbsolutePath.isNullOrBlank()
     var isMenuExpanded by remember { mutableStateOf(false) }
     var hasSelection by remember { mutableStateOf(false) }
-    var isFabVisible by remember(hasReaderContent) { mutableStateOf(true) }
+    var isToolbarVisible by remember(hasReaderContent) { mutableStateOf(true) }
+    var currentPage by remember { mutableStateOf(1) }
+    var pageCount by remember { mutableStateOf(1) }
 
-    LaunchedEffect(readerBridge, hasReaderContent, isFabVisible) {
-        if (!hasReaderContent || !isFabVisible) {
+    LaunchedEffect(readerBridge, hasReaderContent) {
+        if (!hasReaderContent) {
             hasSelection = false
             return@LaunchedEffect
         }
         val bridge = readerBridge ?: return@LaunchedEffect
         while (true) {
             hasSelection = bridge.getCanCreateHighlight()
+            currentPage = bridge.getCurrentPageNumber()
+            pageCount = bridge.getPageCount()
             delay(200)
         }
     }
@@ -145,6 +149,39 @@ internal fun DocmarkContentLayout(
                     onEvent(DocmarkDetailEvent.OnClearScrollToHighlight)
                 }
 
+                DocmarkReaderFloatingToolbar(
+                    isVisible = isToolbarVisible,
+                    hasSelection = hasSelection,
+                    canGoPrev = currentPage > 1,
+                    canGoNext = currentPage < pageCount,
+                    onPrevPage = {
+                        scope.launch {
+                            readerBridge?.prevPage()
+                        }
+                    },
+                    onNextPage = {
+                        scope.launch {
+                            readerBridge?.nextPage()
+                        }
+                    },
+                    onHighlightClick = {
+                        val bridge = readerBridge ?: return@DocmarkReaderFloatingToolbar
+                        val bookmarkId = state.bookmark?.id ?: return@DocmarkReaderFloatingToolbar
+                        val readableVersionId = state.selectedReadableVersionId ?: return@DocmarkReaderFloatingToolbar
+                        scope.launch {
+                            val draft = bridge.getSelectionSnapshot(bookmarkId, readableVersionId)
+                            creationNavigator.add(
+                                HighlightCreationRoute(
+                                    bookmarkId = bookmarkId,
+                                    selectionDraft = draft,
+                                    highlightId = null,
+                                ),
+                            )
+                            appStateManager.onShowCreationContent()
+                        }
+                    },
+                )
+
                 YabaPdfWebViewViewer(
                     modifier = Modifier.fillMaxSize(),
                     baseUrl = WebComponentUris.getPdfViewerUri(),
@@ -152,8 +189,8 @@ internal fun DocmarkContentLayout(
                     platform = YabaWebPlatform.Compose,
                     appearance = appearance,
                     onScrollDirectionChanged = { direction ->
-                        if (direction == YabaWebScrollDirection.Down) isFabVisible = false
-                        if (direction == YabaWebScrollDirection.Up) isFabVisible = true
+                        if (direction == YabaWebScrollDirection.Down) isToolbarVisible = false
+                        if (direction == YabaWebScrollDirection.Up) isToolbarVisible = true
                     },
                     onBridgeReady = { bridge -> readerBridge = bridge },
                     onHighlightTap = { highlightId ->
@@ -169,35 +206,6 @@ internal fun DocmarkContentLayout(
                     },
                     highlights = state.highlights,
                 )
-
-                if (isFabVisible) {
-                    FloatingActionButton(
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(16.dp),
-                        onClick = {
-                            if (!hasSelection) return@FloatingActionButton
-                            val bridge = readerBridge ?: return@FloatingActionButton
-                            val bookmarkId = state.bookmark?.id ?: return@FloatingActionButton
-                            val readableVersionId = state.selectedReadableVersionId ?: return@FloatingActionButton
-                            scope.launch {
-                                val draft = bridge.getSelectionSnapshot(bookmarkId, readableVersionId)
-                                creationNavigator.add(
-                                    HighlightCreationRoute(
-                                        bookmarkId = bookmarkId,
-                                        selectionDraft = draft,
-                                        highlightId = null,
-                                    ),
-                                )
-                                appStateManager.onShowCreationContent()
-                            }
-                        },
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                    ) {
-                        YabaIcon(name = "highlighter")
-                    }
-                }
             } else if (!state.isLoading) {
                 NoContentView(
                     modifier = Modifier

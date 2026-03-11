@@ -32,4 +32,24 @@ interface WebViewReaderBridge {
      * Scrolls the viewer so the highlight with the given ID is visible.
      */
     suspend fun scrollToHighlight(highlightId: String)
+
+    /**
+     * Page count (for PDF viewer). Default 1 for non-PDF readers.
+     */
+    suspend fun getPageCount(): Int = 1
+
+    /**
+     * Current page number (1-based). Default 1 for non-PDF readers.
+     */
+    suspend fun getCurrentPageNumber(): Int = 1
+
+    /**
+     * Go to next page. Returns true if navigated. Default false for non-PDF readers.
+     */
+    suspend fun nextPage(): Boolean = false
+
+    /**
+     * Go to previous page. Returns true if navigated. Default false for non-PDF readers.
+     */
+    suspend fun prevPage(): Boolean = false
 }

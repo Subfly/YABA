@@ -82,7 +82,6 @@ internal fun ImagemarkDetailLayout(
                 ) { Text(stringResource(Res.string.done)) }
             }
         }
-        item { Spacer(modifier = Modifier.height(18.dp)) }
         state.bookmark?.let { bookmark ->
             item {
                 Column(

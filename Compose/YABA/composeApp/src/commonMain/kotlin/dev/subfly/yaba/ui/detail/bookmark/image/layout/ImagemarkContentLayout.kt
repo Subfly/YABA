@@ -61,11 +61,11 @@ private const val DOUBLE_TAP_ANIMATION_DURATION_MS = 220
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun ImagemarkContentLayout(
-    modifier: Modifier = Modifier,
-    state: ImagemarkDetailUIState,
-    onShowDetail: () -> Unit,
-    onEvent: (ImagemarkDetailEvent) -> Unit,
-    onShowRemindMePicker: () -> Unit = {},
+        modifier: Modifier = Modifier,
+        state: ImagemarkDetailUIState,
+        onShowDetail: () -> Unit,
+        onEvent: (ImagemarkDetailEvent) -> Unit,
+        onShowRemindMePicker: () -> Unit = {},
 ) {
     val navigator = LocalContentNavigator.current
     var scale by remember { mutableFloatStateOf(1f) }
@@ -73,9 +73,10 @@ internal fun ImagemarkContentLayout(
     var isMenuExpanded by remember { mutableStateOf(false) }
 
     var containerSize by remember { mutableStateOf(IntSize.Zero) }
-    val containerSizeFloat = remember(containerSize) {
-        Size(containerSize.width.toFloat(), containerSize.height.toFloat())
-    }
+    val containerSizeFloat =
+            remember(containerSize) {
+                Size(containerSize.width.toFloat(), containerSize.height.toFloat())
+            }
     val hasValidSize = containerSize.width > 0 && containerSize.height > 0
 
     val scope = rememberCoroutineScope()
@@ -88,151 +89,188 @@ internal fun ImagemarkContentLayout(
         if (!hasValidSize) {
             scale = targetScale
             offset =
-                if (targetScale <= MIN_SCALE + SCALE_EPSILON) Offset.Zero else offset + panChange
+                    if (targetScale <= MIN_SCALE + SCALE_EPSILON) Offset.Zero
+                    else offset + panChange
             return@rememberTransformableState
         }
 
         val safeCentroid =
-            if (ZoomPanUtils.isFiniteOffset(centroid)) centroid else ZoomPanUtils.centerOf(
-                containerSizeFloat
-            )
-        offset = ZoomPanUtils.calculateOffsetForTransform(
-            currentOffset = offset,
-            currentScale = scale,
-            targetScale = targetScale,
-            centroid = safeCentroid,
-            pan = panChange,
-            containerSize = containerSizeFloat,
-            minScale = MIN_SCALE,
-            scaleEpsilon = SCALE_EPSILON,
-        )
+                if (ZoomPanUtils.isFiniteOffset(centroid)) centroid
+                else ZoomPanUtils.centerOf(containerSizeFloat)
+        offset =
+                ZoomPanUtils.calculateOffsetForTransform(
+                        currentOffset = offset,
+                        currentScale = scale,
+                        targetScale = targetScale,
+                        centroid = safeCentroid,
+                        pan = panChange,
+                        containerSize = containerSizeFloat,
+                        minScale = MIN_SCALE,
+                        scaleEpsilon = SCALE_EPSILON,
+                )
         scale = targetScale
     }
 
     Scaffold(
-        modifier = modifier.fillMaxSize(),
-        topBar = {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                TopAppBar(
-                    title = { Text(text = stringResource(Res.string.bookmark_detail_title)) },
-                    navigationIcon = {
-                        IconButton(onClick = navigator::removeLastOrNull) {
-                            YabaIcon(name = "arrow-left-01")
-                        }
-                    },
-                    actions = {
-                        IconButton(
-                            onClick = onShowDetail,
-                            shapes = IconButtonDefaults.shapes(),
-                        ) { YabaIcon(name = "information-circle") }
-                        Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
-                            IconButton(
-                                onClick = { isMenuExpanded = !isMenuExpanded },
-                                shapes = IconButtonDefaults.shapes(),
-                            ) { YabaIcon(name = "more-horizontal-circle-02") }
+            modifier = modifier.fillMaxSize(),
+            topBar = {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    TopAppBar(
+                            title = {
+                                Text(text = stringResource(Res.string.bookmark_detail_title))
+                            },
+                            navigationIcon = {
+                                IconButton(onClick = navigator::removeLastOrNull) {
+                                    YabaIcon(name = "arrow-left-01")
+                                }
+                            },
+                            actions = {
+                                IconButton(
+                                        onClick = onShowDetail,
+                                        shapes = IconButtonDefaults.shapes(),
+                                ) { YabaIcon(name = "information-circle") }
+                                Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
+                                    IconButton(
+                                            onClick = { isMenuExpanded = !isMenuExpanded },
+                                            shapes = IconButtonDefaults.shapes(),
+                                    ) { YabaIcon(name = "more-horizontal-circle-02") }
 
-                            ImagemarkContentDropdownMenu(
-                                expanded = isMenuExpanded,
-                                onDismissRequest = { isMenuExpanded = false },
-                                state = state,
-                                onEvent = onEvent,
-                                onShowRemindMePicker = onShowRemindMePicker,
-                            )
+                                    ImagemarkContentDropdownMenu(
+                                            expanded = isMenuExpanded,
+                                            onDismissRequest = { isMenuExpanded = false },
+                                            state = state,
+                                            onEvent = onEvent,
+                                            onShowRemindMePicker = onShowRemindMePicker,
+                                    )
+                                }
+                            }
+                    )
+                    AnimatedContent(state.isLoading) { loading ->
+                        if (loading) {
+                            Box(
+                                    modifier =
+                                            Modifier.fillMaxWidth()
+                                                    .padding(bottom = 4.dp)
+                                                    .background(
+                                                            color =
+                                                                    MaterialTheme.colorScheme
+                                                                            .surface
+                                                    )
+                            ) { LinearWavyProgressIndicator(modifier = Modifier.fillMaxWidth()) }
+                        } else {
+                            Box(modifier = Modifier.fillMaxWidth())
                         }
-                    }
-                )
-                AnimatedContent(state.isLoading) { loading ->
-                    if (loading) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 4.dp)
-                                .background(color = MaterialTheme.colorScheme.surface)
-                        ) { LinearWavyProgressIndicator(modifier = Modifier.fillMaxWidth()) }
-                    } else {
-                        Box(modifier = Modifier.fillMaxWidth())
                     }
                 }
             }
-        }
     ) { paddingValues ->
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .onSizeChanged { containerSize = it },
-            contentAlignment = Alignment.Center,
+                modifier =
+                        Modifier.fillMaxSize().padding(paddingValues).onSizeChanged {
+                            containerSize = it
+                        },
+                contentAlignment = Alignment.Center,
         ) {
             YabaImage(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .graphicsLayer(
-                        scaleX = scale,
-                        scaleY = scale,
-                        translationX = offset.x,
-                        translationY = offset.y,
-                    )
-                    .transformable(
-                        state = transformableState,
-                        lockRotationOnZoomPan = true,
-                    )
-                    .pointerInput(Unit) {
-                        detectTapGestures(
-                            onDoubleTap = { tapOffset ->
-                                doubleTapAnimationJob?.cancel()
-                                doubleTapAnimationJob = scope.launch {
-                                    val startScale = scale
-                                    val startOffset = offset
-                                    val targetScale = if (startScale > MIN_SCALE + SCALE_EPSILON) {
-                                        MIN_SCALE
-                                    } else {
-                                        DOUBLE_TAP_SCALE
-                                    }
+                    modifier =
+                            Modifier.fillMaxSize()
+                                    .graphicsLayer(
+                                            scaleX = scale,
+                                            scaleY = scale,
+                                            translationX = offset.x,
+                                            translationY = offset.y,
+                                    )
+                                    .transformable(
+                                            state = transformableState,
+                                            lockRotationOnZoomPan = true,
+                                    )
+                                    .pointerInput(Unit) {
+                                        detectTapGestures(
+                                                onDoubleTap = { tapOffset ->
+                                                    doubleTapAnimationJob?.cancel()
+                                                    doubleTapAnimationJob =
+                                                            scope.launch {
+                                                                val startScale = scale
+                                                                val startOffset = offset
+                                                                val targetScale =
+                                                                        if (startScale >
+                                                                                        MIN_SCALE +
+                                                                                                SCALE_EPSILON
+                                                                        ) {
+                                                                            MIN_SCALE
+                                                                        } else {
+                                                                            DOUBLE_TAP_SCALE
+                                                                        }
 
-                                    val targetOffset =
-                                        if (!hasValidSize || targetScale <= MIN_SCALE + SCALE_EPSILON) {
-                                            Offset.Zero
-                                        } else {
-                                            ZoomPanUtils.calculateOffsetForTransform(
-                                                currentOffset = startOffset,
-                                                currentScale = startScale,
-                                                targetScale = targetScale,
-                                                centroid = if (ZoomPanUtils.isFiniteOffset(tapOffset)) {
-                                                    tapOffset
-                                                } else {
-                                                    ZoomPanUtils.centerOf(containerSizeFloat)
-                                                },
-                                                pan = Offset.Zero,
-                                                containerSize = containerSizeFloat,
-                                                minScale = MIN_SCALE,
-                                                scaleEpsilon = SCALE_EPSILON,
-                                            )
-                                        }
+                                                                val targetOffset =
+                                                                        if (!hasValidSize ||
+                                                                                        targetScale <=
+                                                                                                MIN_SCALE +
+                                                                                                        SCALE_EPSILON
+                                                                        ) {
+                                                                            Offset.Zero
+                                                                        } else {
+                                                                            ZoomPanUtils
+                                                                                    .calculateOffsetForTransform(
+                                                                                            currentOffset =
+                                                                                                    startOffset,
+                                                                                            currentScale =
+                                                                                                    startScale,
+                                                                                            targetScale =
+                                                                                                    targetScale,
+                                                                                            centroid =
+                                                                                                    if (ZoomPanUtils
+                                                                                                                    .isFiniteOffset(
+                                                                                                                            tapOffset
+                                                                                                                    )
+                                                                                                    ) {
+                                                                                                        tapOffset
+                                                                                                    } else {
+                                                                                                        ZoomPanUtils
+                                                                                                                .centerOf(
+                                                                                                                        containerSizeFloat
+                                                                                                                )
+                                                                                                    },
+                                                                                            pan =
+                                                                                                    Offset.Zero,
+                                                                                            containerSize =
+                                                                                                    containerSizeFloat,
+                                                                                            minScale =
+                                                                                                    MIN_SCALE,
+                                                                                            scaleEpsilon =
+                                                                                                    SCALE_EPSILON,
+                                                                                    )
+                                                                        }
 
-                                    animate(
-                                        initialValue = 0f,
-                                        targetValue = 1f,
-                                        animationSpec = tween(
-                                            durationMillis = DOUBLE_TAP_ANIMATION_DURATION_MS,
-                                            easing = FastOutSlowInEasing,
-                                        ),
-                                    ) { progress, _ ->
-                                        scale = ZoomPanUtils.lerpFloat(
-                                            startScale,
-                                            targetScale,
-                                            progress
+                                                                animate(
+                                                                        initialValue = 0f,
+                                                                        targetValue = 1f,
+                                                                        animationSpec =
+                                                                                tween(
+                                                                                        durationMillis =
+                                                                                                DOUBLE_TAP_ANIMATION_DURATION_MS,
+                                                                                        easing =
+                                                                                                FastOutSlowInEasing,
+                                                                                ),
+                                                                ) { progress, _ ->
+                                                                    scale =
+                                                                            ZoomPanUtils.lerpFloat(
+                                                                                    startScale,
+                                                                                    targetScale,
+                                                                                    progress
+                                                                            )
+                                                                    offset =
+                                                                            ZoomPanUtils.lerpOffset(
+                                                                                    startOffset,
+                                                                                    targetOffset,
+                                                                                    progress
+                                                                            )
+                                                                }
+                                                            }
+                                                }
                                         )
-                                        offset = ZoomPanUtils.lerpOffset(
-                                            startOffset,
-                                            targetOffset,
-                                            progress
-                                        )
-                                    }
-                                }
-                            }
-                        )
-                    },
-                filePath = state.imageAbsolutePath,
+                                    },
+                    filePath = state.imageAbsolutePath,
             )
         }
     }

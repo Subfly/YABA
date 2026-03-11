@@ -97,9 +97,13 @@ private fun toInternalStorageAssetLoaderFileUrl(
     rawFileUrl: String?,
 ): String? {
     if (rawFileUrl.isNullOrBlank()) return null
-    val uri = runCatching { rawFileUrl.toUri() }.getOrNull() ?: return null
-    if (uri.scheme != "file") return null
-    val rawPath = uri.path ?: return null
+    // BookmarkFileManager.getAbsolutePath returns a raw path (e.g. /data/.../files/YABA/...),
+    // not a file:// URI. Handle both: file:// URLs and raw absolute paths.
+    val rawPath = when {
+        rawFileUrl.startsWith("file://") -> runCatching { rawFileUrl.toUri() }.getOrNull()?.path
+        rawFileUrl.startsWith("/") -> rawFileUrl
+        else -> runCatching { rawFileUrl.toUri() }.getOrNull()?.takeIf { it.scheme == "file" }?.path
+    } ?: return null
     val filesRoot = context.filesDir.absolutePath.trimEnd('/')
     if (!rawPath.startsWith(filesRoot)) return null
 
@@ -1085,8 +1089,8 @@ actual fun YabaPdfWebViewViewerInternal(
         WebView(context).apply {
             settings.javaScriptEnabled = true
             settings.allowFileAccess = true
-            settings.setSupportZoom(true)
-            settings.builtInZoomControls = true
+            settings.setSupportZoom(false)
+            settings.builtInZoomControls = false
             settings.displayZoomControls = false
             webChromeClient = denyPermissionsChromeClient()
             setBackgroundColor(Color.TRANSPARENT)
@@ -1333,6 +1337,54 @@ actual fun YabaPdfWebViewViewerInternal(
                     })();
                 """.trimIndent()
                 evaluateJs(webView, script)
+            }
+
+            override suspend fun getPageCount(): Int {
+                val webView = webViewRef.value ?: return 0
+                val ready = waitForBridgeReady(
+                    webView,
+                    "(function(){ try { return !!(window.YabaPdfBridge && window.YabaPdfBridge.isReady); } catch(e){ return false; } })();",
+                )
+                if (!ready) return 0
+                val script = "(function(){ try { return window.YabaPdfBridge?.getPageCount?.() ?? 0; } catch(e){ return 0; } })();"
+                return try {
+                    evaluateJs(webView, script).trim().toIntOrNull() ?: 0
+                } catch (_: Exception) { 0 }
+            }
+
+            override suspend fun getCurrentPageNumber(): Int {
+                val webView = webViewRef.value ?: return 1
+                val ready = waitForBridgeReady(
+                    webView,
+                    "(function(){ try { return !!(window.YabaPdfBridge && window.YabaPdfBridge.isReady); } catch(e){ return false; } })();",
+                )
+                if (!ready) return 1
+                val script = "(function(){ try { return window.YabaPdfBridge?.getCurrentPageNumber?.() ?? 1; } catch(e){ return 1; } })();"
+                return try {
+                    evaluateJs(webView, script).trim().toIntOrNull() ?: 1
+                } catch (_: Exception) { 1 }
+            }
+
+            override suspend fun nextPage(): Boolean {
+                val webView = webViewRef.value ?: return false
+                val ready = waitForBridgeReady(
+                    webView,
+                    "(function(){ try { return !!(window.YabaPdfBridge && window.YabaPdfBridge.isReady); } catch(e){ return false; } })();",
+                )
+                if (!ready) return false
+                val script = "(function(){ try { return window.YabaPdfBridge?.nextPage?.() ?? false; } catch(e){ return false; } })();"
+                return evaluateJs(webView, script).trim() == "true"
+            }
+
+            override suspend fun prevPage(): Boolean {
+                val webView = webViewRef.value ?: return false
+                val ready = waitForBridgeReady(
+                    webView,
+                    "(function(){ try { return !!(window.YabaPdfBridge && window.YabaPdfBridge.isReady); } catch(e){ return false; } })();",
+                )
+                if (!ready) return false
+                val script = "(function(){ try { return window.YabaPdfBridge?.prevPage?.() ?? false; } catch(e){ return false; } })();"
+                return evaluateJs(webView, script).trim() == "true"
             }
         }
     }

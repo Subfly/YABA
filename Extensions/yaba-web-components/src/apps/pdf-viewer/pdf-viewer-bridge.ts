@@ -12,7 +12,7 @@ import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url"
 import {
   EventBus,
   PDFLinkService,
-  PDFViewer,
+  PDFSinglePageViewer,
 } from "pdfjs-dist/web/pdf_viewer.mjs"
 
 GlobalWorkerOptions.workerSrc = pdfWorkerUrl
@@ -56,6 +56,10 @@ interface YabaPdfBridge {
   getCanCreateHighlight: () => boolean
   setHighlights: (highlightsJson: string) => void
   scrollToHighlight: (highlightId: string) => void
+  getCurrentPageNumber: () => number
+  getPageCount: () => number
+  nextPage: () => boolean
+  prevPage: () => boolean
   setPlatform: (platform: Platform) => void
   setAppearance: (appearance: AppearanceMode) => void
   onHighlightTap?: (id: string) => void
@@ -78,7 +82,7 @@ const colorRoleToClass: Record<string, string> = {
   YELLOW: "yaba-highlight-yellow",
 }
 
-const PDF_SCALE = 1.35
+const SCALE_FIT = "page-width"
 const CONTEXT_WINDOW = 30
 
 let isReady = false
@@ -87,7 +91,7 @@ let currentAppearance: AppearanceMode = "auto"
 let currentPdfUrl: string | null = null
 let currentHighlights: PdfHighlightForRendering[] = []
 let currentPdfDocument: PDFDocumentProxy | null = null
-let pdfViewer: PDFViewer | null = null
+let pdfViewer: PDFSinglePageViewer | null = null
 let pdfEventBus: EventBus | null = null
 let pageStates: PdfPageState[] = []
 
@@ -96,6 +100,12 @@ function getRootElement(): HTMLElement {
   if (!root) throw new Error("Missing #pdf-root")
   root.classList.add("yaba-pdf-root")
   return root
+}
+
+function applyFitWidth(): void {
+  const viewer = pdfViewer
+  if (!viewer) return
+  viewer.currentScaleValue = SCALE_FIT
 }
 
 function buildViewerShell(): void {
@@ -114,7 +124,7 @@ function buildViewerShell(): void {
   const linkService = new PDFLinkService({
     eventBus: pdfEventBus,
   })
-  pdfViewer = new PDFViewer({
+  pdfViewer = new PDFSinglePageViewer({
     container: container as HTMLDivElement,
     viewer: viewerElement as HTMLDivElement,
     eventBus: pdfEventBus,
@@ -126,11 +136,75 @@ function buildViewerShell(): void {
   })
   linkService.setViewer(pdfViewer)
 
+  pdfEventBus.on("pagesinit", () => {
+    applyFitWidth()
+  })
+
   pdfEventBus.on("textlayerrendered", () => {
     rebuildPageStatesFromDom()
     attachHighlightTapListeners()
     renderHighlights()
   })
+
+  const resizeObserver = new ResizeObserver(() => {
+    applyFitWidth()
+  })
+  resizeObserver.observe(container)
+
+  attachPinchZoom(container)
+}
+
+function attachPinchZoom(container: HTMLElement): void {
+  let initialPinchDistance = 0
+  let lastPinchScale = 1
+
+  const reset = (): void => {
+    initialPinchDistance = 0
+    lastPinchScale = 1
+  }
+
+  container.addEventListener(
+    "touchstart",
+    (e: TouchEvent) => {
+      if (e.touches.length === 2) {
+        initialPinchDistance = Math.hypot(
+          e.touches[1].pageX - e.touches[0].pageX,
+          e.touches[1].pageY - e.touches[0].pageY
+        )
+      } else {
+        reset()
+      }
+    },
+    { passive: true }
+  )
+
+  container.addEventListener(
+    "touchmove",
+    (e: TouchEvent) => {
+      if (initialPinchDistance <= 0 || e.touches.length < 2) return
+      e.preventDefault()
+      const pinchDistance = Math.hypot(
+        e.touches[1].pageX - e.touches[0].pageX,
+        e.touches[1].pageY - e.touches[0].pageY
+      )
+      lastPinchScale = pinchDistance / initialPinchDistance
+    },
+    { passive: false }
+  )
+
+  container.addEventListener(
+    "touchend",
+    () => {
+      if (initialPinchDistance <= 0) return
+      const viewer = pdfViewer
+      if (viewer && lastPinchScale !== 1) {
+        const newScale = Math.max(0.5, Math.min(4, viewer.currentScale * lastPinchScale))
+        viewer.currentScale = newScale
+      }
+      reset()
+    },
+    { passive: true }
+  )
 }
 
 function parsePageIndex(sectionKey: string): number | null {
@@ -198,28 +272,11 @@ function computeOffsetInLayer(
   return range.toString().length
 }
 
+const HIGHLIGHT_OVERLAY_CLASS = "yaba-highlight-overlay"
+
 function clearRenderedHighlights(): void {
-  pageStates.forEach((state) => {
-    state.textSpanRanges.forEach(({ element }) => {
-      element.classList.remove(
-        "yaba-highlight",
-        "yaba-highlight-yellow",
-        "yaba-highlight-blue",
-        "yaba-highlight-brown",
-        "yaba-highlight-cyan",
-        "yaba-highlight-gray",
-        "yaba-highlight-green",
-        "yaba-highlight-indigo",
-        "yaba-highlight-mint",
-        "yaba-highlight-orange",
-        "yaba-highlight-pink",
-        "yaba-highlight-purple",
-        "yaba-highlight-red",
-        "yaba-highlight-teal"
-      )
-      element.removeAttribute("data-highlight-id")
-    })
-  })
+  const root = getRootElement()
+  root.querySelectorAll(`.${HIGHLIGHT_OVERLAY_CLASS}`).forEach((el) => el.remove())
 }
 
 function getTextLayerElements(): HTMLElement[] {
@@ -242,19 +299,71 @@ function rebuildPageStatesFromDom(): void {
   })
 }
 
+function getOrCreateHighlightOverlayContainer(pageElement: HTMLElement): HTMLElement {
+  let container = pageElement.querySelector(".yaba-highlight-overlays") as HTMLElement | null
+  if (!container) {
+    container = document.createElement("div")
+    container.className = "yaba-highlight-overlays"
+    container.style.cssText =
+      "position:absolute;left:0;top:0;right:0;bottom:0;pointer-events:none;"
+    const textLayer = pageElement.querySelector(".textLayer")
+    if (textLayer) {
+      textLayer.insertAdjacentElement("afterend", container)
+    } else {
+      pageElement.appendChild(container)
+    }
+  }
+  return container
+}
+
+function createRangeByOffsets(
+  textLayer: HTMLElement,
+  startOffset: number,
+  endOffset: number
+): Range | null {
+  const range = document.createRange()
+  const walker = document.createTreeWalker(textLayer, NodeFilter.SHOW_TEXT)
+  let current = 0
+  let startNode: Node | null = null
+  let startOffsetInNode = 0
+  let endNode: Node | null = null
+  let endOffsetInNode = 0
+  let node: Node | null
+  while ((node = walker.nextNode())) {
+    const len = node.textContent?.length ?? 0
+    if (startNode === null && current + len > startOffset) {
+      startNode = node
+      startOffsetInNode = Math.max(0, startOffset - current)
+    }
+    if (endNode === null && current + len >= endOffset) {
+      endNode = node
+      endOffsetInNode = Math.min(len, endOffset - current)
+    }
+    if (startNode && endNode) break
+    current += len
+  }
+  if (!startNode || !endNode) return null
+  try {
+    range.setStart(startNode, startOffsetInNode)
+    range.setEnd(endNode, endOffsetInNode)
+    return range
+  } catch {
+    return null
+  }
+}
+
 function attachHighlightTapListeners(): void {
-  pageStates.forEach((state) => {
-    if (state.textLayerElement.dataset.yabaTapListenerAttached === "true") return
-    state.textLayerElement.dataset.yabaTapListenerAttached = "true"
-    state.textLayerElement.addEventListener("click", (event) => {
-      const target = event.target as HTMLElement
-      const highlightElement = target.closest("[data-highlight-id]") as HTMLElement | null
-      const highlightId = highlightElement?.dataset.highlightId
-      if (!highlightId) return
-      event.preventDefault()
-      const win = window as Window & { YabaPdfBridge?: YabaPdfBridge }
-      win.YabaPdfBridge?.onHighlightTap?.(highlightId)
-    })
+  const root = getRootElement()
+  if (root.dataset.yabaHighlightTapAttached === "true") return
+  root.dataset.yabaHighlightTapAttached = "true"
+  root.addEventListener("click", (event) => {
+    const target = event.target as HTMLElement
+    const highlightElement = target.closest("[data-highlight-id]") as HTMLElement | null
+    const highlightId = highlightElement?.dataset.highlightId
+    if (!highlightId) return
+    event.preventDefault()
+    const win = window as Window & { YabaPdfBridge?: YabaPdfBridge }
+    win.YabaPdfBridge?.onHighlightTap?.(highlightId)
   })
 }
 
@@ -269,6 +378,8 @@ function renderHighlights(): void {
 
     const pageRangeStart = Math.min(startPage, endPage)
     const pageRangeEnd = Math.max(startPage, endPage)
+    const colorClass = colorRoleToClass[highlight.colorRole] ?? "yaba-highlight-yellow"
+
     for (let pageIndex = pageRangeStart; pageIndex <= pageRangeEnd; pageIndex += 1) {
       const pageState = pageStates.find((page) => page.pageIndex === pageIndex)
       if (!pageState) continue
@@ -280,15 +391,37 @@ function renderHighlights(): void {
         pageIndex === endPage ? highlight.endOffsetInSection : pageTextLength
       if (fromOffset >= toOffset) continue
 
-      const colorClass = colorRoleToClass[highlight.colorRole] ?? "yaba-highlight-yellow"
-      pageState.textSpanRanges.forEach((spanRange) => {
-        const overlaps = spanRange.start < toOffset && spanRange.end > fromOffset
-        if (!overlaps) return
-        spanRange.element.classList.add("yaba-highlight", colorClass)
-        if (!spanRange.element.dataset.highlightId) {
-          spanRange.element.dataset.highlightId = highlight.id
-        }
-      })
+      const range = createRangeByOffsets(
+        pageState.textLayerElement,
+        fromOffset,
+        toOffset
+      )
+      if (!range) continue
+
+      const rects = range.getClientRects()
+      if (rects.length === 0) continue
+
+      const pageElement = pageState.textLayerElement.closest(".page") as HTMLElement | null
+      if (!pageElement) continue
+
+      const overlayContainer = getOrCreateHighlightOverlayContainer(pageElement)
+      const pageRect = pageElement.getBoundingClientRect()
+      for (let i = 0; i < rects.length; i += 1) {
+        const rect = rects[i]
+        if (rect.width <= 0 || rect.height <= 0) continue
+        const overlay = document.createElement("div")
+        overlay.className = `yaba-highlight-overlay yaba-highlight ${colorClass}`
+        overlay.dataset.highlightId = highlight.id
+        overlay.style.cssText = `
+          position:absolute;
+          left:${rect.left - pageRect.left}px;
+          top:${rect.top - pageRect.top}px;
+          width:${rect.width}px;
+          height:${rect.height}px;
+          pointer-events:auto;
+        `
+        overlayContainer.appendChild(overlay)
+      }
     }
   })
 }
@@ -329,7 +462,6 @@ async function renderPdfPages(pdfUrl: string): Promise<void> {
   const pdfDocument = await loadingTask.promise
   currentPdfDocument = pdfDocument
   viewer.setDocument(pdfDocument)
-  viewer.currentScale = PDF_SCALE
   await viewer.pagesPromise
   rebuildPageStatesFromDom()
   attachHighlightTapListeners()
@@ -423,6 +555,24 @@ export function initPdfViewerBridge(
     getCanCreateHighlight,
     setHighlights,
     scrollToHighlight,
+    getCurrentPageNumber: () => (pdfViewer?.currentPageNumber ?? 1),
+    getPageCount: () => (pdfViewer?.pagesCount ?? 0),
+    nextPage(): boolean {
+      const viewer = pdfViewer
+      if (!viewer || viewer.pagesCount <= 0) return false
+      const next = Math.min(viewer.currentPageNumber + 1, viewer.pagesCount)
+      if (next === viewer.currentPageNumber) return false
+      viewer.currentPageNumber = next
+      return true
+    },
+    prevPage(): boolean {
+      const viewer = pdfViewer
+      if (!viewer || viewer.pagesCount <= 0) return false
+      const prev = Math.max(viewer.currentPageNumber - 1, 1)
+      if (prev === viewer.currentPageNumber) return false
+      viewer.currentPageNumber = prev
+      return true
+    },
     setPlatform(nextPlatform: Platform): void {
       currentPlatform = nextPlatform
       applyTheme(currentPlatform, currentAppearance, null)

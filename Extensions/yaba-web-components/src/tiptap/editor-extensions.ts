@@ -17,7 +17,6 @@ import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight"
 import { Markdown } from "@tiptap/markdown"
 import { all, createLowlight } from "lowlight"
 import type { Extensions } from "@tiptap/core"
-import { Excalidraw } from "./extensions/excalidraw"
 import { HighlightDecorationsExtension } from "./extensions/highlight-decorations"
 
 const lowlight = createLowlight(all)
@@ -107,7 +106,6 @@ export function createEditorExtensions(): Extensions {
         gfm: true,
       },
     }),
-    Excalidraw,
     HighlightDecorationsExtension,
   ]
 }

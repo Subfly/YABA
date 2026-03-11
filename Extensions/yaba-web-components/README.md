@@ -1,6 +1,6 @@
 # YABA Web Components
 
-WebView-hosted components for YABA: TipTap editor, read-only viewer, and HTML-to-Markdown converter. Built with Vite 7, React 19, TipTap 3.20, Excalidraw 0.18, and TypeScript.
+WebView-hosted components for YABA: TipTap editor, read-only viewer, and HTML-to-Markdown converter. Built with Vite 7, React 19, TipTap 3.20, and TypeScript.
 
 ## Build
 
@@ -65,7 +65,6 @@ viewer.html?platform=darwin&appearance=dark
 - `{ type: 'indent' }`, `{ type: 'outdent' }`
 - `{ type: 'undo' }`, `{ type: 'redo' }`
 - `{ type: 'insertLink', url: string }`, `{ type: 'removeLink' }`
-- `{ type: 'openExcalidraw' }` — Opens Excalidraw modal; on Save, inserts an Excalidraw node into the editor
 
 ### `window.YabaConverterBridge` (converter.html)
 
@@ -93,7 +92,6 @@ The `converter.html` page is loaded in a hidden WebView when link saving needs H
 - **Mathematics**: LaTeX math via KaTeX; inline `$...$` and block `$$...$$`; `dispatch({ type: 'insertInlineMath', latex: '...' })` / `{ type: 'insertBlockMath', latex: '...' }`
 - **Subscript / Superscript**: `dispatch({ type: 'toggleSubscript' })` / `{ type: 'toggleSuperscript' }`
 - **YouTube**: `dispatch({ type: 'insertYouTube', url: 'https://youtube.com/watch?v=...' })`; paste of YouTube URLs auto-embeds
-- **Excalidraw**: Insert diagrams via `dispatch({ type: 'openExcalidraw' })`; Excalidraw nodes serialize as fenced blocks (` ```yaba-excalidraw `) and render as SVG; Edit button to modify existing diagrams
 
 ## Follow-ups (Not in Scope)
 

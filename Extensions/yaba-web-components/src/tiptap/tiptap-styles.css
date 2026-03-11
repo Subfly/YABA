@@ -335,13 +335,6 @@ body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-attribut
   background: rgba(158, 158, 158, 0.4);
 }
 
-/* Excalidraw */
-.yaba-excalidraw-wrapper {
-  position: relative;
-  display: block;
-  margin: 8px 0;
-}
-
 /* KaTeX mathematics */
 .yaba-editor-container .tiptap-mathematics-render {
   padding: 0.25em 0.5em;
@@ -363,17 +356,4 @@ body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-attribut
   max-width: 100%;
   margin: 0.5em 0;
   border-radius: 8px;
-}
-
-.yaba-excalidraw-edit-button {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  padding: 6px 12px;
-  font-size: 12px;
-  background: var(--yaba-primary, #ff7c75);
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
 }

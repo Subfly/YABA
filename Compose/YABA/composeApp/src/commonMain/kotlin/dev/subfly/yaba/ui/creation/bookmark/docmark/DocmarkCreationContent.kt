@@ -20,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -44,12 +43,10 @@ import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.ResultStoreKeys
-import dev.subfly.yaba.util.uiTitle
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.model.utils.FolderSelectionMode
 import dev.subfly.yabacore.model.utils.YabaColor
-import dev.subfly.yabacore.model.utils.uiIconName
 import dev.subfly.yabacore.state.creation.docmark.DocmarkCreationEvent
 import dev.subfly.yabacore.state.creation.docmark.DocmarkCreationUIState
 import dev.subfly.yabacore.ui.icon.YabaIcon
@@ -246,6 +243,7 @@ private fun DocmarkPreviewContent(
             Spacer(modifier = Modifier.height(12.dp))
             Button(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
+                shapes = ButtonDefaults.shapes(),
                 onClick = onPickPdf,
                 enabled = state.isLoading.not() && state.isInEditMode.not(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(color.iconTintArgb())),

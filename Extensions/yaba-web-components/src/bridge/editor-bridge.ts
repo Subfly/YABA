@@ -59,7 +59,6 @@ export type EditorCommandPayload =
   | { type: "redo" }
   | { type: "insertLink"; url: string }
   | { type: "removeLink" }
-  | { type: "openExcalidraw" }
   | { type: "insertYouTube"; url: string }
   | { type: "insertInlineMath"; latex: string }
   | { type: "insertBlockMath"; latex: string }
@@ -294,9 +293,6 @@ export function initEditorBridge(editor: Editor): void {
           break
         case "removeLink":
           chain.unsetLink().run()
-          break
-        case "openExcalidraw":
-          ed.commands.insertExcalidraw()
           break
         case "insertYouTube":
           ed.commands.setYoutubeVideo({ src: cmd.url })

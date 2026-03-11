@@ -16,6 +16,10 @@ if [[ ! -d "$WEB_COMPONENTS_DIR" ]]; then
     exit 1
 fi
 
+echo "Deleting previous build files..."
+rm -rf "$TARGET_DIR"
+rm -rf "$DIST_DIR"
+
 echo "Building web components..."
 cd "$WEB_COMPONENTS_DIR"
 npm run build
@@ -27,7 +31,6 @@ fi
 
 echo "Copying dist to Core composeResources..."
 mkdir -p "$TARGET_DIR"
-rm -rf "$TARGET_DIR"/*
 cp -R "$DIST_DIR"/* "$TARGET_DIR"
 
 echo "Done. Web components copied to $TARGET_DIR"

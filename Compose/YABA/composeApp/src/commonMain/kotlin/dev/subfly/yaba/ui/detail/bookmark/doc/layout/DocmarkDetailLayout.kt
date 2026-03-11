@@ -35,24 +35,19 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import dev.subfly.yaba.core.components.NoContentView
-import dev.subfly.yaba.core.navigation.alert.DeletionState
-import dev.subfly.yaba.core.navigation.alert.DeletionType
-import dev.subfly.yaba.core.navigation.creation.DocmarkCreationRoute
-import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
 import dev.subfly.yaba.core.navigation.creation.HighlightCreationRoute
 import dev.subfly.yaba.core.navigation.main.FolderDetailRoute
 import dev.subfly.yaba.core.navigation.main.TagDetailRoute
 import dev.subfly.yaba.ui.detail.bookmark.doc.models.DocmarkDetailPage
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailHighlightItemContent
 import dev.subfly.yaba.ui.detail.composables.BookmarkDetailFolderSectionContent
+import dev.subfly.yaba.ui.detail.composables.BookmarkDetailLabel
 import dev.subfly.yaba.ui.detail.composables.BookmarkDetailReminderSectionContent
 import dev.subfly.yaba.ui.detail.composables.BookmarkDetailTagSectionContent
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalCreationContentNavigator
-import dev.subfly.yaba.util.LocalDeletionDialogManager
 import dev.subfly.yaba.util.formatDateTime
-import dev.subfly.yabacore.model.utils.FolderSelectionMode
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.detail.docmark.DocmarkDetailEvent
 import dev.subfly.yabacore.state.detail.docmark.DocmarkDetailUIState
@@ -65,19 +60,8 @@ import yaba.composeapp.generated.resources.bookmark_detail_edited_at_title
 import yaba.composeapp.generated.resources.bookmark_detail_no_description_provided
 import yaba.composeapp.generated.resources.bookmark_detail_no_tags_added_description
 import yaba.composeapp.generated.resources.bookmark_detail_no_tags_added_title
-import yaba.composeapp.generated.resources.delete
 import yaba.composeapp.generated.resources.done
-import yaba.composeapp.generated.resources.edit
-import yaba.composeapp.generated.resources.move
-import yaba.composeapp.generated.resources.remind_me
-import yaba.composeapp.generated.resources.share
-
-private data class DocActionItem(
-    val key: String,
-    val label: String,
-    val iconName: String,
-    val color: YabaColor,
-)
+import yaba.composeapp.generated.resources.info
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -90,16 +74,10 @@ internal fun DocmarkDetailLayout(
     val navigator = LocalContentNavigator.current
     val creationNavigator = LocalCreationContentNavigator.current
     val appStateManager = LocalAppStateManager.current
-    val deletionDialogManager = LocalDeletionDialogManager.current
     val mainColor by remember(state.bookmark) {
         mutableStateOf(state.bookmark?.parentFolder?.color ?: YabaColor.RED)
     }
     var currentPage by remember { mutableStateOf(DocmarkDetailPage.INFO) }
-    val editText = stringResource(Res.string.edit)
-    val moveText = stringResource(Res.string.move)
-    val shareText = stringResource(Res.string.share)
-    val deleteText = stringResource(Res.string.delete)
-    val remindMeText = stringResource(Res.string.remind_me)
     val bookmark = state.bookmark
 
     LazyColumn(
@@ -129,7 +107,7 @@ internal fun DocmarkDetailLayout(
                         SegmentedButton(
                             selected = currentPage == page,
                             onClick = { currentPage = page },
-                            shape = SegmentedButtonDefaults.itemShape(index = index, count = 3),
+                            shape = SegmentedButtonDefaults.itemShape(index = index, count = DocmarkDetailPage.entries.size),
                             label = { Text(page.label) },
                             icon = { YabaIcon(name = page.iconName) },
                         )
@@ -140,92 +118,17 @@ internal fun DocmarkDetailLayout(
         item { Spacer(modifier = Modifier.height(18.dp)) }
         if (bookmark != null) {
             when (currentPage) {
-                DocmarkDetailPage.ACTIONS -> {
-                    val actions = listOf(
-                        DocActionItem("edit", editText, "edit-02", YabaColor.ORANGE),
-                        DocActionItem("move", moveText, "arrow-move-up-right", YabaColor.TEAL),
-                        DocActionItem("export", "Save Copy", "download-01", YabaColor.BLUE),
-                        DocActionItem("share", shareText, "share-03", YabaColor.INDIGO),
-                        DocActionItem(
-                            "reminder",
-                            if (state.reminderDateEpochMillis == null) remindMeText else "Cancel Reminder",
-                            if (state.reminderDateEpochMillis == null) "notification-01" else "notification-off-03",
-                            YabaColor.YELLOW,
-                        ),
-                        DocActionItem("delete", deleteText, "delete-02", YabaColor.RED),
-                    )
-                    itemsIndexed(actions, key = { _, action -> action.key }) { index, action ->
-                        SegmentedListItem(
-                            modifier = Modifier
-                                .animateItem()
-                                .padding(horizontal = 12.dp)
-                                .padding(vertical = 4.dp)
-                                .clip(RoundedCornerShape(12.dp)),
-                            onClick = {
-                                when (action.key) {
-                                    "edit" -> {
-                                        creationNavigator.add(DocmarkCreationRoute(bookmarkId = bookmark.id))
-                                        appStateManager.onShowCreationContent()
-                                    }
-
-                                    "move" -> {
-                                        creationNavigator.add(
-                                            FolderSelectionRoute(
-                                                mode = FolderSelectionMode.BOOKMARKS_MOVE,
-                                                contextFolderId = bookmark.folderId,
-                                                contextBookmarkIds = listOf(bookmark.id),
-                                            ),
-                                        )
-                                        appStateManager.onShowCreationContent()
-                                    }
-
-                                    "export" -> onEvent(DocmarkDetailEvent.OnExportPdf)
-                                    "share" -> onEvent(DocmarkDetailEvent.OnSharePdf)
-                                    "reminder" -> {
-                                        if (state.reminderDateEpochMillis == null) {
-                                            onShowRemindMePicker()
-                                        } else {
-                                            onEvent(DocmarkDetailEvent.OnCancelReminder)
-                                        }
-                                    }
-
-                                    "delete" -> {
-                                        deletionDialogManager.send(
-                                            DeletionState(
-                                                deletionType = DeletionType.BOOKMARK,
-                                                bookmarkToBeDeleted = bookmark,
-                                                onConfirm = {
-                                                    onEvent(DocmarkDetailEvent.OnDeleteBookmark)
-                                                    navigator.removeLastOrNull()
-                                                },
-                                            ),
-                                        )
-                                    }
-                                }
-                            },
-                            shapes = ListItemDefaults.segmentedShapes(index = index, count = actions.size),
-                            content = {
-                                Text(
-                                    text = action.label,
-                                    color = if (action.key == "delete") Color(YabaColor.RED.iconTintArgb()) else MaterialTheme.colorScheme.onSurface,
-                                )
-                            },
-                            leadingContent = {
-                                YabaIcon(
-                                    name = action.iconName,
-                                    color = action.color,
-                                )
-                            },
-                        )
-                    }
-                }
-
                 DocmarkDetailPage.INFO -> {
                     item {
                         Column(
                             modifier = Modifier.padding(horizontal = 12.dp),
                             verticalArrangement = Arrangement.spacedBy(4.dp),
                         ) {
+                            BookmarkDetailLabel(
+                                modifier = Modifier.padding(bottom = 8.dp),
+                                iconName = "information-circle",
+                                label = stringResource(Res.string.info),
+                            )
                             SegmentedListItem(
                                 modifier = Modifier.clip(RoundedCornerShape(8.dp)),
                                 onClick = {},
