@@ -47,7 +47,7 @@ fun YabaMainNavigationView(
     NavDisplay(
         modifier = modifier,
         backStack = navigator,
-        sceneStrategy = listDetailStrategy,
+        sceneStrategies = listOf(listDetailStrategy),
         entryDecorators = listOf(
             rememberSaveableStateHolderNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator(),

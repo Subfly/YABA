@@ -1,10 +1,10 @@
 package dev.subfly.yabacore.database
 
-import androidx.room.ConstructedBy
-import androidx.room.Database
-import androidx.room.RoomDatabase
-import androidx.room.RoomDatabaseConstructor
-import androidx.room.TypeConverters
+import androidx.room3.ConstructedBy
+import androidx.room3.Database
+import androidx.room3.RoomDatabase
+import androidx.room3.RoomDatabaseConstructor
+import androidx.room3.TypeConverters
 import dev.subfly.yabacore.database.converters.CoreTypeConverters
 import dev.subfly.yabacore.database.dao.BookmarkDao
 import dev.subfly.yabacore.database.dao.DocBookmarkDao

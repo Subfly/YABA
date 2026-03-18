@@ -1,8 +1,8 @@
 package dev.subfly.yabacore.database.entities
 
-import androidx.room.Entity
-import androidx.room.Index
-import androidx.room.PrimaryKey
+import androidx.room3.Entity
+import androidx.room3.Index
+import androidx.room3.PrimaryKey
 import dev.subfly.yabacore.model.utils.YabaColor
 
 @Entity(

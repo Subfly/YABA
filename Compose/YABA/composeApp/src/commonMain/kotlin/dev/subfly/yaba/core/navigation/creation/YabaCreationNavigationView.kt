@@ -38,6 +38,7 @@ fun YabaCreationNavigationView(
     NavDisplay(
         modifier = modifier,
         backStack = creationNavigator,
+        sceneStrategies = emptyList(),
         entryDecorators = listOf(
             rememberSaveableStateHolderNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator(),

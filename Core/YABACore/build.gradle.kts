@@ -56,7 +56,6 @@ kotlin {
             implementation(libs.ktor.serialization.json)
             implementation(libs.ktor.client.logging)
             implementation(libs.room.runtime)
-            implementation(libs.sqlite.bundled)
             implementation(libs.androidx.datastore)
             implementation(libs.androidx.datastore.preferences)
             implementation(libs.filekit.core)
@@ -129,6 +128,6 @@ dependencies {
     add("kspIosSimulatorArm64", libs.room.compiler)
 }
 
-room {
+room3 {
     schemaDirectory("$projectDir/schemas")
 }

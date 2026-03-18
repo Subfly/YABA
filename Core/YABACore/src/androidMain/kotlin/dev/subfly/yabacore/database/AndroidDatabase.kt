@@ -1,9 +1,9 @@
 package dev.subfly.yabacore.database
 
 import android.content.Context
-import androidx.room.ExperimentalRoomApi
-import androidx.room.Room
-import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import androidx.room3.ExperimentalRoomApi
+import androidx.room3.Room
+import kotlinx.coroutines.Dispatchers
 
 @OptIn(ExperimentalRoomApi::class)
 fun Context.createYabaDatabase(
@@ -20,5 +20,5 @@ fun Context.createYabaDatabase(
         applicationContext,
         YabaDatabase::class.java,
         databasePath.absolutePath,
-    ).setDriver(BundledSQLiteDriver()).build()
+    ).setQueryCoroutineContext(Dispatchers.IO).build()
 }

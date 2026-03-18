@@ -1,8 +1,8 @@
 package dev.subfly.yabacore.database.models
 
-import androidx.room.Embedded
-import androidx.room.Junction
-import androidx.room.Relation
+import androidx.room3.Embedded
+import androidx.room3.Junction
+import androidx.room3.Relation
 import dev.subfly.yabacore.database.entities.BookmarkEntity
 import dev.subfly.yabacore.database.entities.FolderEntity
 import dev.subfly.yabacore.database.entities.LinkBookmarkEntity

@@ -1,7 +1,6 @@
 package dev.subfly.yabacore.notifications
 
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.datetime.Instant
 import kotlinx.datetime.toKotlinInstant
 import kotlinx.datetime.toNSDate
 import platform.Foundation.NSBundle
@@ -21,6 +20,7 @@ import platform.UserNotifications.UNNotificationRequest
 import platform.UserNotifications.UNNotificationSound
 import platform.UserNotifications.UNUserNotificationCenter
 import kotlin.coroutines.resume
+import kotlin.time.Instant
 
 internal actual fun initializePlatformNotifications(platformContext: Any?) {
     // No-op on iOS; UNUserNotificationCenter is always available.
@@ -64,7 +64,7 @@ internal actual suspend fun platformScheduleReminder(
     )
 
     suspendCancellableCoroutine { continuation ->
-        center.addNotificationRequest(request) { error ->
+        center.addNotificationRequest(request) { _ ->
             if (continuation.isActive) {
                 continuation.resume(Unit)
             }

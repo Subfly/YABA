@@ -1,7 +1,7 @@
 package dev.subfly.yabacore.database
 
-import androidx.room.Room
-import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import androidx.room3.Room
+import kotlinx.coroutines.Dispatchers
 import java.io.File
 
 fun createYabaDatabase(
@@ -33,5 +33,8 @@ fun createYabaDatabase(
 
     val dbPath = File(dbDir, databaseName).absolutePath
 
-    return Room.databaseBuilder<YabaDatabase>(dbPath).setDriver(BundledSQLiteDriver()).build()
+    return Room
+        .databaseBuilder<YabaDatabase>(dbPath)
+        .setQueryCoroutineContext(Dispatchers.IO)
+        .build()
 }

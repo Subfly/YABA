@@ -1,6 +1,6 @@
 package dev.subfly.yabacore.database.converters
 
-import androidx.room.TypeConverter
+import androidx.room3.TypeConverter
 import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.ReadableAssetRole
 import dev.subfly.yabacore.model.utils.YabaColor

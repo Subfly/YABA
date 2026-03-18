@@ -8,17 +8,16 @@ kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.10.0"
 kotlinx-datetime = "0.7.1"
 kermit = "2.1.0"
-ktor = "3.4.0"
-compose = "1.11.0-alpha03"
-androidx-activityCompose = "1.12.4"
-room = "2.8.4"
-sqlite = "2.6.2"
-datastore = "1.2.0"
+ktor = "3.4.1"
+compose = "1.11.0-alpha04"
+androidx-activityCompose = "1.13.0"
+room3 = "3.0.0-alpha01"
+datastore = "1.2.1"
 filekit = "0.13.0"
-okio = "3.16.4"
+okio = "3.17.0"
 coil = "3.4.0"
-core = "1.17.0"
-activityKtx = "1.12.4"
+core = "1.18.0"
+activityKtx = "1.13.0"
 
 [libraries]
 
@@ -37,9 +36,8 @@ ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "k
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 androidx-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+room-runtime = { module = "androidx.room3:room3-runtime", version.ref = "room3" }
+room-compiler = { module = "androidx.room3:room3-compiler", version.ref = "room3" }
 androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 filekit-core = { module = "io.github.vinceglb:filekit-core", version.ref = "filekit" }
@@ -57,7 +55,7 @@ multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotl
 android-library = { id = "com.android.library", version.ref = "agp" }
 maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-room = { id = "androidx.room", version.ref = "room" }
+room = { id = "androidx.room3", version.ref = "room3" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

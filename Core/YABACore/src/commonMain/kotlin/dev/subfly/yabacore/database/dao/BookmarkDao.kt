@@ -1,9 +1,9 @@
 package dev.subfly.yabacore.database.dao
 
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.Transaction
-import androidx.room.Upsert
+import androidx.room3.Dao
+import androidx.room3.Query
+import androidx.room3.Transaction
+import androidx.room3.Upsert
 import dev.subfly.yabacore.database.entities.BookmarkEntity
 import dev.subfly.yabacore.database.models.BookmarkWithRelations
 import dev.subfly.yabacore.model.utils.BookmarkKind
