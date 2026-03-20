@@ -6,7 +6,7 @@ import dev.subfly.yabacore.model.utils.ReaderTheme
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.notifications.PlatformNotificationText
 import dev.subfly.yabacore.unfurl.ReadableUnfurl
-import dev.subfly.yabacore.unfurl.ConverterAssetInput
+import dev.subfly.yabacore.webview.WebConverterAsset
 
 sealed interface LinkmarkDetailEvent {
     data class OnInit(val bookmarkId: String) : LinkmarkDetailEvent
@@ -15,7 +15,7 @@ sealed interface LinkmarkDetailEvent {
     data object OnUpdateReadableRequested : LinkmarkDetailEvent
     data class OnConverterSucceeded(
         val markdown: String,
-        val assets: List<ConverterAssetInput>,
+        val assets: List<WebConverterAsset>,
         val title: String?,
         val author: String?,
     ) : LinkmarkDetailEvent

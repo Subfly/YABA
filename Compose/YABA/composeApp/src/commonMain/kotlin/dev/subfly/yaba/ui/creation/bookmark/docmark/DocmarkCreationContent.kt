@@ -18,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -25,9 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import dev.subfly.yaba.core.components.webview.PdfConverterInput
-import dev.subfly.yaba.core.components.webview.PdfTextSection
-import dev.subfly.yaba.core.components.webview.YabaWebViewPdfConverter
+import dev.subfly.yaba.core.components.webview.YabaWebView
 import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
 import dev.subfly.yaba.core.navigation.creation.TagCreationRoute
 import dev.subfly.yaba.core.navigation.creation.TagSelectionRoute
@@ -52,6 +51,10 @@ import dev.subfly.yabacore.state.creation.docmark.DocmarkCreationUIState
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.icon.iconTintArgb
 import dev.subfly.yabacore.ui.webview.WebComponentUris
+import dev.subfly.yabacore.webview.WebPdfConverterInput
+import dev.subfly.yabacore.webview.WebPdfTextSection
+import dev.subfly.yabacore.webview.YabaWebFeature
+import dev.subfly.yabacore.webview.YabaWebHostEvent
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.create_bookmark_title_placeholder
@@ -66,6 +69,24 @@ fun DocmarkCreationContent(bookmarkId: String?) {
     val resultStore = LocalResultStore.current
     val vm = viewModel { DocmarkCreationVM() }
     val state by vm.state.collectAsStateWithLifecycle()
+
+    val pdfDataUrl by remember(state.pdfBytes, state.isInEditMode) {
+        derivedStateOf {
+            if (state.isInEditMode) return@derivedStateOf null
+            state.pdfBytes?.let { bytes ->
+                "data:application/pdf;base64,${Base64.encode(bytes)}"
+            }
+        }
+    }
+
+    val pdfConverterInput by remember(pdfDataUrl, state.isInEditMode) {
+        derivedStateOf {
+            if (state.isInEditMode || pdfDataUrl == null) return@derivedStateOf null
+            pdfDataUrl?.let { url ->
+                WebPdfConverterInput(pdfUrl = url)
+            }
+        }
+    }
 
     LaunchedEffect(bookmarkId) {
         vm.onEvent(
@@ -89,34 +110,31 @@ fun DocmarkCreationContent(bookmarkId: String?) {
         }
     }
 
-    val pdfDataUrl = remember(state.pdfBytes, state.isInEditMode) {
-        if (state.isInEditMode) return@remember null
-        state.pdfBytes?.let { bytes ->
-            "data:application/pdf;base64,${Base64.encode(bytes)}"
-        }
-    }
-    val pdfConverterInput = remember(pdfDataUrl, state.isInEditMode) {
-        if (state.isInEditMode || pdfDataUrl == null) null
-        else PdfConverterInput(pdfUrl = pdfDataUrl)
-    }
-
-    YabaWebViewPdfConverter(
+    YabaWebView(
         modifier = Modifier.size(0.dp),
         baseUrl = WebComponentUris.getConverterUri(),
-        input = pdfConverterInput,
-        onPdfConverterResult = { result ->
-            val previewBytes = result.firstPagePngDataUrl?.let(::decodeDataUrlToBytes)
-            vm.onEvent(
-                DocmarkCreationEvent.OnSetGeneratedPreview(
-                    imageBytes = previewBytes,
-                    extension = "png",
-                ),
-            )
-            vm.onEvent(
-                DocmarkCreationEvent.OnSetInternalReadableMarkdown(
-                    markdown = buildHiddenMarkdown(result.sections),
-                ),
-            )
+        feature = YabaWebFeature.PdfExtractor(input = pdfConverterInput),
+        onHostEvent = { ev ->
+            when (ev) {
+                is YabaWebHostEvent.PdfConverterSuccess -> {
+                    val previewBytes = ev.result.firstPagePngDataUrl?.let(::decodeDataUrlToBytes)
+                    vm.onEvent(
+                        DocmarkCreationEvent.OnSetGeneratedPreview(
+                            imageBytes = previewBytes,
+                            extension = "png",
+                        ),
+                    )
+                    vm.onEvent(
+                        DocmarkCreationEvent.OnSetInternalReadableMarkdown(
+                            markdown = buildHiddenMarkdown(ev.result.sections),
+                        ),
+                    )
+                }
+                is YabaWebHostEvent.PdfConverterFailure -> {
+                    // Non-fatal: preview/readable may stay empty
+                }
+                else -> Unit
+            }
         },
     )
 
@@ -270,7 +288,7 @@ private fun decodeDataUrlToBytes(dataUrl: String): ByteArray? {
     return runCatching { Base64.decode(base64) }.getOrNull()
 }
 
-private fun buildHiddenMarkdown(sections: List<PdfTextSection>): String? {
+private fun buildHiddenMarkdown(sections: List<WebPdfTextSection>): String? {
     if (sections.isEmpty()) return null
     return sections.joinToString(separator = "\n\n") { section ->
         val title = section.sectionKey.ifBlank { "page" }

@@ -1,6 +1,7 @@
 package dev.subfly.yabacore.unfurl
 
 import dev.subfly.yabacore.common.IdGenerator
+import dev.subfly.yabacore.webview.WebConverterAsset
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.statement.HttpResponse
@@ -18,7 +19,7 @@ object ConverterResultProcessor {
      */
     suspend fun process(
         markdown: String,
-        assets: List<ConverterAssetInput>,
+        assets: List<WebConverterAsset>,
         title: String? = null,
         author: String? = null,
     ): ReadableUnfurl {
@@ -86,10 +87,3 @@ object ConverterResultProcessor {
         }
     }
 }
-
-/** Input from the JS converter for each asset. */
-data class ConverterAssetInput(
-    val placeholder: String,
-    val url: String,
-    val alt: String? = null,
-)

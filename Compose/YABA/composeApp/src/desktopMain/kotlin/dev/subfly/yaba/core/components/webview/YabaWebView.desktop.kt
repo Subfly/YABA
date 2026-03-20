@@ -6,142 +6,67 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import dev.subfly.yabacore.model.ui.HighlightUiModel
-import dev.subfly.yabacore.model.utils.ReaderPreferences
+import dev.subfly.yabacore.webview.WebViewReaderBridge
+import dev.subfly.yabacore.webview.YabaWebFeature
+import dev.subfly.yabacore.webview.YabaWebHostEvent
+import dev.subfly.yabacore.webview.YabaWebScrollDirection
 
 /**
- * Desktop stub for YabaWebView.
- * JavaFX WebView integration will be implemented later.
+ * Desktop stub: WebView integration is not implemented yet.
  */
 @Composable
-actual fun YabaWebViewViewerInternal(
+actual fun YabaWebViewHost(
     modifier: Modifier,
     baseUrl: String,
-    markdown: String,
-    assetsBaseUrl: String?,
-    platform: YabaWebPlatform,
-    appearance: YabaWebAppearance,
-    readerPreferences: ReaderPreferences,
+    feature: YabaWebFeature,
+    onHostEvent: (YabaWebHostEvent) -> Unit,
     onUrlClick: (String) -> Boolean,
     onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit,
-    onReady: () -> Unit,
-    onBridgeReady: (WebViewReaderBridge) -> Unit,
+    onBridgeReady: (WebViewReaderBridge?) -> Unit,
     onHighlightTap: (String) -> Unit,
-    highlights: List<HighlightUiModel>,
 ) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = "WebView not available on desktop yet",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-    }
-    onReady()
-}
+    val showPlaceholder = feature is YabaWebFeature.MarkdownViewer ||
+        feature is YabaWebFeature.PdfViewer ||
+        feature is YabaWebFeature.Editor
 
-@Composable
-actual fun YabaWebViewEditorInternal(
-    modifier: Modifier,
-    baseUrl: String,
-    markdown: String,
-    assetsBaseUrl: String?,
-    onUrlClick: (String) -> Boolean,
-    onReady: () -> Unit,
-) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = "WebView not available on desktop yet",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+    if (showPlaceholder) {
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.surface),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = "WebView not available on desktop yet",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
-    onReady()
-}
 
-@Composable
-actual fun YabaWebViewConverterInternal(
-    modifier: Modifier,
-    baseUrl: String,
-    input: ConverterInput?,
-    onConverterResult: (ConverterResult) -> Unit,
-    onConverterError: (Throwable) -> Unit,
-    onReady: () -> Unit,
-) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = "WebView not available on desktop yet",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+    LaunchedEffect(feature) {
+        onBridgeReady(null)
+        when (val f = feature) {
+            is YabaWebFeature.HtmlConverter ->
+                if (f.input != null) {
+                    onHostEvent(
+                        YabaWebHostEvent.HtmlConverterFailure(
+                            UnsupportedOperationException("WebView not available on desktop"),
+                        ),
+                    )
+                }
+            is YabaWebFeature.PdfExtractor ->
+                if (f.input != null) {
+                    onHostEvent(
+                        YabaWebHostEvent.PdfConverterFailure(
+                            UnsupportedOperationException("WebView not available on desktop"),
+                        ),
+                    )
+                }
+            else -> Unit
+        }
     }
-    onReady()
-}
-
-@Composable
-actual fun YabaWebViewPdfConverterInternal(
-    modifier: Modifier,
-    baseUrl: String,
-    input: PdfConverterInput?,
-    onPdfConverterResult: (PdfConverterResult) -> Unit,
-    onPdfConverterError: (Throwable) -> Unit,
-    onReady: () -> Unit,
-) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = "WebView not available on desktop yet",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-    }
-    onReady()
-}
-
-@Composable
-actual fun YabaPdfWebViewViewerInternal(
-    modifier: Modifier,
-    baseUrl: String,
-    pdfUrl: String,
-    platform: YabaWebPlatform,
-    appearance: YabaWebAppearance,
-    onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit,
-    onReady: () -> Unit,
-    onBridgeReady: (WebViewReaderBridge) -> Unit,
-    onHighlightTap: (String) -> Unit,
-    highlights: List<HighlightUiModel>,
-) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = "WebView not available on desktop yet",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-    }
-    onReady()
 }

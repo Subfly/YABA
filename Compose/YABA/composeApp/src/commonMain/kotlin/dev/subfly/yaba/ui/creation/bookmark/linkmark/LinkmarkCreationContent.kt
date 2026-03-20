@@ -12,13 +12,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import dev.subfly.yaba.core.components.webview.ConverterInput
-import dev.subfly.yaba.core.components.webview.YabaWebViewConverter
+import dev.subfly.yaba.core.components.webview.YabaWebView
 import dev.subfly.yaba.util.ResultStoreKeys
 import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
 import dev.subfly.yaba.core.navigation.creation.ImageSelectionRoute
@@ -44,8 +45,10 @@ import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.state.creation.linkmark.LinkmarkCreationEvent
 import dev.subfly.yabacore.state.creation.linkmark.LinkmarkCreationToastMessages
-import dev.subfly.yabacore.unfurl.ConverterAssetInput
 import dev.subfly.yabacore.ui.webview.WebComponentUris
+import dev.subfly.yabacore.webview.WebConverterInput
+import dev.subfly.yabacore.webview.YabaWebFeature
+import dev.subfly.yabacore.webview.YabaWebHostEvent
 import yaba.composeapp.generated.resources.create_bookmark_url_placeholder
 import yaba.composeapp.generated.resources.generic_unfurl_error_text
 import yaba.composeapp.generated.resources.generic_unfurl_success_text
@@ -62,6 +65,14 @@ fun LinkmarkCreationContent(bookmarkId: String?, initialUrl: String? = null) {
 
     val vm = viewModel { LinkmarkCreationVM() }
     val state by vm.state.collectAsStateWithLifecycle()
+
+    val converterInput by remember(state.converterHtml) {
+        derivedStateOf {
+            state.converterHtml?.let { html ->
+                WebConverterInput(html = html, baseUrl = state.converterBaseUrl)
+            }
+        }
+    }
 
     LaunchedEffect(bookmarkId, initialUrl) {
         vm.onEvent(
@@ -100,32 +111,25 @@ fun LinkmarkCreationContent(bookmarkId: String?, initialUrl: String? = null) {
         }
     }
 
-    val converterInput = state.converterHtml?.let { html ->
-        ConverterInput(html = html, baseUrl = state.converterBaseUrl)
-    }
-
-    YabaWebViewConverter(
+    YabaWebView(
         modifier = Modifier.size(0.dp),
         baseUrl = WebComponentUris.getConverterUri(),
-        input = converterInput,
-        onConverterResult = { result ->
-            vm.onEvent(
-                LinkmarkCreationEvent.OnConverterSucceeded(
-                    markdown = result.markdown,
-                    assets = result.assets.map { a ->
-                        ConverterAssetInput(
-                            placeholder = a.placeholder,
-                            url = a.url,
-                            alt = a.alt,
-                        )
-                    },
-                    title = state.label.takeIf { it.isNotBlank() },
-                    author = null,
-                ),
-            )
-        },
-        onConverterError = { error ->
-            vm.onEvent(LinkmarkCreationEvent.OnConverterFailed(error = error))
+        feature = YabaWebFeature.HtmlConverter(input = converterInput),
+        onHostEvent = { ev ->
+            when (ev) {
+                is YabaWebHostEvent.HtmlConverterSuccess ->
+                    vm.onEvent(
+                        LinkmarkCreationEvent.OnConverterSucceeded(
+                            markdown = ev.result.markdown,
+                            assets = ev.result.assets,
+                            title = state.label.takeIf { it.isNotBlank() },
+                            author = null,
+                        ),
+                    )
+                is YabaWebHostEvent.HtmlConverterFailure ->
+                    vm.onEvent(LinkmarkCreationEvent.OnConverterFailed(error = ev.error))
+                else -> Unit
+            }
         },
     )
 

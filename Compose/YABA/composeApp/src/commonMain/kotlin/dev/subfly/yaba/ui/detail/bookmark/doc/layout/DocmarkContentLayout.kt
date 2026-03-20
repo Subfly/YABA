@@ -27,11 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.components.NoContentView
-import dev.subfly.yaba.core.components.webview.WebViewReaderBridge
-import dev.subfly.yaba.core.components.webview.YabaPdfWebViewViewer
-import dev.subfly.yaba.core.components.webview.YabaWebAppearance
-import dev.subfly.yaba.core.components.webview.YabaWebPlatform
-import dev.subfly.yaba.core.components.webview.YabaWebScrollDirection
+import dev.subfly.yaba.core.components.webview.YabaWebView
 import dev.subfly.yaba.core.navigation.creation.HighlightCreationRoute
 import dev.subfly.yaba.ui.detail.bookmark.doc.components.DocmarkContentDropdownMenu
 import dev.subfly.yaba.ui.detail.bookmark.doc.components.DocmarkReaderFloatingToolbar
@@ -42,7 +38,12 @@ import dev.subfly.yabacore.state.detail.docmark.DocmarkDetailEvent
 import dev.subfly.yabacore.state.detail.docmark.DocmarkDetailUIState
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.webview.WebComponentUris
-import kotlinx.coroutines.delay
+import dev.subfly.yabacore.webview.WebViewReaderBridge
+import dev.subfly.yabacore.webview.YabaWebAppearance
+import dev.subfly.yabacore.webview.YabaWebFeature
+import dev.subfly.yabacore.webview.YabaWebHostEvent
+import dev.subfly.yabacore.webview.YabaWebPlatform
+import dev.subfly.yabacore.webview.YabaWebScrollDirection
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
@@ -75,17 +76,11 @@ internal fun DocmarkContentLayout(
     var currentPage by remember { mutableStateOf(1) }
     var pageCount by remember { mutableStateOf(1) }
 
-    LaunchedEffect(readerBridge, hasReaderContent) {
+    LaunchedEffect(hasReaderContent) {
         if (!hasReaderContent) {
             hasSelection = false
-            return@LaunchedEffect
-        }
-        val bridge = readerBridge ?: return@LaunchedEffect
-        while (true) {
-            hasSelection = bridge.getCanCreateHighlight()
-            currentPage = bridge.getCurrentPageNumber()
-            pageCount = bridge.getPageCount()
-            delay(200)
+            currentPage = 1
+            pageCount = 1
         }
     }
 
@@ -182,19 +177,32 @@ internal fun DocmarkContentLayout(
                     },
                 )
 
-                YabaPdfWebViewViewer(
+                YabaWebView(
                     modifier = Modifier.fillMaxSize(),
                     baseUrl = WebComponentUris.getPdfViewerUri(),
-                    pdfUrl = state.pdfAbsolutePath ?: "",
-                    platform = YabaWebPlatform.Compose,
-                    appearance = appearance,
+                    feature = YabaWebFeature.PdfViewer(
+                        pdfUrl = state.pdfAbsolutePath ?: "",
+                        platform = YabaWebPlatform.Compose,
+                        appearance = appearance,
+                        highlights = state.highlights,
+                    ),
+                    onHostEvent = { ev ->
+                        when (ev) {
+                            is YabaWebHostEvent.ReaderMetrics -> {
+                                hasSelection = ev.canCreateHighlight
+                                currentPage = ev.currentPage
+                                pageCount = ev.pageCount.coerceAtLeast(1)
+                            }
+                            else -> Unit
+                        }
+                    },
                     onScrollDirectionChanged = { direction ->
                         if (direction == YabaWebScrollDirection.Down) isToolbarVisible = false
                         if (direction == YabaWebScrollDirection.Up) isToolbarVisible = true
                     },
                     onBridgeReady = { bridge -> readerBridge = bridge },
                     onHighlightTap = { highlightId ->
-                        val bookmarkId = state.bookmark?.id ?: return@YabaPdfWebViewViewer
+                        val bookmarkId = state.bookmark?.id ?: return@YabaWebView
                         creationNavigator.add(
                             HighlightCreationRoute(
                                 bookmarkId = bookmarkId,
@@ -204,7 +212,6 @@ internal fun DocmarkContentLayout(
                         )
                         appStateManager.onShowCreationContent()
                     },
-                    highlights = state.highlights,
                 )
             } else if (!state.isLoading) {
                 NoContentView(

@@ -5,7 +5,7 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 /**
  * URIs for yaba-web-components shipped as raw resources.
- * Used by YabaWebView to load viewer.html and converter.html.
+ * Used to load bundled web-component HTML shells (viewer, editor, converter, PDF viewer).
  */
 @OptIn(ExperimentalResourceApi::class)
 object WebComponentUris {

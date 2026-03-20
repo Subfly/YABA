@@ -350,10 +350,57 @@ function createPdfExtractionJobId(): string {
   return `pdf-job-${Date.now()}-${Math.random().toString(36).slice(2)}`
 }
 
-async function extractPdfPreviewAndText(input: PdfExtractionInput): Promise<PdfExtractionOutput> {
-  const response = await fetch(input.pdfUrl)
+/**
+ * Decode an inline PDF data URL without fetch() so strict CSP (connect-src without data:) still allows
+ * bookmark preview extraction. Only `data:application/pdf;base64,...` is accepted — not arbitrary data: URLs.
+ */
+function pdfDataUrlToArrayBuffer(dataUrl: string): ArrayBuffer {
+  if (!dataUrl.startsWith("data:")) {
+    throw new Error("Expected a data: URL for inline PDF")
+  }
+  const comma = dataUrl.indexOf(",")
+  if (comma < 0) {
+    throw new Error("Invalid data URL")
+  }
+  const meta = dataUrl.slice("data:".length, comma).toLowerCase()
+  const segments = meta.split(";").map((s) => s.trim())
+  const mime = segments[0]
+  if (mime !== "application/pdf") {
+    throw new Error("Inline PDF data URL must use application/pdf")
+  }
+  if (!segments.includes("base64")) {
+    throw new Error("Inline PDF data URL must be base64-encoded")
+  }
+  const b64 = dataUrl.slice(comma + 1).replace(/\s/g, "")
+  let binary: string
+  try {
+    binary = atob(b64)
+  } catch {
+    throw new Error("Invalid base64 in PDF data URL")
+  }
+  const len = binary.length
+  const bytes = new Uint8Array(len)
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binary.charCodeAt(i)
+  }
+  // Reject non-PDF payloads even if MIME was forged
+  if (len < 5 || String.fromCharCode(bytes[0], bytes[1], bytes[2], bytes[3]) !== "%PDF") {
+    throw new Error("Decoded data URL is not a PDF file")
+  }
+  return bytes.buffer
+}
+
+async function loadPdfBytes(pdfUrl: string): Promise<ArrayBuffer> {
+  if (pdfUrl.startsWith("data:")) {
+    return pdfDataUrlToArrayBuffer(pdfUrl)
+  }
+  const response = await fetch(pdfUrl)
   if (!response.ok) throw new Error(`Failed to fetch PDF: ${response.status}`)
-  const data = await response.arrayBuffer()
+  return response.arrayBuffer()
+}
+
+async function extractPdfPreviewAndText(input: PdfExtractionInput): Promise<PdfExtractionOutput> {
+  const data = await loadPdfBytes(input.pdfUrl)
   const loadingTask = getDocument({ data })
   const pdfDocument = await loadingTask.promise
 

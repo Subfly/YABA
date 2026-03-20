@@ -21,24 +21,18 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.components.NoContentView
-import dev.subfly.yaba.core.components.webview.WebViewReaderBridge
-import dev.subfly.yaba.core.components.webview.ConverterInput
-import dev.subfly.yaba.core.components.webview.YabaWebAppearance
-import dev.subfly.yaba.core.components.webview.YabaWebPlatform
-import dev.subfly.yaba.core.components.webview.YabaWebScrollDirection
-import dev.subfly.yaba.core.components.webview.YabaWebViewConverter
-import dev.subfly.yaba.core.components.webview.YabaWebViewViewer
+import dev.subfly.yaba.core.components.webview.YabaWebView
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkContentDropdownMenu
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkReaderFloatingToolbar
 import dev.subfly.yaba.core.navigation.creation.HighlightCreationRoute
@@ -50,7 +44,13 @@ import dev.subfly.yabacore.state.detail.linkmark.LinkmarkDetailEvent
 import dev.subfly.yabacore.state.detail.linkmark.LinkmarkDetailUIState
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.webview.WebComponentUris
-import dev.subfly.yabacore.unfurl.ConverterAssetInput
+import dev.subfly.yabacore.webview.WebConverterInput
+import dev.subfly.yabacore.webview.WebViewReaderBridge
+import dev.subfly.yabacore.webview.YabaWebAppearance
+import dev.subfly.yabacore.webview.YabaWebFeature
+import dev.subfly.yabacore.webview.YabaWebHostEvent
+import dev.subfly.yabacore.webview.YabaWebPlatform
+import dev.subfly.yabacore.webview.YabaWebScrollDirection
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.bookmark_detail_title
@@ -79,7 +79,11 @@ internal fun LinkmarkContentLayout(
     var readerBridge by remember { mutableStateOf<WebViewReaderBridge?>(null) }
     val appearance = if (isSystemInDarkTheme()) YabaWebAppearance.Dark else YabaWebAppearance.Light
 
-    val hasReaderContent = !state.isLoading && !state.readableMarkdown.isNullOrBlank()
+    val hasReaderContent by remember(state.isLoading, state.readableMarkdown) {
+        derivedStateOf {
+            state.isLoading.not() && state.readableMarkdown.isNullOrBlank().not()
+        }
+    }
     var isReaderToolbarVisible by remember(
         state.readableMarkdown,
         state.isLoading
@@ -87,44 +91,33 @@ internal fun LinkmarkContentLayout(
     var isMenuExpanded by remember { mutableStateOf(false) }
     var hasSelection by remember { mutableStateOf(false) }
 
-    LaunchedEffect(readerBridge, isReaderToolbarVisible, hasReaderContent) {
-        if (!hasReaderContent || !isReaderToolbarVisible) {
-            hasSelection = false
-            return@LaunchedEffect
-        }
-        val bridge = readerBridge ?: return@LaunchedEffect
-        while (true) {
-            hasSelection = bridge.getCanCreateHighlight()
-            delay(200)
+    val converterInput by remember(state.converterHtml) {
+        derivedStateOf {
+            state.converterHtml?.let { html ->
+                WebConverterInput(html = html, baseUrl = state.converterBaseUrl)
+            }
         }
     }
 
-    val converterInput = state.converterHtml?.let { html ->
-        ConverterInput(html = html, baseUrl = state.converterBaseUrl)
-    }
-
-    YabaWebViewConverter(
+    YabaWebView(
         modifier = Modifier.size(0.dp),
         baseUrl = WebComponentUris.getConverterUri(),
-        input = converterInput,
-        onConverterResult = { result ->
-            onEvent(
-                LinkmarkDetailEvent.OnConverterSucceeded(
-                    markdown = result.markdown,
-                    assets = result.assets.map { a ->
-                        ConverterAssetInput(
-                            placeholder = a.placeholder,
-                            url = a.url,
-                            alt = a.alt,
-                        )
-                    },
-                    title = state.bookmark?.label?.takeIf { it.isNotBlank() },
-                    author = null,
-                ),
-            )
-        },
-        onConverterError = { error ->
-            onEvent(LinkmarkDetailEvent.OnConverterFailed(error = error))
+        feature = YabaWebFeature.HtmlConverter(input = converterInput),
+        onHostEvent = { ev ->
+            when (ev) {
+                is YabaWebHostEvent.HtmlConverterSuccess ->
+                    onEvent(
+                        LinkmarkDetailEvent.OnConverterSucceeded(
+                            markdown = ev.result.markdown,
+                            assets = ev.result.assets,
+                            title = state.bookmark?.label?.takeIf { it.isNotBlank() },
+                            author = null,
+                        ),
+                    )
+                is YabaWebHostEvent.HtmlConverterFailure ->
+                    onEvent(LinkmarkDetailEvent.OnConverterFailed(error = ev.error))
+                else -> Unit
+            }
         },
     )
 
@@ -211,14 +204,26 @@ internal fun LinkmarkContentLayout(
                     },
                 )
 
-                YabaWebViewViewer(
+                YabaWebView(
                     modifier = Modifier.fillMaxSize(),
                     baseUrl = WebComponentUris.getViewerUri(),
-                    markdown = state.readableMarkdown ?: "",
-                    assetsBaseUrl = state.assetsBaseUrl,
-                    platform = YabaWebPlatform.Compose,
-                    appearance = appearance,
-                    readerPreferences = state.readerPreferences,
+                    feature = YabaWebFeature.MarkdownViewer(
+                        markdown = state.readableMarkdown ?: "",
+                        assetsBaseUrl = state.assetsBaseUrl,
+                        readerPreferences = state.readerPreferences,
+                        platform = YabaWebPlatform.Compose,
+                        appearance = appearance,
+                        highlights = state.highlights,
+                    ),
+                    onHostEvent = { ev ->
+                        when (ev) {
+                            is YabaWebHostEvent.ReaderMetrics ->
+                                if (isReaderToolbarVisible) {
+                                    hasSelection = ev.canCreateHighlight
+                                }
+                            else -> Unit
+                        }
+                    },
                     onUrlClick = openUrl,
                     onScrollDirectionChanged = { direction ->
                         if (direction == YabaWebScrollDirection.Down) isReaderToolbarVisible = false
@@ -226,7 +231,7 @@ internal fun LinkmarkContentLayout(
                     },
                     onBridgeReady = { bridge -> readerBridge = bridge },
                     onHighlightTap = { highlightId ->
-                        val bookmarkId = state.bookmark?.id ?: return@YabaWebViewViewer
+                        val bookmarkId = state.bookmark?.id ?: return@YabaWebView
                         creationNavigator.add(
                             HighlightCreationRoute(
                                 bookmarkId = bookmarkId,
@@ -236,7 +241,6 @@ internal fun LinkmarkContentLayout(
                         )
                         appStateManager.onShowCreationContent()
                     },
-                    highlights = state.highlights,
                 )
             } else if (!state.isLoading && !state.isUpdatingReadable) {
                 NoContentView(
