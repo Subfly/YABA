@@ -1,7 +1,6 @@
 package dev.subfly.yaba.core.components.webview
 
 import android.webkit.WebView
-import androidx.compose.runtime.MutableState
 import dev.subfly.yabacore.model.highlight.HighlightQuoteSnapshot
 import dev.subfly.yabacore.model.highlight.HighlightSourceContext
 import dev.subfly.yabacore.model.highlight.ReadableAnchor
@@ -25,13 +24,12 @@ import org.json.JSONObject
 
 @Suppress("FunctionName")
 internal fun MarkdownWebViewReaderBridge(
-    webViewRef: MutableState<WebView?>,
+    webView: WebView,
 ): WebViewReaderBridge = object : WebViewReaderBridge {
     override suspend fun getSelectionSnapshot(
         bookmarkId: String,
         readableVersionId: String,
     ): ReadableSelectionDraft? {
-        val webView = webViewRef.value ?: return null
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return null
         val raw = evaluateJs(webView, YabaMarkdownReaderBridgeScripts.getSelectionSnapshotScript())
         val jsonStr = decodeJsStringResult(raw)
@@ -65,19 +63,16 @@ internal fun MarkdownWebViewReaderBridge(
     }
 
     override suspend fun getCanCreateHighlight(): Boolean {
-        val webView = webViewRef.value ?: return false
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY_LOOSE)) return false
         return evaluateJs(webView, YabaMarkdownReaderBridgeScripts.getCanCreateHighlightScript()).trim() == "true"
     }
 
     override suspend fun setHighlights(highlights: List<HighlightUiModel>) {
-        val webView = webViewRef.value ?: return
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY_LOOSE)) return
         pushHighlightsEditor(webView, highlights)
     }
 
     override suspend fun scrollToHighlight(highlightId: String) {
-        val webView = webViewRef.value ?: return
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY_LOOSE)) return
         evaluateJs(webView, YabaMarkdownReaderBridgeScripts.scrollToHighlightScript(highlightId))
     }
@@ -146,13 +141,12 @@ private suspend fun pushHighlightsEditor(webView: WebView, highlights: List<High
 
 @Suppress("FunctionName")
 internal fun PdfWebViewReaderBridge(
-    webViewRef: MutableState<WebView?>,
+    webView: WebView,
 ): WebViewReaderBridge = object : WebViewReaderBridge {
     override suspend fun getSelectionSnapshot(
         bookmarkId: String,
         readableVersionId: String,
     ): ReadableSelectionDraft? {
-        val webView = webViewRef.value ?: return null
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.PDF_BRIDGE_READY)) return null
         val raw = evaluateJs(webView, YabaPdfReaderBridgeScripts.getSelectionSnapshotScript())
         val jsonStr = decodeJsStringResult(raw)
@@ -186,43 +180,36 @@ internal fun PdfWebViewReaderBridge(
     }
 
     override suspend fun getCanCreateHighlight(): Boolean {
-        val webView = webViewRef.value ?: return false
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.PDF_BRIDGE_READY_LOOSE)) return false
         return evaluateJs(webView, YabaPdfReaderBridgeScripts.getCanCreateHighlightScript()).trim() == "true"
     }
 
     override suspend fun setHighlights(highlights: List<HighlightUiModel>) {
-        val webView = webViewRef.value ?: return
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.PDF_BRIDGE_READY_LOOSE)) return
         pushHighlightsPdf(webView, highlights)
     }
 
     override suspend fun scrollToHighlight(highlightId: String) {
-        val webView = webViewRef.value ?: return
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.PDF_BRIDGE_READY_LOOSE)) return
         evaluateJs(webView, YabaPdfReaderBridgeScripts.scrollToHighlightScript(highlightId))
     }
 
     override suspend fun getPageCount(): Int {
-        val webView = webViewRef.value ?: return 0
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.PDF_BRIDGE_READY_LOOSE)) return 0
         return evaluateJs(webView, YabaPdfReaderBridgeScripts.GET_PAGE_COUNT_SCRIPT).trim().toIntOrNull() ?: 0
     }
 
     override suspend fun getCurrentPageNumber(): Int {
-        val webView = webViewRef.value ?: return 1
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.PDF_BRIDGE_READY_LOOSE)) return 1
         return evaluateJs(webView, YabaPdfReaderBridgeScripts.GET_CURRENT_PAGE_NUMBER_SCRIPT).trim().toIntOrNull() ?: 1
     }
 
     override suspend fun nextPage(): Boolean {
-        val webView = webViewRef.value ?: return false
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.PDF_BRIDGE_READY_LOOSE)) return false
         return evaluateJs(webView, YabaPdfReaderBridgeScripts.NEXT_PAGE_SCRIPT).trim() == "true"
     }
 
     override suspend fun prevPage(): Boolean {
-        val webView = webViewRef.value ?: return false
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.PDF_BRIDGE_READY_LOOSE)) return false
         return evaluateJs(webView, YabaPdfReaderBridgeScripts.PREV_PAGE_SCRIPT).trim() == "true"
     }

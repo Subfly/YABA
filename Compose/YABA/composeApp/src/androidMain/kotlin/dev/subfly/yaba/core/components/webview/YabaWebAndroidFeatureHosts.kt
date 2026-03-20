@@ -24,6 +24,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import android.util.Log
 import dev.subfly.yabacore.webview.WebLoadState
 import dev.subfly.yabacore.webview.WebViewReaderBridge
+import dev.subfly.yabacore.webview.YabaWebBridgeScripts
 import dev.subfly.yabacore.webview.YabaWebFeature
 import dev.subfly.yabacore.webview.YabaWebHostEvent
 import dev.subfly.yabacore.webview.YabaWebScrollDirection
@@ -48,7 +49,6 @@ internal fun YabaMarkdownFeatureHost(
     val onHostEventState = rememberUpdatedState(onHostEvent)
     val onScrollDirectionChangedState = rememberUpdatedState(onScrollDirectionChanged)
     val onBridgeReadyState = rememberUpdatedState(onBridgeReady)
-    val webViewRef = remember { mutableStateOf<WebView?>(null) }
     var isPageReady by remember { mutableStateOf(false) }
     var rendererCrashed by remember { mutableStateOf(false) }
     var activeBridge by remember { mutableStateOf<WebViewReaderBridge?>(null) }
@@ -60,7 +60,7 @@ internal fun YabaMarkdownFeatureHost(
     val assetLoader = remember(context) { rememberAssetLoader(context, includeLocalStorage = true) }
     val loadUrl = remember(baseUrl, assetLoaderUrl) { assetLoaderUrl ?: baseUrl }
 
-    val myWebView = remember(context) {
+    val webView = remember(context) {
         WebView(context).apply {
             applyHardenedWebSettings(this)
             setBackgroundColor(Color.TRANSPARENT)
@@ -94,11 +94,9 @@ internal fun YabaMarkdownFeatureHost(
             }
         }
     }
-    webViewRef.value = myWebView
 
     DisposableEffect(Unit) {
         onDispose {
-            webViewRef.value = null
             activeBridge = null
             onBridgeReadyState.value(null)
         }
@@ -111,70 +109,42 @@ internal fun YabaMarkdownFeatureHost(
         }
     }
 
-    if (rendererCrashed.not()) {
-        myWebView.webChromeClient = denyPermissionsWebChromeClient { progress ->
-            onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.Loading(progress / 100f)))
-        }
-        myWebView.webViewClient = yabaWebViewClient(
-            assetLoader = assetLoader,
-            onPageStarted = {
-                onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.Loading(0f)))
-            },
-            onPageFinished = {
-                isPageReady = true
-                onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.PageFinished))
-            },
-            onRenderProcessGone = {
-                rendererCrashed = true
-                onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.RendererCrashed))
-                true
-            },
-            onUrlClick = onUrlClick,
-            onHighlightTap = onHighlightTap,
-        )
-    }
-
     LaunchedEffect(isPageReady) {
         if (!isPageReady) {
             activeBridge = null
             onBridgeReadyState.value(null)
             return@LaunchedEffect
         }
-        val wv = webViewRef.value ?: return@LaunchedEffect
-        val ready = waitForBridgeReady(wv, dev.subfly.yabacore.webview.YabaWebBridgeScripts.EDITOR_BRIDGE_READY)
+        val ready = waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)
         if (!ready) {
             Log.w(YABA_WEBVIEW_LOG_TAG, "Viewer bridge not ready before timeout")
             return@LaunchedEffect
         }
         onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.BridgeReady))
-        val bridge = MarkdownWebViewReaderBridge(webViewRef, context)
+        val bridge = MarkdownWebViewReaderBridge(webView)
         activeBridge = bridge
         onBridgeReadyState.value(bridge)
     }
 
     LaunchedEffect(isPageReady, feature.markdown, feature.assetsBaseUrl) {
         if (!isPageReady || rendererCrashed) return@LaunchedEffect
-        val wv = webViewRef.value ?: return@LaunchedEffect
-        applyMarkdownContent(wv, context, feature.markdown, feature.assetsBaseUrl)
+        applyMarkdownContent(webView, context, feature.markdown, feature.assetsBaseUrl)
     }
 
     LaunchedEffect(isPageReady, feature.readerPreferences, feature.platform, feature.appearance) {
         if (!isPageReady || rendererCrashed) return@LaunchedEffect
-        val wv = webViewRef.value ?: return@LaunchedEffect
-        applyMarkdownReaderPreferences(wv, feature.readerPreferences, feature.platform, feature.appearance)
+        applyMarkdownReaderPreferences(webView, feature.readerPreferences, feature.platform, feature.appearance)
     }
 
     LaunchedEffect(isPageReady) {
         if (!isPageReady || rendererCrashed) return@LaunchedEffect
-        val wv = webViewRef.value ?: return@LaunchedEffect
-        installMarkdownHighlightTap(wv)
+        installMarkdownHighlightTap(webView)
     }
 
     LaunchedEffect(isPageReady, feature.highlights) {
         if (!isPageReady || rendererCrashed) return@LaunchedEffect
-        val wv = webViewRef.value ?: return@LaunchedEffect
-        if (!waitForBridgeReady(wv, dev.subfly.yabacore.webview.YabaWebBridgeScripts.EDITOR_BRIDGE_READY_LOOSE)) return@LaunchedEffect
-        MarkdownWebViewReaderBridge(webViewRef, context).setHighlights(feature.highlights)
+        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY_LOOSE)) return@LaunchedEffect
+        MarkdownWebViewReaderBridge(webView).setHighlights(feature.highlights)
     }
 
     LaunchedEffect(activeBridge) {
@@ -206,11 +176,11 @@ internal fun YabaMarkdownFeatureHost(
         modifier = modifier,
         factory = { ctx ->
             FrameLayout(ctx).apply {
-                if (myWebView.parent != null) {
-                    (myWebView.parent as ViewGroup).removeView(myWebView)
+                if (webView.parent != null) {
+                    (webView.parent as ViewGroup).removeView(webView)
                 }
                 addView(
-                    myWebView,
+                    webView,
                     FrameLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT,
@@ -219,14 +189,36 @@ internal fun YabaMarkdownFeatureHost(
             }
         },
         update = {
+            if (rendererCrashed.not()) {
+                webView.webChromeClient = denyPermissionsWebChromeClient { progress ->
+                    onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.Loading(progress / 100f)))
+                }
+                webView.webViewClient = yabaWebViewClient(
+                    assetLoader = assetLoader,
+                    onPageStarted = {
+                        onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.Loading(0f)))
+                    },
+                    onPageFinished = {
+                        isPageReady = true
+                        onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.PageFinished))
+                    },
+                    onRenderProcessGone = {
+                        rendererCrashed = true
+                        onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.RendererCrashed))
+                        true
+                    },
+                    onUrlClick = onUrlClick,
+                    onHighlightTap = onHighlightTap,
+                )
+            }
             if (rendererCrashed) return@AndroidView
-            val lastLoadedUrl = myWebView.tag as? String
+            val lastLoadedUrl = webView.tag as? String
             if (lastLoadedUrl != loadUrl) {
                 isPageReady = false
                 activeBridge = null
                 onBridgeReadyState.value(null)
-                myWebView.loadUrl(loadUrl)
-                myWebView.tag = loadUrl
+                webView.loadUrl(loadUrl)
+                webView.tag = loadUrl
             }
         },
     )
@@ -243,7 +235,6 @@ internal fun YabaEditorFeatureHost(
 ) {
     val context = LocalContext.current
     val onHostEventState = rememberUpdatedState(onHostEvent)
-    val webViewRef = remember { mutableStateOf<WebView?>(null) }
     var isPageReady by remember { mutableStateOf(false) }
     var rendererCrashed by remember { mutableStateOf(false) }
     val pendingPermissionRequestRef = remember { mutableStateOf<Pair<PermissionRequest, Array<String>>?>(null) }
@@ -263,14 +254,16 @@ internal fun YabaEditorFeatureHost(
     val assetLoader = remember(context) { rememberAssetLoader(context, includeLocalStorage = true) }
     val loadUrl = remember(baseUrl, assetLoaderUrl) { assetLoaderUrl ?: baseUrl }
 
-    DisposableEffect(Unit) {
-        onDispose { webViewRef.value = null }
+    val webView = remember(context) {
+        WebView(context).apply {
+            applyHardenedWebSettings(this)
+            setBackgroundColor(Color.TRANSPARENT)
+        }
     }
 
     LaunchedEffect(isPageReady, feature.initialMarkdown, feature.assetsBaseUrl) {
         if (!isPageReady || rendererCrashed) return@LaunchedEffect
-        val webView = webViewRef.value ?: return@LaunchedEffect
-        if (!waitForBridgeReady(webView, dev.subfly.yabacore.webview.YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) {
+        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) {
             Log.w(YABA_WEBVIEW_LOG_TAG, "Editor bridge not ready before timeout")
             return@LaunchedEffect
         }
@@ -281,12 +274,10 @@ internal fun YabaEditorFeatureHost(
     AndroidView(
         modifier = modifier,
         factory = { ctx ->
-            val webView = WebView(ctx).apply {
-                applyHardenedWebSettings(this)
-                setBackgroundColor(Color.TRANSPARENT)
-                webViewRef.value = this
-            }
             FrameLayout(ctx).apply {
+                if (webView.parent != null) {
+                    (webView.parent as ViewGroup).removeView(webView)
+                }
                 addView(
                     webView,
                     FrameLayout.LayoutParams(
@@ -297,7 +288,6 @@ internal fun YabaEditorFeatureHost(
             }
         },
         update = {
-            val webView = webViewRef.value ?: return@AndroidView
             if (!rendererCrashed) {
                 webView.webChromeClient = editorWebChromeClient(
                     onProgressChanged = { p ->
@@ -345,7 +335,6 @@ internal fun YabaHtmlConverterFeatureHost(
 ) {
     val context = LocalContext.current
     val onHostEventState = rememberUpdatedState(onHostEvent)
-    val webViewRef = remember { mutableStateOf<WebView?>(null) }
     var isPageReady by remember { mutableStateOf(false) }
     var rendererCrashed by remember { mutableStateOf(false) }
 
@@ -353,14 +342,15 @@ internal fun YabaHtmlConverterFeatureHost(
     val assetLoader = remember(context) { rememberAssetLoader(context, includeLocalStorage = false) }
     val loadUrl = remember(baseUrl, assetLoaderUrl) { assetLoaderUrl ?: baseUrl }
 
-    DisposableEffect(Unit) {
-        onDispose { webViewRef.value = null }
+    val webView = remember(context) {
+        WebView(context).apply {
+            applyHardenedWebSettings(this)
+        }
     }
 
     LaunchedEffect(isPageReady, feature.input?.html, feature.input?.baseUrl) {
         if (!isPageReady || rendererCrashed) return@LaunchedEffect
         val request = feature.input ?: return@LaunchedEffect
-        val webView = webViewRef.value ?: return@LaunchedEffect
         runHtmlConversion(webView, request.html, request.baseUrl).fold(
             onSuccess = { result ->
                 onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.BridgeReady))
@@ -375,11 +365,10 @@ internal fun YabaHtmlConverterFeatureHost(
     AndroidView(
         modifier = modifier,
         factory = { ctx ->
-            val webView = WebView(ctx).apply {
-                applyHardenedWebSettings(this)
-                webViewRef.value = this
-            }
             FrameLayout(ctx).apply {
+                if (webView.parent != null) {
+                    (webView.parent as ViewGroup).removeView(webView)
+                }
                 addView(
                     webView,
                     FrameLayout.LayoutParams(
@@ -390,7 +379,6 @@ internal fun YabaHtmlConverterFeatureHost(
             }
         },
         update = {
-            val webView = webViewRef.value ?: return@AndroidView
             if (!rendererCrashed) {
                 webView.webChromeClient = denyPermissionsWebChromeClient { p ->
                     onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.Loading(p / 100f)))
@@ -434,7 +422,6 @@ internal fun YabaPdfExtractorFeatureHost(
 ) {
     val context = LocalContext.current
     val onHostEventState = rememberUpdatedState(onHostEvent)
-    val webViewRef = remember { mutableStateOf<WebView?>(null) }
     var isPageReady by remember { mutableStateOf(false) }
     var rendererCrashed by remember { mutableStateOf(false) }
 
@@ -442,14 +429,15 @@ internal fun YabaPdfExtractorFeatureHost(
     val assetLoader = remember(context) { rememberAssetLoader(context, includeLocalStorage = true) }
     val loadUrl = remember(baseUrl, assetLoaderUrl) { assetLoaderUrl ?: baseUrl }
 
-    DisposableEffect(Unit) {
-        onDispose { webViewRef.value = null }
+    val webView = remember(context) {
+        WebView(context).apply {
+            applyHardenedWebSettings(this)
+        }
     }
 
     LaunchedEffect(isPageReady, feature.input?.pdfUrl, feature.input?.renderScale) {
         if (!isPageReady || rendererCrashed) return@LaunchedEffect
         val request = feature.input ?: return@LaunchedEffect
-        val webView = webViewRef.value ?: return@LaunchedEffect
         runPdfExtraction(webView, context, request.pdfUrl, request.renderScale).fold(
             onSuccess = { result ->
                 onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.BridgeReady))
@@ -464,11 +452,10 @@ internal fun YabaPdfExtractorFeatureHost(
     AndroidView(
         modifier = modifier,
         factory = { ctx ->
-            val webView = WebView(ctx).apply {
-                applyHardenedWebSettings(this)
-                webViewRef.value = this
-            }
             FrameLayout(ctx).apply {
+                if (webView.parent != null) {
+                    (webView.parent as ViewGroup).removeView(webView)
+                }
                 addView(
                     webView,
                     FrameLayout.LayoutParams(
@@ -479,7 +466,6 @@ internal fun YabaPdfExtractorFeatureHost(
             }
         },
         update = {
-            val webView = webViewRef.value ?: return@AndroidView
             if (!rendererCrashed) {
                 webView.webChromeClient = denyPermissionsWebChromeClient { p ->
                     onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.Loading(p / 100f)))
@@ -528,7 +514,6 @@ internal fun YabaPdfViewerFeatureHost(
     val onHostEventState = rememberUpdatedState(onHostEvent)
     val onScrollDirectionChangedState = rememberUpdatedState(onScrollDirectionChanged)
     val onBridgeReadyState = rememberUpdatedState(onBridgeReady)
-    val webViewRef = remember { mutableStateOf<WebView?>(null) }
     var isPageReady by remember { mutableStateOf(false) }
     var rendererCrashed by remember { mutableStateOf(false) }
     var activeBridge by remember { mutableStateOf<WebViewReaderBridge?>(null) }
@@ -540,7 +525,7 @@ internal fun YabaPdfViewerFeatureHost(
     val assetLoader = remember(context) { rememberAssetLoader(context, includeLocalStorage = true) }
     val loadUrl = remember(baseUrl, assetLoaderUrl) { assetLoaderUrl ?: baseUrl }
 
-    val myWebView = remember(context) {
+    val webView = remember(context) {
         WebView(context).apply {
             applyHardenedWebSettings(this)
             setBackgroundColor(Color.TRANSPARENT)
@@ -574,11 +559,9 @@ internal fun YabaPdfViewerFeatureHost(
             }
         }
     }
-    webViewRef.value = myWebView
 
     DisposableEffect(Unit) {
         onDispose {
-            webViewRef.value = null
             activeBridge = null
             onBridgeReadyState.value(null)
         }
@@ -591,70 +574,42 @@ internal fun YabaPdfViewerFeatureHost(
         }
     }
 
-    if (!rendererCrashed) {
-        myWebView.webChromeClient = denyPermissionsWebChromeClient { p ->
-            onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.Loading(p / 100f)))
-        }
-        myWebView.webViewClient = yabaWebViewClient(
-            assetLoader = assetLoader,
-            onPageStarted = {
-                onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.Loading(0f)))
-            },
-            onPageFinished = {
-                isPageReady = true
-                onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.PageFinished))
-            },
-            onRenderProcessGone = {
-                rendererCrashed = true
-                onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.RendererCrashed))
-                true
-            },
-            onUrlClick = null,
-            onHighlightTap = onHighlightTap,
-        )
-    }
-
     LaunchedEffect(isPageReady) {
         if (!isPageReady) {
             activeBridge = null
             onBridgeReadyState.value(null)
             return@LaunchedEffect
         }
-        val wv = webViewRef.value ?: return@LaunchedEffect
-        val ready = waitForBridgeReady(wv, dev.subfly.yabacore.webview.YabaWebBridgeScripts.PDF_BRIDGE_READY)
+        val ready = waitForBridgeReady(webView, dev.subfly.yabacore.webview.YabaWebBridgeScripts.PDF_BRIDGE_READY)
         if (!ready) {
             Log.w(YABA_WEBVIEW_LOG_TAG, "PDF bridge not ready before timeout")
             return@LaunchedEffect
         }
         onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.BridgeReady))
-        val bridge = PdfWebViewReaderBridge(webViewRef)
+        val bridge = PdfWebViewReaderBridge(webView)
         activeBridge = bridge
         onBridgeReadyState.value(bridge)
     }
 
     LaunchedEffect(isPageReady, feature.pdfUrl) {
         if (!isPageReady || rendererCrashed) return@LaunchedEffect
-        val wv = webViewRef.value ?: return@LaunchedEffect
-        applyPdfUrl(wv, context, feature.pdfUrl)
+        applyPdfUrl(webView, context, feature.pdfUrl)
     }
 
     LaunchedEffect(isPageReady, feature.platform, feature.appearance) {
         if (!isPageReady || rendererCrashed) return@LaunchedEffect
-        val wv = webViewRef.value ?: return@LaunchedEffect
-        applyPdfTheme(wv, feature.platform, feature.appearance)
+        applyPdfTheme(webView, feature.platform, feature.appearance)
     }
 
     LaunchedEffect(isPageReady) {
         if (!isPageReady || rendererCrashed) return@LaunchedEffect
-        val wv = webViewRef.value ?: return@LaunchedEffect
-        installPdfHighlightTap(wv)
+        installPdfHighlightTap(webView)
     }
 
     LaunchedEffect(isPageReady, feature.highlights) {
         if (!isPageReady || rendererCrashed) return@LaunchedEffect
-        val wv = webViewRef.value ?: return@LaunchedEffect
-        if (!waitForBridgeReady(wv, dev.subfly.yabacore.webview.YabaWebBridgeScripts.PDF_BRIDGE_READY_LOOSE)) return@LaunchedEffect
-        PdfWebViewReaderBridge(webViewRef).setHighlights(feature.highlights)
+        if (!waitForBridgeReady(webView, dev.subfly.yabacore.webview.YabaWebBridgeScripts.PDF_BRIDGE_READY_LOOSE)) return@LaunchedEffect
+        PdfWebViewReaderBridge(webView).setHighlights(feature.highlights)
     }
 
     LaunchedEffect(activeBridge) {
@@ -686,11 +641,11 @@ internal fun YabaPdfViewerFeatureHost(
         modifier = modifier,
         factory = { ctx ->
             FrameLayout(ctx).apply {
-                if (myWebView.parent != null) {
-                    (myWebView.parent as ViewGroup).removeView(myWebView)
+                if (webView.parent != null) {
+                    (webView.parent as ViewGroup).removeView(webView)
                 }
                 addView(
-                    myWebView,
+                    webView,
                     FrameLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT,
@@ -699,14 +654,36 @@ internal fun YabaPdfViewerFeatureHost(
             }
         },
         update = {
+            if (rendererCrashed.not()) {
+                webView.webChromeClient = denyPermissionsWebChromeClient { p ->
+                    onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.Loading(p / 100f)))
+                }
+                webView.webViewClient = yabaWebViewClient(
+                    assetLoader = assetLoader,
+                    onPageStarted = {
+                        onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.Loading(0f)))
+                    },
+                    onPageFinished = {
+                        isPageReady = true
+                        onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.PageFinished))
+                    },
+                    onRenderProcessGone = {
+                        rendererCrashed = true
+                        onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.RendererCrashed))
+                        true
+                    },
+                    onUrlClick = null,
+                    onHighlightTap = onHighlightTap,
+                )
+            }
             if (rendererCrashed) return@AndroidView
-            val lastLoadedUrl = myWebView.tag as? String
+            val lastLoadedUrl = webView.tag as? String
             if (lastLoadedUrl != loadUrl) {
                 isPageReady = false
                 activeBridge = null
                 onBridgeReadyState.value(null)
-                myWebView.loadUrl(loadUrl)
-                myWebView.tag = loadUrl
+                webView.loadUrl(loadUrl)
+                webView.tag = loadUrl
             }
         },
     )
