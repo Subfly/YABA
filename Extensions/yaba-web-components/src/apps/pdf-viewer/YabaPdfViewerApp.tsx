@@ -14,10 +14,11 @@ import {
 } from "./pdf-yaba-highlights"
 import type { PdfHighlightForRendering } from "./pdf-text-utils"
 import "./pdf-highlighter-viewer-patch"
-import { attachPdfPinchZoom, SCALE_PAGE_WIDTH } from "./pdf-viewer-zoom"
 
 // Bundled worker matching `react-pdf-highlighter` / nested pdfjs-dist 4.4.x (offline-safe).
 import pdfWorkerUrl from "../../../node_modules/react-pdf-highlighter/node_modules/pdfjs-dist/build/pdf.worker.min.mjs?url"
+
+const SCALE_PAGE_WIDTH = "page-width"
 
 function colorClassForRole(role: string): string {
   const map: Record<string, string> = {
@@ -167,13 +168,6 @@ function YabaPdfHighlighterPane({
   useEffect(() => {
     pdfBridgeRuntime.lastLibHighlights = libHighlights
   }, [libHighlights])
-
-  useEffect(() => {
-    const dispose = attachPdfPinchZoom({
-      onScaleChanged: bumpViewerRevision,
-    })
-    return dispose
-  }, [pdfDocument, bumpViewerRevision])
 
   const scrollRefHandler = useCallback((scrollTo: (h: IHighlight) => void) => {
     pdfBridgeRuntime.scrollToLib = scrollTo

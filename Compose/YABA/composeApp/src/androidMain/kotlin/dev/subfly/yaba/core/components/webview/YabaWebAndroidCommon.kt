@@ -125,15 +125,18 @@ internal fun rememberAssetLoader(context: Context, includeLocalStorage: Boolean)
 }
 
 @SuppressLint("SetJavaScriptEnabled")
-internal fun applyHardenedWebSettings(webView: WebView) {
+internal fun applyHardenedWebSettings(
+    webView: WebView,
+    allowZoom: Boolean = false,
+) {
     val settings = webView.settings
     settings.javaScriptEnabled = true
     settings.allowFileAccess = false
     settings.allowContentAccess = false
     settings.blockNetworkLoads = true
     settings.cacheMode = WebSettings.LOAD_NO_CACHE
-    settings.setSupportZoom(false)
-    settings.builtInZoomControls = false
+    settings.setSupportZoom(allowZoom)
+    settings.builtInZoomControls = allowZoom
     settings.displayZoomControls = false
     CookieManager.getInstance().setAcceptCookie(false)
 }

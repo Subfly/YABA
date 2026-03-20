@@ -13,17 +13,12 @@
   min-height: 100%;
 }
 
-/* Scrollport from PdfHighlighter (class added in pdf-viewer-zoom.ts) */
+/* Restore centered page layout without custom pinch-zoom logic. */
 #pdf-root .yaba-pdf-scroll-container {
   -webkit-overflow-scrolling: touch;
 }
 
-#pdf-root .yaba-pdf-scroll-container.yaba-pdf-pinching {
-  cursor: grabbing;
-}
-
-/* Center single page horizontally + vertically when shorter than viewport */
-#pdf-root .yaba-pdf-scroll-container > .pdfViewer {
+#pdf-root .yaba-pdf-scroll-container > .pdfViewer.yaba-pdf-viewer-content {
   min-height: 100%;
   display: flex;
   flex-direction: column;
@@ -32,7 +27,7 @@
   box-sizing: border-box;
 }
 
-#pdf-root .yaba-pdf-scroll-container > .pdfViewer .page {
+#pdf-root .yaba-pdf-scroll-container > .pdfViewer.yaba-pdf-viewer-content .page {
   margin-left: auto !important;
   margin-right: auto !important;
 }

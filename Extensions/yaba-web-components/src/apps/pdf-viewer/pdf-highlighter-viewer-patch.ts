@@ -21,6 +21,9 @@ declare global {
 }
 
 type InstanceWithViewer = { viewer?: Window["__YABA_PDF_VIEWER__"] }
+type ViewerWithContainer = NonNullable<Window["__YABA_PDF_VIEWER__"]> & {
+  viewer?: HTMLElement
+}
 
 const proto = PdfHighlighter.prototype as unknown as {
   init: () => Promise<void>
@@ -31,6 +34,9 @@ const originalInit = proto.init
 proto.init = async function patchedInit(this: InstanceWithViewer) {
   await originalInit.call(this)
   if (this.viewer) {
-    window.__YABA_PDF_VIEWER__ = this.viewer
+    const viewer = this.viewer as ViewerWithContainer
+    window.__YABA_PDF_VIEWER__ = viewer
+    viewer.container.classList.add("yaba-pdf-scroll-container")
+    viewer.viewer?.classList.add("yaba-pdf-viewer-content")
   }
 }

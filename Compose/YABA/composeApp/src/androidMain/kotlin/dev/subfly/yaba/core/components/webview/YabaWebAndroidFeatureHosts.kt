@@ -527,9 +527,13 @@ internal fun YabaPdfViewerFeatureHost(
 
     val webView = remember(context) {
         WebView(context).apply {
-            applyHardenedWebSettings(this)
+            applyHardenedWebSettings(this, allowZoom = true)
             setBackgroundColor(Color.TRANSPARENT)
             setOnTouchListener { _, motionEvent ->
+                if (motionEvent.pointerCount > 1) {
+                    lastGestureDirectionRef[0] = 0
+                    return@setOnTouchListener false
+                }
                 when (motionEvent.actionMasked) {
                     MotionEvent.ACTION_DOWN -> {
                         gestureStartYRef[0] = motionEvent.y
