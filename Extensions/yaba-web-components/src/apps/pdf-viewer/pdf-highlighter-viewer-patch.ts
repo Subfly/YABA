@@ -1,7 +1,9 @@
 import { PdfHighlighter } from "react-pdf-highlighter"
 
 /**
- * Exposes the internal PDF.js `PDFViewer` instance for YABA bridge (page nav, metrics).
+ * Exposes the internal PDF.js viewer (`PDFSinglePageViewer` after Vite transform in
+ * `vite.config.ts`) for YABA bridge (page nav, metrics).
+ *
  * Must be imported before the viewer mounts.
  */
 declare global {
@@ -9,6 +11,8 @@ declare global {
     __YABA_PDF_VIEWER__?: {
       currentPageNumber: number
       pagesCount: number
+      currentScale: number
+      currentScaleValue: string
       getPageView: (index: number) => unknown
       container: HTMLElement
       eventBus?: { on: (n: string, fn: () => void) => void; off: (n: string, fn: () => void) => void }

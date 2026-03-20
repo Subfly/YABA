@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import {
   Highlight,
   PdfHighlighter,
@@ -14,11 +14,10 @@ import {
 } from "./pdf-yaba-highlights"
 import type { PdfHighlightForRendering } from "./pdf-text-utils"
 import "./pdf-highlighter-viewer-patch"
+import { attachPdfPinchZoom, SCALE_PAGE_WIDTH } from "./pdf-viewer-zoom"
 
 // Bundled worker matching `react-pdf-highlighter` / nested pdfjs-dist 4.4.x (offline-safe).
 import pdfWorkerUrl from "../../../node_modules/react-pdf-highlighter/node_modules/pdfjs-dist/build/pdf.worker.min.mjs?url"
-
-const SCALE_PAGE_WIDTH = "page-width"
 
 function colorClassForRole(role: string): string {
   const map: Record<string, string> = {
@@ -40,6 +39,36 @@ function colorClassForRole(role: string): string {
   return map[role] ?? "yaba-highlight-yellow"
 }
 
+const VIEWER_EVENT_NAMES = [
+  "pagesinit",
+  "pagerendered",
+  "textlayerrendered",
+  "pagechanging",
+  "scalechanging",
+] as const
+
+type ViewerBus = {
+  on: (name: string, fn: (...args: unknown[]) => void) => void
+  off: (name: string, fn: (...args: unknown[]) => void) => void
+}
+
+type ViewerWithBus = PdfViewerLike & {
+  pagesCount?: number
+  eventBus?: ViewerBus
+}
+
+function getViewerWithBus(): ViewerWithBus | null {
+  const viewer = window.__YABA_PDF_VIEWER__ as ViewerWithBus | undefined
+  return viewer ?? null
+}
+
+function emitHighlightTap(id: string): void {
+  const win = window as Window & {
+    YabaPdfBridge?: { onHighlightTap?: (highlightId: string) => void }
+  }
+  win.YabaPdfBridge?.onHighlightTap?.(id)
+}
+
 function YabaPdfHighlighterPane({
   pdfDocument,
   yabaHighlights,
@@ -48,7 +77,12 @@ function YabaPdfHighlighterPane({
   pdfDocument: object
   yabaHighlights: PdfHighlightForRendering[]
 }) {
-  const [layerTick, setLayerTick] = useState(0)
+  const [viewerRevision, setViewerRevision] = useState(0)
+  const highlightCacheRef = useRef(new Map<string, IHighlight>())
+
+  const bumpViewerRevision = useCallback(() => {
+    setViewerRevision((v) => v + 1)
+  }, [])
 
   const colorById = useMemo(() => {
     const m = new Map<string, string>()
@@ -57,42 +91,89 @@ function YabaPdfHighlighterPane({
   }, [yabaHighlights])
 
   useEffect(() => {
-    let cleared = false
-    let off: (() => void) | undefined
-    const timer = window.setInterval(() => {
-      if (cleared) return
-      const v = window.__YABA_PDF_VIEWER__
-      const bus = v?.eventBus
+    let disposed = false
+    let bus: ViewerBus | null = null
+    let bindTimer: number | null = null
+    const onViewerEvent = (): void => {
+      bumpViewerRevision()
+    }
+
+    const unbindBus = (): void => {
       if (!bus) return
-      window.clearInterval(timer)
-      const handler = () => setLayerTick((t) => t + 1)
-      bus.on("textlayerrendered", handler)
-      off = () => {
+      for (const eventName of VIEWER_EVENT_NAMES) {
         try {
-          bus.off("textlayerrendered", handler)
+          bus.off(eventName, onViewerEvent)
         } catch {
           /* ignore */
         }
       }
-      handler()
-    }, 32)
-    return () => {
-      cleared = true
-      window.clearInterval(timer)
-      off?.()
+      bus = null
     }
-  }, [pdfDocument])
+
+    const tryBind = (): void => {
+      if (disposed) return
+      const viewer = getViewerWithBus()
+      const nextBus = viewer?.eventBus
+      if (!nextBus || nextBus === bus) return
+      unbindBus()
+      bus = nextBus
+      for (const eventName of VIEWER_EVENT_NAMES) {
+        bus.on(eventName, onViewerEvent)
+      }
+      onViewerEvent()
+      if ((viewer.pagesCount ?? 0) > 0 && bindTimer !== null) {
+        window.clearInterval(bindTimer)
+        bindTimer = null
+      }
+    }
+
+    bindTimer = window.setInterval(tryBind, 64)
+    tryBind()
+
+    return () => {
+      disposed = true
+      if (bindTimer !== null) {
+        window.clearInterval(bindTimer)
+      }
+      unbindBus()
+    }
+  }, [pdfDocument, bumpViewerRevision])
+
+  useEffect(() => {
+    const validIds = new Set(yabaHighlights.map((h) => h.id))
+    for (const id of highlightCacheRef.current.keys()) {
+      if (!validIds.has(id)) {
+        highlightCacheRef.current.delete(id)
+      }
+    }
+  }, [yabaHighlights])
 
   const libHighlights: IHighlight[] = useMemo(() => {
-    const viewer = window.__YABA_PDF_VIEWER__
+    const viewer = getViewerWithBus()
     if (!viewer?.pagesCount) return []
-    void layerTick
-    return yabaHighlightsToLibraryHighlights(viewer as PdfViewerLike, yabaHighlights)
-  }, [pdfDocument, yabaHighlights, layerTick])
+    const next = yabaHighlightsToLibraryHighlights(viewer as PdfViewerLike, yabaHighlights)
+    const nextById = new Map(next.map((h) => [h.id, h]))
+    return yabaHighlights
+      .map((source) => nextById.get(source.id) ?? highlightCacheRef.current.get(source.id))
+      .filter((highlight): highlight is IHighlight => Boolean(highlight))
+  }, [pdfDocument, yabaHighlights, viewerRevision])
+
+  useEffect(() => {
+    for (const highlight of libHighlights) {
+      highlightCacheRef.current.set(highlight.id, highlight)
+    }
+  }, [libHighlights])
 
   useEffect(() => {
     pdfBridgeRuntime.lastLibHighlights = libHighlights
   }, [libHighlights])
+
+  useEffect(() => {
+    const dispose = attachPdfPinchZoom({
+      onScaleChanged: bumpViewerRevision,
+    })
+    return dispose
+  }, [pdfDocument, bumpViewerRevision])
 
   const scrollRefHandler = useCallback((scrollTo: (h: IHighlight) => void) => {
     pdfBridgeRuntime.scrollToLib = scrollTo
@@ -104,7 +185,7 @@ function YabaPdfHighlighterPane({
       pdfScaleValue={SCALE_PAGE_WIDTH}
       highlights={libHighlights}
       scrollRef={scrollRefHandler}
-      onScrollChange={() => setLayerTick((t) => t + 1)}
+      onScrollChange={bumpViewerRevision}
       enableAreaSelection={() => false}
       onSelectionFinished={(_position, _content, hideTipAndSelection) => {
         hideTipAndSelection()
@@ -130,12 +211,7 @@ function YabaPdfHighlighterPane({
               isScrolledTo={isScrolledTo}
               comment={{ text: "", emoji: "" }}
               position={highlight.position}
-              onClick={() => {
-                const win = window as Window & {
-                  YabaPdfBridge?: { onHighlightTap?: (id: string) => void }
-                }
-                win.YabaPdfBridge?.onHighlightTap?.(highlight.id)
-              }}
+              onClick={() => emitHighlightTap(highlight.id)}
             />
           </div>
         )

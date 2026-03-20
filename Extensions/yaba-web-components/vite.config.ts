@@ -1,9 +1,29 @@
-import { defineConfig } from "vite"
+import { defineConfig, type Plugin } from "vite"
 import react from "@vitejs/plugin-react"
 import { resolve } from "path"
 
+/**
+ * `react-pdf-highlighter` always constructs `PDFViewer` (all pages in DOM).
+ * Swap to `PDFSinglePageViewer` so only the current page is mounted — required for large PDFs.
+ */
+function reactPdfHighlighterSinglePage(): Plugin {
+  return {
+    name: "react-pdf-highlighter-single-page",
+    transform(code, id) {
+      const normalized = id.replace(/\\/g, "/")
+      if (!normalized.includes("/react-pdf-highlighter/")) return null
+      if (!normalized.includes("PdfHighlighter")) return null
+      if (!code.includes("new pdfjs.PDFViewer(")) return null
+      return {
+        code: code.replaceAll("new pdfjs.PDFViewer(", "new pdfjs.PDFSinglePageViewer("),
+        map: null,
+      }
+    },
+  }
+}
+
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), reactPdfHighlighterSinglePage()],
   base: "./",
   build: {
     outDir: "dist",

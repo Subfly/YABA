@@ -13,6 +13,30 @@
   min-height: 100%;
 }
 
+/* Scrollport from PdfHighlighter (class added in pdf-viewer-zoom.ts) */
+#pdf-root .yaba-pdf-scroll-container {
+  -webkit-overflow-scrolling: touch;
+}
+
+#pdf-root .yaba-pdf-scroll-container.yaba-pdf-pinching {
+  cursor: grabbing;
+}
+
+/* Center single page horizontally + vertically when shorter than viewport */
+#pdf-root .yaba-pdf-scroll-container > .pdfViewer {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+#pdf-root .yaba-pdf-scroll-container > .pdfViewer .page {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
 /* Hide react-pdf-highlighter selection tip; Compose owns highlight creation. */
 #PdfHighlighter__tip-container {
   display: none !important;
@@ -20,26 +44,27 @@
   pointer-events: none !important;
 }
 
-/* PDF.js PDFViewer requires the container to be the single scroll owner */
-.yaba-pdf-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  min-height: 100%;
-  overflow: auto;
-}
-
 .pdfViewer {
   --page-margin: 12px auto;
 }
 
 /* Map YABA highlight color roles onto react-pdf-highlighter parts */
+#pdf-root .PdfHighlighter__highlight-layer {
+  z-index: 8;
+  pointer-events: auto;
+}
+
 .yaba-rph-highlight-wrap .Highlight__part {
   border-radius: 2px;
   box-sizing: border-box;
+  cursor: pointer;
+  pointer-events: auto !important;
+}
+
+.yaba-rph-highlight-wrap {
+  position: relative;
+  z-index: 6;
+  pointer-events: auto !important;
 }
 
 .yaba-rph-highlight-wrap.yaba-highlight-yellow .Highlight__part {
@@ -91,61 +116,4 @@
 
 .textLayer ::selection {
   background: rgba(72, 93, 146, 0.26);
-}
-
-.yaba-highlight-overlay {
-  border-radius: 2px;
-  box-sizing: border-box;
-}
-
-.yaba-highlight-overlay.yaba-highlight-yellow {
-  background: rgba(255, 214, 10, 0.35);
-}
-
-.yaba-highlight-overlay.yaba-highlight-blue {
-  background: rgba(88, 166, 255, 0.35);
-}
-
-.yaba-highlight-overlay.yaba-highlight-brown {
-  background: rgba(193, 154, 107, 0.35);
-}
-
-.yaba-highlight-overlay.yaba-highlight-cyan {
-  background: rgba(0, 188, 212, 0.35);
-}
-
-.yaba-highlight-overlay.yaba-highlight-gray {
-  background: rgba(158, 158, 158, 0.35);
-}
-
-.yaba-highlight-overlay.yaba-highlight-green {
-  background: rgba(102, 187, 106, 0.35);
-}
-
-.yaba-highlight-overlay.yaba-highlight-indigo {
-  background: rgba(92, 107, 192, 0.35);
-}
-
-.yaba-highlight-overlay.yaba-highlight-mint {
-  background: rgba(38, 166, 154, 0.35);
-}
-
-.yaba-highlight-overlay.yaba-highlight-orange {
-  background: rgba(255, 167, 38, 0.35);
-}
-
-.yaba-highlight-overlay.yaba-highlight-pink {
-  background: rgba(236, 64, 122, 0.3);
-}
-
-.yaba-highlight-overlay.yaba-highlight-purple {
-  background: rgba(171, 71, 188, 0.3);
-}
-
-.yaba-highlight-overlay.yaba-highlight-red {
-  background: rgba(239, 83, 80, 0.3);
-}
-
-.yaba-highlight-overlay.yaba-highlight-teal {
-  background: rgba(38, 166, 154, 0.3);
 }
