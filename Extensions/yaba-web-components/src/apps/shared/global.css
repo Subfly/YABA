@@ -50,6 +50,12 @@ body[data-yaba-page="viewer"] {
   color: var(--yaba-reader-on-bg, var(--yaba-on-bg));
 }
 
+/* PDF viewer: always transparent chrome so the host (e.g. Compose) provides the surface; avoids a light flash before theme JS runs. */
+body[data-yaba-page="pdf-viewer"] {
+  background: transparent;
+  color: var(--yaba-on-bg);
+}
+
 #root {
   width: 100%;
   height: 100%;
