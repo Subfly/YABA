@@ -180,7 +180,7 @@ internal fun LinkmarkContentLayout(
                 }
 
                 LinkmarkReaderFloatingToolbar(
-                    isVisible = isReaderToolbarVisible,
+                    isVisible = isReaderToolbarVisible || hasSelection,
                     readerPreferences = state.readerPreferences,
                     hasSelection = hasSelection,
                     onEvent = onEvent,
@@ -218,9 +218,7 @@ internal fun LinkmarkContentLayout(
                     onHostEvent = { ev ->
                         when (ev) {
                             is YabaWebHostEvent.ReaderMetrics ->
-                                if (isReaderToolbarVisible) {
-                                    hasSelection = ev.canCreateHighlight
-                                }
+                                hasSelection = ev.canCreateHighlight
                             else -> Unit
                         }
                     },

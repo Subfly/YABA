@@ -145,7 +145,7 @@ internal fun DocmarkContentLayout(
                 }
 
                 DocmarkReaderFloatingToolbar(
-                    isVisible = isToolbarVisible,
+                    isVisible = isToolbarVisible || hasSelection,
                     hasSelection = hasSelection,
                     canGoPrev = currentPage > 1,
                     canGoNext = currentPage < pageCount,
