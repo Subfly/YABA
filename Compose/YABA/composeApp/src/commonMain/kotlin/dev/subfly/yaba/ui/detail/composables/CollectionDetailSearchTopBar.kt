@@ -51,6 +51,19 @@ internal fun collectionDetailIconButtonColors(accentColor: YabaColor): IconButto
     )
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+internal fun searchScreenIconButtonColors(): IconButtonColors {
+    val scheme = MaterialTheme.colorScheme
+    val bg = scheme.surfaceContainerHigh.copy(alpha = 0.5f)
+    return IconButtonDefaults.iconButtonColors(
+        containerColor = bg,
+        contentColor = scheme.onSurface,
+        disabledContainerColor = bg,
+        disabledContentColor = scheme.onSurface.copy(alpha = 0.38f),
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun CollectionDetailSearchTopBar(
@@ -74,6 +87,77 @@ internal fun CollectionDetailSearchTopBar(
     val searchBarColors =
         SearchBarDefaults.colors(
             containerColor = accentTint,
+            inputFieldColors = inputFieldColors,
+        )
+    val appBarColors =
+        SearchBarDefaults.appBarWithSearchColors(
+            searchBarColors = searchBarColors,
+            scrolledSearchBarContainerColor = Color.Unspecified,
+            appBarContainerColor = Color.Transparent,
+            scrolledAppBarContainerColor = Color.Unspecified,
+            appBarNavigationIconColor = scheme.onSurface,
+            appBarActionIconColor = scheme.onSurface,
+        )
+
+    Box(modifier = modifier.fillMaxWidth()) {
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .fillMaxWidth()
+                .height(TOP_SCRIM_HEIGHT_DP.dp)
+                .graphicsLayer { clip = false }
+                .background(
+                    brush = Brush.verticalGradient(
+                        colorStops = arrayOf(
+                            0f to scrimStrong,
+                            0.42f to scrimSoft,
+                            0.82f to Color.Transparent,
+                            1f to Color.Transparent,
+                        ),
+                    ),
+                )
+                .blur(radius = 16.dp),
+        )
+        Column(modifier = Modifier.fillMaxWidth()) {
+            AppBarWithSearch(
+                modifier = Modifier.fillMaxWidth(),
+                state = searchBarState,
+                scrollBehavior = null,
+                colors = appBarColors,
+                inputField = inputField,
+                navigationIcon = navigationIcon,
+                actions = actions,
+            )
+        }
+    }
+}
+
+/**
+ * Global search screen: same blur + [AppBarWithSearch] chrome as collection detail, but the field
+ * and icon buttons use [ColorScheme.surfaceContainerHigh] at 0.5 alpha (no folder/tag accent).
+ */
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+internal fun SearchScreenChromeTopBar(
+    searchBarState: SearchBarState,
+    inputField: @Composable () -> Unit,
+    navigationIcon: @Composable () -> Unit,
+    actions: @Composable RowScope.() -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val scheme = MaterialTheme.colorScheme
+    val scrimStrong = scheme.surface.copy(alpha = 0.82f)
+    val scrimSoft = scheme.surface.copy(alpha = 0.38f)
+    val fieldTint = scheme.surfaceContainerHigh.copy(alpha = 0.5f)
+    val inputFieldColors =
+        SearchBarDefaults.inputFieldColors(
+            focusedContainerColor = fieldTint,
+            unfocusedContainerColor = fieldTint,
+            disabledContainerColor = fieldTint,
+        )
+    val searchBarColors =
+        SearchBarDefaults.colors(
+            containerColor = fieldTint,
             inputFieldColors = inputFieldColors,
         )
     val appBarColors =
