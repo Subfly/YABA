@@ -70,8 +70,8 @@ body[data-yaba-page="pdf-viewer"] {
 
 .yaba-web-chrome-spacer--top {
   /* min-height: fallback when calc(env()) is unsupported and the whole height declaration is dropped */
-  min-height: 36px;
-  height: calc(36px + env(safe-area-inset-top, 0px));
+  min-height: 54px;
+  height: calc(54px + env(safe-area-inset-top, 0px));
 }
 
 .yaba-web-chrome-spacer--bottom {

@@ -18,7 +18,7 @@ body[data-yaba-page="viewer"] .yaba-editor-container {
   /* Keep full-screen WebView while reserving reading space inside the scrollable content. */
   padding-top: 5.5rem;
   padding-bottom: 3.25rem;
-  padding-top: calc(36px + env(safe-area-inset-top, 0px) + 1rem);
+  padding-top: calc(54px + env(safe-area-inset-top, 0px) + 1rem);
   padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px) + 1rem);
 }
 
