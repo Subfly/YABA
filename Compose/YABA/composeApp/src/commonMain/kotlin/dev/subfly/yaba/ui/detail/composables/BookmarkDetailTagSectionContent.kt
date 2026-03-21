@@ -63,6 +63,7 @@ internal fun BookmarkDetailTagSectionContent(
                     allowsDeletion = false,
                     onClick = onClickTag,
                     containerColor = MaterialTheme.colorScheme.surface,
+                    showBookmarkCounts = false,
                     onDeleteTag = {}
                 )
             }

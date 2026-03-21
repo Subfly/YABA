@@ -2,6 +2,7 @@
 
 package dev.subfly.yaba.core.components.item.tag
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,6 +50,7 @@ fun TagItemView(
     index: Int = 0,
     count: Int = 1,
     containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
+    showBookmarkCounts: Boolean = true,
 ) {
     val creationNavigator = LocalCreationContentNavigator.current
     val deletionDialogManager = LocalDeletionDialogManager.current
@@ -184,7 +186,11 @@ fun TagItemView(
         leftSwipeActions = leftSwipeActions,
         rightSwipeActions = rightSwipeActions,
         onClick = { onClick(model) },
-        trailingContent = { Text(model.bookmarkCount.toString()) },
+        trailingContent = {
+            if (showBookmarkCounts) {
+                Text(model.bookmarkCount.toString())
+            } else Box(modifier = Modifier)
+        },
         index = index,
         count = count,
         containerColor = containerColor,

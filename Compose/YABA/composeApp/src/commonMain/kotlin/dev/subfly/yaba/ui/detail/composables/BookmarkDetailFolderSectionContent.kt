@@ -35,6 +35,7 @@ internal fun BookmarkDetailFolderSectionContent(
             allowsDeletion = false,
             onClick = onClickFolder,
             containerColor = MaterialTheme.colorScheme.surface,
+            showBookmarkCounts = false,
             onDeleteFolder = {}
         )
     }

@@ -153,7 +153,7 @@ internal fun ImagemarkDetailLayout(
                     BookmarkDetailFolderSectionContent(
                         folder = folder,
                         mainColor = mainColor,
-                        onClickFolder = { navigator.add(FolderDetailRoute(folderId = it.id)) }
+                        onClickFolder = { navigator.add(FolderDetailRoute(folderId = it.id)) },
                     )
                 }
             }
@@ -161,7 +161,7 @@ internal fun ImagemarkDetailLayout(
             item {
                 BookmarkDetailTagSectionContent(
                     tags = bookmark.tags,
-                    onClickTag = { tag -> navigator.add(TagDetailRoute(tagId = tag.id)) }
+                    onClickTag = { tag -> navigator.add(TagDetailRoute(tagId = tag.id)) },
                 )
             }
             state.reminderDateEpochMillis?.let { reminderMillis ->

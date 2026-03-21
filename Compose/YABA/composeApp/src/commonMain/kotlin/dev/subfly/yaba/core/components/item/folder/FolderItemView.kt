@@ -5,6 +5,7 @@ package dev.subfly.yaba.core.components.item.folder
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.CircleShape
@@ -27,11 +28,11 @@ import dev.subfly.yaba.core.navigation.alert.DeletionType
 import dev.subfly.yaba.core.navigation.creation.BookmarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.FolderCreationRoute
 import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
-import dev.subfly.yaba.util.ResultStoreKeys
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalDeletionDialogManager
 import dev.subfly.yaba.util.LocalResultStore
+import dev.subfly.yaba.util.ResultStoreKeys
 import dev.subfly.yabacore.common.CoreConstants
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.utils.FolderSelectionMode
@@ -67,6 +68,7 @@ fun FolderItemView(
     index: Int = 0,
     count: Int = 1,
     containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
+    showBookmarkCounts: Boolean = true,
 ) {
     val creationNavigator = LocalCreationContentNavigator.current
     val deletionDialogManager = LocalDeletionDialogManager.current
@@ -247,22 +249,26 @@ fun FolderItemView(
         count = count,
         containerColor = containerColor,
         trailingContent = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                Text(model.bookmarkCount.toString())
-                if (hasChildren) {
-                    YabaIcon(
-                        modifier = Modifier
-                            .rotate(expandedIconRotation)
-                            .clip(CircleShape)
-                            .clickable(onClick = onToggleExpanded),
-                        name = "arrow-right-01",
-                        color = color,
-                    )
+            if (showBookmarkCounts || hasChildren) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    if (showBookmarkCounts) {
+                        Text(model.bookmarkCount.toString())
+                    }
+                    if (hasChildren) {
+                        YabaIcon(
+                            modifier = Modifier
+                                .rotate(expandedIconRotation)
+                                .clip(CircleShape)
+                                .clickable(onClick = onToggleExpanded),
+                            name = "arrow-right-01",
+                            color = color,
+                        )
+                    }
                 }
-            }
-        }
+            } else Box(modifier = Modifier)
+        },
     )
 }

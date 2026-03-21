@@ -103,7 +103,7 @@ internal fun LinkmarkDetailLayout(
                                 modifier = Modifier.animateItem(),
                                 folder = folder,
                                 mainColor = mainColor,
-                                onClickFolder = { navigator.add(FolderDetailRoute(folderId = folder.id)) }
+                                onClickFolder = { navigator.add(FolderDetailRoute(folderId = folder.id)) },
                             )
                         }
                     }
@@ -112,7 +112,7 @@ internal fun LinkmarkDetailLayout(
                         BookmarkDetailTagSectionContent(
                             modifier = Modifier.animateItem(),
                             tags = bookmarkDetails.tags,
-                            onClickTag = { tag -> navigator.add(TagDetailRoute(tagId = tag.id)) }
+                            onClickTag = { tag -> navigator.add(TagDetailRoute(tagId = tag.id)) },
                         )
                     }
                     state.reminderDateEpochMillis?.let { reminderMillis ->
