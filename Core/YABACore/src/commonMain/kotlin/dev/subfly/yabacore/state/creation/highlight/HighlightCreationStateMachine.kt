@@ -11,6 +11,8 @@ class HighlightCreationStateMachine :
     BaseStateMachine<HighlightCreationUIState, HighlightCreationEvent>(
         initialState = HighlightCreationUIState()
     ) {
+    private var isInitialized = false
+
     override fun onEvent(event: HighlightCreationEvent) {
         when (event) {
             is HighlightCreationEvent.OnInitWithSelection -> onInitWithSelection(event)
@@ -23,6 +25,9 @@ class HighlightCreationStateMachine :
     }
 
     private fun onInitWithSelection(event: HighlightCreationEvent.OnInitWithSelection) {
+        if (isInitialized) return
+        isInitialized = true
+
         updateState {
             it.copy(
                 selectionDraft = event.draft,
@@ -35,6 +40,8 @@ class HighlightCreationStateMachine :
     }
 
     private fun onInitWithHighlight(event: HighlightCreationEvent.OnInitWithHighlight) {
+        if (isInitialized) return
+        isInitialized = true
         if (currentState().highlight?.id == event.highlightId) return
 
         updateState { it.copy(isLoading = true) }
@@ -140,5 +147,10 @@ class HighlightCreationStateMachine :
         }
         HighlightManager.deleteHighlight(bookmarkId = bookmarkId, highlightId = highlight.id)
         event.onDeletedCallback()
+    }
+
+    override fun clear() {
+        isInitialized = false
+        super.clear()
     }
 }
