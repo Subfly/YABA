@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -39,7 +40,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.ui.detail.bookmark.components.BookmarkDetailContentTopBar
-import dev.subfly.yaba.ui.detail.bookmark.components.bookmarkDetailIconButtonColors
+import dev.subfly.yaba.ui.detail.bookmark.util.bookmarkDetailIconButtonColors
 import dev.subfly.yaba.ui.detail.bookmark.components.bookmarkFolderAccentColor
 import dev.subfly.yaba.ui.detail.bookmark.image.components.ImagemarkContentDropdownMenu
 import dev.subfly.yaba.util.LocalContentNavigator
@@ -237,7 +238,7 @@ internal fun ImagemarkContentLayout(
                 .fillMaxWidth(),
         ) {
             BookmarkDetailContentTopBar(
-                folderYabaColor = folderAccent,
+                color = folderAccent,
                 onBack = navigator::removeLastOrNull,
                 onShowDetail = onShowDetail,
                 overflowMenu = {
@@ -246,7 +247,7 @@ internal fun ImagemarkContentLayout(
                             onClick = { isMenuExpanded = !isMenuExpanded },
                             colors = menuIconButtonColors,
                             shapes = IconButtonDefaults.shapes(),
-                        ) { YabaIcon(name = "more-horizontal-circle-02", color = folderAccent) }
+                        ) { YabaIcon(name = "more-horizontal-circle-02", color = Color.White) }
 
                         ImagemarkContentDropdownMenu(
                             expanded = isMenuExpanded,

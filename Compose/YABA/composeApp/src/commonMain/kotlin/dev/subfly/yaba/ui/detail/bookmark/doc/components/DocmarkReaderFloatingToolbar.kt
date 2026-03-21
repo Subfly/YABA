@@ -12,22 +12,27 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.offset
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.VerticalFloatingToolbar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import dev.subfly.yaba.ui.detail.bookmark.util.bookmarkReaderFloatingToolbarColors
+import dev.subfly.yaba.ui.detail.bookmark.util.bookmarkReaderToolbarIconButtonColors
 import dev.subfly.yaba.util.LocalPaneInfo
+import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.ui.icon.YabaIcon
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
 internal fun BoxScope.DocmarkReaderFloatingToolbar(
     modifier: Modifier = Modifier,
+    color: YabaColor,
     isVisible: Boolean,
     hasSelection: Boolean,
     canGoPrev: Boolean,
@@ -38,7 +43,8 @@ internal fun BoxScope.DocmarkReaderFloatingToolbar(
 ) {
     val paneInfo = LocalPaneInfo.current
     val isTwoPaneLayout = paneInfo.isTwoPaneLayout
-    val vibrantColors = FloatingToolbarDefaults.vibrantFloatingToolbarColors()
+    val toolbarColors = bookmarkReaderFloatingToolbarColors(color)
+    val disabledTint = Color.White.copy(alpha = 0.5f)
 
     if (isTwoPaneLayout) {
         AnimatedVisibility(
@@ -56,26 +62,40 @@ internal fun BoxScope.DocmarkReaderFloatingToolbar(
         ) {
             VerticalFloatingToolbar(
                 expanded = true,
-                colors = vibrantColors,
+                colors = toolbarColors,
             ) {
                 IconButton(
                     onClick = onPrevPage,
                     enabled = canGoPrev,
+                    colors = bookmarkReaderToolbarIconButtonColors(color),
+                    shapes = IconButtonDefaults.shapes(),
                 ) {
-                    YabaIcon(name = "previous")
+                    YabaIcon(
+                        name = "previous",
+                        color = if (canGoPrev) Color.White else disabledTint,
+                    )
                 }
                 AnimatedContent(targetState = hasSelection) { has ->
                     if (has) {
-                        IconButton(onClick = onHighlightClick) {
-                            YabaIcon(name = "highlighter")
+                        IconButton(
+                            onClick = onHighlightClick,
+                            colors = bookmarkReaderToolbarIconButtonColors(color),
+                            shapes = IconButtonDefaults.shapes(),
+                        ) {
+                            YabaIcon(name = "highlighter", color = Color.White)
                         }
                     }
                 }
                 IconButton(
                     onClick = onNextPage,
                     enabled = canGoNext,
+                    colors = bookmarkReaderToolbarIconButtonColors(color),
+                    shapes = IconButtonDefaults.shapes(),
                 ) {
-                    YabaIcon(name = "next")
+                    YabaIcon(
+                        name = "next",
+                        color = if (canGoNext) Color.White else disabledTint,
+                    )
                 }
             }
         }
@@ -98,26 +118,40 @@ internal fun BoxScope.DocmarkReaderFloatingToolbar(
     ) {
         HorizontalFloatingToolbar(
             expanded = true,
-            colors = vibrantColors,
+            colors = toolbarColors,
         ) {
             IconButton(
                 onClick = onPrevPage,
                 enabled = canGoPrev,
+                colors = bookmarkReaderToolbarIconButtonColors(color),
+                shapes = IconButtonDefaults.shapes(),
             ) {
-                YabaIcon(name = "previous")
+                YabaIcon(
+                    name = "previous",
+                    color = if (canGoPrev) Color.White else disabledTint,
+                )
             }
             AnimatedContent(targetState = hasSelection) { has ->
                 if (has) {
-                    IconButton(onClick = onHighlightClick) {
-                        YabaIcon(name = "highlighter")
+                    IconButton(
+                        onClick = onHighlightClick,
+                        colors = bookmarkReaderToolbarIconButtonColors(color),
+                        shapes = IconButtonDefaults.shapes(),
+                    ) {
+                        YabaIcon(name = "highlighter", color = Color.White)
                     }
                 }
             }
             IconButton(
                 onClick = onNextPage,
                 enabled = canGoNext,
+                colors = bookmarkReaderToolbarIconButtonColors(color),
+                shapes = IconButtonDefaults.shapes(),
             ) {
-                YabaIcon(name = "next")
+                YabaIcon(
+                    name = "next",
+                    color = if (canGoNext) Color.White else disabledTint,
+                )
             }
         }
     }

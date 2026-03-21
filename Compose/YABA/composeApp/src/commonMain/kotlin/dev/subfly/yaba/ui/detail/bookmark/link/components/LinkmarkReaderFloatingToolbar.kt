@@ -16,9 +16,9 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.DropdownMenuPopup
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalFloatingToolbar
@@ -29,14 +29,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.compose.ui.zIndex
+import dev.subfly.yaba.ui.detail.bookmark.util.bookmarkReaderFloatingToolbarColors
+import dev.subfly.yaba.ui.detail.bookmark.util.bookmarkReaderToolbarIconButtonColors
 import dev.subfly.yaba.util.LocalPaneInfo
 import dev.subfly.yabacore.model.utils.ReaderFontSize
 import dev.subfly.yabacore.model.utils.ReaderLineHeight
 import dev.subfly.yabacore.model.utils.ReaderPreferences
 import dev.subfly.yabacore.model.utils.ReaderTheme
+import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.detail.linkmark.LinkmarkDetailEvent
 import dev.subfly.yabacore.ui.icon.YabaIcon
 
@@ -44,6 +48,7 @@ import dev.subfly.yabacore.ui.icon.YabaIcon
 @Composable
 internal fun BoxScope.LinkmarkReaderFloatingToolbar(
     modifier: Modifier = Modifier,
+    color: YabaColor,
     isVisible: Boolean,
     readerPreferences: ReaderPreferences,
     hasSelection: Boolean = false,
@@ -52,7 +57,7 @@ internal fun BoxScope.LinkmarkReaderFloatingToolbar(
 ) {
     val paneInfo = LocalPaneInfo.current
     val isTwoPaneLayout = paneInfo.isTwoPaneLayout
-    val vibrantColors = FloatingToolbarDefaults.vibrantFloatingToolbarColors()
+    val toolbarColors = bookmarkReaderFloatingToolbarColors(color)
 
     if (isTwoPaneLayout) {
         AnimatedVisibility(
@@ -70,17 +75,20 @@ internal fun BoxScope.LinkmarkReaderFloatingToolbar(
         ) {
             VerticalFloatingToolbar(
                 expanded = true,
-                colors = vibrantColors,
+                colors = toolbarColors,
             ) {
                 ThemeOptionsButton(
+                    folderYabaColor = color,
                     selectedTheme = readerPreferences.theme,
                     onSelectTheme = { onEvent(LinkmarkDetailEvent.OnSetReaderTheme(it)) },
                 )
                 FontSizeOptionsButton(
+                    folderYabaColor = color,
                     selectedFontSize = readerPreferences.fontSize,
                     onSelectFontSize = { onEvent(LinkmarkDetailEvent.OnSetReaderFontSize(it)) },
                 )
                 LineHeightOptionsButton(
+                    folderYabaColor = color,
                     selectedLineHeight = readerPreferences.lineHeight,
                     onSelectLineHeight = { onEvent(LinkmarkDetailEvent.OnSetReaderLineHeight(it)) },
                 )
@@ -88,8 +96,12 @@ internal fun BoxScope.LinkmarkReaderFloatingToolbar(
                     targetState = hasSelection
                 ) { has ->
                     if (has) {
-                        IconButton(onClick = onHighlightClick) {
-                            YabaIcon(name = "highlighter")
+                        IconButton(
+                            onClick = onHighlightClick,
+                            colors = bookmarkReaderToolbarIconButtonColors(color),
+                            shapes = IconButtonDefaults.shapes(),
+                        ) {
+                            YabaIcon(name = "highlighter", color = Color.White)
                         }
                     }
                 }
@@ -114,17 +126,20 @@ internal fun BoxScope.LinkmarkReaderFloatingToolbar(
     ) {
         HorizontalFloatingToolbar(
             expanded = true,
-            colors = vibrantColors,
+            colors = toolbarColors,
         ) {
             ThemeOptionsButton(
+                folderYabaColor = color,
                 selectedTheme = readerPreferences.theme,
                 onSelectTheme = { onEvent(LinkmarkDetailEvent.OnSetReaderTheme(it)) },
             )
             FontSizeOptionsButton(
+                folderYabaColor = color,
                 selectedFontSize = readerPreferences.fontSize,
                 onSelectFontSize = { onEvent(LinkmarkDetailEvent.OnSetReaderFontSize(it)) },
             )
             LineHeightOptionsButton(
+                folderYabaColor = color,
                 selectedLineHeight = readerPreferences.lineHeight,
                 onSelectLineHeight = { onEvent(LinkmarkDetailEvent.OnSetReaderLineHeight(it)) },
             )
@@ -132,8 +147,12 @@ internal fun BoxScope.LinkmarkReaderFloatingToolbar(
                 targetState = hasSelection
             ) { has ->
                 if (has) {
-                    IconButton(onClick = onHighlightClick) {
-                        YabaIcon(name = "highlighter")
+                    IconButton(
+                        onClick = onHighlightClick,
+                        colors = bookmarkReaderToolbarIconButtonColors(color),
+                        shapes = IconButtonDefaults.shapes(),
+                    ) {
+                        YabaIcon(name = "highlighter", color = Color.White)
                     }
                 }
             }
@@ -144,13 +163,18 @@ internal fun BoxScope.LinkmarkReaderFloatingToolbar(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun ThemeOptionsButton(
+    folderYabaColor: YabaColor,
     selectedTheme: ReaderTheme,
     onSelectTheme: (ReaderTheme) -> Unit,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
     Box {
-        IconButton(onClick = { isExpanded = !isExpanded }) {
-            YabaIcon(name = "colors")
+        IconButton(
+            onClick = { isExpanded = !isExpanded },
+            colors = bookmarkReaderToolbarIconButtonColors(folderYabaColor),
+            shapes = IconButtonDefaults.shapes(),
+        ) {
+            YabaIcon(name = "colors", color = Color.White)
         }
         DropdownMenuPopup(
             expanded = isExpanded,
@@ -180,13 +204,18 @@ private fun ThemeOptionsButton(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun FontSizeOptionsButton(
+    folderYabaColor: YabaColor,
     selectedFontSize: ReaderFontSize,
     onSelectFontSize: (ReaderFontSize) -> Unit,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
     Box {
-        IconButton(onClick = { isExpanded = !isExpanded }) {
-            YabaIcon(name = "text-square")
+        IconButton(
+            onClick = { isExpanded = !isExpanded },
+            colors = bookmarkReaderToolbarIconButtonColors(folderYabaColor),
+            shapes = IconButtonDefaults.shapes(),
+        ) {
+            YabaIcon(name = "text-square", color = Color.White)
         }
         DropdownMenuPopup(
             expanded = isExpanded,
@@ -216,13 +245,18 @@ private fun FontSizeOptionsButton(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun LineHeightOptionsButton(
+    folderYabaColor: YabaColor,
     selectedLineHeight: ReaderLineHeight,
     onSelectLineHeight: (ReaderLineHeight) -> Unit,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
     Box {
-        IconButton(onClick = { isExpanded = !isExpanded }) {
-            YabaIcon(name = "cursor-text")
+        IconButton(
+            onClick = { isExpanded = !isExpanded },
+            colors = bookmarkReaderToolbarIconButtonColors(folderYabaColor),
+            shapes = IconButtonDefaults.shapes(),
+        ) {
+            YabaIcon(name = "cursor-text", color = Color.White)
         }
         DropdownMenuPopup(
             expanded = isExpanded,

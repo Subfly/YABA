@@ -27,12 +27,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.webview.YabaWebView
 import dev.subfly.yaba.core.navigation.creation.HighlightCreationRoute
 import dev.subfly.yaba.ui.detail.bookmark.components.BookmarkDetailContentTopBar
-import dev.subfly.yaba.ui.detail.bookmark.components.bookmarkDetailIconButtonColors
+import dev.subfly.yaba.ui.detail.bookmark.util.bookmarkDetailIconButtonColors
 import dev.subfly.yaba.ui.detail.bookmark.components.bookmarkFolderAccentColor
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkContentDropdownMenu
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkReaderFloatingToolbar
@@ -144,6 +145,7 @@ internal fun LinkmarkContentLayout(
 
                 LinkmarkReaderFloatingToolbar(
                     modifier = Modifier.padding(bottom = 8.dp),
+                    color = folderAccent,
                     isVisible = isReaderToolbarVisible || hasSelection,
                     readerPreferences = state.readerPreferences,
                     hasSelection = hasSelection,
@@ -223,7 +225,7 @@ internal fun LinkmarkContentLayout(
                 .fillMaxWidth(),
         ) {
             BookmarkDetailContentTopBar(
-                folderYabaColor = folderAccent,
+                color = folderAccent,
                 onBack = navigator::removeLastOrNull,
                 onShowDetail = onShowDetail,
                 overflowMenu = {
@@ -232,7 +234,7 @@ internal fun LinkmarkContentLayout(
                             onClick = { isMenuExpanded = !isMenuExpanded },
                             colors = menuIconButtonColors,
                             shapes = IconButtonDefaults.shapes(),
-                        ) { YabaIcon(name = "more-horizontal-circle-02", color = folderAccent) }
+                        ) { YabaIcon(name = "more-horizontal-circle-02", color = Color.White) }
 
                         LinkmarkContentDropdownMenu(
                             expanded = isMenuExpanded,

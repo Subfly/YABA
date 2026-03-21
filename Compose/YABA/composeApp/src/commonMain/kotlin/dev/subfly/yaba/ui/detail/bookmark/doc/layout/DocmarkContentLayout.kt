@@ -27,12 +27,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.webview.YabaWebView
 import dev.subfly.yaba.core.navigation.creation.HighlightCreationRoute
 import dev.subfly.yaba.ui.detail.bookmark.components.BookmarkDetailContentTopBar
-import dev.subfly.yaba.ui.detail.bookmark.components.bookmarkDetailIconButtonColors
+import dev.subfly.yaba.ui.detail.bookmark.util.bookmarkDetailIconButtonColors
 import dev.subfly.yaba.ui.detail.bookmark.components.bookmarkFolderAccentColor
 import dev.subfly.yaba.ui.detail.bookmark.doc.components.DocmarkContentDropdownMenu
 import dev.subfly.yaba.ui.detail.bookmark.doc.components.DocmarkReaderFloatingToolbar
@@ -110,6 +111,7 @@ internal fun DocmarkContentLayout(
 
                 DocmarkReaderFloatingToolbar(
                     modifier = Modifier.padding(bottom = 8.dp),
+                    color = folderAccent,
                     isVisible = isToolbarVisible || hasSelection,
                     hasSelection = hasSelection,
                     canGoPrev = currentPage > 1,
@@ -199,7 +201,7 @@ internal fun DocmarkContentLayout(
                 .fillMaxWidth(),
         ) {
             BookmarkDetailContentTopBar(
-                folderYabaColor = folderAccent,
+                color = folderAccent,
                 onBack = navigator::removeLastOrNull,
                 onShowDetail = onShowDetail,
                 overflowMenu = {
@@ -208,7 +210,7 @@ internal fun DocmarkContentLayout(
                             onClick = { isMenuExpanded = !isMenuExpanded },
                             colors = menuIconButtonColors,
                             shapes = IconButtonDefaults.shapes(),
-                        ) { YabaIcon(name = "more-horizontal-circle-02", color = folderAccent) }
+                        ) { YabaIcon(name = "more-horizontal-circle-02", color = Color.White) }
 
                         DocmarkContentDropdownMenu(
                             expanded = isMenuExpanded,
