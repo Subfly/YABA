@@ -1,5 +1,8 @@
 package dev.subfly.yaba.core.navigation.creation
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -48,5 +51,23 @@ fun YabaCreationSheet(modifier: Modifier = Modifier) {
         isVisible = appState.showCreationContent,
         sheetState = sheetState,
         onDismissRequest = appStateManager::onHideCreationContent,
-    ) { YabaCreationNavigationView() }
+    ) {
+        Box(modifier = Modifier.wrapContentSize()) {
+            YabaCreationNavigationView()
+            // Hack to prevent clicking on creation content until the animation finishes
+            // Thanks Compose Bottom Sheets for giving us the opportunity to be creative
+            // for these type of solutions for the last 5 years...
+            if (sheetState.isAnimationRunning) {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .clickable(
+                            interactionSource = null,
+                            indication = null,
+                            onClick = {}
+                        )
+                )
+            }
+        }
+    }
 }
