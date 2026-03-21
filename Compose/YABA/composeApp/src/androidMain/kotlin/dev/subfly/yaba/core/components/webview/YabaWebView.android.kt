@@ -16,7 +16,7 @@ actual fun YabaWebViewHost(
     onHostEvent: (YabaWebHostEvent) -> Unit,
     onUrlClick: (String) -> Boolean,
     onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit,
-    onBridgeReady: (WebViewReaderBridge?) -> Unit,
+    onReaderBridgeReady: (WebViewReaderBridge?) -> Unit,
     onEditorBridgeReady: (WebViewEditorBridge?) -> Unit,
     onHighlightTap: (String) -> Unit,
 ) {
@@ -29,7 +29,7 @@ actual fun YabaWebViewHost(
                 onHostEvent = onHostEvent,
                 onUrlClick = onUrlClick,
                 onScrollDirectionChanged = onScrollDirectionChanged,
-                onBridgeReady = onBridgeReady,
+                onReaderBridgeReady = onReaderBridgeReady,
                 onHighlightTap = onHighlightTap,
             )
         is YabaWebFeature.Editor ->
@@ -63,7 +63,7 @@ actual fun YabaWebViewHost(
                 feature = f,
                 onHostEvent = onHostEvent,
                 onScrollDirectionChanged = onScrollDirectionChanged,
-                onBridgeReady = onBridgeReady,
+                onReaderBridgeReady = onReaderBridgeReady,
                 onHighlightTap = onHighlightTap,
             )
     }

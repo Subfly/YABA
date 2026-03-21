@@ -26,7 +26,7 @@ actual fun YabaWebViewHost(
     onHostEvent: (YabaWebHostEvent) -> Unit,
     onUrlClick: (String) -> Boolean,
     onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit,
-    onBridgeReady: (WebViewReaderBridge?) -> Unit,
+    onReaderBridgeReady: (WebViewReaderBridge?) -> Unit,
     onEditorBridgeReady: (WebViewEditorBridge?) -> Unit,
     onHighlightTap: (String) -> Unit,
 ) {
@@ -50,7 +50,7 @@ actual fun YabaWebViewHost(
     }
 
     LaunchedEffect(feature) {
-        onBridgeReady(null)
+        onReaderBridgeReady(null)
         onEditorBridgeReady(null)
         when (val f = feature) {
             is YabaWebFeature.HtmlConverter ->

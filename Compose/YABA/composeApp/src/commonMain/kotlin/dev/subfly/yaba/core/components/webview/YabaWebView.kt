@@ -12,7 +12,7 @@ import dev.subfly.yabacore.webview.YabaWebScrollDirection
  * Single entry WebView for readable HTML viewer, rich-text editor, HTML/PDF converter shells, and PDF viewer.
  *
  * @param onHostEvent Load state, reader metrics, and converter results
- * @param onBridgeReady Non-null when the reader bridge is available ([YabaWebFeature.ReadableViewer], [YabaWebFeature.PdfViewer])
+ * @param onReaderBridgeReady Non-null when the reader bridge is available ([YabaWebFeature.ReadableViewer], [YabaWebFeature.PdfViewer])
  */
 @Composable
 fun YabaWebView(
@@ -22,7 +22,7 @@ fun YabaWebView(
     onHostEvent: (YabaWebHostEvent) -> Unit = {},
     onUrlClick: (String) -> Boolean = { false },
     onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit = {},
-    onBridgeReady: (WebViewReaderBridge?) -> Unit = {},
+    onReaderBridgeReady: (WebViewReaderBridge?) -> Unit = {},
     onEditorBridgeReady: (WebViewEditorBridge?) -> Unit = {},
     onHighlightTap: (String) -> Unit = {},
 ) {
@@ -33,7 +33,7 @@ fun YabaWebView(
         onHostEvent = onHostEvent,
         onUrlClick = onUrlClick,
         onScrollDirectionChanged = onScrollDirectionChanged,
-        onBridgeReady = onBridgeReady,
+        onReaderBridgeReady = onReaderBridgeReady,
         onEditorBridgeReady = onEditorBridgeReady,
         onHighlightTap = onHighlightTap,
     )
@@ -47,7 +47,7 @@ internal expect fun YabaWebViewHost(
     onHostEvent: (YabaWebHostEvent) -> Unit,
     onUrlClick: (String) -> Boolean,
     onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit,
-    onBridgeReady: (WebViewReaderBridge?) -> Unit,
+    onReaderBridgeReady: (WebViewReaderBridge?) -> Unit,
     onEditorBridgeReady: (WebViewEditorBridge?) -> Unit,
     onHighlightTap: (String) -> Unit,
 )

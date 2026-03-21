@@ -2,6 +2,7 @@ package dev.subfly.yaba.core.components.webview
 
 import android.annotation.SuppressLint
 import android.graphics.Color
+import android.util.Log
 import android.view.MotionEvent
 import android.view.ViewConfiguration
 import android.view.ViewGroup
@@ -21,7 +22,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
-import android.util.Log
 import dev.subfly.yabacore.webview.WebLoadState
 import dev.subfly.yabacore.webview.WebViewEditorBridge
 import dev.subfly.yabacore.webview.WebViewReaderBridge
@@ -29,9 +29,9 @@ import dev.subfly.yabacore.webview.YabaWebBridgeScripts
 import dev.subfly.yabacore.webview.YabaWebFeature
 import dev.subfly.yabacore.webview.YabaWebHostEvent
 import dev.subfly.yabacore.webview.YabaWebScrollDirection
-import kotlin.math.abs
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import kotlin.math.abs
 
 @SuppressLint("SetJavaScriptEnabled", "ClickableViewAccessibility")
 @Composable
@@ -42,14 +42,14 @@ internal fun YabaReadableViewerFeatureHost(
     onHostEvent: (YabaWebHostEvent) -> Unit,
     onUrlClick: (String) -> Boolean,
     onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit,
-    onBridgeReady: (WebViewReaderBridge?) -> Unit,
+    onReaderBridgeReady: (WebViewReaderBridge?) -> Unit,
     onHighlightTap: (String) -> Unit,
 ) {
     val context = LocalContext.current
 
     val onHostEventState = rememberUpdatedState(onHostEvent)
     val onScrollDirectionChangedState = rememberUpdatedState(onScrollDirectionChanged)
-    val onBridgeReadyState = rememberUpdatedState(onBridgeReady)
+    val onBridgeReadyState = rememberUpdatedState(onReaderBridgeReady)
     var isPageReady by remember { mutableStateOf(false) }
     var rendererCrashed by remember { mutableStateOf(false) }
     var activeBridge by remember { mutableStateOf<WebViewReaderBridge?>(null) }
@@ -592,13 +592,13 @@ internal fun YabaPdfViewerFeatureHost(
     feature: YabaWebFeature.PdfViewer,
     onHostEvent: (YabaWebHostEvent) -> Unit,
     onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit,
-    onBridgeReady: (WebViewReaderBridge?) -> Unit,
+    onReaderBridgeReady: (WebViewReaderBridge?) -> Unit,
     onHighlightTap: (String) -> Unit,
 ) {
     val context = LocalContext.current
     val onHostEventState = rememberUpdatedState(onHostEvent)
     val onScrollDirectionChangedState = rememberUpdatedState(onScrollDirectionChanged)
-    val onBridgeReadyState = rememberUpdatedState(onBridgeReady)
+    val onReaderBridgeReadyState = rememberUpdatedState(onReaderBridgeReady)
     var isPageReady by remember { mutableStateOf(false) }
     var rendererCrashed by remember { mutableStateOf(false) }
     var activeBridge by remember { mutableStateOf<WebViewReaderBridge?>(null) }
@@ -652,24 +652,24 @@ internal fun YabaPdfViewerFeatureHost(
     DisposableEffect(Unit) {
         onDispose {
             activeBridge = null
-            onBridgeReadyState.value(null)
+            onReaderBridgeReadyState.value(null)
         }
     }
 
     LaunchedEffect(rendererCrashed) {
         if (rendererCrashed) {
             activeBridge = null
-            onBridgeReadyState.value(null)
+            onReaderBridgeReadyState.value(null)
         }
     }
 
     LaunchedEffect(isPageReady) {
         if (!isPageReady) {
             activeBridge = null
-            onBridgeReadyState.value(null)
+            onReaderBridgeReadyState.value(null)
             return@LaunchedEffect
         }
-        val ready = waitForBridgeReady(webView, dev.subfly.yabacore.webview.YabaWebBridgeScripts.PDF_BRIDGE_READY)
+        val ready = waitForBridgeReady(webView, YabaWebBridgeScripts.PDF_BRIDGE_READY)
         if (!ready) {
             Log.w(YABA_WEBVIEW_LOG_TAG, "PDF bridge not ready before timeout")
             return@LaunchedEffect
@@ -677,7 +677,7 @@ internal fun YabaPdfViewerFeatureHost(
         onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.BridgeReady))
         val bridge = PdfWebViewReaderBridge(webView)
         activeBridge = bridge
-        onBridgeReadyState.value(bridge)
+        onReaderBridgeReadyState.value(bridge)
     }
 
     LaunchedEffect(isPageReady, feature.pdfUrl) {
@@ -697,7 +697,7 @@ internal fun YabaPdfViewerFeatureHost(
 
     LaunchedEffect(isPageReady, feature.highlights) {
         if (!isPageReady || rendererCrashed) return@LaunchedEffect
-        if (!waitForBridgeReady(webView, dev.subfly.yabacore.webview.YabaWebBridgeScripts.PDF_BRIDGE_READY_LOOSE)) return@LaunchedEffect
+        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.PDF_BRIDGE_READY_LOOSE)) return@LaunchedEffect
         PdfWebViewReaderBridge(webView).setHighlights(feature.highlights)
     }
 
@@ -770,7 +770,7 @@ internal fun YabaPdfViewerFeatureHost(
             if (lastLoadedUrl != loadUrl) {
                 isPageReady = false
                 activeBridge = null
-                onBridgeReadyState.value(null)
+                onReaderBridgeReadyState.value(null)
                 webView.loadUrl(loadUrl)
                 webView.tag = loadUrl
             }

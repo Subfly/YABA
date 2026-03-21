@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -129,6 +131,10 @@ internal fun NotemarkContentLayout(
         Box(modifier = Modifier.fillMaxSize()) {
             if (ready) {
                 NotemarkEditorFloatingToolbar(
+                    modifier = Modifier
+                        .padding(bottom = 8.dp)
+                        .navigationBarsPadding()
+                        .imePadding(),
                     color = folderAccent,
                     isVisible = isToolbarVisible || hasSelection,
                     saveMode = state.saveMode,
@@ -177,7 +183,7 @@ internal fun NotemarkContentLayout(
                         if (direction == YabaWebScrollDirection.Down) isToolbarVisible = false
                         if (direction == YabaWebScrollDirection.Up) isToolbarVisible = true
                     },
-                    onBridgeReady = {},
+                    onReaderBridgeReady = {},
                     onEditorBridgeReady = { editorBridge = it },
                     onHighlightTap = { highlightId ->
                         val bookmarkId = state.bookmark?.id ?: return@YabaWebView

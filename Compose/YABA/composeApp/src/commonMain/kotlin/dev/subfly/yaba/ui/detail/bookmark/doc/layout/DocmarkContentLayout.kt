@@ -169,7 +169,7 @@ internal fun DocmarkContentLayout(
                         if (direction == YabaWebScrollDirection.Down) isToolbarVisible = false
                         if (direction == YabaWebScrollDirection.Up) isToolbarVisible = true
                     },
-                    onBridgeReady = { bridge -> readerBridge = bridge },
+                    onReaderBridgeReady = { bridge -> readerBridge = bridge },
                     onHighlightTap = { highlightId ->
                         val bookmarkId = state.bookmark?.id ?: return@YabaWebView
                         creationNavigator.add(

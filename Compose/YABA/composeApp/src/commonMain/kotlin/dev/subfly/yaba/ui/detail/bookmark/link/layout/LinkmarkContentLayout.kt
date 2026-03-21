@@ -192,7 +192,7 @@ internal fun LinkmarkContentLayout(
                         if (direction == YabaWebScrollDirection.Down) isReaderToolbarVisible = false
                         if (direction == YabaWebScrollDirection.Up) isReaderToolbarVisible = true
                     },
-                    onBridgeReady = { bridge -> readerBridge = bridge },
+                    onReaderBridgeReady = { bridge -> readerBridge = bridge },
                     onHighlightTap = { highlightId ->
                         val bookmarkId = state.bookmark?.id ?: return@YabaWebView
                         creationNavigator.add(
