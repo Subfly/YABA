@@ -15,10 +15,14 @@ import dev.subfly.yabacore.notifications.NotificationManager
 import dev.subfly.yabacore.state.base.BaseStateMachine
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DocmarkDetailStateMachine : BaseStateMachine<DocmarkDetailUIState, DocmarkDetailEvent>(
@@ -51,6 +55,30 @@ class DocmarkDetailStateMachine : BaseStateMachine<DocmarkDetailUIState, Docmark
         launch {
             val reminderDate = NotificationManager.getPendingReminderDate(bookmarkId)
             updateState { it.copy(reminderDateEpochMillis = reminderDate) }
+        }
+
+        /**
+         * New docmarks may have no readable rows after creation-time readable save was removed.
+         * Highlight creation still needs a [ReadableVersionEntity] id; ensure a minimal placeholder once.
+         */
+        launch {
+            bookmarkIdFlow.flatMapLatest { id ->
+                if (id == null) {
+                    emptyFlow()
+                } else {
+                    ReadableContentManager.observeReadableVersions(id)
+                        .map { it.size }
+                        .distinctUntilChanged()
+                        .map { size -> Pair(id, size) }
+                }
+            }.collect { (id, size) ->
+                if (size == 0) {
+                    val pdfPath = DocmarkManager.resolvePdfAbsolutePath(id)
+                    if (pdfPath.isNullOrBlank().not()) {
+                        ReadableContentManager.ensurePdfDocmarkHighlightReadableVersionIfNeeded(id)
+                    }
+                }
+            }
         }
 
         launch {

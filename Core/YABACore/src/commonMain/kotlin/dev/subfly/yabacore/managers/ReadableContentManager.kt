@@ -46,6 +46,26 @@ object ReadableContentManager {
     }
 
     /**
+     * PDF highlights still persist a [HighlightEntity.readableVersionId] FK to [ReadableVersionEntity].
+     * Docmarks that never received a readable snapshot therefore have no version row and the UI cannot
+     * resolve a version id for highlight selection drafts (see [HighlightEntity.readableVersionId]).
+     * Creates a single minimal HTML placeholder version when the bookmark has none yet.
+     */
+    fun ensurePdfDocmarkHighlightReadableVersionIfNeeded(bookmarkId: String) {
+        CoreOperationQueue.queue("EnsurePdfReadable:$bookmarkId") {
+            val existing = readableVersionDao.getByBookmarkId(bookmarkId)
+            if (existing.isNotEmpty()) return@queue
+            saveReadableContentInternal(
+                bookmarkId = bookmarkId,
+                readable = ReadableUnfurl(
+                    html = "<article></article>",
+                    assets = emptyList(),
+                ),
+            )
+        }
+    }
+
+    /**
      * Writes or overwrites the readable mirror used for highlight anchoring on notemarks (document JSON).
      */
     suspend fun syncNotemarkReadableMirror(
