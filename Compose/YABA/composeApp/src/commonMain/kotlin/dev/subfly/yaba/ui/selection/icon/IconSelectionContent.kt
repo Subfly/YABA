@@ -1,7 +1,9 @@
 package dev.subfly.yaba.ui.selection.icon
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -18,6 +20,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.LinearWavyProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -57,6 +60,8 @@ fun IconSelectionContent(
         mutableStateOf(currentSelectedIcon)
     }
 
+    val isLoadingIcons by IconCatalog.isLoadingIconsFlow.collectAsState()
+
     DisposableEffect(Unit) {
         onDispose { IconCatalog.resetIcons() }
     }
@@ -70,6 +75,7 @@ fun IconSelectionContent(
         IconSelectionTopBar(
             modifier = Modifier.padding(horizontal = 8.dp),
             title = selectedSubcategory.name,
+            isLoading = isLoadingIcons,
             onDone = {
                 resultStore.setResult(
                     key = ResultStoreKeys.SELECTED_ICON,
@@ -103,27 +109,44 @@ fun IconSelectionContent(
 private fun IconSelectionTopBar(
     modifier: Modifier = Modifier,
     title: String,
+    isLoading: Boolean,
     onDone: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    CenterAlignedTopAppBar(
-        modifier = modifier,
-        colors = TopAppBarDefaults.topAppBarColors().copy(
-            containerColor = Color.Transparent,
-        ),
-        title = { Text(text = title) },
-        navigationIcon = {
-            IconButton(onClick = onDismiss) {
-                YabaIcon(name = "arrow-left-01")
+    Column(modifier = modifier.fillMaxWidth()) {
+        CenterAlignedTopAppBar(
+            modifier = Modifier.fillMaxWidth(),
+            colors = TopAppBarDefaults.topAppBarColors().copy(
+                containerColor = Color.Transparent,
+            ),
+            title = { Text(text = title) },
+            navigationIcon = {
+                IconButton(onClick = onDismiss) {
+                    YabaIcon(name = "arrow-left-01")
+                }
+            },
+            actions = {
+                TextButton(
+                    shapes = ButtonDefaults.shapes(),
+                    onClick = onDone,
+                ) { Text(text = stringResource(Res.string.done)) }
             }
-        },
-        actions = {
-            TextButton(
-                shapes = ButtonDefaults.shapes(),
-                onClick = onDone,
-            ) { Text(text = stringResource(Res.string.done)) }
+        )
+        AnimatedContent(isLoading) { loading ->
+            if (loading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 4.dp)
+                        .background(color = MaterialTheme.colorScheme.surface),
+                ) {
+                    LinearWavyProgressIndicator(modifier = Modifier.fillMaxWidth())
+                }
+            } else {
+                Box(modifier = Modifier.fillMaxWidth())
+            }
         }
-    )
+    }
 }
 
 @Composable

@@ -1,12 +1,10 @@
 package dev.subfly.yabacore.icons
 
 import dev.subfly.yabacore.database.preload.readResourceText
-import dev.subfly.yabacore.icons.IconCatalog.categoriesFlow
-import dev.subfly.yabacore.icons.IconCatalog.iconsFlow
-import dev.subfly.yabacore.icons.IconCatalog.loadIcons
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,6 +17,7 @@ import kotlinx.serialization.json.Json
  * Icon catalog that exposes two flows:
  * - [categoriesFlow]: List of icon categories (loaded on init)
  * - [iconsFlow]: List of icons for the currently selected subcategory
+ * - [isLoadingIconsFlow]: True while a [loadIcons] request is in progress (file read / decode)
  *
  * Call [loadIcons] with a subcategory ID to populate [iconsFlow].
  */
@@ -28,6 +27,7 @@ object IconCatalog {
 
     private val json = Json { ignoreUnknownKeys = true }
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private var loadIconsJob: Job? = null
 
     // Cache for already-loaded subcategory files
     private val subcategoryCache = mutableMapOf<String, IconSubcategoryFile>()
@@ -41,39 +41,51 @@ object IconCatalog {
     private val _icons = MutableStateFlow<List<IconItem>>(emptyList())
     val iconsFlow: StateFlow<List<IconItem>> = _icons.asStateFlow()
 
+    private val _isLoadingIcons = MutableStateFlow(false)
+    val isLoadingIconsFlow: StateFlow<Boolean> = _isLoadingIcons.asStateFlow()
+
     init {
         loadHeader()
     }
 
     /** Load icons for the given [subcategoryId]. Updates [iconsFlow] when complete. */
     fun loadIcons(subcategoryId: String) {
-        // Clear current icons immediately (UI will show loading)
+        loadIconsJob?.cancel()
         _icons.update { emptyList() }
+        _isLoadingIcons.update { true }
 
-        scope.launch {
-            // Check cache first
-            val cached = subcategoryCache[subcategoryId]
-            if (cached != null) {
-                _icons.update { cached.icons }
-                return@launch
+        loadIconsJob = scope.launch {
+            val currentJob = coroutineContext[Job]!!
+            try {
+                val cached = subcategoryCache[subcategoryId]
+                if (cached != null) {
+                    _icons.update { cached.icons }
+                    return@launch
+                }
+
+                val target = header?.categories?.flatMap { it.subcategories }?.firstOrNull {
+                    it.id == subcategoryId
+                } ?: return@launch
+
+                val path = "$METADATA_DIR/${target.filename}"
+                val raw = readResourceText(path)
+                val parsed = json.decodeFromString<IconSubcategoryFile>(raw)
+                subcategoryCache[subcategoryId] = parsed
+                _icons.update { parsed.icons }
+            } finally {
+                if (loadIconsJob === currentJob) {
+                    _isLoadingIcons.update { false }
+                }
             }
-
-            // Find the subcategory in the header to get its filename
-            val target = header?.categories?.flatMap { it.subcategories }?.firstOrNull {
-                it.id == subcategoryId
-            } ?: return@launch
-
-            val path = "$METADATA_DIR/${target.filename}"
-            val raw = readResourceText(path)
-            val parsed = json.decodeFromString<IconSubcategoryFile>(raw)
-            subcategoryCache[subcategoryId] = parsed
-            _icons.update { parsed.icons }
         }
     }
 
     /** Clear current icons (e.g., when navigating back to categories). */
     fun resetIcons() {
+        loadIconsJob?.cancel()
+        loadIconsJob = null
         _icons.update { emptyList() }
+        _isLoadingIcons.update { false }
     }
 
     private fun loadHeader() {
