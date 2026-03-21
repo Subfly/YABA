@@ -42,6 +42,7 @@ import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.ResultStoreKeys
+import dev.subfly.yaba.util.SharedPdfData
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.model.utils.FolderSelectionMode
@@ -107,6 +108,18 @@ fun DocmarkCreationContent(bookmarkId: String?) {
         resultStore.getResult<List<TagUiModel>>(ResultStoreKeys.SELECTED_TAGS)?.let { tags ->
             vm.onEvent(DocmarkCreationEvent.OnSelectTags(tags))
             resultStore.removeResult(ResultStoreKeys.SELECTED_TAGS)
+        }
+    }
+
+    LaunchedEffect(resultStore.getResult(ResultStoreKeys.SHARED_PDF_DATA)) {
+        resultStore.getResult<SharedPdfData>(ResultStoreKeys.SHARED_PDF_DATA)?.let { pdfData ->
+            vm.onEvent(
+                DocmarkCreationEvent.OnPdfFromShare(
+                    bytes = pdfData.bytes,
+                    sourceFileName = pdfData.sourceFileName,
+                )
+            )
+            resultStore.removeResult(ResultStoreKeys.SHARED_PDF_DATA)
         }
     }
 

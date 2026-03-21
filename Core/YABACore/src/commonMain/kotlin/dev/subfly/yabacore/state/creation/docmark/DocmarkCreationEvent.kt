@@ -14,6 +14,19 @@ sealed class DocmarkCreationEvent {
 
     data object OnClearPdf : DocmarkCreationEvent()
 
+    data class OnPdfFromShare(
+        val bytes: ByteArray,
+        val sourceFileName: String?,
+    ) : DocmarkCreationEvent() {
+        override fun equals(other: Any?): Boolean =
+            other is OnPdfFromShare &&
+                    bytes.contentEquals(other.bytes) &&
+                    sourceFileName == other.sourceFileName
+
+        override fun hashCode(): Int =
+            bytes.contentHashCode() * 31 + (sourceFileName?.hashCode() ?: 0)
+    }
+
     data object OnCyclePreviewAppearance : DocmarkCreationEvent()
 
     data class OnSetGeneratedPreview(

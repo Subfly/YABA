@@ -25,12 +25,14 @@ class DocmarkCreationStateMachine :
         initialState = DocmarkCreationUIState(),
     ) {
     private var isInitialized = false
-    private val preferencesStore get() = SettingsStores.userPreferences
+    private val preferencesStore
+        get() = SettingsStores.userPreferences
 
     override fun onEvent(event: DocmarkCreationEvent) {
         when (event) {
             is DocmarkCreationEvent.OnInit -> onInit(event)
             DocmarkCreationEvent.OnPickPdf -> onPickPdf()
+            is DocmarkCreationEvent.OnPdfFromShare -> onPdfFromShare(event)
             DocmarkCreationEvent.OnClearPdf -> onClearPdf()
             DocmarkCreationEvent.OnCyclePreviewAppearance -> onCyclePreviewAppearance()
             is DocmarkCreationEvent.OnSetGeneratedPreview -> onSetGeneratedPreview(event)
@@ -112,7 +114,7 @@ class DocmarkCreationStateMachine :
                     it.copy(
                         pdfBytes = bytes,
                         sourceFileName = sourceName,
-                        label = if (it.label.isBlank()) sourceName.substringBeforeLast('.') else it.label,
+                        label = it.label.ifBlank { sourceName.substringBeforeLast('.') },
                         isLoading = false,
                         error = null,
                     )
@@ -125,6 +127,29 @@ class DocmarkCreationStateMachine :
                     )
                 }
             }
+        }
+    }
+
+    private fun onPdfFromShare(event: DocmarkCreationEvent.OnPdfFromShare) {
+        if (currentState().isInEditMode) return
+        val sourceFileName = event.sourceFileName?.trim()?.ifBlank { null }
+        updateState { state ->
+            val autoLabel =
+                if (state.label.isBlank() && sourceFileName != null) {
+                    sourceFileName.substringBeforeLast('.', sourceFileName)
+                } else {
+                    state.label
+                }
+            state.copy(
+                pdfBytes = event.bytes,
+                sourceFileName = sourceFileName,
+                label = autoLabel,
+                previewImageBytes = null,
+                internalReadableMarkdown = null,
+                previewImageExtension = "png",
+                isLoading = false,
+                error = null,
+            )
         }
     }
 

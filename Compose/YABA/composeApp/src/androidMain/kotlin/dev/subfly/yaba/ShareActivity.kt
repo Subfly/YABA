@@ -4,7 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import java.io.InputStream
+import android.provider.OpenableColumns
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -25,11 +25,10 @@ import dev.subfly.yaba.core.app.AppVM
 import dev.subfly.yaba.core.components.toast.YabaToastHost
 import dev.subfly.yaba.core.navigation.alert.DeletionVM
 import dev.subfly.yaba.core.navigation.creation.BookmarkCreationRoute
+import dev.subfly.yaba.core.navigation.creation.DocmarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.EmptyCretionRoute
 import dev.subfly.yaba.core.navigation.creation.ImagemarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.LinkmarkCreationRoute
-import dev.subfly.yaba.util.ResultStoreKeys
-import dev.subfly.yaba.util.SharedImageData
 import dev.subfly.yaba.core.navigation.creation.YabaCreationSheet
 import dev.subfly.yaba.core.navigation.creation.creationNavigationConfig
 import dev.subfly.yaba.core.navigation.creation.rememberResultStore
@@ -39,9 +38,13 @@ import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalDeletionDialogManager
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.LocalUserPreferences
+import dev.subfly.yaba.util.ResultStoreKeys
+import dev.subfly.yaba.util.SharedImageData
+import dev.subfly.yaba.util.SharedPdfData
 import dev.subfly.yabacore.common.CoreRuntime
 import dev.subfly.yabacore.preferences.SettingsStores
 import dev.subfly.yabacore.preferences.UserPreferences
+import java.io.InputStream
 
 class ShareActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,23 +75,35 @@ class ShareActivity : ComponentActivity() {
                 if (intent.hasExtra(Intent.EXTRA_STREAM)) {
                     val uri =
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            intent.getParcelableExtra(
-                                Intent.EXTRA_STREAM,
-                                Uri::class.java
-                            )
+                            intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
                         } else {
                             @Suppress("DEPRECATION")
                             intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
                         }
                     if (uri != null) {
-                        // For images, read bytes immediately so we can pass to Imagemark creation
-                        if (type != null && type.startsWith("image/")) {
-                            readImageBytesFromUri(uri, type)?.let { (bytes, ext) ->
+                        val resolvedType = resolveMimeType(uri = uri, declaredType = type)
+
+                        if (isImageMimeType(resolvedType)) {
+                            readImageBytesFromUri(uri, resolvedType)?.let { (bytes, ext) ->
                                 return SharedContent.ImageBytes(bytes, ext)
                             }
                             return null
                         }
-                        return SharedContent.Uri(uri, type)
+
+                        if (isPdfMimeType(resolvedType)) {
+                            readPdfBytesFromUri(
+                                uri = uri,
+                                declaredType = resolvedType
+                            )?.let { pdfData ->
+                                return SharedContent.PdfBytes(
+                                    bytes = pdfData.bytes,
+                                    sourceFileName = pdfData.sourceFileName,
+                                )
+                            }
+                            return null
+                        }
+
+                        return null
                     }
                 }
 
@@ -103,26 +118,26 @@ class ShareActivity : ComponentActivity() {
             Intent.ACTION_SEND_MULTIPLE -> {
                 val uris =
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        intent.getParcelableArrayListExtra(
-                            Intent.EXTRA_STREAM,
-                            Uri::class.java
-                        )
+                        intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM, Uri::class.java)
                     } else {
                         @Suppress("DEPRECATION")
                         intent.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM)
                     }
                 if (uris.isNullOrEmpty().not()) {
-                    val firstUri = uris[0]
-                    // For images, take first and read bytes (same as single share)
-                    if (type != null && type.startsWith("image/")) {
-                        readImageBytesFromUri(firstUri, type)?.let { (bytes, ext) ->
-                            return SharedContent.ImageBytes(bytes, ext)
-                        }
-                        return null
+                    val pdfUri = uris.firstOrNull { uri ->
+                        isPdfMimeType(resolveMimeType(uri = uri, declaredType = type))
                     }
-                    // For PDF, reject multiple
-                    if (type == "application/pdf") return null
-                    return SharedContent.Uri(firstUri, type)
+
+                    if (pdfUri == null) return null
+
+                    readPdfBytesFromUri(uri = pdfUri, declaredType = type)?.let { pdfData ->
+                        return SharedContent.PdfBytes(
+                            bytes = pdfData.bytes,
+                            sourceFileName = pdfData.sourceFileName,
+                        )
+                    }
+
+                    return null
                 }
             }
         }
@@ -130,16 +145,67 @@ class ShareActivity : ComponentActivity() {
         return null
     }
 
-    private fun readImageBytesFromUri(uri: Uri, mimeType: String?): Pair<ByteArray, String>? {
+    private fun isImageMimeType(mimeType: String?): Boolean {
+        return mimeType != null && mimeType.lowercase().startsWith("image/")
+    }
+
+    private fun isPdfMimeType(mimeType: String?): Boolean {
+        return mimeType != null && mimeType.lowercase() == "application/pdf"
+    }
+
+    private fun resolveMimeType(uri: Uri, declaredType: String?): String? {
+        val trimmedType =
+            declaredType
+                ?.trim()
+                ?.lowercase()
+                ?.takeIf { it.isNotBlank() && it != "*/*" }
+        if (trimmedType != null) return trimmedType
+
+        return runCatching { contentResolver.getType(uri) }.getOrNull()
+    }
+
+    private fun readPdfBytesFromUri(uri: Uri, declaredType: String?): SharedPdfData? {
+        val mimeType = resolveMimeType(uri = uri, declaredType = declaredType)
+        if (isPdfMimeType(mimeType).not()) return null
+
+        val bytes = readBytesFromUri(uri) ?: return null
+        val sourceFileName = getFileNameFromUri(uri)
+
+        return SharedPdfData(bytes = bytes, sourceFileName = sourceFileName)
+    }
+
+    private fun readBytesFromUri(uri: Uri): ByteArray? {
         return try {
             contentResolver.openInputStream(uri)?.use { stream: InputStream ->
-                val bytes = stream.readBytes()
-                val ext = mimeType?.substringAfterLast("/")?.lowercase()?.takeIf { it.isNotBlank() }
-                    ?: "jpeg"
-                Pair(bytes, if (ext == "jpeg" || ext == "jpg") "jpeg" else ext)
+                stream.readBytes()
             }
         } catch (_: Exception) {
             null
+        }
+    }
+
+    private fun getFileNameFromUri(uri: Uri): String? {
+        val projectedColumns = arrayOf(OpenableColumns.DISPLAY_NAME)
+        return runCatching {
+            contentResolver.query(uri, projectedColumns, null, null, null)?.use { cursor ->
+                val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (index >= 0 && cursor.moveToFirst()) {
+                    cursor.getString(index)
+                } else {
+                    null
+                }
+            }
+        }.getOrNull()?.takeIf { it.isNullOrBlank().not() } ?: uri.lastPathSegment
+            ?.substringAfterLast('/')
+            ?.takeIf { it.isNotBlank() }
+    }
+
+    private fun readImageBytesFromUri(uri: Uri, mimeType: String?): Pair<ByteArray, String>? {
+        return readBytesFromUri(uri)?.let { bytes ->
+            val ext =
+                mimeType?.substringAfterLast("/")?.lowercase()?.takeIf { it.isNotBlank() }
+                    ?: "jpeg"
+            Pair(bytes, if (ext == "jpeg" || ext == "jpg") "jpeg" else ext)
         }
     }
 }
@@ -149,9 +215,21 @@ sealed class SharedContent {
     data class Uri(val uri: android.net.Uri, val mimeType: String?) : SharedContent()
     data class ImageBytes(val bytes: ByteArray, val extension: String) : SharedContent() {
         override fun equals(other: Any?): Boolean =
-            other is ImageBytes && bytes.contentEquals(other.bytes) && extension == other.extension
+            other is ImageBytes &&
+                    bytes.contentEquals(other.bytes) &&
+                    extension == other.extension
 
         override fun hashCode(): Int = bytes.contentHashCode() * 31 + extension.hashCode()
+    }
+
+    data class PdfBytes(val bytes: ByteArray, val sourceFileName: String?) : SharedContent() {
+        override fun equals(other: Any?): Boolean =
+            other is PdfBytes &&
+                    bytes.contentEquals(other.bytes) &&
+                    sourceFileName == other.sourceFileName
+
+        override fun hashCode(): Int =
+            bytes.contentHashCode() * 31 + (sourceFileName?.hashCode() ?: 0)
     }
 }
 
@@ -171,6 +249,7 @@ private fun handleSharedContent(
     sharedContent: SharedContent?,
     onNavigateToLinkmark: (String) -> Unit,
     onNavigateToImagemark: (SharedImageData) -> Unit,
+    onNavigateToDocmark: (SharedPdfData) -> Unit,
     onNavigateToBookmarkSelection: () -> Unit,
     onShowCreation: () -> Unit,
     onDismiss: () -> Unit,
@@ -183,6 +262,12 @@ private fun handleSharedContent(
     // Image bytes from share - go directly to Imagemark creation
     if (sharedContent is SharedContent.ImageBytes) {
         onNavigateToImagemark(SharedImageData(sharedContent.bytes, sharedContent.extension))
+        onShowCreation()
+        return
+    }
+
+    if (sharedContent is SharedContent.PdfBytes) {
+        onNavigateToDocmark(SharedPdfData(sharedContent.bytes, sharedContent.sourceFileName))
         onShowCreation()
         return
     }
@@ -212,6 +297,7 @@ private fun handleSharedContent(
             }
 
             is SharedContent.ImageBytes -> null
+            is SharedContent.PdfBytes -> null
         }
 
     // Navigate to appropriate route
@@ -232,19 +318,15 @@ private fun ShareActivityContent(
     sharedContent: SharedContent?,
     onDismiss: () -> Unit,
 ) {
-    val userPreferences by SettingsStores
-        .userPreferences
-        .preferencesFlow
-        .collectAsState(UserPreferences())
+    val userPreferences by
+    SettingsStores.userPreferences.preferencesFlow.collectAsState(UserPreferences())
 
     val appVM = viewModel { AppVM() }
     val deletionVM = viewModel { DeletionVM() }
 
     val navigationResultStore = rememberResultStore()
-    val creationNavigator = rememberNavBackStack(
-        configuration = creationNavigationConfig,
-        EmptyCretionRoute
-    )
+    val creationNavigator =
+        rememberNavBackStack(configuration = creationNavigationConfig, EmptyCretionRoute)
 
     CompositionLocalProvider(
         LocalUserPreferences provides userPreferences,
@@ -268,8 +350,18 @@ private fun ShareActivityContent(
                         )
                     },
                     onNavigateToImagemark = { imageData ->
-                        navigationResultStore.setResult(ResultStoreKeys.SHARED_IMAGE_DATA, imageData)
+                        navigationResultStore.setResult(
+                            ResultStoreKeys.SHARED_IMAGE_DATA,
+                            imageData
+                        )
                         creationNavigator.add(ImagemarkCreationRoute(bookmarkId = null))
+                    },
+                    onNavigateToDocmark = { pdfData ->
+                        navigationResultStore.setResult(
+                            ResultStoreKeys.SHARED_PDF_DATA,
+                            pdfData
+                        )
+                        creationNavigator.add(DocmarkCreationRoute(bookmarkId = null))
                     },
                     onNavigateToBookmarkSelection = {
                         creationNavigator.add(BookmarkCreationRoute())
