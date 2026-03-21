@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -14,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material3.AppBarWithSearch
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.DropdownMenuGroup
 import androidx.compose.material3.DropdownMenuItem
@@ -22,6 +22,8 @@ import androidx.compose.material3.DropdownMenuPopup
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonColors
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
@@ -29,9 +31,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,17 +53,21 @@ import dev.subfly.yaba.core.components.item.bookmark.BookmarkItemView
 import dev.subfly.yaba.core.navigation.alert.DeletionState
 import dev.subfly.yaba.core.navigation.alert.DeletionType
 import dev.subfly.yaba.core.navigation.creation.BookmarkCreationRoute
-import dev.subfly.yaba.util.ResultStoreKeys
 import dev.subfly.yaba.core.navigation.main.DocDetailRoute
 import dev.subfly.yaba.core.navigation.main.ImageDetailRoute
 import dev.subfly.yaba.core.navigation.main.LinkDetailRoute
 import dev.subfly.yaba.core.navigation.main.NoteDetailRoute
+import dev.subfly.yaba.ui.detail.composables.CollectionDetailSearchTopBar
+import dev.subfly.yaba.ui.detail.composables.collectionDetailAccentColor
+import dev.subfly.yaba.ui.detail.composables.collectionDetailIconButtonColors
+import dev.subfly.yaba.ui.detail.composables.collectionDetailSearchFieldTint
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalDeletionDialogManager
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.LocalUserPreferences
+import dev.subfly.yaba.util.ResultStoreKeys
 import dev.subfly.yaba.util.rememberShareHandler
 import dev.subfly.yaba.util.uiTitle
 import dev.subfly.yaba.util.yabaPointerEventSpy
@@ -67,8 +75,6 @@ import dev.subfly.yabacore.filesystem.access.YabaFileAccessor
 import dev.subfly.yabacore.managers.LinkmarkManager
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.BookmarkKind
-import kotlinx.coroutines.launch
-import androidx.compose.runtime.rememberCoroutineScope
 import dev.subfly.yabacore.model.utils.CardImageSizing
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
@@ -79,6 +85,7 @@ import dev.subfly.yabacore.state.detail.tag.TagDetailUIState
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.layout.ContentLayoutConfig
 import dev.subfly.yabacore.ui.layout.YabaBookmarkLayout
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.bookmark_selection_cancel
@@ -107,15 +114,10 @@ fun TagDetailView(
 ) {
     val userPreferences = LocalUserPreferences.current
     val navigator = LocalContentNavigator.current
-    val creationNavigator = LocalCreationContentNavigator.current
-    val appStateManager = LocalAppStateManager.current
-    val resultStore = LocalResultStore.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
     val shareUrl = rememberShareHandler()
     val shareScope = rememberCoroutineScope()
-
-    val searchBarState = rememberSearchBarState()
 
     var searchHasFocus by remember { mutableStateOf(false) }
 
@@ -126,6 +128,8 @@ fun TagDetailView(
         vm.onEvent(TagDetailEvent.OnInit(tagId = tagId))
     }
 
+    val color = remember(state.tag) { collectionDetailAccentColor(state.tag?.color) }
+
     Scaffold(
         modifier = modifier.yabaPointerEventSpy(
             onInteraction = {
@@ -135,134 +139,128 @@ fun TagDetailView(
                 }
             }
         ),
-        topBar = {
-            AppBarWithSearch(
-                modifier = Modifier.onFocusChanged { focusState ->
-                    searchHasFocus = focusState.hasFocus
-                },
-                scrollBehavior = SearchBarDefaults.enterAlwaysSearchBarScrollBehavior(),
-                state = searchBarState,
-                inputField = {
-                    SearchBarDefaults.InputField(
-                        query = state.query,
-                        expanded = false,
-                        onExpandedChange = {},
-                        onQueryChange = { newQuery ->
+    ) { paddings ->
+        when {
+            state.isLoading && state.bookmarks.isEmpty() -> {
+                Column(Modifier.fillMaxSize().padding(paddings)) {
+                    TagSearchToolbar(
+                        state = state,
+                        color = color,
+                        onFocusChanged = { searchHasFocus = it },
+                        onQueryChanged = { newQuery ->
                             vm.onEvent(TagDetailEvent.OnChangeQuery(query = newQuery))
                         },
                         onSearch = { finalQuery ->
                             vm.onEvent(TagDetailEvent.OnChangeQuery(query = finalQuery))
                         },
-                        leadingIcon = { YabaIcon(name = "search-01") },
-                        trailingIcon = {
-                            AnimatedVisibility(
-                                visible = state.query.isNotEmpty(),
-                                enter = fadeIn() + scaleIn(),
-                                exit = fadeOut() + scaleOut(),
-                            ) {
-                                IconButton(
-                                    onClick = { vm.onEvent(TagDetailEvent.OnChangeQuery("")) }
-                                ) { YabaIcon(name = "cancel-01") }
-                            }
-                        },
-                        placeholder = {
-                            Text(
-                                text = stringResource(
-                                    Res.string.search_collection,
-                                    state.tag?.label ?: ""
-                                ),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        },
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = navigator::removeLastOrNull) {
-                        YabaIcon(name = "arrow-left-01")
-                    }
-                },
-                actions = {
-                    TagDetailOptionsMenu(
-                        state = state,
+                        onClear = { vm.onEvent(TagDetailEvent.OnChangeQuery("")) },
                         onEvent = vm::onEvent,
-                        onNewBookmark = {
-                            val tag = state.tag ?: return@TagDetailOptionsMenu
-                            resultStore.setResult(ResultStoreKeys.SELECTED_TAGS, listOf(tag))
-                            creationNavigator.add(BookmarkCreationRoute())
-                            appStateManager.onShowCreationContent()
-                        },
                     )
-                },
-            )
-        },
-    ) { paddings ->
-        when {
-            state.isLoading && state.bookmarks.isEmpty() -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddings),
-                    contentAlignment = Alignment.Center,
-                ) { CircularWavyProgressIndicator() }
+                    Box(
+                        modifier = Modifier.weight(1f).fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                    ) { CircularWavyProgressIndicator() }
+                }
             }
 
             state.query.isEmpty() && state.bookmarks.isEmpty() -> {
-                Box(
-                    Modifier
-                        .fillMaxSize()
-                        .padding(paddings),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    NoContentView(
-                        iconName = "bookmark-02",
-                        labelRes = Res.string.no_bookmarks_title,
-                        message = { Text(text = stringResource(Res.string.no_bookmarks_message)) },
+                Column(Modifier.fillMaxSize().padding(paddings)) {
+                    TagSearchToolbar(
+                        state = state,
+                        color = color,
+                        onFocusChanged = { searchHasFocus = it },
+                        onQueryChanged = { newQuery ->
+                            vm.onEvent(TagDetailEvent.OnChangeQuery(query = newQuery))
+                        },
+                        onSearch = { finalQuery ->
+                            vm.onEvent(TagDetailEvent.OnChangeQuery(query = finalQuery))
+                        },
+                        onClear = { vm.onEvent(TagDetailEvent.OnChangeQuery("")) },
+                        onEvent = vm::onEvent,
                     )
+                    Box(
+                        modifier = Modifier.weight(1f).fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        NoContentView(
+                            iconName = "bookmark-02",
+                            labelRes = Res.string.no_bookmarks_title,
+                            message = { Text(text = stringResource(Res.string.no_bookmarks_message)) },
+                        )
+                    }
                 }
             }
 
             state.query.isNotEmpty() && state.bookmarks.isEmpty() -> {
-                Box(
-                    Modifier
-                        .fillMaxSize()
-                        .padding(paddings),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    NoContentView(
-                        iconName = "bookmark-02",
-                        labelRes = Res.string.search_no_bookmarks_found_title,
-                        message = {
-                            Text(
-                                text = stringResource(
-                                    Res.string.search_no_bookmarks_found_description,
-                                    state.query,
-                                )
-                            )
+                Column(Modifier.fillMaxSize().padding(paddings)) {
+                    TagSearchToolbar(
+                        state = state,
+                        color = color,
+                        onFocusChanged = { searchHasFocus = it },
+                        onQueryChanged = { newQuery ->
+                            vm.onEvent(TagDetailEvent.OnChangeQuery(query = newQuery))
                         },
+                        onSearch = { finalQuery ->
+                            vm.onEvent(TagDetailEvent.OnChangeQuery(query = finalQuery))
+                        },
+                        onClear = { vm.onEvent(TagDetailEvent.OnChangeQuery("")) },
+                        onEvent = vm::onEvent,
                     )
+                    Box(
+                        modifier = Modifier.weight(1f).fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        NoContentView(
+                            iconName = "bookmark-02",
+                            labelRes = Res.string.search_no_bookmarks_found_title,
+                            message = {
+                                Text(
+                                    text = stringResource(
+                                        Res.string.search_no_bookmarks_found_description,
+                                        state.query,
+                                    )
+                                )
+                            },
+                        )
+                    }
                 }
             }
 
             else -> {
+                val itemModifier = Modifier.padding(
+                    horizontal = if (userPreferences.preferredBookmarkAppearance == BookmarkAppearance.CARD) {
+                        12.dp
+                    } else 0.dp
+                )
+
                 YabaBookmarkLayout(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddings)
-                        .padding(
-                            horizontal = if (userPreferences.preferredBookmarkAppearance != BookmarkAppearance.LIST) {
-                                12.dp
-                            } else 0.dp
-                        ),
+                    modifier = Modifier.fillMaxSize(),
                     bookmarks = state.bookmarks,
                     layoutConfig = ContentLayoutConfig(
                         bookmarkAppearance = userPreferences.preferredBookmarkAppearance,
                         cardImageSizing = userPreferences.preferredCardImageSizing,
                         headlineSpacerSizing = 8.dp,
+                        gridForceApplyPadding = true,
                     ),
                     onDrop = {},
+                    stickyHeaderContent = {
+                        TagSearchToolbar(
+                            state = state,
+                            color = color,
+                            onFocusChanged = { searchHasFocus = it },
+                            onQueryChanged = { newQuery ->
+                                vm.onEvent(TagDetailEvent.OnChangeQuery(query = newQuery))
+                            },
+                            onSearch = { finalQuery ->
+                                vm.onEvent(TagDetailEvent.OnChangeQuery(query = finalQuery))
+                            },
+                            onClear = { vm.onEvent(TagDetailEvent.OnChangeQuery("")) },
+                            onEvent = vm::onEvent,
+                        )
+                    },
                     itemContent = { model, _, appearance, cardImageSizing, index, count ->
                         BookmarkItemView(
+                            modifier = itemModifier,
                             model = model,
                             appearance = appearance,
                             cardImageSizing = cardImageSizing,
@@ -293,9 +291,11 @@ fun TagDetailView(
                                     BookmarkKind.LINK -> shareScope.launch {
                                         LinkmarkManager.getBookmarkUrl(bookmark.id)?.let(shareUrl)
                                     }
+
                                     BookmarkKind.IMAGE -> shareScope.launch {
                                         YabaFileAccessor.shareImageBookmark(bookmark.id)
                                     }
+
                                     else -> {}
                                 }
                             },
@@ -309,8 +309,101 @@ fun TagDetailView(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun TagSearchToolbar(
+    state: TagDetailUIState,
+    color: YabaColor,
+    onFocusChanged: (Boolean) -> Unit,
+    onQueryChanged: (String) -> Unit,
+    onSearch: (String) -> Unit,
+    onClear: () -> Unit,
+    onEvent: (TagDetailEvent) -> Unit,
+) {
+    val creationNavigator = LocalCreationContentNavigator.current
+    val appStateManager = LocalAppStateManager.current
+    val resultStore = LocalResultStore.current
+    val navigator = LocalContentNavigator.current
+
+    val searchFieldTint by remember {
+        derivedStateOf { collectionDetailSearchFieldTint(color) }
+    }
+    val searchBarState = rememberSearchBarState()
+    val topBarIconButtonColors = collectionDetailIconButtonColors(color)
+
+    CollectionDetailSearchTopBar(
+        accentColor = color,
+        searchBarState = searchBarState,
+        inputField = {
+            SearchBarDefaults.InputField(
+                modifier = Modifier.onFocusChanged { focusState ->
+                    onFocusChanged(focusState.hasFocus)
+                },
+                query = state.query,
+                expanded = false,
+                onExpandedChange = {},
+                onQueryChange = onQueryChanged,
+                onSearch = onSearch,
+                colors =
+                    SearchBarDefaults.inputFieldColors(
+                        focusedContainerColor = searchFieldTint,
+                        unfocusedContainerColor = searchFieldTint,
+                        disabledContainerColor = searchFieldTint,
+                    ),
+                leadingIcon = { YabaIcon(name = "search-01") },
+                trailingIcon = {
+                    AnimatedVisibility(
+                        visible = state.query.isNotEmpty(),
+                        enter = fadeIn() + scaleIn(),
+                        exit = fadeOut() + scaleOut(),
+                    ) {
+                        IconButton(
+                            onClick = onClear,
+                            colors = topBarIconButtonColors,
+                            shapes = IconButtonDefaults.shapes(),
+                        ) { YabaIcon(name = "cancel-01") }
+                    }
+                },
+                placeholder = {
+                    Text(
+                        modifier = Modifier.basicMarquee(),
+                        text = stringResource(
+                            Res.string.search_collection,
+                            state.tag?.label ?: ""
+                        ),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                },
+            )
+        },
+        navigationIcon = {
+            IconButton(
+                onClick = navigator::removeLastOrNull,
+                colors = topBarIconButtonColors,
+                shapes = IconButtonDefaults.shapes(),
+            ) { YabaIcon(name = "arrow-left-01") }
+        },
+        actions = {
+            TagDetailOptionsMenu(
+                iconButtonColors = topBarIconButtonColors,
+                state = state,
+                onEvent = onEvent,
+                onNewBookmark = {
+                    val tag = state.tag ?: return@TagDetailOptionsMenu
+                    resultStore.setResult(ResultStoreKeys.SELECTED_TAGS, listOf(tag))
+                    creationNavigator.add(BookmarkCreationRoute())
+                    appStateManager.onShowCreationContent()
+                },
+            )
+        },
+    )
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun TagDetailOptionsMenu(
+    iconButtonColors: IconButtonColors,
     state: TagDetailUIState,
     onEvent: (TagDetailEvent) -> Unit,
     onNewBookmark: () -> Unit,
@@ -318,9 +411,11 @@ private fun TagDetailOptionsMenu(
     var isMenuExpanded by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
-        IconButton(onClick = { isMenuExpanded = !isMenuExpanded }) {
-            YabaIcon(name = "more-horizontal-circle-02")
-        }
+        IconButton(
+            onClick = { isMenuExpanded = !isMenuExpanded },
+            colors = iconButtonColors,
+            shapes = IconButtonDefaults.shapes(),
+        ) { YabaIcon(name = "more-horizontal-circle-02") }
 
         TagDetailDropdownMenu(
             isExpanded = isMenuExpanded,

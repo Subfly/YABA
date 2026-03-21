@@ -1,5 +1,6 @@
 package dev.subfly.yabacore.ui.layout
 
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
@@ -20,10 +21,12 @@ import dev.subfly.yabacore.model.utils.CardImageSizing
  * @param gridColumnCount Legacy fixed column count for GRID appearance. Only used when
  * [gridMinCellSize] is set to <= 0.dp.
  */
+@Stable
 data class ContentLayoutConfig(
     val bookmarkAppearance: BookmarkAppearance = BookmarkAppearance.LIST,
     val cardImageSizing: CardImageSizing = CardImageSizing.SMALL,
     val headlineSpacerSizing: Dp = 12.dp,
     val itemSpacing: Dp = 8.dp,
     val gridMinCellSize: Dp = 180.dp,
+    val gridForceApplyPadding: Boolean = false,
 )
