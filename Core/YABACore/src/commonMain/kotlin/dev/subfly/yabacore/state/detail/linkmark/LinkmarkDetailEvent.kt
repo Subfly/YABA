@@ -14,10 +14,8 @@ sealed interface LinkmarkDetailEvent {
     data object OnFetchReadableContent : LinkmarkDetailEvent
     data object OnUpdateReadableRequested : LinkmarkDetailEvent
     data class OnConverterSucceeded(
-        val markdown: String,
+        val html: String,
         val assets: List<WebConverterAsset>,
-        val title: String?,
-        val author: String?,
     ) : LinkmarkDetailEvent
     data class OnConverterFailed(val error: Throwable) : LinkmarkDetailEvent
     data class OnSelectReadableVersion(val versionId: String) : LinkmarkDetailEvent

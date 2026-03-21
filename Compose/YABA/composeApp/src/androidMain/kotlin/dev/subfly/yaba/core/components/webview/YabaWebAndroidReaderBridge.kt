@@ -8,9 +8,8 @@ import dev.subfly.yabacore.model.highlight.ReadableSelectionDraft
 import dev.subfly.yabacore.model.ui.HighlightUiModel
 import dev.subfly.yabacore.model.utils.ReaderPreferences
 import dev.subfly.yabacore.webview.WebViewEditorBridge
-import dev.subfly.yabacore.webview.normalizeMarkdownEscapesCorruption
 import dev.subfly.yabacore.webview.WebViewReaderBridge
-import dev.subfly.yabacore.webview.YabaMarkdownReaderBridgeScripts
+import dev.subfly.yabacore.webview.YabaEditorBridgeScripts
 import dev.subfly.yabacore.webview.YabaPdfReaderBridgeScripts
 import dev.subfly.yabacore.webview.YabaWebAppearance
 import dev.subfly.yabacore.webview.YabaWebBridgeScripts
@@ -25,7 +24,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 @Suppress("FunctionName")
-internal fun MarkdownWebViewReaderBridge(
+internal fun RichTextWebViewReaderBridge(
     webView: WebView,
 ): WebViewReaderBridge = object : WebViewReaderBridge {
     override suspend fun getSelectionSnapshot(
@@ -33,7 +32,7 @@ internal fun MarkdownWebViewReaderBridge(
         readableVersionId: String,
     ): ReadableSelectionDraft? {
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return null
-        val raw = evaluateJs(webView, YabaMarkdownReaderBridgeScripts.getSelectionSnapshotScript())
+        val raw = evaluateJs(webView, YabaEditorBridgeScripts.getSelectionSnapshotScript())
         val jsonStr = decodeJsStringResult(raw)
         if (jsonStr == "null" || jsonStr.isBlank()) return null
         return runCatching {
@@ -66,7 +65,7 @@ internal fun MarkdownWebViewReaderBridge(
 
     override suspend fun getCanCreateHighlight(): Boolean {
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY_LOOSE)) return false
-        return evaluateJs(webView, YabaMarkdownReaderBridgeScripts.getCanCreateHighlightScript()).trim() == "true"
+        return evaluateJs(webView, YabaEditorBridgeScripts.getCanCreateHighlightScript()).trim() == "true"
     }
 
     override suspend fun setHighlights(highlights: List<HighlightUiModel>) {
@@ -76,32 +75,31 @@ internal fun MarkdownWebViewReaderBridge(
 
     override suspend fun scrollToHighlight(highlightId: String) {
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY_LOOSE)) return
-        evaluateJs(webView, YabaMarkdownReaderBridgeScripts.scrollToHighlightScript(highlightId))
+        evaluateJs(webView, YabaEditorBridgeScripts.scrollToHighlightScript(highlightId))
     }
 }
 
 @Suppress("FunctionName")
-internal fun MarkdownWebViewEditorBridge(
+internal fun RichTextWebViewEditorBridge(
     webView: WebView,
 ): WebViewEditorBridge {
-    val reader = MarkdownWebViewReaderBridge(webView)
+    val reader = RichTextWebViewReaderBridge(webView)
     return object : WebViewEditorBridge {
-        override suspend fun getMarkdown(): String {
+        override suspend fun getDocumentJson(): String {
             if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return ""
-            val raw = evaluateJs(webView, YabaMarkdownReaderBridgeScripts.getMarkdownScript())
-            val decoded = decodeJsStringResult(raw)
-            return normalizeMarkdownEscapesCorruption(decoded)
+            val raw = evaluateJs(webView, YabaEditorBridgeScripts.getDocumentJsonScript())
+            return decodeJsStringResult(raw)
         }
 
         override suspend fun setEditable(editable: Boolean) {
             if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return
-            evaluateJs(webView, YabaMarkdownReaderBridgeScripts.setEditableScript(editable))
+            evaluateJs(webView, YabaEditorBridgeScripts.setEditableScript(editable))
         }
 
         override suspend fun dispatch(payloadJson: String) {
             if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return
             val escaped = escapeForJsSingleQuotedString(payloadJson)
-            evaluateJs(webView, YabaMarkdownReaderBridgeScripts.dispatchScript(escaped))
+            evaluateJs(webView, YabaEditorBridgeScripts.dispatchScript(escaped))
         }
 
         override suspend fun getSelectionSnapshot(
@@ -119,22 +117,37 @@ internal fun MarkdownWebViewEditorBridge(
     }
 }
 
-internal suspend fun applyMarkdownContent(
+internal suspend fun applyReaderHtmlContent(
     webView: WebView,
     context: android.content.Context,
-    markdown: String,
+    readerHtml: String,
     assetsBaseUrl: String?,
 ) {
     if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return
     val resolvedAssetsBaseUrl = toInternalStorageAssetLoaderBaseUrl(context, assetsBaseUrl) ?: assetsBaseUrl
-    val opts = YabaMarkdownReaderBridgeScripts.setMarkdownOptionsFromAssetsBaseUrl(resolvedAssetsBaseUrl)
+    val opts = YabaEditorBridgeScripts.setReaderHtmlOptionsFromAssetsBaseUrl(resolvedAssetsBaseUrl)
     evaluateJs(
         webView,
-        YabaMarkdownReaderBridgeScripts.setMarkdownScript(markdown, opts),
+        YabaEditorBridgeScripts.setReaderHtmlScript(readerHtml, opts),
     )
 }
 
-internal suspend fun applyMarkdownReaderPreferences(
+internal suspend fun applyEditorDocumentJson(
+    webView: WebView,
+    context: android.content.Context,
+    documentJson: String,
+    assetsBaseUrl: String?,
+) {
+    if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return
+    val resolvedAssetsBaseUrl = toInternalStorageAssetLoaderBaseUrl(context, assetsBaseUrl) ?: assetsBaseUrl
+    val opts = YabaEditorBridgeScripts.setDocumentJsonOptionsFromAssetsBaseUrl(resolvedAssetsBaseUrl)
+    evaluateJs(
+        webView,
+        YabaEditorBridgeScripts.setDocumentJsonScript(documentJson, opts),
+    )
+}
+
+internal suspend fun applyEditorReaderPreferences(
     webView: WebView,
     readerPreferences: ReaderPreferences,
     platform: YabaWebPlatform,
@@ -143,7 +156,7 @@ internal suspend fun applyMarkdownReaderPreferences(
     if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return
     evaluateJs(
         webView,
-        YabaMarkdownReaderBridgeScripts.applyReaderPreferencesScript(
+        YabaEditorBridgeScripts.applyReaderPreferencesScript(
             readerTheme = readerPreferences.theme.toJsReaderThemeLiteral(),
             readerFontSize = readerPreferences.fontSize.toJsReaderFontSizeLiteral(),
             readerLineHeight = readerPreferences.lineHeight.toJsReaderLineHeightLiteral(),
@@ -153,9 +166,9 @@ internal suspend fun applyMarkdownReaderPreferences(
     )
 }
 
-internal suspend fun installMarkdownHighlightTap(webView: WebView) {
+internal suspend fun installEditorHighlightTap(webView: WebView) {
     if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY_LOOSE)) return
-    evaluateJs(webView, YabaMarkdownReaderBridgeScripts.installHighlightTapScript())
+    evaluateJs(webView, YabaEditorBridgeScripts.installHighlightTapScript())
 }
 
 private suspend fun pushHighlightsEditor(webView: WebView, highlights: List<HighlightUiModel>) {
@@ -176,7 +189,7 @@ private suspend fun pushHighlightsEditor(webView: WebView, highlights: List<High
     val escaped = escapeForJsSingleQuotedString(jsonStr)
     evaluateJs(
         webView,
-        YabaMarkdownReaderBridgeScripts.setHighlightsJsonParseScript(escaped),
+        YabaEditorBridgeScripts.setHighlightsJsonParseScript(escaped),
     )
 }
 

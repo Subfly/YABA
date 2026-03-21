@@ -5,7 +5,7 @@ import Subscript from "@tiptap/extension-subscript"
 import Superscript from "@tiptap/extension-superscript"
 import Link from "@tiptap/extension-link"
 import Image from "@tiptap/extension-image"
-import BaseYoutube from "@tiptap/extension-youtube"
+import Youtube from "@tiptap/extension-youtube"
 import { Mathematics } from "@tiptap/extension-mathematics"
 import { Table } from "@tiptap/extension-table"
 import TableRow from "@tiptap/extension-table-row"
@@ -21,20 +21,6 @@ import type { Extensions } from "@tiptap/core"
 import { HighlightDecorationsExtension } from "./extensions/highlight-decorations"
 
 const lowlight = createLowlight(all)
-
-const Youtube = BaseYoutube.extend({
-  parseMarkdown(token: any, helpers: any) {
-    if (token.type !== "code" || token.lang !== "yaba-youtube") return null
-    const url = (typeof token.text === "string" ? token.text : token.raw ?? "").trim()
-    if (!url) return null
-    return helpers.createNode("youtube", { src: url })
-  },
-
-  renderMarkdown(node: any) {
-    const src = node.attrs?.src ?? ""
-    return `\`\`\`yaba-youtube\n${src}\n\`\`\`\n\n`
-  },
-})
 
 export function createEditorExtensions(): Extensions {
   return [
@@ -111,11 +97,8 @@ export function createEditorExtensions(): Extensions {
         class: "yaba-editor-code-block",
       },
     }),
-    Markdown.configure({
-      markedOptions: {
-        gfm: true,
-      },
-    }),
     HighlightDecorationsExtension,
+    /** Enables markdown-style input (shortcuts, paste, serialization) alongside the rich-text model. */
+    Markdown,
   ]
 }

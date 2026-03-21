@@ -5,14 +5,14 @@ package dev.subfly.yabacore.webview
  */
 object YabaConverterBridgeScripts {
 
-    fun sanitizeAndConvertHtmlToMarkdownScript(html: String, baseUrl: String?): String {
+    fun sanitizeAndConvertHtmlToReaderHtmlScript(html: String, baseUrl: String?): String {
         val htmlEscaped = escapeForJsSingleQuotedString(html)
         val baseUrlLiteral =
             baseUrl?.let { "'${escapeForJsSingleQuotedString(it)}'" } ?: "null"
         return """
             (function() {
                 try {
-                    var result = window.YabaConverterBridge.sanitizeAndConvertHtmlToMarkdown({
+                    var result = window.YabaConverterBridge.sanitizeAndConvertHtmlToReaderHtml({
                         html: '$htmlEscaped',
                         baseUrl: $baseUrlLiteral
                     });

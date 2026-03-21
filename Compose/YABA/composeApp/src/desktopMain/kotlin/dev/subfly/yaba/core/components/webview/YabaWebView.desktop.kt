@@ -30,7 +30,7 @@ actual fun YabaWebViewHost(
     onEditorBridgeReady: (WebViewEditorBridge?) -> Unit,
     onHighlightTap: (String) -> Unit,
 ) {
-    val showPlaceholder = feature is YabaWebFeature.MarkdownViewer ||
+    val showPlaceholder = feature is YabaWebFeature.ReadableViewer ||
         feature is YabaWebFeature.PdfViewer ||
         feature is YabaWebFeature.Editor
 

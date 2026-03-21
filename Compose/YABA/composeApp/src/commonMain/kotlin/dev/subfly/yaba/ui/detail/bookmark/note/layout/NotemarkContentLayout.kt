@@ -78,10 +78,10 @@ internal fun NotemarkContentLayout(
     var isToolbarVisible by remember { mutableStateOf(true) }
     var isMenuExpanded by remember { mutableStateOf(false) }
 
-    var frozenInitialMarkdown by remember(state.bookmark?.id) { mutableStateOf<String?>(null) }
-    LaunchedEffect(state.isLoading, state.editorMarkdown, state.bookmark?.id) {
-        if (!state.isLoading && frozenInitialMarkdown == null) {
-            frozenInitialMarkdown = state.editorMarkdown
+    var frozenInitialDocumentJson by remember(state.bookmark?.id) { mutableStateOf<String?>(null) }
+    LaunchedEffect(state.isLoading, state.editorDocumentJson, state.bookmark?.id) {
+        if (!state.isLoading && frozenInitialDocumentJson == null) {
+            frozenInitialDocumentJson = state.editorDocumentJson
         }
     }
 
@@ -93,8 +93,8 @@ internal fun NotemarkContentLayout(
         val bridge = editorBridge ?: return@LaunchedEffect
         while (true) {
             delay(400)
-            val md = bridge.getMarkdown()
-            onEvent(NotemarkDetailEvent.OnEditorMarkdownChanged(md))
+            val json = bridge.getDocumentJson()
+            onEvent(NotemarkDetailEvent.OnEditorDocumentJsonChanged(json))
         }
     }
 
@@ -110,8 +110,8 @@ internal fun NotemarkContentLayout(
     }
     val menuIconButtonColors = bookmarkDetailIconButtonColors(folderAccent)
 
-    val ready by remember(state.isLoading, frozenInitialMarkdown) {
-        derivedStateOf { !state.isLoading && frozenInitialMarkdown != null }
+    val ready by remember(state.isLoading, frozenInitialDocumentJson) {
+        derivedStateOf { !state.isLoading && frozenInitialDocumentJson != null }
     }
 
     Box(
@@ -151,7 +151,7 @@ internal fun NotemarkContentLayout(
                     modifier = Modifier.fillMaxSize(),
                     baseUrl = WebComponentUris.getEditorUri(),
                     feature = YabaWebFeature.Editor(
-                        initialMarkdown = frozenInitialMarkdown ?: "",
+                        initialDocumentJson = frozenInitialDocumentJson ?: "",
                         assetsBaseUrl = state.assetsBaseUrl,
                         highlights = state.highlights,
                     ),

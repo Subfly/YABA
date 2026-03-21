@@ -23,13 +23,27 @@ export interface ReaderPreferences {
   lineHeight: ReaderLineHeight
 }
 
+const EMPTY_DOC_JSON = '{"type":"doc","content":[]}'
+
+function rewriteAssetPathsInDocumentJson(json: string, assetsBaseUrl: string): string {
+  if (!json.includes("../assets/")) return json
+  const base = assetsBaseUrl.replace(/\/?$/, "/")
+  return json.replaceAll("../assets/", `${base}assets/`)
+}
+
+function rewriteAssetPathsInReaderHtml(html: string, assetsBaseUrl: string): string {
+  if (!html.includes("../assets/")) return html
+  const base = assetsBaseUrl.replace(/\/?$/, "/")
+  return html.replaceAll("../assets/", `${base}assets/`)
+}
+
 export interface YabaEditorBridge {
   isReady: () => boolean
   getSelectionSnapshot: () => SelectionSnapshot | null
   getCanCreateHighlight: () => boolean
   setHighlights: (highlightsJson: string) => void
   scrollToHighlight: (highlightId: string) => void
-  /** True when editor markdown differs from last [flush] / [setMarkdown] baseline. */
+  /** True when editor document JSON differs from last [flush] / [setDocumentJson] baseline. */
   isDirty: () => boolean
   /** Marks current document as clean for [isDirty] (after native save). */
   flush: () => void
@@ -38,8 +52,11 @@ export interface YabaEditorBridge {
   setCursorColor: (color: string) => void
   setReaderPreferences: (preferences: Partial<ReaderPreferences>) => void
   setEditable: (isEditable: boolean) => void
-  setMarkdown: (markdown: string, options?: { assetsBaseUrl?: string }) => void
-  getMarkdown: () => string
+  /** TipTap/ProseMirror document as JSON string. */
+  setDocumentJson: (documentJson: string, options?: { assetsBaseUrl?: string }) => void
+  /** Sanitized reader HTML for the read-only viewer (TipTap parses HTML → document). */
+  setReaderHtml: (html: string, options?: { assetsBaseUrl?: string }) => void
+  getDocumentJson: () => string
   focus: () => void
   blur: () => void
   dispatch: (command: EditorCommandPayload) => void
@@ -68,7 +85,7 @@ export type EditorCommandPayload =
   | { type: "insertBlockMath"; latex: string }
 
 let editorInstance: Editor | null = null
-let lastPersistedMarkdown = ""
+let lastPersistedDocumentJson = EMPTY_DOC_JSON
 let platform: Platform = "compose"
 let appearance: AppearanceMode = "auto"
 let cursorColor: string | null = null
@@ -170,7 +187,7 @@ function applyReaderPreferences(): void {
 
 export function initEditorBridge(editor: Editor): void {
   editorInstance = editor
-  lastPersistedMarkdown = editor.getMarkdown() ?? ""
+  lastPersistedDocumentJson = JSON.stringify(editor.getJSON())
   const win = window as Window & { YabaEditorBridge?: YabaEditorBridge }
   win.YabaEditorBridge = {
     isReady: () => !!editorInstance,
@@ -230,27 +247,37 @@ export function initEditorBridge(editor: Editor): void {
     setEditable: (isEditable: boolean) => {
       editorInstance?.setEditable(isEditable)
     },
-    setMarkdown: (markdown: string, options?: { assetsBaseUrl?: string }) => {
-      let content = markdown
-      if (options?.assetsBaseUrl && content.includes("../assets/")) {
-        const base = options.assetsBaseUrl.replace(/\/?$/, "/")
-        content = content.replace(/\]\(\.\.\/assets\//g, `](${base}assets/`)
+    setDocumentJson: (documentJson: string, options?: { assetsBaseUrl?: string }) => {
+      let payload = documentJson?.trim() ? documentJson : EMPTY_DOC_JSON
+      if (options?.assetsBaseUrl) {
+        payload = rewriteAssetPathsInDocumentJson(payload, options.assetsBaseUrl)
       }
-      editorInstance?.commands.setContent(content, {
-        contentType: "markdown",
-        emitUpdate: false,
-      })
-      lastPersistedMarkdown = editorInstance?.getMarkdown() ?? content
+      let doc: Record<string, unknown>
+      try {
+        doc = JSON.parse(payload) as Record<string, unknown>
+      } catch {
+        doc = JSON.parse(EMPTY_DOC_JSON) as Record<string, unknown>
+      }
+      editorInstance?.commands.setContent(doc, { emitUpdate: false })
+      lastPersistedDocumentJson = JSON.stringify(editorInstance?.getJSON() ?? JSON.parse(EMPTY_DOC_JSON))
     },
-    getMarkdown: () => {
-      return editorInstance?.getMarkdown() ?? ""
+    setReaderHtml: (html: string, options?: { assetsBaseUrl?: string }) => {
+      let payload = html?.trim() ? html : "<p></p>"
+      if (options?.assetsBaseUrl) {
+        payload = rewriteAssetPathsInReaderHtml(payload, options.assetsBaseUrl)
+      }
+      editorInstance?.commands.setContent(payload, { emitUpdate: false })
+      lastPersistedDocumentJson = JSON.stringify(editorInstance?.getJSON() ?? JSON.parse(EMPTY_DOC_JSON))
+    },
+    getDocumentJson: () => {
+      return JSON.stringify(editorInstance?.getJSON() ?? JSON.parse(EMPTY_DOC_JSON))
     },
     isDirty: () => {
-      const current = editorInstance?.getMarkdown() ?? ""
-      return current !== lastPersistedMarkdown
+      const current = JSON.stringify(editorInstance?.getJSON() ?? JSON.parse(EMPTY_DOC_JSON))
+      return current !== lastPersistedDocumentJson
     },
     flush: () => {
-      lastPersistedMarkdown = editorInstance?.getMarkdown() ?? ""
+      lastPersistedDocumentJson = JSON.stringify(editorInstance?.getJSON() ?? JSON.parse(EMPTY_DOC_JSON))
     },
     focus: () => editorInstance?.commands.focus(),
     blur: () => editorInstance?.commands.blur(),

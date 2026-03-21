@@ -3,7 +3,7 @@ package dev.subfly.yabacore.webview
 import androidx.compose.runtime.Stable
 
 /**
- * Input for HTML → Markdown conversion in the WebView converter shell.
+ * Input for HTML → reader HTML conversion in the WebView converter shell.
  */
 @Stable
 data class WebConverterInput(
@@ -26,6 +26,6 @@ data class WebConverterAsset(
  */
 @Stable
 data class WebConverterResult(
-    val markdown: String,
+    val html: String,
     val assets: List<WebConverterAsset>,
 )

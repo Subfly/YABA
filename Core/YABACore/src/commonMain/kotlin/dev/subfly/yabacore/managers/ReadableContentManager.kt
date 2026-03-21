@@ -2,8 +2,6 @@ package dev.subfly.yabacore.managers
 
 import dev.subfly.yabacore.common.CoreConstants
 import dev.subfly.yabacore.common.IdGenerator
-import dev.subfly.yabacore.model.utils.parseReadableMarkdownFrontmatter
-import dev.subfly.yabacore.model.utils.writeReadableMarkdownWithFrontmatter
 import dev.subfly.yabacore.database.DatabaseProvider
 import dev.subfly.yabacore.database.entities.HighlightEntity
 import dev.subfly.yabacore.database.entities.ReadableAssetEntity
@@ -30,11 +28,9 @@ import kotlin.time.Clock
 /**
  * Filesystem-first manager for immutable readable content.
  *
- * Handles saving readable document snapshots and their assets.
- * Content is never overwritten - new saves create new versions.
- *
  * File layout:
- * - /bookmarks/<id>/readable/<versionId>.md
+ * - /bookmarks/<id>/readable/<versionId>.html (link HTML snapshots)
+ * - /bookmarks/<id>/readable/<versionId>.json (notemark readable mirror)
  * - /bookmarks/<id>/assets/<assetId>.<ext>
  */
 object ReadableContentManager {
@@ -43,14 +39,6 @@ object ReadableContentManager {
     private val highlightDao get() = DatabaseProvider.highlightDao
     private val accessProvider = FileAccessProvider
 
-    /**
-     * Saves a new readable content version for a bookmark.
-     *
-     * This operation is enqueued to ensure proper ordering with other filesystem operations.
-     *
-     * @param bookmarkId The bookmark ID
-     * @param readable The readable content from Unfurler
-     */
     fun saveReadableContent(bookmarkId: String, readable: ReadableUnfurl) {
         CoreOperationQueue.queue("SaveReadable:$bookmarkId") {
             saveReadableContentInternal(bookmarkId, readable)
@@ -58,21 +46,16 @@ object ReadableContentManager {
     }
 
     /**
-     * Writes or overwrites the readable mirror used for highlight anchoring on notemarks.
-     * Unlike [saveReadableContentInternal], this overwrites the same [versionId] file in place.
+     * Writes or overwrites the readable mirror used for highlight anchoring on notemarks (document JSON).
      */
     suspend fun syncNotemarkReadableMirror(
         bookmarkId: String,
         versionId: String,
-        markdownBody: String,
-        title: String?,
-        author: String?,
+        documentJson: String,
     ) {
-        val relativePath = CoreConstants.FileSystem.Linkmark.readableVersionPath(bookmarkId, versionId)
+        val relativePath = CoreConstants.FileSystem.Linkmark.readableVersionJsonPath(bookmarkId, versionId)
         val file = accessProvider.resolveRelativePath(relativePath, ensureParentExists = true)
-        val content = writeReadableMarkdownWithFrontmatter(markdownBody, title, author)
-
-        file.write(content.encodeToByteArray())
+        file.write(documentJson.encodeToByteArray())
 
         val existing = readableVersionDao.getById(versionId)
         val createdAt = existing?.createdAt ?: Clock.System.now().toEpochMilliseconds()
@@ -83,49 +66,31 @@ object ReadableContentManager {
                 bookmarkId = bookmarkId,
                 createdAt = createdAt,
                 relativePath = relativePath,
-                title = title,
-                author = author,
             ),
         )
     }
 
-    /**
-     * Internal implementation for saving readable content.
-     * @return The created version ID
-     */
     internal suspend fun saveReadableContentInternal(bookmarkId: String, readable: ReadableUnfurl): String {
         val versionId = IdGenerator.newId()
         val createdAt = Clock.System.now().toEpochMilliseconds()
 
         val savedAssets = saveAssets(bookmarkId, readable.assets)
-        saveMarkdownVersion(bookmarkId, versionId, readable.markdown, readable.title, readable.author)
-        updateRoomIndex(bookmarkId, versionId, createdAt, readable.title, readable.author, savedAssets)
+        saveHtmlVersion(bookmarkId, versionId, readable.html)
+        updateRoomIndex(bookmarkId, versionId, createdAt, savedAssets)
         return versionId
     }
 
-    /**
-     * Saves the markdown content to filesystem with optional YAML frontmatter (title, author).
-     * Frontmatter stores title/author for display.
-     */
-    private suspend fun saveMarkdownVersion(
+    private suspend fun saveHtmlVersion(
         bookmarkId: String,
         versionId: String,
-        markdown: String,
-        title: String?,
-        author: String?,
+        html: String,
     ) {
         val relativePath = CoreConstants.FileSystem.Linkmark.readableVersionPath(bookmarkId, versionId)
-
         val file = accessProvider.resolveRelativePath(relativePath, ensureParentExists = true)
         if (file.exists()) return
-
-        val content = writeReadableMarkdownWithFrontmatter(markdown, title, author)
-        file.write(content.encodeToByteArray())
+        file.write(html.encodeToByteArray())
     }
 
-    /**
-     * Saves assets to filesystem, returning info about saved assets.
-     */
     private suspend fun saveAssets(
         bookmarkId: String,
         assets: List<ReadableAsset>,
@@ -136,13 +101,10 @@ object ReadableContentManager {
                 asset.assetId,
                 asset.extension,
             )
-
-            // Check if file already exists (immutable, never overwrite)
             val file = accessProvider.resolveRelativePath(relativePath, ensureParentExists = true)
             if (!file.exists()) {
                 file.write(asset.bytes)
             }
-
             SavedAssetInfo(
                 assetId = asset.assetId,
                 extension = asset.extension,
@@ -151,15 +113,10 @@ object ReadableContentManager {
         }
     }
 
-    /**
-     * Updates Room index with the new readable version and assets.
-     */
     private suspend fun updateRoomIndex(
         bookmarkId: String,
         versionId: String,
         createdAt: Long,
-        title: String?,
-        author: String?,
         savedAssets: List<SavedAssetInfo>,
     ) {
         val relativePath = CoreConstants.FileSystem.Linkmark.readableVersionPath(bookmarkId, versionId)
@@ -168,8 +125,6 @@ object ReadableContentManager {
             bookmarkId = bookmarkId,
             createdAt = createdAt,
             relativePath = relativePath,
-            title = title,
-            author = author,
         )
         readableVersionDao.upsert(versionEntity)
 
@@ -184,19 +139,9 @@ object ReadableContentManager {
         }
     }
 
-    /**
-     * Reads a specific readable version from filesystem as raw markdown.
-     * Strips YAML frontmatter so the UI receives only the body.
-     */
-    suspend fun readVersionByPath(relativePath: String): String? {
-        val raw = accessProvider.readText(relativePath) ?: return null
-        return parseReadableMarkdownFrontmatter(raw).body
-    }
+    suspend fun readVersionByPath(relativePath: String): String? =
+        accessProvider.readText(relativePath)
 
-    /**
-     * Deletes a readable version and its markdown file.
-     * Highlights for this version are cascade-deleted via FK.
-     */
     fun deleteVersion(versionId: String) {
         CoreOperationQueue.queue("DeleteReadableVersion:$versionId") {
             deleteVersionInternal(versionId)
@@ -227,7 +172,7 @@ object ReadableContentManager {
         bookmarkId: String,
         versionEntity: ReadableVersionEntity,
     ): ReadableVersionUiModel {
-        val markdownContent = readVersionByPath(versionEntity.relativePath)
+        val bodyContent = readVersionByPath(versionEntity.relativePath)
         val assets = readableAssetDao.getByBookmarkId(bookmarkId)
         val highlights = highlightDao.getByBookmarkId(bookmarkId, readableVersionId = versionEntity.id)
 
@@ -238,7 +183,7 @@ object ReadableContentManager {
                     assetId = entity.id,
                     role = entity.role,
                     absolutePath = BookmarkFileManager.getAbsolutePath(entity.relativePath),
-                )
+                ),
             )
         }
 
@@ -247,9 +192,7 @@ object ReadableContentManager {
         return ReadableVersionUiModel(
             versionId = versionEntity.id,
             createdAt = versionEntity.createdAt,
-            title = versionEntity.title,
-            author = versionEntity.author,
-            markdown = markdownContent,
+            body = bodyContent,
             assets = assetsUi,
             highlights = highlightsUi,
         )

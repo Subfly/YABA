@@ -117,8 +117,8 @@ class LinkmarkDetailStateMachine :
                             val selectedVersion = combined.readableVersions.find {
                                 it.versionId == combined.selectedReadableVersionId
                             } ?: combined.readableVersions.firstOrNull()
-                            val markdown = selectedVersion?.markdown
-                            val assetsBaseUrl = if (markdown != null) {
+                            val html = selectedVersion?.body
+                            val assetsBaseUrl = if (html != null) {
                                 val folderPath =
                                     BookmarkFileManager.getAbsolutePath(
                                         CoreConstants.FileSystem.bookmarkFolder(id),
@@ -133,7 +133,7 @@ class LinkmarkDetailStateMachine :
                                     linkDetails = combined.linkDetails?.toUiModel(),
                                     readableVersions = combined.readableVersions,
                                     selectedReadableVersionId = combined.selectedReadableVersionId,
-                                    readableMarkdown = markdown,
+                                    readableHtml = html,
                                     assetsBaseUrl = assetsBaseUrl,
                                     highlights = selectedVersion?.highlights ?: emptyList(),
                                     isLoading = false,
@@ -193,10 +193,8 @@ class LinkmarkDetailStateMachine :
         val bookmarkId = bookmarkIdFlow.value ?: return
         launch {
             val readable = ConverterResultProcessor.process(
-                markdown = event.markdown,
+                html = event.html,
                 assets = event.assets,
-                title = event.title,
-                author = event.author,
             )
             val versionId = ReadableContentManager.saveReadableContentInternal(bookmarkId, readable)
             selectedReadableVersionIdFlow.value = versionId

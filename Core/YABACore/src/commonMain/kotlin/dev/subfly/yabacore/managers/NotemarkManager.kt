@@ -6,11 +6,11 @@ import dev.subfly.yabacore.database.DatabaseProvider
 import dev.subfly.yabacore.database.entities.NoteBookmarkEntity
 import dev.subfly.yabacore.database.mappers.toUiModel
 import dev.subfly.yabacore.filesystem.BookmarkFileManager
+import dev.subfly.yabacore.filesystem.EMPTY_EDITOR_DOCUMENT_JSON
 import dev.subfly.yabacore.filesystem.NotemarkFileManager
 import dev.subfly.yabacore.model.ui.NotemarkUiModel
 import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.queue.CoreOperationQueue
-import dev.subfly.yabacore.webview.normalizeMarkdownEscapesCorruption
 import kotlinx.coroutines.flow.Flow
 import kotlin.time.Instant
 
@@ -46,7 +46,7 @@ object NotemarkManager {
             viewCount = bookmarkMetaData.viewCount,
             isPrivate = bookmarkMetaData.isPrivate,
             isPinned = bookmarkMetaData.isPinned,
-            markdownRelativePath = noteMeta.markdownRelativePath,
+            documentRelativePath = noteMeta.documentRelativePath,
             readableVersionId = noteMeta.readableVersionId,
             localImagePath = localImageAbsolutePath,
             localIconPath = localIconAbsolutePath,
@@ -58,10 +58,10 @@ object NotemarkManager {
     fun observeNoteDetails(bookmarkId: String): Flow<NoteBookmarkEntity?> =
         noteBookmarkDao.observeByBookmarkId(bookmarkId)
 
-    suspend fun readNoteMarkdown(bookmarkId: String): String? {
+    suspend fun readNoteDocumentJson(bookmarkId: String): String? {
         val note = noteBookmarkDao.getByBookmarkId(bookmarkId) ?: return null
-        val raw = NotemarkFileManager.readMarkdownByRelativePath(note.markdownRelativePath)
-        return raw?.let { normalizeMarkdownEscapesCorruption(it) }
+        val raw = NotemarkFileManager.readDocumentByRelativePath(note.documentRelativePath)
+        return raw
     }
 
     suspend fun resolveNoteAssetsBaseUrl(bookmarkId: String): String? {
@@ -73,44 +73,38 @@ object NotemarkManager {
     }
 
     /**
-     * Persists canonical body and mirrors to readable for highlight anchoring.
+     * Persists canonical editor document JSON and mirrors to readable for highlight anchoring.
      */
-    fun saveNoteMarkdown(
+    fun saveNoteDocumentJson(
         bookmarkId: String,
-        markdown: String,
+        documentJson: String,
         touchEditedAt: Boolean = true,
     ) {
-        CoreOperationQueue.queue("SaveNotemarkMarkdown:$bookmarkId") {
-            saveNoteMarkdownInternal(bookmarkId, markdown, touchEditedAt)
+        CoreOperationQueue.queue("SaveNotemarkDocument:$bookmarkId") {
+            saveNoteDocumentJsonInternal(bookmarkId, documentJson, touchEditedAt)
         }
     }
 
-    /**
-     * Persists note markdown and waits for the operation queue to finish (for editor save UX).
-     */
-    suspend fun persistNoteMarkdownAwait(
+    suspend fun persistNoteDocumentJsonAwait(
         bookmarkId: String,
-        markdown: String,
+        documentJson: String,
         touchEditedAt: Boolean = true,
     ): Result<Unit> =
-        CoreOperationQueue.queueAndAwait("SaveNotemarkMarkdown:$bookmarkId") {
-            saveNoteMarkdownInternal(bookmarkId, markdown, touchEditedAt)
+        CoreOperationQueue.queueAndAwait("SaveNotemarkDocument:$bookmarkId") {
+            saveNoteDocumentJsonInternal(bookmarkId, documentJson, touchEditedAt)
         }
 
-    private suspend fun saveNoteMarkdownInternal(
+    private suspend fun saveNoteDocumentJsonInternal(
         bookmarkId: String,
-        markdown: String,
+        documentJson: String,
         touchEditedAt: Boolean,
     ) {
         val note = noteBookmarkDao.getByBookmarkId(bookmarkId) ?: return
-        NotemarkFileManager.writeMarkdownBody(bookmarkId, markdown)
-        val bookmark = bookmarkDao.getById(bookmarkId)
+        NotemarkFileManager.writeDocumentBody(bookmarkId, documentJson)
         ReadableContentManager.syncNotemarkReadableMirror(
             bookmarkId = bookmarkId,
             versionId = note.readableVersionId,
-            markdownBody = markdown,
-            title = bookmark?.label?.takeIf { it.isNotBlank() },
-            author = null,
+            documentJson = documentJson,
         )
         if (touchEditedAt) {
             AllBookmarksManager.touchBookmarkEditedAt(bookmarkId)
@@ -119,18 +113,16 @@ object NotemarkManager {
 
     /**
      * Creates empty body file, readable mirror row, and note subtype row. Call after bookmark metadata exists.
-     *
-     * @param readableVersionId When null, reuses an existing note row's id or allocates a new one for first create.
      */
     fun createOrUpdateNoteDetails(
         bookmarkId: String,
-        markdownRelativePath: String = NotemarkFileManager.markdownBodyRelativePath(bookmarkId),
+        documentRelativePath: String = NotemarkFileManager.documentBodyRelativePath(bookmarkId),
         readableVersionId: String? = null,
     ) {
         CoreOperationQueue.queue("CreateOrUpdateNoteDetails:$bookmarkId") {
             createOrUpdateNoteDetailsInternal(
                 bookmarkId = bookmarkId,
-                markdownRelativePath = markdownRelativePath,
+                documentRelativePath = documentRelativePath,
                 readableVersionId = readableVersionId,
             )
         }
@@ -138,12 +130,11 @@ object NotemarkManager {
 
     private suspend fun createOrUpdateNoteDetailsInternal(
         bookmarkId: String,
-        markdownRelativePath: String,
+        documentRelativePath: String,
         readableVersionId: String?,
     ) {
-        NotemarkFileManager.ensureEmptyMarkdownBody(bookmarkId)
-        val bookmark = bookmarkDao.getById(bookmarkId) ?: return
-        val body = NotemarkFileManager.readMarkdownBody(bookmarkId).orEmpty()
+        NotemarkFileManager.ensureEmptyDocumentBody(bookmarkId)
+        val body = NotemarkFileManager.readDocumentBody(bookmarkId).orEmpty()
         val resolvedVersionId =
             readableVersionId
                 ?: noteBookmarkDao.getByBookmarkId(bookmarkId)?.readableVersionId
@@ -151,14 +142,12 @@ object NotemarkManager {
         ReadableContentManager.syncNotemarkReadableMirror(
             bookmarkId = bookmarkId,
             versionId = resolvedVersionId,
-            markdownBody = body,
-            title = bookmark.label.takeIf { it.isNotBlank() },
-            author = null,
+            documentJson = body.ifBlank { EMPTY_EDITOR_DOCUMENT_JSON },
         )
         noteBookmarkDao.upsert(
             NoteBookmarkEntity(
                 bookmarkId = bookmarkId,
-                markdownRelativePath = markdownRelativePath,
+                documentRelativePath = documentRelativePath,
                 readableVersionId = resolvedVersionId,
             ),
         )

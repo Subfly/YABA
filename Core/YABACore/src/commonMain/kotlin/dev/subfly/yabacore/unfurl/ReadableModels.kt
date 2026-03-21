@@ -3,13 +3,10 @@ package dev.subfly.yabacore.unfurl
 /**
  * Result of readable content extraction, ready for persistence.
  *
- * This is returned by the Unfurler and contains markdown plus downloaded asset bytes.
  * versionId and createdAt are set by ReadableContentManager when saving.
  */
 data class ReadableUnfurl(
-    val markdown: String,
-    val title: String?,
-    val author: String?,
+    val html: String,
     val assets: List<ReadableAsset>,
 )
 
@@ -19,7 +16,7 @@ data class ReadableUnfurl(
 data class ReadableAsset(
     /** UUID for the asset */
     val assetId: String,
-    /** File extension (e.g., "jpg", "png", "webp") */
+    /** File extension (e.g. "jpg", "png", "webp") */
     val extension: String,
     /** Raw image bytes */
     val bytes: ByteArray,

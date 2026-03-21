@@ -13,9 +13,9 @@ data class LinkmarkDetailUIState(
     val readableVersions: List<ReadableVersionUiModel> = emptyList(),
     /** Currently selected version ID; null means use newest (first). */
     val selectedReadableVersionId: String? = null,
-    /** Raw markdown for WebView viewer. */
-    val readableMarkdown: String? = null,
-    /** Base URL for resolving ../assets/ in markdown (file://... with trailing slash). */
+    /** Sanitized reader HTML for WebView viewer. */
+    val readableHtml: String? = null,
+    /** Base URL for resolving ../assets/ in HTML (file://... with trailing slash). */
     val assetsBaseUrl: String? = null,
     val readerPreferences: ReaderPreferences = ReaderPreferences(),
     val highlights: List<HighlightUiModel> = emptyList(),

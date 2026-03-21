@@ -1,7 +1,7 @@
 {
   "name": "yaba-web-components",
   "version": "1.0.0",
-  "description": "WebView components for YABA: TipTap editor, read-only viewer, and HTML→Markdown converter",
+  "description": "WebView components for YABA: TipTap editor, read-only viewer, and HTML→reader HTML converter",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -35,9 +35,7 @@
     "pdfjs-dist": "5.5.207",
     "react": "19.2.0",
     "react-dom": "19.2.0",
-    "react-pdf-highlighter": "^8.0.0-rc.0",
-    "turndown": "^7.2.2",
-    "turndown-plugin-gfm": "^1.0.2"
+    "react-pdf-highlighter": "^8.0.0-rc.0"
   },
   "devDependencies": {
     "@types/dompurify": "^3.0.5",

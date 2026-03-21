@@ -1,6 +1,6 @@
 # YABA Web Components
 
-WebView-hosted components for YABA: TipTap editor, read-only viewer, and HTML-to-Markdown converter. Built with Vite 7, React 19, TipTap 3.20, and TypeScript.
+WebView-hosted components for YABA: TipTap editor, read-only viewer, and HTML-to-reader-HTML converter. Built with Vite 7, React 19, TipTap 3.20, and TypeScript.
 
 ## Build
 
@@ -17,7 +17,7 @@ Output: `dist/editor.html`, `dist/viewer.html`, `dist/converter.html` plus JS an
 |------|---------|
 | `editor.html` | Full TipTap WYSIWYG editor (no visible toolbar; native buttons only) |
 | `viewer.html` | Read-only TipTap viewer for saved link content |
-| `converter.html` | Hidden utility page: DOMPurify → Readability → Turndown (HTML→Markdown) |
+| `converter.html` | Hidden utility page: DOMPurify → Readability → sanitized reader HTML |
 
 ## URL Parameters
 
@@ -52,8 +52,9 @@ viewer.html?platform=darwin&appearance=dark
 | `setAppearance(mode)` | `'auto'` \| `'light'` \| `'dark'` |
 | `setCursorColor(color)` | CSS color string |
 | `setEditable(isEditable)` | Toggle edit/read-only |
-| `setMarkdown(markdown, options?)` | Set content; `options.assetsBaseUrl` resolves `../assets/` image paths |
-| `getMarkdown()` | Returns current markdown string |
+| `setDocumentJson(documentJson, options?)` | Set content from TipTap/ProseMirror JSON string; `options.assetsBaseUrl` resolves `../assets/` paths in the JSON |
+| `getDocumentJson()` | Returns current document as JSON string |
+| `isDirty()` / `flush()` | Dirty tracking vs last persisted baseline |
 | `focus()` / `blur()` | Focus/blur editor |
 | `dispatch(cmd)` | Run command; see below |
 
@@ -70,24 +71,23 @@ viewer.html?platform=darwin&appearance=dark
 
 | Method | Description |
 |--------|-------------|
-| `sanitizeAndConvertHtmlToMarkdown(input)` | `input: { html: string, baseUrl?: string }` → `{ markdown: string }` |
+| `sanitizeAndConvertHtmlToReaderHtml(input)` | `input: { html: string, baseUrl?: string }` → `{ html: string, assets: [...] }` |
 
-Uses DOMPurify for sanitization, Mozilla Readability for reader-mode extraction (strips nav/footer/clutter), then Turndown + GFM for conversion (tables, strikethrough, etc.).
+Uses DOMPurify for sanitization, Mozilla Readability for reader-mode extraction (strips nav/footer/clutter), then returns sanitized HTML with image placeholders for offline assets.
 
 ## Native Integration
 
 Native platforms call the bridge via their WebView evaluation APIs:
 
-- **Android**: `webView.evaluateJavascript("window.YabaEditorBridge?.getMarkdown()", callback)`
-- **iOS**: `webView.evaluateJavaScript("window.YabaEditorBridge?.getMarkdown()", completionHandler)`
+- **Android**: `webView.evaluateJavascript("window.YabaEditorBridge?.getDocumentJson()", callback)`
+- **iOS**: `webView.evaluateJavaScript("window.YabaEditorBridge?.getDocumentJson()", completionHandler)`
 
-The `converter.html` page is loaded in a hidden WebView when link saving needs HTML→Markdown conversion. Call `sanitizeAndConvertHtmlToMarkdown` after the page has loaded.
+The `converter.html` page is loaded in a hidden WebView when link saving needs HTML extraction. Call `sanitizeAndConvertHtmlToReaderHtml` after the page has loaded.
 
 ## Features
 
-- **Images**: Markdown image syntax (`![](url)`); `setMarkdown` accepts `assetsBaseUrl` to resolve `../assets/` paths. Android WebView uses `allowFileAccess` for `file://` image URLs.
-- **GFM tables**: Markdown import and export for tables
-- **Task lists**: GFM task list syntax (`- [ ]` / `- [x]`)
+- **Images**: Inline images in HTML/JSON; `setDocumentJson` accepts `assetsBaseUrl` to resolve `../assets/` paths. Android WebView uses `allowFileAccess` for `file://` image URLs.
+- **Tables, task lists, code**: Native TipTap document model
 - **Code highlighting**: Syntax highlighting via lowlight
 - **Mathematics**: LaTeX math via KaTeX; inline `$...$` and block `$$...$$`; `dispatch({ type: 'insertInlineMath', latex: '...' })` / `{ type: 'insertBlockMath', latex: '...' }`
 - **Subscript / Superscript**: `dispatch({ type: 'toggleSubscript' })` / `{ type: 'toggleSuperscript' }`

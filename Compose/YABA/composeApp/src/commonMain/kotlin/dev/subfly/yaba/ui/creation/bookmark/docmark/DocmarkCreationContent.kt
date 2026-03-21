@@ -53,7 +53,6 @@ import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.icon.iconTintArgb
 import dev.subfly.yabacore.ui.webview.WebComponentUris
 import dev.subfly.yabacore.webview.WebPdfConverterInput
-import dev.subfly.yabacore.webview.WebPdfTextSection
 import dev.subfly.yabacore.webview.YabaWebFeature
 import dev.subfly.yabacore.webview.YabaWebHostEvent
 import org.jetbrains.compose.resources.stringResource
@@ -135,11 +134,6 @@ fun DocmarkCreationContent(bookmarkId: String?) {
                         DocmarkCreationEvent.OnSetGeneratedPreview(
                             imageBytes = previewBytes,
                             extension = "png",
-                        ),
-                    )
-                    vm.onEvent(
-                        DocmarkCreationEvent.OnSetInternalReadableMarkdown(
-                            markdown = buildHiddenMarkdown(ev.result.sections),
                         ),
                     )
                 }
@@ -299,12 +293,4 @@ private fun decodeDataUrlToBytes(dataUrl: String): ByteArray? {
     if (markerIndex < 0) return null
     val base64 = dataUrl.substring(markerIndex + marker.length)
     return runCatching { Base64.decode(base64) }.getOrNull()
-}
-
-private fun buildHiddenMarkdown(sections: List<WebPdfTextSection>): String? {
-    if (sections.isEmpty()) return null
-    return sections.joinToString(separator = "\n\n") { section ->
-        val title = section.sectionKey.ifBlank { "page" }
-        "## $title\n\n${section.text}"
-    }.ifBlank { null }
 }

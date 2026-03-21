@@ -21,8 +21,8 @@ actual fun YabaWebViewHost(
     onHighlightTap: (String) -> Unit,
 ) {
     when (val f = feature) {
-        is YabaWebFeature.MarkdownViewer ->
-            YabaMarkdownFeatureHost(
+        is YabaWebFeature.ReadableViewer ->
+            YabaReadableViewerFeatureHost(
                 modifier = modifier,
                 baseUrl = baseUrl,
                 feature = f,

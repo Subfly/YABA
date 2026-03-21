@@ -19,7 +19,6 @@ data class DocmarkCreationUIState(
 
     val previewImageBytes: ByteArray? = null,
     val previewImageExtension: String = "png",
-    val internalReadableMarkdown: String? = null,
     val selectedFolder: FolderUiModel? = null,
     val selectedTags: List<TagUiModel> = emptyList(),
     val isLoading: Boolean = false,
@@ -55,7 +54,6 @@ data class DocmarkCreationUIState(
             if (other.previewImageBytes == null || !previewImageBytes.contentEquals(other.previewImageBytes)) return false
         } else if (other.previewImageBytes != null) return false
         if (previewImageExtension != other.previewImageExtension) return false
-        if (internalReadableMarkdown != other.internalReadableMarkdown) return false
         if (selectedFolder != other.selectedFolder) return false
         if (selectedTags != other.selectedTags) return false
         if (isLoading != other.isLoading) return false
@@ -76,7 +74,6 @@ data class DocmarkCreationUIState(
         result = 31 * result + summary.hashCode()
         result = 31 * result + (previewImageBytes?.contentHashCode() ?: 0)
         result = 31 * result + previewImageExtension.hashCode()
-        result = 31 * result + (internalReadableMarkdown?.hashCode() ?: 0)
         result = 31 * result + (selectedFolder?.hashCode() ?: 0)
         result = 31 * result + selectedTags.hashCode()
         result = 31 * result + isLoading.hashCode()

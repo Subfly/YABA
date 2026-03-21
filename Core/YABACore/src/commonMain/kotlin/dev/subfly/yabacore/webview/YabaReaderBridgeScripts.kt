@@ -41,9 +41,9 @@ fun YabaWebAppearance.toJsAppearanceLiteral(): String =
     }
 
 /**
- * Markdown / TipTap reader — [window.YabaEditorBridge].
+ * Rich-text reader/editor — [window.YabaEditorBridge].
  */
-object YabaMarkdownReaderBridgeScripts {
+object YabaEditorBridgeScripts {
 
     fun getSelectionSnapshotScript(): String =
         """
@@ -79,19 +79,34 @@ object YabaMarkdownReaderBridgeScripts {
     }
 
     /**
-     * @param markdown raw markdown; escaped for embedding
-     * @param setMarkdownOptionsJs `undefined` or e.g. `{ assetsBaseUrl: 'https://...' }` (already valid JS)
+     * @param documentJson Rich-text document JSON string; escaped for embedding
+     * @param setDocumentJsonOptionsJs `undefined` or e.g. `{ assetsBaseUrl: 'https://...' }` (already valid JS)
      */
-    fun setMarkdownScript(markdown: String, setMarkdownOptionsJs: String): String {
-        val markdownEscaped = escapeForJsSingleQuotedString(markdown)
+    fun setDocumentJsonScript(documentJson: String, setDocumentJsonOptionsJs: String): String {
+        val jsonEscaped = escapeForJsSingleQuotedString(documentJson)
         return """
         (function() {
-            window.YabaEditorBridge.setMarkdown('$markdownEscaped', $setMarkdownOptionsJs);
+            window.YabaEditorBridge.setDocumentJson('$jsonEscaped', $setDocumentJsonOptionsJs);
         })();
         """.trimIndent()
     }
 
-    fun setMarkdownOptionsFromAssetsBaseUrl(resolvedAssetsBaseUrl: String?): String =
+    /**
+     * Loads sanitized reader HTML into the read-only viewer shell.
+     */
+    fun setReaderHtmlScript(readerHtml: String, setReaderHtmlOptionsJs: String): String {
+        val htmlEscaped = escapeForJsSingleQuotedString(readerHtml)
+        return """
+        (function() {
+            window.YabaEditorBridge.setReaderHtml('$htmlEscaped', $setReaderHtmlOptionsJs);
+        })();
+        """.trimIndent()
+    }
+
+    fun setReaderHtmlOptionsFromAssetsBaseUrl(resolvedAssetsBaseUrl: String?): String =
+        setDocumentJsonOptionsFromAssetsBaseUrl(resolvedAssetsBaseUrl)
+
+    fun setDocumentJsonOptionsFromAssetsBaseUrl(resolvedAssetsBaseUrl: String?): String =
         if (resolvedAssetsBaseUrl != null) {
             "{ assetsBaseUrl: '${escapeForJsSingleQuotedString(resolvedAssetsBaseUrl)}' }"
         } else {
@@ -155,12 +170,12 @@ object YabaMarkdownReaderBridgeScripts {
         """.trimIndent()
     }
 
-    fun getMarkdownScript(): String =
+    fun getDocumentJsonScript(): String =
         """
         (function() {
             try {
-                if (window.YabaEditorBridge && window.YabaEditorBridge.getMarkdown) {
-                    return window.YabaEditorBridge.getMarkdown();
+                if (window.YabaEditorBridge && window.YabaEditorBridge.getDocumentJson) {
+                    return window.YabaEditorBridge.getDocumentJson();
                 }
                 return "";
             } catch(e) { return ""; }

@@ -2,45 +2,9 @@ import DOMPurify from "dompurify"
 import { Readability } from "@mozilla/readability"
 import { GlobalWorkerOptions, getDocument } from "pdfjs-dist"
 import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url"
-import TurndownService from "turndown"
-import { gfm } from "turndown-plugin-gfm"
 
 const YOUTUBE_URL_RE = /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]+)/i
 GlobalWorkerOptions.workerSrc = pdfWorkerUrl
-
-const turndown = new TurndownService({
-  headingStyle: "atx",
-  codeBlockStyle: "fenced",
-  bulletListMarker: "-",
-})
-
-turndown.use(gfm)
-
-turndown.addRule("youtubeIframe", {
-  filter: (node: HTMLElement) => {
-    if (node.tagName !== "IFRAME") return false
-    const src = node.getAttribute("src") ?? ""
-    return YOUTUBE_URL_RE.test(src)
-  },
-  replacement: (_content: string, node: HTMLElement) => {
-    const src = node.getAttribute("src") ?? ""
-    return `\n\n\`\`\`yaba-youtube\n${src}\n\`\`\`\n\n`
-  },
-})
-
-turndown.addRule("youtubeWrapper", {
-  filter: (node: HTMLElement) => {
-    if (node.tagName !== "DIV") return false
-    return node.hasAttribute("data-youtube-video") || node.querySelector("iframe") !== null && YOUTUBE_URL_RE.test(node.querySelector("iframe")?.getAttribute("src") ?? "")
-  },
-  replacement: (_content: string, node: HTMLElement) => {
-    const iframe = node.querySelector("iframe")
-    if (!iframe) return _content
-    const src = iframe.getAttribute("src") ?? ""
-    if (!YOUTUBE_URL_RE.test(src)) return _content
-    return `\n\n\`\`\`yaba-youtube\n${src}\n\`\`\`\n\n`
-  },
-})
 
 const ASSET_PLACEHOLDER_PREFIX = "yaba-asset://"
 const CODE_CLASS_HINT = /(language-|lang-|highlight|hljs|codehilite|prism|rouge|prettyprint|sourcecode|syntax)/i
@@ -66,12 +30,12 @@ export interface ConverterAsset {
 }
 
 export interface ConverterOutput {
-  markdown: string
+  html: string
   assets: ConverterAsset[]
 }
 
 export interface YabaConverterBridge {
-  sanitizeAndConvertHtmlToMarkdown: (input: ConverterInput) => ConverterOutput
+  sanitizeAndConvertHtmlToReaderHtml: (input: ConverterInput) => ConverterOutput
   startPdfExtraction: (input: PdfExtractionInput) => string
   getPdfExtractionJob: (jobId: string) => PdfExtractionJobState | null
   deletePdfExtractionJob: (jobId: string) => void
@@ -339,8 +303,7 @@ function sanitizeAndConvertWithAssets(html: string, baseUrl?: string): Converter
     img.setAttribute("src", placeholder)
   })
 
-  const markdown = turndown.turndown(wrapper)
-  return { markdown, assets }
+  return { html: wrapper.innerHTML, assets }
 }
 
 function createPdfExtractionJobId(): string {
@@ -459,7 +422,7 @@ async function extractPdfPreviewAndText(input: PdfExtractionInput): Promise<PdfE
 export function initConverterBridge(): void {
   const win = window as Window & { YabaConverterBridge?: YabaConverterBridge }
   win.YabaConverterBridge = {
-    sanitizeAndConvertHtmlToMarkdown(input: ConverterInput): ConverterOutput {
+    sanitizeAndConvertHtmlToReaderHtml(input: ConverterInput): ConverterOutput {
       return sanitizeAndConvertWithAssets(input.html, input.baseUrl)
     },
     startPdfExtraction(input: PdfExtractionInput): string {

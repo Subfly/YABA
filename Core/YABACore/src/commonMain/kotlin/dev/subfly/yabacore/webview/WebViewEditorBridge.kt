@@ -1,11 +1,11 @@
 package dev.subfly.yabacore.webview
 
 /**
- * TipTap editor WebView: markdown I/O, formatting commands, plus the same highlight/selection
+ * Rich-text editor WebView: JSON document I/O, formatting commands, plus the same highlight/selection
  * surface as [WebViewReaderBridge] for the readable mirror.
  */
 interface WebViewEditorBridge : WebViewReaderBridge {
-    suspend fun getMarkdown(): String
+    suspend fun getDocumentJson(): String
 
     suspend fun setEditable(editable: Boolean)
 

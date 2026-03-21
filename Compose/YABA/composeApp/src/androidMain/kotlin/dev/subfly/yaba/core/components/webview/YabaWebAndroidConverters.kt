@@ -21,7 +21,7 @@ internal suspend fun runHtmlConversion(
     }
     val rawResult = evaluateJs(
         webView,
-        YabaConverterBridgeScripts.sanitizeAndConvertHtmlToMarkdownScript(html, baseUrl),
+        YabaConverterBridgeScripts.sanitizeAndConvertHtmlToReaderHtmlScript(html, baseUrl),
     )
     val jsonStr = decodeJsStringResult(rawResult)
     return runCatching {
@@ -29,7 +29,7 @@ internal suspend fun runHtmlConversion(
         if (json.has("error")) {
             error(json.optString("error"))
         }
-        val markdownResult = json.optString("markdown", "")
+        val htmlResult = json.optString("html", "")
         val assetsArray = json.optJSONArray("assets") ?: JSONArray()
         val assets = mutableListOf<WebConverterAsset>()
         for (i in 0 until assetsArray.length()) {
@@ -42,7 +42,7 @@ internal suspend fun runHtmlConversion(
                 ),
             )
         }
-        WebConverterResult(markdown = markdownResult, assets = assets)
+        WebConverterResult(html = htmlResult, assets = assets)
     }
 }
 

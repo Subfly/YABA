@@ -8,41 +8,44 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 
-object NotemarkFileManager {
-    fun markdownBodyRelativePath(bookmarkId: String): String =
-        CoreConstants.FileSystem.Notemark.markdownBodyPath(bookmarkId)
+/** Default empty rich-text document JSON (`doc` with empty `content`). */
+const val EMPTY_EDITOR_DOCUMENT_JSON = """{"type":"doc","content":[]}"""
 
-    suspend fun ensureEmptyMarkdownBody(bookmarkId: String) {
-        val relativePath = markdownBodyRelativePath(bookmarkId)
+object NotemarkFileManager {
+    fun documentBodyRelativePath(bookmarkId: String): String =
+        CoreConstants.FileSystem.Notemark.documentBodyPath(bookmarkId)
+
+    suspend fun ensureEmptyDocumentBody(bookmarkId: String) {
+        val relativePath = documentBodyRelativePath(bookmarkId)
         val file = BookmarkFileManager.resolve(relativePath)
         if (!file.exists()) {
-            BookmarkFileManager.writeBytes(relativePath, ByteArray(0))
+            BookmarkFileManager.writeBytes(relativePath, EMPTY_EDITOR_DOCUMENT_JSON.encodeToByteArray())
         }
     }
 
-    suspend fun writeMarkdownBody(
+    suspend fun writeDocumentBody(
         bookmarkId: String,
-        markdown: String,
+        documentJson: String,
     ) {
-        val relativePath = markdownBodyRelativePath(bookmarkId)
-        BookmarkFileManager.writeBytes(relativePath, markdown.encodeToByteArray())
+        val relativePath = documentBodyRelativePath(bookmarkId)
+        BookmarkFileManager.writeBytes(relativePath, documentJson.encodeToByteArray())
     }
 
-    suspend fun readMarkdownBody(bookmarkId: String): String? {
-        val relativePath = markdownBodyRelativePath(bookmarkId)
+    suspend fun readDocumentBody(bookmarkId: String): String? {
+        val relativePath = documentBodyRelativePath(bookmarkId)
         val file = BookmarkFileManager.find(relativePath) ?: return null
         return withContext(Dispatchers.IO) {
             file.readBytes().decodeToString()
         }
     }
 
-    suspend fun readMarkdownByRelativePath(relativePath: String): String? {
+    suspend fun readDocumentByRelativePath(relativePath: String): String? {
         val file = BookmarkFileManager.find(relativePath) ?: return null
         return withContext(Dispatchers.IO) {
             file.readBytes().decodeToString()
         }
     }
 
-    suspend fun getMarkdownBodyFile(bookmarkId: String): PlatformFile? =
-        BookmarkFileManager.find(markdownBodyRelativePath(bookmarkId))
+    suspend fun getDocumentBodyFile(bookmarkId: String): PlatformFile? =
+        BookmarkFileManager.find(documentBodyRelativePath(bookmarkId))
 }

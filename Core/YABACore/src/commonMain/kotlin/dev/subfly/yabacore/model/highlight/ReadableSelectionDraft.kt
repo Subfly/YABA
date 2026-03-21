@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 /**
  * Selection payload from the web viewer for readable content.
- * Produced by the Tiptap bridge when the user selects text and taps the FAB.
+ * Produced by the rich-text reader WebView bridge when the user selects text and taps the FAB.
  */
 @Serializable
 @Stable

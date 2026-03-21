@@ -90,8 +90,8 @@ internal fun toInternalStorageAssetLoaderFileUrl(
  * Decodes the value returned by [WebView.evaluateJavascript], which is JSON-encoded.
  *
  * The previous implementation only unescaped `\"` and `\\\\`, not JSON escapes like `\n`.
- * That left literal backslash-n in [MarkdownWebViewEditorBridge.getMarkdown] results, which
- * were persisted to disk and reloaded as plain text instead of markdown newlines.
+ * That left literal backslash-n in JSON strings returned from [WebView.evaluateJavascript],
+ * which could corrupt persisted document JSON if not fully decoded.
  */
 internal fun decodeJsStringResult(value: String?): String {
     if (value == null) return ""

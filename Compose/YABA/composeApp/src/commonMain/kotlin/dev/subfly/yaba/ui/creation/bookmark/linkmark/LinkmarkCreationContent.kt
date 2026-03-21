@@ -120,10 +120,8 @@ fun LinkmarkCreationContent(bookmarkId: String?, initialUrl: String? = null) {
                 is YabaWebHostEvent.HtmlConverterSuccess ->
                     vm.onEvent(
                         LinkmarkCreationEvent.OnConverterSucceeded(
-                            markdown = ev.result.markdown,
+                            html = ev.result.html,
                             assets = ev.result.assets,
-                            title = state.label.takeIf { it.isNotBlank() },
-                            author = null,
                         ),
                     )
                 is YabaWebHostEvent.HtmlConverterFailure ->

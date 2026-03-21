@@ -35,10 +35,10 @@ import kotlinx.coroutines.isActive
 
 @SuppressLint("SetJavaScriptEnabled", "ClickableViewAccessibility")
 @Composable
-internal fun YabaMarkdownFeatureHost(
+internal fun YabaReadableViewerFeatureHost(
     modifier: Modifier,
     baseUrl: String,
-    feature: YabaWebFeature.MarkdownViewer,
+    feature: YabaWebFeature.ReadableViewer,
     onHostEvent: (YabaWebHostEvent) -> Unit,
     onUrlClick: (String) -> Boolean,
     onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit,
@@ -122,30 +122,30 @@ internal fun YabaMarkdownFeatureHost(
             return@LaunchedEffect
         }
         onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.BridgeReady))
-        val bridge = MarkdownWebViewReaderBridge(webView)
+        val bridge = RichTextWebViewReaderBridge(webView)
         activeBridge = bridge
         onBridgeReadyState.value(bridge)
     }
 
-    LaunchedEffect(isPageReady, feature.markdown, feature.assetsBaseUrl) {
+    LaunchedEffect(isPageReady, feature.html, feature.assetsBaseUrl) {
         if (!isPageReady || rendererCrashed) return@LaunchedEffect
-        applyMarkdownContent(webView, context, feature.markdown, feature.assetsBaseUrl)
+        applyReaderHtmlContent(webView, context, feature.html, feature.assetsBaseUrl)
     }
 
     LaunchedEffect(isPageReady, feature.readerPreferences, feature.platform, feature.appearance) {
         if (!isPageReady || rendererCrashed) return@LaunchedEffect
-        applyMarkdownReaderPreferences(webView, feature.readerPreferences, feature.platform, feature.appearance)
+        applyEditorReaderPreferences(webView, feature.readerPreferences, feature.platform, feature.appearance)
     }
 
     LaunchedEffect(isPageReady) {
         if (!isPageReady || rendererCrashed) return@LaunchedEffect
-        installMarkdownHighlightTap(webView)
+        installEditorHighlightTap(webView)
     }
 
     LaunchedEffect(isPageReady, feature.highlights) {
         if (!isPageReady || rendererCrashed) return@LaunchedEffect
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY_LOOSE)) return@LaunchedEffect
-        MarkdownWebViewReaderBridge(webView).setHighlights(feature.highlights)
+        RichTextWebViewReaderBridge(webView).setHighlights(feature.highlights)
     }
 
     LaunchedEffect(activeBridge) {
@@ -294,30 +294,30 @@ internal fun YabaEditorFeatureHost(
             return@LaunchedEffect
         }
         onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.BridgeReady))
-        val bridge = MarkdownWebViewEditorBridge(webView)
+        val bridge = RichTextWebViewEditorBridge(webView)
         activeEditorBridge = bridge
         onEditorBridgeReadyState.value(bridge)
     }
 
-    LaunchedEffect(isPageReady, feature.initialMarkdown, feature.assetsBaseUrl) {
+    LaunchedEffect(isPageReady, feature.initialDocumentJson, feature.assetsBaseUrl) {
         if (!isPageReady || rendererCrashed) return@LaunchedEffect
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) {
             Log.w(YABA_WEBVIEW_LOG_TAG, "Editor bridge not ready before timeout")
             return@LaunchedEffect
         }
-        applyMarkdownContent(webView, context, feature.initialMarkdown, feature.assetsBaseUrl)
-        MarkdownWebViewEditorBridge(webView).setEditable(true)
+        applyEditorDocumentJson(webView, context, feature.initialDocumentJson, feature.assetsBaseUrl)
+        RichTextWebViewEditorBridge(webView).setEditable(true)
     }
 
     LaunchedEffect(isPageReady) {
         if (!isPageReady || rendererCrashed) return@LaunchedEffect
-        installMarkdownHighlightTap(webView)
+        installEditorHighlightTap(webView)
     }
 
     LaunchedEffect(isPageReady, feature.highlights) {
         if (!isPageReady || rendererCrashed) return@LaunchedEffect
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY_LOOSE)) return@LaunchedEffect
-        MarkdownWebViewEditorBridge(webView).setHighlights(feature.highlights)
+        RichTextWebViewEditorBridge(webView).setHighlights(feature.highlights)
     }
 
     LaunchedEffect(activeEditorBridge) {

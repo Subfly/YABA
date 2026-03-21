@@ -6,14 +6,12 @@ import dev.subfly.yabacore.filesystem.access.YabaFileAccessor
 import dev.subfly.yabacore.managers.AllBookmarksManager
 import dev.subfly.yabacore.managers.DocmarkManager
 import dev.subfly.yabacore.managers.FolderManager
-import dev.subfly.yabacore.managers.ReadableContentManager
 import dev.subfly.yabacore.managers.TagManager
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.CardImageSizing
 import dev.subfly.yabacore.preferences.SettingsStores
 import dev.subfly.yabacore.state.base.BaseStateMachine
-import dev.subfly.yabacore.unfurl.ReadableUnfurl
 import io.github.vinceglb.filekit.name
 import io.github.vinceglb.filekit.readBytes
 import kotlinx.coroutines.Dispatchers
@@ -36,7 +34,6 @@ class DocmarkCreationStateMachine :
             DocmarkCreationEvent.OnClearPdf -> onClearPdf()
             DocmarkCreationEvent.OnCyclePreviewAppearance -> onCyclePreviewAppearance()
             is DocmarkCreationEvent.OnSetGeneratedPreview -> onSetGeneratedPreview(event)
-            is DocmarkCreationEvent.OnSetInternalReadableMarkdown -> onSetInternalReadableMarkdown(event)
             is DocmarkCreationEvent.OnChangeLabel -> onChangeLabel(event)
             is DocmarkCreationEvent.OnChangeDescription -> onChangeDescription(event)
             is DocmarkCreationEvent.OnChangeSummary -> onChangeSummary(event)
@@ -145,7 +142,6 @@ class DocmarkCreationStateMachine :
                 sourceFileName = sourceFileName,
                 label = autoLabel,
                 previewImageBytes = null,
-                internalReadableMarkdown = null,
                 previewImageExtension = "png",
                 isLoading = false,
                 error = null,
@@ -160,7 +156,6 @@ class DocmarkCreationStateMachine :
                 pdfBytes = null,
                 sourceFileName = null,
                 previewImageBytes = null,
-                internalReadableMarkdown = null,
             )
         }
     }
@@ -190,10 +185,6 @@ class DocmarkCreationStateMachine :
                 previewImageExtension = event.extension.lowercase().removePrefix(".").ifBlank { "png" },
             )
         }
-    }
-
-    private fun onSetInternalReadableMarkdown(event: DocmarkCreationEvent.OnSetInternalReadableMarkdown) {
-        updateState { it.copy(internalReadableMarkdown = event.markdown) }
     }
 
     private fun onChangeLabel(event: DocmarkCreationEvent.OnChangeLabel) {
@@ -282,20 +273,6 @@ class DocmarkCreationStateMachine :
                     bookmarkId = bookmarkId,
                     summary = state.summary.ifBlank { null },
                 )
-
-                state.internalReadableMarkdown
-                    ?.takeIf { it.isNotBlank() && state.isInEditMode.not() }
-                    ?.let { markdown ->
-                        ReadableContentManager.saveReadableContent(
-                            bookmarkId = bookmarkId,
-                            readable = ReadableUnfurl(
-                                markdown = markdown,
-                                title = label,
-                                author = null,
-                                assets = emptyList(),
-                            ),
-                        )
-                    }
 
                 updateState { it.copy(isSaving = false, error = null) }
                 event.onSavedCallback()

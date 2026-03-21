@@ -98,9 +98,13 @@ object CoreConstants {
             fun readableDir(bookmarkId: String): String =
                 join(bookmarkFolder(bookmarkId), READABLE_DIR)
 
-            /** Path for a readable version file: readable/<versionId>.md */
+            /** Path for a readable HTML snapshot (linkmarks): readable/<versionId>.html */
             fun readableVersionPath(bookmarkId: String, versionId: String): String =
-                join(readableDir(bookmarkId), "$versionId.md")
+                join(readableDir(bookmarkId), "$versionId.html")
+
+            /** Path for a notemark readable mirror (document JSON): readable/<versionId>.json */
+            fun readableVersionJsonPath(bookmarkId: String, versionId: String): String =
+                join(readableDir(bookmarkId), "$versionId.json")
 
             fun assetsDir(bookmarkId: String): String =
                 join(bookmarkFolder(bookmarkId), ASSETS_DIR)
@@ -140,8 +144,8 @@ object CoreConstants {
             private const val NOTE_SUBDIR = "note"
             private const val NOTE_BODY_BASENAME = "body"
 
-            /** Canonical note body: bookmarks/<id>/note/body.md */
-            fun markdownBodyPath(bookmarkId: String, extension: String = "md"): String =
+            /** Canonical note body (document JSON): bookmarks/<id>/note/body.json */
+            fun documentBodyPath(bookmarkId: String, extension: String = "json"): String =
                 join(
                     bookmarkFolder(bookmarkId),
                     NOTE_SUBDIR,

@@ -14,7 +14,6 @@ import dev.subfly.yabacore.model.utils.NoteSaveMode
 import dev.subfly.yabacore.notifications.NotificationManager
 import dev.subfly.yabacore.preferences.SettingsStores
 import dev.subfly.yabacore.state.base.BaseStateMachine
-import dev.subfly.yabacore.webview.normalizeMarkdownEscapesCorruption
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -43,7 +42,7 @@ class NotemarkDetailStateMachine :
         when (event) {
             is NotemarkDetailEvent.OnInit -> onInit(event.bookmarkId)
             is NotemarkDetailEvent.OnNoteSaveModeChanged -> onNoteSaveModeChanged(event)
-            is NotemarkDetailEvent.OnEditorMarkdownChanged -> onEditorMarkdownChanged(event)
+            is NotemarkDetailEvent.OnEditorDocumentJsonChanged -> onEditorDocumentJsonChanged(event)
             NotemarkDetailEvent.OnManualSave -> onManualSave()
             NotemarkDetailEvent.OnFlushPendingSave -> onFlushPendingSave()
             NotemarkDetailEvent.OnDeleteBookmark -> onDeleteBookmark()
@@ -111,15 +110,15 @@ class NotemarkDetailStateMachine :
 
                             if (note != null && !didBootstrapEditor) {
                                 didBootstrapEditor = true
-                                val md = NotemarkManager.readNoteMarkdown(id).orEmpty()
+                                val docJson = NotemarkManager.readNoteDocumentJson(id).orEmpty()
                                 emit(
                                     currentState().copy(
                                         bookmark = bookmarkModel,
                                         readableVersionId = vid,
                                         highlights = highlights,
                                         assetsBaseUrl = assetsBaseUrl,
-                                        editorMarkdown = md,
-                                        lastSavedMarkdown = md,
+                                        editorDocumentJson = docJson,
+                                        lastSavedDocumentJson = docJson,
                                         isDirty = false,
                                         isLoading = false,
                                     ),
@@ -144,14 +143,14 @@ class NotemarkDetailStateMachine :
         }
     }
 
-    private fun onEditorMarkdownChanged(event: NotemarkDetailEvent.OnEditorMarkdownChanged) {
-        val md = normalizeMarkdownEscapesCorruption(event.markdown)
+    private fun onEditorDocumentJsonChanged(event: NotemarkDetailEvent.OnEditorDocumentJsonChanged) {
+        val json = event.documentJson
         var scheduleAutosave = false
         updateState {
-            val dirty = md != it.lastSavedMarkdown
+            val dirty = json != it.lastSavedDocumentJson
             scheduleAutosave =
                 dirty && it.saveMode == NoteSaveMode.AUTOSAVE_3S_INACTIVITY
-            it.copy(editorMarkdown = md, isDirty = dirty)
+            it.copy(editorDocumentJson = json, isDirty = dirty)
         }
         if (scheduleAutosave) {
             scheduleAutosaveDebounced()
@@ -185,15 +184,15 @@ class NotemarkDetailStateMachine :
             updateState { it.copy(isSaving = false) }
             return
         }
-        val markdown = snapshot.editorMarkdown
+        val documentJson = snapshot.editorDocumentJson
         updateState { it.copy(isSaving = true) }
         launch {
-            val result = NotemarkManager.persistNoteMarkdownAwait(bookmarkId, markdown)
+            val result = NotemarkManager.persistNoteDocumentJsonAwait(bookmarkId, documentJson)
             updateState {
                 if (result.isSuccess) {
                     it.copy(
                         isSaving = false,
-                        lastSavedMarkdown = markdown,
+                        lastSavedDocumentJson = documentJson,
                         isDirty = false,
                     )
                 } else {

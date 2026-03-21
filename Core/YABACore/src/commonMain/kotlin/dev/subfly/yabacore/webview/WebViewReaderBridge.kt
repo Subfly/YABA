@@ -4,7 +4,7 @@ import dev.subfly.yabacore.model.highlight.ReadableSelectionDraft
 import dev.subfly.yabacore.model.ui.HighlightUiModel
 
 /**
- * Imperative bridge for reader WebViews (markdown or PDF): selection, highlights, paging.
+ * Imperative bridge for reader WebViews (HTML reader shell or PDF): selection, highlights, paging.
  */
 interface WebViewReaderBridge {
     suspend fun getSelectionSnapshot(

@@ -3,6 +3,8 @@ import { EditorProvider, useCurrentEditor } from "@tiptap/react"
 import { createEditorExtensions } from "./editor-extensions"
 import "./tiptap-styles.css"
 
+const EMPTY_DOC = { type: "doc" as const, content: [] }
+
 const IMAGE_NOT_FOUND_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
   <path d="M15.5 8C15.7761 8 16 7.77614 16 7.5C16 7.22386 15.7761 7 15.5 7M15.5 8C15.2239 8 15 7.77614 15 7.5C15 7.22386 15.2239 7 15.5 7M15.5 8V7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
   <path d="M2 2L22 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -12,9 +14,29 @@ const IMAGE_NOT_FOUND_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 
 
 interface TiptapEditorViewProps {
   editable: boolean
-  initialMarkdown?: string
+  /** TipTap/ProseMirror JSON document as string. */
+  initialDocumentJson?: string
   onEditorReady?: (editor: import("@tiptap/core").Editor) => void
   assetsBaseUrl?: string
+}
+
+function rewriteAssetPathsInDocumentJson(json: string, assetsBaseUrl: string): string {
+  if (!json.includes("../assets/")) return json
+  const base = assetsBaseUrl.replace(/\/?$/, "/")
+  return json.replaceAll("../assets/", `${base}assets/`)
+}
+
+function parseInitialContent(initialDocumentJson: string | undefined, assetsBaseUrl: string | undefined): Record<string, unknown> {
+  let raw = initialDocumentJson?.trim() ? initialDocumentJson : ""
+  if (assetsBaseUrl && raw.includes("../assets/")) {
+    raw = rewriteAssetPathsInDocumentJson(raw, assetsBaseUrl)
+  }
+  if (!raw) return EMPTY_DOC as Record<string, unknown>
+  try {
+    return JSON.parse(raw) as Record<string, unknown>
+  } catch {
+    return EMPTY_DOC as Record<string, unknown>
+  }
 }
 
 function handleBrokenImage(img: HTMLImageElement) {
@@ -90,15 +112,11 @@ function EditorReadyNotifier({
 
 export function TiptapEditorView({
   editable,
-  initialMarkdown,
+  initialDocumentJson,
   onEditorReady,
   assetsBaseUrl,
 }: TiptapEditorViewProps) {
-  let content = initialMarkdown ?? ""
-  if (assetsBaseUrl && content.includes("../assets/")) {
-    const base = assetsBaseUrl.replace(/\/?$/, "/")
-    content = content.replace(/\]\(\.\.\/assets\//g, `](${base}assets/`)
-  }
+  const content = parseInitialContent(initialDocumentJson, assetsBaseUrl)
 
   const extensions = createEditorExtensions()
 
@@ -108,7 +126,6 @@ export function TiptapEditorView({
         extensions={extensions}
         editable={editable}
         content={content}
-        contentType="markdown"
         editorProps={{
           attributes: {
             class: "yaba-content-editable",

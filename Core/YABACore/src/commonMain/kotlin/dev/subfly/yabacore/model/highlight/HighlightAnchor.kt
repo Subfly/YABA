@@ -12,7 +12,7 @@ sealed interface HighlightAnchor {
 }
 
 /**
- * Anchor for readable markdown/Tiptap content.
+ * Anchor for readable HTML / rich-text content.
  */
 @Serializable
 @Stable

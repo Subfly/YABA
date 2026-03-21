@@ -12,10 +12,10 @@ data class NotemarkDetailUIState(
     val readableVersionId: String? = null,
     /** Base URL for resolving relative assets in the editor (`file://.../bookmarks/<id>/`). */
     val assetsBaseUrl: String? = null,
-    /** Markdown last loaded from disk / last successfully persisted. */
-    val lastSavedMarkdown: String = "",
+    /** Document JSON last loaded from disk / last successfully persisted. */
+    val lastSavedDocumentJson: String = "",
     /** Current editor buffer (mirrors WebView). */
-    val editorMarkdown: String = "",
+    val editorDocumentJson: String = "",
     val highlights: List<HighlightUiModel> = emptyList(),
     val saveMode: NoteSaveMode = NoteSaveMode.AUTOSAVE_3S_INACTIVITY,
     val isDirty: Boolean = false,

@@ -453,10 +453,8 @@ class LinkmarkCreationStateMachine :
         if (currentState().isInEditMode) return
         launch {
             val readable = ConverterResultProcessor.process(
-                markdown = event.markdown,
+                html = event.html,
                 assets = event.assets,
-                title = event.title,
-                author = event.author,
             )
             updateState {
                 if (it.isInEditMode) {

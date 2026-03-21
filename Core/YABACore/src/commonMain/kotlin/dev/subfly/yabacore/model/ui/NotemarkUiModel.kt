@@ -16,8 +16,8 @@ data class NotemarkUiModel(
     override val viewCount: Long = 0,
     override val isPrivate: Boolean = false,
     override val isPinned: Boolean = false,
-    /** Relative path to canonical note body markdown (e.g. `bookmarks/<id>/note/body.md`). */
-    val markdownRelativePath: String,
+    /** Relative path to canonical note body (document JSON, e.g. `bookmarks/<id>/note/body.json`). */
+    val documentRelativePath: String,
     /** Readable version id used for highlight anchors. */
     val readableVersionId: String,
     override val localImagePath: String? = null,

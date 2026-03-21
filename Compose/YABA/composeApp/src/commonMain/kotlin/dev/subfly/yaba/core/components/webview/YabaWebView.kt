@@ -9,10 +9,10 @@ import dev.subfly.yabacore.webview.YabaWebHostEvent
 import dev.subfly.yabacore.webview.YabaWebScrollDirection
 
 /**
- * Single entry WebView for markdown viewer, editor, HTML/PDF converter shells, and PDF viewer.
+ * Single entry WebView for readable HTML viewer, rich-text editor, HTML/PDF converter shells, and PDF viewer.
  *
  * @param onHostEvent Load state, reader metrics, and converter results
- * @param onBridgeReady Non-null when the reader bridge is available ([YabaWebFeature.MarkdownViewer], [YabaWebFeature.PdfViewer])
+ * @param onBridgeReady Non-null when the reader bridge is available ([YabaWebFeature.ReadableViewer], [YabaWebFeature.PdfViewer])
  */
 @Composable
 fun YabaWebView(

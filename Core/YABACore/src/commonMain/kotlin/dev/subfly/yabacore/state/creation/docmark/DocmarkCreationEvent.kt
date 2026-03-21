@@ -35,14 +35,15 @@ sealed class DocmarkCreationEvent {
     ) : DocmarkCreationEvent() {
         override fun equals(other: Any?): Boolean =
             other is OnSetGeneratedPreview &&
-                extension == other.extension &&
-                if (imageBytes == null && other.imageBytes == null) true
-                else imageBytes != null && other.imageBytes != null && imageBytes.contentEquals(other.imageBytes)
+                    extension == other.extension &&
+                    if (imageBytes == null && other.imageBytes == null) true
+                    else imageBytes != null && other.imageBytes != null && imageBytes.contentEquals(
+                        other.imageBytes
+                    )
 
-        override fun hashCode(): Int = (imageBytes?.contentHashCode() ?: 0) * 31 + extension.hashCode()
+        override fun hashCode(): Int =
+            (imageBytes?.contentHashCode() ?: 0) * 31 + extension.hashCode()
     }
-
-    data class OnSetInternalReadableMarkdown(val markdown: String?) : DocmarkCreationEvent()
 
     data class OnChangeLabel(val newLabel: String) : DocmarkCreationEvent()
 

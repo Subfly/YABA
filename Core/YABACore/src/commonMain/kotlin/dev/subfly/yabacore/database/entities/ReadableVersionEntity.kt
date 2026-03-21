@@ -9,7 +9,7 @@ import androidx.room3.PrimaryKey
  * Room entity for readable content versions.
  *
  * Indexes immutable readable content stored at
- * `/bookmarks/<id>/readable/<versionId>.md`.
+ * `/bookmarks/<id>/readable/<versionId>.html` (or `.json` for note mirrors).
  *
  * This is a derived cache - the filesystem is authoritative.
  */
@@ -33,6 +33,4 @@ data class ReadableVersionEntity(
     val bookmarkId: String,
     val createdAt: Long,
     val relativePath: String,
-    val title: String?,
-    val author: String?,
 )

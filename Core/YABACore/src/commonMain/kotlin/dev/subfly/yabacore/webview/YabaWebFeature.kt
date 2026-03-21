@@ -5,8 +5,8 @@ import dev.subfly.yabacore.model.utils.ReaderPreferences
 
 /** Which web shell to load and what data to drive it with. */
 sealed class YabaWebFeature {
-    data class MarkdownViewer(
-        val markdown: String,
+    data class ReadableViewer(
+        val html: String,
         val assetsBaseUrl: String?,
         val readerPreferences: ReaderPreferences,
         val platform: YabaWebPlatform,
@@ -15,7 +15,7 @@ sealed class YabaWebFeature {
     ) : YabaWebFeature()
 
     data class Editor(
-        val initialMarkdown: String,
+        val initialDocumentJson: String,
         val assetsBaseUrl: String?,
         val highlights: List<HighlightUiModel> = emptyList(),
     ) : YabaWebFeature()

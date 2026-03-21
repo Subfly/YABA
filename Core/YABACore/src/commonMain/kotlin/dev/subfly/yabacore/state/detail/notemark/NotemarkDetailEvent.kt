@@ -9,8 +9,8 @@ sealed interface NotemarkDetailEvent {
 
     data class OnNoteSaveModeChanged(val mode: NoteSaveMode) : NotemarkDetailEvent
 
-    /** Editor content changed (markdown). */
-    data class OnEditorMarkdownChanged(val markdown: String) : NotemarkDetailEvent
+    /** Editor content changed (document JSON). */
+    data class OnEditorDocumentJsonChanged(val documentJson: String) : NotemarkDetailEvent
 
     /** User explicitly saves (manual mode or toolbar). */
     data object OnManualSave : NotemarkDetailEvent
