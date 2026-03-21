@@ -23,6 +23,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import android.util.Log
 import dev.subfly.yabacore.webview.WebLoadState
+import dev.subfly.yabacore.webview.WebViewEditorBridge
 import dev.subfly.yabacore.webview.WebViewReaderBridge
 import dev.subfly.yabacore.webview.YabaWebBridgeScripts
 import dev.subfly.yabacore.webview.YabaWebFeature
@@ -232,11 +233,15 @@ internal fun YabaEditorFeatureHost(
     feature: YabaWebFeature.Editor,
     onHostEvent: (YabaWebHostEvent) -> Unit,
     onUrlClick: (String) -> Boolean,
+    onEditorBridgeReady: (WebViewEditorBridge?) -> Unit,
+    onHighlightTap: (String) -> Unit,
 ) {
     val context = LocalContext.current
     val onHostEventState = rememberUpdatedState(onHostEvent)
+    val onEditorBridgeReadyState = rememberUpdatedState(onEditorBridgeReady)
     var isPageReady by remember { mutableStateOf(false) }
     var rendererCrashed by remember { mutableStateOf(false) }
+    var activeEditorBridge by remember { mutableStateOf<WebViewEditorBridge?>(null) }
     val pendingPermissionRequestRef = remember { mutableStateOf<Pair<PermissionRequest, Array<String>>?>(null) }
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions(),
@@ -258,7 +263,40 @@ internal fun YabaEditorFeatureHost(
         WebView(context).apply {
             applyHardenedWebSettings(this)
             setBackgroundColor(Color.TRANSPARENT)
+            isFocusable = true
+            isFocusableInTouchMode = true
         }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            activeEditorBridge = null
+            onEditorBridgeReadyState.value(null)
+        }
+    }
+
+    LaunchedEffect(rendererCrashed) {
+        if (rendererCrashed) {
+            activeEditorBridge = null
+            onEditorBridgeReadyState.value(null)
+        }
+    }
+
+    LaunchedEffect(isPageReady) {
+        if (!isPageReady || rendererCrashed) {
+            activeEditorBridge = null
+            onEditorBridgeReadyState.value(null)
+            return@LaunchedEffect
+        }
+        val ready = waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)
+        if (!ready) {
+            Log.w(YABA_WEBVIEW_LOG_TAG, "Editor bridge not ready before timeout")
+            return@LaunchedEffect
+        }
+        onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.BridgeReady))
+        val bridge = MarkdownWebViewEditorBridge(webView)
+        activeEditorBridge = bridge
+        onEditorBridgeReadyState.value(bridge)
     }
 
     LaunchedEffect(isPageReady, feature.initialMarkdown, feature.assetsBaseUrl) {
@@ -267,8 +305,38 @@ internal fun YabaEditorFeatureHost(
             Log.w(YABA_WEBVIEW_LOG_TAG, "Editor bridge not ready before timeout")
             return@LaunchedEffect
         }
-        onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.BridgeReady))
         applyMarkdownContent(webView, context, feature.initialMarkdown, feature.assetsBaseUrl)
+        MarkdownWebViewEditorBridge(webView).setEditable(true)
+    }
+
+    LaunchedEffect(isPageReady) {
+        if (!isPageReady || rendererCrashed) return@LaunchedEffect
+        installMarkdownHighlightTap(webView)
+    }
+
+    LaunchedEffect(isPageReady, feature.highlights) {
+        if (!isPageReady || rendererCrashed) return@LaunchedEffect
+        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY_LOOSE)) return@LaunchedEffect
+        MarkdownWebViewEditorBridge(webView).setHighlights(feature.highlights)
+    }
+
+    LaunchedEffect(activeEditorBridge) {
+        val b = activeEditorBridge ?: return@LaunchedEffect
+        var lastCan = false
+        while (isActive) {
+            val can = b.getCanCreateHighlight()
+            if (can != lastCan) {
+                lastCan = can
+                onHostEventState.value(
+                    YabaWebHostEvent.ReaderMetrics(
+                        canCreateHighlight = can,
+                        currentPage = 1,
+                        pageCount = 1,
+                    ),
+                )
+            }
+            delay(200)
+        }
     }
 
     AndroidView(
@@ -311,13 +379,15 @@ internal fun YabaEditorFeatureHost(
                         true
                     },
                     onUrlClick = onUrlClick,
-                    onHighlightTap = null,
+                    onHighlightTap = onHighlightTap,
                 )
             }
             if (rendererCrashed) return@AndroidView
             val lastLoadedUrl = webView.tag as? String
             if (lastLoadedUrl != loadUrl) {
                 isPageReady = false
+                activeEditorBridge = null
+                onEditorBridgeReadyState.value(null)
                 webView.loadUrl(loadUrl)
                 webView.tag = loadUrl
             }

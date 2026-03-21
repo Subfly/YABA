@@ -19,6 +19,7 @@ import androidx.core.net.toUri
 import androidx.webkit.WebViewAssetLoader
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.suspendCancellableCoroutine
+import org.json.JSONTokener
 import kotlin.coroutines.resume
 
 /**
@@ -85,15 +86,34 @@ internal fun toInternalStorageAssetLoaderFileUrl(
     return "$ASSET_LOADER_DOMAIN/local/$relativePath"
 }
 
+/**
+ * Decodes the value returned by [WebView.evaluateJavascript], which is JSON-encoded.
+ *
+ * The previous implementation only unescaped `\"` and `\\\\`, not JSON escapes like `\n`.
+ * That left literal backslash-n in [MarkdownWebViewEditorBridge.getMarkdown] results, which
+ * were persisted to disk and reloaded as plain text instead of markdown newlines.
+ */
 internal fun decodeJsStringResult(value: String?): String {
     if (value == null) return ""
     val trimmed = value.trim()
-    if (trimmed.startsWith("\"") && trimmed.endsWith("\"")) {
-        return trimmed.removeSurrounding("\"")
-            .replace("\\\"", "\"")
-            .replace("\\\\", "\\")
+    if (trimmed.isEmpty()) return ""
+    if (trimmed == "null" || trimmed == "undefined") return ""
+    return try {
+        when (val parsed = JSONTokener(trimmed).nextValue()) {
+            is String -> parsed
+            else -> trimmed
+        }
+    } catch (_: Exception) {
+        if (trimmed.startsWith("\"") && trimmed.endsWith("\"")) {
+            return trimmed.removeSurrounding("\"")
+                .replace("\\\"", "\"")
+                .replace("\\\\", "\\")
+                .replace("\\n", "\n")
+                .replace("\\r", "\r")
+                .replace("\\t", "\t")
+        }
+        return trimmed
     }
-    return trimmed
 }
 
 internal suspend fun evaluateJs(webView: WebView, script: String): String =

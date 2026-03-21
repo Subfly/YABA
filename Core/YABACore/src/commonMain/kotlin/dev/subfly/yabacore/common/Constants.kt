@@ -136,6 +136,19 @@ object CoreConstants {
             )
         }
 
+        object Notemark {
+            private const val NOTE_SUBDIR = "note"
+            private const val NOTE_BODY_BASENAME = "body"
+
+            /** Canonical note body: bookmarks/<id>/note/body.md */
+            fun markdownBodyPath(bookmarkId: String, extension: String = "md"): String =
+                join(
+                    bookmarkFolder(bookmarkId),
+                    NOTE_SUBDIR,
+                    "$NOTE_BODY_BASENAME.$extension",
+                )
+        }
+
         fun bookmarkFolderPath(
             bookmarkId: String,
             subtypeDirectory: String? = null,
@@ -175,6 +188,7 @@ object CoreConstants {
         const val SHOW_MENU_BAR_ITEM = "showMenuBarItem" // mac / catalyst only
         const val USE_SIMPLIFIED_SHARE = "useSimplifiedShare" // share extension uses app-group
         const val PREVENT_DELETION_SYNC = "preventDeletionSync"
+        const val NOTE_SAVE_MODE = "noteSaveMode"
     }
 
     /**

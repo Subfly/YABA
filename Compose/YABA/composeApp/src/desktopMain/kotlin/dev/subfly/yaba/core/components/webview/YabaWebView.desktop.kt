@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import dev.subfly.yabacore.webview.WebViewEditorBridge
 import dev.subfly.yabacore.webview.WebViewReaderBridge
 import dev.subfly.yabacore.webview.YabaWebFeature
 import dev.subfly.yabacore.webview.YabaWebHostEvent
@@ -26,6 +27,7 @@ actual fun YabaWebViewHost(
     onUrlClick: (String) -> Boolean,
     onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit,
     onBridgeReady: (WebViewReaderBridge?) -> Unit,
+    onEditorBridgeReady: (WebViewEditorBridge?) -> Unit,
     onHighlightTap: (String) -> Unit,
 ) {
     val showPlaceholder = feature is YabaWebFeature.MarkdownViewer ||
@@ -49,6 +51,7 @@ actual fun YabaWebViewHost(
 
     LaunchedEffect(feature) {
         onBridgeReady(null)
+        onEditorBridgeReady(null)
         when (val f = feature) {
             is YabaWebFeature.HtmlConverter ->
                 if (f.input != null) {

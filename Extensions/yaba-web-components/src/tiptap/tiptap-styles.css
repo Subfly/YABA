@@ -11,15 +11,18 @@
   caret-color: var(--yaba-cursor, var(--yaba-primary));
 }
 
-body[data-yaba-page="viewer"] .yaba-editor-container {
+/* Read-it-later viewer + note editor: reader typography and on-background text (automatic mode follows --yaba-reader-on-bg). */
+body[data-yaba-page="viewer"] .yaba-editor-container,
+body[data-yaba-page="editor"] .yaba-editor-container {
   font-size: var(--yaba-reader-font-size, 18px);
   line-height: var(--yaba-reader-line-height, 1.6);
   color: var(--yaba-reader-on-bg, var(--yaba-on-bg));
-  /* Keep full-screen WebView while reserving reading space inside the scrollable content. */
-  padding-top: 5.5rem;
-  padding-bottom: 3.25rem;
   padding-top: calc(54px + env(safe-area-inset-top, 0px) + 1rem);
   padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px) + 1rem);
+}
+
+body[data-yaba-page="editor"] .yaba-editor-container {
+  background: transparent;
 }
 
 .yaba-editor-container [contenteditable="true"] {
@@ -171,8 +174,9 @@ body[data-yaba-page="viewer"] .yaba-editor-container {
   font-size: 0.9em;
 }
 
-/* Viewer-only fenced code behavior: keep single lines + horizontal scroll */
-body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror pre {
+/* Viewer + note editor: fenced code — single lines + horizontal scroll */
+body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror pre,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror pre {
   overflow-x: auto;
   overflow-y: hidden;
   white-space: pre;
@@ -181,7 +185,8 @@ body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror pre {
   -webkit-overflow-scrolling: touch;
 }
 
-body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror pre code {
+body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror pre code,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror pre code {
   display: block;
   min-width: max-content;
   white-space: inherit;
@@ -192,34 +197,48 @@ body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror pre code {
   border-radius: 0;
 }
 
-/* Viewer-only syntax highlighting for lowlight/hljs token classes */
-body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror pre code.hljs {
+/* Syntax highlighting (lowlight/hljs) — viewer + editor */
+body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror pre code.hljs,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror pre code.hljs {
   color: var(--yaba-reader-on-bg, var(--yaba-on-bg));
 }
 
 body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-comment,
-body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-quote {
+body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-quote,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-comment,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-quote {
   color: var(--yaba-on-surface-variant);
   font-style: italic;
 }
 
 body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-keyword,
 body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-selector-tag,
-body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-subst {
+body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-subst,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-keyword,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-selector-tag,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-subst {
   color: #c678dd;
 }
 
 body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-string,
 body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-doctag,
 body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-regexp,
-body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-attr {
+body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-attr,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-string,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-doctag,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-regexp,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-attr {
   color: #98c379;
 }
 
 body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-number,
 body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-literal,
 body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-variable,
-body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-template-variable {
+body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-template-variable,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-number,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-literal,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-variable,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-template-variable {
   color: #d19a66;
 }
 
@@ -227,19 +246,30 @@ body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-title,
 body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-title.class_,
 body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-title.function_,
 body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-function .hljs-title,
-body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-section {
+body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-section,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-title,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-title.class_,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-title.function_,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-function .hljs-title,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-section {
   color: #61afef;
 }
 
 body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-type,
 body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-built_in,
-body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-class .hljs-title {
+body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-class .hljs-title,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-type,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-built_in,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-class .hljs-title {
   color: #e5c07b;
 }
 
 body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-tag,
 body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-name,
-body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-attribute {
+body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-attribute,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-tag,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-name,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-attribute {
   color: #e06c75;
 }
 

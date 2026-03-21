@@ -3,6 +3,7 @@ package dev.subfly.yabacore.preferences
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.CardImageSizing
 import dev.subfly.yabacore.model.utils.FabPosition
+import dev.subfly.yabacore.model.utils.NoteSaveMode
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
 import dev.subfly.yabacore.model.utils.ThemePreference
@@ -24,6 +25,7 @@ data class UserPreferences(
     val preferredBookmarkSorting: SortType = SortType.CREATED_AT,
     val preferredBookmarkSortOrder: SortOrderType = SortOrderType.DESCENDING,
     val preferredFabPosition: FabPosition = FabPosition.CENTER,
+    val preferredNoteSaveMode: NoteSaveMode = NoteSaveMode.AUTOSAVE_3S_INACTIVITY,
     val disableBackgroundAnimation: Boolean = false,
     val deviceId: String = "",
     val deviceName: String = "",
@@ -31,7 +33,6 @@ data class UserPreferences(
     val showMenuBarItem: Boolean = true,
     val useSimplifiedShare: Boolean = false,
     val preventDeletionSync: Boolean = false,
-    // Announcement toggles (defaults keep announcements hidden unless explicitly reset)
     val announcementsYaba1_2Update: Boolean = true,
     val announcementsYaba1_3Update: Boolean = true,
     val announcementsYaba1_4Update: Boolean = true,

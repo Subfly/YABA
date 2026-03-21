@@ -12,6 +12,7 @@ import dev.subfly.yabacore.database.dao.FolderDao
 import dev.subfly.yabacore.database.dao.HighlightDao
 import dev.subfly.yabacore.database.dao.ImageBookmarkDao
 import dev.subfly.yabacore.database.dao.LinkBookmarkDao
+import dev.subfly.yabacore.database.dao.NoteBookmarkDao
 import dev.subfly.yabacore.database.dao.ReadableAssetDao
 import dev.subfly.yabacore.database.dao.ReadableVersionDao
 import dev.subfly.yabacore.database.dao.TagBookmarkDao
@@ -22,6 +23,7 @@ import dev.subfly.yabacore.database.entities.FolderEntity
 import dev.subfly.yabacore.database.entities.HighlightEntity
 import dev.subfly.yabacore.database.entities.ImageBookmarkEntity
 import dev.subfly.yabacore.database.entities.LinkBookmarkEntity
+import dev.subfly.yabacore.database.entities.NoteBookmarkEntity
 import dev.subfly.yabacore.database.entities.ReadableAssetEntity
 import dev.subfly.yabacore.database.entities.ReadableVersionEntity
 import dev.subfly.yabacore.database.entities.TagBookmarkCrossRef
@@ -44,6 +46,7 @@ internal expect object YabaDatabaseCtor : RoomDatabaseConstructor<YabaDatabase> 
         LinkBookmarkEntity::class,
         ImageBookmarkEntity::class,
         DocBookmarkEntity::class,
+        NoteBookmarkEntity::class,
         ReadableVersionEntity::class,
         ReadableAssetEntity::class,
         HighlightEntity::class,
@@ -60,6 +63,7 @@ abstract class YabaDatabase : RoomDatabase() {
     abstract fun linkBookmarkDao(): LinkBookmarkDao
     abstract fun imageBookmarkDao(): ImageBookmarkDao
     abstract fun docBookmarkDao(): DocBookmarkDao
+    abstract fun noteBookmarkDao(): NoteBookmarkDao
     abstract fun tagBookmarkDao(): TagBookmarkDao
     abstract fun readableVersionDao(): ReadableVersionDao
     abstract fun readableAssetDao(): ReadableAssetDao

@@ -71,7 +71,16 @@ fun RecentBookmarksGridSection(
                     }
 
                     BookmarkKind.NOTE -> {
-                        // TODO: Implement NotemarkItemView
+                        BookmarkItemView(
+                            model = bookmarkModel,
+                            appearance = appearance,
+                            cardImageSizing = cardImageSizing,
+                            onClick = { onClickBookmark(bookmarkModel) },
+                            onDeleteBookmark = { onDeleteBookmark(bookmarkModel) },
+                            onShareBookmark = { onShareBookmark(bookmarkModel) },
+                            index = index,
+                            count = bookmarks.size,
+                        )
                     }
 
                     BookmarkKind.IMAGE -> {

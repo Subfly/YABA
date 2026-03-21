@@ -12,6 +12,7 @@ import dev.subfly.yabacore.common.CoreConstants
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.CardImageSizing
 import dev.subfly.yabacore.model.utils.FabPosition
+import dev.subfly.yabacore.model.utils.NoteSaveMode
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
 import dev.subfly.yabacore.model.utils.ThemePreference
@@ -73,6 +74,7 @@ internal object UserPreferenceKeys {
         booleanPreferencesKey(CoreConstants.Announcements.LEGALS_UPDATE_2)
 
     val migrationCompleted = booleanPreferencesKey(MIGRATION_FLAG)
+    val preferredNoteSaveMode = stringPreferencesKey(CoreConstants.Settings.NOTE_SAVE_MODE)
 }
 
 class UserPreferencesStore internal constructor(
@@ -182,6 +184,9 @@ class UserPreferencesStore internal constructor(
 
     suspend fun markMigrationComplete() =
         setBoolean(UserPreferenceKeys.migrationCompleted, true)
+
+    suspend fun setPreferredNoteSaveMode(value: NoteSaveMode) =
+        setEnum(UserPreferenceKeys.preferredNoteSaveMode, value)
 
     @OptIn(ExperimentalUuidApi::class)
     suspend fun ensureDefaults() {
@@ -297,6 +302,10 @@ private fun Preferences.toUserPreferences(): UserPreferences =
             true
         ),
         migrationCompleted = getBoolean(UserPreferenceKeys.migrationCompleted, false),
+        preferredNoteSaveMode = enumValue(
+            UserPreferenceKeys.preferredNoteSaveMode,
+            NoteSaveMode.AUTOSAVE_3S_INACTIVITY,
+        ),
     )
 
 private fun Preferences.getBoolean(

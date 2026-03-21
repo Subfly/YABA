@@ -6,7 +6,10 @@ function EditorApp() {
   const [editable] = useState(true)
 
   return (
-    <div data-yaba-editor style={{ width: "100%", height: "100%" }}>
+    <div
+      data-yaba-editor
+      style={{ width: "100%", height: "100%", backgroundColor: "transparent" }}
+    >
       <TiptapEditorView
         editable={editable}
         onEditorReady={initEditorBridge}

@@ -58,6 +58,38 @@ object ReadableContentManager {
     }
 
     /**
+     * Writes or overwrites the readable mirror used for highlight anchoring on notemarks.
+     * Unlike [saveReadableContentInternal], this overwrites the same [versionId] file in place.
+     */
+    suspend fun syncNotemarkReadableMirror(
+        bookmarkId: String,
+        versionId: String,
+        markdownBody: String,
+        title: String?,
+        author: String?,
+    ) {
+        val relativePath = CoreConstants.FileSystem.Linkmark.readableVersionPath(bookmarkId, versionId)
+        val file = accessProvider.resolveRelativePath(relativePath, ensureParentExists = true)
+        val content = writeReadableMarkdownWithFrontmatter(markdownBody, title, author)
+
+        file.write(content.encodeToByteArray())
+
+        val existing = readableVersionDao.getById(versionId)
+        val createdAt = existing?.createdAt ?: Clock.System.now().toEpochMilliseconds()
+
+        readableVersionDao.upsert(
+            ReadableVersionEntity(
+                id = versionId,
+                bookmarkId = bookmarkId,
+                createdAt = createdAt,
+                relativePath = relativePath,
+                title = title,
+                author = author,
+            ),
+        )
+    }
+
+    /**
      * Internal implementation for saving readable content.
      * @return The created version ID
      */

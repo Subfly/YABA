@@ -45,6 +45,7 @@ import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
 import dev.subfly.yaba.core.navigation.creation.DocmarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.ImagemarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.LinkmarkCreationRoute
+import dev.subfly.yaba.core.navigation.creation.NotemarkCreationRoute
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalDeletionDialogManager
@@ -130,7 +131,7 @@ fun BookmarkItemView(
                         }
 
                         BookmarkKind.NOTE -> {
-
+                            creationNavigator.add(NotemarkCreationRoute(bookmarkId = model.id))
                         }
 
                         BookmarkKind.IMAGE -> {
@@ -226,7 +227,7 @@ fun BookmarkItemView(
                         }
 
                         BookmarkKind.NOTE -> {
-
+                            creationNavigator.add(NotemarkCreationRoute(bookmarkId = model.id))
                         }
 
                         BookmarkKind.IMAGE -> {

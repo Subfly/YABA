@@ -2,6 +2,7 @@ package dev.subfly.yaba.core.components.webview
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import dev.subfly.yabacore.webview.WebViewEditorBridge
 import dev.subfly.yabacore.webview.WebViewReaderBridge
 import dev.subfly.yabacore.webview.YabaWebFeature
 import dev.subfly.yabacore.webview.YabaWebHostEvent
@@ -22,6 +23,7 @@ fun YabaWebView(
     onUrlClick: (String) -> Boolean = { false },
     onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit = {},
     onBridgeReady: (WebViewReaderBridge?) -> Unit = {},
+    onEditorBridgeReady: (WebViewEditorBridge?) -> Unit = {},
     onHighlightTap: (String) -> Unit = {},
 ) {
     YabaWebViewHost(
@@ -32,6 +34,7 @@ fun YabaWebView(
         onUrlClick = onUrlClick,
         onScrollDirectionChanged = onScrollDirectionChanged,
         onBridgeReady = onBridgeReady,
+        onEditorBridgeReady = onEditorBridgeReady,
         onHighlightTap = onHighlightTap,
     )
 }
@@ -45,5 +48,6 @@ internal expect fun YabaWebViewHost(
     onUrlClick: (String) -> Boolean,
     onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit,
     onBridgeReady: (WebViewReaderBridge?) -> Unit,
+    onEditorBridgeReady: (WebViewEditorBridge?) -> Unit,
     onHighlightTap: (String) -> Unit,
 )

@@ -29,6 +29,10 @@ export interface YabaEditorBridge {
   getCanCreateHighlight: () => boolean
   setHighlights: (highlightsJson: string) => void
   scrollToHighlight: (highlightId: string) => void
+  /** True when editor markdown differs from last [flush] / [setMarkdown] baseline. */
+  isDirty: () => boolean
+  /** Marks current document as clean for [isDirty] (after native save). */
+  flush: () => void
   setPlatform: (platform: Platform) => void
   setAppearance: (mode: AppearanceMode) => void
   setCursorColor: (color: string) => void
@@ -64,6 +68,7 @@ export type EditorCommandPayload =
   | { type: "insertBlockMath"; latex: string }
 
 let editorInstance: Editor | null = null
+let lastPersistedMarkdown = ""
 let platform: Platform = "compose"
 let appearance: AppearanceMode = "auto"
 let cursorColor: string | null = null
@@ -135,23 +140,27 @@ function applyReaderTypographyVars(prefs: ReaderPreferences): void {
 }
 
 function applyReaderPreferences(): void {
-  const isViewerPage = document.body?.dataset.yabaPage === "viewer"
+  const page = document.body?.dataset.yabaPage
+  /** Read-it-later viewer + note editor: same reader theme + typography pipeline (incl. automatic / system). */
+  const useReaderAppearancePipeline = page === "viewer" || page === "editor"
 
-  if (!isViewerPage) {
-    applyTheme(platform, appearance, cursorColor)
-    clearSystemColorSchemeListener()
-  } else if (readerPreferences.theme === "system") {
-    applyTheme(platform, appearance, cursorColor)
-    if (appearance === "auto") ensureSystemColorSchemeListener()
-    else clearSystemColorSchemeListener()
-  } else if (readerPreferences.theme === "dark") {
-    applyTheme(platform, "dark", cursorColor)
-    clearSystemColorSchemeListener()
-  } else if (readerPreferences.theme === "light") {
-    applyTheme(platform, "light", cursorColor)
-    clearSystemColorSchemeListener()
+  if (useReaderAppearancePipeline) {
+    if (readerPreferences.theme === "system") {
+      applyTheme(platform, appearance, cursorColor)
+      if (appearance === "auto") ensureSystemColorSchemeListener()
+      else clearSystemColorSchemeListener()
+    } else if (readerPreferences.theme === "dark") {
+      applyTheme(platform, "dark", cursorColor)
+      clearSystemColorSchemeListener()
+    } else if (readerPreferences.theme === "light") {
+      applyTheme(platform, "light", cursorColor)
+      clearSystemColorSchemeListener()
+    } else {
+      applyTheme(platform, "light", cursorColor)
+      clearSystemColorSchemeListener()
+    }
   } else {
-    applyTheme(platform, "light", cursorColor)
+    applyTheme(platform, appearance, cursorColor)
     clearSystemColorSchemeListener()
   }
 
@@ -161,6 +170,7 @@ function applyReaderPreferences(): void {
 
 export function initEditorBridge(editor: Editor): void {
   editorInstance = editor
+  lastPersistedMarkdown = editor.getMarkdown() ?? ""
   const win = window as Window & { YabaEditorBridge?: YabaEditorBridge }
   win.YabaEditorBridge = {
     isReady: () => !!editorInstance,
@@ -230,9 +240,17 @@ export function initEditorBridge(editor: Editor): void {
         contentType: "markdown",
         emitUpdate: false,
       })
+      lastPersistedMarkdown = editorInstance?.getMarkdown() ?? content
     },
     getMarkdown: () => {
       return editorInstance?.getMarkdown() ?? ""
+    },
+    isDirty: () => {
+      const current = editorInstance?.getMarkdown() ?? ""
+      return current !== lastPersistedMarkdown
+    },
+    flush: () => {
+      lastPersistedMarkdown = editorInstance?.getMarkdown() ?? ""
     },
     focus: () => editorInstance?.commands.focus(),
     blur: () => editorInstance?.commands.blur(),

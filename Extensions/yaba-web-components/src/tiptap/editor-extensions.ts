@@ -13,6 +13,7 @@ import TableCell from "@tiptap/extension-table-cell"
 import TableHeader from "@tiptap/extension-table-header"
 import TaskList from "@tiptap/extension-task-list"
 import TaskItem from "@tiptap/extension-task-item"
+import { Placeholder, TrailingNode } from "@tiptap/extensions"
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight"
 import { Markdown } from "@tiptap/markdown"
 import { all, createLowlight } from "lowlight"
@@ -94,6 +95,15 @@ export function createEditorExtensions(): Extensions {
       HTMLAttributes: {
         class: "yaba-editor-task-item",
       },
+    }),
+    Placeholder.configure({
+      placeholder: "",
+      showOnlyWhenEditable: true,
+      showOnlyCurrent: false,
+    }),
+    TrailingNode.configure({
+      node: "paragraph",
+      notAfter: ["paragraph"],
     }),
     CodeBlockLowlight.configure({
       lowlight,

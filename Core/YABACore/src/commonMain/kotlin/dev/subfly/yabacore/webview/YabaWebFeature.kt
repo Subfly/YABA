@@ -17,6 +17,7 @@ sealed class YabaWebFeature {
     data class Editor(
         val initialMarkdown: String,
         val assetsBaseUrl: String?,
+        val highlights: List<HighlightUiModel> = emptyList(),
     ) : YabaWebFeature()
 
     data class HtmlConverter(

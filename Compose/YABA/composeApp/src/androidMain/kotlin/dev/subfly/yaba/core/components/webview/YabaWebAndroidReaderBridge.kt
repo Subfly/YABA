@@ -7,6 +7,8 @@ import dev.subfly.yabacore.model.highlight.ReadableAnchor
 import dev.subfly.yabacore.model.highlight.ReadableSelectionDraft
 import dev.subfly.yabacore.model.ui.HighlightUiModel
 import dev.subfly.yabacore.model.utils.ReaderPreferences
+import dev.subfly.yabacore.webview.WebViewEditorBridge
+import dev.subfly.yabacore.webview.normalizeMarkdownEscapesCorruption
 import dev.subfly.yabacore.webview.WebViewReaderBridge
 import dev.subfly.yabacore.webview.YabaMarkdownReaderBridgeScripts
 import dev.subfly.yabacore.webview.YabaPdfReaderBridgeScripts
@@ -75,6 +77,45 @@ internal fun MarkdownWebViewReaderBridge(
     override suspend fun scrollToHighlight(highlightId: String) {
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY_LOOSE)) return
         evaluateJs(webView, YabaMarkdownReaderBridgeScripts.scrollToHighlightScript(highlightId))
+    }
+}
+
+@Suppress("FunctionName")
+internal fun MarkdownWebViewEditorBridge(
+    webView: WebView,
+): WebViewEditorBridge {
+    val reader = MarkdownWebViewReaderBridge(webView)
+    return object : WebViewEditorBridge {
+        override suspend fun getMarkdown(): String {
+            if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return ""
+            val raw = evaluateJs(webView, YabaMarkdownReaderBridgeScripts.getMarkdownScript())
+            val decoded = decodeJsStringResult(raw)
+            return normalizeMarkdownEscapesCorruption(decoded)
+        }
+
+        override suspend fun setEditable(editable: Boolean) {
+            if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return
+            evaluateJs(webView, YabaMarkdownReaderBridgeScripts.setEditableScript(editable))
+        }
+
+        override suspend fun dispatch(payloadJson: String) {
+            if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return
+            val escaped = escapeForJsSingleQuotedString(payloadJson)
+            evaluateJs(webView, YabaMarkdownReaderBridgeScripts.dispatchScript(escaped))
+        }
+
+        override suspend fun getSelectionSnapshot(
+            bookmarkId: String,
+            readableVersionId: String,
+        ): ReadableSelectionDraft? = reader.getSelectionSnapshot(bookmarkId, readableVersionId)
+
+        override suspend fun getCanCreateHighlight(): Boolean = reader.getCanCreateHighlight()
+
+        override suspend fun setHighlights(highlights: List<HighlightUiModel>) =
+            reader.setHighlights(highlights)
+
+        override suspend fun scrollToHighlight(highlightId: String) =
+            reader.scrollToHighlight(highlightId)
     }
 }
 

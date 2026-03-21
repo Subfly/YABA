@@ -24,6 +24,7 @@ import dev.subfly.yaba.ui.detail.EmptyDetailView
 import dev.subfly.yaba.ui.detail.bookmark.doc.DocmarkDetailView
 import dev.subfly.yaba.ui.detail.bookmark.image.ImagemarkDetailView
 import dev.subfly.yaba.ui.detail.bookmark.link.LinkmarkDetailView
+import dev.subfly.yaba.ui.detail.bookmark.note.NotemarkDetailView
 import dev.subfly.yaba.ui.detail.folder.FolderDetailView
 import dev.subfly.yaba.ui.detail.tag.TagDetailView
 import dev.subfly.yaba.ui.home.HomeView
@@ -99,6 +100,9 @@ fun YabaMainNavigationView(
             }
             entry<LinkDetailRoute>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
                 LinkmarkDetailView(bookmarkId = key.bookmarkId)
+            }
+            entry<NoteDetailRoute>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
+                NotemarkDetailView(bookmarkId = key.bookmarkId)
             }
             entry<ImageDetailRoute>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
                 ImagemarkDetailView(bookmarkId = key.bookmarkId)

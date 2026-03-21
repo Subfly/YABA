@@ -16,6 +16,7 @@ import dev.subfly.yaba.ui.creation.bookmark.BookmarkCreationRouteSelectionConten
 import dev.subfly.yaba.ui.creation.bookmark.docmark.DocmarkCreationContent
 import dev.subfly.yaba.ui.creation.bookmark.imagemark.ImagemarkCreationContent
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.LinkmarkCreationContent
+import dev.subfly.yaba.ui.creation.bookmark.notemark.NotemarkCreationContent
 import dev.subfly.yaba.ui.creation.folder.FolderCreationContent
 import dev.subfly.yaba.ui.creation.highlight.HighlightCreationContent
 import dev.subfly.yaba.ui.creation.tag.TagCreationContent
@@ -90,6 +91,9 @@ fun YabaCreationNavigationView(
                     bookmarkId = key.bookmarkId,
                     initialUrl = key.initialUrl,
                 )
+            }
+            entry<NotemarkCreationRoute> { key ->
+                NotemarkCreationContent(bookmarkId = key.bookmarkId)
             }
             entry<ImagemarkCreationRoute> { key ->
                 ImagemarkCreationContent(bookmarkId = key.bookmarkId)

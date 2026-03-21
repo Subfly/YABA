@@ -40,9 +40,16 @@ body {
   color: var(--yaba-on-bg);
 }
 
+/* Note editor: transparent shell (Compose draws the surface); reader CSS vars color TipTap (same pipeline as viewer). */
 body[data-yaba-page="editor"] {
-  background: var(--yaba-bg);
-  color: var(--yaba-on-bg);
+  background: transparent;
+  /* Avoid stray inherited text color outside the scroll column; content uses --yaba-reader-on-bg in tiptap-styles. */
+  color: transparent;
+}
+
+body[data-yaba-page="editor"] #root,
+body[data-yaba-page="editor"] [data-yaba-editor] {
+  background: transparent;
 }
 
 body[data-yaba-page="viewer"] {

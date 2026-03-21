@@ -154,6 +154,44 @@ object YabaMarkdownReaderBridgeScripts {
         })();
         """.trimIndent()
     }
+
+    fun getMarkdownScript(): String =
+        """
+        (function() {
+            try {
+                if (window.YabaEditorBridge && window.YabaEditorBridge.getMarkdown) {
+                    return window.YabaEditorBridge.getMarkdown();
+                }
+                return "";
+            } catch(e) { return ""; }
+        })();
+        """.trimIndent()
+
+    fun setEditableScript(editable: Boolean): String =
+        """
+        (function() {
+            try {
+                if (window.YabaEditorBridge && window.YabaEditorBridge.setEditable) {
+                    window.YabaEditorBridge.setEditable($editable);
+                }
+            } catch(e) {}
+        })();
+        """.trimIndent()
+
+    /**
+     * @param payloadJsonEscaped JSON text escaped for embedding in a single-quoted JS string.
+     */
+    fun dispatchScript(payloadJsonEscaped: String): String =
+        """
+        (function() {
+            try {
+                var payload = JSON.parse('$payloadJsonEscaped');
+                if (window.YabaEditorBridge && window.YabaEditorBridge.dispatch) {
+                    window.YabaEditorBridge.dispatch(payload);
+                }
+            } catch(e) {}
+        })();
+        """.trimIndent()
 }
 
 /**
