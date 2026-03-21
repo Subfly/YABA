@@ -16,9 +16,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LinearWavyProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -27,15 +25,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.webview.YabaWebView
+import dev.subfly.yaba.core.navigation.creation.HighlightCreationRoute
+import dev.subfly.yaba.ui.detail.bookmark.components.BookmarkDetailContentTopBar
+import dev.subfly.yaba.ui.detail.bookmark.components.bookmarkDetailIconButtonColors
+import dev.subfly.yaba.ui.detail.bookmark.components.bookmarkFolderAccentColor
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkContentDropdownMenu
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkReaderFloatingToolbar
-import dev.subfly.yaba.core.navigation.creation.HighlightCreationRoute
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalCreationContentNavigator
@@ -51,9 +51,9 @@ import dev.subfly.yabacore.webview.YabaWebFeature
 import dev.subfly.yabacore.webview.YabaWebHostEvent
 import dev.subfly.yabacore.webview.YabaWebPlatform
 import dev.subfly.yabacore.webview.YabaWebScrollDirection
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
-import yaba.composeapp.generated.resources.bookmark_detail_title
 import yaba.composeapp.generated.resources.reader_not_available_description
 import yaba.composeapp.generated.resources.reader_not_available_title
 
@@ -91,6 +91,11 @@ internal fun LinkmarkContentLayout(
     var isMenuExpanded by remember { mutableStateOf(false) }
     var hasSelection by remember { mutableStateOf(false) }
 
+    val folderAccent by remember(state.bookmark) {
+        derivedStateOf { bookmarkFolderAccentColor(state.bookmark) }
+    }
+    val menuIconButtonColors = bookmarkDetailIconButtonColors(folderAccent)
+
     val converterInput by remember(state.converterHtml) {
         derivedStateOf {
             state.converterHtml?.let { html ->
@@ -114,63 +119,21 @@ internal fun LinkmarkContentLayout(
                             author = null,
                         ),
                     )
+
                 is YabaWebHostEvent.HtmlConverterFailure ->
                     onEvent(LinkmarkDetailEvent.OnConverterFailed(error = ev.error))
+
                 else -> Unit
             }
         },
     )
 
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        topBar = {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                TopAppBar(
-                    modifier = Modifier.fillMaxWidth(),
-                    title = { Text(text = stringResource(Res.string.bookmark_detail_title)) },
-                    navigationIcon = {
-                        IconButton(onClick = navigator::removeLastOrNull) {
-                            YabaIcon(name = "arrow-left-01")
-                        }
-                    },
-                    actions = {
-                        IconButton(
-                            onClick = onShowDetail,
-                            shapes = IconButtonDefaults.shapes(),
-                            content = { YabaIcon(name = "information-circle") }
-                        )
-                        Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
-                            IconButton(
-                                onClick = { isMenuExpanded = !isMenuExpanded },
-                                shapes = IconButtonDefaults.shapes(),
-                            ) { YabaIcon(name = "more-horizontal-circle-02") }
-
-                            LinkmarkContentDropdownMenu(
-                                expanded = isMenuExpanded,
-                                onDismissRequest = { isMenuExpanded = false },
-                                state = state,
-                                onEvent = onEvent,
-                                onShowRemindMePicker = onShowRemindMePicker,
-                            )
-                        }
-                    }
-                )
-                AnimatedContent(state.isLoading || state.isUpdatingReadable) { loading ->
-                    if (loading) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 4.dp)
-                                .background(color = MaterialTheme.colorScheme.surface)
-                        ) { LinearWavyProgressIndicator(modifier = Modifier.fillMaxWidth()) }
-                    } else {
-                        Box(modifier = Modifier.fillMaxWidth())
-                    }
-                }
-            }
-        }
-    ) { paddings ->
-        Box(modifier = Modifier.fillMaxSize().padding(paddings)) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.background),
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
             if (hasReaderContent) {
                 LaunchedEffect(state.scrollToHighlightId) {
                     val highlightId = state.scrollToHighlightId ?: return@LaunchedEffect
@@ -180,6 +143,7 @@ internal fun LinkmarkContentLayout(
                 }
 
                 LinkmarkReaderFloatingToolbar(
+                    modifier = Modifier.padding(bottom = 8.dp),
                     isVisible = isReaderToolbarVisible || hasSelection,
                     readerPreferences = state.readerPreferences,
                     hasSelection = hasSelection,
@@ -219,6 +183,7 @@ internal fun LinkmarkContentLayout(
                         when (ev) {
                             is YabaWebHostEvent.ReaderMetrics ->
                                 hasSelection = ev.canCreateHighlight
+
                             else -> Unit
                         }
                     },
@@ -250,6 +215,49 @@ internal fun LinkmarkContentLayout(
                     Text(text = stringResource(Res.string.reader_not_available_description))
                 }
             }
+        }
+
+        Column(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .fillMaxWidth(),
+        ) {
+            BookmarkDetailContentTopBar(
+                folderYabaColor = folderAccent,
+                onBack = navigator::removeLastOrNull,
+                onShowDetail = onShowDetail,
+                overflowMenu = {
+                    Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
+                        IconButton(
+                            onClick = { isMenuExpanded = !isMenuExpanded },
+                            colors = menuIconButtonColors,
+                            shapes = IconButtonDefaults.shapes(),
+                        ) { YabaIcon(name = "more-horizontal-circle-02", color = folderAccent) }
+
+                        LinkmarkContentDropdownMenu(
+                            expanded = isMenuExpanded,
+                            onDismissRequest = { isMenuExpanded = false },
+                            state = state,
+                            onEvent = onEvent,
+                            onShowRemindMePicker = onShowRemindMePicker,
+                        )
+                    }
+                },
+                loadingIndicator = {
+                    AnimatedContent(state.isLoading || state.isUpdatingReadable) { loading ->
+                        if (loading) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 4.dp)
+                                    .background(color = MaterialTheme.colorScheme.surface)
+                            ) { LinearWavyProgressIndicator(modifier = Modifier.fillMaxWidth()) }
+                        } else {
+                            Box(modifier = Modifier.fillMaxWidth())
+                        }
+                    }
+                },
+            )
         }
     }
 }

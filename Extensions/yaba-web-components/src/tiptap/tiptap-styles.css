@@ -15,6 +15,11 @@ body[data-yaba-page="viewer"] .yaba-editor-container {
   font-size: var(--yaba-reader-font-size, 18px);
   line-height: var(--yaba-reader-line-height, 1.6);
   color: var(--yaba-reader-on-bg, var(--yaba-on-bg));
+  /* Keep full-screen WebView while reserving reading space inside the scrollable content. */
+  padding-top: 5.5rem;
+  padding-bottom: 3.25rem;
+  padding-top: calc(36px + env(safe-area-inset-top, 0px) + 1rem);
+  padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px) + 1rem);
 }
 
 .yaba-editor-container [contenteditable="true"] {

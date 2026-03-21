@@ -60,3 +60,43 @@ body[data-yaba-page="pdf-viewer"] {
   width: 100%;
   height: 100%;
 }
+
+/* Reserve space under transparent Compose chrome + system bars (viewer / PDF WebViews). */
+.yaba-web-chrome-spacer {
+  flex-shrink: 0;
+  width: 100%;
+  pointer-events: none;
+}
+
+.yaba-web-chrome-spacer--top {
+  /* min-height: fallback when calc(env()) is unsupported and the whole height declaration is dropped */
+  min-height: 36px;
+  height: calc(36px + env(safe-area-inset-top, 0px));
+}
+
+.yaba-web-chrome-spacer--bottom {
+  min-height: 18px;
+  height: calc(18px + env(safe-area-inset-bottom, 0px));
+}
+
+/* Read-it-later / TipTap: keep scrolling bounded to the editor slot in full-screen viewer. */
+body[data-yaba-page="viewer"] [data-yaba-viewer] {
+  overflow: hidden;
+}
+
+.yaba-viewer-editor-slot {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+body[data-yaba-page="viewer"] .yaba-viewer-editor-slot > .yaba-editor-container {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  height: auto;
+  overflow: auto;
+}

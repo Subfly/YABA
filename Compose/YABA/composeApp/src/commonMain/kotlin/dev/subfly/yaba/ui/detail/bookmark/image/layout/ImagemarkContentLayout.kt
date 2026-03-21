@@ -20,10 +20,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LinearWavyProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -40,6 +38,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import dev.subfly.yaba.ui.detail.bookmark.components.BookmarkDetailContentTopBar
+import dev.subfly.yaba.ui.detail.bookmark.components.bookmarkDetailIconButtonColors
+import dev.subfly.yaba.ui.detail.bookmark.components.bookmarkFolderAccentColor
 import dev.subfly.yaba.ui.detail.bookmark.image.components.ImagemarkContentDropdownMenu
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.ZoomPanUtils
@@ -49,9 +50,6 @@ import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.image.YabaImage
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.stringResource
-import yaba.composeapp.generated.resources.Res
-import yaba.composeapp.generated.resources.bookmark_detail_title
 
 private const val MIN_SCALE = 1F
 private const val MAX_SCALE = 5F
@@ -83,6 +81,11 @@ internal fun ImagemarkContentLayout(
     val scope = rememberCoroutineScope()
     var doubleTapAnimationJob by remember { mutableStateOf<Job?>(null) }
 
+    val folderAccent by remember(state.bookmark) {
+        derivedStateOf { bookmarkFolderAccentColor(state.bookmark) }
+    }
+    val menuIconButtonColors = bookmarkDetailIconButtonColors(folderAccent)
+
     val transformableState = rememberTransformableState { centroid, zoomChange, panChange, _ ->
         doubleTapAnimationJob?.cancel()
         val targetScale = ZoomPanUtils.clampFloat(scale * zoomChange, MIN_SCALE, MAX_SCALE)
@@ -112,64 +115,16 @@ internal fun ImagemarkContentLayout(
         scale = targetScale
     }
 
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        topBar = {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                TopAppBar(
-                    title = {
-                        Text(text = stringResource(Res.string.bookmark_detail_title))
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = navigator::removeLastOrNull) {
-                            YabaIcon(name = "arrow-left-01")
-                        }
-                    },
-                    actions = {
-                        IconButton(
-                            onClick = onShowDetail,
-                            shapes = IconButtonDefaults.shapes(),
-                        ) { YabaIcon(name = "information-circle") }
-                        Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
-                            IconButton(
-                                onClick = { isMenuExpanded = !isMenuExpanded },
-                                shapes = IconButtonDefaults.shapes(),
-                            ) { YabaIcon(name = "more-horizontal-circle-02") }
-
-                            ImagemarkContentDropdownMenu(
-                                expanded = isMenuExpanded,
-                                onDismissRequest = { isMenuExpanded = false },
-                                state = state,
-                                onEvent = onEvent,
-                                onShowRemindMePicker = onShowRemindMePicker,
-                            )
-                        }
-                    }
-                )
-                AnimatedContent(state.isLoading) { loading ->
-                    if (loading) {
-                        Box(
-                            modifier =
-                                Modifier.fillMaxWidth()
-                                    .padding(bottom = 4.dp)
-                                    .background(
-                                        color =
-                                            MaterialTheme.colorScheme
-                                                .surface
-                                    )
-                        ) { LinearWavyProgressIndicator(modifier = Modifier.fillMaxWidth()) }
-                    } else {
-                        Box(modifier = Modifier.fillMaxWidth())
-                    }
-                }
-            }
-        }
-    ) { paddingValues ->
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.background),
+    ) {
         Box(
             modifier =
-                Modifier.fillMaxSize().padding(paddingValues).onSizeChanged {
-                    containerSize = it
-                },
+                Modifier
+                    .fillMaxSize()
+                    .onSizeChanged { containerSize = it },
             contentAlignment = Alignment.Center,
         ) {
             YabaImage(
@@ -273,6 +228,53 @@ internal fun ImagemarkContentLayout(
                         },
                 filePath = state.imageAbsolutePath,
                 contentScale = ContentScale.Fit,
+            )
+        }
+
+        Column(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .fillMaxWidth(),
+        ) {
+            BookmarkDetailContentTopBar(
+                folderYabaColor = folderAccent,
+                onBack = navigator::removeLastOrNull,
+                onShowDetail = onShowDetail,
+                overflowMenu = {
+                    Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
+                        IconButton(
+                            onClick = { isMenuExpanded = !isMenuExpanded },
+                            colors = menuIconButtonColors,
+                            shapes = IconButtonDefaults.shapes(),
+                        ) { YabaIcon(name = "more-horizontal-circle-02", color = folderAccent) }
+
+                        ImagemarkContentDropdownMenu(
+                            expanded = isMenuExpanded,
+                            onDismissRequest = { isMenuExpanded = false },
+                            state = state,
+                            onEvent = onEvent,
+                            onShowRemindMePicker = onShowRemindMePicker,
+                        )
+                    }
+                },
+                loadingIndicator = {
+                    AnimatedContent(state.isLoading) { loading ->
+                        if (loading) {
+                            Box(
+                                modifier =
+                                    Modifier.fillMaxWidth()
+                                        .padding(bottom = 4.dp)
+                                        .background(
+                                            color =
+                                                MaterialTheme.colorScheme
+                                                    .surface
+                                        )
+                            ) { LinearWavyProgressIndicator(modifier = Modifier.fillMaxWidth()) }
+                        } else {
+                            Box(modifier = Modifier.fillMaxWidth())
+                        }
+                    }
+                },
             )
         }
     }

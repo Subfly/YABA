@@ -246,19 +246,31 @@ export default function YabaPdfViewerApp() {
   }, [yabaHighlights])
 
   if (!pdfUrl) {
-    return null
+    return (
+      <>
+        <div className="yaba-web-chrome-spacer yaba-web-chrome-spacer--top" aria-hidden />
+        <div className="yaba-pdf-main-column" />
+        <div className="yaba-web-chrome-spacer yaba-web-chrome-spacer--bottom" aria-hidden />
+      </>
+    )
   }
 
   return (
-    <div className="yaba-pdf-react-root">
-      <PdfLoader url={pdfUrl} workerSrc={pdfWorkerUrl} beforeLoad={null}>
-        {(pdfDocument) => (
-          <YabaPdfHighlighterPane
-            pdfDocument={pdfDocument}
-            yabaHighlights={yabaHighlights}
-          />
-        )}
-      </PdfLoader>
-    </div>
+    <>
+      <div className="yaba-web-chrome-spacer yaba-web-chrome-spacer--top" aria-hidden />
+      <div className="yaba-pdf-main-column">
+        <div className="yaba-pdf-react-root">
+          <PdfLoader url={pdfUrl} workerSrc={pdfWorkerUrl} beforeLoad={null}>
+            {(pdfDocument) => (
+              <YabaPdfHighlighterPane
+                pdfDocument={pdfDocument}
+                yabaHighlights={yabaHighlights}
+              />
+            )}
+          </PdfLoader>
+        </div>
+      </div>
+      <div className="yaba-web-chrome-spacer yaba-web-chrome-spacer--bottom" aria-hidden />
+    </>
   )
 }

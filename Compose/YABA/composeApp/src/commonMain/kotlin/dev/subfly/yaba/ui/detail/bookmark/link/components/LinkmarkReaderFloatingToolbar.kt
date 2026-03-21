@@ -37,14 +37,13 @@ import dev.subfly.yabacore.model.utils.ReaderFontSize
 import dev.subfly.yabacore.model.utils.ReaderLineHeight
 import dev.subfly.yabacore.model.utils.ReaderPreferences
 import dev.subfly.yabacore.model.utils.ReaderTheme
-import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.detail.linkmark.LinkmarkDetailEvent
 import dev.subfly.yabacore.ui.icon.YabaIcon
-import dev.subfly.yabacore.ui.icon.iconTintArgb
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
 internal fun BoxScope.LinkmarkReaderFloatingToolbar(
+    modifier: Modifier = Modifier,
     isVisible: Boolean,
     readerPreferences: ReaderPreferences,
     hasSelection: Boolean = false,
@@ -103,6 +102,7 @@ internal fun BoxScope.LinkmarkReaderFloatingToolbar(
         modifier = Modifier
             .align(Alignment.BottomCenter)
             .offset(y = -toolbarOffset)
+            .then(modifier)
             .zIndex(1f),
         visible = isVisible,
         enter = fadeIn() + slideInVertically(

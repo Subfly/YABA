@@ -10,15 +10,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -29,6 +31,9 @@ import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.webview.YabaWebView
 import dev.subfly.yaba.core.navigation.creation.HighlightCreationRoute
+import dev.subfly.yaba.ui.detail.bookmark.components.BookmarkDetailContentTopBar
+import dev.subfly.yaba.ui.detail.bookmark.components.bookmarkDetailIconButtonColors
+import dev.subfly.yaba.ui.detail.bookmark.components.bookmarkFolderAccentColor
 import dev.subfly.yaba.ui.detail.bookmark.doc.components.DocmarkContentDropdownMenu
 import dev.subfly.yaba.ui.detail.bookmark.doc.components.DocmarkReaderFloatingToolbar
 import dev.subfly.yaba.util.LocalAppStateManager
@@ -47,12 +52,12 @@ import dev.subfly.yabacore.webview.YabaWebScrollDirection
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
-import yaba.composeapp.generated.resources.bookmark_detail_title
 import yaba.composeapp.generated.resources.reader_not_available_description
 import yaba.composeapp.generated.resources.reader_not_available_title
 
 @OptIn(
     ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3ExpressiveApi::class,
 )
 @Composable
 internal fun DocmarkContentLayout(
@@ -73,8 +78,13 @@ internal fun DocmarkContentLayout(
     var isMenuExpanded by remember { mutableStateOf(false) }
     var hasSelection by remember { mutableStateOf(false) }
     var isToolbarVisible by remember(hasReaderContent) { mutableStateOf(true) }
-    var currentPage by remember { mutableStateOf(1) }
-    var pageCount by remember { mutableStateOf(1) }
+    var currentPage by remember { mutableIntStateOf(1) }
+    var pageCount by remember { mutableIntStateOf(1) }
+
+    val folderAccent by remember(state.bookmark) {
+        derivedStateOf { bookmarkFolderAccentColor(state.bookmark) }
+    }
+    val menuIconButtonColors = bookmarkDetailIconButtonColors(folderAccent)
 
     LaunchedEffect(hasReaderContent) {
         if (!hasReaderContent) {
@@ -84,58 +94,12 @@ internal fun DocmarkContentLayout(
         }
     }
 
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        topBar = {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                TopAppBar(
-                    modifier = Modifier.fillMaxWidth(),
-                    title = { Text(text = stringResource(Res.string.bookmark_detail_title)) },
-                    navigationIcon = {
-                        IconButton(onClick = navigator::removeLastOrNull) {
-                            YabaIcon(name = "arrow-left-01")
-                        }
-                    },
-                    actions = {
-                        IconButton(
-                            onClick = onShowDetail,
-                            content = { YabaIcon(name = "information-circle") },
-                        )
-                        Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
-                            IconButton(
-                                onClick = { isMenuExpanded = !isMenuExpanded },
-                            ) { YabaIcon(name = "more-horizontal-circle-02") }
-
-                            DocmarkContentDropdownMenu(
-                                expanded = isMenuExpanded,
-                                onDismissRequest = { isMenuExpanded = false },
-                                state = state,
-                                onEvent = onEvent,
-                                onShowRemindMePicker = onShowRemindMePicker,
-                            )
-                        }
-                    },
-                )
-                AnimatedContent(state.isLoading) { loading ->
-                    if (loading) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 4.dp)
-                                .background(color = MaterialTheme.colorScheme.surface),
-                        ) { LinearProgressIndicator(modifier = Modifier.fillMaxWidth()) }
-                    } else {
-                        Box(modifier = Modifier.fillMaxWidth())
-                    }
-                }
-            }
-        },
-    ) { paddings ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddings),
-        ) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.background),
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
             if (hasReaderContent) {
                 LaunchedEffect(state.scrollToHighlightId) {
                     val highlightId = state.scrollToHighlightId ?: return@LaunchedEffect
@@ -145,6 +109,7 @@ internal fun DocmarkContentLayout(
                 }
 
                 DocmarkReaderFloatingToolbar(
+                    modifier = Modifier.padding(bottom = 8.dp),
                     isVisible = isToolbarVisible || hasSelection,
                     hasSelection = hasSelection,
                     canGoPrev = currentPage > 1,
@@ -162,7 +127,8 @@ internal fun DocmarkContentLayout(
                     onHighlightClick = {
                         val bridge = readerBridge ?: return@DocmarkReaderFloatingToolbar
                         val bookmarkId = state.bookmark?.id ?: return@DocmarkReaderFloatingToolbar
-                        val readableVersionId = state.selectedReadableVersionId ?: return@DocmarkReaderFloatingToolbar
+                        val readableVersionId =
+                            state.selectedReadableVersionId ?: return@DocmarkReaderFloatingToolbar
                         scope.launch {
                             val draft = bridge.getSelectionSnapshot(bookmarkId, readableVersionId)
                             creationNavigator.add(
@@ -193,6 +159,7 @@ internal fun DocmarkContentLayout(
                                 currentPage = ev.currentPage
                                 pageCount = ev.pageCount.coerceAtLeast(1)
                             }
+
                             else -> Unit
                         }
                     },
@@ -224,6 +191,49 @@ internal fun DocmarkContentLayout(
                     Text(text = stringResource(Res.string.reader_not_available_description))
                 }
             }
+        }
+
+        Column(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .fillMaxWidth(),
+        ) {
+            BookmarkDetailContentTopBar(
+                folderYabaColor = folderAccent,
+                onBack = navigator::removeLastOrNull,
+                onShowDetail = onShowDetail,
+                overflowMenu = {
+                    Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
+                        IconButton(
+                            onClick = { isMenuExpanded = !isMenuExpanded },
+                            colors = menuIconButtonColors,
+                            shapes = IconButtonDefaults.shapes(),
+                        ) { YabaIcon(name = "more-horizontal-circle-02", color = folderAccent) }
+
+                        DocmarkContentDropdownMenu(
+                            expanded = isMenuExpanded,
+                            onDismissRequest = { isMenuExpanded = false },
+                            state = state,
+                            onEvent = onEvent,
+                            onShowRemindMePicker = onShowRemindMePicker,
+                        )
+                    }
+                },
+                loadingIndicator = {
+                    AnimatedContent(state.isLoading) { loading ->
+                        if (loading) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 4.dp)
+                                    .background(color = MaterialTheme.colorScheme.surface),
+                            ) { LinearProgressIndicator(modifier = Modifier.fillMaxWidth()) }
+                        } else {
+                            Box(modifier = Modifier.fillMaxWidth())
+                        }
+                    }
+                },
+            )
         }
     }
 }

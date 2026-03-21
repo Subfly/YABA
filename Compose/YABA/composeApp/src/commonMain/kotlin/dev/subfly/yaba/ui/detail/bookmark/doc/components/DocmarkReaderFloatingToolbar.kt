@@ -27,6 +27,7 @@ import dev.subfly.yabacore.ui.icon.YabaIcon
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
 internal fun BoxScope.DocmarkReaderFloatingToolbar(
+    modifier: Modifier = Modifier,
     isVisible: Boolean,
     hasSelection: Boolean,
     canGoPrev: Boolean,
@@ -85,6 +86,7 @@ internal fun BoxScope.DocmarkReaderFloatingToolbar(
         modifier = Modifier
             .align(Alignment.BottomCenter)
             .offset(y = -toolbarOffset)
+            .then(modifier)
             .zIndex(1f),
         visible = isVisible,
         enter = fadeIn() + slideInVertically(
