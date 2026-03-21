@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -56,6 +57,10 @@ fun IconSelectionContent(
         mutableStateOf(currentSelectedIcon)
     }
 
+    DisposableEffect(Unit) {
+        onDispose { IconCatalog.resetIcons() }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -75,7 +80,10 @@ fun IconSelectionContent(
                 creationNavigator.removeLastOrNull()
                 IconCatalog.resetIcons()
             },
-            onDismiss = creationNavigator::removeLastOrNull,
+            onDismiss = {
+                IconCatalog.resetIcons()
+                creationNavigator.removeLastOrNull()
+            },
         )
         Spacer(modifier = Modifier.height(12.dp))
         SelectionContent(
@@ -126,8 +134,7 @@ private fun SelectionContent(
 ) {
     val icons by IconCatalog.iconsFlow.collectAsState()
 
-    LaunchedEffect(Unit) {
-        IconCatalog.resetIcons()
+    LaunchedEffect(selectedSubcategory.id) {
         IconCatalog.loadIcons(selectedSubcategory.id)
     }
 
