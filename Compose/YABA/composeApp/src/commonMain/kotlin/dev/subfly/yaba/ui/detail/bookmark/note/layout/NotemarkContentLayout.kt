@@ -2,6 +2,7 @@ package dev.subfly.yaba.ui.detail.bookmark.note.layout
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -40,12 +41,15 @@ import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.rememberUrlLauncher
+import dev.subfly.yabacore.model.utils.ReaderPreferences
 import dev.subfly.yabacore.state.detail.notemark.NotemarkDetailEvent
 import dev.subfly.yabacore.state.detail.notemark.NotemarkDetailUIState
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.webview.WebComponentUris
 import dev.subfly.yabacore.webview.WebViewEditorBridge
+import dev.subfly.yabacore.webview.YabaWebAppearance
 import dev.subfly.yabacore.webview.YabaWebFeature
+import dev.subfly.yabacore.webview.YabaWebPlatform
 import dev.subfly.yabacore.webview.YabaWebHostEvent
 import dev.subfly.yabacore.webview.YabaWebScrollDirection
 import kotlinx.coroutines.delay
@@ -110,6 +114,9 @@ internal fun NotemarkContentLayout(
     }
     val menuIconButtonColors = bookmarkDetailIconButtonColors(folderAccent)
 
+    val webAppearance =
+        if (isSystemInDarkTheme()) YabaWebAppearance.Dark else YabaWebAppearance.Light
+
     val ready by remember(state.isLoading, frozenInitialDocumentJson) {
         derivedStateOf { !state.isLoading && frozenInitialDocumentJson != null }
     }
@@ -154,6 +161,9 @@ internal fun NotemarkContentLayout(
                         initialDocumentJson = frozenInitialDocumentJson ?: "",
                         assetsBaseUrl = state.assetsBaseUrl,
                         highlights = state.highlights,
+                        platform = YabaWebPlatform.Compose,
+                        appearance = webAppearance,
+                        readerPreferences = ReaderPreferences(),
                     ),
                     onHostEvent = { ev ->
                         when (ev) {

@@ -299,6 +299,21 @@ internal fun YabaEditorFeatureHost(
         onEditorBridgeReadyState.value(bridge)
     }
 
+    /** Same as [YabaReadableViewerFeatureHost]: host-driven palette + reader vars (transparent editor shell, correct on-bg). */
+    LaunchedEffect(isPageReady, feature.readerPreferences, feature.platform, feature.appearance) {
+        if (!isPageReady || rendererCrashed) return@LaunchedEffect
+        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) {
+            Log.w(YABA_WEBVIEW_LOG_TAG, "Editor bridge not ready before timeout")
+            return@LaunchedEffect
+        }
+        applyEditorReaderPreferences(
+            webView,
+            feature.readerPreferences,
+            feature.platform,
+            feature.appearance,
+        )
+    }
+
     LaunchedEffect(isPageReady, feature.initialDocumentJson, feature.assetsBaseUrl) {
         if (!isPageReady || rendererCrashed) return@LaunchedEffect
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) {

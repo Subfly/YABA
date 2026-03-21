@@ -18,6 +18,9 @@ sealed class YabaWebFeature {
         val initialDocumentJson: String,
         val assetsBaseUrl: String?,
         val highlights: List<HighlightUiModel> = emptyList(),
+        val platform: YabaWebPlatform = YabaWebPlatform.Compose,
+        val appearance: YabaWebAppearance = YabaWebAppearance.Auto,
+        val readerPreferences: ReaderPreferences = ReaderPreferences(),
     ) : YabaWebFeature()
 
     data class HtmlConverter(

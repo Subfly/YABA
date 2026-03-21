@@ -1,6 +1,6 @@
 import type { Editor } from "@tiptap/core"
 import type { Platform, AppearanceMode } from "@/theme"
-import { applyTheme } from "@/theme"
+import { applyTheme, parseUrlParams } from "@/theme"
 import {
   getSelectionSnapshot,
   type SelectionSnapshot,
@@ -188,6 +188,9 @@ function applyReaderPreferences(): void {
 export function initEditorBridge(editor: Editor): void {
   editorInstance = editor
   lastPersistedDocumentJson = JSON.stringify(editor.getJSON())
+  const urlParams = parseUrlParams()
+  platform = urlParams.platform
+  appearance = urlParams.appearance
   const win = window as Window & { YabaEditorBridge?: YabaEditorBridge }
   win.YabaEditorBridge = {
     isReady: () => !!editorInstance,
