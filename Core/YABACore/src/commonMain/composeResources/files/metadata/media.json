@@ -1,0 +1,198 @@
+{
+  "metadata": {
+    "id": "media",
+    "name": "Media",
+    "description": "Media stroke-rounded icons from HugeIcons",
+    "main_category": "media",
+    "icon_count": 62,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "backward-01"
+    },
+    {
+      "name": "backward-02"
+    },
+    {
+      "name": "burning-cd"
+    },
+    {
+      "name": "carousel-horizontal-02"
+    },
+    {
+      "name": "forward-01"
+    },
+    {
+      "name": "forward-02"
+    },
+    {
+      "name": "go-backward-10-sec"
+    },
+    {
+      "name": "go-backward-10sec"
+    },
+    {
+      "name": "go-backward-15-sec"
+    },
+    {
+      "name": "go-backward-5sec"
+    },
+    {
+      "name": "go-backward-60-sec"
+    },
+    {
+      "name": "go-forward-10-sec"
+    },
+    {
+      "name": "go-forward-15-sec"
+    },
+    {
+      "name": "go-forward-30-sec"
+    },
+    {
+      "name": "go-forward-5sec"
+    },
+    {
+      "name": "go-forward-60-sec"
+    },
+    {
+      "name": "headphone-mute"
+    },
+    {
+      "name": "headphones"
+    },
+    {
+      "name": "mic-01"
+    },
+    {
+      "name": "mic-02"
+    },
+    {
+      "name": "mic-off-01"
+    },
+    {
+      "name": "mic-off-02"
+    },
+    {
+      "name": "music-note-01"
+    },
+    {
+      "name": "music-note-02"
+    },
+    {
+      "name": "music-note-03"
+    },
+    {
+      "name": "music-note-04"
+    },
+    {
+      "name": "music-note-square-01"
+    },
+    {
+      "name": "music-note-square-02"
+    },
+    {
+      "name": "next"
+    },
+    {
+      "name": "pause"
+    },
+    {
+      "name": "pause-circle"
+    },
+    {
+      "name": "play"
+    },
+    {
+      "name": "play-circle-02"
+    },
+    {
+      "name": "playlist-01"
+    },
+    {
+      "name": "playlist-02"
+    },
+    {
+      "name": "playlist-03"
+    },
+    {
+      "name": "previous"
+    },
+    {
+      "name": "radio"
+    },
+    {
+      "name": "record"
+    },
+    {
+      "name": "repeat"
+    },
+    {
+      "name": "repeat-off"
+    },
+    {
+      "name": "repeat-one-01"
+    },
+    {
+      "name": "repeat-one-02"
+    },
+    {
+      "name": "replay"
+    },
+    {
+      "name": "scissor"
+    },
+    {
+      "name": "shuffle"
+    },
+    {
+      "name": "shuffle-square"
+    },
+    {
+      "name": "speaker"
+    },
+    {
+      "name": "stop"
+    },
+    {
+      "name": "stop-circle"
+    },
+    {
+      "name": "subtitle"
+    },
+    {
+      "name": "voice"
+    },
+    {
+      "name": "volume-high"
+    },
+    {
+      "name": "volume-low"
+    },
+    {
+      "name": "volume-minus"
+    },
+    {
+      "name": "volume-mute-01"
+    },
+    {
+      "name": "volume-mute-02"
+    },
+    {
+      "name": "volume-off"
+    },
+    {
+      "name": "volume-up"
+    },
+    {
+      "name": "vynil-01"
+    },
+    {
+      "name": "vynil-02"
+    },
+    {
+      "name": "vynil-03"
+    }
+  ]
+}

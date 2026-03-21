@@ -1,0 +1,300 @@
+{
+  "metadata": {
+    "id": "weather",
+    "name": "Weather",
+    "description": "Weather stroke-rounded icons from HugeIcons",
+    "main_category": "weather",
+    "icon_count": 96,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "avalanche"
+    },
+    {
+      "name": "celsius"
+    },
+    {
+      "name": "cloud"
+    },
+    {
+      "name": "cloud-angled-rain"
+    },
+    {
+      "name": "cloud-angled-rain-zap"
+    },
+    {
+      "name": "cloud-angled-zap"
+    },
+    {
+      "name": "cloud-big-rain"
+    },
+    {
+      "name": "cloud-fast-wind"
+    },
+    {
+      "name": "cloud-hailstone"
+    },
+    {
+      "name": "cloud-little-rain"
+    },
+    {
+      "name": "cloud-little-snow"
+    },
+    {
+      "name": "cloud-mid-rain"
+    },
+    {
+      "name": "cloud-mid-snow"
+    },
+    {
+      "name": "cloud-slow-wind"
+    },
+    {
+      "name": "cloud-snow"
+    },
+    {
+      "name": "desert"
+    },
+    {
+      "name": "fahrenheit"
+    },
+    {
+      "name": "fast-wind"
+    },
+    {
+      "name": "gibbous-moon"
+    },
+    {
+      "name": "humidity"
+    },
+    {
+      "name": "moon"
+    },
+    {
+      "name": "moon-angled-rain-zap"
+    },
+    {
+      "name": "moon-cloud"
+    },
+    {
+      "name": "moon-cloud-angled-rain"
+    },
+    {
+      "name": "moon-cloud-angled-zap"
+    },
+    {
+      "name": "moon-cloud-big-rain"
+    },
+    {
+      "name": "moon-cloud-fast-wind"
+    },
+    {
+      "name": "moon-cloud-hailstone"
+    },
+    {
+      "name": "moon-cloud-little-rain"
+    },
+    {
+      "name": "moon-cloud-little-snow"
+    },
+    {
+      "name": "moon-cloud-mid-rain"
+    },
+    {
+      "name": "moon-cloud-mid-snow"
+    },
+    {
+      "name": "moon-cloud-slow-wind"
+    },
+    {
+      "name": "moon-cloud-snow"
+    },
+    {
+      "name": "moon-eclipse"
+    },
+    {
+      "name": "moon-fast-wind"
+    },
+    {
+      "name": "moon-slow-wind"
+    },
+    {
+      "name": "moonset"
+    },
+    {
+      "name": "rain"
+    },
+    {
+      "name": "rain-double-drop"
+    },
+    {
+      "name": "rain-drop"
+    },
+    {
+      "name": "rainbow"
+    },
+    {
+      "name": "sailboat-coastal"
+    },
+    {
+      "name": "sailboat-offshore"
+    },
+    {
+      "name": "slow-winds"
+    },
+    {
+      "name": "snow"
+    },
+    {
+      "name": "soil-moisture-field"
+    },
+    {
+      "name": "soil-moisture-global"
+    },
+    {
+      "name": "soil-temperature-field"
+    },
+    {
+      "name": "soil-temperature-global"
+    },
+    {
+      "name": "sparkles"
+    },
+    {
+      "name": "stars"
+    },
+    {
+      "name": "sun-01"
+    },
+    {
+      "name": "sun-02"
+    },
+    {
+      "name": "sun-03"
+    },
+    {
+      "name": "sun-cloud-01"
+    },
+    {
+      "name": "sun-cloud-02"
+    },
+    {
+      "name": "sun-cloud-angled-rain-01"
+    },
+    {
+      "name": "sun-cloud-angled-rain-02"
+    },
+    {
+      "name": "sun-cloud-angled-rain-zap-01"
+    },
+    {
+      "name": "sun-cloud-angled-rain-zap-02"
+    },
+    {
+      "name": "sun-cloud-angled-zap-01"
+    },
+    {
+      "name": "sun-cloud-big-rain-01"
+    },
+    {
+      "name": "sun-cloud-big-rain-02"
+    },
+    {
+      "name": "sun-cloud-fast-wind-01"
+    },
+    {
+      "name": "sun-cloud-fast-wind-02"
+    },
+    {
+      "name": "sun-cloud-hailstone-01"
+    },
+    {
+      "name": "sun-cloud-hailstone-02"
+    },
+    {
+      "name": "sun-cloud-little-rain-01"
+    },
+    {
+      "name": "sun-cloud-little-rain-02"
+    },
+    {
+      "name": "sun-cloud-little-snow-01"
+    },
+    {
+      "name": "sun-cloud-little-snow-02"
+    },
+    {
+      "name": "sun-cloud-mid-rain-01"
+    },
+    {
+      "name": "sun-cloud-mid-rain-02"
+    },
+    {
+      "name": "sun-cloud-mid-snow-01"
+    },
+    {
+      "name": "sun-cloud-mid-snow-02"
+    },
+    {
+      "name": "sun-cloud-slow-wind-01"
+    },
+    {
+      "name": "sun-cloud-slow-wind-02"
+    },
+    {
+      "name": "sun-cloud-snow-01"
+    },
+    {
+      "name": "sun-cloud-snow-02"
+    },
+    {
+      "name": "sun-cloud-zap-02"
+    },
+    {
+      "name": "sunrise"
+    },
+    {
+      "name": "sunset"
+    },
+    {
+      "name": "thermometer-cold"
+    },
+    {
+      "name": "thermometer-warm"
+    },
+    {
+      "name": "tornado-01"
+    },
+    {
+      "name": "tornado-02"
+    },
+    {
+      "name": "tropical-storm"
+    },
+    {
+      "name": "tropical-storm-tracks"
+    },
+    {
+      "name": "tropical-storm-tracks-1"
+    },
+    {
+      "name": "tsunami"
+    },
+    {
+      "name": "uv-01"
+    },
+    {
+      "name": "uv-02"
+    },
+    {
+      "name": "uv-03"
+    },
+    {
+      "name": "wind-power"
+    },
+    {
+      "name": "zap"
+    }
+  ]
+}

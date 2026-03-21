@@ -1,0 +1,204 @@
+{
+  "metadata": {
+    "id": "clothing",
+    "name": "Clothing",
+    "description": "Clothing stroke-rounded icons from HugeIcons",
+    "main_category": "clothing",
+    "icon_count": 64,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "baby-01"
+    },
+    {
+      "name": "baby-02"
+    },
+    {
+      "name": "baby-bottle"
+    },
+    {
+      "name": "baby-boy-dress"
+    },
+    {
+      "name": "baby-girl-dress"
+    },
+    {
+      "name": "belt"
+    },
+    {
+      "name": "blush-brush-01"
+    },
+    {
+      "name": "blush-brush-02"
+    },
+    {
+      "name": "body-soap"
+    },
+    {
+      "name": "bow-tie"
+    },
+    {
+      "name": "boxer"
+    },
+    {
+      "name": "breast-pump"
+    },
+    {
+      "name": "cap"
+    },
+    {
+      "name": "cardigan"
+    },
+    {
+      "name": "child"
+    },
+    {
+      "name": "cowboy-hat"
+    },
+    {
+      "name": "detergent"
+    },
+    {
+      "name": "diaper"
+    },
+    {
+      "name": "dress-01"
+    },
+    {
+      "name": "dress-02"
+    },
+    {
+      "name": "dress-03"
+    },
+    {
+      "name": "dress-04"
+    },
+    {
+      "name": "dress-05"
+    },
+    {
+      "name": "dress-06"
+    },
+    {
+      "name": "dress-07"
+    },
+    {
+      "name": "ear-rings-01"
+    },
+    {
+      "name": "ear-rings-02"
+    },
+    {
+      "name": "ear-rings-03"
+    },
+    {
+      "name": "hair-clips"
+    },
+    {
+      "name": "hair-dryer"
+    },
+    {
+      "name": "hand-bag-01"
+    },
+    {
+      "name": "hand-bag-02"
+    },
+    {
+      "name": "hanger"
+    },
+    {
+      "name": "hat"
+    },
+    {
+      "name": "high-heels-01"
+    },
+    {
+      "name": "high-heels-02"
+    },
+    {
+      "name": "hoodie"
+    },
+    {
+      "name": "infant"
+    },
+    {
+      "name": "jogger-pants"
+    },
+    {
+      "name": "jumpers"
+    },
+    {
+      "name": "kurta"
+    },
+    {
+      "name": "long-sleeve-shirt"
+    },
+    {
+      "name": "monocle"
+    },
+    {
+      "name": "necklace"
+    },
+    {
+      "name": "perfume"
+    },
+    {
+      "name": "poop"
+    },
+    {
+      "name": "purse"
+    },
+    {
+      "name": "safety-pin-01"
+    },
+    {
+      "name": "safety-pin-02"
+    },
+    {
+      "name": "sandals"
+    },
+    {
+      "name": "shampoo"
+    },
+    {
+      "name": "shirt-01"
+    },
+    {
+      "name": "shorts-pants"
+    },
+    {
+      "name": "sleeveless"
+    },
+    {
+      "name": "socks"
+    },
+    {
+      "name": "suit-01"
+    },
+    {
+      "name": "suit-02"
+    },
+    {
+      "name": "t-shirt"
+    },
+    {
+      "name": "tank-top"
+    },
+    {
+      "name": "turtle-neck"
+    },
+    {
+      "name": "underpants-01"
+    },
+    {
+      "name": "underpants-02"
+    },
+    {
+      "name": "underpants-03"
+    },
+    {
+      "name": "vest"
+    }
+  ]
+}

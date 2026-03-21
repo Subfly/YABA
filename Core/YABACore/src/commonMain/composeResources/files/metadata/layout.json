@@ -1,0 +1,141 @@
+{
+  "metadata": {
+    "id": "layout",
+    "name": "Layout",
+    "description": "Layout stroke-rounded icons from HugeIcons",
+    "main_category": "layout",
+    "icon_count": 43,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "border-all-01"
+    },
+    {
+      "name": "border-all-02"
+    },
+    {
+      "name": "border-bottom-01"
+    },
+    {
+      "name": "border-bottom-02"
+    },
+    {
+      "name": "border-horizontal"
+    },
+    {
+      "name": "border-inner"
+    },
+    {
+      "name": "border-left-01"
+    },
+    {
+      "name": "border-left-02"
+    },
+    {
+      "name": "border-none-01"
+    },
+    {
+      "name": "border-none-02"
+    },
+    {
+      "name": "border-right-01"
+    },
+    {
+      "name": "border-right-02"
+    },
+    {
+      "name": "border-top-01"
+    },
+    {
+      "name": "border-top-02"
+    },
+    {
+      "name": "border-vertical"
+    },
+    {
+      "name": "delete-column"
+    },
+    {
+      "name": "delete-row"
+    },
+    {
+      "name": "edit-table"
+    },
+    {
+      "name": "insert-column"
+    },
+    {
+      "name": "insert-column-left"
+    },
+    {
+      "name": "insert-column-right"
+    },
+    {
+      "name": "insert-row"
+    },
+    {
+      "name": "insert-row-down"
+    },
+    {
+      "name": "insert-row-up"
+    },
+    {
+      "name": "layout-01"
+    },
+    {
+      "name": "layout-02"
+    },
+    {
+      "name": "layout-03"
+    },
+    {
+      "name": "layout-04"
+    },
+    {
+      "name": "layout-05"
+    },
+    {
+      "name": "layout-06"
+    },
+    {
+      "name": "layout-07"
+    },
+    {
+      "name": "layout-2-column"
+    },
+    {
+      "name": "layout-2-row"
+    },
+    {
+      "name": "layout-3-column"
+    },
+    {
+      "name": "layout-3-row"
+    },
+    {
+      "name": "layout-bottom"
+    },
+    {
+      "name": "layout-grid"
+    },
+    {
+      "name": "layout-left"
+    },
+    {
+      "name": "layout-right"
+    },
+    {
+      "name": "layout-table-01"
+    },
+    {
+      "name": "layout-table-02"
+    },
+    {
+      "name": "layout-top"
+    },
+    {
+      "name": "table"
+    }
+  ]
+}

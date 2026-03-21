@@ -1,0 +1,159 @@
+{
+  "metadata": {
+    "id": "gym",
+    "name": "Gym",
+    "description": "Gym stroke-rounded icons from HugeIcons",
+    "main_category": "gym",
+    "icon_count": 49,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "back-muscle-body"
+    },
+    {
+      "name": "body-part-leg"
+    },
+    {
+      "name": "body-part-muscle"
+    },
+    {
+      "name": "body-part-six-pack"
+    },
+    {
+      "name": "body-part-six-pack-01"
+    },
+    {
+      "name": "body-weight"
+    },
+    {
+      "name": "boxing-bag"
+    },
+    {
+      "name": "boxing-glove-01"
+    },
+    {
+      "name": "dumbbell-01"
+    },
+    {
+      "name": "dumbbell-02"
+    },
+    {
+      "name": "dumbbell-03"
+    },
+    {
+      "name": "equipment-bench-press"
+    },
+    {
+      "name": "equipment-chest-press"
+    },
+    {
+      "name": "equipment-gym-01"
+    },
+    {
+      "name": "equipment-gym-02"
+    },
+    {
+      "name": "equipment-gym-03"
+    },
+    {
+      "name": "equipment-weightlifting"
+    },
+    {
+      "name": "expander"
+    },
+    {
+      "name": "flying-human"
+    },
+    {
+      "name": "gymnastic-rings"
+    },
+    {
+      "name": "hand-grip"
+    },
+    {
+      "name": "kettlebell"
+    },
+    {
+      "name": "locker"
+    },
+    {
+      "name": "pool"
+    },
+    {
+      "name": "punching-ball-01"
+    },
+    {
+      "name": "punching-ball-02"
+    },
+    {
+      "name": "push-up-bar"
+    },
+    {
+      "name": "running-shoes"
+    },
+    {
+      "name": "shoulder"
+    },
+    {
+      "name": "skipping-rope"
+    },
+    {
+      "name": "tape-measure"
+    },
+    {
+      "name": "towels"
+    },
+    {
+      "name": "treadmill-01"
+    },
+    {
+      "name": "treadmill-02"
+    },
+    {
+      "name": "weight-scale"
+    },
+    {
+      "name": "wellness"
+    },
+    {
+      "name": "workout-battle-ropes"
+    },
+    {
+      "name": "workout-gymnastics"
+    },
+    {
+      "name": "workout-kicking"
+    },
+    {
+      "name": "workout-run"
+    },
+    {
+      "name": "workout-sport"
+    },
+    {
+      "name": "workout-squats"
+    },
+    {
+      "name": "workout-stretching"
+    },
+    {
+      "name": "workout-warm-up"
+    },
+    {
+      "name": "yoga-01"
+    },
+    {
+      "name": "yoga-02"
+    },
+    {
+      "name": "yoga-03"
+    },
+    {
+      "name": "yoga-ball"
+    },
+    {
+      "name": "yoga-mat"
+    }
+  ]
+}

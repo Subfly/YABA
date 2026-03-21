@@ -35,14 +35,14 @@ import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.util.ResultStoreKeys
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
-import dev.subfly.yaba.util.localizedNameRes
 import dev.subfly.yabacore.icons.IconCatalog
 import dev.subfly.yabacore.icons.IconSubcategory
 import dev.subfly.yabacore.ui.icon.YabaIcon
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.done
+
+// TODO(localization): Subcategory title is from bundled JSON; add string resources when localizing taxonomy.
 
 @Composable
 fun IconSelectionContent(
@@ -62,9 +62,9 @@ fun IconSelectionContent(
             .fillMaxHeight(0.9F)
             .background(color = MaterialTheme.colorScheme.surfaceContainerLow)
     ) {
-        TopBar(
+        IconSelectionTopBar(
             modifier = Modifier.padding(horizontal = 8.dp),
-            titleRes = selectedSubcategory.localizedNameRes(),
+            title = selectedSubcategory.name,
             onDone = {
                 resultStore.setResult(
                     key = ResultStoreKeys.SELECTED_ICON,
@@ -92,9 +92,9 @@ fun IconSelectionContent(
     ExperimentalMaterial3Api::class
 )
 @Composable
-private fun TopBar(
+private fun IconSelectionTopBar(
     modifier: Modifier = Modifier,
-    titleRes: StringResource,
+    title: String,
     onDone: () -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -103,7 +103,7 @@ private fun TopBar(
         colors = TopAppBarDefaults.topAppBarColors().copy(
             containerColor = Color.Transparent,
         ),
-        title = { Text(text = stringResource(titleRes)) },
+        title = { Text(text = title) },
         navigationIcon = {
             IconButton(onClick = onDismiss) {
                 YabaIcon(name = "arrow-left-01")

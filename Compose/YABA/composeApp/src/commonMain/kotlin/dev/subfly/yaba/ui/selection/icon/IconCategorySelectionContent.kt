@@ -32,8 +32,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import dev.subfly.yaba.core.navigation.creation.IconSelectionRoute
 import dev.subfly.yaba.util.LocalCreationContentNavigator
-import dev.subfly.yaba.util.localizedDescriptionRes
-import dev.subfly.yaba.util.localizedNameRes
 import dev.subfly.yabacore.icons.IconCatalog
 import dev.subfly.yabacore.icons.IconSubcategory
 import dev.subfly.yabacore.model.utils.YabaColor
@@ -42,6 +40,9 @@ import dev.subfly.yabacore.ui.icon.iconTintArgb
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.pick_icon_category_title
+
+// TODO(localization): Category/subcategory titles and descriptions come from bundled JSON (English).
+// Wire these fields to string resources when icon taxonomy is localized.
 
 @Composable
 fun IconCategorySelectionContent(currentSelectedIcon: String) {
@@ -121,7 +122,7 @@ private fun SelectionContent(
                         color = color,
                     )
                     Text(
-                        text = stringResource(category.localizedNameRes()),
+                        text = category.name,
                         style = MaterialTheme.typography.bodyLargeEmphasized,
                         color = Color(color.iconTintArgb()),
                     )
@@ -132,7 +133,7 @@ private fun SelectionContent(
                         onClick = { onSelectedSubcategory(subcategory) },
                         shapes = ListItemDefaults.segmentedShapes(index = index, count = category.subcategories.size),
                         content = {
-                            Text(stringResource(subcategory.localizedNameRes()))
+                            Text(subcategory.name)
                         },
                         leadingContent = {
                             YabaIcon(
@@ -153,7 +154,7 @@ private fun SelectionContent(
                 }
                 Text(
                     modifier = Modifier.padding(top = 4.dp).padding(horizontal = 12.dp),
-                    text = stringResource(category.localizedDescriptionRes()),
+                    text = category.description,
                     style = MaterialTheme.typography.bodySmallEmphasized,
                 )
             }

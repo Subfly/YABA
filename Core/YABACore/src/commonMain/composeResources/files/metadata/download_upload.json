@@ -1,0 +1,72 @@
+{
+  "metadata": {
+    "id": "download_upload",
+    "name": "Download Upload",
+    "description": "Download Upload stroke-rounded icons from HugeIcons",
+    "main_category": "download_upload",
+    "icon_count": 20,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "cloud-download"
+    },
+    {
+      "name": "cloud-upload"
+    },
+    {
+      "name": "download-01"
+    },
+    {
+      "name": "download-02"
+    },
+    {
+      "name": "download-03"
+    },
+    {
+      "name": "download-04"
+    },
+    {
+      "name": "download-05"
+    },
+    {
+      "name": "download-circle-01"
+    },
+    {
+      "name": "download-circle-02"
+    },
+    {
+      "name": "download-square-01"
+    },
+    {
+      "name": "download-square-02"
+    },
+    {
+      "name": "upload-01"
+    },
+    {
+      "name": "upload-02"
+    },
+    {
+      "name": "upload-03"
+    },
+    {
+      "name": "upload-04"
+    },
+    {
+      "name": "upload-05"
+    },
+    {
+      "name": "upload-circle-01"
+    },
+    {
+      "name": "upload-circle-02"
+    },
+    {
+      "name": "upload-square-01"
+    },
+    {
+      "name": "upload-square-02"
+    }
+  ]
+}

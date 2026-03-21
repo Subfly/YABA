@@ -4,5 +4,5 @@
 <path d="M14 15H14.009" stroke="#141B34" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M12 6H12.009" stroke="#141B34" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M8 10H8.00898" stroke="#141B34" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M4.5 19.5001L21 3.00012" stroke="#141B34" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M4.5 19.5L21 3" stroke="#141B34" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

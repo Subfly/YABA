@@ -1,0 +1,117 @@
+{
+  "metadata": {
+    "id": "animation",
+    "name": "Animation",
+    "description": "Animation stroke-rounded icons from HugeIcons",
+    "main_category": "animation",
+    "icon_count": 35,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "bounce-left"
+    },
+    {
+      "name": "bounce-right"
+    },
+    {
+      "name": "ease-curve-control-points"
+    },
+    {
+      "name": "ease-in"
+    },
+    {
+      "name": "ease-in-control-point"
+    },
+    {
+      "name": "ease-in-out"
+    },
+    {
+      "name": "ease-out"
+    },
+    {
+      "name": "ease-out-control-point"
+    },
+    {
+      "name": "keyframe"
+    },
+    {
+      "name": "keyframe-add"
+    },
+    {
+      "name": "keyframe-align-center"
+    },
+    {
+      "name": "keyframe-align-horizontal"
+    },
+    {
+      "name": "keyframe-align-vertical"
+    },
+    {
+      "name": "keyframe-bottom"
+    },
+    {
+      "name": "keyframe-left"
+    },
+    {
+      "name": "keyframe-remove"
+    },
+    {
+      "name": "keyframe-right"
+    },
+    {
+      "name": "keyframe-top"
+    },
+    {
+      "name": "keyframes-double"
+    },
+    {
+      "name": "keyframes-double-add"
+    },
+    {
+      "name": "keyframes-double-remove"
+    },
+    {
+      "name": "keyframes-multiple"
+    },
+    {
+      "name": "keyframes-multiple-add"
+    },
+    {
+      "name": "keyframes-multiple-remove"
+    },
+    {
+      "name": "liner"
+    },
+    {
+      "name": "motion-01"
+    },
+    {
+      "name": "motion-02"
+    },
+    {
+      "name": "move-bottom"
+    },
+    {
+      "name": "move-left"
+    },
+    {
+      "name": "move-right"
+    },
+    {
+      "name": "move-top"
+    },
+    {
+      "name": "transition-bottom"
+    },
+    {
+      "name": "transition-left"
+    },
+    {
+      "name": "transition-right"
+    },
+    {
+      "name": "transition-top"
+    }
+  ]
+}

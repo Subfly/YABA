@@ -60,6 +60,4 @@ internal data class IconSubcategoryFile(
 @Serializable
 data class IconItem(
     val name: String,
-    val tags: String,
-    val category: String,
 )
