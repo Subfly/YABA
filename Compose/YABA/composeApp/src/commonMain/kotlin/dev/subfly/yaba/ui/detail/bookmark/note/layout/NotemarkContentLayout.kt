@@ -373,7 +373,7 @@ internal fun NotemarkContentLayout(
 
 /**
  * [LocalSoftwareKeyboardController] does not dismiss the IME while the WebView editor holds focus.
- * We unFocus TipTap first, then hide, then wait until IME insets are gone (with a timeout so the sheet
+ * We unFocus the WebView editor first, then hide, then wait until IME insets are gone (with a timeout so the sheet
  * still opens if insets never update).
  */
 @Composable

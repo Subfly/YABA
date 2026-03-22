@@ -80,13 +80,13 @@ internal fun LinkmarkContentLayout(
     var readerBridge by remember { mutableStateOf<WebViewReaderBridge?>(null) }
     val appearance = if (isSystemInDarkTheme()) YabaWebAppearance.Dark else YabaWebAppearance.Light
 
-    val hasReaderContent by remember(state.isLoading, state.readableHtml) {
+    val hasReaderContent by remember(state.isLoading, state.readableDocumentJson) {
         derivedStateOf {
-            state.isLoading.not() && state.readableHtml.isNullOrBlank().not()
+            state.isLoading.not() && state.readableDocumentJson.isNullOrBlank().not()
         }
     }
     var isReaderToolbarVisible by remember(
-        state.readableHtml,
+        state.readableDocumentJson,
         state.isLoading
     ) { mutableStateOf(true) }
     var isMenuExpanded by remember { mutableStateOf(false) }
@@ -114,7 +114,7 @@ internal fun LinkmarkContentLayout(
                 is YabaWebHostEvent.HtmlConverterSuccess ->
                     onEvent(
                         LinkmarkDetailEvent.OnConverterSucceeded(
-                            html = ev.result.html,
+                            documentJson = ev.result.documentJson,
                             assets = ev.result.assets,
                         ),
                     )
@@ -172,7 +172,7 @@ internal fun LinkmarkContentLayout(
                     modifier = Modifier.fillMaxSize(),
                     baseUrl = WebComponentUris.getViewerUri(),
                     feature = YabaWebFeature.ReadableViewer(
-                        html = state.readableHtml ?: "",
+                        initialDocumentJson = state.readableDocumentJson ?: "",
                         assetsBaseUrl = state.assetsBaseUrl,
                         readerPreferences = state.readerPreferences,
                         platform = YabaWebPlatform.Compose,

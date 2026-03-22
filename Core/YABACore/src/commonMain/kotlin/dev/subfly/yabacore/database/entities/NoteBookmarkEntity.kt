@@ -30,7 +30,7 @@ data class NoteBookmarkEntity(
     val documentRelativePath: String,
     /**
      * Stable [ReadableVersionEntity.id] used for highlight anchors.
-     * The mirrored document lives at [CoreConstants.FileSystem.Linkmark.readableVersionPath] (json mirror).
+     * The mirrored document lives at [CoreConstants.FileSystem.Linkmark.readableVersionJsonPath].
      */
     val readableVersionId: String,
 )

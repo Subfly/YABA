@@ -12,7 +12,7 @@ sealed interface YabaWebHostEvent {
         val canCreateHighlight: Boolean,
         val currentPage: Int,
         val pageCount: Int,
-        /** Non-null when the host is the rich-text editor (TipTap); used for formatting toolbar toggles. */
+        /** Non-null when the host is the rich-text WebView editor; used for formatting toolbar toggles. */
         val editorFormatting: EditorFormattingState? = null,
     ) : YabaWebHostEvent
 

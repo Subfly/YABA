@@ -78,7 +78,7 @@ object NotemarkManager {
 
     /**
      * Writes image bytes under the note's `assets/` folder and returns the canonical
-     * document-relative `src` stored in TipTap JSON (`../assets/<id>.<ext>`).
+     * document-relative `src` stored in editor document JSON (`../assets/<id>.<ext>`).
      */
     suspend fun saveInlineImageBytes(
         bookmarkId: String,

@@ -29,8 +29,7 @@ import kotlin.time.Clock
  * Filesystem-first manager for immutable readable content.
  *
  * File layout:
- * - /bookmarks/<id>/readable/<versionId>.html (link HTML snapshots)
- * - /bookmarks/<id>/readable/<versionId>.json (notemark readable mirror)
+ * - /bookmarks/<id>/readable/<versionId>.json (link readable + notemark readable mirror; rich-text document JSON)
  * - /bookmarks/<id>/assets/<assetId>.<ext>
  */
 object ReadableContentManager {
@@ -49,7 +48,7 @@ object ReadableContentManager {
      * PDF highlights still persist a [HighlightEntity.readableVersionId] FK to [ReadableVersionEntity].
      * Docmarks that never received a readable snapshot therefore have no version row and the UI cannot
      * resolve a version id for highlight selection drafts (see [HighlightEntity.readableVersionId]).
-     * Creates a single minimal HTML placeholder version when the bookmark has none yet.
+     * Creates a single minimal document JSON placeholder version when the bookmark has none yet.
      */
     fun ensurePdfDocmarkHighlightReadableVersionIfNeeded(bookmarkId: String) {
         CoreOperationQueue.queue("EnsurePdfReadable:$bookmarkId") {
@@ -58,7 +57,7 @@ object ReadableContentManager {
             saveReadableContentInternal(
                 bookmarkId = bookmarkId,
                 readable = ReadableUnfurl(
-                    html = "<article></article>",
+                    documentJson = """{"type":"doc","content":[]}""",
                     assets = emptyList(),
                 ),
             )
@@ -73,7 +72,7 @@ object ReadableContentManager {
         versionId: String,
         documentJson: String,
     ) {
-        val relativePath = CoreConstants.FileSystem.Linkmark.readableVersionJsonPath(bookmarkId, versionId)
+        val relativePath = CoreConstants.FileSystem.Linkmark.readableVersionPath(bookmarkId, versionId)
         val file = accessProvider.resolveRelativePath(relativePath, ensureParentExists = true)
         file.write(documentJson.encodeToByteArray())
 
@@ -95,20 +94,20 @@ object ReadableContentManager {
         val createdAt = Clock.System.now().toEpochMilliseconds()
 
         val savedAssets = saveAssets(bookmarkId, readable.assets)
-        saveHtmlVersion(bookmarkId, versionId, readable.html)
+        saveJsonVersion(bookmarkId, versionId, readable.documentJson)
         updateRoomIndex(bookmarkId, versionId, createdAt, savedAssets)
         return versionId
     }
 
-    private suspend fun saveHtmlVersion(
+    private suspend fun saveJsonVersion(
         bookmarkId: String,
         versionId: String,
-        html: String,
+        documentJson: String,
     ) {
         val relativePath = CoreConstants.FileSystem.Linkmark.readableVersionPath(bookmarkId, versionId)
         val file = accessProvider.resolveRelativePath(relativePath, ensureParentExists = true)
         if (file.exists()) return
-        file.write(html.encodeToByteArray())
+        file.write(documentJson.encodeToByteArray())
     }
 
     private suspend fun saveAssets(

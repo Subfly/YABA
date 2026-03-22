@@ -1,7 +1,9 @@
 import DOMPurify from "dompurify"
 import { Readability } from "@mozilla/readability"
+import { Editor } from "@tiptap/core"
 import { GlobalWorkerOptions, getDocument } from "pdfjs-dist"
 import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url"
+import { createEditorExtensions } from "../tiptap/editor-extensions"
 
 GlobalWorkerOptions.workerSrc = pdfWorkerUrl
 
@@ -29,7 +31,8 @@ export interface ConverterAsset {
 }
 
 export interface ConverterOutput {
-  html: string
+  /** TipTap/ProseMirror JSON string (canonical reader document). */
+  documentJson: string
   assets: ConverterAsset[]
 }
 
@@ -235,7 +238,12 @@ function isImagePlaceholder(url: string): boolean {
   )
 }
 
-function sanitizeAndConvertWithAssets(html: string, baseUrl?: string): ConverterOutput {
+/**
+ * 1) Readability + DOMPurify sanitize
+ * 2) Rewrite img src to yaba-asset:// placeholders + collect assets
+ * 3) TipTap parse → document JSON
+ */
+function sanitizeReaderHtmlWithPlaceholders(html: string, baseUrl?: string): { htmlWithPlaceholders: string; assets: ConverterAsset[] } {
   const readerHtml = toReaderModeHtml(html, baseUrl)
   const clean = DOMPurify.sanitize(readerHtml, SANITIZE_OPTIONS)
 
@@ -275,7 +283,38 @@ function sanitizeAndConvertWithAssets(html: string, baseUrl?: string): Converter
     img.setAttribute("src", placeholder)
   })
 
-  return { html: wrapper.innerHTML, assets }
+  return { htmlWithPlaceholders: wrapper.innerHTML, assets }
+}
+
+const EMPTY_DOC_JSON = '{"type":"doc","content":[]}'
+
+let converterTipTapEditor: Editor | null = null
+
+function getConverterTipTapEditor(): Editor {
+  if (!converterTipTapEditor) {
+    converterTipTapEditor = new Editor({
+      extensions: createEditorExtensions(),
+      editable: false,
+    })
+  }
+  return converterTipTapEditor
+}
+
+function htmlToDocumentJson(html: string): string {
+  const ed = getConverterTipTapEditor()
+  const payload = html?.trim() ? html : "<p></p>"
+  try {
+    ed.commands.setContent(payload, { emitUpdate: false })
+    return JSON.stringify(ed.getJSON())
+  } catch {
+    return EMPTY_DOC_JSON
+  }
+}
+
+function sanitizeAndConvertWithAssets(html: string, baseUrl?: string): ConverterOutput {
+  const { htmlWithPlaceholders, assets } = sanitizeReaderHtmlWithPlaceholders(html, baseUrl)
+  const documentJson = htmlToDocumentJson(htmlWithPlaceholders)
+  return { documentJson, assets }
 }
 
 function createPdfExtractionJobId(): string {

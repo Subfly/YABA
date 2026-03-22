@@ -129,9 +129,10 @@ internal fun YabaReadableViewerFeatureHost(
         onBridgeReadyState.value(bridge)
     }
 
-    LaunchedEffect(isPageReady, feature.html, feature.assetsBaseUrl) {
+    LaunchedEffect(isPageReady, feature.initialDocumentJson, feature.assetsBaseUrl) {
         if (!isPageReady || rendererCrashed) return@LaunchedEffect
-        applyReaderHtmlContent(webView, context, feature.html, feature.assetsBaseUrl)
+        applyEditorDocumentJson(webView, context, feature.initialDocumentJson, feature.assetsBaseUrl)
+        RichTextWebViewEditorBridge(webView).setEditable(false)
     }
 
     LaunchedEffect(isPageReady, feature.readerPreferences, feature.platform, feature.appearance) {

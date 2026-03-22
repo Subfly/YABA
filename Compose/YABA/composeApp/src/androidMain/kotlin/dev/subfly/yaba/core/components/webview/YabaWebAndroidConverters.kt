@@ -29,7 +29,7 @@ internal suspend fun runHtmlConversion(
         if (json.has("error")) {
             error(json.optString("error"))
         }
-        val htmlResult = json.optString("html", "")
+        val documentJson = json.optString("documentJson", "")
         val assetsArray = json.optJSONArray("assets") ?: JSONArray()
         val assets = mutableListOf<WebConverterAsset>()
         for (i in 0 until assetsArray.length()) {
@@ -42,7 +42,7 @@ internal suspend fun runHtmlConversion(
                 ),
             )
         }
-        WebConverterResult(html = htmlResult, assets = assets)
+        WebConverterResult(documentJson = documentJson, assets = assets)
     }
 }
 

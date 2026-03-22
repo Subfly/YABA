@@ -7,16 +7,16 @@ import io.ktor.client.request.get
 import io.ktor.client.statement.HttpResponse
 
 /**
- * Converts the JS converter output (HTML with `yaba-asset://` placeholders + asset URLs)
- * into [ReadableUnfurl] by downloading assets and rewriting placeholders in HTML.
+ * Converts the JS converter output (document JSON with `yaba-asset://` placeholders + asset URLs)
+ * into [ReadableUnfurl] by downloading assets and rewriting placeholders in the JSON string.
  */
 object ConverterResultProcessor {
     /**
-     * @param html HTML with yaba-asset://N placeholders in img src (and similar)
-     * @param assets Map of placeholder -> remote URL
+     * @param documentJson Rich-text document JSON with yaba-asset://N placeholders (e.g. image src attrs)
+     * @param assets Remote URLs for each placeholder
      */
     suspend fun process(
-        html: String,
+        documentJson: String,
         assets: List<WebConverterAsset>,
     ): ReadableUnfurl {
         val client = UnfurlHttpClient.client
@@ -36,14 +36,14 @@ object ConverterResultProcessor {
             }.getOrNull()
         }
 
-        var resultHtml = html
+        var resultJson = documentJson
         readables.forEach { (_, mapping) ->
             val (placeholder, replacement) = mapping
-            resultHtml = resultHtml.replace(placeholder, replacement)
+            resultJson = resultJson.replace(placeholder, replacement)
         }
 
         return ReadableUnfurl(
-            html = resultHtml,
+            documentJson = resultJson,
             assets = readables.map { it.first },
         )
     }

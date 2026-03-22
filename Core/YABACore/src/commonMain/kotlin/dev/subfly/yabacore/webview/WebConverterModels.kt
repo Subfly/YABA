@@ -26,6 +26,6 @@ data class WebConverterAsset(
  */
 @Stable
 data class WebConverterResult(
-    val html: String,
+    val documentJson: String,
     val assets: List<WebConverterAsset>,
 )

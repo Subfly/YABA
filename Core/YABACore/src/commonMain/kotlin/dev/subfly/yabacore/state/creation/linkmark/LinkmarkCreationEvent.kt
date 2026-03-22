@@ -104,10 +104,10 @@ sealed class LinkmarkCreationEvent {
     data object OnApplyContentUpdates : LinkmarkCreationEvent()
 
     /**
-     * Converter (WebView) finished successfully with reader HTML + asset mappings.
+     * Converter (WebView) finished successfully with rich-text document JSON + asset mappings.
      */
     data class OnConverterSucceeded(
-        val html: String,
+        val documentJson: String,
         val assets: List<WebConverterAsset>,
     ) : LinkmarkCreationEvent()
 

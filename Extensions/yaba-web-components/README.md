@@ -70,9 +70,9 @@ viewer.html?platform=darwin&appearance=dark
 
 | Method | Description |
 |--------|-------------|
-| `sanitizeAndConvertHtmlToReaderHtml(input)` | `input: { html: string, baseUrl?: string }` → `{ html: string, assets: [...] }` |
+| `sanitizeAndConvertHtmlToReaderHtml(input)` | `input: { html: string, baseUrl?: string }` → `{ documentJson: string, assets: [...] }` |
 
-Uses DOMPurify for sanitization, Mozilla Readability for reader-mode extraction (strips nav/footer/clutter), then returns sanitized HTML with image placeholders for offline assets.
+Uses DOMPurify for sanitization, Mozilla Readability for reader-mode extraction (strips nav/footer/clutter), then rewrites image URLs to `yaba-asset://` placeholders, parses with TipTap, and returns canonical document JSON plus asset descriptors for offline download.
 
 ## Native Integration
 
@@ -81,7 +81,7 @@ Native platforms call the bridge via their WebView evaluation APIs:
 - **Android**: `webView.evaluateJavascript("window.YabaEditorBridge?.getDocumentJson()", callback)`
 - **iOS**: `webView.evaluateJavaScript("window.YabaEditorBridge?.getDocumentJson()", completionHandler)`
 
-The `converter.html` page is loaded in a hidden WebView when link saving needs HTML extraction. Call `sanitizeAndConvertHtmlToReaderHtml` after the page has loaded.
+The `converter.html` page is loaded in a hidden WebView when link saving needs extraction. Call `sanitizeAndConvertHtmlToReaderHtml` after the page has loaded; native persists `documentJson` (not HTML).
 
 ## Features
 

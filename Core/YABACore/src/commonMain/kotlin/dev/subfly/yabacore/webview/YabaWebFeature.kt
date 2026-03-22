@@ -6,7 +6,7 @@ import dev.subfly.yabacore.model.utils.ReaderPreferences
 /** Which web shell to load and what data to drive it with. */
 sealed class YabaWebFeature {
     data class ReadableViewer(
-        val html: String,
+        val initialDocumentJson: String,
         val assetsBaseUrl: String?,
         val readerPreferences: ReaderPreferences,
         val platform: YabaWebPlatform,

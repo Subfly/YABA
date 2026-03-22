@@ -6,7 +6,8 @@ package dev.subfly.yabacore.unfurl
  * versionId and createdAt are set by ReadableContentManager when saving.
  */
 data class ReadableUnfurl(
-    val html: String,
+    /** Rich-text document JSON (same canonical format as the note editor body). */
+    val documentJson: String,
     val assets: List<ReadableAsset>,
 )
 

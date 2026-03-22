@@ -98,12 +98,8 @@ object CoreConstants {
             fun readableDir(bookmarkId: String): String =
                 join(bookmarkFolder(bookmarkId), READABLE_DIR)
 
-            /** Path for a readable HTML snapshot (linkmarks): readable/<versionId>.html */
+            /** Path for readable document JSON (linkmarks + notemark mirror): readable/<versionId>.json */
             fun readableVersionPath(bookmarkId: String, versionId: String): String =
-                join(readableDir(bookmarkId), "$versionId.html")
-
-            /** Path for a notemark readable mirror (document JSON): readable/<versionId>.json */
-            fun readableVersionJsonPath(bookmarkId: String, versionId: String): String =
                 join(readableDir(bookmarkId), "$versionId.json")
 
             fun assetsDir(bookmarkId: String): String =

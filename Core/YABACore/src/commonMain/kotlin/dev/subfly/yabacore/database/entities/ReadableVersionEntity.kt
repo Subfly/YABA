@@ -9,7 +9,7 @@ import androidx.room3.PrimaryKey
  * Room entity for readable content versions.
  *
  * Indexes immutable readable content stored at
- * `/bookmarks/<id>/readable/<versionId>.html` (or `.json` for note mirrors).
+ * `/bookmarks/<id>/readable/<versionId>.json` (rich-text document JSON).
  *
  * This is a derived cache - the filesystem is authoritative.
  */
