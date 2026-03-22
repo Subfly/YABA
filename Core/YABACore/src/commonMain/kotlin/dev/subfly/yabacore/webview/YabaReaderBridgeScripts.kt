@@ -206,6 +206,28 @@ object YabaEditorBridgeScripts {
         })();
         """.trimIndent()
 
+    fun unFocusScript(): String =
+        """
+        (function() {
+            try {
+                if (window.YabaEditorBridge && typeof window.YabaEditorBridge.unFocus === "function") {
+                    window.YabaEditorBridge.unFocus();
+                }
+            } catch(e) {}
+        })();
+        """.trimIndent()
+
+    fun focusScript(): String =
+        """
+        (function() {
+            try {
+                if (window.YabaEditorBridge && typeof window.YabaEditorBridge.focus === "function") {
+                    window.YabaEditorBridge.focus();
+                }
+            } catch(e) {}
+        })();
+        """.trimIndent()
+
     /**
      * @param payloadJsonEscaped JSON text escaped for embedding in a single-quoted JS string.
      */

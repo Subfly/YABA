@@ -5,8 +5,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,15 +20,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -55,8 +61,10 @@ import dev.subfly.yabacore.webview.YabaWebHostEvent
 import dev.subfly.yabacore.webview.YabaWebPlatform
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.reader_not_available_description
@@ -77,13 +85,24 @@ internal fun NotemarkContentLayout(
     val navigator = LocalContentNavigator.current
     val creationNavigator = LocalCreationContentNavigator.current
     val appStateManager = LocalAppStateManager.current
+    val appState by appStateManager.state.collectAsState()
     val scope = rememberCoroutineScope()
     val openUrl = rememberUrlLauncher()
+    val awaitKeyboardClosedBeforeCreationSheet = rememberAwaitKeyboardClosedBeforeCreationSheet()
 
     var editorBridge by remember { mutableStateOf<WebViewEditorBridge?>(null) }
     var hasSelection by remember { mutableStateOf(false) }
     var editorFormatting by remember(state.bookmark?.id) { mutableStateOf(EditorFormattingState()) }
     var isMenuExpanded by remember { mutableStateOf(false) }
+    var previousShowCreationContent by remember { mutableStateOf(false) }
+
+    LaunchedEffect(appState.showCreationContent) {
+        if (previousShowCreationContent && !appState.showCreationContent) {
+            val bridge = editorBridge ?: return@LaunchedEffect
+            bridge.focus()
+        }
+        previousShowCreationContent = appState.showCreationContent
+    }
 
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
         val bridge = editorBridge ?: return@LifecycleEventEffect
@@ -157,14 +176,17 @@ internal fun NotemarkContentLayout(
                     onEditorBridgeReady = { editorBridge = it },
                     onHighlightTap = { highlightId ->
                         val bookmarkId = state.bookmark?.id ?: return@YabaWebView
-                        creationNavigator.add(
-                            HighlightCreationRoute(
-                                bookmarkId = bookmarkId,
-                                selectionDraft = null,
-                                highlightId = highlightId,
-                            ),
-                        )
-                        appStateManager.onShowCreationContent()
+                        scope.launch {
+                            awaitKeyboardClosedBeforeCreationSheet(editorBridge)
+                            creationNavigator.add(
+                                HighlightCreationRoute(
+                                    bookmarkId = bookmarkId,
+                                    selectionDraft = null,
+                                    highlightId = highlightId,
+                                ),
+                            )
+                            appStateManager.onShowCreationContent()
+                        }
                     },
                 )
             } else if (!state.isLoading) {
@@ -230,6 +252,7 @@ internal fun NotemarkContentLayout(
                                     state.readableVersionId ?: return@NotemarkEditorToolbar
                                 scope.launch {
                                     val draft = bridge.getSelectionSnapshot(bookmarkId, versionId)
+                                    awaitKeyboardClosedBeforeCreationSheet(bridge)
                                     creationNavigator.add(
                                         HighlightCreationRoute(
                                             bookmarkId = bookmarkId,
@@ -247,6 +270,27 @@ internal fun NotemarkContentLayout(
                     }
                 },
             )
+        }
+    }
+}
+
+/**
+ * [LocalSoftwareKeyboardController] does not dismiss the IME while the WebView editor holds focus.
+ * We unFocus TipTap first, then hide, then wait until IME insets are gone (with a timeout so the sheet
+ * still opens if insets never update).
+ */
+@Composable
+private fun rememberAwaitKeyboardClosedBeforeCreationSheet(): suspend (WebViewEditorBridge?) -> Unit {
+    val density = LocalDensity.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val ime = WindowInsets.ime
+    return remember(density, keyboardController, ime) {
+        suspend { editorBridge ->
+            editorBridge?.unFocus()
+            keyboardController?.hide()
+            withTimeoutOrNull(4_000) {
+                snapshotFlow { ime.getBottom(density) }.first { it == 0 }
+            }
         }
     }
 }

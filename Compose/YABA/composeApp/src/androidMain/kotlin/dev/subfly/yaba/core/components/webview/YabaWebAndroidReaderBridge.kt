@@ -97,6 +97,16 @@ internal fun RichTextWebViewEditorBridge(
             evaluateJs(webView, YabaEditorBridgeScripts.setEditableScript(editable))
         }
 
+        override suspend fun unFocus() {
+            if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return
+            evaluateJs(webView, YabaEditorBridgeScripts.unFocusScript())
+        }
+
+        override suspend fun focus() {
+            if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return
+            evaluateJs(webView, YabaEditorBridgeScripts.focusScript())
+        }
+
         override suspend fun dispatch(payloadJson: String) {
             if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return
             val escaped = escapeForJsSingleQuotedString(payloadJson)

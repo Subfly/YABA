@@ -55,8 +55,10 @@ export interface YabaEditorBridge {
   getDocumentJson: () => string
   /** JSON string of active marks / undo availability for native toolbars. */
   getActiveFormatting: () => string
+  /** Restores DOM focus; reapplies the last remembered text cursor when possible. */
   focus: () => void
-  blur: () => void
+  /** Blurs the editor and dismisses the keyboard; remembers cursor first for [focus]. */
+  unFocus: () => void
   dispatch: (command: EditorCommandPayload) => void
 }
 
@@ -86,6 +88,8 @@ export type EditorCommandPayload =
   | { type: "insertText"; text: string }
 
 let editorInstance: Editor | null = null
+/** Latest ProseMirror selection (anchor/head) for restoring the caret after [unFocus] / native chrome. */
+let lastStoredCursor: { anchor: number; head: number } | null = null
 let platform: Platform = "compose"
 let appearance: AppearanceMode = "auto"
 let cursorColor: string | null = null
@@ -156,6 +160,30 @@ function applyReaderTypographyVars(prefs: ReaderPreferences): void {
   root.style.setProperty("--yaba-reader-line-height", readerLineHeightCssByMode[prefs.lineHeight])
 }
 
+function captureStoredCursorFromEditor(): void {
+  const ed = editorInstance
+  if (!ed) return
+  const { anchor, head } = ed.state.selection
+  lastStoredCursor = { anchor, head }
+}
+
+function focusEditorRestoringCursor(): void {
+  const ed = editorInstance
+  if (!ed) return
+  try {
+    if (lastStoredCursor) {
+      const size = ed.state.doc.content.size
+      const from = Math.max(0, Math.min(lastStoredCursor.anchor, size))
+      const to = Math.max(0, Math.min(lastStoredCursor.head, size))
+      ed.chain().setTextSelection({ from, to }).focus().run()
+      return
+    }
+  } catch {
+    // Invalid range after doc changes — fall through to plain focus.
+  }
+  ed.commands.focus()
+}
+
 function applyReaderPreferences(): void {
   const page = document.body?.dataset.yabaPage
   /** Read-it-later viewer + note editor: same reader theme + typography pipeline (incl. automatic / system). */
@@ -187,6 +215,10 @@ function applyReaderPreferences(): void {
 
 export function initEditorBridge(editor: Editor): void {
   editorInstance = editor
+  captureStoredCursorFromEditor()
+  editor.on("selectionUpdate", () => {
+    captureStoredCursorFromEditor()
+  })
   const urlParams = parseUrlParams()
   platform = urlParams.platform
   appearance = urlParams.appearance
@@ -311,8 +343,13 @@ export function initEditorBridge(editor: Editor): void {
         canOutdent: ed.can().liftListItem("listItem"),
       })
     },
-    focus: () => editorInstance?.commands.focus(),
-    blur: () => editorInstance?.commands.blur(),
+    focus: () => {
+      focusEditorRestoringCursor()
+    },
+    unFocus: () => {
+      captureStoredCursorFromEditor()
+      editorInstance?.commands.blur()
+    },
     dispatch: (cmd: EditorCommandPayload) => {
       const ed = editorInstance
       if (!ed) return
