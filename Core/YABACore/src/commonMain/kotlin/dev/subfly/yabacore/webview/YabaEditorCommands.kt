@@ -46,6 +46,28 @@ object YabaEditorCommands {
         return """{"type":"insertImage","src":"$escaped"}"""
     }
 
+    fun insertInlineMathPayload(latex: String): String {
+        val escaped = escapeJsonString(latex)
+        return """{"type":"insertInlineMath","latex":"$escaped"}"""
+    }
+
+    fun insertBlockMathPayload(latex: String): String {
+        val escaped = escapeJsonString(latex)
+        return """{"type":"insertBlockMath","latex":"$escaped"}"""
+    }
+
+    fun updateInlineMathPayload(latex: String, pos: Int): String {
+        val escaped = escapeJsonString(latex)
+        val p = pos.coerceAtLeast(0)
+        return """{"type":"updateInlineMath","latex":"$escaped","pos":$p}"""
+    }
+
+    fun updateBlockMathPayload(latex: String, pos: Int): String {
+        val escaped = escapeJsonString(latex)
+        val p = pos.coerceAtLeast(0)
+        return """{"type":"updateBlockMath","latex":"$escaped","pos":$p}"""
+    }
+
     private fun escapeJsonString(text: String): String =
         buildString {
             for (c in text) {
@@ -80,5 +102,7 @@ object YabaEditorCommands {
             formatting.blockquote ||
             formatting.bulletList ||
             formatting.orderedList ||
-            formatting.taskList
+            formatting.taskList ||
+            formatting.inlineMath ||
+            formatting.blockMath
 }

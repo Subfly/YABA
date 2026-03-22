@@ -21,6 +21,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.json.JSONTokener
 import kotlin.coroutines.resume
+import dev.subfly.yabacore.webview.MathTapEvent
+import dev.subfly.yabacore.webview.YabaWebBridgeScripts
 
 /**
  * Hardened settings and permissions are taken from:
@@ -168,6 +170,7 @@ internal fun yabaWebViewClient(
     onRenderProcessGone: () -> Boolean,
     onUrlClick: ((String) -> Boolean)?,
     onHighlightTap: ((String) -> Unit)?,
+    onMathTap: ((MathTapEvent) -> Unit)?,
 ): WebViewClient = object : WebViewClient() {
     override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
         onPageStarted()
@@ -229,13 +232,33 @@ internal fun yabaWebViewClient(
     ): Boolean {
         val uri = request?.url ?: return true
         val url = uri.toString()
-        if (url.startsWith(dev.subfly.yabacore.webview.YabaWebBridgeScripts.HIGHLIGHT_TAP_SCHEME_PREFIX)) {
+        if (url.startsWith(YabaWebBridgeScripts.HIGHLIGHT_TAP_SCHEME_PREFIX)) {
             val id = try {
                 url.toUri().getQueryParameter("id") ?: ""
             } catch (_: Exception) {
                 ""
             }
             if (id.isNotBlank()) onHighlightTap?.invoke(id)
+            return true
+        }
+        if (url.startsWith(YabaWebBridgeScripts.MATH_TAP_SCHEME_PREFIX)) {
+            val u = try {
+                url.toUri()
+            } catch (_: Exception) {
+                return true
+            }
+            val kind = u.getQueryParameter("kind").orEmpty()
+            val pos = u.getQueryParameter("pos")?.toIntOrNull()
+            val latex = u.getQueryParameter("latex").orEmpty()
+            if (pos != null) {
+                onMathTap?.invoke(
+                    MathTapEvent(
+                        isBlock = kind == "block",
+                        documentPos = pos,
+                        latex = latex,
+                    ),
+                )
+            }
             return true
         }
         // In-package navigations only; never load arbitrary external URLs inside the WebView (PdfViewer

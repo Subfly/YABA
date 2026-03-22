@@ -49,6 +49,18 @@ export function createEditorExtensions(): Extensions {
     }),
     Mathematics.configure({
       katexOptions: { throwOnError: false },
+      inlineOptions: {
+        onClick: (node, pos) => {
+          const latex = encodeURIComponent(node.attrs.latex ?? "")
+          window.location.href = `yaba://math-tap?kind=inline&pos=${pos}&latex=${latex}`
+        },
+      },
+      blockOptions: {
+        onClick: (node, pos) => {
+          const latex = encodeURIComponent(node.attrs.latex ?? "")
+          window.location.href = `yaba://math-tap?kind=block&pos=${pos}&latex=${latex}`
+        },
+      },
     }),
     Table.configure({
       resizable: false,

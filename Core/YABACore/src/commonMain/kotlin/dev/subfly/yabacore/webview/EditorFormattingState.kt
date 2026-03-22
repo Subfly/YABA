@@ -20,6 +20,8 @@ data class EditorFormattingState(
     val bulletList: Boolean = false,
     val orderedList: Boolean = false,
     val taskList: Boolean = false,
+    val inlineMath: Boolean = false,
+    val blockMath: Boolean = false,
     val canUndo: Boolean = false,
     val canRedo: Boolean = false,
     val canIndent: Boolean = false,

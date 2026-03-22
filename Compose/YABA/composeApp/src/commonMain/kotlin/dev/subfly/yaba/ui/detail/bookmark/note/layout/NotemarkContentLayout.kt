@@ -39,6 +39,7 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.webview.YabaWebView
 import dev.subfly.yaba.core.navigation.creation.HighlightCreationRoute
+import dev.subfly.yaba.core.navigation.creation.NotemarkMathSheetRoute
 import dev.subfly.yaba.core.navigation.creation.NotemarkTableCreationRoute
 import dev.subfly.yaba.ui.detail.bookmark.components.BookmarkDetailContentTopBar
 import dev.subfly.yaba.ui.detail.bookmark.components.bookmarkFolderAccentColor
@@ -49,6 +50,7 @@ import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
+import dev.subfly.yaba.util.NotemarkMathSheetResult
 import dev.subfly.yaba.util.NotemarkTableSheetResult
 import dev.subfly.yaba.util.ResultStoreKeys
 import dev.subfly.yaba.util.rememberUrlLauncher
@@ -58,6 +60,7 @@ import dev.subfly.yabacore.state.detail.notemark.NotemarkDetailUIState
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.webview.WebComponentUris
 import dev.subfly.yabacore.webview.EditorFormattingState
+import dev.subfly.yabacore.webview.MathTapEvent
 import dev.subfly.yabacore.webview.WebViewEditorBridge
 import dev.subfly.yabacore.webview.YabaEditorCommands
 import dev.subfly.yabacore.webview.YabaWebAppearance
@@ -146,6 +149,30 @@ internal fun NotemarkContentLayout(
         bridge.dispatch(YabaEditorCommands.insertTablePayload(r.rows, r.cols, r.withHeaderRow))
     }
 
+    LaunchedEffect(resultStore.getResult(ResultStoreKeys.NOTEMARK_MATH_INSERT), editorBridge) {
+        val r = resultStore.getResult<NotemarkMathSheetResult>(ResultStoreKeys.NOTEMARK_MATH_INSERT)
+            ?: return@LaunchedEffect
+        val bridge = editorBridge ?: return@LaunchedEffect
+        resultStore.removeResult(ResultStoreKeys.NOTEMARK_MATH_INSERT)
+        when {
+            r.isEdit && r.editPos != null -> {
+                if (r.isBlock) {
+                    bridge.dispatch(YabaEditorCommands.updateBlockMathPayload(r.latex, r.editPos))
+                } else {
+                    bridge.dispatch(YabaEditorCommands.updateInlineMathPayload(r.latex, r.editPos))
+                }
+            }
+            else -> {
+                if (r.isBlock) {
+                    bridge.dispatch(YabaEditorCommands.insertBlockMathPayload(r.latex))
+                } else {
+                    bridge.dispatch(YabaEditorCommands.insertInlineMathPayload(r.latex))
+                }
+            }
+        }
+        bridge.focus()
+    }
+
     LaunchedEffect(state.inlineImageDocumentSrc, editorBridge) {
         val src = state.inlineImageDocumentSrc ?: return@LaunchedEffect
         val bridge = editorBridge ?: return@LaunchedEffect
@@ -206,6 +233,20 @@ internal fun NotemarkContentLayout(
                                     bookmarkId = bookmarkId,
                                     selectionDraft = null,
                                     highlightId = highlightId,
+                                ),
+                            )
+                            appStateManager.onShowCreationContent()
+                        }
+                    },
+                    onMathTap = { ev: MathTapEvent ->
+                        scope.launch {
+                            awaitKeyboardClosedBeforeCreationSheet(editorBridge)
+                            creationNavigator.add(
+                                NotemarkMathSheetRoute(
+                                    isBlock = ev.isBlock,
+                                    initialLatex = ev.latex,
+                                    isEdit = true,
+                                    editPos = ev.documentPos,
                                 ),
                             )
                             appStateManager.onShowCreationContent()
@@ -293,6 +334,20 @@ internal fun NotemarkContentLayout(
                                 scope.launch {
                                     awaitKeyboardClosedBeforeCreationSheet(editorBridge)
                                     creationNavigator.add(NotemarkTableCreationRoute())
+                                    appStateManager.onShowCreationContent()
+                                }
+                            },
+                            onOpenMathSheet = { isBlock ->
+                                scope.launch {
+                                    awaitKeyboardClosedBeforeCreationSheet(editorBridge)
+                                    creationNavigator.add(
+                                        NotemarkMathSheetRoute(
+                                            isBlock = isBlock,
+                                            initialLatex = "",
+                                            isEdit = false,
+                                            editPos = null,
+                                        ),
+                                    )
                                     appStateManager.onShowCreationContent()
                                 }
                             },

@@ -202,6 +202,8 @@ internal suspend fun getEditorActiveFormatting(webView: WebView): EditorFormatti
             bulletList = json.optBoolean("bulletList"),
             orderedList = json.optBoolean("orderedList"),
             taskList = json.optBoolean("taskList"),
+            inlineMath = json.optBoolean("inlineMath"),
+            blockMath = json.optBoolean("blockMath"),
             canUndo = json.optBoolean("canUndo"),
             canRedo = json.optBoolean("canRedo"),
             canIndent = json.optBoolean("canIndent"),

@@ -9,4 +9,5 @@ object ResultStoreKeys {
     const val SHARED_IMAGE_DATA = "shared_image_data"
     const val SHARED_PDF_DATA = "shared_pdf_data"
     const val NOTEMARK_TABLE_INSERT = "notemark_table_insert"
+    const val NOTEMARK_MATH_INSERT = "notemark_math_insert"
 }

@@ -26,6 +26,7 @@ import dev.subfly.yabacore.webview.EditorFormattingState
 import dev.subfly.yabacore.webview.WebLoadState
 import dev.subfly.yabacore.webview.WebViewEditorBridge
 import dev.subfly.yabacore.webview.WebViewReaderBridge
+import dev.subfly.yabacore.webview.MathTapEvent
 import dev.subfly.yabacore.webview.YabaWebBridgeScripts
 import dev.subfly.yabacore.webview.YabaWebFeature
 import dev.subfly.yabacore.webview.YabaWebHostEvent
@@ -211,6 +212,7 @@ internal fun YabaReadableViewerFeatureHost(
                     },
                     onUrlClick = onUrlClick,
                     onHighlightTap = onHighlightTap,
+                    onMathTap = null,
                 )
             }
             if (rendererCrashed) return@AndroidView
@@ -236,6 +238,7 @@ internal fun YabaEditorFeatureHost(
     onUrlClick: (String) -> Boolean,
     onEditorBridgeReady: (WebViewEditorBridge?) -> Unit,
     onHighlightTap: (String) -> Unit,
+    onMathTap: (MathTapEvent) -> Unit,
 ) {
     val context = LocalContext.current
     val onHostEventState = rememberUpdatedState(onHostEvent)
@@ -400,6 +403,7 @@ internal fun YabaEditorFeatureHost(
                     },
                     onUrlClick = onUrlClick,
                     onHighlightTap = onHighlightTap,
+                    onMathTap = onMathTap,
                 )
             }
             if (rendererCrashed) return@AndroidView
@@ -489,6 +493,7 @@ internal fun YabaHtmlConverterFeatureHost(
                     },
                     onUrlClick = null,
                     onHighlightTap = null,
+                    onMathTap = null,
                 )
             }
             if (rendererCrashed) return@AndroidView
@@ -576,6 +581,7 @@ internal fun YabaPdfExtractorFeatureHost(
                     },
                     onUrlClick = null,
                     onHighlightTap = null,
+                    onMathTap = null,
                 )
             }
             if (rendererCrashed) return@AndroidView
@@ -768,6 +774,7 @@ internal fun YabaPdfViewerFeatureHost(
                     },
                     onUrlClick = null,
                     onHighlightTap = onHighlightTap,
+                    onMathTap = null,
                 )
             }
             if (rendererCrashed) return@AndroidView

@@ -103,6 +103,8 @@ export type EditorCommandPayload =
   | { type: "removeLink" }
   | { type: "insertInlineMath"; latex: string }
   | { type: "insertBlockMath"; latex: string }
+  | { type: "updateInlineMath"; latex: string; pos: number }
+  | { type: "updateBlockMath"; latex: string; pos: number }
   /** Plain text at selection (does not run markdown input rules; use [setHeading] for headings). */
   | { type: "insertText"; text: string }
   /** Turn the current block into a heading (same as toolbar “Heading N”; avoids insertText bypassing input rules). */
@@ -367,6 +369,8 @@ export function initEditorBridge(editor: Editor): void {
           canAddColumnBefore: false,
           canAddColumnAfter: false,
           canDeleteColumn: false,
+          inlineMath: false,
+          blockMath: false,
         })
       }
       const inTable = ed.isActive("table")
@@ -383,6 +387,8 @@ export function initEditorBridge(editor: Editor): void {
         bulletList: ed.isActive("bulletList"),
         orderedList: ed.isActive("orderedList"),
         taskList: ed.isActive("taskList"),
+        inlineMath: ed.isActive("inlineMath"),
+        blockMath: ed.isActive("blockMath"),
         canUndo: ed.can().undo(),
         canRedo: ed.can().redo(),
         canIndent: ed.can().sinkListItem("listItem"),
@@ -472,6 +478,12 @@ export function initEditorBridge(editor: Editor): void {
           break
         case "insertBlockMath":
           ed.commands.insertBlockMath({ latex: cmd.latex })
+          break
+        case "updateInlineMath":
+          ed.commands.updateInlineMath({ latex: cmd.latex, pos: cmd.pos })
+          break
+        case "updateBlockMath":
+          ed.commands.updateBlockMath({ latex: cmd.latex, pos: cmd.pos })
           break
         case "insertTable": {
           const rows = Math.max(1, Math.min(20, Math.floor(cmd.rows)))

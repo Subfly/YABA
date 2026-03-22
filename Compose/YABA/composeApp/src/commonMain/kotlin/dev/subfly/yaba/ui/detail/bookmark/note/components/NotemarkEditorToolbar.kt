@@ -54,6 +54,7 @@ internal fun NotemarkEditorToolbar(
     onHighlightClick: () -> Unit,
     onDispatchCommand: (String) -> Unit,
     onOpenTableInsertSheet: () -> Unit,
+    onOpenMathSheet: (isBlock: Boolean) -> Unit,
     onPickImageFromGallery: () -> Unit,
     onCaptureImageFromCamera: () -> Unit,
 ) {
@@ -115,6 +116,7 @@ internal fun NotemarkEditorToolbar(
                 formatting = formatting,
                 onDispatchCommand = onDispatchCommand,
                 onOpenTableInsertSheet = onOpenTableInsertSheet,
+                onOpenMathSheet = onOpenMathSheet,
                 onPickImageFromGallery = onPickImageFromGallery,
                 onCaptureImageFromCamera = onCaptureImageFromCamera,
             )
@@ -401,6 +403,7 @@ private fun InsertBlocksDropdown(
     formatting: EditorFormattingState,
     onDispatchCommand: (String) -> Unit,
     onOpenTableInsertSheet: () -> Unit,
+    onOpenMathSheet: (isBlock: Boolean) -> Unit,
     onPickImageFromGallery: () -> Unit,
     onCaptureImageFromCamera: () -> Unit,
 ) {
@@ -408,6 +411,7 @@ private fun InsertBlocksDropdown(
     var listSubExpanded by remember { mutableStateOf(false) }
     var imageSubExpanded by remember { mutableStateOf(false) }
     var codeSubExpanded by remember { mutableStateOf(false) }
+    var mathSubExpanded by remember { mutableStateOf(false) }
 
     val anyInsertToggleActive by remember(formatting) {
         derivedStateOf { YabaEditorCommands.hasAnyInsertMenuToggle(formatting) }
@@ -418,6 +422,7 @@ private fun InsertBlocksDropdown(
             listSubExpanded = false
             imageSubExpanded = false
             codeSubExpanded = false
+            mathSubExpanded = false
         }
     }
 
@@ -630,14 +635,55 @@ private fun InsertBlocksDropdown(
                     leadingIcon = { YabaIcon(name = "link-04") },
                     text = { Text(text = "Link") },
                 )
-                DropdownMenuItem(
-                    shapes = MenuDefaults.itemShape(7, 8),
-                    checked = false,
-                    enabled = false,
-                    onCheckedChange = {},
-                    leadingIcon = { YabaIcon(name = "calculator") },
-                    text = { Text(text = "Math") },
-                )
+                Box {
+                    val mathTrailingRotation by animateFloatAsState(
+                        targetValue = if (mathSubExpanded) 90f else 0f,
+                    )
+                    DropdownMenuItem(
+                        shapes = MenuDefaults.itemShape(7, 8),
+                        checked = formatting.inlineMath || formatting.blockMath,
+                        onCheckedChange = { _ -> mathSubExpanded = true },
+                        leadingIcon = { YabaIcon(name = "calculator") },
+                        trailingIcon = {
+                            YabaIcon(
+                                modifier = Modifier.rotate(mathTrailingRotation),
+                                name = "arrow-right-01",
+                            )
+                        },
+                        text = { Text(text = "Math") },
+                    )
+                    DropdownMenuPopup(
+                        expanded = mathSubExpanded,
+                        onDismissRequest = { mathSubExpanded = false },
+                    ) {
+                        DropdownMenuGroup(
+                            shapes = MenuDefaults.groupShape(index = 0, count = 1),
+                        ) {
+                            DropdownMenuItem(
+                                shapes = MenuDefaults.itemShape(0, 2),
+                                checked = formatting.inlineMath,
+                                onCheckedChange = { _ ->
+                                    mathSubExpanded = false
+                                    expanded = false
+                                    onOpenMathSheet(false)
+                                },
+                                leadingIcon = { YabaIcon(name = "absolute") },
+                                text = { Text(text = "Inline math") },
+                            )
+                            DropdownMenuItem(
+                                shapes = MenuDefaults.itemShape(1, 2),
+                                checked = formatting.blockMath,
+                                onCheckedChange = { _ ->
+                                    mathSubExpanded = false
+                                    expanded = false
+                                    onOpenMathSheet(true)
+                                },
+                                leadingIcon = { YabaIcon(name = "alpha-square") },
+                                text = { Text(text = "Math block") },
+                            )
+                        }
+                    }
+                }
             }
         }
     }

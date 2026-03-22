@@ -8,3 +8,11 @@ data class NotemarkTableSheetResult(
     val cols: Int,
     val withHeaderRow: Boolean = false,
 )
+
+@Serializable
+data class NotemarkMathSheetResult(
+    val isBlock: Boolean,
+    val latex: String,
+    val isEdit: Boolean,
+    val editPos: Int? = null,
+)
