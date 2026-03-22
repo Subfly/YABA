@@ -19,6 +19,7 @@ import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,18 +43,6 @@ private data class FormatMenuRow(
     val command: String,
     val isSelected: (EditorFormattingState) -> Boolean,
 )
-
-private val textFormatMenuRows: List<FormatMenuRow> =
-    listOf(
-        FormatMenuRow("text-bold", "Bold", YabaEditorCommands.ToggleBold) { it.bold },
-        FormatMenuRow("text-italic", "Italic", YabaEditorCommands.ToggleItalic) { it.italic },
-        FormatMenuRow("text-underline", "Underline", YabaEditorCommands.ToggleUnderline) { it.underline },
-        FormatMenuRow("text-strikethrough", "Strikethrough", YabaEditorCommands.ToggleStrikethrough) {
-            it.strikethrough
-        },
-        FormatMenuRow("text-subscript", "Subscript", YabaEditorCommands.ToggleSubscript) { it.subscript },
-        FormatMenuRow("text-superscript", "Superscript", YabaEditorCommands.ToggleSuperscript) { it.superscript },
-    )
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -174,7 +163,9 @@ private fun TextMarksDropdown(
     onDispatchCommand: (String) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val anyActive = YabaEditorCommands.hasAnyTextMark(formatting)
+    val anyActive by remember(formatting) {
+        derivedStateOf { YabaEditorCommands.hasAnyTextMark(formatting) }
+    }
 
     Box {
         IconButton(
@@ -187,9 +178,16 @@ private fun TextMarksDropdown(
             onDismissRequest = { expanded = false },
         ) {
             DropdownMenuGroup(shapes = MenuDefaults.groupShape(index = 0, count = 1)) {
-                textFormatMenuRows.fastForEachIndexed { index, row ->
+                listOf(
+                    FormatMenuRow("text-bold", "Bold", YabaEditorCommands.ToggleBold) { it.bold },
+                    FormatMenuRow("text-italic", "Italic", YabaEditorCommands.ToggleItalic) { it.italic },
+                    FormatMenuRow("text-underline", "Underline", YabaEditorCommands.ToggleUnderline) { it.underline },
+                    FormatMenuRow("text-strikethrough", "Strikethrough", YabaEditorCommands.ToggleStrikethrough) { it.strikethrough },
+                    FormatMenuRow("text-subscript", "Subscript", YabaEditorCommands.ToggleSubscript) { it.subscript },
+                    FormatMenuRow("text-superscript", "Superscript", YabaEditorCommands.ToggleSuperscript) { it.superscript },
+                ).fastForEachIndexed { index, row ->
                     DropdownMenuItem(
-                        shapes = MenuDefaults.itemShape(index, textFormatMenuRows.size),
+                        shapes = MenuDefaults.itemShape(index, 6),
                         checked = row.isSelected(formatting),
                         onCheckedChange = { _ ->
                             onDispatchCommand(row.command)
