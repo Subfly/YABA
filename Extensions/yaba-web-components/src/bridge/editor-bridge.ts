@@ -89,6 +89,7 @@ export type EditorCommandPayload =
   | { type: "toggleSubscript" }
   | { type: "toggleSuperscript" }
   | { type: "toggleCode" }
+  | { type: "toggleCodeBlock" }
   | { type: "toggleQuote" }
   | { type: "insertHr" }
   | { type: "toggleBulletedList" }
@@ -350,6 +351,7 @@ export function initEditorBridge(editor: Editor): void {
           subscript: false,
           superscript: false,
           code: false,
+          codeBlock: false,
           blockquote: false,
           bulletList: false,
           orderedList: false,
@@ -376,6 +378,7 @@ export function initEditorBridge(editor: Editor): void {
         subscript: ed.isActive("subscript"),
         superscript: ed.isActive("superscript"),
         code: ed.isActive("code"),
+        codeBlock: ed.isActive("codeBlock"),
         blockquote: ed.isActive("blockquote"),
         bulletList: ed.isActive("bulletList"),
         orderedList: ed.isActive("orderedList"),
@@ -427,6 +430,9 @@ export function initEditorBridge(editor: Editor): void {
           break
         case "toggleCode":
           chain.toggleCode().run()
+          break
+        case "toggleCodeBlock":
+          chain.toggleCodeBlock().run()
           break
         case "toggleQuote":
           chain.toggleBlockquote().run()

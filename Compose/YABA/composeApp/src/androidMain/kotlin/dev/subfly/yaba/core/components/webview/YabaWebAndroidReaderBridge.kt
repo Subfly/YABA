@@ -197,6 +197,7 @@ internal suspend fun getEditorActiveFormatting(webView: WebView): EditorFormatti
             subscript = json.optBoolean("subscript"),
             superscript = json.optBoolean("superscript"),
             code = json.optBoolean("code"),
+            codeBlock = json.optBoolean("codeBlock"),
             blockquote = json.optBoolean("blockquote"),
             bulletList = json.optBoolean("bulletList"),
             orderedList = json.optBoolean("orderedList"),

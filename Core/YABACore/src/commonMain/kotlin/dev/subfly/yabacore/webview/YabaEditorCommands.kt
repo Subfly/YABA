@@ -8,6 +8,7 @@ object YabaEditorCommands {
     const val ToggleSubscript = """{"type":"toggleSubscript"}"""
     const val ToggleSuperscript = """{"type":"toggleSuperscript"}"""
     const val ToggleCode = """{"type":"toggleCode"}"""
+    const val ToggleCodeBlock = """{"type":"toggleCodeBlock"}"""
     const val ToggleQuote = """{"type":"toggleQuote"}"""
     const val InsertHr = """{"type":"insertHr"}"""
     const val ToggleBulletedList = """{"type":"toggleBulletedList"}"""
@@ -71,4 +72,13 @@ object YabaEditorCommands {
             formatting.strikethrough ||
             formatting.subscript ||
             formatting.superscript
+
+    /** Block/list toggles shown under the insert ("add") toolbar menu. */
+    fun hasAnyInsertMenuToggle(formatting: EditorFormattingState): Boolean =
+        formatting.code ||
+            formatting.codeBlock ||
+            formatting.blockquote ||
+            formatting.bulletList ||
+            formatting.orderedList ||
+            formatting.taskList
 }

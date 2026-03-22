@@ -407,18 +407,24 @@ private fun InsertBlocksDropdown(
     var expanded by remember { mutableStateOf(false) }
     var listSubExpanded by remember { mutableStateOf(false) }
     var imageSubExpanded by remember { mutableStateOf(false) }
+    var codeSubExpanded by remember { mutableStateOf(false) }
+
+    val anyInsertToggleActive by remember(formatting) {
+        derivedStateOf { YabaEditorCommands.hasAnyInsertMenuToggle(formatting) }
+    }
 
     LaunchedEffect(expanded) {
         if (expanded.not()) {
             listSubExpanded = false
             imageSubExpanded = false
+            codeSubExpanded = false
         }
     }
 
     Box {
         IconButton(
             onClick = { expanded = expanded.not() },
-            colors = bookmarkReaderToolbarIconButtonColors(folderYabaColor),
+            colors = bookmarkReaderToolbarToggleIconButtonColors(folderYabaColor, anyInsertToggleActive),
             shapes = IconButtonDefaults.shapes(),
         ) { YabaIcon(name = "add-01", color = Color.White) }
         DropdownMenuPopup(
@@ -485,16 +491,55 @@ private fun InsertBlocksDropdown(
                         }
                     }
                 }
-                DropdownMenuItem(
-                    shapes = MenuDefaults.itemShape(2, 8),
-                    checked = formatting.code,
-                    onCheckedChange = { _ ->
-                        expanded = false
-                        onDispatchCommand(YabaEditorCommands.ToggleCode)
-                    },
-                    leadingIcon = { YabaIcon(name = "source-code") },
-                    text = { Text(text = "Code") },
-                )
+                Box {
+                    val codeTrailingRotation by animateFloatAsState(
+                        targetValue = if (codeSubExpanded) 90f else 0f,
+                    )
+                    DropdownMenuItem(
+                        shapes = MenuDefaults.itemShape(2, 8),
+                        checked = formatting.code || formatting.codeBlock,
+                        onCheckedChange = { _ -> codeSubExpanded = true },
+                        leadingIcon = { YabaIcon(name = "source-code") },
+                        trailingIcon = {
+                            YabaIcon(
+                                modifier = Modifier.rotate(codeTrailingRotation),
+                                name = "arrow-right-01",
+                            )
+                        },
+                        text = { Text(text = "Code") },
+                    )
+                    DropdownMenuPopup(
+                        expanded = codeSubExpanded,
+                        onDismissRequest = { codeSubExpanded = false },
+                    ) {
+                        DropdownMenuGroup(
+                            shapes = MenuDefaults.groupShape(index = 0, count = 1),
+                        ) {
+                            DropdownMenuItem(
+                                shapes = MenuDefaults.itemShape(0, 2),
+                                checked = formatting.code,
+                                onCheckedChange = { _ ->
+                                    codeSubExpanded = false
+                                    expanded = false
+                                    onDispatchCommand(YabaEditorCommands.ToggleCode)
+                                },
+                                leadingIcon = { YabaIcon(name = "code") },
+                                text = { Text(text = "Inline code") },
+                            )
+                            DropdownMenuItem(
+                                shapes = MenuDefaults.itemShape(1, 2),
+                                checked = formatting.codeBlock,
+                                onCheckedChange = { _ ->
+                                    codeSubExpanded = false
+                                    expanded = false
+                                    onDispatchCommand(YabaEditorCommands.ToggleCodeBlock)
+                                },
+                                leadingIcon = { YabaIcon(name = "source-code-square") },
+                                text = { Text(text = "Code block") },
+                            )
+                        }
+                    }
+                }
                 DropdownMenuItem(
                     shapes = MenuDefaults.itemShape(3, 8),
                     checked = formatting.blockquote,

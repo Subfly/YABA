@@ -15,6 +15,7 @@ data class EditorFormattingState(
     val subscript: Boolean = false,
     val superscript: Boolean = false,
     val code: Boolean = false,
+    val codeBlock: Boolean = false,
     val blockquote: Boolean = false,
     val bulletList: Boolean = false,
     val orderedList: Boolean = false,
