@@ -3,7 +3,6 @@ package dev.subfly.yabacore.state.detail.notemark
 import androidx.compose.runtime.Immutable
 import dev.subfly.yabacore.model.ui.BookmarkPreviewUiModel
 import dev.subfly.yabacore.model.ui.HighlightUiModel
-import dev.subfly.yabacore.model.utils.NoteSaveMode
 
 @Immutable
 data class NotemarkDetailUIState(
@@ -12,14 +11,12 @@ data class NotemarkDetailUIState(
     val readableVersionId: String? = null,
     /** Base URL for resolving relative assets in the editor (`file://.../bookmarks/<id>/`). */
     val assetsBaseUrl: String? = null,
-    /** Document JSON last loaded from disk / last successfully persisted. */
-    val lastSavedDocumentJson: String = "",
-    /** Current editor buffer (mirrors WebView). */
-    val editorDocumentJson: String = "",
+    /**
+     * Document JSON loaded once from disk for bootstrapping the WebView editor.
+     * Live edits stay in the WebView; persistence is triggered by [NotemarkDetailEvent.OnSave].
+     */
+    val initialDocumentJson: String? = null,
     val highlights: List<HighlightUiModel> = emptyList(),
-    val saveMode: NoteSaveMode = NoteSaveMode.AUTOSAVE_3S_INACTIVITY,
-    val isDirty: Boolean = false,
-    val isSaving: Boolean = false,
     val isLoading: Boolean = false,
     val reminderDateEpochMillis: Long? = null,
     val scrollToHighlightId: String? = null,

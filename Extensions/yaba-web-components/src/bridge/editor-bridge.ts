@@ -43,10 +43,6 @@ export interface YabaEditorBridge {
   getCanCreateHighlight: () => boolean
   setHighlights: (highlightsJson: string) => void
   scrollToHighlight: (highlightId: string) => void
-  /** True when editor document JSON differs from last [flush] / [setDocumentJson] baseline. */
-  isDirty: () => boolean
-  /** Marks current document as clean for [isDirty] (after native save). */
-  flush: () => void
   setPlatform: (platform: Platform) => void
   setAppearance: (mode: AppearanceMode) => void
   setCursorColor: (color: string) => void
@@ -90,7 +86,6 @@ export type EditorCommandPayload =
   | { type: "insertText"; text: string }
 
 let editorInstance: Editor | null = null
-let lastPersistedDocumentJson = EMPTY_DOC_JSON
 let platform: Platform = "compose"
 let appearance: AppearanceMode = "auto"
 let cursorColor: string | null = null
@@ -192,7 +187,6 @@ function applyReaderPreferences(): void {
 
 export function initEditorBridge(editor: Editor): void {
   editorInstance = editor
-  lastPersistedDocumentJson = JSON.stringify(editor.getJSON())
   const urlParams = parseUrlParams()
   platform = urlParams.platform
   appearance = urlParams.appearance
@@ -267,7 +261,6 @@ export function initEditorBridge(editor: Editor): void {
         doc = JSON.parse(EMPTY_DOC_JSON) as Record<string, unknown>
       }
       editorInstance?.commands.setContent(doc, { emitUpdate: false })
-      lastPersistedDocumentJson = JSON.stringify(editorInstance?.getJSON() ?? JSON.parse(EMPTY_DOC_JSON))
     },
     setReaderHtml: (html: string, options?: { assetsBaseUrl?: string }) => {
       let payload = html?.trim() ? html : "<p></p>"
@@ -275,7 +268,6 @@ export function initEditorBridge(editor: Editor): void {
         payload = rewriteAssetPathsInReaderHtml(payload, options.assetsBaseUrl)
       }
       editorInstance?.commands.setContent(payload, { emitUpdate: false })
-      lastPersistedDocumentJson = JSON.stringify(editorInstance?.getJSON() ?? JSON.parse(EMPTY_DOC_JSON))
     },
     getDocumentJson: () => {
       return JSON.stringify(editorInstance?.getJSON() ?? JSON.parse(EMPTY_DOC_JSON))
@@ -318,13 +310,6 @@ export function initEditorBridge(editor: Editor): void {
         canIndent: ed.can().sinkListItem("listItem"),
         canOutdent: ed.can().liftListItem("listItem"),
       })
-    },
-    isDirty: () => {
-      const current = JSON.stringify(editorInstance?.getJSON() ?? JSON.parse(EMPTY_DOC_JSON))
-      return current !== lastPersistedDocumentJson
-    },
-    flush: () => {
-      lastPersistedDocumentJson = JSON.stringify(editorInstance?.getJSON() ?? JSON.parse(EMPTY_DOC_JSON))
     },
     focus: () => editorInstance?.commands.focus(),
     blur: () => editorInstance?.commands.blur(),

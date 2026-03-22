@@ -192,7 +192,6 @@ object CoreConstants {
         const val SHOW_MENU_BAR_ITEM = "showMenuBarItem" // mac / catalyst only
         const val USE_SIMPLIFIED_SHARE = "useSimplifiedShare" // share extension uses app-group
         const val PREVENT_DELETION_SYNC = "preventDeletionSync"
-        const val NOTE_SAVE_MODE = "noteSaveMode"
     }
 
     /**

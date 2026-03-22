@@ -17,7 +17,6 @@ import androidx.compose.material3.LinearWavyProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -29,6 +28,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.webview.YabaWebView
 import dev.subfly.yaba.core.navigation.creation.HighlightCreationRoute
@@ -52,8 +53,10 @@ import dev.subfly.yabacore.webview.YabaWebAppearance
 import dev.subfly.yabacore.webview.YabaWebFeature
 import dev.subfly.yabacore.webview.YabaWebHostEvent
 import dev.subfly.yabacore.webview.YabaWebPlatform
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.reader_not_available_description
@@ -82,24 +85,23 @@ internal fun NotemarkContentLayout(
     var editorFormatting by remember(state.bookmark?.id) { mutableStateOf(EditorFormattingState()) }
     var isMenuExpanded by remember { mutableStateOf(false) }
 
-    var frozenInitialDocumentJson by remember(state.bookmark?.id) { mutableStateOf<String?>(null) }
-
-    LaunchedEffect(state.isLoading, state.editorDocumentJson, state.bookmark?.id) {
-        if (!state.isLoading && frozenInitialDocumentJson == null) {
-            frozenInitialDocumentJson = state.editorDocumentJson
+    LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
+        val bridge = editorBridge ?: return@LifecycleEventEffect
+        scope.launch {
+            val json = bridge.getDocumentJson()
+            onEvent(NotemarkDetailEvent.OnSave(documentJson = json))
         }
     }
 
-    DisposableEffect(Unit) {
-        onDispose { onEvent(NotemarkDetailEvent.OnFlushPendingSave) }
-    }
-
     LaunchedEffect(editorBridge, state.bookmark?.id) {
-        val bridge = editorBridge ?: return@LaunchedEffect
-        while (true) {
-            delay(400)
-            val json = bridge.getDocumentJson()
-            onEvent(NotemarkDetailEvent.OnEditorDocumentJsonChanged(json))
+        try {
+            awaitCancellation()
+        } finally {
+            withContext(NonCancellable) {
+                val bridge = editorBridge ?: return@withContext
+                val json = bridge.getDocumentJson()
+                onEvent(NotemarkDetailEvent.OnSave(documentJson = json))
+            }
         }
     }
 
@@ -117,8 +119,8 @@ internal fun NotemarkContentLayout(
 
     val webAppearance = if (isSystemInDarkTheme()) YabaWebAppearance.Dark else YabaWebAppearance.Light
 
-    val ready by remember(state.isLoading, frozenInitialDocumentJson) {
-        derivedStateOf { !state.isLoading && frozenInitialDocumentJson != null }
+    val ready by remember(state.isLoading, state.initialDocumentJson) {
+        derivedStateOf { !state.isLoading && state.initialDocumentJson != null }
     }
 
     Box(
@@ -132,7 +134,7 @@ internal fun NotemarkContentLayout(
                     modifier = Modifier.fillMaxSize(),
                     baseUrl = WebComponentUris.getEditorUri(),
                     feature = YabaWebFeature.Editor(
-                        initialDocumentJson = frozenInitialDocumentJson ?: "",
+                        initialDocumentJson = state.initialDocumentJson.orEmpty(),
                         assetsBaseUrl = state.assetsBaseUrl,
                         highlights = state.highlights,
                         platform = YabaWebPlatform.Compose,

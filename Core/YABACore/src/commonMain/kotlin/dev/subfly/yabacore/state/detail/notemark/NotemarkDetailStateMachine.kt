@@ -10,20 +10,15 @@ import dev.subfly.yabacore.managers.HighlightManager
 import dev.subfly.yabacore.managers.NotemarkManager
 import dev.subfly.yabacore.managers.ReadableContentManager
 import dev.subfly.yabacore.model.ui.BookmarkPreviewUiModel
-import dev.subfly.yabacore.model.utils.NoteSaveMode
 import dev.subfly.yabacore.notifications.NotificationManager
-import dev.subfly.yabacore.preferences.SettingsStores
 import dev.subfly.yabacore.state.base.BaseStateMachine
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
-
-private const val AUTOSAVE_DEBOUNCE_MS = 3_000L
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class NotemarkDetailStateMachine :
@@ -33,18 +28,14 @@ class NotemarkDetailStateMachine :
     private var isInitialized = false
     private var didBootstrapEditor = false
     private var dataSubscriptionJob: Job? = null
-    private var autosaveJob: Job? = null
     private val bookmarkIdFlow = MutableStateFlow<String?>(null)
-    private val preferencesStore
-        get() = SettingsStores.userPreferences
+    /** Matches last known persisted document JSON (disk bootstrap or successful [OnSave]). */
+    private var lastPersistedJson: String? = null
 
     override fun onEvent(event: NotemarkDetailEvent) {
         when (event) {
             is NotemarkDetailEvent.OnInit -> onInit(event.bookmarkId)
-            is NotemarkDetailEvent.OnNoteSaveModeChanged -> onNoteSaveModeChanged(event)
-            is NotemarkDetailEvent.OnEditorDocumentJsonChanged -> onEditorDocumentJsonChanged(event)
-            NotemarkDetailEvent.OnManualSave -> onManualSave()
-            NotemarkDetailEvent.OnFlushPendingSave -> onFlushPendingSave()
+            is NotemarkDetailEvent.OnSave -> onSave(event)
             NotemarkDetailEvent.OnDeleteBookmark -> onDeleteBookmark()
             is NotemarkDetailEvent.OnCreateHighlight -> onCreateHighlight(event)
             is NotemarkDetailEvent.OnUpdateHighlight -> onUpdateHighlight(event)
@@ -57,10 +48,6 @@ class NotemarkDetailStateMachine :
         }
     }
 
-    private fun onNoteSaveModeChanged(event: NotemarkDetailEvent.OnNoteSaveModeChanged) {
-        updateState { it.copy(saveMode = event.mode) }
-    }
-
     private fun onInit(bookmarkId: String) {
         if (isInitialized) return
         isInitialized = true
@@ -69,13 +56,7 @@ class NotemarkDetailStateMachine :
 
         launch {
             val reminderDate = NotificationManager.getPendingReminderDate(bookmarkId)
-            val prefs = preferencesStore.get()
-            updateState {
-                it.copy(
-                    reminderDateEpochMillis = reminderDate,
-                    saveMode = prefs.preferredNoteSaveMode,
-                )
-            }
+            updateState { it.copy(reminderDateEpochMillis = reminderDate) }
         }
 
         dataSubscriptionJob?.cancel()
@@ -111,15 +92,14 @@ class NotemarkDetailStateMachine :
                             if (note != null && !didBootstrapEditor) {
                                 didBootstrapEditor = true
                                 val docJson = NotemarkManager.readNoteDocumentJson(id).orEmpty()
+                                lastPersistedJson = docJson
                                 emit(
                                     currentState().copy(
                                         bookmark = bookmarkModel,
                                         readableVersionId = vid,
                                         highlights = highlights,
                                         assetsBaseUrl = assetsBaseUrl,
-                                        editorDocumentJson = docJson,
-                                        lastSavedDocumentJson = docJson,
-                                        isDirty = false,
+                                        initialDocumentJson = docJson,
                                         isLoading = false,
                                     ),
                                 )
@@ -143,61 +123,14 @@ class NotemarkDetailStateMachine :
         }
     }
 
-    private fun onEditorDocumentJsonChanged(event: NotemarkDetailEvent.OnEditorDocumentJsonChanged) {
-        val json = event.documentJson
-        var scheduleAutosave = false
-        updateState {
-            val dirty = json != it.lastSavedDocumentJson
-            scheduleAutosave =
-                dirty && it.saveMode == NoteSaveMode.AUTOSAVE_3S_INACTIVITY
-            it.copy(editorDocumentJson = json, isDirty = dirty)
-        }
-        if (scheduleAutosave) {
-            scheduleAutosaveDebounced()
-        }
-    }
-
-    private fun scheduleAutosaveDebounced() {
-        autosaveJob?.cancel()
-        autosaveJob = launch {
-            delay(AUTOSAVE_DEBOUNCE_MS)
-            performSave()
-        }
-    }
-
-    private fun onManualSave() {
-        autosaveJob?.cancel()
-        performSave()
-    }
-
-    private fun onFlushPendingSave() {
-        autosaveJob?.cancel()
-        if (currentState().isDirty) {
-            performSave()
-        }
-    }
-
-    private fun performSave() {
+    private fun onSave(event: NotemarkDetailEvent.OnSave) {
         val bookmarkId = bookmarkIdFlow.value ?: return
-        val snapshot = currentState()
-        if (!snapshot.isDirty) {
-            updateState { it.copy(isSaving = false) }
-            return
-        }
-        val documentJson = snapshot.editorDocumentJson
-        updateState { it.copy(isSaving = true) }
+        val json = event.documentJson
+        if (json == lastPersistedJson) return
         launch {
-            val result = NotemarkManager.persistNoteDocumentJsonAwait(bookmarkId, documentJson)
-            updateState {
-                if (result.isSuccess) {
-                    it.copy(
-                        isSaving = false,
-                        lastSavedDocumentJson = documentJson,
-                        isDirty = false,
-                    )
-                } else {
-                    it.copy(isSaving = false)
-                }
+            val result = NotemarkManager.persistNoteDocumentJsonAwait(bookmarkId, json)
+            if (result.isSuccess) {
+                lastPersistedJson = json
             }
         }
     }
@@ -279,8 +212,7 @@ class NotemarkDetailStateMachine :
     override fun clear() {
         isInitialized = false
         didBootstrapEditor = false
-        autosaveJob?.cancel()
-        autosaveJob = null
+        lastPersistedJson = null
         dataSubscriptionJob?.cancel()
         dataSubscriptionJob = null
         bookmarkIdFlow.value = null

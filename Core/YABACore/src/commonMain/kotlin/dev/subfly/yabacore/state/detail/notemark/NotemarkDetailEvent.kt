@@ -1,22 +1,16 @@
 package dev.subfly.yabacore.state.detail.notemark
 
-import dev.subfly.yabacore.model.utils.NoteSaveMode
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.notifications.PlatformNotificationText
 
 sealed interface NotemarkDetailEvent {
     data class OnInit(val bookmarkId: String) : NotemarkDetailEvent
 
-    data class OnNoteSaveModeChanged(val mode: NoteSaveMode) : NotemarkDetailEvent
-
-    /** Editor content changed (document JSON). */
-    data class OnEditorDocumentJsonChanged(val documentJson: String) : NotemarkDetailEvent
-
-    /** User explicitly saves (manual mode or toolbar). */
-    data object OnManualSave : NotemarkDetailEvent
-
-    /** Persist immediately if there are unsaved changes (e.g. leaving the screen). */
-    data object OnFlushPendingSave : NotemarkDetailEvent
+    /**
+     * Persist a snapshot of the editor document (JSON). The UI obtains this from
+     * [dev.subfly.yabacore.webview.WebViewEditorBridge.getDocumentJson] on lifecycle pause / disposal.
+     */
+    data class OnSave(val documentJson: String) : NotemarkDetailEvent
 
     data object OnDeleteBookmark : NotemarkDetailEvent
 

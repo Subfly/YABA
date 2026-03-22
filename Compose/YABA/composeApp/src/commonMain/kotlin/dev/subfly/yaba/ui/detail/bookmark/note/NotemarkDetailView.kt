@@ -13,7 +13,6 @@ import dev.subfly.yaba.ui.detail.bookmark.components.BookmarkContentDetailLayout
 import dev.subfly.yaba.ui.detail.bookmark.link.components.RemindMePickerDialog
 import dev.subfly.yaba.ui.detail.bookmark.note.layout.NotemarkContentLayout
 import dev.subfly.yaba.ui.detail.bookmark.note.layout.NotemarkDetailLayout
-import dev.subfly.yaba.util.LocalUserPreferences
 import dev.subfly.yaba.util.rememberNotificationPermissionRequester
 import dev.subfly.yabacore.common.computeTriggerMillisFromDatePicker
 import dev.subfly.yabacore.model.utils.BookmarkKind
@@ -43,14 +42,8 @@ fun NotemarkDetailView(
         }
     }
 
-    val userPreferences = LocalUserPreferences.current
-
     LaunchedEffect(bookmarkId) {
         vm.onEvent(NotemarkDetailEvent.OnInit(bookmarkId = bookmarkId))
-    }
-
-    LaunchedEffect(userPreferences.preferredNoteSaveMode) {
-        vm.onEvent(NotemarkDetailEvent.OnNoteSaveModeChanged(userPreferences.preferredNoteSaveMode))
     }
 
     BookmarkContentDetailLayout(

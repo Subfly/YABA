@@ -54,7 +54,6 @@ viewer.html?platform=darwin&appearance=dark
 | `setEditable(isEditable)` | Toggle edit/read-only |
 | `setDocumentJson(documentJson, options?)` | Set content from TipTap/ProseMirror JSON string; `options.assetsBaseUrl` resolves `../assets/` paths in the JSON |
 | `getDocumentJson()` | Returns current document as JSON string |
-| `isDirty()` / `flush()` | Dirty tracking vs last persisted baseline |
 | `focus()` / `blur()` | Focus/blur editor |
 | `dispatch(cmd)` | Run command; see below |
 

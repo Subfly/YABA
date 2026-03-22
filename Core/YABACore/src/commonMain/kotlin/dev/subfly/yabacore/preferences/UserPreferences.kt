@@ -3,7 +3,6 @@ package dev.subfly.yabacore.preferences
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.CardImageSizing
 import dev.subfly.yabacore.model.utils.FabPosition
-import dev.subfly.yabacore.model.utils.NoteSaveMode
 import dev.subfly.yabacore.model.utils.SortOrderType
 import dev.subfly.yabacore.model.utils.SortType
 import dev.subfly.yabacore.model.utils.ThemePreference
@@ -25,7 +24,6 @@ data class UserPreferences(
     val preferredBookmarkSorting: SortType = SortType.CREATED_AT,
     val preferredBookmarkSortOrder: SortOrderType = SortOrderType.DESCENDING,
     val preferredFabPosition: FabPosition = FabPosition.CENTER,
-    val preferredNoteSaveMode: NoteSaveMode = NoteSaveMode.AUTOSAVE_3S_INACTIVITY,
     val disableBackgroundAnimation: Boolean = false,
     val deviceId: String = "",
     val deviceName: String = "",
