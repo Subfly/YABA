@@ -34,47 +34,7 @@ import dev.subfly.yaba.ui.detail.bookmark.util.bookmarkReaderToolbarToggleIconBu
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.webview.EditorFormattingState
-
-private object NotemarkEditorCommands {
-    const val ToggleBold = """{"type":"toggleBold"}"""
-    const val ToggleItalic = """{"type":"toggleItalic"}"""
-    const val ToggleUnderline = """{"type":"toggleUnderline"}"""
-    const val ToggleStrikethrough = """{"type":"toggleStrikethrough"}"""
-    const val ToggleSubscript = """{"type":"toggleSubscript"}"""
-    const val ToggleSuperscript = """{"type":"toggleSuperscript"}"""
-    const val ToggleCode = """{"type":"toggleCode"}"""
-    const val ToggleQuote = """{"type":"toggleQuote"}"""
-    const val InsertHr = """{"type":"insertHr"}"""
-    const val ToggleBulletedList = """{"type":"toggleBulletedList"}"""
-    const val ToggleNumberedList = """{"type":"toggleNumberedList"}"""
-    const val ToggleTaskList = """{"type":"toggleTaskList"}"""
-    const val Indent = """{"type":"indent"}"""
-    const val Outdent = """{"type":"outdent"}"""
-    const val Undo = """{"type":"undo"}"""
-    const val Redo = """{"type":"redo"}"""
-}
-
-/** JSON for [window.YabaEditorBridge.dispatch] — inserts raw text at the selection (escapes for JS JSON). */
-private fun insertTextPayload(text: String): String {
-    val escaped = buildString {
-        for (c in text) {
-            when (c) {
-                '\\' -> append("\\\\")
-                '"' -> append("\\\"")
-                '\n' -> append("\\n")
-                '\r' -> append("\\r")
-                else -> append(c)
-            }
-        }
-    }
-    return """{"type":"insertText","text":"$escaped"}"""
-}
-
-private fun markdownHeadingPrefix(level: Int): String =
-    "#".repeat(level.coerceIn(1, 6)) + " "
-
-private fun hasAnyTextMark(f: EditorFormattingState): Boolean =
-    f.bold || f.italic || f.underline || f.strikethrough || f.subscript || f.superscript
+import dev.subfly.yabacore.webview.YabaEditorCommands
 
 private data class FormatMenuRow(
     val icon: String,
@@ -85,19 +45,19 @@ private data class FormatMenuRow(
 
 private val textFormatMenuRows: List<FormatMenuRow> =
     listOf(
-        FormatMenuRow("text-bold", "Bold", NotemarkEditorCommands.ToggleBold) { it.bold },
-        FormatMenuRow("text-italic", "Italic", NotemarkEditorCommands.ToggleItalic) { it.italic },
-        FormatMenuRow("text-underline", "Underline", NotemarkEditorCommands.ToggleUnderline) { it.underline },
-        FormatMenuRow("text-strikethrough", "Strikethrough", NotemarkEditorCommands.ToggleStrikethrough) {
+        FormatMenuRow("text-bold", "Bold", YabaEditorCommands.ToggleBold) { it.bold },
+        FormatMenuRow("text-italic", "Italic", YabaEditorCommands.ToggleItalic) { it.italic },
+        FormatMenuRow("text-underline", "Underline", YabaEditorCommands.ToggleUnderline) { it.underline },
+        FormatMenuRow("text-strikethrough", "Strikethrough", YabaEditorCommands.ToggleStrikethrough) {
             it.strikethrough
         },
-        FormatMenuRow("text-subscript", "Subscript", NotemarkEditorCommands.ToggleSubscript) { it.subscript },
-        FormatMenuRow("text-superscript", "Superscript", NotemarkEditorCommands.ToggleSuperscript) { it.superscript },
+        FormatMenuRow("text-subscript", "Subscript", YabaEditorCommands.ToggleSubscript) { it.subscript },
+        FormatMenuRow("text-superscript", "Superscript", YabaEditorCommands.ToggleSuperscript) { it.superscript },
     )
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
-internal fun NotemarkEditorFloatingToolbar(
+internal fun NotemarkEditorToolbar(
     modifier: Modifier = Modifier,
     color: YabaColor,
     canCreateHighlight: Boolean,
@@ -135,7 +95,11 @@ internal fun NotemarkEditorFloatingToolbar(
             HeadingInsertDropdown(
                 folderYabaColor = color,
                 onInsertHeadingMarkdown = { level ->
-                    onDispatchCommand(insertTextPayload(markdownHeadingPrefix(level)))
+                    onDispatchCommand(
+                        YabaEditorCommands.insertTextPayload(
+                            YabaEditorCommands.markdownHeadingPrefix(level),
+                        ),
+                    )
                 },
             )
 
@@ -210,7 +174,7 @@ private fun TextMarksDropdown(
     onDispatchCommand: (String) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val anyActive = hasAnyTextMark(formatting)
+    val anyActive = YabaEditorCommands.hasAnyTextMark(formatting)
 
     Box {
         IconButton(
@@ -263,7 +227,7 @@ private fun IndentOutdentDropdown(
                     checked = false,
                     enabled = formatting.canIndent,
                     onCheckedChange = { _ ->
-                        onDispatchCommand(NotemarkEditorCommands.Indent)
+                        onDispatchCommand(YabaEditorCommands.Indent)
                     },
                     leadingIcon = { YabaIcon(name = "text-indent-more") },
                     text = { Text(text = "Indent") },
@@ -273,7 +237,7 @@ private fun IndentOutdentDropdown(
                     checked = false,
                     enabled = formatting.canOutdent,
                     onCheckedChange = { _ ->
-                        onDispatchCommand(NotemarkEditorCommands.Outdent)
+                        onDispatchCommand(YabaEditorCommands.Outdent)
                     },
                     leadingIcon = { YabaIcon(name = "text-indent-less") },
                     text = { Text(text = "Outdent") },
@@ -307,7 +271,7 @@ private fun UndoRedoDropdown(
                     checked = false,
                     enabled = formatting.canUndo,
                     onCheckedChange = { _ ->
-                        onDispatchCommand(NotemarkEditorCommands.Undo)
+                        onDispatchCommand(YabaEditorCommands.Undo)
                     },
                     leadingIcon = { YabaIcon(name = "undo-03") },
                     text = { Text(text = "Undo") },
@@ -317,7 +281,7 @@ private fun UndoRedoDropdown(
                     checked = false,
                     enabled = formatting.canRedo,
                     onCheckedChange = { _ ->
-                        onDispatchCommand(NotemarkEditorCommands.Redo)
+                        onDispatchCommand(YabaEditorCommands.Redo)
                     },
                     leadingIcon = { YabaIcon(name = "redo-03") },
                     text = { Text(text = "Redo") },
@@ -373,7 +337,7 @@ private fun InsertBlocksDropdown(
                     checked = formatting.code,
                     onCheckedChange = { _ ->
                         expanded = false
-                        onDispatchCommand(NotemarkEditorCommands.ToggleCode)
+                        onDispatchCommand(YabaEditorCommands.ToggleCode)
                     },
                     leadingIcon = { YabaIcon(name = "source-code") },
                     text = { Text(text = "Code") },
@@ -383,7 +347,7 @@ private fun InsertBlocksDropdown(
                     checked = formatting.blockquote,
                     onCheckedChange = { _ ->
                         expanded = false
-                        onDispatchCommand(NotemarkEditorCommands.ToggleQuote)
+                        onDispatchCommand(YabaEditorCommands.ToggleQuote)
                     },
                     leadingIcon = { YabaIcon(name = "quote-down") },
                     text = { Text(text = "Quote") },
@@ -393,7 +357,7 @@ private fun InsertBlocksDropdown(
                     checked = false,
                     onCheckedChange = { _ ->
                         expanded = false
-                        onDispatchCommand(NotemarkEditorCommands.InsertHr)
+                        onDispatchCommand(YabaEditorCommands.InsertHr)
                     },
                     leadingIcon = { YabaIcon(name = "solid-line-01") },
                     text = { Text(text = "Horizontal rule") },
@@ -427,7 +391,7 @@ private fun InsertBlocksDropdown(
                                 shapes = MenuDefaults.itemShape(0, 3),
                                 checked = formatting.bulletList,
                                 onCheckedChange = { _ ->
-                                    onDispatchCommand(NotemarkEditorCommands.ToggleBulletedList)
+                                    onDispatchCommand(YabaEditorCommands.ToggleBulletedList)
                                     listSubExpanded = false
                                     expanded = false
                                 },
@@ -438,7 +402,7 @@ private fun InsertBlocksDropdown(
                                 shapes = MenuDefaults.itemShape(1, 3),
                                 checked = formatting.orderedList,
                                 onCheckedChange = { _ ->
-                                    onDispatchCommand(NotemarkEditorCommands.ToggleNumberedList)
+                                    onDispatchCommand(YabaEditorCommands.ToggleNumberedList)
                                     listSubExpanded = false
                                     expanded = false
                                 },
@@ -449,7 +413,7 @@ private fun InsertBlocksDropdown(
                                 shapes = MenuDefaults.itemShape(2, 3),
                                 checked = formatting.taskList,
                                 onCheckedChange = { _ ->
-                                    onDispatchCommand(NotemarkEditorCommands.ToggleTaskList)
+                                    onDispatchCommand(YabaEditorCommands.ToggleTaskList)
                                     listSubExpanded = false
                                     expanded = false
                                 },
