@@ -42,3 +42,18 @@ internal fun bookmarkReaderToolbarIconButtonColors(
         disabledContentColor = Color.White.copy(alpha = 0.5f),
     )
 }
+
+/** Selected state for format toggles on the reader/editor floating toolbar. */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+internal fun bookmarkReaderToolbarToggleIconButtonColors(
+    color: YabaColor,
+    selected: Boolean,
+): IconButtonColors {
+    val folderColor = Color(color.iconTintArgb())
+    return IconButtonDefaults.iconButtonColors(
+        containerColor = if (selected) folderColor.copy(alpha = 0.42f) else Color.Transparent,
+        contentColor = Color.White,
+        disabledContentColor = Color.White.copy(alpha = 0.5f),
+    )
+}

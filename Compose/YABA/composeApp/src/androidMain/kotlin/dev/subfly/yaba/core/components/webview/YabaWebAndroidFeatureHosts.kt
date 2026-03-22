@@ -22,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import dev.subfly.yabacore.webview.EditorFormattingState
 import dev.subfly.yabacore.webview.WebLoadState
 import dev.subfly.yabacore.webview.WebViewEditorBridge
 import dev.subfly.yabacore.webview.WebViewReaderBridge
@@ -338,15 +339,19 @@ internal fun YabaEditorFeatureHost(
     LaunchedEffect(activeEditorBridge) {
         val b = activeEditorBridge ?: return@LaunchedEffect
         var lastCan = false
+        var lastFmt = EditorFormattingState()
         while (isActive) {
             val can = b.getCanCreateHighlight()
-            if (can != lastCan) {
+            val fmt = getEditorActiveFormatting(webView)
+            if (can != lastCan || fmt != lastFmt) {
                 lastCan = can
+                lastFmt = fmt
                 onHostEventState.value(
                     YabaWebHostEvent.ReaderMetrics(
                         canCreateHighlight = can,
                         currentPage = 1,
                         pageCount = 1,
+                        editorFormatting = fmt,
                     ),
                 )
             }

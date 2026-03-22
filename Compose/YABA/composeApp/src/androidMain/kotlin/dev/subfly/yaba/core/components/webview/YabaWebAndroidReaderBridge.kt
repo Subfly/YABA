@@ -7,6 +7,7 @@ import dev.subfly.yabacore.model.highlight.ReadableAnchor
 import dev.subfly.yabacore.model.highlight.ReadableSelectionDraft
 import dev.subfly.yabacore.model.ui.HighlightUiModel
 import dev.subfly.yabacore.model.utils.ReaderPreferences
+import dev.subfly.yabacore.webview.EditorFormattingState
 import dev.subfly.yabacore.webview.WebViewEditorBridge
 import dev.subfly.yabacore.webview.WebViewReaderBridge
 import dev.subfly.yabacore.webview.YabaEditorBridgeScripts
@@ -169,6 +170,33 @@ internal suspend fun applyEditorReaderPreferences(
 internal suspend fun installEditorHighlightTap(webView: WebView) {
     if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY_LOOSE)) return
     evaluateJs(webView, YabaEditorBridgeScripts.installHighlightTapScript())
+}
+
+internal suspend fun getEditorActiveFormatting(webView: WebView): EditorFormattingState {
+    if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return EditorFormattingState()
+    val raw = evaluateJs(webView, YabaEditorBridgeScripts.getActiveFormattingScript())
+    val jsonStr = decodeJsStringResult(raw)
+    if (jsonStr.isBlank()) return EditorFormattingState()
+    return runCatching {
+        val json = JSONObject(jsonStr)
+        EditorFormattingState(
+            bold = json.optBoolean("bold"),
+            italic = json.optBoolean("italic"),
+            underline = json.optBoolean("underline"),
+            strikethrough = json.optBoolean("strikethrough"),
+            subscript = json.optBoolean("subscript"),
+            superscript = json.optBoolean("superscript"),
+            code = json.optBoolean("code"),
+            blockquote = json.optBoolean("blockquote"),
+            bulletList = json.optBoolean("bulletList"),
+            orderedList = json.optBoolean("orderedList"),
+            taskList = json.optBoolean("taskList"),
+            canUndo = json.optBoolean("canUndo"),
+            canRedo = json.optBoolean("canRedo"),
+            canIndent = json.optBoolean("canIndent"),
+            canOutdent = json.optBoolean("canOutdent"),
+        )
+    }.getOrElse { EditorFormattingState() }
 }
 
 private suspend fun pushHighlightsEditor(webView: WebView, highlights: List<HighlightUiModel>) {

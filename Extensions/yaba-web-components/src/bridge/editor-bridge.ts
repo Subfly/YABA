@@ -57,6 +57,8 @@ export interface YabaEditorBridge {
   /** Sanitized reader HTML for the read-only viewer (TipTap parses HTML → document). */
   setReaderHtml: (html: string, options?: { assetsBaseUrl?: string }) => void
   getDocumentJson: () => string
+  /** JSON string of active marks / undo availability for native toolbars. */
+  getActiveFormatting: () => string
   focus: () => void
   blur: () => void
   dispatch: (command: EditorCommandPayload) => void
@@ -74,6 +76,7 @@ export type EditorCommandPayload =
   | { type: "insertHr" }
   | { type: "toggleBulletedList" }
   | { type: "toggleNumberedList" }
+  | { type: "toggleTaskList" }
   | { type: "indent" }
   | { type: "outdent" }
   | { type: "undo" }
@@ -83,6 +86,8 @@ export type EditorCommandPayload =
   | { type: "insertYouTube"; url: string }
   | { type: "insertInlineMath"; latex: string }
   | { type: "insertBlockMath"; latex: string }
+  /** Plain text at selection (e.g. markdown `# ` for headings). */
+  | { type: "insertText"; text: string }
 
 let editorInstance: Editor | null = null
 let lastPersistedDocumentJson = EMPTY_DOC_JSON
@@ -275,6 +280,45 @@ export function initEditorBridge(editor: Editor): void {
     getDocumentJson: () => {
       return JSON.stringify(editorInstance?.getJSON() ?? JSON.parse(EMPTY_DOC_JSON))
     },
+    getActiveFormatting: () => {
+      const ed = editorInstance
+      if (!ed) {
+        return JSON.stringify({
+          bold: false,
+          italic: false,
+          underline: false,
+          strikethrough: false,
+          subscript: false,
+          superscript: false,
+          code: false,
+          blockquote: false,
+          bulletList: false,
+          orderedList: false,
+          taskList: false,
+          canUndo: false,
+          canRedo: false,
+          canIndent: false,
+          canOutdent: false,
+        })
+      }
+      return JSON.stringify({
+        bold: ed.isActive("bold"),
+        italic: ed.isActive("italic"),
+        underline: ed.isActive("underline"),
+        strikethrough: ed.isActive("strike"),
+        subscript: ed.isActive("subscript"),
+        superscript: ed.isActive("superscript"),
+        code: ed.isActive("code"),
+        blockquote: ed.isActive("blockquote"),
+        bulletList: ed.isActive("bulletList"),
+        orderedList: ed.isActive("orderedList"),
+        taskList: ed.isActive("taskList"),
+        canUndo: ed.can().undo(),
+        canRedo: ed.can().redo(),
+        canIndent: ed.can().sinkListItem("listItem"),
+        canOutdent: ed.can().liftListItem("listItem"),
+      })
+    },
     isDirty: () => {
       const current = JSON.stringify(editorInstance?.getJSON() ?? JSON.parse(EMPTY_DOC_JSON))
       return current !== lastPersistedDocumentJson
@@ -324,6 +368,9 @@ export function initEditorBridge(editor: Editor): void {
         case "toggleNumberedList":
           chain.toggleOrderedList().run()
           break
+        case "toggleTaskList":
+          chain.toggleTaskList().run()
+          break
         case "indent":
           chain.sinkListItem("listItem").run()
           break
@@ -351,6 +398,13 @@ export function initEditorBridge(editor: Editor): void {
         case "insertBlockMath":
           ed.commands.insertBlockMath({ latex: cmd.latex })
           break
+        case "insertText": {
+          const { from, to } = ed.state.selection
+          const tr = ed.state.tr.insertText(cmd.text, from, to)
+          ed.view.dispatch(tr)
+          ed.commands.focus()
+          break
+        }
       }
     },
   }

@@ -314,9 +314,22 @@ body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-attribut
   cursor: pointer;
 }
 
-.yaba-editor-container .ProseMirror ul[data-type="taskList"] li[data-checked] > div {
+/* Only completed tasks: [data-checked] matches any value, including "false", so use exact "true". */
+.yaba-editor-container .ProseMirror ul[data-type="taskList"] li[data-checked="true"] > div {
   text-decoration: line-through;
   color: var(--yaba-on-surface-variant);
+}
+
+/* Empty task lines: give the content column a line box so the caret is visible before typing (WebView/Android). */
+.yaba-editor-container .ProseMirror ul[data-type="taskList"] li > div {
+  flex: 1;
+  min-width: 0;
+  min-height: 1.35em;
+  caret-color: var(--yaba-cursor, var(--yaba-primary));
+}
+
+.yaba-editor-container .ProseMirror ul[data-type="taskList"] li > div > p {
+  min-height: 1.35em;
 }
 
 /* Selection */

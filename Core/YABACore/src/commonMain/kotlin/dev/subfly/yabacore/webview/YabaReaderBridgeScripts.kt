@@ -65,6 +65,19 @@ object YabaEditorBridgeScripts {
         })();
         """.trimIndent()
 
+    /** JSON object text: active marks and undo/list command availability. */
+    fun getActiveFormattingScript(): String =
+        """
+        (function() {
+            try {
+                if (window.YabaEditorBridge && typeof window.YabaEditorBridge.getActiveFormatting === "function") {
+                    return window.YabaEditorBridge.getActiveFormatting();
+                }
+                return "";
+            } catch(e) { return ""; }
+        })();
+        """.trimIndent()
+
     fun scrollToHighlightScript(highlightId: String): String {
         val escaped = escapeForJsSingleQuotedString(highlightId)
         return """

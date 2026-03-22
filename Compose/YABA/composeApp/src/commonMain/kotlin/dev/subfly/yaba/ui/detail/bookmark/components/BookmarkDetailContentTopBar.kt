@@ -33,6 +33,7 @@ internal fun BookmarkDetailContentTopBar(
     onShowDetail: () -> Unit,
     overflowMenu: @Composable () -> Unit,
     loadingIndicator: @Composable () -> Unit,
+    title: (@Composable () -> Unit)? = null,
 ) {
     val iconButtonColors = bookmarkDetailIconButtonColors(color)
     val scheme = MaterialTheme.colorScheme
@@ -69,7 +70,7 @@ internal fun BookmarkDetailContentTopBar(
                         containerColor = Color.Transparent,
                         scrolledContainerColor = Color.Transparent,
                     ),
-                title = {},
+                title = { title?.invoke() },
                 navigationIcon = {
                     IconButton(
                         onClick = onBack,
