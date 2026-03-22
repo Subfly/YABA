@@ -146,11 +146,11 @@ internal fun NotemarkContentLayout(
         bridge.dispatch(YabaEditorCommands.insertTablePayload(r.rows, r.cols, r.withHeaderRow))
     }
 
-    LaunchedEffect(state.pendingInsertedImageSrc, editorBridge) {
-        val src = state.pendingInsertedImageSrc ?: return@LaunchedEffect
+    LaunchedEffect(state.inlineImageDocumentSrc, editorBridge) {
+        val src = state.inlineImageDocumentSrc ?: return@LaunchedEffect
         val bridge = editorBridge ?: return@LaunchedEffect
         bridge.dispatch(YabaEditorCommands.insertImagePayload(src))
-        onEvent(NotemarkDetailEvent.OnConsumedPendingInsertedImage)
+        onEvent(NotemarkDetailEvent.OnConsumedInlineImageInsert)
         bridge.focus()
     }
 

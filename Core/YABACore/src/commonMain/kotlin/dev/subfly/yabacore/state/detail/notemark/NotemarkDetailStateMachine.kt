@@ -1,7 +1,5 @@
 package dev.subfly.yabacore.state.detail.notemark
 
-import dev.subfly.yabacore.common.CoreConstants
-import dev.subfly.yabacore.common.IdGenerator
 import dev.subfly.yabacore.database.DatabaseProvider
 import dev.subfly.yabacore.database.mappers.toPreviewUiModel
 import dev.subfly.yabacore.database.mappers.toUiModel
@@ -37,6 +35,7 @@ class NotemarkDetailStateMachine :
     private var didBootstrapEditor = false
     private var dataSubscriptionJob: Job? = null
     private val bookmarkIdFlow = MutableStateFlow<String?>(null)
+
     /** Matches last known persisted document JSON (disk bootstrap or successful [OnSave]). */
     private var lastPersistedJson: String? = null
 
@@ -55,7 +54,7 @@ class NotemarkDetailStateMachine :
             NotemarkDetailEvent.OnCancelReminder -> onCancelReminder()
             NotemarkDetailEvent.OnPickImageFromGallery -> onPickImageFromGallery()
             NotemarkDetailEvent.OnCaptureImageFromCamera -> onCaptureImageFromCamera()
-            NotemarkDetailEvent.OnConsumedPendingInsertedImage -> onConsumedPendingInsertedImage()
+            NotemarkDetailEvent.OnConsumedInlineImageInsert -> onConsumedInlineImageInsert()
         }
     }
 
@@ -72,68 +71,78 @@ class NotemarkDetailStateMachine :
 
         dataSubscriptionJob?.cancel()
         dataSubscriptionJob = launch {
-            bookmarkIdFlow.flatMapLatest { id ->
-                if (id == null) {
-                    MutableStateFlow(NotemarkDetailUIState())
-                } else {
-                    updateState { it.copy(isLoading = true) }
+            bookmarkIdFlow
+                .flatMapLatest { id ->
+                    if (id == null) {
+                        MutableStateFlow(NotemarkDetailUIState())
+                    } else {
+                        updateState { it.copy(isLoading = true) }
 
-                    val bookmarkFlow = DatabaseProvider.bookmarkDao.observeByIdWithRelations(id)
-                    val noteFlow = DatabaseProvider.noteBookmarkDao.observeByBookmarkId(id)
-                    val readableVersionsFlow = ReadableContentManager.observeReadableVersions(id)
+                        val bookmarkFlow =
+                            DatabaseProvider.bookmarkDao.observeByIdWithRelations(id)
+                        val noteFlow = DatabaseProvider.noteBookmarkDao.observeByBookmarkId(id)
+                        val readableVersionsFlow =
+                            ReadableContentManager.observeReadableVersions(id)
 
-                    combine(
-                        bookmarkFlow,
-                        noteFlow,
-                        readableVersionsFlow,
-                    ) { bookmark, note, versions ->
-                        flow {
-                            val bookmarkModel =
-                                if (bookmark != null) {
-                                    bookmark.toBookmarkPreviewUiModel()
+                        combine(
+                            bookmarkFlow,
+                            noteFlow,
+                            readableVersionsFlow,
+                        ) { bookmark, note, versions ->
+                            flow {
+                                val bookmarkModel =
+                                    if (bookmark != null) {
+                                        bookmark.toBookmarkPreviewUiModel()
+                                    } else {
+                                        null
+                                    }
+                                val vid = note?.readableVersionId
+                                val selectedVersion =
+                                    versions.find { v -> v.versionId == vid }
+                                        ?: versions.firstOrNull()
+                                val highlights = selectedVersion?.highlights ?: emptyList()
+                                val assetsBaseUrl = NotemarkManager.resolveNoteAssetsBaseUrl(id)
+
+                                if (note != null && !didBootstrapEditor) {
+                                    didBootstrapEditor = true
+                                    val docJson =
+                                        NotemarkManager.readNoteDocumentJson(id).orEmpty()
+                                    lastPersistedJson = docJson
+                                    emit(
+                                        currentState()
+                                            .copy(
+                                                bookmark = bookmarkModel,
+                                                readableVersionId = vid,
+                                                highlights = highlights,
+                                                assetsBaseUrl = assetsBaseUrl,
+                                                initialDocumentJson = docJson,
+                                                isLoading = false,
+                                            ),
+                                    )
                                 } else {
-                                    null
+                                    emit(
+                                        currentState()
+                                            .copy(
+                                                bookmark = bookmarkModel,
+                                                readableVersionId = vid,
+                                                highlights = highlights,
+                                                assetsBaseUrl = assetsBaseUrl,
+                                                isLoading = false,
+                                            ),
+                                    )
                                 }
-                            val vid = note?.readableVersionId
-                            val selectedVersion =
-                                versions.find { v -> v.versionId == vid } ?: versions.firstOrNull()
-                            val highlights = selectedVersion?.highlights ?: emptyList()
-                            val assetsBaseUrl = NotemarkManager.resolveNoteAssetsBaseUrl(id)
-
-                            if (note != null && !didBootstrapEditor) {
-                                didBootstrapEditor = true
-                                val docJson = NotemarkManager.readNoteDocumentJson(id).orEmpty()
-                                lastPersistedJson = docJson
-                                emit(
-                                    currentState().copy(
-                                        bookmark = bookmarkModel,
-                                        readableVersionId = vid,
-                                        highlights = highlights,
-                                        assetsBaseUrl = assetsBaseUrl,
-                                        initialDocumentJson = docJson,
-                                        isLoading = false,
-                                    ),
-                                )
-                            } else {
-                                emit(
-                                    currentState().copy(
-                                        bookmark = bookmarkModel,
-                                        readableVersionId = vid,
-                                        highlights = highlights,
-                                        assetsBaseUrl = assetsBaseUrl,
-                                        isLoading = false,
-                                    ),
-                                )
                             }
                         }
-                    }.flatMapLatest { it }
+                            .flatMapLatest { it }
+                    }
                 }
-            }.collectLatest { newState ->
-                updateState {
-                    val pending = currentState().pendingInsertedImageSrc
-                    newState.copy(pendingInsertedImageSrc = pending)
+                .collectLatest { emitted ->
+                    updateState { current ->
+                        emitted.copy(
+                            inlineImageDocumentSrc = current.inlineImageDocumentSrc,
+                        )
+                    }
                 }
-            }
         }
     }
 
@@ -193,9 +202,7 @@ class NotemarkDetailStateMachine :
     }
 
     private fun onRequestNotificationPermission() {
-        launch {
-            NotificationManager.requestPermission()
-        }
+        launch { NotificationManager.requestPermission() }
     }
 
     private fun onScheduleReminder(event: NotemarkDetailEvent.OnScheduleReminder) {
@@ -217,9 +224,7 @@ class NotemarkDetailStateMachine :
 
     private fun onCancelReminder() {
         val bookmarkId = bookmarkIdFlow.value ?: return
-        launch {
-            NotificationManager.cancelReminder(bookmarkId)
-        }
+        launch { NotificationManager.cancelReminder(bookmarkId) }
         updateState { it.copy(reminderDateEpochMillis = null) }
     }
 
@@ -229,10 +234,14 @@ class NotemarkDetailStateMachine :
             try {
                 val file = YabaFileAccessor.pickSingleImage() ?: return@launch
                 val bytes = withContext(Dispatchers.IO) { file.readBytes() }
-                val ext = sanitizeImageExtension(file.name.substringAfterLast('.', ""))
-                saveNoteInlineImageAndQueueInsert(bookmarkId, bytes, ext)
+                val ext =
+                    NotemarkManager.sanitizeInlineImageExtension(
+                        file.name.substringAfterLast('.', ""),
+                    )
+                val docSrc = NotemarkManager.saveInlineImageBytes(bookmarkId, bytes, ext)
+                updateState { it.copy(inlineImageDocumentSrc = docSrc) }
             } catch (_: Exception) {
-                // Picker cancelled or read failed — no-op.
+                // Picker cancelled or read failed
             }
         }
     }
@@ -243,37 +252,20 @@ class NotemarkDetailStateMachine :
             try {
                 val file = YabaFileAccessor.capturePhoto() ?: return@launch
                 val bytes = withContext(Dispatchers.IO) { file.readBytes() }
-                val ext = sanitizeImageExtension(file.name.substringAfterLast('.', ""))
-                saveNoteInlineImageAndQueueInsert(bookmarkId, bytes, ext)
+                val ext =
+                    NotemarkManager.sanitizeInlineImageExtension(
+                        file.name.substringAfterLast('.', ""),
+                    )
+                val docSrc = NotemarkManager.saveInlineImageBytes(bookmarkId, bytes, ext)
+                updateState { it.copy(inlineImageDocumentSrc = docSrc) }
             } catch (_: Exception) {
-                // Capture cancelled or read failed — no-op.
+                // Capture cancelled or read failed
             }
         }
     }
 
-    private suspend fun saveNoteInlineImageAndQueueInsert(
-        bookmarkId: String,
-        bytes: ByteArray,
-        extension: String,
-    ) {
-        val assetId = IdGenerator.newId()
-        val relativePath = CoreConstants.FileSystem.Linkmark.assetPath(bookmarkId, assetId, extension)
-        BookmarkFileManager.writeBytes(relativePath, bytes)
-        val docSrc = "../assets/$assetId.$extension"
-        updateState { it.copy(pendingInsertedImageSrc = docSrc) }
-    }
-
-    private fun sanitizeImageExtension(raw: String?): String {
-        val e = raw.orEmpty().lowercase().removePrefix(".").ifBlank { "jpeg" }
-        return when (e) {
-            "jpg" -> "jpeg"
-            "jpeg", "png", "webp", "gif" -> e
-            else -> "jpeg"
-        }
-    }
-
-    private fun onConsumedPendingInsertedImage() {
-        updateState { it.copy(pendingInsertedImageSrc = null) }
+    private fun onConsumedInlineImageInsert() {
+        updateState { it.copy(inlineImageDocumentSrc = null) }
     }
 
     override fun clear() {
@@ -289,12 +281,10 @@ class NotemarkDetailStateMachine :
     private suspend fun BookmarkWithRelations.toBookmarkPreviewUiModel(): BookmarkPreviewUiModel {
         val folderUi = folder.toUiModel()
         val tagsUi = tags.map { it.toUiModel() }
-        val localImageAbsolutePath = bookmark.localImagePath?.let { path ->
-            BookmarkFileManager.getAbsolutePath(path)
-        }
-        val localIconAbsolutePath = bookmark.localIconPath?.let { path ->
-            BookmarkFileManager.getAbsolutePath(path)
-        }
+        val localImageAbsolutePath =
+            bookmark.localImagePath?.let { path -> BookmarkFileManager.getAbsolutePath(path) }
+        val localIconAbsolutePath =
+            bookmark.localIconPath?.let { path -> BookmarkFileManager.getAbsolutePath(path) }
         return bookmark.toPreviewUiModel(
             folder = folderUi,
             tags = tagsUi,

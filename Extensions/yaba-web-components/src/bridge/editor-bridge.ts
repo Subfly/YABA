@@ -25,10 +25,29 @@ export interface ReaderPreferences {
 
 const EMPTY_DOC_JSON = '{"type":"doc","content":[]}'
 
+/** Set when [setDocumentJson] / [setReaderHtml] runs with options; used to resolve inline image src and normalize saves. */
+let lastAssetsBaseUrl: string | undefined
+
 function rewriteAssetPathsInDocumentJson(json: string, assetsBaseUrl: string): string {
   if (!json.includes("../assets/")) return json
   const base = assetsBaseUrl.replace(/\/?$/, "/")
   return json.replaceAll("../assets/", `${base}assets/`)
+}
+
+/** Same rewrite as document load — [insertImage] must use this or images 404 (relative to editor origin). */
+function resolveImageSrcForEditor(src: string): string {
+  if (!lastAssetsBaseUrl || !src.includes("../assets/")) return src
+  const base = lastAssetsBaseUrl.replace(/\/?$/, "/")
+  return src.replaceAll("../assets/", `${base}assets/`)
+}
+
+/** Persist canonical `../assets/…` paths (matches on-disk JSON and cross-platform loads). */
+function normalizeDocumentJsonAssetPathsForPersistence(json: string): string {
+  if (!lastAssetsBaseUrl || !json.includes("assets/")) return json
+  const base = lastAssetsBaseUrl.replace(/\/?$/, "/")
+  const absolutePrefix = `${base}assets/`
+  if (!json.includes(absolutePrefix)) return json
+  return json.replaceAll(absolutePrefix, "../assets/")
 }
 
 function rewriteAssetPathsInReaderHtml(html: string, assetsBaseUrl: string): string {
@@ -289,6 +308,9 @@ export function initEditorBridge(editor: Editor): void {
       editorInstance?.setEditable(isEditable)
     },
     setDocumentJson: (documentJson: string, options?: { assetsBaseUrl?: string }) => {
+      if (options?.assetsBaseUrl) {
+        lastAssetsBaseUrl = options.assetsBaseUrl
+      }
       let payload = documentJson?.trim() ? documentJson : EMPTY_DOC_JSON
       if (options?.assetsBaseUrl) {
         payload = rewriteAssetPathsInDocumentJson(payload, options.assetsBaseUrl)
@@ -302,6 +324,9 @@ export function initEditorBridge(editor: Editor): void {
       editorInstance?.commands.setContent(doc, { emitUpdate: false })
     },
     setReaderHtml: (html: string, options?: { assetsBaseUrl?: string }) => {
+      if (options?.assetsBaseUrl) {
+        lastAssetsBaseUrl = options.assetsBaseUrl
+      }
       let payload = html?.trim() ? html : "<p></p>"
       if (options?.assetsBaseUrl) {
         payload = rewriteAssetPathsInReaderHtml(payload, options.assetsBaseUrl)
@@ -309,7 +334,8 @@ export function initEditorBridge(editor: Editor): void {
       editorInstance?.commands.setContent(payload, { emitUpdate: false })
     },
     getDocumentJson: () => {
-      return JSON.stringify(editorInstance?.getJSON() ?? JSON.parse(EMPTY_DOC_JSON))
+      const raw = JSON.stringify(editorInstance?.getJSON() ?? JSON.parse(EMPTY_DOC_JSON))
+      return normalizeDocumentJsonAssetPathsForPersistence(raw)
     },
     getActiveFormatting: () => {
       const ed = editorInstance
@@ -450,7 +476,7 @@ export function initEditorBridge(editor: Editor): void {
           break
         }
         case "insertImage":
-          ed.commands.setImage({ src: cmd.src })
+          ed.commands.setImage({ src: resolveImageSrcForEditor(cmd.src) })
           break
         case "addRowBefore":
           ed.commands.addRowBefore()

@@ -11,14 +11,18 @@ import dev.subfly.yabacore.filesystem.NotemarkFileManager
 import dev.subfly.yabacore.model.ui.NotemarkUiModel
 import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.queue.CoreOperationQueue
-import kotlinx.coroutines.flow.Flow
 import kotlin.time.Instant
+import kotlinx.coroutines.flow.Flow
 
 object NotemarkManager {
-    private val bookmarkDao get() = DatabaseProvider.bookmarkDao
-    private val noteBookmarkDao get() = DatabaseProvider.noteBookmarkDao
-    private val folderDao get() = DatabaseProvider.folderDao
-    private val tagDao get() = DatabaseProvider.tagDao
+    private val bookmarkDao
+        get() = DatabaseProvider.bookmarkDao
+    private val noteBookmarkDao
+        get() = DatabaseProvider.noteBookmarkDao
+    private val folderDao
+        get() = DatabaseProvider.folderDao
+    private val tagDao
+        get() = DatabaseProvider.tagDao
 
     suspend fun getNotemarkDetail(bookmarkId: String): NotemarkUiModel? {
         val bookmarkMetaData = bookmarkDao.getById(bookmarkId) ?: return null
@@ -73,8 +77,31 @@ object NotemarkManager {
     }
 
     /**
-     * Persists canonical editor document JSON and mirrors to readable for highlight anchoring.
+     * Writes image bytes under the note's `assets/` folder and returns the canonical
+     * document-relative `src` stored in TipTap JSON (`../assets/<id>.<ext>`).
      */
+    suspend fun saveInlineImageBytes(
+        bookmarkId: String,
+        bytes: ByteArray,
+        extension: String,
+    ): String {
+        val assetId = IdGenerator.newId()
+        val ext = sanitizeInlineImageExtension(extension)
+        val relativePath = CoreConstants.FileSystem.Linkmark.assetPath(bookmarkId, assetId, ext)
+        BookmarkFileManager.writeBytes(relativePath, bytes)
+        return "../assets/$assetId.$ext"
+    }
+
+    fun sanitizeInlineImageExtension(raw: String?): String {
+        val e = raw.orEmpty().lowercase().removePrefix(".").ifBlank { "jpeg" }
+        return when (e) {
+            "jpg" -> "jpeg"
+            "jpeg", "png", "webp", "gif" -> e
+            else -> "jpeg"
+        }
+    }
+
+    /** Persists canonical editor document JSON and mirrors to readable for highlight anchoring. */
     fun saveNoteDocumentJson(
         bookmarkId: String,
         documentJson: String,
@@ -112,7 +139,8 @@ object NotemarkManager {
     }
 
     /**
-     * Creates empty body file, readable mirror row, and note subtype row. Call after bookmark metadata exists.
+     * Creates empty body file, readable mirror row, and note subtype row. Call after bookmark
+     * metadata exists.
      */
     fun createOrUpdateNoteDetails(
         bookmarkId: String,

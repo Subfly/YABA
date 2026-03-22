@@ -8,7 +8,8 @@ sealed interface NotemarkDetailEvent {
 
     /**
      * Persist a snapshot of the editor document (JSON). The UI obtains this from
-     * [dev.subfly.yabacore.webview.WebViewEditorBridge.getDocumentJson] on lifecycle pause / disposal.
+     * [dev.subfly.yabacore.webview.WebViewEditorBridge.getDocumentJson] on lifecycle pause /
+     * disposal.
      */
     data class OnSave(val documentJson: String) : NotemarkDetailEvent
 
@@ -47,12 +48,20 @@ sealed interface NotemarkDetailEvent {
 
     data object OnCancelReminder : NotemarkDetailEvent
 
-    /** Opens the gallery picker and, on success, saves bytes under the note bookmark folder and sets [NotemarkDetailUIState.pendingInsertedImageSrc]. */
+    /**
+     * Opens the gallery picker; Core saves bytes and sets
+     * [NotemarkDetailUIState.inlineImageDocumentSrc].
+     */
     data object OnPickImageFromGallery : NotemarkDetailEvent
 
-    /** Opens the camera capture flow and, on success, saves bytes under the note bookmark folder and sets [NotemarkDetailUIState.pendingInsertedImageSrc]. */
+    /**
+     * Opens the camera; Core saves bytes and sets [NotemarkDetailUIState.inlineImageDocumentSrc].
+     */
     data object OnCaptureImageFromCamera : NotemarkDetailEvent
 
-    /** Clears [NotemarkDetailUIState.pendingInsertedImageSrc] after the UI has inserted the image into the editor. */
-    data object OnConsumedPendingInsertedImage : NotemarkDetailEvent
+    /**
+     * Clears [NotemarkDetailUIState.inlineImageDocumentSrc] after the bridge has inserted the
+     * image.
+     */
+    data object OnConsumedInlineImageInsert : NotemarkDetailEvent
 }
