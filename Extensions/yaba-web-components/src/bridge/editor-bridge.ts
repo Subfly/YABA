@@ -102,8 +102,10 @@ export type EditorCommandPayload =
   | { type: "removeLink" }
   | { type: "insertInlineMath"; latex: string }
   | { type: "insertBlockMath"; latex: string }
-  /** Plain text at selection (e.g. markdown `# ` for headings). */
+  /** Plain text at selection (does not run markdown input rules; use [setHeading] for headings). */
   | { type: "insertText"; text: string }
+  /** Turn the current block into a heading (same as toolbar “Heading N”; avoids insertText bypassing input rules). */
+  | { type: "setHeading"; level: number }
   | { type: "insertTable"; rows: number; cols: number; withHeaderRow?: boolean }
   | { type: "insertImage"; src: string }
   | { type: "addRowBefore" }
@@ -501,6 +503,11 @@ export function initEditorBridge(editor: Editor): void {
           const tr = ed.state.tr.insertText(cmd.text, from, to)
           ed.view.dispatch(tr)
           ed.commands.focus()
+          break
+        }
+        case "setHeading": {
+          const level = Math.min(6, Math.max(1, Math.floor(cmd.level))) as 1 | 2 | 3 | 4 | 5 | 6
+          chain.setHeading({ level }).run()
           break
         }
       }

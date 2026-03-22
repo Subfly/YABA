@@ -58,7 +58,11 @@ object YabaEditorCommands {
             }
         }
 
-    fun markdownHeadingPrefix(level: Int): String = "#".repeat(level.coerceIn(1, 6)) + " "
+    /** JSON for [window.YabaEditorBridge.dispatch] — sets the current block to a heading level */
+    fun setHeadingPayload(level: Int): String {
+        val l = level.coerceIn(1, 6)
+        return """{"type":"setHeading","level":$l}"""
+    }
 
     fun hasAnyTextMark(formatting: EditorFormattingState): Boolean =
         formatting.bold ||

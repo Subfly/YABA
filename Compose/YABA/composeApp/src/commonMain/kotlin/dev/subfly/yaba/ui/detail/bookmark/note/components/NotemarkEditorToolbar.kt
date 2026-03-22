@@ -100,11 +100,7 @@ internal fun NotemarkEditorToolbar(
             HeadingInsertDropdown(
                 folderYabaColor = color,
                 onInsertHeadingMarkdown = { level ->
-                    onDispatchCommand(
-                        YabaEditorCommands.insertTextPayload(
-                            YabaEditorCommands.markdownHeadingPrefix(level),
-                        ),
-                    )
+                    onDispatchCommand(YabaEditorCommands.setHeadingPayload(level))
                 },
             )
 
