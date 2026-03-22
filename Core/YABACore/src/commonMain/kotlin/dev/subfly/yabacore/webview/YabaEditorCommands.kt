@@ -17,10 +17,36 @@ object YabaEditorCommands {
     const val Outdent = """{"type":"outdent"}"""
     const val Undo = """{"type":"undo"}"""
     const val Redo = """{"type":"redo"}"""
+    const val AddRowBefore = """{"type":"addRowBefore"}"""
+    const val AddRowAfter = """{"type":"addRowAfter"}"""
+    const val DeleteRow = """{"type":"deleteRow"}"""
+    const val AddColumnBefore = """{"type":"addColumnBefore"}"""
+    const val AddColumnAfter = """{"type":"addColumnAfter"}"""
+    const val DeleteColumn = """{"type":"deleteColumn"}"""
 
     /** JSON for [window.YabaEditorBridge.dispatch] — inserts raw text at the selection (escapes for JS JSON). */
     fun insertTextPayload(text: String): String {
-        val escaped = buildString {
+        val escaped = escapeJsonString(text)
+        return """{"type":"insertText","text":"$escaped"}"""
+    }
+
+    fun insertTablePayload(
+        rows: Int,
+        cols: Int,
+        withHeaderRow: Boolean = false,
+    ): String {
+        val r = rows.coerceIn(1, 20)
+        val c = cols.coerceIn(1, 20)
+        return """{"type":"insertTable","rows":$r,"cols":$c,"withHeaderRow":$withHeaderRow}"""
+    }
+
+    fun insertImagePayload(src: String): String {
+        val escaped = escapeJsonString(src)
+        return """{"type":"insertImage","src":"$escaped"}"""
+    }
+
+    private fun escapeJsonString(text: String): String =
+        buildString {
             for (c in text) {
                 when (c) {
                     '\\' -> append("\\\\")
@@ -31,8 +57,6 @@ object YabaEditorCommands {
                 }
             }
         }
-        return """{"type":"insertText","text":"$escaped"}"""
-    }
 
     fun markdownHeadingPrefix(level: Int): String = "#".repeat(level.coerceIn(1, 6)) + " "
 

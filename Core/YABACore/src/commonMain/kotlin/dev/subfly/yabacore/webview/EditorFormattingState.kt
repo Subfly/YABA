@@ -23,4 +23,11 @@ data class EditorFormattingState(
     val canRedo: Boolean = false,
     val canIndent: Boolean = false,
     val canOutdent: Boolean = false,
+    val inTable: Boolean = false,
+    val canAddRowBefore: Boolean = false,
+    val canAddRowAfter: Boolean = false,
+    val canDeleteRow: Boolean = false,
+    val canAddColumnBefore: Boolean = false,
+    val canAddColumnAfter: Boolean = false,
+    val canDeleteColumn: Boolean = false,
 )

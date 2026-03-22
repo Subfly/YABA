@@ -397,11 +397,3 @@ body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-attribut
   margin: 0.5em 0;
   padding: 0.5em;
 }
-
-/* YouTube embeds */
-.yaba-editor-container .ProseMirror iframe[src*="youtube"],
-.yaba-editor-container .ProseMirror .yaba-editor-youtube {
-  max-width: 100%;
-  margin: 0.5em 0;
-  border-radius: 8px;
-}

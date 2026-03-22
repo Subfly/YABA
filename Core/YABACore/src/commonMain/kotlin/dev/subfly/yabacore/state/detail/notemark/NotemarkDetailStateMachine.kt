@@ -1,10 +1,13 @@
 package dev.subfly.yabacore.state.detail.notemark
 
+import dev.subfly.yabacore.common.CoreConstants
+import dev.subfly.yabacore.common.IdGenerator
 import dev.subfly.yabacore.database.DatabaseProvider
 import dev.subfly.yabacore.database.mappers.toPreviewUiModel
 import dev.subfly.yabacore.database.mappers.toUiModel
 import dev.subfly.yabacore.database.models.BookmarkWithRelations
 import dev.subfly.yabacore.filesystem.BookmarkFileManager
+import dev.subfly.yabacore.filesystem.access.YabaFileAccessor
 import dev.subfly.yabacore.managers.AllBookmarksManager
 import dev.subfly.yabacore.managers.HighlightManager
 import dev.subfly.yabacore.managers.NotemarkManager
@@ -12,13 +15,18 @@ import dev.subfly.yabacore.managers.ReadableContentManager
 import dev.subfly.yabacore.model.ui.BookmarkPreviewUiModel
 import dev.subfly.yabacore.notifications.NotificationManager
 import dev.subfly.yabacore.state.base.BaseStateMachine
+import io.github.vinceglb.filekit.name
+import io.github.vinceglb.filekit.readBytes
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class NotemarkDetailStateMachine :
@@ -45,6 +53,9 @@ class NotemarkDetailStateMachine :
             NotemarkDetailEvent.OnRequestNotificationPermission -> onRequestNotificationPermission()
             is NotemarkDetailEvent.OnScheduleReminder -> onScheduleReminder(event)
             NotemarkDetailEvent.OnCancelReminder -> onCancelReminder()
+            NotemarkDetailEvent.OnPickImageFromGallery -> onPickImageFromGallery()
+            NotemarkDetailEvent.OnCaptureImageFromCamera -> onCaptureImageFromCamera()
+            NotemarkDetailEvent.OnConsumedPendingInsertedImage -> onConsumedPendingInsertedImage()
         }
     }
 
@@ -118,7 +129,10 @@ class NotemarkDetailStateMachine :
                     }.flatMapLatest { it }
                 }
             }.collectLatest { newState ->
-                updateState { newState }
+                updateState {
+                    val pending = currentState().pendingInsertedImageSrc
+                    newState.copy(pendingInsertedImageSrc = pending)
+                }
             }
         }
     }
@@ -207,6 +221,59 @@ class NotemarkDetailStateMachine :
             NotificationManager.cancelReminder(bookmarkId)
         }
         updateState { it.copy(reminderDateEpochMillis = null) }
+    }
+
+    private fun onPickImageFromGallery() {
+        val bookmarkId = bookmarkIdFlow.value ?: return
+        launch {
+            try {
+                val file = YabaFileAccessor.pickSingleImage() ?: return@launch
+                val bytes = withContext(Dispatchers.IO) { file.readBytes() }
+                val ext = sanitizeImageExtension(file.name.substringAfterLast('.', ""))
+                saveNoteInlineImageAndQueueInsert(bookmarkId, bytes, ext)
+            } catch (_: Exception) {
+                // Picker cancelled or read failed — no-op.
+            }
+        }
+    }
+
+    private fun onCaptureImageFromCamera() {
+        val bookmarkId = bookmarkIdFlow.value ?: return
+        launch {
+            try {
+                val file = YabaFileAccessor.capturePhoto() ?: return@launch
+                val bytes = withContext(Dispatchers.IO) { file.readBytes() }
+                val ext = sanitizeImageExtension(file.name.substringAfterLast('.', ""))
+                saveNoteInlineImageAndQueueInsert(bookmarkId, bytes, ext)
+            } catch (_: Exception) {
+                // Capture cancelled or read failed — no-op.
+            }
+        }
+    }
+
+    private suspend fun saveNoteInlineImageAndQueueInsert(
+        bookmarkId: String,
+        bytes: ByteArray,
+        extension: String,
+    ) {
+        val assetId = IdGenerator.newId()
+        val relativePath = CoreConstants.FileSystem.Linkmark.assetPath(bookmarkId, assetId, extension)
+        BookmarkFileManager.writeBytes(relativePath, bytes)
+        val docSrc = "../assets/$assetId.$extension"
+        updateState { it.copy(pendingInsertedImageSrc = docSrc) }
+    }
+
+    private fun sanitizeImageExtension(raw: String?): String {
+        val e = raw.orEmpty().lowercase().removePrefix(".").ifBlank { "jpeg" }
+        return when (e) {
+            "jpg" -> "jpeg"
+            "jpeg", "png", "webp", "gif" -> e
+            else -> "jpeg"
+        }
+    }
+
+    private fun onConsumedPendingInsertedImage() {
+        updateState { it.copy(pendingInsertedImageSrc = null) }
     }
 
     override fun clear() {

@@ -81,11 +81,18 @@ export type EditorCommandPayload =
   | { type: "redo" }
   | { type: "insertLink"; url: string }
   | { type: "removeLink" }
-  | { type: "insertYouTube"; url: string }
   | { type: "insertInlineMath"; latex: string }
   | { type: "insertBlockMath"; latex: string }
   /** Plain text at selection (e.g. markdown `# ` for headings). */
   | { type: "insertText"; text: string }
+  | { type: "insertTable"; rows: number; cols: number; withHeaderRow?: boolean }
+  | { type: "insertImage"; src: string }
+  | { type: "addRowBefore" }
+  | { type: "addRowAfter" }
+  | { type: "deleteRow" }
+  | { type: "addColumnBefore" }
+  | { type: "addColumnAfter" }
+  | { type: "deleteColumn" }
 
 let editorInstance: Editor | null = null
 /** Latest ProseMirror selection (anchor/head) for restoring the caret after [unFocus] / native chrome. */
@@ -323,8 +330,16 @@ export function initEditorBridge(editor: Editor): void {
           canRedo: false,
           canIndent: false,
           canOutdent: false,
+          inTable: false,
+          canAddRowBefore: false,
+          canAddRowAfter: false,
+          canDeleteRow: false,
+          canAddColumnBefore: false,
+          canAddColumnAfter: false,
+          canDeleteColumn: false,
         })
       }
+      const inTable = ed.isActive("table")
       return JSON.stringify({
         bold: ed.isActive("bold"),
         italic: ed.isActive("italic"),
@@ -341,6 +356,13 @@ export function initEditorBridge(editor: Editor): void {
         canRedo: ed.can().redo(),
         canIndent: ed.can().sinkListItem("listItem"),
         canOutdent: ed.can().liftListItem("listItem"),
+        inTable,
+        canAddRowBefore: inTable && ed.can().addRowBefore(),
+        canAddRowAfter: inTable && ed.can().addRowAfter(),
+        canDeleteRow: inTable && ed.can().deleteRow(),
+        canAddColumnBefore: inTable && ed.can().addColumnBefore(),
+        canAddColumnAfter: inTable && ed.can().addColumnAfter(),
+        canDeleteColumn: inTable && ed.can().deleteColumn(),
       })
     },
     focus: () => {
@@ -411,14 +433,42 @@ export function initEditorBridge(editor: Editor): void {
         case "removeLink":
           chain.unsetLink().run()
           break
-        case "insertYouTube":
-          ed.commands.setYoutubeVideo({ src: cmd.url })
-          break
         case "insertInlineMath":
           ed.commands.insertInlineMath({ latex: cmd.latex })
           break
         case "insertBlockMath":
           ed.commands.insertBlockMath({ latex: cmd.latex })
+          break
+        case "insertTable": {
+          const rows = Math.max(1, Math.min(20, Math.floor(cmd.rows)))
+          const cols = Math.max(1, Math.min(20, Math.floor(cmd.cols)))
+          ed.commands.insertTable({
+            rows,
+            cols,
+            withHeaderRow: cmd.withHeaderRow ?? false,
+          })
+          break
+        }
+        case "insertImage":
+          ed.commands.setImage({ src: cmd.src })
+          break
+        case "addRowBefore":
+          ed.commands.addRowBefore()
+          break
+        case "addRowAfter":
+          ed.commands.addRowAfter()
+          break
+        case "deleteRow":
+          ed.commands.deleteRow()
+          break
+        case "addColumnBefore":
+          ed.commands.addColumnBefore()
+          break
+        case "addColumnAfter":
+          ed.commands.addColumnAfter()
+          break
+        case "deleteColumn":
+          ed.commands.deleteColumn()
           break
         case "insertText": {
           const { from, to } = ed.state.selection

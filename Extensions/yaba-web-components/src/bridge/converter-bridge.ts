@@ -3,7 +3,6 @@ import { Readability } from "@mozilla/readability"
 import { GlobalWorkerOptions, getDocument } from "pdfjs-dist"
 import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url"
 
-const YOUTUBE_URL_RE = /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]+)/i
 GlobalWorkerOptions.workerSrc = pdfWorkerUrl
 
 const ASSET_PLACEHOLDER_PREFIX = "yaba-asset://"
@@ -183,7 +182,7 @@ const SANITIZE_OPTIONS = {
   ],
   ALLOWED_ATTR: [
     "href", "src", "alt", "title", "class", "datetime",
-    "allow", "allowfullscreen", "frameborder", "data-youtube-video",
+    "allow", "allowfullscreen", "frameborder",
   ],
 }
 
@@ -236,40 +235,13 @@ function isImagePlaceholder(url: string): boolean {
   )
 }
 
-function extractYouTubeIframes(root: ParentNode): string[] {
-  const iframes = Array.from(root.querySelectorAll("iframe"))
-  const youtubeHtml: string[] = []
-  iframes.forEach((iframe) => {
-    const src = iframe.getAttribute("src") ?? ""
-    if (YOUTUBE_URL_RE.test(src)) {
-      youtubeHtml.push(`<div data-youtube-video><iframe src="${src}"></iframe></div>`)
-    }
-  })
-  return youtubeHtml
-}
-
 function sanitizeAndConvertWithAssets(html: string, baseUrl?: string): ConverterOutput {
-  const preDoc = new DOMParser().parseFromString(
-    `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>${html}</body></html>`,
-    "text/html"
-  )
-  const savedYouTubeHtml = extractYouTubeIframes(preDoc.body)
-
   const readerHtml = toReaderModeHtml(html, baseUrl)
   const clean = DOMPurify.sanitize(readerHtml, SANITIZE_OPTIONS)
 
   const wrapper = document.createElement("div")
   wrapper.innerHTML = clean
   normalizeCodeWrappers(wrapper)
-
-  const existingYouTube = extractYouTubeIframes(wrapper)
-  if (existingYouTube.length === 0 && savedYouTubeHtml.length > 0) {
-    savedYouTubeHtml.forEach((yt) => {
-      const div = document.createElement("div")
-      div.innerHTML = yt
-      wrapper.appendChild(div.firstElementChild!)
-    })
-  }
 
   if (baseUrl) {
     wrapper.querySelectorAll("a[href]").forEach((a) => {

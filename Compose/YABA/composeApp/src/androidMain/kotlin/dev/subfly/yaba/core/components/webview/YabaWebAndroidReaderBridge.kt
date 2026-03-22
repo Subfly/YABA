@@ -205,6 +205,13 @@ internal suspend fun getEditorActiveFormatting(webView: WebView): EditorFormatti
             canRedo = json.optBoolean("canRedo"),
             canIndent = json.optBoolean("canIndent"),
             canOutdent = json.optBoolean("canOutdent"),
+            inTable = json.optBoolean("inTable"),
+            canAddRowBefore = json.optBoolean("canAddRowBefore"),
+            canAddRowAfter = json.optBoolean("canAddRowAfter"),
+            canDeleteRow = json.optBoolean("canDeleteRow"),
+            canAddColumnBefore = json.optBoolean("canAddColumnBefore"),
+            canAddColumnAfter = json.optBoolean("canAddColumnAfter"),
+            canDeleteColumn = json.optBoolean("canDeleteColumn"),
         )
     }.getOrElse { EditorFormattingState() }
 }

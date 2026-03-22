@@ -53,6 +53,9 @@ internal fun NotemarkEditorToolbar(
     formatting: EditorFormattingState,
     onHighlightClick: () -> Unit,
     onDispatchCommand: (String) -> Unit,
+    onOpenTableInsertSheet: () -> Unit,
+    onPickImageFromGallery: () -> Unit,
+    onCaptureImageFromCamera: () -> Unit,
 ) {
     val toolbarColors = bookmarkReaderFloatingToolbarColors(color)
 
@@ -81,6 +84,14 @@ internal fun NotemarkEditorToolbar(
                 }
             }
 
+            if (formatting.inTable) {
+                TableEditDropdown(
+                    folderYabaColor = color,
+                    formatting = formatting,
+                    onDispatchCommand = onDispatchCommand,
+                )
+            }
+
             HeadingInsertDropdown(
                 folderYabaColor = color,
                 onInsertHeadingMarkdown = { level ->
@@ -102,6 +113,9 @@ internal fun NotemarkEditorToolbar(
                 folderYabaColor = color,
                 formatting = formatting,
                 onDispatchCommand = onDispatchCommand,
+                onOpenTableInsertSheet = onOpenTableInsertSheet,
+                onPickImageFromGallery = onPickImageFromGallery,
+                onCaptureImageFromCamera = onCaptureImageFromCamera,
             )
 
             IndentOutdentDropdown(
@@ -291,16 +305,113 @@ private fun UndoRedoDropdown(
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
-private fun InsertBlocksDropdown(
+private fun TableEditDropdown(
     folderYabaColor: YabaColor,
     formatting: EditorFormattingState,
     onDispatchCommand: (String) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
+    Box {
+        IconButton(
+            onClick = { expanded = expanded.not() },
+            colors = bookmarkReaderToolbarIconButtonColors(folderYabaColor),
+            shapes = IconButtonDefaults.shapes(),
+        ) { YabaIcon(name = "grid-table", color = Color.White) }
+        DropdownMenuPopup(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+        ) {
+            DropdownMenuGroup(shapes = MenuDefaults.groupShape(index = 0, count = 1)) {
+                DropdownMenuItem(
+                    shapes = MenuDefaults.itemShape(0, 6),
+                    checked = false,
+                    enabled = formatting.canAddRowAfter,
+                    onCheckedChange = { _ ->
+                        expanded = false
+                        onDispatchCommand(YabaEditorCommands.AddRowAfter)
+                    },
+                    leadingIcon = { YabaIcon(name = "row-insert") },
+                    text = { Text(text = "Add row below") }, // TODO: localize
+                )
+                DropdownMenuItem(
+                    shapes = MenuDefaults.itemShape(1, 6),
+                    checked = false,
+                    enabled = formatting.canAddRowBefore,
+                    onCheckedChange = { _ ->
+                        expanded = false
+                        onDispatchCommand(YabaEditorCommands.AddRowBefore)
+                    },
+                    leadingIcon = { YabaIcon(name = "row-insert") },
+                    text = { Text(text = "Add row above") }, // TODO: localize
+                )
+                DropdownMenuItem(
+                    shapes = MenuDefaults.itemShape(2, 6),
+                    checked = false,
+                    enabled = formatting.canAddColumnAfter,
+                    onCheckedChange = { _ ->
+                        expanded = false
+                        onDispatchCommand(YabaEditorCommands.AddColumnAfter)
+                    },
+                    leadingIcon = { YabaIcon(name = "column-insert") },
+                    text = { Text(text = "Add column to right") }, // TODO: localize
+                )
+                DropdownMenuItem(
+                    shapes = MenuDefaults.itemShape(3, 6),
+                    checked = false,
+                    enabled = formatting.canAddColumnBefore,
+                    onCheckedChange = { _ ->
+                        expanded = false
+                        onDispatchCommand(YabaEditorCommands.AddColumnBefore)
+                    },
+                    leadingIcon = { YabaIcon(name = "column-insert") },
+                    text = { Text(text = "Add column to left") }, // TODO: localize
+                )
+                DropdownMenuItem(
+                    shapes = MenuDefaults.itemShape(4, 6),
+                    checked = false,
+                    enabled = formatting.canDeleteRow,
+                    onCheckedChange = { _ ->
+                        expanded = false
+                        onDispatchCommand(YabaEditorCommands.DeleteRow)
+                    },
+                    leadingIcon = { YabaIcon(name = "row-delete") },
+                    text = { Text(text = "Remove row") }, // TODO: localize
+                )
+                DropdownMenuItem(
+                    shapes = MenuDefaults.itemShape(5, 6),
+                    checked = false,
+                    enabled = formatting.canDeleteColumn,
+                    onCheckedChange = { _ ->
+                        expanded = false
+                        onDispatchCommand(YabaEditorCommands.DeleteColumn)
+                    },
+                    leadingIcon = { YabaIcon(name = "column-delete") },
+                    text = { Text(text = "Remove column") }, // TODO: localize
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
+@Composable
+private fun InsertBlocksDropdown(
+    folderYabaColor: YabaColor,
+    formatting: EditorFormattingState,
+    onDispatchCommand: (String) -> Unit,
+    onOpenTableInsertSheet: () -> Unit,
+    onPickImageFromGallery: () -> Unit,
+    onCaptureImageFromCamera: () -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
     var listSubExpanded by remember { mutableStateOf(false) }
+    var imageSubExpanded by remember { mutableStateOf(false) }
 
     LaunchedEffect(expanded) {
-        if (expanded.not()) listSubExpanded = false
+        if (expanded.not()) {
+            listSubExpanded = false
+            imageSubExpanded = false
+        }
     }
 
     Box {
@@ -315,23 +426,66 @@ private fun InsertBlocksDropdown(
         ) {
             DropdownMenuGroup(shapes = MenuDefaults.groupShape(index = 0, count = 1)) {
                 DropdownMenuItem(
-                    shapes = MenuDefaults.itemShape(0, 9),
+                    shapes = MenuDefaults.itemShape(0, 8),
                     checked = false,
-                    enabled = false,
-                    onCheckedChange = {},
+                    onCheckedChange = { _ ->
+                        expanded = false
+                        onOpenTableInsertSheet()
+                    },
                     leadingIcon = { YabaIcon(name = "grid-table") },
-                    text = { Text(text = "Table") },
+                    text = { Text(text = "Table") }, // TODO: localize
                 )
+                Box {
+                    val imageTrailingRotation by animateFloatAsState(
+                        targetValue = if (imageSubExpanded) 90f else 0f,
+                    )
+                    DropdownMenuItem(
+                        shapes = MenuDefaults.itemShape(1, 8),
+                        checked = false,
+                        onCheckedChange = { _ -> imageSubExpanded = true },
+                        leadingIcon = { YabaIcon(name = "image-add-02") },
+                        trailingIcon = {
+                            YabaIcon(
+                                modifier = Modifier.rotate(imageTrailingRotation),
+                                name = "arrow-right-01",
+                            )
+                        },
+                        text = { Text(text = "Image") }, // TODO: localize
+                    )
+                    DropdownMenuPopup(
+                        expanded = imageSubExpanded,
+                        onDismissRequest = { imageSubExpanded = false },
+                    ) {
+                        DropdownMenuGroup(
+                            shapes = MenuDefaults.groupShape(index = 0, count = 1),
+                        ) {
+                            DropdownMenuItem(
+                                shapes = MenuDefaults.itemShape(0, 2),
+                                checked = false,
+                                onCheckedChange = { _ ->
+                                    imageSubExpanded = false
+                                    expanded = false
+                                    onCaptureImageFromCamera()
+                                },
+                                leadingIcon = { YabaIcon(name = "camera-01") },
+                                text = { Text(text = "Take Photo") }, // TODO: localize
+                            )
+                            DropdownMenuItem(
+                                shapes = MenuDefaults.itemShape(1, 2),
+                                checked = false,
+                                onCheckedChange = { _ ->
+                                    imageSubExpanded = false
+                                    expanded = false
+                                    onPickImageFromGallery()
+                                },
+                                leadingIcon = { YabaIcon(name = "add-circle") },
+                                text = { Text(text = "Pick From Gallery") }, // TODO: localize
+                            )
+                        }
+                    }
+                }
                 DropdownMenuItem(
-                    shapes = MenuDefaults.itemShape(1, 9),
-                    checked = false,
-                    enabled = false,
-                    onCheckedChange = {},
-                    leadingIcon = { YabaIcon(name = "image-add-02") },
-                    text = { Text(text = "Image") },
-                )
-                DropdownMenuItem(
-                    shapes = MenuDefaults.itemShape(2, 9),
+                    shapes = MenuDefaults.itemShape(2, 8),
                     checked = formatting.code,
                     onCheckedChange = { _ ->
                         expanded = false
@@ -341,7 +495,7 @@ private fun InsertBlocksDropdown(
                     text = { Text(text = "Code") },
                 )
                 DropdownMenuItem(
-                    shapes = MenuDefaults.itemShape(3, 9),
+                    shapes = MenuDefaults.itemShape(3, 8),
                     checked = formatting.blockquote,
                     onCheckedChange = { _ ->
                         expanded = false
@@ -351,7 +505,7 @@ private fun InsertBlocksDropdown(
                     text = { Text(text = "Quote") },
                 )
                 DropdownMenuItem(
-                    shapes = MenuDefaults.itemShape(4, 9),
+                    shapes = MenuDefaults.itemShape(4, 8),
                     checked = false,
                     onCheckedChange = { _ ->
                         expanded = false
@@ -366,7 +520,7 @@ private fun InsertBlocksDropdown(
                         targetValue = if (listSubExpanded) 90f else 0f,
                     )
                     DropdownMenuItem(
-                        shapes = MenuDefaults.itemShape(5, 9),
+                        shapes = MenuDefaults.itemShape(5, 8),
                         checked = formatting.bulletList || formatting.orderedList || formatting.taskList,
                         onCheckedChange = { _ -> listSubExpanded = true },
                         leadingIcon = { YabaIcon(name = "left-to-right-list-dash") },
@@ -423,7 +577,7 @@ private fun InsertBlocksDropdown(
                 }
 
                 DropdownMenuItem(
-                    shapes = MenuDefaults.itemShape(6, 9),
+                    shapes = MenuDefaults.itemShape(6, 8),
                     checked = false,
                     enabled = false,
                     onCheckedChange = {},
@@ -431,15 +585,7 @@ private fun InsertBlocksDropdown(
                     text = { Text(text = "Link") },
                 )
                 DropdownMenuItem(
-                    shapes = MenuDefaults.itemShape(7, 9),
-                    checked = false,
-                    enabled = false,
-                    onCheckedChange = {},
-                    leadingIcon = { YabaIcon(name = "youtube") },
-                    text = { Text(text = "YouTube") },
-                )
-                DropdownMenuItem(
-                    shapes = MenuDefaults.itemShape(8, 9),
+                    shapes = MenuDefaults.itemShape(7, 8),
                     checked = false,
                     enabled = false,
                     onCheckedChange = {},

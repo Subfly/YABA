@@ -19,6 +19,7 @@ import dev.subfly.yaba.ui.creation.bookmark.linkmark.LinkmarkCreationContent
 import dev.subfly.yaba.ui.creation.bookmark.notemark.NotemarkCreationContent
 import dev.subfly.yaba.ui.creation.folder.FolderCreationContent
 import dev.subfly.yaba.ui.creation.highlight.HighlightCreationContent
+import dev.subfly.yaba.ui.creation.notemark.table.NotemarkTableCreationContent
 import dev.subfly.yaba.ui.creation.tag.TagCreationContent
 import dev.subfly.yaba.ui.selection.color.ColorSelectionContent
 import dev.subfly.yaba.ui.selection.folder.FolderSelectionContent
@@ -123,6 +124,9 @@ fun YabaCreationNavigationView(
                     selectionDraft = key.selectionDraft,
                     highlightId = key.highlightId,
                 )
+            }
+            entry<NotemarkTableCreationRoute> {
+                NotemarkTableCreationContent()
             }
             entry<EmptyCretionRoute> {
                 // Only old Compose users will remember why we had to put 1.dp boxes in sheets...

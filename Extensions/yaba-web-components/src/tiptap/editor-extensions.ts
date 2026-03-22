@@ -5,7 +5,6 @@ import Subscript from "@tiptap/extension-subscript"
 import Superscript from "@tiptap/extension-superscript"
 import Link from "@tiptap/extension-link"
 import Image from "@tiptap/extension-image"
-import Youtube from "@tiptap/extension-youtube"
 import { Mathematics } from "@tiptap/extension-mathematics"
 import { Table } from "@tiptap/extension-table"
 import TableRow from "@tiptap/extension-table-row"
@@ -45,14 +44,6 @@ export function createEditorExtensions(): Extensions {
         class: "yaba-editor-img",
         style:
           "max-width: 100%; height: auto; border-radius: 8px; display: block; object-fit: contain; vertical-align: middle;",
-      },
-    }),
-    Youtube.configure({
-      width: 640,
-      height: 360,
-      nocookie: true,
-      HTMLAttributes: {
-        class: "yaba-editor-youtube",
       },
     }),
     Mathematics.configure({

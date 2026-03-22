@@ -90,7 +90,6 @@ The `converter.html` page is loaded in a hidden WebView when link saving needs H
 - **Code highlighting**: Syntax highlighting via lowlight
 - **Mathematics**: LaTeX math via KaTeX; inline `$...$` and block `$$...$$`; `dispatch({ type: 'insertInlineMath', latex: '...' })` / `{ type: 'insertBlockMath', latex: '...' }`
 - **Subscript / Superscript**: `dispatch({ type: 'toggleSubscript' })` / `{ type: 'toggleSuperscript' }`
-- **YouTube**: `dispatch({ type: 'insertYouTube', url: 'https://youtube.com/watch?v=...' })`; paste of YouTube URLs auto-embeds
 
 ## Follow-ups (Not in Scope)
 

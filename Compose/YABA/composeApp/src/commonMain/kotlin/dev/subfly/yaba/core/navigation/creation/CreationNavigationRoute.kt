@@ -31,6 +31,7 @@ val creationNavigationConfig = SavedStateConfiguration {
             subclass(ColorSelectionRoute::class, ColorSelectionRoute.serializer())
             subclass(ImageSelectionRoute::class, ImageSelectionRoute.serializer())
             subclass(HighlightCreationRoute::class, HighlightCreationRoute.serializer())
+            subclass(NotemarkTableCreationRoute::class, NotemarkTableCreationRoute.serializer())
             subclass(EmptyCretionRoute::class, EmptyCretionRoute.serializer())
         }
     }
@@ -126,6 +127,11 @@ data class HighlightCreationRoute(
     val selectionDraft: ReadableSelectionDraft? = null,
     val highlightId: String? = null,
 ): NavKey
+
+@Serializable
+data class NotemarkTableCreationRoute(
+    val routeId: String = Uuid.generateV4().toString(),
+) : NavKey
 
 @Serializable
 data object EmptyCretionRoute: NavKey

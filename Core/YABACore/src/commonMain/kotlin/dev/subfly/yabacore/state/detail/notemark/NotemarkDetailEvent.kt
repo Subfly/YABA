@@ -46,4 +46,13 @@ sealed interface NotemarkDetailEvent {
     ) : NotemarkDetailEvent
 
     data object OnCancelReminder : NotemarkDetailEvent
+
+    /** Opens the gallery picker and, on success, saves bytes under the note bookmark folder and sets [NotemarkDetailUIState.pendingInsertedImageSrc]. */
+    data object OnPickImageFromGallery : NotemarkDetailEvent
+
+    /** Opens the camera capture flow and, on success, saves bytes under the note bookmark folder and sets [NotemarkDetailUIState.pendingInsertedImageSrc]. */
+    data object OnCaptureImageFromCamera : NotemarkDetailEvent
+
+    /** Clears [NotemarkDetailUIState.pendingInsertedImageSrc] after the UI has inserted the image into the editor. */
+    data object OnConsumedPendingInsertedImage : NotemarkDetailEvent
 }

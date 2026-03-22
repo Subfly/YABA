@@ -39,6 +39,7 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.webview.YabaWebView
 import dev.subfly.yaba.core.navigation.creation.HighlightCreationRoute
+import dev.subfly.yaba.core.navigation.creation.NotemarkTableCreationRoute
 import dev.subfly.yaba.ui.detail.bookmark.components.BookmarkDetailContentTopBar
 import dev.subfly.yaba.ui.detail.bookmark.components.bookmarkFolderAccentColor
 import dev.subfly.yaba.ui.detail.bookmark.note.components.NotemarkContentDropdownMenu
@@ -47,6 +48,9 @@ import dev.subfly.yaba.ui.detail.bookmark.util.bookmarkDetailIconButtonColors
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalCreationContentNavigator
+import dev.subfly.yaba.util.LocalResultStore
+import dev.subfly.yaba.util.NotemarkTableSheetResult
+import dev.subfly.yaba.util.ResultStoreKeys
 import dev.subfly.yaba.util.rememberUrlLauncher
 import dev.subfly.yabacore.model.utils.ReaderPreferences
 import dev.subfly.yabacore.state.detail.notemark.NotemarkDetailEvent
@@ -55,6 +59,7 @@ import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.webview.WebComponentUris
 import dev.subfly.yabacore.webview.EditorFormattingState
 import dev.subfly.yabacore.webview.WebViewEditorBridge
+import dev.subfly.yabacore.webview.YabaEditorCommands
 import dev.subfly.yabacore.webview.YabaWebAppearance
 import dev.subfly.yabacore.webview.YabaWebFeature
 import dev.subfly.yabacore.webview.YabaWebHostEvent
@@ -85,6 +90,8 @@ internal fun NotemarkContentLayout(
     val navigator = LocalContentNavigator.current
     val creationNavigator = LocalCreationContentNavigator.current
     val appStateManager = LocalAppStateManager.current
+    val resultStore = LocalResultStore.current
+
     val appState by appStateManager.state.collectAsState()
     val scope = rememberCoroutineScope()
     val openUrl = rememberUrlLauncher()
@@ -129,6 +136,22 @@ internal fun NotemarkContentLayout(
         val bridge = editorBridge ?: return@LaunchedEffect
         bridge.scrollToHighlight(highlightId)
         onEvent(NotemarkDetailEvent.OnClearScrollToHighlight)
+    }
+
+    LaunchedEffect(resultStore.getResult(ResultStoreKeys.NOTEMARK_TABLE_INSERT), editorBridge) {
+        val r = resultStore.getResult<NotemarkTableSheetResult>(ResultStoreKeys.NOTEMARK_TABLE_INSERT)
+            ?: return@LaunchedEffect
+        val bridge = editorBridge ?: return@LaunchedEffect
+        resultStore.removeResult(ResultStoreKeys.NOTEMARK_TABLE_INSERT)
+        bridge.dispatch(YabaEditorCommands.insertTablePayload(r.rows, r.cols, r.withHeaderRow))
+    }
+
+    LaunchedEffect(state.pendingInsertedImageSrc, editorBridge) {
+        val src = state.pendingInsertedImageSrc ?: return@LaunchedEffect
+        val bridge = editorBridge ?: return@LaunchedEffect
+        bridge.dispatch(YabaEditorCommands.insertImagePayload(src))
+        onEvent(NotemarkDetailEvent.OnConsumedPendingInsertedImage)
+        bridge.focus()
     }
 
     val folderAccent by remember(state.bookmark) {
@@ -265,6 +288,25 @@ internal fun NotemarkContentLayout(
                             },
                             onDispatchCommand = { payload ->
                                 scope.launch { editorBridge?.dispatch(payload) }
+                            },
+                            onOpenTableInsertSheet = {
+                                scope.launch {
+                                    awaitKeyboardClosedBeforeCreationSheet(editorBridge)
+                                    creationNavigator.add(NotemarkTableCreationRoute())
+                                    appStateManager.onShowCreationContent()
+                                }
+                            },
+                            onPickImageFromGallery = {
+                                scope.launch {
+                                    editorBridge?.unFocus()
+                                    onEvent(NotemarkDetailEvent.OnPickImageFromGallery)
+                                }
+                            },
+                            onCaptureImageFromCamera = {
+                                scope.launch {
+                                    editorBridge?.unFocus()
+                                    onEvent(NotemarkDetailEvent.OnCaptureImageFromCamera)
+                                }
                             },
                         )
                     }

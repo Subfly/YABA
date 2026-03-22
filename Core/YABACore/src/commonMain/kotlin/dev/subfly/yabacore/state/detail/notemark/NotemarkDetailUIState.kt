@@ -20,4 +20,9 @@ data class NotemarkDetailUIState(
     val isLoading: Boolean = false,
     val reminderDateEpochMillis: Long? = null,
     val scrollToHighlightId: String? = null,
+    /**
+     * One-shot: relative `src` for an inline image (e.g. `../assets/<id>.<ext>`) after a gallery/camera pick.
+     * Compose consumes this and dispatches [dev.subfly.yabacore.webview.YabaEditorCommands.insertImagePayload], then emits [NotemarkDetailEvent.OnConsumedPendingInsertedImage].
+     */
+    val pendingInsertedImageSrc: String? = null,
 )
