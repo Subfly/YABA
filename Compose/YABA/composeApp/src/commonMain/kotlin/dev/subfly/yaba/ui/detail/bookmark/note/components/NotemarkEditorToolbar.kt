@@ -84,12 +84,17 @@ internal fun NotemarkEditorToolbar(
                 }
             }
 
-            if (formatting.inTable) {
-                TableEditDropdown(
-                    folderYabaColor = color,
-                    formatting = formatting,
-                    onDispatchCommand = onDispatchCommand,
-                )
+            AnimatedContent(
+                targetState = formatting.inTable,
+                label = "notemarkTableEdit",
+            ) { inTable ->
+                if (inTable) {
+                    TableEditDropdown(
+                        folderYabaColor = color,
+                        formatting = formatting,
+                        onDispatchCommand = onDispatchCommand,
+                    )
+                }
             }
 
             HeadingInsertDropdown(
