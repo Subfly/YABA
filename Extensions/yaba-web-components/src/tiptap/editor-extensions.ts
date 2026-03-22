@@ -18,6 +18,7 @@ import { Markdown } from "@tiptap/markdown"
 import { all, createLowlight } from "lowlight"
 import type { Extensions } from "@tiptap/core"
 import { HighlightDecorationsExtension } from "./extensions/highlight-decorations"
+import { CodeBlockEnterBehaviorExtension } from "./extensions/code-block-enter-behavior"
 
 const lowlight = createLowlight(all)
 
@@ -88,6 +89,7 @@ export function createEditorExtensions(): Extensions {
         class: "yaba-editor-code-block",
       },
     }),
+    CodeBlockEnterBehaviorExtension,
     HighlightDecorationsExtension,
     /** Enables markdown-style input (shortcuts, paste, serialization) alongside the rich-text model. */
     Markdown,
