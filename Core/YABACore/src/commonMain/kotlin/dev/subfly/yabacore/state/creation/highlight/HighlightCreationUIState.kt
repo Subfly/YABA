@@ -25,6 +25,13 @@ data class HighlightCreationUIState(
     val bookmarkId: String?
         get() = selectionDraft?.bookmarkId ?: bookmarkIdForEdit
 
-    val hasValidAnchor: Boolean
-        get() = selectionDraft != null || highlight != null
+    /** Enough to save: editing, or new PDF/rich selection with quote (or PDF anchor). */
+    val hasValidSelection: Boolean
+        get() = when {
+            highlight != null -> true
+            selectionDraft != null ->
+                selectionDraft.quote.displayText.isNotBlank() ||
+                    selectionDraft.pdfAnchor != null
+            else -> false
+        }
 }

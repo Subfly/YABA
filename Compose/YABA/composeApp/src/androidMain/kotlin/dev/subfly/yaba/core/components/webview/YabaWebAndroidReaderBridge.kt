@@ -3,7 +3,8 @@ package dev.subfly.yaba.core.components.webview
 import android.webkit.WebView
 import dev.subfly.yabacore.model.highlight.HighlightQuoteSnapshot
 import dev.subfly.yabacore.model.highlight.HighlightSourceContext
-import dev.subfly.yabacore.model.highlight.ReadableAnchor
+import dev.subfly.yabacore.model.highlight.HighlightType
+import dev.subfly.yabacore.model.highlight.PdfHighlightExtras
 import dev.subfly.yabacore.model.highlight.ReadableSelectionDraft
 import dev.subfly.yabacore.model.ui.HighlightUiModel
 import dev.subfly.yabacore.model.utils.ReaderPreferences
@@ -38,28 +39,18 @@ internal fun RichTextWebViewReaderBridge(
         if (jsonStr == "null" || jsonStr.isBlank()) return null
         return runCatching {
             val json = JSONObject(jsonStr)
-            val startSectionKey = json.optString("startSectionKey", "")
-            val startOffsetInSection = json.optInt("startOffsetInSection", 0)
-            val endSectionKey = json.optString("endSectionKey", "")
-            val endOffsetInSection = json.optInt("endOffsetInSection", 0)
             val selectedText = json.optString("selectedText", "")
             val prefixText = json.optString("prefixText").takeIf { it.isNotBlank() }
             val suffixText = json.optString("suffixText").takeIf { it.isNotBlank() }
-            if (startSectionKey.isBlank() || endSectionKey.isBlank() || selectedText.isBlank()) return@runCatching null
+            if (selectedText.isBlank()) return@runCatching null
             ReadableSelectionDraft(
                 sourceContext = HighlightSourceContext.readable(bookmarkId, readableVersionId),
-                anchor = ReadableAnchor(
-                    readableVersionId = readableVersionId,
-                    startSectionKey = startSectionKey,
-                    startOffsetInSection = startOffsetInSection,
-                    endSectionKey = endSectionKey,
-                    endOffsetInSection = endOffsetInSection,
-                ),
                 quote = HighlightQuoteSnapshot(
                     selectedText = selectedText,
                     prefixText = prefixText,
                     suffixText = suffixText,
                 ),
+                pdfAnchor = null,
             )
         }.getOrNull()
     }
@@ -78,6 +69,24 @@ internal fun RichTextWebViewReaderBridge(
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY_LOOSE)) return
         evaluateJs(webView, YabaEditorBridgeScripts.scrollToHighlightScript(highlightId))
     }
+
+    override suspend fun getDocumentJson(): String {
+        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return ""
+        val raw = evaluateJs(webView, YabaEditorBridgeScripts.getDocumentJsonScript())
+        return decodeJsStringResult(raw)
+    }
+
+    override suspend fun applyHighlightToSelection(highlightId: String): Boolean {
+        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return false
+        val raw = evaluateJs(webView, YabaEditorBridgeScripts.applyHighlightToSelectionScript(highlightId))
+        return decodeJsStringResult(raw).trim() == "true"
+    }
+
+    override suspend fun removeHighlightFromDocument(highlightId: String): Int {
+        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return 0
+        val raw = evaluateJs(webView, YabaEditorBridgeScripts.removeHighlightFromDocumentScript(highlightId))
+        return decodeJsStringResult(raw).trim().toIntOrNull() ?: 0
+    }
 }
 
 @Suppress("FunctionName")
@@ -86,11 +95,7 @@ internal fun RichTextWebViewEditorBridge(
 ): WebViewEditorBridge {
     val reader = RichTextWebViewReaderBridge(webView)
     return object : WebViewEditorBridge {
-        override suspend fun getDocumentJson(): String {
-            if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return ""
-            val raw = evaluateJs(webView, YabaEditorBridgeScripts.getDocumentJsonScript())
-            return decodeJsStringResult(raw)
-        }
+        override suspend fun getDocumentJson(): String = reader.getDocumentJson()
 
         override suspend fun setEditable(editable: Boolean) {
             if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return
@@ -125,6 +130,12 @@ internal fun RichTextWebViewEditorBridge(
 
         override suspend fun scrollToHighlight(highlightId: String) =
             reader.scrollToHighlight(highlightId)
+
+        override suspend fun applyHighlightToSelection(highlightId: String): Boolean =
+            reader.applyHighlightToSelection(highlightId)
+
+        override suspend fun removeHighlightFromDocument(highlightId: String): Int =
+            reader.removeHighlightFromDocument(highlightId)
     }
 }
 
@@ -222,13 +233,10 @@ internal suspend fun getEditorActiveFormatting(webView: WebView): EditorFormatti
 private suspend fun pushHighlightsEditor(webView: WebView, highlights: List<HighlightUiModel>) {
     val arr = JSONArray()
     for (h in highlights) {
+        if (h.type != HighlightType.READABLE && h.type != HighlightType.NOTE) continue
         arr.put(
             JSONObject().apply {
                 put("id", h.id)
-                put("startSectionKey", h.startSectionKey)
-                put("startOffsetInSection", h.startOffsetInSection)
-                put("endSectionKey", h.endSectionKey)
-                put("endOffsetInSection", h.endOffsetInSection)
                 put("colorRole", h.colorRole.name)
             },
         )
@@ -265,17 +273,16 @@ internal fun PdfWebViewReaderBridge(
             if (startSectionKey.isBlank() || endSectionKey.isBlank() || selectedText.isBlank()) return@runCatching null
             ReadableSelectionDraft(
                 sourceContext = HighlightSourceContext.readable(bookmarkId, readableVersionId),
-                anchor = ReadableAnchor(
-                    readableVersionId = readableVersionId,
-                    startSectionKey = startSectionKey,
-                    startOffsetInSection = startOffsetInSection,
-                    endSectionKey = endSectionKey,
-                    endOffsetInSection = endOffsetInSection,
-                ),
                 quote = HighlightQuoteSnapshot(
                     selectedText = selectedText,
                     prefixText = prefixText,
                     suffixText = suffixText,
+                ),
+                pdfAnchor = PdfHighlightExtras(
+                    startSectionKey = startSectionKey,
+                    startOffsetInSection = startOffsetInSection,
+                    endSectionKey = endSectionKey,
+                    endOffsetInSection = endOffsetInSection,
                 ),
             )
         }.getOrNull()
@@ -315,6 +322,12 @@ internal fun PdfWebViewReaderBridge(
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.PDF_BRIDGE_READY_LOOSE)) return false
         return evaluateJs(webView, YabaPdfReaderBridgeScripts.PREV_PAGE_SCRIPT).trim() == "true"
     }
+
+    override suspend fun getDocumentJson(): String = ""
+
+    override suspend fun applyHighlightToSelection(highlightId: String): Boolean = false
+
+    override suspend fun removeHighlightFromDocument(highlightId: String): Int = 0
 }
 
 internal suspend fun applyPdfUrl(webView: WebView, context: android.content.Context, pdfUrl: String) {
@@ -342,16 +355,20 @@ internal suspend fun installPdfHighlightTap(webView: WebView) {
 private suspend fun pushHighlightsPdf(webView: WebView, highlights: List<HighlightUiModel>) {
     val arr = JSONArray()
     highlights.forEach { highlight ->
-        arr.put(
-            JSONObject().apply {
-                put("id", highlight.id)
-                put("startSectionKey", highlight.startSectionKey)
-                put("startOffsetInSection", highlight.startOffsetInSection)
-                put("endSectionKey", highlight.endSectionKey)
-                put("endOffsetInSection", highlight.endOffsetInSection)
-                put("colorRole", highlight.colorRole.name)
-            },
-        )
+        val obj = JSONObject().apply {
+            put("id", highlight.id)
+            put("colorRole", highlight.colorRole.name)
+        }
+        if (highlight.type == HighlightType.PDF && !highlight.extrasJson.isNullOrBlank()) {
+            runCatching {
+                val extras = JSONObject(highlight.extrasJson)
+                obj.put("startSectionKey", extras.optString("startSectionKey", ""))
+                obj.put("startOffsetInSection", extras.optInt("startOffsetInSection", 0))
+                obj.put("endSectionKey", extras.optString("endSectionKey", ""))
+                obj.put("endOffsetInSection", extras.optInt("endOffsetInSection", 0))
+            }
+        }
+        arr.put(obj)
     }
     val escaped = escapeForJsSingleQuotedString(arr.toString())
     evaluateJs(

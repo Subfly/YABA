@@ -10,6 +10,7 @@ import dev.subfly.yabacore.common.CoreConstants
 import dev.subfly.yabacore.common.computeTriggerMillisFromDatePicker
 import dev.subfly.yabacore.managers.AllBookmarksManager
 import dev.subfly.yabacore.managers.HighlightManager
+import dev.subfly.yabacore.model.highlight.HighlightType
 import dev.subfly.yabacore.managers.ReadableContentManager
 import dev.subfly.yabacore.notifications.NotificationManager
 import dev.subfly.yabacore.unfurl.ConverterResultProcessor
@@ -65,6 +66,8 @@ class LinkmarkDetailStateMachine :
             is LinkmarkDetailEvent.OnCreateHighlight -> onCreateHighlight(event)
             is LinkmarkDetailEvent.OnUpdateHighlight -> onUpdateHighlight(event)
             is LinkmarkDetailEvent.OnDeleteHighlight -> onDeleteHighlight(event)
+            is LinkmarkDetailEvent.OnHighlightReadableCreateCommitted -> onHighlightReadableCreateCommitted(event)
+            is LinkmarkDetailEvent.OnHighlightReadableDeleteCommitted -> onHighlightReadableDeleteCommitted(event)
             is LinkmarkDetailEvent.OnScrollToHighlight -> onScrollToHighlight(event)
             LinkmarkDetailEvent.OnClearScrollToHighlight -> onClearScrollToHighlight()
             LinkmarkDetailEvent.OnRequestNotificationPermission -> onRequestNotificationPermission()
@@ -309,15 +312,14 @@ class LinkmarkDetailStateMachine :
     private fun onCreateHighlight(event: LinkmarkDetailEvent.OnCreateHighlight) {
         val bookmarkId = bookmarkIdFlow.value ?: return
         HighlightManager.createHighlight(
+            highlightId = event.highlightId,
             bookmarkId = bookmarkId,
             readableVersionId = event.readableVersionId,
-            startSectionKey = event.startSectionKey,
-            startOffsetInSection = event.startOffsetInSection,
-            endSectionKey = event.endSectionKey,
-            endOffsetInSection = event.endOffsetInSection,
+            type = HighlightType.READABLE,
             colorRole = event.colorRole,
             note = event.note,
             quoteText = event.quoteText,
+            extrasJson = null,
         )
     }
 
@@ -334,6 +336,49 @@ class LinkmarkDetailStateMachine :
     private fun onDeleteHighlight(event: LinkmarkDetailEvent.OnDeleteHighlight) {
         val bookmarkId = bookmarkIdFlow.value ?: return
         HighlightManager.deleteHighlight(bookmarkId, event.highlightId)
+    }
+
+    private fun onHighlightReadableCreateCommitted(
+        event: LinkmarkDetailEvent.OnHighlightReadableCreateCommitted,
+    ) {
+        val activeBookmarkId = bookmarkIdFlow.value ?: return
+        val req = event.request
+        if (req.selectionDraft.bookmarkId != activeBookmarkId) return
+        launch {
+            ReadableContentManager.syncNotemarkReadableMirror(
+                bookmarkId = req.selectionDraft.bookmarkId,
+                versionId = req.selectionDraft.readableVersionId,
+                documentJson = event.documentJson,
+            )
+            HighlightManager.createHighlight(
+                highlightId = event.highlightId,
+                bookmarkId = req.selectionDraft.bookmarkId,
+                readableVersionId = req.selectionDraft.readableVersionId,
+                type = HighlightType.READABLE,
+                colorRole = req.colorRole,
+                note = req.note,
+                quoteText = req.selectionDraft.quote.displayText.ifBlank { null },
+                extrasJson = null,
+            )
+        }
+    }
+
+    private fun onHighlightReadableDeleteCommitted(
+        event: LinkmarkDetailEvent.OnHighlightReadableDeleteCommitted,
+    ) {
+        val bookmarkId = bookmarkIdFlow.value ?: return
+        launch {
+            val state = currentState()
+            val versionId = state.selectedReadableVersionId
+                ?: state.readableVersions.firstOrNull()?.versionId
+                ?: return@launch
+            ReadableContentManager.syncNotemarkReadableMirror(
+                bookmarkId = bookmarkId,
+                versionId = versionId,
+                documentJson = event.documentJson,
+            )
+            HighlightManager.deleteHighlight(bookmarkId, event.highlightId)
+        }
     }
 
     private fun onScrollToHighlight(event: LinkmarkDetailEvent.OnScrollToHighlight) {

@@ -4,14 +4,14 @@ import androidx.room3.Entity
 import androidx.room3.ForeignKey
 import androidx.room3.Index
 import androidx.room3.PrimaryKey
+import dev.subfly.yabacore.model.highlight.HighlightType
 import dev.subfly.yabacore.model.utils.YabaColor
 
 /**
  * Room entity for highlight annotations.
  *
- * Highlights are stored in DB only. Section-anchored for readable content:
- * startSectionKey, startOffsetInSection, endSectionKey, endOffsetInSection.
- * quoteText stores best-effort selected text for UI preview.
+ * - [READABLE]/[NOTE]: identity is stored in TipTap JSON via `yabaHighlight` marks; DB holds metadata only.
+ * - [PDF]: positional data is in [extrasJson] ([dev.subfly.yabacore.model.highlight.PdfHighlightExtras]).
  */
 @Entity(
     tableName = "highlights",
@@ -40,13 +40,11 @@ data class HighlightEntity(
     @PrimaryKey val id: String,
     val bookmarkId: String,
     val readableVersionId: String,
-    val startSectionKey: String,
-    val startOffsetInSection: Int,
-    val endSectionKey: String,
-    val endOffsetInSection: Int,
+    val type: HighlightType,
     val colorRole: YabaColor,
     val note: String?,
     val quoteText: String?,
+    val extrasJson: String?,
     val createdAt: Long,
     val editedAt: Long,
 )

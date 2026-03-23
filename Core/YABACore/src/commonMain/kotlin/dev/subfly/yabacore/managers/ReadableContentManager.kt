@@ -65,7 +65,8 @@ object ReadableContentManager {
     }
 
     /**
-     * Writes or overwrites the readable mirror used for highlight anchoring on notemarks (document JSON).
+     * Writes or overwrites readable version JSON at `/readable/<versionId>.json` (notemark mirror,
+     * linkmarks after embedding `yabaHighlight` marks, etc.).
      */
     suspend fun syncNotemarkReadableMirror(
         bookmarkId: String,
@@ -175,7 +176,7 @@ object ReadableContentManager {
 
     fun observeReadableVersions(bookmarkId: String): Flow<List<ReadableVersionUiModel>> {
         val versionsFlow = readableVersionDao.observeByBookmarkId(bookmarkId)
-        val highlightsFlow = highlightDao.observeByBookmarkId(bookmarkId, readableVersionId = null)
+        val highlightsFlow = highlightDao.observeByBookmarkId(bookmarkId)
         return combine(versionsFlow, highlightsFlow) { versions, _ ->
             versions
         }.map { versions ->
@@ -220,13 +221,11 @@ object ReadableContentManager {
     private fun HighlightEntity.toHighlightUiModel(): HighlightUiModel =
         HighlightUiModel(
             id = id,
-            startSectionKey = startSectionKey,
-            startOffsetInSection = startOffsetInSection,
-            endSectionKey = endSectionKey,
-            endOffsetInSection = endOffsetInSection,
+            type = type,
             colorRole = colorRole,
             note = note,
             quoteText = quoteText,
+            extrasJson = extrasJson,
             absolutePath = null,
             createdAt = createdAt,
             editedAt = editedAt,

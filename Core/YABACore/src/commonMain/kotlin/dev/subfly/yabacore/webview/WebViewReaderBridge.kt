@@ -25,4 +25,10 @@ interface WebViewReaderBridge {
     suspend fun nextPage(): Boolean = false
 
     suspend fun prevPage(): Boolean = false
+
+    suspend fun getDocumentJson(): String = ""
+
+    suspend fun applyHighlightToSelection(highlightId: String): Boolean = false
+
+    suspend fun removeHighlightFromDocument(highlightId: String): Int = 0
 }

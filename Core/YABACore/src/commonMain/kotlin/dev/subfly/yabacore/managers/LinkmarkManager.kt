@@ -93,13 +93,11 @@ object LinkmarkManager {
     private fun HighlightEntity.toUiModel(): HighlightUiModel =
         HighlightUiModel(
             id = id,
-            startSectionKey = startSectionKey,
-            startOffsetInSection = startOffsetInSection,
-            endSectionKey = endSectionKey,
-            endOffsetInSection = endOffsetInSection,
+            type = type,
             colorRole = colorRole,
             note = note,
             quoteText = quoteText,
+            extrasJson = extrasJson,
             absolutePath = null,
             createdAt = createdAt,
             editedAt = editedAt,

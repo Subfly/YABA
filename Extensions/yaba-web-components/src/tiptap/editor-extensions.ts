@@ -18,6 +18,7 @@ import { Markdown } from "@tiptap/markdown"
 import { all, createLowlight } from "lowlight"
 import type { Extensions } from "@tiptap/core"
 import { HighlightDecorationsExtension } from "./extensions/highlight-decorations"
+import { YabaHighlightMark } from "./extensions/yaba-highlight-mark"
 import { CodeBlockEnterBehaviorExtension } from "./extensions/code-block-enter-behavior"
 
 const lowlight = createLowlight(all)
@@ -102,6 +103,7 @@ export function createEditorExtensions(): Extensions {
       },
     }),
     CodeBlockEnterBehaviorExtension,
+    YabaHighlightMark,
     HighlightDecorationsExtension,
     /** Enables markdown-style input (shortcuts, paste, serialization) alongside the rich-text model. */
     Markdown,

@@ -6,12 +6,12 @@ import {
   type SelectionSnapshot,
 } from "./selection-extractor"
 import {
-  getHighlightRanges,
-  getStoredHighlights,
   HIGHLIGHTS_META_KEY,
+  selectionOverlapsYabaHighlightMark,
   setStoredHighlights,
   type HighlightForRendering,
 } from "@/tiptap/extensions/highlight-decorations"
+import { YabaHighlightMarkName } from "@/tiptap/extensions/yaba-highlight-mark"
 
 export type ReaderTheme = "system" | "dark" | "light" | "sepia"
 export type ReaderFontSize = "small" | "medium" | "large"
@@ -79,6 +79,31 @@ export interface YabaEditorBridge {
   /** Blurs the editor and dismisses the keyboard; remembers cursor first for [focus]. */
   unFocus: () => void
   dispatch: (command: EditorCommandPayload) => void
+  /** Apply `yabaHighlight` mark with attrs `{ id }` to the current non-empty selection. */
+  applyHighlightToSelection: (highlightId: string) => boolean
+  /** Remove all `yabaHighlight` marks with the given id from the document. Returns number of text nodes updated. */
+  removeHighlightFromDocument: (highlightId: string) => number
+}
+
+function removeHighlightMarksWithId(editor: Editor | null, highlightId: string): number {
+  if (!editor) return 0
+  const { state } = editor
+  const markType = state.schema.marks[YabaHighlightMarkName]
+  if (!markType) return 0
+  let count = 0
+  const tr = state.tr
+  state.doc.descendants((node, pos) => {
+    if (!node.isText) return
+    const mark = node.marks.find((m) => m.type === markType && m.attrs.id === highlightId)
+    if (mark) {
+      tr.removeMark(pos, pos + node.nodeSize, markType)
+      count += 1
+    }
+  })
+  if (count > 0) {
+    editor.view.dispatch(tr)
+  }
+  return count
 }
 
 export type EditorCommandPayload =
@@ -264,8 +289,7 @@ export function initEditorBridge(editor: Editor): void {
       if (!ed) return false
       const { from, to } = ed.state.selection
       if (from === to) return false
-      const ranges = getHighlightRanges(ed.state.doc, getStoredHighlights())
-      const overlaps = ranges.some((r) => from < r.to && to > r.from)
+      const overlaps = selectionOverlapsYabaHighlightMark(ed.state.doc, from, to)
       return !overlaps
     },
     setHighlights: (highlightsJson: string) => {
@@ -530,6 +554,15 @@ export function initEditorBridge(editor: Editor): void {
         }
       }
     },
+    applyHighlightToSelection: (highlightId: string) => {
+      const ed = editorInstance
+      if (!ed) return false
+      const { from, to } = ed.state.selection
+      if (from === to) return false
+      return ed.chain().focus().setMark(YabaHighlightMarkName, { id: highlightId }).run()
+    },
+    removeHighlightFromDocument: (highlightId: string) =>
+      removeHighlightMarksWithId(editorInstance, highlightId),
   }
 
   applyReaderPreferences()

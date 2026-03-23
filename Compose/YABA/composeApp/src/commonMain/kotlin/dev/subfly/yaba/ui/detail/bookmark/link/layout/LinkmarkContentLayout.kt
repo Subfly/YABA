@@ -33,14 +33,18 @@ import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.webview.YabaWebView
 import dev.subfly.yaba.core.navigation.creation.HighlightCreationRoute
 import dev.subfly.yaba.ui.detail.bookmark.components.BookmarkDetailContentTopBar
-import dev.subfly.yaba.ui.detail.bookmark.util.bookmarkDetailIconButtonColors
 import dev.subfly.yaba.ui.detail.bookmark.components.bookmarkFolderAccentColor
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkContentDropdownMenu
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkReaderFloatingToolbar
+import dev.subfly.yaba.ui.detail.bookmark.util.bookmarkDetailIconButtonColors
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalCreationContentNavigator
+import dev.subfly.yaba.util.LocalResultStore
+import dev.subfly.yaba.util.ResultStoreKeys
 import dev.subfly.yaba.util.rememberUrlLauncher
+import dev.subfly.yabacore.common.IdGenerator
+import dev.subfly.yabacore.model.highlight.HighlightReadableCreateRequest
 import dev.subfly.yabacore.state.detail.linkmark.LinkmarkDetailEvent
 import dev.subfly.yabacore.state.detail.linkmark.LinkmarkDetailUIState
 import dev.subfly.yabacore.ui.icon.YabaIcon
@@ -73,9 +77,10 @@ internal fun LinkmarkContentLayout(
     val navigator = LocalContentNavigator.current
     val creationNavigator = LocalCreationContentNavigator.current
     val appStateManager = LocalAppStateManager.current
+    val resultStore = LocalResultStore.current
 
-    val scope = rememberCoroutineScope()
     val openUrl = rememberUrlLauncher()
+    val scope = rememberCoroutineScope()
 
     var readerBridge by remember { mutableStateOf<WebViewReaderBridge?>(null) }
     val appearance = if (isSystemInDarkTheme()) YabaWebAppearance.Dark else YabaWebAppearance.Light
@@ -103,6 +108,45 @@ internal fun LinkmarkContentLayout(
                 WebConverterInput(html = html, baseUrl = state.converterBaseUrl)
             }
         }
+    }
+
+    LaunchedEffect(resultStore.getResult(ResultStoreKeys.HIGHLIGHT_READABLE_CREATE_REQUEST)) {
+        val createReq = resultStore.getResult<HighlightReadableCreateRequest>(
+            ResultStoreKeys.HIGHLIGHT_READABLE_CREATE_REQUEST,
+        ) ?: return@LaunchedEffect
+        resultStore.removeResult(ResultStoreKeys.HIGHLIGHT_READABLE_CREATE_REQUEST)
+
+        val bridge = readerBridge ?: return@LaunchedEffect
+
+        val highlightId = IdGenerator.newId()
+        if (!bridge.applyHighlightToSelection(highlightId)) return@LaunchedEffect
+
+        val json = bridge.getDocumentJson()
+        onEvent(
+            LinkmarkDetailEvent.OnHighlightReadableCreateCommitted(
+                highlightId = highlightId,
+                request = createReq,
+                documentJson = json,
+            ),
+        )
+    }
+
+    LaunchedEffect(resultStore.getResult(ResultStoreKeys.HIGHLIGHT_READABLE_DELETE_REQUEST)) {
+        val deleteId = resultStore.getResult<String>(
+            ResultStoreKeys.HIGHLIGHT_READABLE_DELETE_REQUEST,
+        ) ?: return@LaunchedEffect
+        resultStore.removeResult(ResultStoreKeys.HIGHLIGHT_READABLE_DELETE_REQUEST)
+
+        val bridge = readerBridge ?: return@LaunchedEffect
+
+        bridge.removeHighlightFromDocument(deleteId)
+        val json = bridge.getDocumentJson()
+        onEvent(
+            LinkmarkDetailEvent.OnHighlightReadableDeleteCommitted(
+                highlightId = deleteId,
+                documentJson = json,
+            ),
+        )
     }
 
     YabaWebView(

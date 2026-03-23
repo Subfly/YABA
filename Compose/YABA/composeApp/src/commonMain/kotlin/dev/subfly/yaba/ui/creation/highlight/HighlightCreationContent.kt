@@ -42,10 +42,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.core.navigation.creation.ColorSelectionRoute
-import dev.subfly.yaba.util.ResultStoreKeys
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
+import dev.subfly.yaba.util.ResultStoreKeys
+import dev.subfly.yabacore.model.highlight.HighlightReadableCreateRequest
+import dev.subfly.yabacore.model.highlight.HighlightType
 import dev.subfly.yabacore.model.highlight.ReadableSelectionDraft
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.creation.highlight.HighlightCreationEvent
@@ -103,21 +105,39 @@ fun HighlightCreationContent(
         TopBar(
             modifier = Modifier.padding(horizontal = 8.dp),
             isStartingFlow = creationNavigator.size <= 2,
-            canPerformDone = state.hasValidAnchor,
+            canPerformDone = state.hasValidSelection,
             isEditing = state.isEditing,
             isSaving = state.isSaving,
             onDone = {
-                vm.onEvent(
-                    HighlightCreationEvent.OnSave(
-                        onSavedCallback = {
-                            if (creationNavigator.size == 2) {
-                                appStateManager.onHideCreationContent()
-                            }
-                            creationNavigator.removeLastOrNull()
-                        },
-                        onErrorCallback = { /* TODO: Show global toast */ },
-                    )
-                )
+                when {
+                    state.isEditing || state.selectionDraft?.pdfAnchor != null -> {
+                        vm.onEvent(
+                            HighlightCreationEvent.OnSave(
+                                onSavedCallback = {
+                                    if (creationNavigator.size == 2) {
+                                        appStateManager.onHideCreationContent()
+                                    }
+                                    creationNavigator.removeLastOrNull()
+                                },
+                                onErrorCallback = { /* TODO: Show global toast */ },
+                            ),
+                        )
+                    }
+                    state.selectionDraft != null -> {
+                        resultStore.setResult(
+                            ResultStoreKeys.HIGHLIGHT_READABLE_CREATE_REQUEST,
+                            HighlightReadableCreateRequest(
+                                selectionDraft = state.selectionDraft!!,
+                                colorRole = state.selectedColor,
+                                note = state.note.ifBlank { null },
+                            ),
+                        )
+                        if (creationNavigator.size == 2) {
+                            appStateManager.onHideCreationContent()
+                        }
+                        creationNavigator.removeLastOrNull()
+                    }
+                }
             },
             onDismiss = {
                 if (creationNavigator.size == 2) {
@@ -182,17 +202,30 @@ fun HighlightCreationContent(
                     .padding(horizontal = 12.dp)
                     .align(Alignment.CenterHorizontally),
                 onClick = {
-                    vm.onEvent(
-                        HighlightCreationEvent.OnDelete(
-                            onDeletedCallback = {
-                                if (creationNavigator.size == 2) {
-                                    appStateManager.onHideCreationContent()
-                                }
-                                creationNavigator.removeLastOrNull()
-                            },
-                            onErrorCallback = { /* TODO: Show global toast */ },
-                        )
-                    )
+                    val highlight = state.highlight
+                    when {
+                        highlight != null &&
+                            (highlight.type == HighlightType.READABLE || highlight.type == HighlightType.NOTE) -> {
+                            resultStore.setResult(ResultStoreKeys.HIGHLIGHT_READABLE_DELETE_REQUEST, highlight.id)
+                            if (creationNavigator.size == 2) {
+                                appStateManager.onHideCreationContent()
+                            }
+                            creationNavigator.removeLastOrNull()
+                        }
+                        else -> {
+                            vm.onEvent(
+                                HighlightCreationEvent.OnDelete(
+                                    onDeletedCallback = {
+                                        if (creationNavigator.size == 2) {
+                                            appStateManager.onHideCreationContent()
+                                        }
+                                        creationNavigator.removeLastOrNull()
+                                    },
+                                    onErrorCallback = { /* TODO: Show global toast */ },
+                                ),
+                            )
+                        }
+                    }
                 },
                 colors = ButtonDefaults.textButtonColors(
                     contentColor = MaterialTheme.colorScheme.error,

@@ -1,5 +1,6 @@
 package dev.subfly.yabacore.state.detail.linkmark
 
+import dev.subfly.yabacore.model.highlight.HighlightReadableCreateRequest
 import dev.subfly.yabacore.model.utils.ReaderFontSize
 import dev.subfly.yabacore.model.utils.ReaderLineHeight
 import dev.subfly.yabacore.model.utils.ReaderTheme
@@ -28,11 +29,8 @@ sealed interface LinkmarkDetailEvent {
     data class OnSetReaderFontSize(val fontSize: ReaderFontSize) : LinkmarkDetailEvent
     data class OnSetReaderLineHeight(val lineHeight: ReaderLineHeight) : LinkmarkDetailEvent
     data class OnCreateHighlight(
+        val highlightId: String,
         val readableVersionId: String,
-        val startSectionKey: String,
-        val startOffsetInSection: Int,
-        val endSectionKey: String,
-        val endOffsetInSection: Int,
         val colorRole: YabaColor = YabaColor.NONE,
         val note: String? = null,
         val quoteText: String? = null,
@@ -43,6 +41,15 @@ sealed interface LinkmarkDetailEvent {
         val note: String?,
     ) : LinkmarkDetailEvent
     data class OnDeleteHighlight(val highlightId: String) : LinkmarkDetailEvent
+    data class OnHighlightReadableCreateCommitted(
+        val highlightId: String,
+        val request: HighlightReadableCreateRequest,
+        val documentJson: String,
+    ) : LinkmarkDetailEvent
+    data class OnHighlightReadableDeleteCommitted(
+        val highlightId: String,
+        val documentJson: String,
+    ) : LinkmarkDetailEvent
     data class OnScrollToHighlight(val highlightId: String) : LinkmarkDetailEvent
     data object OnClearScrollToHighlight : LinkmarkDetailEvent
 

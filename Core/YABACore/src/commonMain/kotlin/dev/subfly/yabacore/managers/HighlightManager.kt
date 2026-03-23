@@ -1,33 +1,28 @@
 package dev.subfly.yabacore.managers
 
-import dev.subfly.yabacore.common.IdGenerator
 import dev.subfly.yabacore.database.DatabaseProvider
 import dev.subfly.yabacore.database.entities.HighlightEntity
+import dev.subfly.yabacore.model.highlight.HighlightType
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.queue.CoreOperationQueue
 import kotlin.time.Clock
 
 /**
  * DB-first manager for highlight annotations.
- *
- * Highlights are stored in Room only. Section-anchored: startSectionKey, startOffsetInSection,
- * endSectionKey, endOffsetInSection.
  */
 object HighlightManager {
     private val highlightDao get() = DatabaseProvider.highlightDao
 
     fun createHighlight(
+        highlightId: String,
         bookmarkId: String,
         readableVersionId: String,
-        startSectionKey: String,
-        startOffsetInSection: Int,
-        endSectionKey: String,
-        endOffsetInSection: Int,
+        type: HighlightType,
         colorRole: YabaColor = YabaColor.NONE,
         note: String? = null,
         quoteText: String? = null,
-    ): String {
-        val highlightId = IdGenerator.newId()
+        extrasJson: String? = null,
+    ) {
         val now = Clock.System.now().toEpochMilliseconds()
 
         CoreOperationQueue.queue("CreateHighlight:$highlightId") {
@@ -35,21 +30,17 @@ object HighlightManager {
                 id = highlightId,
                 bookmarkId = bookmarkId,
                 readableVersionId = readableVersionId,
-                startSectionKey = startSectionKey,
-                startOffsetInSection = startOffsetInSection,
-                endSectionKey = endSectionKey,
-                endOffsetInSection = endOffsetInSection,
+                type = type,
                 colorRole = colorRole,
                 note = note,
                 quoteText = quoteText,
+                extrasJson = extrasJson,
                 createdAt = now,
                 editedAt = now,
             )
             highlightDao.upsert(entity)
             AllBookmarksManager.touchBookmarkEditedAt(bookmarkId)
         }
-
-        return highlightId
     }
 
     fun updateHighlight(

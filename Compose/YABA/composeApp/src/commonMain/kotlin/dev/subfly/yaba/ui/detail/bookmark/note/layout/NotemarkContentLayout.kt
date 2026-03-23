@@ -54,6 +54,8 @@ import dev.subfly.yaba.util.NotemarkMathSheetResult
 import dev.subfly.yaba.util.NotemarkTableSheetResult
 import dev.subfly.yaba.util.ResultStoreKeys
 import dev.subfly.yaba.util.rememberUrlLauncher
+import dev.subfly.yabacore.common.IdGenerator
+import dev.subfly.yabacore.model.highlight.HighlightReadableCreateRequest
 import dev.subfly.yabacore.model.utils.ReaderPreferences
 import dev.subfly.yabacore.state.detail.notemark.NotemarkDetailEvent
 import dev.subfly.yabacore.state.detail.notemark.NotemarkDetailUIState
@@ -106,12 +108,51 @@ internal fun NotemarkContentLayout(
     var isMenuExpanded by remember { mutableStateOf(false) }
     var previousShowCreationContent by remember { mutableStateOf(false) }
 
-    LaunchedEffect(appState.showCreationContent) {
-        if (previousShowCreationContent && !appState.showCreationContent) {
-            val bridge = editorBridge ?: return@LaunchedEffect
-            bridge.focus()
+    LaunchedEffect(appState.showCreationContent, editorBridge) {
+        val show = appState.showCreationContent
+        if (previousShowCreationContent && !show) {
+            val createReq = resultStore.getResult<HighlightReadableCreateRequest>(
+                ResultStoreKeys.HIGHLIGHT_READABLE_CREATE_REQUEST,
+            )
+            val deleteId = resultStore.getResult<String>(
+                ResultStoreKeys.HIGHLIGHT_READABLE_DELETE_REQUEST,
+            )
+
+            val bridge = editorBridge
+            when {
+                createReq != null && bridge != null -> {
+                    resultStore.removeResult(ResultStoreKeys.HIGHLIGHT_READABLE_CREATE_REQUEST)
+                    val highlightId = IdGenerator.newId()
+                    if (bridge.applyHighlightToSelection(highlightId)) {
+                        val json = bridge.getDocumentJson()
+                        onEvent(
+                            NotemarkDetailEvent.OnHighlightReadableCreateCommitted(
+                                highlightId = highlightId,
+                                request = createReq,
+                                documentJson = json,
+                            ),
+                        )
+                        bridge.focus()
+                    }
+                }
+                deleteId != null && bridge != null -> {
+                    resultStore.removeResult(ResultStoreKeys.HIGHLIGHT_READABLE_DELETE_REQUEST)
+                    bridge.removeHighlightFromDocument(deleteId)
+                    val json = bridge.getDocumentJson()
+                    onEvent(
+                        NotemarkDetailEvent.OnHighlightReadableDeleteCommitted(
+                            highlightId = deleteId,
+                            documentJson = json,
+                        ),
+                    )
+                    bridge.focus()
+                }
+                bridge != null -> {
+                    bridge.focus()
+                }
+            }
         }
-        previousShowCreationContent = appState.showCreationContent
+        previousShowCreationContent = show
     }
 
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {

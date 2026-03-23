@@ -4,16 +4,17 @@ import androidx.compose.runtime.Stable
 import kotlinx.serialization.Serializable
 
 /**
- * Selection payload from the web viewer for readable content.
- * Produced by the rich-text reader WebView bridge when the user selects text and taps the FAB.
+ * Selection payload from a WebView for highlight creation.
+ * - Rich-text reader: [pdfAnchor] is null; quote-only (positions live in TipTap `yabaHighlight` marks after apply).
+ * - PDF viewer: [pdfAnchor] holds section offsets stored in DB [HighlightEntity.extrasJson].
  */
 @Serializable
 @Stable
 data class ReadableSelectionDraft(
     val sourceContext: HighlightSourceContext,
-    val anchor: ReadableAnchor,
     val quote: HighlightQuoteSnapshot,
+    val pdfAnchor: PdfHighlightExtras? = null,
 ) {
     val bookmarkId: String get() = sourceContext.bookmarkId
-    val readableVersionId: String get() = anchor.readableVersionId
+    val readableVersionId: String get() = sourceContext.contentId
 }

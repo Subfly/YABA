@@ -2,16 +2,14 @@ import { Extension } from "@tiptap/core"
 import { Plugin, PluginKey } from "@tiptap/pm/state"
 import { Decoration, DecorationSet } from "@tiptap/pm/view"
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model"
+import { YabaHighlightMarkName } from "./yaba-highlight-mark"
 
 export const HIGHLIGHTS_META_KEY = "yaba-highlights"
 export const highlightDecorationPluginKey = new PluginKey("highlightDecorations")
 
+/** Native-driven highlight list: id + color role; positions come from `yabaHighlight` marks in the document. */
 export interface HighlightForRendering {
   id: string
-  startSectionKey: string
-  startOffsetInSection: number
-  endSectionKey: string
-  endOffsetInSection: number
   colorRole: string
 }
 
@@ -23,49 +21,6 @@ export function setStoredHighlights(highlights: HighlightForRendering[]): void {
 
 export function getStoredHighlights(): HighlightForRendering[] {
   return storedHighlights
-}
-
-interface BlockInfo {
-  key: string
-  from: number
-  to: number
-}
-
-function buildBlockIndex(doc: ProseMirrorNode): BlockInfo[] {
-  const blocks: BlockInfo[] = []
-  let index = 0
-  doc.descendants((node, pos) => {
-    if (node.isBlock && node.isTextblock) {
-      blocks.push({
-        key: `block-${index}`,
-        from: pos + 1,
-        to: pos + node.nodeSize - 1,
-      })
-      index++
-    }
-  })
-  return blocks
-}
-
-function findBlockByKey(blocks: BlockInfo[], key: string): BlockInfo | null {
-  return blocks.find((b) => b.key === key) ?? null
-}
-
-export function getHighlightRanges(
-  doc: ProseMirrorNode,
-  highlights: HighlightForRendering[]
-): { from: number; to: number }[] {
-  const blocks = buildBlockIndex(doc)
-  const ranges: { from: number; to: number }[] = []
-  for (const h of highlights) {
-    const startBlock = findBlockByKey(blocks, h.startSectionKey)
-    const endBlock = findBlockByKey(blocks, h.endSectionKey)
-    if (!startBlock || !endBlock) continue
-    const from = startBlock.from + h.startOffsetInSection
-    const to = endBlock.from + h.endOffsetInSection
-    if (from < to) ranges.push({ from, to })
-  }
-  return ranges
 }
 
 const colorRoleToClass: Record<string, string> = {
@@ -89,30 +44,48 @@ function getHighlightClass(colorRole: string): string {
   return colorRoleToClass[colorRole] ?? "yaba-highlight-yellow"
 }
 
+/** True if the selection range overlaps any `yabaHighlight` mark (for “can create” guard). */
+export function selectionOverlapsYabaHighlightMark(
+  doc: ProseMirrorNode,
+  from: number,
+  to: number
+): boolean {
+  let overlaps = false
+  doc.nodesBetween(from, to, (node) => {
+    if (!node.isText) return true
+    const has = node.marks.some((m) => m.type.name === YabaHighlightMarkName)
+    if (has) {
+      overlaps = true
+      return false
+    }
+    return true
+  })
+  return overlaps
+}
+
 function mapHighlightsToDecorations(
   doc: ProseMirrorNode,
   highlights: HighlightForRendering[]
 ): Decoration[] {
-  const blocks = buildBlockIndex(doc)
+  const idToRole = new Map(highlights.map((h) => [h.id, h.colorRole]))
   const decorations: Decoration[] = []
 
-  for (const h of highlights) {
-    const startBlock = findBlockByKey(blocks, h.startSectionKey)
-    const endBlock = findBlockByKey(blocks, h.endSectionKey)
-    if (!startBlock || !endBlock) continue
-
-    const from = startBlock.from + h.startOffsetInSection
-    const to = endBlock.from + h.endOffsetInSection
-    if (from >= to) continue
-
-    const cls = getHighlightClass(h.colorRole)
+  doc.descendants((node, pos) => {
+    if (!node.isText) return
+    const mark = node.marks.find(m => m.type.name === YabaHighlightMarkName)
+    if (!mark) return
+    const id = mark.attrs.id as string | undefined
+    if (!id || !idToRole.has(id)) return
+    const cls = getHighlightClass(idToRole.get(id)!)
+    const from = pos
+    const to = pos + node.nodeSize
     decorations.push(
       Decoration.inline(from, to, {
         class: `yaba-highlight ${cls}`,
-        "data-highlight-id": h.id,
+        "data-highlight-id": id,
       })
     )
-  }
+  })
   return decorations
 }
 
@@ -125,10 +98,7 @@ export const HighlightDecorationsExtension = Extension.create({
         key: highlightDecorationPluginKey,
         state: {
           init(_, state) {
-            const decos = mapHighlightsToDecorations(
-              state.doc,
-              storedHighlights
-            )
+            const decos = mapHighlightsToDecorations(state.doc, storedHighlights)
             return DecorationSet.create(state.doc, decos)
           },
           apply(tr, pluginState) {
@@ -138,7 +108,8 @@ export const HighlightDecorationsExtension = Extension.create({
               return DecorationSet.create(tr.doc, decos)
             }
             if (tr.docChanged) {
-              return pluginState.map(tr.mapping, tr.doc)
+              const decos = mapHighlightsToDecorations(tr.doc, storedHighlights)
+              return DecorationSet.create(tr.doc, decos)
             }
             return pluginState
           },
@@ -153,7 +124,9 @@ export const HighlightDecorationsExtension = Extension.create({
             const highlightId = highlightEl?.getAttribute?.("data-highlight-id")
             if (highlightId) {
               event.preventDefault()
-              const win = window as Window & { YabaEditorBridge?: { onHighlightTap?: (id: string) => void } }
+              const win = window as Window & {
+                YabaEditorBridge?: { onHighlightTap?: (id: string) => void }
+              }
               win.YabaEditorBridge?.onHighlightTap?.(highlightId)
               return true
             }

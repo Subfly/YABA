@@ -195,6 +195,34 @@ object YabaEditorBridgeScripts {
         })();
         """.trimIndent()
 
+    fun applyHighlightToSelectionScript(highlightId: String): String {
+        val escaped = escapeForJsSingleQuotedString(highlightId)
+        return """
+        (function() {
+            try {
+                if (window.YabaEditorBridge && window.YabaEditorBridge.applyHighlightToSelection) {
+                    return window.YabaEditorBridge.applyHighlightToSelection('$escaped') ? 'true' : 'false';
+                }
+            } catch(e) {}
+            return 'false';
+        })();
+        """.trimIndent()
+    }
+
+    fun removeHighlightFromDocumentScript(highlightId: String): String {
+        val escaped = escapeForJsSingleQuotedString(highlightId)
+        return """
+        (function() {
+            try {
+                if (window.YabaEditorBridge && window.YabaEditorBridge.removeHighlightFromDocument) {
+                    return String(window.YabaEditorBridge.removeHighlightFromDocument('$escaped'));
+                }
+            } catch(e) {}
+            return '0';
+        })();
+        """.trimIndent()
+    }
+
     fun setEditableScript(editable: Boolean): String =
         """
         (function() {

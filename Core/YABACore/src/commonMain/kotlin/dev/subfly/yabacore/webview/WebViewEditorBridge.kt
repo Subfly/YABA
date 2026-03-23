@@ -5,7 +5,7 @@ package dev.subfly.yabacore.webview
  * surface as [WebViewReaderBridge] for the readable mirror.
  */
 interface WebViewEditorBridge : WebViewReaderBridge {
-    suspend fun getDocumentJson(): String
+    override suspend fun getDocumentJson(): String
 
     suspend fun setEditable(editable: Boolean)
 

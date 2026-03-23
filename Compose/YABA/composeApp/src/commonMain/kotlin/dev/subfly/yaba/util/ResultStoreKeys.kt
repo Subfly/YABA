@@ -10,4 +10,6 @@ object ResultStoreKeys {
     const val SHARED_PDF_DATA = "shared_pdf_data"
     const val NOTEMARK_TABLE_INSERT = "notemark_table_insert"
     const val NOTEMARK_MATH_INSERT = "notemark_math_insert"
+    const val HIGHLIGHT_READABLE_CREATE_REQUEST = "highlight_readable_create_request"
+    const val HIGHLIGHT_READABLE_DELETE_REQUEST = "highlight_readable_delete_request"
 }

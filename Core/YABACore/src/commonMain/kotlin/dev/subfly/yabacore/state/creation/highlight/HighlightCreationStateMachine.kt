@@ -1,17 +1,22 @@
 package dev.subfly.yabacore.state.creation.highlight
 
+import dev.subfly.yabacore.common.IdGenerator
 import dev.subfly.yabacore.database.entities.HighlightEntity
 import dev.subfly.yabacore.managers.HighlightManager
+import dev.subfly.yabacore.model.highlight.HighlightType
+import dev.subfly.yabacore.model.highlight.PdfHighlightExtras
 import dev.subfly.yabacore.model.ui.HighlightUiModel
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.base.BaseStateMachine
-import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
 
 class HighlightCreationStateMachine :
     BaseStateMachine<HighlightCreationUIState, HighlightCreationEvent>(
-        initialState = HighlightCreationUIState()
+        initialState = HighlightCreationUIState(),
     ) {
     private var isInitialized = false
+
+    private val json = Json { ignoreUnknownKeys = true }
 
     override fun onEvent(event: HighlightCreationEvent) {
         when (event) {
@@ -73,13 +78,11 @@ class HighlightCreationStateMachine :
     private fun mapEntityToUiModel(entity: HighlightEntity) =
         HighlightUiModel(
             id = entity.id,
-            startSectionKey = entity.startSectionKey,
-            startOffsetInSection = entity.startOffsetInSection,
-            endSectionKey = entity.endSectionKey,
-            endOffsetInSection = entity.endOffsetInSection,
+            type = entity.type,
             colorRole = entity.colorRole,
             note = entity.note,
             quoteText = entity.quoteText,
+            extrasJson = entity.extrasJson,
             absolutePath = null,
             createdAt = entity.createdAt,
             editedAt = entity.editedAt,
@@ -95,7 +98,7 @@ class HighlightCreationStateMachine :
 
     private fun onSave(event: HighlightCreationEvent.OnSave) {
         val state = currentState()
-        if (state.isSaving || !state.hasValidAnchor) {
+        if (state.isSaving || !state.hasValidSelection) {
             event.onErrorCallback(IllegalStateException("Cannot save: invalid state"))
             return
         }
@@ -114,16 +117,22 @@ class HighlightCreationStateMachine :
                     )
                 } else {
                     val draft = state.selectionDraft ?: return@launch
+                    val anchor = draft.pdfAnchor ?: run {
+                        updateState { it.copy(isSaving = false) }
+                        event.onErrorCallback(IllegalStateException("Expected PDF selection anchor"))
+                        return@launch
+                    }
+                    val highlightId = IdGenerator.newId()
+                    val extrasJson = json.encodeToString(PdfHighlightExtras.serializer(), anchor)
                     HighlightManager.createHighlight(
+                        highlightId = highlightId,
                         bookmarkId = draft.bookmarkId,
                         readableVersionId = draft.readableVersionId,
-                        startSectionKey = draft.anchor.startSectionKey,
-                        startOffsetInSection = draft.anchor.startOffsetInSection,
-                        endSectionKey = draft.anchor.endSectionKey,
-                        endOffsetInSection = draft.anchor.endOffsetInSection,
+                        type = HighlightType.PDF,
                         colorRole = state.selectedColor,
                         note = state.note.ifBlank { null },
                         quoteText = draft.quote.displayText.ifBlank { null },
+                        extrasJson = extrasJson,
                     )
                 }
                 updateState { it.copy(isSaving = false) }
