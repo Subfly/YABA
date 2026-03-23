@@ -108,7 +108,7 @@ internal fun NotemarkContentLayout(
     var isMenuExpanded by remember { mutableStateOf(false) }
     var previousShowCreationContent by remember { mutableStateOf(false) }
 
-    LaunchedEffect(appState.showCreationContent, editorBridge) {
+    LaunchedEffect(appState.showCreationContent) {
         val show = appState.showCreationContent
         if (previousShowCreationContent && !show) {
             val createReq = resultStore.getResult<HighlightReadableCreateRequest>(

@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -79,6 +80,7 @@ internal fun LinkmarkContentLayout(
     val appStateManager = LocalAppStateManager.current
     val resultStore = LocalResultStore.current
 
+    val appState by appStateManager.state.collectAsState()
     val openUrl = rememberUrlLauncher()
     val scope = rememberCoroutineScope()
 
@@ -96,6 +98,7 @@ internal fun LinkmarkContentLayout(
     ) { mutableStateOf(true) }
     var isMenuExpanded by remember { mutableStateOf(false) }
     var hasSelection by remember { mutableStateOf(false) }
+    var previousShowCreationContent by remember { mutableStateOf(false) }
 
     val folderAccent by remember(state.bookmark) {
         derivedStateOf { bookmarkFolderAccentColor(state.bookmark) }
@@ -110,43 +113,46 @@ internal fun LinkmarkContentLayout(
         }
     }
 
-    LaunchedEffect(resultStore.getResult(ResultStoreKeys.HIGHLIGHT_READABLE_CREATE_REQUEST)) {
-        val createReq = resultStore.getResult<HighlightReadableCreateRequest>(
-            ResultStoreKeys.HIGHLIGHT_READABLE_CREATE_REQUEST,
-        ) ?: return@LaunchedEffect
-        resultStore.removeResult(ResultStoreKeys.HIGHLIGHT_READABLE_CREATE_REQUEST)
+    LaunchedEffect(appState.showCreationContent) {
+        val show = appState.showCreationContent
+        if (previousShowCreationContent && show.not()) {
+            val createReq = resultStore.getResult<HighlightReadableCreateRequest>(
+                ResultStoreKeys.HIGHLIGHT_READABLE_CREATE_REQUEST,
+            )
+            val deleteId = resultStore.getResult<String>(
+                ResultStoreKeys.HIGHLIGHT_READABLE_DELETE_REQUEST,
+            )
+            val bridge = readerBridge
 
-        val bridge = readerBridge ?: return@LaunchedEffect
-
-        val highlightId = IdGenerator.newId()
-        if (!bridge.applyHighlightToSelection(highlightId)) return@LaunchedEffect
-
-        val json = bridge.getDocumentJson()
-        onEvent(
-            LinkmarkDetailEvent.OnHighlightReadableCreateCommitted(
-                highlightId = highlightId,
-                request = createReq,
-                documentJson = json,
-            ),
-        )
-    }
-
-    LaunchedEffect(resultStore.getResult(ResultStoreKeys.HIGHLIGHT_READABLE_DELETE_REQUEST)) {
-        val deleteId = resultStore.getResult<String>(
-            ResultStoreKeys.HIGHLIGHT_READABLE_DELETE_REQUEST,
-        ) ?: return@LaunchedEffect
-        resultStore.removeResult(ResultStoreKeys.HIGHLIGHT_READABLE_DELETE_REQUEST)
-
-        val bridge = readerBridge ?: return@LaunchedEffect
-
-        bridge.removeHighlightFromDocument(deleteId)
-        val json = bridge.getDocumentJson()
-        onEvent(
-            LinkmarkDetailEvent.OnHighlightReadableDeleteCommitted(
-                highlightId = deleteId,
-                documentJson = json,
-            ),
-        )
+            when {
+                createReq != null && bridge != null -> {
+                    resultStore.removeResult(ResultStoreKeys.HIGHLIGHT_READABLE_CREATE_REQUEST)
+                    val highlightId = IdGenerator.newId()
+                    if (bridge.applyHighlightToSelection(highlightId)) {
+                        val json = bridge.getDocumentJson()
+                        onEvent(
+                            LinkmarkDetailEvent.OnHighlightReadableCreateCommitted(
+                                highlightId = highlightId,
+                                request = createReq,
+                                documentJson = json,
+                            ),
+                        )
+                    }
+                }
+                deleteId != null && bridge != null -> {
+                    resultStore.removeResult(ResultStoreKeys.HIGHLIGHT_READABLE_DELETE_REQUEST)
+                    bridge.removeHighlightFromDocument(deleteId)
+                    val json = bridge.getDocumentJson()
+                    onEvent(
+                        LinkmarkDetailEvent.OnHighlightReadableDeleteCommitted(
+                            highlightId = deleteId,
+                            documentJson = json,
+                        ),
+                    )
+                }
+            }
+        }
+        previousShowCreationContent = show
     }
 
     YabaWebView(
