@@ -1,4 +1,5 @@
 import type { Editor } from "@tiptap/core"
+import { Selection } from "@tiptap/pm/state"
 import type { Platform, AppearanceMode } from "@/theme"
 import { applyTheme, parseUrlParams } from "@/theme"
 import {
@@ -224,6 +225,30 @@ function captureStoredCursorFromEditor(): void {
   lastStoredCursor = { anchor, head }
 }
 
+/** `setContent` often leaves a range selection; collapse to a caret so toggles don't apply to the whole doc. */
+function clearSelectionToCaretAtStart(editor: Editor): void {
+  const pos = Selection.atStart(editor.state.doc).from
+  editor.chain().setTextSelection(pos).run()
+}
+
+function isEditorDocumentEmpty(editor: Editor): boolean {
+  return editor.state.doc.textContent.trim().length === 0
+}
+
+/**
+ * After loading/replacing content: caret at doc start, then either focus (empty doc, ready to type)
+ * or blur (has content — avoids spurious selection / keyboard until user taps).
+ */
+function applyInitialFocusStateAfterContent(editor: Editor): void {
+  clearSelectionToCaretAtStart(editor)
+  captureStoredCursorFromEditor()
+  if (isEditorDocumentEmpty(editor)) {
+    editor.commands.focus()
+  } else {
+    editor.commands.blur()
+  }
+}
+
 function focusEditorRestoringCursor(): void {
   const ed = editorInstance
   if (!ed) return
@@ -272,9 +297,11 @@ function applyReaderPreferences(): void {
 
 export function initEditorBridge(editor: Editor): void {
   editorInstance = editor
-  captureStoredCursorFromEditor()
   editor.on("selectionUpdate", () => {
     captureStoredCursorFromEditor()
+  })
+  queueMicrotask(() => {
+    applyInitialFocusStateAfterContent(editor)
   })
   const urlParams = parseUrlParams()
   platform = urlParams.platform
@@ -356,6 +383,9 @@ export function initEditorBridge(editor: Editor): void {
         doc = JSON.parse(EMPTY_DOC_JSON) as Record<string, unknown>
       }
       editorInstance?.commands.setContent(doc, { emitUpdate: false })
+      if (editorInstance) {
+        applyInitialFocusStateAfterContent(editorInstance)
+      }
     },
     setReaderHtml: (html: string, options?: { assetsBaseUrl?: string }) => {
       if (options?.assetsBaseUrl) {
@@ -366,6 +396,9 @@ export function initEditorBridge(editor: Editor): void {
         payload = rewriteAssetPathsInReaderHtml(payload, options.assetsBaseUrl)
       }
       editorInstance?.commands.setContent(payload, { emitUpdate: false })
+      if (editorInstance) {
+        applyInitialFocusStateAfterContent(editorInstance)
+      }
     },
     getDocumentJson: () => {
       const raw = JSON.stringify(editorInstance?.getJSON() ?? JSON.parse(EMPTY_DOC_JSON))

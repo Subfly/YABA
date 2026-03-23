@@ -102,7 +102,8 @@ object YabaEditorCommands {
             formatting.underline ||
             formatting.strikethrough ||
             formatting.subscript ||
-            formatting.superscript
+            formatting.superscript ||
+            formatting.textHighlight
 
     /** Block/list toggles shown under the insert ("add") toolbar menu. */
     fun hasAnyInsertMenuToggle(formatting: EditorFormattingState): Boolean =
