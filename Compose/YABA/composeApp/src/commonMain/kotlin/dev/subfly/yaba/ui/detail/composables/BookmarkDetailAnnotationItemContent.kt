@@ -1,4 +1,4 @@
-package dev.subfly.yaba.ui.detail.bookmark.link.components
+package dev.subfly.yaba.ui.detail.composables
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -49,7 +49,7 @@ import yaba.composeapp.generated.resources.delete
 // TODO: LOCALIZATIONS
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalFoundationApi::class)
 @Composable
-internal fun LinkmarkDetailAnnotationItemContent(
+internal fun BookmarkDetailAnnotationItemContent(
     modifier: Modifier = Modifier,
     annotation: AnnotationUiModel,
     index: Int,

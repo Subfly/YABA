@@ -27,7 +27,7 @@ import dev.subfly.yaba.core.navigation.main.FolderDetailRoute
 import dev.subfly.yaba.core.navigation.main.TagDetailRoute
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailActionsContent
 import dev.subfly.yaba.ui.detail.composables.BookmarkDetailFolderSectionContent
-import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailAnnotationItemContent
+import dev.subfly.yaba.ui.detail.composables.BookmarkDetailAnnotationItemContent
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailImageSectionContent
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailInfoSectionContent
 import dev.subfly.yaba.ui.detail.composables.BookmarkDetailReminderSectionContent
@@ -204,7 +204,7 @@ internal fun LinkmarkDetailLayout(
                             items = state.annotations,
                             key = { _, a -> a.id },
                         ) { index, annotation ->
-                            LinkmarkDetailAnnotationItemContent(
+                            BookmarkDetailAnnotationItemContent(
                                 modifier = Modifier
                                     .animateItem()
                                     .padding(vertical = 4.dp),
@@ -216,16 +216,16 @@ internal fun LinkmarkDetailLayout(
                                     onEvent(LinkmarkDetailEvent.OnScrollToAnnotation(annotation.id))
                                 },
                                 onEdit = {
-                                    val bookmarkId = state.bookmark?.id
-                                        ?: return@LinkmarkDetailAnnotationItemContent
-                                    creationNavigator.add(
-                                        AnnotationCreationRoute(
-                                            bookmarkId = bookmarkId,
-                                            selectionDraft = null,
-                                            annotationId = annotation.id,
-                                        ),
-                                    )
-                                    appStateManager.onShowCreationContent()
+                                    state.bookmark?.id?.let { bookmarkId ->
+                                        creationNavigator.add(
+                                            AnnotationCreationRoute(
+                                                bookmarkId = bookmarkId,
+                                                selectionDraft = null,
+                                                annotationId = annotation.id,
+                                            ),
+                                        )
+                                        appStateManager.onShowCreationContent()
+                                    }
                                 },
                                 onDelete = {
                                     onEvent(LinkmarkDetailEvent.OnDeleteAnnotation(annotation.id))
