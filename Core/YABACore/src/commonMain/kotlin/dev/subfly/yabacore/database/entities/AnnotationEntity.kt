@@ -4,17 +4,17 @@ import androidx.room3.Entity
 import androidx.room3.ForeignKey
 import androidx.room3.Index
 import androidx.room3.PrimaryKey
-import dev.subfly.yabacore.model.highlight.HighlightType
+import dev.subfly.yabacore.model.annotation.AnnotationType
 import dev.subfly.yabacore.model.utils.YabaColor
 
 /**
- * Room entity for highlight annotations.
+ * Room entity for persisted annotations (read-it-later, PDF).
  *
- * - [READABLE]/[NOTE]: identity is stored in TipTap JSON via `yabaHighlight` marks; DB holds metadata only.
- * - [PDF]: positional data is in [extrasJson] ([dev.subfly.yabacore.model.highlight.PdfHighlightExtras]).
+ * - [READABLE]: identity is stored in TipTap JSON via `yabaAnnotation` marks; DB holds metadata only.
+ * - [PDF]: positional data is in [extrasJson] ([dev.subfly.yabacore.model.annotation.PdfAnnotationExtras]).
  */
 @Entity(
-    tableName = "highlights",
+    tableName = "annotations",
     foreignKeys = [
         ForeignKey(
             entity = BookmarkEntity::class,
@@ -36,11 +36,11 @@ import dev.subfly.yabacore.model.utils.YabaColor
         Index(value = ["editedAt"]),
     ],
 )
-data class HighlightEntity(
+data class AnnotationEntity(
     @PrimaryKey val id: String,
     val bookmarkId: String,
     val readableVersionId: String,
-    val type: HighlightType,
+    val type: AnnotationType,
     val colorRole: YabaColor,
     val note: String?,
     val quoteText: String?,

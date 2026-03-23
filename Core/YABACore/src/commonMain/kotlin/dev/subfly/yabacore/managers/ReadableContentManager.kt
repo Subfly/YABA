@@ -3,12 +3,12 @@ package dev.subfly.yabacore.managers
 import dev.subfly.yabacore.common.CoreConstants
 import dev.subfly.yabacore.common.IdGenerator
 import dev.subfly.yabacore.database.DatabaseProvider
-import dev.subfly.yabacore.database.entities.HighlightEntity
+import dev.subfly.yabacore.database.entities.AnnotationEntity
 import dev.subfly.yabacore.database.entities.ReadableAssetEntity
 import dev.subfly.yabacore.database.entities.ReadableVersionEntity
 import dev.subfly.yabacore.filesystem.BookmarkFileManager
 import dev.subfly.yabacore.filesystem.access.FileAccessProvider
-import dev.subfly.yabacore.model.ui.HighlightUiModel
+import dev.subfly.yabacore.model.ui.AnnotationUiModel
 import dev.subfly.yabacore.model.ui.ReadableAssetUiModel
 import dev.subfly.yabacore.model.ui.ReadableVersionUiModel
 import dev.subfly.yabacore.model.utils.ReadableAssetRole
@@ -35,7 +35,7 @@ import kotlin.time.Clock
 object ReadableContentManager {
     private val readableVersionDao get() = DatabaseProvider.readableVersionDao
     private val readableAssetDao get() = DatabaseProvider.readableAssetDao
-    private val highlightDao get() = DatabaseProvider.highlightDao
+    private val annotationDao get() = DatabaseProvider.annotationDao
     private val accessProvider = FileAccessProvider
 
     fun saveReadableContent(bookmarkId: String, readable: ReadableUnfurl) {
@@ -45,12 +45,12 @@ object ReadableContentManager {
     }
 
     /**
-     * PDF highlights still persist a [HighlightEntity.readableVersionId] FK to [ReadableVersionEntity].
+     * PDF annotations still persist an [AnnotationEntity.readableVersionId] FK to [ReadableVersionEntity].
      * Docmarks that never received a readable snapshot therefore have no version row and the UI cannot
-     * resolve a version id for highlight selection drafts (see [HighlightEntity.readableVersionId]).
+     * resolve a version id for annotation selection drafts (see [AnnotationEntity.readableVersionId]).
      * Creates a single minimal document JSON placeholder version when the bookmark has none yet.
      */
-    fun ensurePdfDocmarkHighlightReadableVersionIfNeeded(bookmarkId: String) {
+    fun ensurePdfDocmarkAnnotationReadableVersionIfNeeded(bookmarkId: String) {
         CoreOperationQueue.queue("EnsurePdfReadable:$bookmarkId") {
             val existing = readableVersionDao.getByBookmarkId(bookmarkId)
             if (existing.isNotEmpty()) return@queue
@@ -66,7 +66,7 @@ object ReadableContentManager {
 
     /**
      * Writes or overwrites readable version JSON at `/readable/<versionId>.json` (notemark mirror,
-     * linkmarks after embedding `yabaHighlight` marks, etc.).
+     * linkmarks after embedding `yabaAnnotation` marks, etc.).
      */
     suspend fun syncNotemarkReadableMirror(
         bookmarkId: String,
@@ -176,8 +176,8 @@ object ReadableContentManager {
 
     fun observeReadableVersions(bookmarkId: String): Flow<List<ReadableVersionUiModel>> {
         val versionsFlow = readableVersionDao.observeByBookmarkId(bookmarkId)
-        val highlightsFlow = highlightDao.observeByBookmarkId(bookmarkId)
-        return combine(versionsFlow, highlightsFlow) { versions, _ ->
+        val annotationsFlow = annotationDao.observeByBookmarkId(bookmarkId)
+        return combine(versionsFlow, annotationsFlow) { versions, _ ->
             versions
         }.map { versions ->
             coroutineScope {
@@ -194,7 +194,7 @@ object ReadableContentManager {
     ): ReadableVersionUiModel {
         val bodyContent = readVersionByPath(versionEntity.relativePath)
         val assets = readableAssetDao.getByBookmarkId(bookmarkId)
-        val highlights = highlightDao.getByBookmarkId(bookmarkId, readableVersionId = versionEntity.id)
+        val annotations = annotationDao.getByBookmarkId(bookmarkId, readableVersionId = versionEntity.id)
 
         val assetsUi = mutableListOf<ReadableAssetUiModel>()
         assets.forEach { entity ->
@@ -207,26 +207,25 @@ object ReadableContentManager {
             )
         }
 
-        val highlightsUi = highlights.map { it.toHighlightUiModel() }
+        val annotationsUi = annotations.map { it.toAnnotationUiModel() }
 
         return ReadableVersionUiModel(
             versionId = versionEntity.id,
             createdAt = versionEntity.createdAt,
             body = bodyContent,
             assets = assetsUi,
-            highlights = highlightsUi,
+            annotations = annotationsUi,
         )
     }
 
-    private fun HighlightEntity.toHighlightUiModel(): HighlightUiModel =
-        HighlightUiModel(
+    private fun AnnotationEntity.toAnnotationUiModel(): AnnotationUiModel =
+        AnnotationUiModel(
             id = id,
             type = type,
             colorRole = colorRole,
             note = note,
             quoteText = quoteText,
             extrasJson = extrasJson,
-            absolutePath = null,
             createdAt = createdAt,
             editedAt = editedAt,
         )

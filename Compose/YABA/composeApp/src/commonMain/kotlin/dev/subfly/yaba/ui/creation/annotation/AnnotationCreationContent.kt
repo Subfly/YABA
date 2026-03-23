@@ -1,4 +1,4 @@
-package dev.subfly.yaba.ui.creation.highlight
+package dev.subfly.yaba.ui.creation.annotation
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
@@ -46,11 +46,11 @@ import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.ResultStoreKeys
-import dev.subfly.yabacore.model.highlight.HighlightReadableCreateRequest
-import dev.subfly.yabacore.model.highlight.HighlightType
-import dev.subfly.yabacore.model.highlight.ReadableSelectionDraft
+import dev.subfly.yabacore.model.annotation.AnnotationReadableCreateRequest
+import dev.subfly.yabacore.model.annotation.AnnotationType
+import dev.subfly.yabacore.model.annotation.ReadableSelectionDraft
 import dev.subfly.yabacore.model.utils.YabaColor
-import dev.subfly.yabacore.state.creation.highlight.HighlightCreationEvent
+import dev.subfly.yabacore.state.creation.annotation.AnnotationCreationEvent
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.icon.iconTintArgb
 import org.jetbrains.compose.resources.stringResource
@@ -60,38 +60,38 @@ import yaba.composeapp.generated.resources.done
 
 // TODO: LOCALIZATIONS
 @Composable
-fun HighlightCreationContent(
+fun AnnotationCreationContent(
     bookmarkId: String,
     selectionDraft: ReadableSelectionDraft? = null,
-    highlightId: String? = null,
+    annotationId: String? = null,
 ) {
     val creationNavigator = LocalCreationContentNavigator.current
     val appStateManager = LocalAppStateManager.current
     val resultStore = LocalResultStore.current
 
-    val vm = viewModel { HighlightCreationVM() }
+    val vm = viewModel { AnnotationCreationVM() }
     val state by vm.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(selectionDraft) {
         selectionDraft?.let { draft ->
-            vm.onEvent(HighlightCreationEvent.OnInitWithSelection(draft = draft))
+            vm.onEvent(AnnotationCreationEvent.OnInitWithSelection(draft = draft))
         }
     }
 
-    LaunchedEffect(highlightId) {
-        highlightId?.let { id ->
+    LaunchedEffect(annotationId) {
+        annotationId?.let { id ->
             vm.onEvent(
-                HighlightCreationEvent.OnInitWithHighlight(
+                AnnotationCreationEvent.OnInitWithAnnotation(
                     bookmarkId = bookmarkId,
-                    highlightId = id,
-                )
+                    annotationId = id,
+                ),
             )
         }
     }
 
     LaunchedEffect(resultStore.getResult(ResultStoreKeys.SELECTED_COLOR)) {
         resultStore.getResult<YabaColor>(ResultStoreKeys.SELECTED_COLOR)?.let { newColor ->
-            vm.onEvent(HighlightCreationEvent.OnSelectNewColor(newColor = newColor))
+            vm.onEvent(AnnotationCreationEvent.OnSelectNewColor(newColor = newColor))
             resultStore.removeResult(ResultStoreKeys.SELECTED_COLOR)
         }
     }
@@ -100,7 +100,7 @@ fun HighlightCreationContent(
         modifier = Modifier
             .fillMaxWidth()
             .background(color = MaterialTheme.colorScheme.surfaceContainerLow)
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(rememberScrollState()),
     ) {
         TopBar(
             modifier = Modifier.padding(horizontal = 8.dp),
@@ -112,7 +112,7 @@ fun HighlightCreationContent(
                 when {
                     state.isEditing || state.selectionDraft?.pdfAnchor != null -> {
                         vm.onEvent(
-                            HighlightCreationEvent.OnSave(
+                            AnnotationCreationEvent.OnSave(
                                 onSavedCallback = {
                                     if (creationNavigator.size == 2) {
                                         appStateManager.onHideCreationContent()
@@ -125,8 +125,8 @@ fun HighlightCreationContent(
                     }
                     state.selectionDraft != null -> {
                         resultStore.setResult(
-                            ResultStoreKeys.HIGHLIGHT_READABLE_CREATE_REQUEST,
-                            HighlightReadableCreateRequest(
+                            ResultStoreKeys.ANNOTATION_READABLE_CREATE_REQUEST,
+                            AnnotationReadableCreateRequest(
                                 selectionDraft = state.selectionDraft!!,
                                 colorRole = state.selectedColor,
                                 note = state.note.ifBlank { null },
@@ -166,9 +166,9 @@ fun HighlightCreationContent(
                     ColorSelectionRoute(
                         selectedColor = state.selectedColor,
                         allowTransparent = false,
-                    )
+                    ),
                 )
-            }
+            },
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -184,15 +184,15 @@ fun HighlightCreationContent(
             ),
             enabled = !state.isLoading,
             value = state.note,
-            onValueChange = { vm.onEvent(HighlightCreationEvent.OnChangeNote(it)) },
+            onValueChange = { vm.onEvent(AnnotationCreationEvent.OnChangeNote(it)) },
             shape = RoundedCornerShape(12.dp),
-            placeholder = { Text(text = "Annotation...") },
+            placeholder = { Text(text = "Note…") },
             leadingIcon = {
                 YabaIcon(
                     name = "paragraph",
                     color = state.selectedColor,
                 )
-            }
+            },
         )
 
         if (state.isEditing) {
@@ -202,11 +202,10 @@ fun HighlightCreationContent(
                     .padding(horizontal = 12.dp)
                     .align(Alignment.CenterHorizontally),
                 onClick = {
-                    val highlight = state.highlight
+                    val annotation = state.annotation
                     when {
-                        highlight != null &&
-                            (highlight.type == HighlightType.READABLE || highlight.type == HighlightType.NOTE) -> {
-                            resultStore.setResult(ResultStoreKeys.HIGHLIGHT_READABLE_DELETE_REQUEST, highlight.id)
+                        annotation != null && annotation.type == AnnotationType.READABLE -> {
+                            resultStore.setResult(ResultStoreKeys.ANNOTATION_READABLE_DELETE_REQUEST, annotation.id)
                             if (creationNavigator.size == 2) {
                                 appStateManager.onHideCreationContent()
                             }
@@ -214,7 +213,7 @@ fun HighlightCreationContent(
                         }
                         else -> {
                             vm.onEvent(
-                                HighlightCreationEvent.OnDelete(
+                                AnnotationCreationEvent.OnDelete(
                                     onDeletedCallback = {
                                         if (creationNavigator.size == 2) {
                                             appStateManager.onHideCreationContent()
@@ -233,7 +232,7 @@ fun HighlightCreationContent(
             ) {
                 YabaIcon(name = "delete-02", color = YabaColor.RED)
                 Spacer(modifier = Modifier.size(8.dp))
-                Text(text = "Delete Highlight", color = Color(YabaColor.RED.iconTintArgb()))
+                Text(text = "Delete Annotation", color = Color(YabaColor.RED.iconTintArgb()))
             }
         }
 
@@ -290,9 +289,9 @@ private fun TopBar(
         title = {
             Text(
                 text = if (isEditing) {
-                    "Edit Highlight"
+                    "Edit Annotation"
                 } else {
-                    "Create Highlight"
+                    "Create Annotation"
                 },
             )
         },
@@ -359,7 +358,7 @@ private fun ColorSelectionContent(
                 .border(
                     width = 2.dp,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    shape = CircleShape
+                    shape = CircleShape,
                 )
                 .clip(CircleShape)
                 .clickable(onClick = onPressed),

@@ -5,7 +5,7 @@ package dev.subfly.yaba.core.navigation.creation
 import androidx.navigation3.runtime.NavKey
 import androidx.savedstate.serialization.SavedStateConfiguration
 import dev.subfly.yabacore.icons.IconSubcategory
-import dev.subfly.yabacore.model.highlight.ReadableSelectionDraft
+import dev.subfly.yabacore.model.annotation.ReadableSelectionDraft
 import dev.subfly.yabacore.model.utils.FolderSelectionMode
 import dev.subfly.yabacore.model.utils.YabaColor
 import kotlinx.serialization.Serializable
@@ -30,7 +30,7 @@ val creationNavigationConfig = SavedStateConfiguration {
             subclass(IconSelectionRoute::class, IconSelectionRoute.serializer())
             subclass(ColorSelectionRoute::class, ColorSelectionRoute.serializer())
             subclass(ImageSelectionRoute::class, ImageSelectionRoute.serializer())
-            subclass(HighlightCreationRoute::class, HighlightCreationRoute.serializer())
+            subclass(AnnotationCreationRoute::class, AnnotationCreationRoute.serializer())
             subclass(NotemarkTableCreationRoute::class, NotemarkTableCreationRoute.serializer())
             subclass(NotemarkMathSheetRoute::class, NotemarkMathSheetRoute.serializer())
             subclass(EmptyCretionRoute::class, EmptyCretionRoute.serializer())
@@ -122,11 +122,11 @@ data class ColorSelectionRoute(
 ): NavKey
 
 @Serializable
-data class HighlightCreationRoute(
+data class AnnotationCreationRoute(
     val routeId: String = Uuid.generateV4().toString(),
     val bookmarkId: String,
     val selectionDraft: ReadableSelectionDraft? = null,
-    val highlightId: String? = null,
+    val annotationId: String? = null,
 ): NavKey
 
 @Serializable

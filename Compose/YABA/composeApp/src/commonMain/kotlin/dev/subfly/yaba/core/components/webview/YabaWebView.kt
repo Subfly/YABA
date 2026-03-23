@@ -25,7 +25,7 @@ fun YabaWebView(
     onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit = {},
     onReaderBridgeReady: (WebViewReaderBridge?) -> Unit = {},
     onEditorBridgeReady: (WebViewEditorBridge?) -> Unit = {},
-    onHighlightTap: (String) -> Unit = {},
+    onAnnotationTap: (String) -> Unit = {},
     onMathTap: (MathTapEvent) -> Unit = {},
 ) {
     YabaWebViewHost(
@@ -37,7 +37,7 @@ fun YabaWebView(
         onScrollDirectionChanged = onScrollDirectionChanged,
         onReaderBridgeReady = onReaderBridgeReady,
         onEditorBridgeReady = onEditorBridgeReady,
-        onHighlightTap = onHighlightTap,
+        onAnnotationTap = onAnnotationTap,
         onMathTap = onMathTap,
     )
 }
@@ -52,6 +52,6 @@ internal expect fun YabaWebViewHost(
     onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit,
     onReaderBridgeReady: (WebViewReaderBridge?) -> Unit,
     onEditorBridgeReady: (WebViewEditorBridge?) -> Unit,
-    onHighlightTap: (String) -> Unit,
+    onAnnotationTap: (String) -> Unit,
     onMathTap: (MathTapEvent) -> Unit,
 )

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback } from "react"
 import { EditorProvider, useCurrentEditor } from "@tiptap/react"
-import { createEditorExtensions } from "./editor-extensions"
+import { createNoteEditorExtensions, createViewerRichTextExtensions } from "./editor-extensions"
 import "./tiptap-styles.css"
 
 const EMPTY_DOC = { type: "doc" as const, content: [] }
@@ -12,8 +12,12 @@ const IMAGE_NOT_FOUND_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 
   <path d="M3 16L7.50036 11.5004M21 16L18.5303 13.5303C18.1908 13.1908 17.7302 13 17.25 13C16.7698 13 16.3092 13.1908 15.9697 13.5303L14.75 14.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`
 
+export type TiptapShellVariant = "viewer" | "editor"
+
 interface TiptapEditorViewProps {
   editable: boolean
+  /** `viewer`: persisted annotations; `editor`: TipTap native text highlights (`<mark>`). */
+  variant?: TiptapShellVariant
   /** TipTap/ProseMirror JSON document as string. */
   initialDocumentJson?: string
   onEditorReady?: (editor: import("@tiptap/core").Editor) => void
@@ -112,13 +116,15 @@ function EditorReadyNotifier({
 
 export function TiptapEditorView({
   editable,
+  variant = "viewer",
   initialDocumentJson,
   onEditorReady,
   assetsBaseUrl,
 }: TiptapEditorViewProps) {
   const content = parseInitialContent(initialDocumentJson, assetsBaseUrl)
 
-  const extensions = createEditorExtensions()
+  const extensions =
+    variant === "editor" ? createNoteEditorExtensions() : createViewerRichTextExtensions()
 
   return (
     <div className="yaba-editor-container" data-yaba-editor-root>

@@ -5,5 +5,5 @@ internal enum class DocmarkDetailPage(
     val label: String,
 ) {
     INFO(iconName = "information-circle", label = "Info"),
-    HIGHLIGHTS(iconName = "highlighter", label = "Highlights"),
+    ANNOTATIONS(iconName = "sticky-note-03", label = "Annotations"),
 }

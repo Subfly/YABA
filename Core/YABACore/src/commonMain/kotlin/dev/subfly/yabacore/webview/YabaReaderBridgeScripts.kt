@@ -56,11 +56,11 @@ object YabaEditorBridgeScripts {
         })();
         """.trimIndent()
 
-    fun getCanCreateHighlightScript(): String =
+    fun getCanCreateAnnotationScript(): String =
         """
         (function() {
             try {
-                return !!(window.YabaEditorBridge && window.YabaEditorBridge.getCanCreateHighlight && window.YabaEditorBridge.getCanCreateHighlight());
+                return !!(window.YabaEditorBridge && window.YabaEditorBridge.getCanCreateAnnotation && window.YabaEditorBridge.getCanCreateAnnotation());
             } catch(e) { return false; }
         })();
         """.trimIndent()
@@ -78,13 +78,13 @@ object YabaEditorBridgeScripts {
         })();
         """.trimIndent()
 
-    fun scrollToHighlightScript(highlightId: String): String {
-        val escaped = escapeForJsSingleQuotedString(highlightId)
+    fun scrollToAnnotationScript(annotationId: String): String {
+        val escaped = escapeForJsSingleQuotedString(annotationId)
         return """
         (function() {
             try {
-                if (window.YabaEditorBridge && window.YabaEditorBridge.scrollToHighlight) {
-                    window.YabaEditorBridge.scrollToHighlight('$escaped');
+                if (window.YabaEditorBridge && window.YabaEditorBridge.scrollToAnnotation) {
+                    window.YabaEditorBridge.scrollToAnnotation('$escaped');
                 }
             } catch(e) {}
         })();
@@ -153,29 +153,29 @@ object YabaEditorBridgeScripts {
         """.trimIndent()
 
     /**
-     * [highlightsJsonEscaped] must be safe inside a single-quoted JS string (use [escapeForJsSingleQuotedString] on JSON text).
+     * [annotationsJsonEscaped] must be safe inside a single-quoted JS string (use [escapeForJsSingleQuotedString] on JSON text).
      */
-    fun setHighlightsJsonParseScript(highlightsJsonEscaped: String): String =
+    fun setAnnotationsJsonParseScript(annotationsJsonEscaped: String): String =
         """
         (function() {
             try {
-                var json = JSON.parse('$highlightsJsonEscaped');
-                if (window.YabaEditorBridge && window.YabaEditorBridge.setHighlights) {
-                    window.YabaEditorBridge.setHighlights(JSON.stringify(json));
+                var json = JSON.parse('$annotationsJsonEscaped');
+                if (window.YabaEditorBridge && window.YabaEditorBridge.setAnnotations) {
+                    window.YabaEditorBridge.setAnnotations(JSON.stringify(json));
                 }
             } catch(e) {}
         })();
         """.trimIndent()
 
-    fun installHighlightTapScript(): String {
+    fun installAnnotationTapScript(): String {
         val prefix =
             escapeForJsSingleQuotedString(
-                YabaWebBridgeScripts.HIGHLIGHT_TAP_SCHEME_PREFIX + "id=",
+                YabaWebBridgeScripts.ANNOTATION_TAP_SCHEME_PREFIX + "id=",
             )
         return """
         (function() {
             if (window.YabaEditorBridge) {
-                window.YabaEditorBridge.onHighlightTap = function(id) {
+                window.YabaEditorBridge.onAnnotationTap = function(id) {
                     if (id) window.location = '$prefix' + encodeURIComponent(id);
                 };
             }
@@ -195,13 +195,13 @@ object YabaEditorBridgeScripts {
         })();
         """.trimIndent()
 
-    fun applyHighlightToSelectionScript(highlightId: String): String {
-        val escaped = escapeForJsSingleQuotedString(highlightId)
+    fun applyAnnotationToSelectionScript(annotationId: String): String {
+        val escaped = escapeForJsSingleQuotedString(annotationId)
         return """
         (function() {
             try {
-                if (window.YabaEditorBridge && window.YabaEditorBridge.applyHighlightToSelection) {
-                    return window.YabaEditorBridge.applyHighlightToSelection('$escaped') ? 'true' : 'false';
+                if (window.YabaEditorBridge && window.YabaEditorBridge.applyAnnotationToSelection) {
+                    return window.YabaEditorBridge.applyAnnotationToSelection('$escaped') ? 'true' : 'false';
                 }
             } catch(e) {}
             return 'false';
@@ -209,13 +209,13 @@ object YabaEditorBridgeScripts {
         """.trimIndent()
     }
 
-    fun removeHighlightFromDocumentScript(highlightId: String): String {
-        val escaped = escapeForJsSingleQuotedString(highlightId)
+    fun removeAnnotationFromDocumentScript(annotationId: String): String {
+        val escaped = escapeForJsSingleQuotedString(annotationId)
         return """
         (function() {
             try {
-                if (window.YabaEditorBridge && window.YabaEditorBridge.removeHighlightFromDocument) {
-                    return String(window.YabaEditorBridge.removeHighlightFromDocument('$escaped'));
+                if (window.YabaEditorBridge && window.YabaEditorBridge.removeAnnotationFromDocument) {
+                    return String(window.YabaEditorBridge.removeAnnotationFromDocument('$escaped'));
                 }
             } catch(e) {}
             return '0';
@@ -288,22 +288,22 @@ object YabaPdfReaderBridgeScripts {
         })();
         """.trimIndent()
 
-    fun getCanCreateHighlightScript(): String =
+    fun getCanCreateAnnotationScript(): String =
         """
         (function() {
             try {
-                return !!(window.YabaPdfBridge && window.YabaPdfBridge.getCanCreateHighlight && window.YabaPdfBridge.getCanCreateHighlight());
+                return !!(window.YabaPdfBridge && window.YabaPdfBridge.getCanCreateAnnotation && window.YabaPdfBridge.getCanCreateAnnotation());
             } catch(e) { return false; }
         })();
         """.trimIndent()
 
-    fun scrollToHighlightScript(highlightId: String): String {
-        val escaped = escapeForJsSingleQuotedString(highlightId)
+    fun scrollToAnnotationScript(annotationId: String): String {
+        val escaped = escapeForJsSingleQuotedString(annotationId)
         return """
         (function() {
             try {
-                if (window.YabaPdfBridge && window.YabaPdfBridge.scrollToHighlight) {
-                    window.YabaPdfBridge.scrollToHighlight('$escaped');
+                if (window.YabaPdfBridge && window.YabaPdfBridge.scrollToAnnotation) {
+                    window.YabaPdfBridge.scrollToAnnotation('$escaped');
                 }
             } catch(e) {}
         })();
@@ -350,28 +350,28 @@ object YabaPdfReaderBridgeScripts {
         """.trimIndent()
 
     /**
-     * [highlightsJsonEscaped] must be safe inside a single-quoted JS string.
+     * [annotationsJsonEscaped] must be safe inside a single-quoted JS string.
      */
-    fun setHighlightsStringArgScript(highlightsJsonEscaped: String): String =
+    fun setAnnotationsStringArgScript(annotationsJsonEscaped: String): String =
         """
         (function() {
             try {
-                if (window.YabaPdfBridge && window.YabaPdfBridge.setHighlights) {
-                    window.YabaPdfBridge.setHighlights('$highlightsJsonEscaped');
+                if (window.YabaPdfBridge && window.YabaPdfBridge.setAnnotations) {
+                    window.YabaPdfBridge.setAnnotations('$annotationsJsonEscaped');
                 }
             } catch(e) {}
         })();
         """.trimIndent()
 
-    fun installHighlightTapScript(): String {
+    fun installAnnotationTapScript(): String {
         val prefix =
             escapeForJsSingleQuotedString(
-                YabaWebBridgeScripts.HIGHLIGHT_TAP_SCHEME_PREFIX + "id=",
+                YabaWebBridgeScripts.ANNOTATION_TAP_SCHEME_PREFIX + "id=",
             )
         return """
         (function() {
             if (window.YabaPdfBridge) {
-                window.YabaPdfBridge.onHighlightTap = function(id) {
+                window.YabaPdfBridge.onAnnotationTap = function(id) {
                     if (id) window.location = '$prefix' + encodeURIComponent(id);
                 };
             }

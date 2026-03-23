@@ -407,8 +407,10 @@ body[data-yaba-page="editor"]
 	color: var(--yaba-on-primary-container);
 }
 
-/* Saved highlight decorations */
-.yaba-editor-container .ProseMirror .yaba-highlight {
+/* Persisted annotation decorations + TipTap native text highlights */
+.yaba-editor-container .ProseMirror .yaba-highlight,
+.yaba-editor-container .ProseMirror .yaba-annotation-decoration,
+.yaba-editor-container .ProseMirror mark.yaba-editor-text-highlight {
 	border-radius: 2px;
 	cursor: pointer;
 }

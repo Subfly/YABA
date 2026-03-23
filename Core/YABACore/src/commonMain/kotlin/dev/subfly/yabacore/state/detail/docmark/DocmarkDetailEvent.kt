@@ -7,9 +7,9 @@ sealed interface DocmarkDetailEvent {
     data object OnDeleteBookmark : DocmarkDetailEvent
     data object OnSharePdf : DocmarkDetailEvent
     data object OnExportPdf : DocmarkDetailEvent
-    data class OnDeleteHighlight(val highlightId: String) : DocmarkDetailEvent
-    data class OnScrollToHighlight(val highlightId: String) : DocmarkDetailEvent
-    data object OnClearScrollToHighlight : DocmarkDetailEvent
+    data class OnDeleteAnnotation(val annotationId: String) : DocmarkDetailEvent
+    data class OnScrollToAnnotation(val annotationId: String) : DocmarkDetailEvent
+    data object OnClearScrollToAnnotation : DocmarkDetailEvent
     data object OnRequestNotificationPermission : DocmarkDetailEvent
     data class OnScheduleReminder(
         val title: PlatformNotificationText,

@@ -31,7 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.webview.YabaWebView
-import dev.subfly.yaba.core.navigation.creation.HighlightCreationRoute
+import dev.subfly.yaba.core.navigation.creation.AnnotationCreationRoute
 import dev.subfly.yaba.ui.detail.bookmark.components.BookmarkDetailContentTopBar
 import dev.subfly.yaba.ui.detail.bookmark.util.bookmarkDetailIconButtonColors
 import dev.subfly.yaba.ui.detail.bookmark.components.bookmarkFolderAccentColor
@@ -102,11 +102,11 @@ internal fun DocmarkContentLayout(
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             if (hasReaderContent) {
-                LaunchedEffect(state.scrollToHighlightId) {
-                    val highlightId = state.scrollToHighlightId ?: return@LaunchedEffect
+                LaunchedEffect(state.scrollToAnnotationId) {
+                    val annotationId = state.scrollToAnnotationId ?: return@LaunchedEffect
                     val bridge = readerBridge ?: return@LaunchedEffect
-                    bridge.scrollToHighlight(highlightId)
-                    onEvent(DocmarkDetailEvent.OnClearScrollToHighlight)
+                    bridge.scrollToAnnotation(annotationId)
+                    onEvent(DocmarkDetailEvent.OnClearScrollToAnnotation)
                 }
 
                 DocmarkReaderFloatingToolbar(
@@ -126,7 +126,7 @@ internal fun DocmarkContentLayout(
                             readerBridge?.nextPage()
                         }
                     },
-                    onHighlightClick = {
+                    onAnnotationClick = {
                         val bridge = readerBridge ?: return@DocmarkReaderFloatingToolbar
                         val bookmarkId = state.bookmark?.id ?: return@DocmarkReaderFloatingToolbar
                         val readableVersionId =
@@ -134,10 +134,10 @@ internal fun DocmarkContentLayout(
                         scope.launch {
                             val draft = bridge.getSelectionSnapshot(bookmarkId, readableVersionId)
                             creationNavigator.add(
-                                HighlightCreationRoute(
+                                AnnotationCreationRoute(
                                     bookmarkId = bookmarkId,
                                     selectionDraft = draft,
-                                    highlightId = null,
+                                    annotationId = null,
                                 ),
                             )
                             appStateManager.onShowCreationContent()
@@ -152,12 +152,12 @@ internal fun DocmarkContentLayout(
                         pdfUrl = state.pdfAbsolutePath ?: "",
                         platform = YabaWebPlatform.Compose,
                         appearance = appearance,
-                        highlights = state.highlights,
+                        annotations = state.annotations,
                     ),
                     onHostEvent = { ev ->
                         when (ev) {
                             is YabaWebHostEvent.ReaderMetrics -> {
-                                hasSelection = ev.canCreateHighlight
+                                hasSelection = ev.canCreateAnnotation
                                 currentPage = ev.currentPage
                                 pageCount = ev.pageCount.coerceAtLeast(1)
                             }
@@ -170,13 +170,13 @@ internal fun DocmarkContentLayout(
                         if (direction == YabaWebScrollDirection.Up) isToolbarVisible = true
                     },
                     onReaderBridgeReady = { bridge -> readerBridge = bridge },
-                    onHighlightTap = { highlightId ->
+                    onAnnotationTap = { annotationId ->
                         val bookmarkId = state.bookmark?.id ?: return@YabaWebView
                         creationNavigator.add(
-                            HighlightCreationRoute(
+                            AnnotationCreationRoute(
                                 bookmarkId = bookmarkId,
                                 selectionDraft = null,
-                                highlightId = highlightId,
+                                annotationId = annotationId,
                             ),
                         )
                         appStateManager.onShowCreationContent()

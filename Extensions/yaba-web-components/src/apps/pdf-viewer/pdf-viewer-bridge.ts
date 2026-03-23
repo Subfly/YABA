@@ -8,7 +8,7 @@ import {
 import YabaPdfViewerApp from "./YabaPdfViewerApp"
 import { pdfBridgeRuntime } from "./pdf-bridge-runtime"
 import {
-  getCanCreateHighlightFromRoot,
+  getCanCreateAnnotationFromRoot,
   getSelectionSnapshotFromRoot,
   type PdfHighlightForRendering,
   type PdfSelectionSnapshot,
@@ -20,16 +20,16 @@ interface YabaPdfBridge {
   isReady: () => boolean
   setPdfUrl: (pdfUrl: string) => boolean
   getSelectionSnapshot: () => PdfSelectionSnapshot | null
-  getCanCreateHighlight: () => boolean
-  setHighlights: (highlightsJson: string) => void
-  scrollToHighlight: (highlightId: string) => void
+  getCanCreateAnnotation: () => boolean
+  setAnnotations: (annotationsJson: string) => void
+  scrollToAnnotation: (annotationId: string) => void
   getCurrentPageNumber: () => number
   getPageCount: () => number
   nextPage: () => boolean
   prevPage: () => boolean
   setPlatform: (platform: Platform) => void
   setAppearance: (appearance: AppearanceMode) => void
-  onHighlightTap?: (id: string) => void
+  onAnnotationTap?: (id: string) => void
 }
 
 let isReady = false
@@ -86,15 +86,15 @@ export function initPdfViewerBridge(
       if (!root) return null
       return getSelectionSnapshotFromRoot(root)
     },
-    getCanCreateHighlight(): boolean {
+    getCanCreateAnnotation(): boolean {
       const root = document.getElementById("pdf-root")
       if (!root) return false
-      return getCanCreateHighlightFromRoot(root, currentHighlights)
+      return getCanCreateAnnotationFromRoot(root, currentHighlights)
     },
-    setHighlights(highlightsJson: string): void {
+    setAnnotations(annotationsJson: string): void {
       try {
-        const parsed = highlightsJson.trim().length > 0
-          ? (JSON.parse(highlightsJson) as PdfHighlightForRendering[])
+        const parsed = annotationsJson.trim().length > 0
+          ? (JSON.parse(annotationsJson) as PdfHighlightForRendering[])
           : []
         currentHighlights = parsed
       } catch {
@@ -102,14 +102,14 @@ export function initPdfViewerBridge(
       }
       pushHighlightsToReact(currentHighlights)
     },
-    scrollToHighlight(highlightId: string): void {
-      const lib = pdfBridgeRuntime.lastLibHighlights.find((h) => h.id === highlightId)
+    scrollToAnnotation(annotationId: string): void {
+      const lib = pdfBridgeRuntime.lastLibHighlights.find((h) => h.id === annotationId)
       const scroll = pdfBridgeRuntime.scrollToLib
       if (lib && scroll) {
         scroll(lib)
         return
       }
-      const safeId = highlightId.replace(/\\/g, "\\\\").replace(/"/g, '\\"')
+      const safeId = annotationId.replace(/\\/g, "\\\\").replace(/"/g, '\\"')
       const el = document.querySelector(
         `[data-highlight-id="${safeId}"]`,
       ) as HTMLElement | null

@@ -1,7 +1,7 @@
 package dev.subfly.yabacore.webview
 
 /**
- * Rich-text editor WebView: JSON document I/O, formatting commands, plus the same highlight/selection
+ * Rich-text editor WebView: JSON document I/O, formatting commands, plus the same annotation/selection
  * surface as [WebViewReaderBridge] for the readable mirror.
  */
 interface WebViewEditorBridge : WebViewReaderBridge {

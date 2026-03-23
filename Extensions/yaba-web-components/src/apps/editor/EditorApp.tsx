@@ -12,6 +12,7 @@ function EditorApp() {
     >
       <TiptapEditorView
         editable={editable}
+        variant="editor"
         onEditorReady={initEditorBridge}
         assetsBaseUrl={undefined}
       />

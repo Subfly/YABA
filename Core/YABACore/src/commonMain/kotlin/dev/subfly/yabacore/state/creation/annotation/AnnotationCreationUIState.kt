@@ -1,25 +1,25 @@
-package dev.subfly.yabacore.state.creation.highlight
+package dev.subfly.yabacore.state.creation.annotation
 
-import dev.subfly.yabacore.model.highlight.ReadableSelectionDraft
-import dev.subfly.yabacore.model.ui.HighlightUiModel
+import dev.subfly.yabacore.model.annotation.ReadableSelectionDraft
+import dev.subfly.yabacore.model.ui.AnnotationUiModel
 import dev.subfly.yabacore.model.utils.YabaColor
 
-data class HighlightCreationUIState(
+data class AnnotationCreationUIState(
     /** Selection draft when creating from reader. Null when editing. */
     val selectionDraft: ReadableSelectionDraft? = null,
-    /** Existing highlight when editing. Null when creating. */
-    val highlight: HighlightUiModel? = null,
-    /** BookmarkId when editing (from OnInitWithHighlight). */
+    /** Existing annotation when editing. Null when creating. */
+    val annotation: AnnotationUiModel? = null,
+    /** BookmarkId when editing (from OnInitWithAnnotation). */
     val bookmarkIdForEdit: String? = null,
     val selectedColor: YabaColor = YabaColor.YELLOW,
     val note: String = "",
     val isLoading: Boolean = false,
     val isSaving: Boolean = false,
 ) {
-    val isEditing: Boolean get() = highlight != null
+    val isEditing: Boolean get() = annotation != null
     val quoteText: String
         get() = selectionDraft?.quote?.displayText
-            ?: highlight?.quoteText
+            ?: annotation?.quoteText
             ?: ""
 
     val bookmarkId: String?
@@ -28,7 +28,7 @@ data class HighlightCreationUIState(
     /** Enough to save: editing, or new PDF/rich selection with quote (or PDF anchor). */
     val hasValidSelection: Boolean
         get() = when {
-            highlight != null -> true
+            annotation != null -> true
             selectionDraft != null ->
                 selectionDraft.quote.displayText.isNotBlank() ||
                     selectionDraft.pdfAnchor != null

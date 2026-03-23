@@ -9,7 +9,7 @@ sealed interface YabaWebHostEvent {
      * Reader metrics for toolbar UI; emitted when values change (reduces Compose-side polling).
      */
     data class ReaderMetrics(
-        val canCreateHighlight: Boolean,
+        val canCreateAnnotation: Boolean,
         val currentPage: Int,
         val pageCount: Int,
         /** Non-null when the host is the rich-text WebView editor; used for formatting toolbar toggles. */

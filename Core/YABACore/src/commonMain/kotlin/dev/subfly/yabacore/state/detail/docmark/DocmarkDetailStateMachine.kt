@@ -8,14 +8,13 @@ import dev.subfly.yabacore.filesystem.BookmarkFileManager
 import dev.subfly.yabacore.filesystem.access.YabaFileAccessor
 import dev.subfly.yabacore.managers.AllBookmarksManager
 import dev.subfly.yabacore.managers.DocmarkManager
-import dev.subfly.yabacore.managers.HighlightManager
+import dev.subfly.yabacore.managers.AnnotationManager
 import dev.subfly.yabacore.managers.ReadableContentManager
 import dev.subfly.yabacore.model.ui.BookmarkPreviewUiModel
 import dev.subfly.yabacore.notifications.NotificationManager
 import dev.subfly.yabacore.state.base.BaseStateMachine
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -38,9 +37,9 @@ class DocmarkDetailStateMachine : BaseStateMachine<DocmarkDetailUIState, Docmark
             DocmarkDetailEvent.OnDeleteBookmark -> onDeleteBookmark()
             DocmarkDetailEvent.OnSharePdf -> onSharePdf()
             DocmarkDetailEvent.OnExportPdf -> onExportPdf()
-            is DocmarkDetailEvent.OnDeleteHighlight -> onDeleteHighlight(event.highlightId)
-            is DocmarkDetailEvent.OnScrollToHighlight -> onScrollToHighlight(event.highlightId)
-            DocmarkDetailEvent.OnClearScrollToHighlight -> onClearScrollToHighlight()
+            is DocmarkDetailEvent.OnDeleteAnnotation -> onDeleteAnnotation(event.annotationId)
+            is DocmarkDetailEvent.OnScrollToAnnotation -> onScrollToAnnotation(event.annotationId)
+            DocmarkDetailEvent.OnClearScrollToAnnotation -> onClearScrollToAnnotation()
             DocmarkDetailEvent.OnRequestNotificationPermission -> {}
             is DocmarkDetailEvent.OnScheduleReminder -> onScheduleReminder(event)
             DocmarkDetailEvent.OnCancelReminder -> onCancelReminder()
@@ -59,7 +58,7 @@ class DocmarkDetailStateMachine : BaseStateMachine<DocmarkDetailUIState, Docmark
 
         /**
          * New docmarks may have no readable rows after creation-time readable save was removed.
-         * Highlight creation still needs a [ReadableVersionEntity] id; ensure a minimal placeholder once.
+         * Annotation creation still needs a [ReadableVersionEntity] id; ensure a minimal placeholder once.
          */
         launch {
             bookmarkIdFlow.flatMapLatest { id ->
@@ -75,7 +74,7 @@ class DocmarkDetailStateMachine : BaseStateMachine<DocmarkDetailUIState, Docmark
                 if (size == 0) {
                     val pdfPath = DocmarkManager.resolvePdfAbsolutePath(id)
                     if (pdfPath.isNullOrBlank().not()) {
-                        ReadableContentManager.ensurePdfDocmarkHighlightReadableVersionIfNeeded(id)
+                        ReadableContentManager.ensurePdfDocmarkAnnotationReadableVersionIfNeeded(id)
                     }
                 }
             }
@@ -106,7 +105,7 @@ class DocmarkDetailStateMachine : BaseStateMachine<DocmarkDetailUIState, Docmark
                                     summary = doc?.summary,
                                     pdfAbsolutePath = pdfPath,
                                     selectedReadableVersionId = selectedVersion?.versionId,
-                                    highlights = selectedVersion?.highlights ?: emptyList(),
+                                    annotations = selectedVersion?.annotations ?: emptyList(),
                                     isLoading = false,
                                 ),
                             )
@@ -120,7 +119,7 @@ class DocmarkDetailStateMachine : BaseStateMachine<DocmarkDetailUIState, Docmark
                         summary = newState.summary,
                         pdfAbsolutePath = newState.pdfAbsolutePath,
                         selectedReadableVersionId = newState.selectedReadableVersionId,
-                        highlights = newState.highlights,
+                        annotations = newState.annotations,
                         isLoading = newState.isLoading,
                     )
                 }
@@ -153,20 +152,20 @@ class DocmarkDetailStateMachine : BaseStateMachine<DocmarkDetailUIState, Docmark
         }
     }
 
-    private fun onDeleteHighlight(highlightId: String) {
+    private fun onDeleteAnnotation(annotationId: String) {
         val bookmarkId = bookmarkIdFlow.value ?: return
-        HighlightManager.deleteHighlight(
+        AnnotationManager.deleteAnnotation(
             bookmarkId = bookmarkId,
-            highlightId = highlightId,
+            annotationId = annotationId,
         )
     }
 
-    private fun onScrollToHighlight(highlightId: String) {
-        updateState { it.copy(scrollToHighlightId = highlightId) }
+    private fun onScrollToAnnotation(annotationId: String) {
+        updateState { it.copy(scrollToAnnotationId = annotationId) }
     }
 
-    private fun onClearScrollToHighlight() {
-        updateState { it.copy(scrollToHighlightId = null) }
+    private fun onClearScrollToAnnotation() {
+        updateState { it.copy(scrollToAnnotationId = null) }
     }
 
     private fun onScheduleReminder(event: DocmarkDetailEvent.OnScheduleReminder) {

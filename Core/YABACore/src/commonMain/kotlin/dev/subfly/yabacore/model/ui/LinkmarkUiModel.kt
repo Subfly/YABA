@@ -36,7 +36,7 @@ data class LinkmarkUiModel(
     val versionCount: Int
         get() = readableVersions.size
 
-    /** Total number of highlights across all versions */
-    val totalHighlightCount: Int
-        get() = readableVersions.sumOf { it.highlights.size }
+    /** Total number of annotations across all versions */
+    val totalAnnotationCount: Int
+        get() = readableVersions.sumOf { it.annotations.size }
 }

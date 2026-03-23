@@ -20,7 +20,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,7 +37,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.webview.YabaWebView
-import dev.subfly.yaba.core.navigation.creation.HighlightCreationRoute
 import dev.subfly.yaba.core.navigation.creation.NotemarkMathSheetRoute
 import dev.subfly.yaba.core.navigation.creation.NotemarkTableCreationRoute
 import dev.subfly.yaba.ui.detail.bookmark.components.BookmarkDetailContentTopBar
@@ -54,8 +52,6 @@ import dev.subfly.yaba.util.NotemarkMathSheetResult
 import dev.subfly.yaba.util.NotemarkTableSheetResult
 import dev.subfly.yaba.util.ResultStoreKeys
 import dev.subfly.yaba.util.rememberUrlLauncher
-import dev.subfly.yabacore.common.IdGenerator
-import dev.subfly.yabacore.model.highlight.HighlightReadableCreateRequest
 import dev.subfly.yabacore.model.utils.ReaderPreferences
 import dev.subfly.yabacore.state.detail.notemark.NotemarkDetailEvent
 import dev.subfly.yabacore.state.detail.notemark.NotemarkDetailUIState
@@ -97,7 +93,6 @@ internal fun NotemarkContentLayout(
     val appStateManager = LocalAppStateManager.current
     val resultStore = LocalResultStore.current
 
-    val appState by appStateManager.state.collectAsState()
     val scope = rememberCoroutineScope()
     val openUrl = rememberUrlLauncher()
     val awaitKeyboardClosedBeforeCreationSheet = rememberAwaitKeyboardClosedBeforeCreationSheet()
@@ -106,54 +101,6 @@ internal fun NotemarkContentLayout(
     var hasSelection by remember { mutableStateOf(false) }
     var editorFormatting by remember(state.bookmark?.id) { mutableStateOf(EditorFormattingState()) }
     var isMenuExpanded by remember { mutableStateOf(false) }
-    var previousShowCreationContent by remember { mutableStateOf(false) }
-
-    LaunchedEffect(appState.showCreationContent) {
-        val show = appState.showCreationContent
-        if (previousShowCreationContent && !show) {
-            val createReq = resultStore.getResult<HighlightReadableCreateRequest>(
-                ResultStoreKeys.HIGHLIGHT_READABLE_CREATE_REQUEST,
-            )
-            val deleteId = resultStore.getResult<String>(
-                ResultStoreKeys.HIGHLIGHT_READABLE_DELETE_REQUEST,
-            )
-
-            val bridge = editorBridge
-            when {
-                createReq != null && bridge != null -> {
-                    resultStore.removeResult(ResultStoreKeys.HIGHLIGHT_READABLE_CREATE_REQUEST)
-                    val highlightId = IdGenerator.newId()
-                    if (bridge.applyHighlightToSelection(highlightId)) {
-                        val json = bridge.getDocumentJson()
-                        onEvent(
-                            NotemarkDetailEvent.OnHighlightReadableCreateCommitted(
-                                highlightId = highlightId,
-                                request = createReq,
-                                documentJson = json,
-                            ),
-                        )
-                        bridge.focus()
-                    }
-                }
-                deleteId != null && bridge != null -> {
-                    resultStore.removeResult(ResultStoreKeys.HIGHLIGHT_READABLE_DELETE_REQUEST)
-                    bridge.removeHighlightFromDocument(deleteId)
-                    val json = bridge.getDocumentJson()
-                    onEvent(
-                        NotemarkDetailEvent.OnHighlightReadableDeleteCommitted(
-                            highlightId = deleteId,
-                            documentJson = json,
-                        ),
-                    )
-                    bridge.focus()
-                }
-                bridge != null -> {
-                    bridge.focus()
-                }
-            }
-        }
-        previousShowCreationContent = show
-    }
 
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
         val bridge = editorBridge ?: return@LifecycleEventEffect
@@ -173,13 +120,6 @@ internal fun NotemarkContentLayout(
                 onEvent(NotemarkDetailEvent.OnSave(documentJson = json))
             }
         }
-    }
-
-    LaunchedEffect(state.scrollToHighlightId) {
-        val highlightId = state.scrollToHighlightId ?: return@LaunchedEffect
-        val bridge = editorBridge ?: return@LaunchedEffect
-        bridge.scrollToHighlight(highlightId)
-        onEvent(NotemarkDetailEvent.OnClearScrollToHighlight)
     }
 
     LaunchedEffect(resultStore.getResult(ResultStoreKeys.NOTEMARK_TABLE_INSERT), editorBridge) {
@@ -246,7 +186,6 @@ internal fun NotemarkContentLayout(
                     feature = YabaWebFeature.Editor(
                         initialDocumentJson = state.initialDocumentJson.orEmpty(),
                         assetsBaseUrl = state.assetsBaseUrl,
-                        highlights = state.highlights,
                         platform = YabaWebPlatform.Compose,
                         appearance = webAppearance,
                         readerPreferences = ReaderPreferences(),
@@ -254,7 +193,7 @@ internal fun NotemarkContentLayout(
                     onHostEvent = { ev ->
                         when (ev) {
                             is YabaWebHostEvent.ReaderMetrics -> {
-                                hasSelection = ev.canCreateHighlight
+                                hasSelection = ev.canCreateAnnotation
                                 ev.editorFormatting?.let { editorFormatting = it }
                             }
 
@@ -265,20 +204,7 @@ internal fun NotemarkContentLayout(
                     onScrollDirectionChanged = { _ -> },
                     onReaderBridgeReady = {},
                     onEditorBridgeReady = { editorBridge = it },
-                    onHighlightTap = { highlightId ->
-                        val bookmarkId = state.bookmark?.id ?: return@YabaWebView
-                        scope.launch {
-                            awaitKeyboardClosedBeforeCreationSheet(editorBridge)
-                            creationNavigator.add(
-                                HighlightCreationRoute(
-                                    bookmarkId = bookmarkId,
-                                    selectionDraft = null,
-                                    highlightId = highlightId,
-                                ),
-                            )
-                            appStateManager.onShowCreationContent()
-                        }
-                    },
+                    onAnnotationTap = {},
                     onMathTap = { ev: MathTapEvent ->
                         scope.launch {
                             awaitKeyboardClosedBeforeCreationSheet(editorBridge)
@@ -347,25 +273,16 @@ internal fun NotemarkContentLayout(
                     if (ready) {
                         NotemarkEditorToolbar(
                             color = folderAccent,
-                            canCreateHighlight = hasSelection,
+                            canCreateTextHighlight = hasSelection,
                             formatting = editorFormatting,
-                            onHighlightClick = {
-                                val bridge = editorBridge ?: return@NotemarkEditorToolbar
-                                val bookmarkId =
-                                    state.bookmark?.id ?: return@NotemarkEditorToolbar
-                                val versionId =
-                                    state.readableVersionId ?: return@NotemarkEditorToolbar
+                            onSetTextHighlightColor = { color ->
                                 scope.launch {
-                                    val draft = bridge.getSelectionSnapshot(bookmarkId, versionId)
-                                    awaitKeyboardClosedBeforeCreationSheet(bridge)
-                                    creationNavigator.add(
-                                        HighlightCreationRoute(
-                                            bookmarkId = bookmarkId,
-                                            selectionDraft = draft,
-                                            highlightId = null,
-                                        ),
-                                    )
-                                    appStateManager.onShowCreationContent()
+                                    editorBridge?.dispatch(YabaEditorCommands.setTextHighlightPayload(color))
+                                }
+                            },
+                            onRemoveTextHighlight = {
+                                scope.launch {
+                                    editorBridge?.dispatch(YabaEditorCommands.UnsetTextHighlight)
                                 }
                             },
                             onDispatchCommand = { payload ->

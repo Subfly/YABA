@@ -18,7 +18,7 @@ import dev.subfly.yaba.ui.creation.bookmark.imagemark.ImagemarkCreationContent
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.LinkmarkCreationContent
 import dev.subfly.yaba.ui.creation.bookmark.notemark.NotemarkCreationContent
 import dev.subfly.yaba.ui.creation.folder.FolderCreationContent
-import dev.subfly.yaba.ui.creation.highlight.HighlightCreationContent
+import dev.subfly.yaba.ui.creation.annotation.AnnotationCreationContent
 import dev.subfly.yaba.ui.creation.notemark.math.NotemarkMathCreationContent
 import dev.subfly.yaba.ui.creation.notemark.table.NotemarkTableCreationContent
 import dev.subfly.yaba.ui.creation.tag.TagCreationContent
@@ -119,11 +119,11 @@ fun YabaCreationNavigationView(
                     imageDataMap = key.imageDataMap,
                 )
             }
-            entry<HighlightCreationRoute> { key ->
-                HighlightCreationContent(
+            entry<AnnotationCreationRoute> { key ->
+                AnnotationCreationContent(
                     bookmarkId = key.bookmarkId,
                     selectionDraft = key.selectionDraft,
-                    highlightId = key.highlightId,
+                    annotationId = key.annotationId,
                 )
             }
             entry<NotemarkTableCreationRoute> {

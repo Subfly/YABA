@@ -7,8 +7,6 @@ import dev.subfly.yabacore.database.models.BookmarkWithRelations
 import dev.subfly.yabacore.filesystem.BookmarkFileManager
 import dev.subfly.yabacore.filesystem.access.YabaFileAccessor
 import dev.subfly.yabacore.managers.AllBookmarksManager
-import dev.subfly.yabacore.managers.HighlightManager
-import dev.subfly.yabacore.model.highlight.HighlightType
 import dev.subfly.yabacore.managers.NotemarkManager
 import dev.subfly.yabacore.managers.ReadableContentManager
 import dev.subfly.yabacore.model.ui.BookmarkPreviewUiModel
@@ -45,13 +43,6 @@ class NotemarkDetailStateMachine :
             is NotemarkDetailEvent.OnInit -> onInit(event.bookmarkId)
             is NotemarkDetailEvent.OnSave -> onSave(event)
             NotemarkDetailEvent.OnDeleteBookmark -> onDeleteBookmark()
-            is NotemarkDetailEvent.OnCreateHighlight -> onCreateHighlight(event)
-            is NotemarkDetailEvent.OnUpdateHighlight -> onUpdateHighlight(event)
-            is NotemarkDetailEvent.OnDeleteHighlight -> onDeleteHighlight(event)
-            is NotemarkDetailEvent.OnHighlightReadableCreateCommitted -> onHighlightReadableCreateCommitted(event)
-            is NotemarkDetailEvent.OnHighlightReadableDeleteCommitted -> onHighlightReadableDeleteCommitted(event)
-            is NotemarkDetailEvent.OnScrollToHighlight -> onScrollToHighlight(event)
-            NotemarkDetailEvent.OnClearScrollToHighlight -> onClearScrollToHighlight()
             NotemarkDetailEvent.OnRequestNotificationPermission -> onRequestNotificationPermission()
             is NotemarkDetailEvent.OnScheduleReminder -> onScheduleReminder(event)
             NotemarkDetailEvent.OnCancelReminder -> onCancelReminder()
@@ -100,10 +91,6 @@ class NotemarkDetailStateMachine :
                                         null
                                     }
                                 val vid = note?.readableVersionId
-                                val selectedVersion =
-                                    versions.find { v -> v.versionId == vid }
-                                        ?: versions.firstOrNull()
-                                val highlights = selectedVersion?.highlights ?: emptyList()
                                 val assetsBaseUrl = NotemarkManager.resolveNoteAssetsBaseUrl(id)
 
                                 if (note != null && !didBootstrapEditor) {
@@ -116,7 +103,6 @@ class NotemarkDetailStateMachine :
                                             .copy(
                                                 bookmark = bookmarkModel,
                                                 readableVersionId = vid,
-                                                highlights = highlights,
                                                 assetsBaseUrl = assetsBaseUrl,
                                                 initialDocumentJson = docJson,
                                                 isLoading = false,
@@ -128,7 +114,6 @@ class NotemarkDetailStateMachine :
                                             .copy(
                                                 bookmark = bookmarkModel,
                                                 readableVersionId = vid,
-                                                highlights = highlights,
                                                 assetsBaseUrl = assetsBaseUrl,
                                                 isLoading = false,
                                             ),
@@ -167,85 +152,6 @@ class NotemarkDetailStateMachine :
     private fun onDeleteBookmark() {
         val bookmarkId = bookmarkIdFlow.value ?: return
         AllBookmarksManager.deleteBookmarks(listOf(bookmarkId))
-    }
-
-    private fun onCreateHighlight(event: NotemarkDetailEvent.OnCreateHighlight) {
-        val bookmarkId = bookmarkIdFlow.value ?: return
-        HighlightManager.createHighlight(
-            highlightId = event.highlightId,
-            bookmarkId = bookmarkId,
-            readableVersionId = event.readableVersionId,
-            type = HighlightType.NOTE,
-            colorRole = event.colorRole,
-            note = event.note,
-            quoteText = event.quoteText,
-            extrasJson = null,
-        )
-    }
-
-    private fun onUpdateHighlight(event: NotemarkDetailEvent.OnUpdateHighlight) {
-        val bookmarkId = bookmarkIdFlow.value ?: return
-        HighlightManager.updateHighlight(
-            bookmarkId = bookmarkId,
-            highlightId = event.highlightId,
-            colorRole = event.colorRole,
-            note = event.note,
-        )
-    }
-
-    private fun onDeleteHighlight(event: NotemarkDetailEvent.OnDeleteHighlight) {
-        val bookmarkId = bookmarkIdFlow.value ?: return
-        HighlightManager.deleteHighlight(bookmarkId, event.highlightId)
-    }
-
-    private fun onHighlightReadableCreateCommitted(
-        event: NotemarkDetailEvent.OnHighlightReadableCreateCommitted,
-    ) {
-        val activeBookmarkId = bookmarkIdFlow.value ?: return
-        val req = event.request
-        if (req.selectionDraft.bookmarkId != activeBookmarkId) return
-        launch {
-            ReadableContentManager.syncNotemarkReadableMirror(
-                bookmarkId = req.selectionDraft.bookmarkId,
-                versionId = req.selectionDraft.readableVersionId,
-                documentJson = event.documentJson,
-            )
-            HighlightManager.createHighlight(
-                highlightId = event.highlightId,
-                bookmarkId = req.selectionDraft.bookmarkId,
-                readableVersionId = req.selectionDraft.readableVersionId,
-                type = HighlightType.NOTE,
-                colorRole = req.colorRole,
-                note = req.note,
-                quoteText = req.selectionDraft.quote.displayText.ifBlank { null },
-                extrasJson = null,
-            )
-            persistNoteDocumentJsonIfChanged(event.documentJson)
-        }
-    }
-
-    private fun onHighlightReadableDeleteCommitted(
-        event: NotemarkDetailEvent.OnHighlightReadableDeleteCommitted,
-    ) {
-        val bookmarkId = bookmarkIdFlow.value ?: return
-        launch {
-            val versionId = currentState().readableVersionId ?: return@launch
-            ReadableContentManager.syncNotemarkReadableMirror(
-                bookmarkId = bookmarkId,
-                versionId = versionId,
-                documentJson = event.documentJson,
-            )
-            HighlightManager.deleteHighlight(bookmarkId, event.highlightId)
-            persistNoteDocumentJsonIfChanged(event.documentJson)
-        }
-    }
-
-    private fun onScrollToHighlight(event: NotemarkDetailEvent.OnScrollToHighlight) {
-        updateState { it.copy(scrollToHighlightId = event.highlightId) }
-    }
-
-    private fun onClearScrollToHighlight() {
-        updateState { it.copy(scrollToHighlightId = null) }
     }
 
     private fun onRequestNotificationPermission() {

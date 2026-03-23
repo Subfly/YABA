@@ -228,7 +228,7 @@ export function getSelectionSnapshotFromRoot(
   }
 }
 
-export function getCanCreateHighlightFromRoot(
+export function getCanCreateAnnotationFromRoot(
   root: HTMLElement,
   currentHighlights: PdfHighlightForRendering[],
 ): boolean {

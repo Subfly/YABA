@@ -1,7 +1,5 @@
 package dev.subfly.yabacore.state.detail.notemark
 
-import dev.subfly.yabacore.model.highlight.HighlightReadableCreateRequest
-import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.notifications.PlatformNotificationText
 
 sealed interface NotemarkDetailEvent {
@@ -15,37 +13,6 @@ sealed interface NotemarkDetailEvent {
     data class OnSave(val documentJson: String) : NotemarkDetailEvent
 
     data object OnDeleteBookmark : NotemarkDetailEvent
-
-    data class OnCreateHighlight(
-        val highlightId: String,
-        val readableVersionId: String,
-        val colorRole: YabaColor,
-        val note: String?,
-        val quoteText: String?,
-    ) : NotemarkDetailEvent
-
-    data class OnUpdateHighlight(
-        val highlightId: String,
-        val colorRole: YabaColor,
-        val note: String?,
-    ) : NotemarkDetailEvent
-
-    data class OnDeleteHighlight(val highlightId: String) : NotemarkDetailEvent
-
-    data class OnHighlightReadableCreateCommitted(
-        val highlightId: String,
-        val request: HighlightReadableCreateRequest,
-        val documentJson: String,
-    ) : NotemarkDetailEvent
-
-    data class OnHighlightReadableDeleteCommitted(
-        val highlightId: String,
-        val documentJson: String,
-    ) : NotemarkDetailEvent
-
-    data class OnScrollToHighlight(val highlightId: String) : NotemarkDetailEvent
-
-    data object OnClearScrollToHighlight : NotemarkDetailEvent
 
     data object OnRequestNotificationPermission : NotemarkDetailEvent
 

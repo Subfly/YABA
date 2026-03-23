@@ -14,16 +14,17 @@ import TaskList from "@tiptap/extension-task-list"
 import TaskItem from "@tiptap/extension-task-item"
 import { Placeholder, TrailingNode } from "@tiptap/extensions"
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight"
+import Highlight from "@tiptap/extension-highlight"
 import { Markdown } from "@tiptap/markdown"
 import { all, createLowlight } from "lowlight"
 import type { Extensions } from "@tiptap/core"
-import { HighlightDecorationsExtension } from "./extensions/highlight-decorations"
-import { YabaHighlightMark } from "./extensions/yaba-highlight-mark"
+import { AnnotationDecorationsExtension } from "./extensions/annotation-decorations"
+import { YabaAnnotationMark } from "./extensions/yaba-annotation-mark"
 import { CodeBlockEnterBehaviorExtension } from "./extensions/code-block-enter-behavior"
 
 const lowlight = createLowlight(all)
 
-export function createEditorExtensions(): Extensions {
+function createSharedBaseExtensions(): Extensions {
   return [
     StarterKit.configure({
       codeBlock: false,
@@ -103,9 +104,48 @@ export function createEditorExtensions(): Extensions {
       },
     }),
     CodeBlockEnterBehaviorExtension,
-    YabaHighlightMark,
-    HighlightDecorationsExtension,
-    /** Enables markdown-style input (shortcuts, paste, serialization) alongside the rich-text model. */
     Markdown,
   ]
+}
+
+/** Read-only HTML viewer + HTML→reader converter: persisted `yabaAnnotation` marks + decorations. */
+export function createViewerRichTextExtensions(): Extensions {
+  return [...createSharedBaseExtensions(), YabaAnnotationMark, AnnotationDecorationsExtension]
+}
+
+/**
+ * Note editor: TipTap native text highlights (`<mark>`) only — no persisted annotation marks in the document.
+ */
+export function createNoteEditorExtensions(): Extensions {
+  return [
+    ...createSharedBaseExtensions(),
+    Highlight.extend({
+      addAttributes() {
+        return {
+          ...this.parent?.(),
+          color: {
+            default: null,
+            parseHTML: (element) =>
+              (element as HTMLElement).getAttribute("data-color-role"),
+            renderHTML: (attributes) => {
+              const raw = attributes.color as string | undefined
+              if (!raw) {
+                return {}
+              }
+              const role = raw.toLowerCase()
+              return {
+                "data-color-role": raw,
+                class: `yaba-editor-text-highlight yaba-highlight-${role}`,
+              }
+            },
+          },
+        }
+      },
+    }).configure({ multicolor: true }),
+  ]
+}
+
+/** @deprecated alias — use [createViewerRichTextExtensions] for viewer/converter shells. */
+export function createEditorExtensions(): Extensions {
+  return createViewerRichTextExtensions()
 }

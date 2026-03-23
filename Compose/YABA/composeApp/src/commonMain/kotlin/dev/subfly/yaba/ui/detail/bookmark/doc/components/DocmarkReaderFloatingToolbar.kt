@@ -39,7 +39,7 @@ internal fun BoxScope.DocmarkReaderFloatingToolbar(
     canGoNext: Boolean,
     onPrevPage: () -> Unit,
     onNextPage: () -> Unit,
-    onHighlightClick: () -> Unit,
+    onAnnotationClick: () -> Unit,
 ) {
     val paneInfo = LocalPaneInfo.current
     val isTwoPaneLayout = paneInfo.isTwoPaneLayout
@@ -78,11 +78,11 @@ internal fun BoxScope.DocmarkReaderFloatingToolbar(
                 AnimatedContent(targetState = hasSelection) { has ->
                     if (has) {
                         IconButton(
-                            onClick = onHighlightClick,
+                            onClick = onAnnotationClick,
                             colors = bookmarkReaderToolbarIconButtonColors(color),
                             shapes = IconButtonDefaults.shapes(),
                         ) {
-                            YabaIcon(name = "highlighter", color = Color.White)
+                            YabaIcon(name = "sticky-note-03", color = Color.White)
                         }
                     }
                 }
@@ -134,11 +134,11 @@ internal fun BoxScope.DocmarkReaderFloatingToolbar(
             AnimatedContent(targetState = hasSelection) { has ->
                 if (has) {
                     IconButton(
-                        onClick = onHighlightClick,
+                        onClick = onAnnotationClick,
                         colors = bookmarkReaderToolbarIconButtonColors(color),
                         shapes = IconButtonDefaults.shapes(),
                     ) {
-                        YabaIcon(name = "highlighter", color = Color.White)
+                        YabaIcon(name = "sticky-note-03", color = Color.White)
                     }
                 }
             }

@@ -1,10 +1,10 @@
 package dev.subfly.yabacore.webview
 
-import dev.subfly.yabacore.model.highlight.ReadableSelectionDraft
-import dev.subfly.yabacore.model.ui.HighlightUiModel
+import dev.subfly.yabacore.model.annotation.ReadableSelectionDraft
+import dev.subfly.yabacore.model.ui.AnnotationUiModel
 
 /**
- * Imperative bridge for reader WebViews (HTML reader shell or PDF): selection, highlights, paging.
+ * Imperative bridge for reader WebViews (HTML reader shell or PDF): selection, annotations, paging.
  */
 interface WebViewReaderBridge {
     suspend fun getSelectionSnapshot(
@@ -12,11 +12,11 @@ interface WebViewReaderBridge {
         readableVersionId: String,
     ): ReadableSelectionDraft?
 
-    suspend fun getCanCreateHighlight(): Boolean
+    suspend fun getCanCreateAnnotation(): Boolean
 
-    suspend fun setHighlights(highlights: List<HighlightUiModel>)
+    suspend fun setAnnotations(annotations: List<AnnotationUiModel>)
 
-    suspend fun scrollToHighlight(highlightId: String)
+    suspend fun scrollToAnnotation(annotationId: String)
 
     suspend fun getPageCount(): Int = 1
 
@@ -28,7 +28,7 @@ interface WebViewReaderBridge {
 
     suspend fun getDocumentJson(): String = ""
 
-    suspend fun applyHighlightToSelection(highlightId: String): Boolean = false
+    suspend fun applyAnnotationToSelection(annotationId: String): Boolean = false
 
-    suspend fun removeHighlightFromDocument(highlightId: String): Int = 0
+    suspend fun removeAnnotationFromDocument(annotationId: String): Int = 0
 }

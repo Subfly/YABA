@@ -9,8 +9,8 @@ import dev.subfly.yabacore.filesystem.BookmarkFileManager
 import dev.subfly.yabacore.common.CoreConstants
 import dev.subfly.yabacore.common.computeTriggerMillisFromDatePicker
 import dev.subfly.yabacore.managers.AllBookmarksManager
-import dev.subfly.yabacore.managers.HighlightManager
-import dev.subfly.yabacore.model.highlight.HighlightType
+import dev.subfly.yabacore.managers.AnnotationManager
+import dev.subfly.yabacore.model.annotation.AnnotationType
 import dev.subfly.yabacore.managers.ReadableContentManager
 import dev.subfly.yabacore.notifications.NotificationManager
 import dev.subfly.yabacore.unfurl.ConverterResultProcessor
@@ -63,13 +63,13 @@ class LinkmarkDetailStateMachine :
             is LinkmarkDetailEvent.OnSetReaderTheme -> onSetReaderTheme(event.theme)
             is LinkmarkDetailEvent.OnSetReaderFontSize -> onSetReaderFontSize(event.fontSize)
             is LinkmarkDetailEvent.OnSetReaderLineHeight -> onSetReaderLineHeight(event.lineHeight)
-            is LinkmarkDetailEvent.OnCreateHighlight -> onCreateHighlight(event)
-            is LinkmarkDetailEvent.OnUpdateHighlight -> onUpdateHighlight(event)
-            is LinkmarkDetailEvent.OnDeleteHighlight -> onDeleteHighlight(event)
-            is LinkmarkDetailEvent.OnHighlightReadableCreateCommitted -> onHighlightReadableCreateCommitted(event)
-            is LinkmarkDetailEvent.OnHighlightReadableDeleteCommitted -> onHighlightReadableDeleteCommitted(event)
-            is LinkmarkDetailEvent.OnScrollToHighlight -> onScrollToHighlight(event)
-            LinkmarkDetailEvent.OnClearScrollToHighlight -> onClearScrollToHighlight()
+            is LinkmarkDetailEvent.OnCreateAnnotation -> onCreateAnnotation(event)
+            is LinkmarkDetailEvent.OnUpdateAnnotation -> onUpdateAnnotation(event)
+            is LinkmarkDetailEvent.OnDeleteAnnotation -> onDeleteAnnotation(event)
+            is LinkmarkDetailEvent.OnAnnotationReadableCreateCommitted -> onAnnotationReadableCreateCommitted(event)
+            is LinkmarkDetailEvent.OnAnnotationReadableDeleteCommitted -> onAnnotationReadableDeleteCommitted(event)
+            is LinkmarkDetailEvent.OnScrollToAnnotation -> onScrollToAnnotation(event)
+            LinkmarkDetailEvent.OnClearScrollToAnnotation -> onClearScrollToAnnotation()
             LinkmarkDetailEvent.OnRequestNotificationPermission -> onRequestNotificationPermission()
             is LinkmarkDetailEvent.OnScheduleReminder -> onScheduleReminder(event)
             LinkmarkDetailEvent.OnCancelReminder -> onCancelReminder()
@@ -138,7 +138,7 @@ class LinkmarkDetailStateMachine :
                                     selectedReadableVersionId = combined.selectedReadableVersionId,
                                     readableDocumentJson = documentJson,
                                     assetsBaseUrl = assetsBaseUrl,
-                                    highlights = selectedVersion?.highlights ?: emptyList(),
+                                    annotations = selectedVersion?.annotations ?: emptyList(),
                                     isLoading = false,
                                 ),
                             )
@@ -309,13 +309,13 @@ class LinkmarkDetailStateMachine :
         }
     }
 
-    private fun onCreateHighlight(event: LinkmarkDetailEvent.OnCreateHighlight) {
+    private fun onCreateAnnotation(event: LinkmarkDetailEvent.OnCreateAnnotation) {
         val bookmarkId = bookmarkIdFlow.value ?: return
-        HighlightManager.createHighlight(
-            highlightId = event.highlightId,
+        AnnotationManager.createAnnotation(
+            annotationId = event.annotationId,
             bookmarkId = bookmarkId,
             readableVersionId = event.readableVersionId,
-            type = HighlightType.READABLE,
+            type = AnnotationType.READABLE,
             colorRole = event.colorRole,
             note = event.note,
             quoteText = event.quoteText,
@@ -323,23 +323,23 @@ class LinkmarkDetailStateMachine :
         )
     }
 
-    private fun onUpdateHighlight(event: LinkmarkDetailEvent.OnUpdateHighlight) {
+    private fun onUpdateAnnotation(event: LinkmarkDetailEvent.OnUpdateAnnotation) {
         val bookmarkId = bookmarkIdFlow.value ?: return
-        HighlightManager.updateHighlight(
+        AnnotationManager.updateAnnotation(
             bookmarkId = bookmarkId,
-            highlightId = event.highlightId,
+            annotationId = event.annotationId,
             colorRole = event.colorRole,
             note = event.note,
         )
     }
 
-    private fun onDeleteHighlight(event: LinkmarkDetailEvent.OnDeleteHighlight) {
+    private fun onDeleteAnnotation(event: LinkmarkDetailEvent.OnDeleteAnnotation) {
         val bookmarkId = bookmarkIdFlow.value ?: return
-        HighlightManager.deleteHighlight(bookmarkId, event.highlightId)
+        AnnotationManager.deleteAnnotation(bookmarkId, event.annotationId)
     }
 
-    private fun onHighlightReadableCreateCommitted(
-        event: LinkmarkDetailEvent.OnHighlightReadableCreateCommitted,
+    private fun onAnnotationReadableCreateCommitted(
+        event: LinkmarkDetailEvent.OnAnnotationReadableCreateCommitted,
     ) {
         val activeBookmarkId = bookmarkIdFlow.value ?: return
         val req = event.request
@@ -350,11 +350,11 @@ class LinkmarkDetailStateMachine :
                 versionId = req.selectionDraft.readableVersionId,
                 documentJson = event.documentJson,
             )
-            HighlightManager.createHighlight(
-                highlightId = event.highlightId,
+            AnnotationManager.createAnnotation(
+                annotationId = event.annotationId,
                 bookmarkId = req.selectionDraft.bookmarkId,
                 readableVersionId = req.selectionDraft.readableVersionId,
-                type = HighlightType.READABLE,
+                type = AnnotationType.READABLE,
                 colorRole = req.colorRole,
                 note = req.note,
                 quoteText = req.selectionDraft.quote.displayText.ifBlank { null },
@@ -363,8 +363,8 @@ class LinkmarkDetailStateMachine :
         }
     }
 
-    private fun onHighlightReadableDeleteCommitted(
-        event: LinkmarkDetailEvent.OnHighlightReadableDeleteCommitted,
+    private fun onAnnotationReadableDeleteCommitted(
+        event: LinkmarkDetailEvent.OnAnnotationReadableDeleteCommitted,
     ) {
         val bookmarkId = bookmarkIdFlow.value ?: return
         launch {
@@ -377,16 +377,16 @@ class LinkmarkDetailStateMachine :
                 versionId = versionId,
                 documentJson = event.documentJson,
             )
-            HighlightManager.deleteHighlight(bookmarkId, event.highlightId)
+            AnnotationManager.deleteAnnotation(bookmarkId, event.annotationId)
         }
     }
 
-    private fun onScrollToHighlight(event: LinkmarkDetailEvent.OnScrollToHighlight) {
-        updateState { it.copy(scrollToHighlightId = event.highlightId) }
+    private fun onScrollToAnnotation(event: LinkmarkDetailEvent.OnScrollToAnnotation) {
+        updateState { it.copy(scrollToAnnotationId = event.annotationId) }
     }
 
-    private fun onClearScrollToHighlight() {
-        updateState { it.copy(scrollToHighlightId = null) }
+    private fun onClearScrollToAnnotation() {
+        updateState { it.copy(scrollToAnnotationId = null) }
     }
 
     private fun onRequestNotificationPermission() {

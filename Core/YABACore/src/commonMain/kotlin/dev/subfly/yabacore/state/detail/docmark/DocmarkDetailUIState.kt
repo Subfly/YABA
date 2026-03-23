@@ -1,8 +1,8 @@
 package dev.subfly.yabacore.state.detail.docmark
 
 import androidx.compose.runtime.Immutable
+import dev.subfly.yabacore.model.ui.AnnotationUiModel
 import dev.subfly.yabacore.model.ui.BookmarkPreviewUiModel
-import dev.subfly.yabacore.model.ui.HighlightUiModel
 
 @Immutable
 data class DocmarkDetailUIState(
@@ -10,8 +10,8 @@ data class DocmarkDetailUIState(
     val summary: String? = null,
     val pdfAbsolutePath: String? = null,
     val selectedReadableVersionId: String? = null,
-    val highlights: List<HighlightUiModel> = emptyList(),
+    val annotations: List<AnnotationUiModel> = emptyList(),
     val isLoading: Boolean = false,
     val reminderDateEpochMillis: Long? = null,
-    val scrollToHighlightId: String? = null,
+    val scrollToAnnotationId: String? = null,
 )

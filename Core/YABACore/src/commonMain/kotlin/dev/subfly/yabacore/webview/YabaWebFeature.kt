@@ -1,6 +1,6 @@
 package dev.subfly.yabacore.webview
 
-import dev.subfly.yabacore.model.ui.HighlightUiModel
+import dev.subfly.yabacore.model.ui.AnnotationUiModel
 import dev.subfly.yabacore.model.utils.ReaderPreferences
 
 /** Which web shell to load and what data to drive it with. */
@@ -11,13 +11,12 @@ sealed class YabaWebFeature {
         val readerPreferences: ReaderPreferences,
         val platform: YabaWebPlatform,
         val appearance: YabaWebAppearance,
-        val highlights: List<HighlightUiModel>,
+        val annotations: List<AnnotationUiModel>,
     ) : YabaWebFeature()
 
     data class Editor(
         val initialDocumentJson: String,
         val assetsBaseUrl: String?,
-        val highlights: List<HighlightUiModel> = emptyList(),
         val platform: YabaWebPlatform = YabaWebPlatform.Compose,
         val appearance: YabaWebAppearance = YabaWebAppearance.Auto,
         val readerPreferences: ReaderPreferences = ReaderPreferences(),
@@ -35,6 +34,6 @@ sealed class YabaWebFeature {
         val pdfUrl: String,
         val platform: YabaWebPlatform,
         val appearance: YabaWebAppearance,
-        val highlights: List<HighlightUiModel>,
+        val annotations: List<AnnotationUiModel>,
     ) : YabaWebFeature()
 }

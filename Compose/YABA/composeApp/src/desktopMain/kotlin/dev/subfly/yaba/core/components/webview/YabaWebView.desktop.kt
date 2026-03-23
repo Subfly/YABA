@@ -29,7 +29,7 @@ actual fun YabaWebViewHost(
     onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit,
     onReaderBridgeReady: (WebViewReaderBridge?) -> Unit,
     onEditorBridgeReady: (WebViewEditorBridge?) -> Unit,
-    onHighlightTap: (String) -> Unit,
+    onAnnotationTap: (String) -> Unit,
     onMathTap: (MathTapEvent) -> Unit,
 ) {
     val showPlaceholder = feature is YabaWebFeature.ReadableViewer ||

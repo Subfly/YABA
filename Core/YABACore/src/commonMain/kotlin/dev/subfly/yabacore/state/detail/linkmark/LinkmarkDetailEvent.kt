@@ -1,6 +1,6 @@
 package dev.subfly.yabacore.state.detail.linkmark
 
-import dev.subfly.yabacore.model.highlight.HighlightReadableCreateRequest
+import dev.subfly.yabacore.model.annotation.AnnotationReadableCreateRequest
 import dev.subfly.yabacore.model.utils.ReaderFontSize
 import dev.subfly.yabacore.model.utils.ReaderLineHeight
 import dev.subfly.yabacore.model.utils.ReaderTheme
@@ -28,30 +28,30 @@ sealed interface LinkmarkDetailEvent {
     data class OnSetReaderTheme(val theme: ReaderTheme) : LinkmarkDetailEvent
     data class OnSetReaderFontSize(val fontSize: ReaderFontSize) : LinkmarkDetailEvent
     data class OnSetReaderLineHeight(val lineHeight: ReaderLineHeight) : LinkmarkDetailEvent
-    data class OnCreateHighlight(
-        val highlightId: String,
+    data class OnCreateAnnotation(
+        val annotationId: String,
         val readableVersionId: String,
         val colorRole: YabaColor = YabaColor.NONE,
         val note: String? = null,
         val quoteText: String? = null,
     ) : LinkmarkDetailEvent
-    data class OnUpdateHighlight(
-        val highlightId: String,
+    data class OnUpdateAnnotation(
+        val annotationId: String,
         val colorRole: YabaColor,
         val note: String?,
     ) : LinkmarkDetailEvent
-    data class OnDeleteHighlight(val highlightId: String) : LinkmarkDetailEvent
-    data class OnHighlightReadableCreateCommitted(
-        val highlightId: String,
-        val request: HighlightReadableCreateRequest,
+    data class OnDeleteAnnotation(val annotationId: String) : LinkmarkDetailEvent
+    data class OnAnnotationReadableCreateCommitted(
+        val annotationId: String,
+        val request: AnnotationReadableCreateRequest,
         val documentJson: String,
     ) : LinkmarkDetailEvent
-    data class OnHighlightReadableDeleteCommitted(
-        val highlightId: String,
+    data class OnAnnotationReadableDeleteCommitted(
+        val annotationId: String,
         val documentJson: String,
     ) : LinkmarkDetailEvent
-    data class OnScrollToHighlight(val highlightId: String) : LinkmarkDetailEvent
-    data object OnClearScrollToHighlight : LinkmarkDetailEvent
+    data class OnScrollToAnnotation(val annotationId: String) : LinkmarkDetailEvent
+    data object OnClearScrollToAnnotation : LinkmarkDetailEvent
 
     data object OnRequestNotificationPermission : LinkmarkDetailEvent
     data class OnScheduleReminder(

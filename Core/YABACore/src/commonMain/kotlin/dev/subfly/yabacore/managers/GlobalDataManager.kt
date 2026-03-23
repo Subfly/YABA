@@ -14,7 +14,7 @@ object GlobalDataManager {
     private val bookmarkDao get() = DatabaseProvider.bookmarkDao
     private val linkBookmarkDao get() = DatabaseProvider.linkBookmarkDao
     private val tagBookmarkDao get() = DatabaseProvider.tagBookmarkDao
-    private val highlightDao get() = DatabaseProvider.highlightDao
+    private val annotationDao get() = DatabaseProvider.annotationDao
     private val readableVersionDao get() = DatabaseProvider.readableVersionDao
     private val readableAssetDao get() = DatabaseProvider.readableAssetDao
 
@@ -31,7 +31,7 @@ object GlobalDataManager {
         }
 
         tagBookmarkDao.deleteAll()
-        highlightDao.deleteAll()
+        annotationDao.deleteAll()
         readableVersionDao.deleteAll()
         readableAssetDao.deleteAll()
         linkBookmarkDao.deleteAll()

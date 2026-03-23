@@ -22,12 +22,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.components.NoContentView
-import dev.subfly.yaba.core.navigation.creation.HighlightCreationRoute
+import dev.subfly.yaba.core.navigation.creation.AnnotationCreationRoute
 import dev.subfly.yaba.core.navigation.main.FolderDetailRoute
 import dev.subfly.yaba.core.navigation.main.TagDetailRoute
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailActionsContent
 import dev.subfly.yaba.ui.detail.composables.BookmarkDetailFolderSectionContent
-import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailHighlightItemContent
+import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailAnnotationItemContent
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailImageSectionContent
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailInfoSectionContent
 import dev.subfly.yaba.ui.detail.composables.BookmarkDetailReminderSectionContent
@@ -176,9 +176,9 @@ internal fun LinkmarkDetailLayout(
                     }
                 }
 
-                DetailPage.HIGHLIGHTS -> {
-                    if (state.highlights.isEmpty()) {
-                        item(key = "NO_HIGHLIGHTS") {
+                DetailPage.ANNOTATIONS -> {
+                    if (state.annotations.isEmpty()) {
+                        item(key = "NO_ANNOTATIONS") {
                             Box(
                                 modifier = Modifier
                                     .animateItem()
@@ -201,34 +201,34 @@ internal fun LinkmarkDetailLayout(
                         }
                     } else {
                         itemsIndexed(
-                            items = state.highlights,
-                            key = { _, h -> h.id },
-                        ) { index, highlight ->
-                            LinkmarkDetailHighlightItemContent(
+                            items = state.annotations,
+                            key = { _, a -> a.id },
+                        ) { index, annotation ->
+                            LinkmarkDetailAnnotationItemContent(
                                 modifier = Modifier
                                     .animateItem()
                                     .padding(vertical = 4.dp),
-                                highlight = highlight,
+                                annotation = annotation,
                                 index = index,
-                                count = state.highlights.size,
-                                onScrollToHighlight = {
+                                count = state.annotations.size,
+                                onScrollToAnnotation = {
                                     onHide()
-                                    onEvent(LinkmarkDetailEvent.OnScrollToHighlight(highlight.id))
+                                    onEvent(LinkmarkDetailEvent.OnScrollToAnnotation(annotation.id))
                                 },
                                 onEdit = {
                                     val bookmarkId = state.bookmark?.id
-                                        ?: return@LinkmarkDetailHighlightItemContent
+                                        ?: return@LinkmarkDetailAnnotationItemContent
                                     creationNavigator.add(
-                                        HighlightCreationRoute(
+                                        AnnotationCreationRoute(
                                             bookmarkId = bookmarkId,
                                             selectionDraft = null,
-                                            highlightId = highlight.id,
+                                            annotationId = annotation.id,
                                         ),
                                     )
                                     appStateManager.onShowCreationContent()
                                 },
                                 onDelete = {
-                                    onEvent(LinkmarkDetailEvent.OnDeleteHighlight(highlight.id))
+                                    onEvent(LinkmarkDetailEvent.OnDeleteAnnotation(annotation.id))
                                 },
                             )
                         }

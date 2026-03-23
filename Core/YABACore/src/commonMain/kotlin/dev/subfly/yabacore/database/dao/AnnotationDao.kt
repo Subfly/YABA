@@ -3,49 +3,49 @@ package dev.subfly.yabacore.database.dao
 import androidx.room3.Dao
 import androidx.room3.Query
 import androidx.room3.Upsert
-import dev.subfly.yabacore.database.entities.HighlightEntity
+import dev.subfly.yabacore.database.entities.AnnotationEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface HighlightDao {
+interface AnnotationDao {
     @Upsert
-    suspend fun upsert(entity: HighlightEntity)
+    suspend fun upsert(entity: AnnotationEntity)
 
-    @Query("DELETE FROM highlights")
+    @Query("DELETE FROM annotations")
     suspend fun deleteAll()
 
-    @Query("DELETE FROM highlights WHERE id = :highlightId")
-    suspend fun deleteById(highlightId: String)
+    @Query("DELETE FROM annotations WHERE id = :annotationId")
+    suspend fun deleteById(annotationId: String)
 
-    @Query("DELETE FROM highlights WHERE bookmarkId = :bookmarkId")
+    @Query("DELETE FROM annotations WHERE bookmarkId = :bookmarkId")
     suspend fun deleteByBookmarkId(bookmarkId: String)
 
-    @Query("SELECT * FROM highlights WHERE id = :highlightId LIMIT 1")
-    suspend fun getById(highlightId: String): HighlightEntity?
+    @Query("SELECT * FROM annotations WHERE id = :annotationId LIMIT 1")
+    suspend fun getById(annotationId: String): AnnotationEntity?
 
     @Query(
         """
-        SELECT * FROM highlights 
+        SELECT * FROM annotations 
         WHERE bookmarkId = :bookmarkId 
         AND (:readableVersionId IS NULL OR readableVersionId = :readableVersionId)
         ORDER BY createdAt ASC
-        """
+        """,
     )
     suspend fun getByBookmarkId(
         bookmarkId: String,
         readableVersionId: String? = null,
-    ): List<HighlightEntity>
+    ): List<AnnotationEntity>
 
     @Query(
         """
-        SELECT * FROM highlights 
+        SELECT * FROM annotations 
         WHERE bookmarkId = :bookmarkId 
         AND (:readableVersionId IS NULL OR readableVersionId = :readableVersionId)
         ORDER BY createdAt ASC
-        """
+        """,
     )
     fun observeByBookmarkId(
         bookmarkId: String,
         readableVersionId: String? = null,
-    ): Flow<List<HighlightEntity>>
+    ): Flow<List<AnnotationEntity>>
 }

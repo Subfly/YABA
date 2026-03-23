@@ -2,25 +2,25 @@ import { Extension } from "@tiptap/core"
 import { Plugin, PluginKey } from "@tiptap/pm/state"
 import { Decoration, DecorationSet } from "@tiptap/pm/view"
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model"
-import { YabaHighlightMarkName } from "./yaba-highlight-mark"
+import { YabaAnnotationMarkName } from "./yaba-annotation-mark"
 
-export const HIGHLIGHTS_META_KEY = "yaba-highlights"
-export const highlightDecorationPluginKey = new PluginKey("highlightDecorations")
+export const ANNOTATIONS_META_KEY = "yaba-annotations"
+export const annotationDecorationPluginKey = new PluginKey("annotationDecorations")
 
-/** Native-driven highlight list: id + color role; positions come from `yabaHighlight` marks in the document. */
-export interface HighlightForRendering {
+/** Native-driven annotation list: id + color role; positions come from `yabaAnnotation` marks in the document. */
+export interface AnnotationForRendering {
   id: string
   colorRole: string
 }
 
-let storedHighlights: HighlightForRendering[] = []
+let storedAnnotations: AnnotationForRendering[] = []
 
-export function setStoredHighlights(highlights: HighlightForRendering[]): void {
-  storedHighlights = highlights
+export function setStoredAnnotations(annotations: AnnotationForRendering[]): void {
+  storedAnnotations = annotations
 }
 
-export function getStoredHighlights(): HighlightForRendering[] {
-  return storedHighlights
+export function getStoredAnnotations(): AnnotationForRendering[] {
+  return storedAnnotations
 }
 
 const colorRoleToClass: Record<string, string> = {
@@ -40,12 +40,12 @@ const colorRoleToClass: Record<string, string> = {
   YELLOW: "yaba-highlight-yellow",
 }
 
-function getHighlightClass(colorRole: string): string {
+function getAnnotationClass(colorRole: string): string {
   return colorRoleToClass[colorRole] ?? "yaba-highlight-yellow"
 }
 
-/** True if the selection range overlaps any `yabaHighlight` mark (for “can create” guard). */
-export function selectionOverlapsYabaHighlightMark(
+/** True if the selection range overlaps any persisted `yabaAnnotation` mark (for “can create” guard on viewer). */
+export function selectionOverlapsYabaAnnotationMark(
   doc: ProseMirrorNode,
   from: number,
   to: number
@@ -53,7 +53,7 @@ export function selectionOverlapsYabaHighlightMark(
   let overlaps = false
   doc.nodesBetween(from, to, (node) => {
     if (!node.isText) return true
-    const has = node.marks.some((m) => m.type.name === YabaHighlightMarkName)
+    const has = node.marks.some((m) => m.type.name === YabaAnnotationMarkName)
     if (has) {
       overlaps = true
       return false
@@ -63,52 +63,52 @@ export function selectionOverlapsYabaHighlightMark(
   return overlaps
 }
 
-function mapHighlightsToDecorations(
+function mapAnnotationsToDecorations(
   doc: ProseMirrorNode,
-  highlights: HighlightForRendering[]
+  annotations: AnnotationForRendering[]
 ): Decoration[] {
-  const idToRole = new Map(highlights.map((h) => [h.id, h.colorRole]))
+  const idToRole = new Map(annotations.map((h) => [h.id, h.colorRole]))
   const decorations: Decoration[] = []
 
   doc.descendants((node, pos) => {
     if (!node.isText) return
-    const mark = node.marks.find(m => m.type.name === YabaHighlightMarkName)
+    const mark = node.marks.find((m) => m.type.name === YabaAnnotationMarkName)
     if (!mark) return
     const id = mark.attrs.id as string | undefined
     if (!id || !idToRole.has(id)) return
-    const cls = getHighlightClass(idToRole.get(id)!)
+    const cls = getAnnotationClass(idToRole.get(id)!)
     const from = pos
     const to = pos + node.nodeSize
     decorations.push(
       Decoration.inline(from, to, {
-        class: `yaba-highlight ${cls}`,
-        "data-highlight-id": id,
+        class: `yaba-annotation-decoration ${cls}`,
+        "data-annotation-id": id,
       })
     )
   })
   return decorations
 }
 
-export const HighlightDecorationsExtension = Extension.create({
-  name: "highlightDecorations",
+export const AnnotationDecorationsExtension = Extension.create({
+  name: "annotationDecorations",
 
   addProseMirrorPlugins() {
     return [
       new Plugin({
-        key: highlightDecorationPluginKey,
+        key: annotationDecorationPluginKey,
         state: {
           init(_, state) {
-            const decos = mapHighlightsToDecorations(state.doc, storedHighlights)
+            const decos = mapAnnotationsToDecorations(state.doc, storedAnnotations)
             return DecorationSet.create(state.doc, decos)
           },
           apply(tr, pluginState) {
-            const meta = tr.getMeta(HIGHLIGHTS_META_KEY)
+            const meta = tr.getMeta(ANNOTATIONS_META_KEY)
             if (meta !== undefined) {
-              const decos = mapHighlightsToDecorations(tr.doc, meta)
+              const decos = mapAnnotationsToDecorations(tr.doc, meta)
               return DecorationSet.create(tr.doc, decos)
             }
             if (tr.docChanged) {
-              const decos = mapHighlightsToDecorations(tr.doc, storedHighlights)
+              const decos = mapAnnotationsToDecorations(tr.doc, storedAnnotations)
               return DecorationSet.create(tr.doc, decos)
             }
             return pluginState
@@ -120,14 +120,14 @@ export const HighlightDecorationsExtension = Extension.create({
           },
           handleClick(_view, _pos, event) {
             const target = event.target as HTMLElement
-            const highlightEl = target.closest?.(".yaba-highlight") as HTMLElement | null
-            const highlightId = highlightEl?.getAttribute?.("data-highlight-id")
-            if (highlightId) {
+            const el = target.closest?.(".yaba-annotation-decoration") as HTMLElement | null
+            const annotationId = el?.getAttribute?.("data-annotation-id")
+            if (annotationId) {
               event.preventDefault()
               const win = window as Window & {
-                YabaEditorBridge?: { onHighlightTap?: (id: string) => void }
+                YabaEditorBridge?: { onAnnotationTap?: (id: string) => void }
               }
-              win.YabaEditorBridge?.onHighlightTap?.(highlightId)
+              win.YabaEditorBridge?.onAnnotationTap?.(annotationId)
               return true
             }
             return false

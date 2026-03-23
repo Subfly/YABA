@@ -6,5 +6,5 @@ internal enum class DetailPage(
 ) {
     INFO(iconName = "information-circle", label = "Info"),
     VERSIONS(iconName = "clock-02", label = "Versions"),
-    HIGHLIGHTS(iconName = "highlighter", label = "Highlights")
+    ANNOTATIONS(iconName = "sticky-note-03", label = "Annotations")
 }

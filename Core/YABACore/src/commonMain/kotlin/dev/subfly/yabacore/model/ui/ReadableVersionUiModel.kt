@@ -3,7 +3,7 @@ package dev.subfly.yabacore.model.ui
 import androidx.compose.runtime.Stable
 
 /**
- * A single readable content version with its assets and highlights.
+ * A single readable content version with its assets and annotations.
  *
  * [body] is the raw file text: sanitized HTML for link readables, or document JSON for notemark mirrors.
  */
@@ -13,5 +13,5 @@ data class ReadableVersionUiModel(
     val createdAt: Long,
     val body: String? = null,
     val assets: List<ReadableAssetUiModel> = emptyList(),
-    val highlights: List<HighlightUiModel> = emptyList(),
+    val annotations: List<AnnotationUiModel> = emptyList(),
 )

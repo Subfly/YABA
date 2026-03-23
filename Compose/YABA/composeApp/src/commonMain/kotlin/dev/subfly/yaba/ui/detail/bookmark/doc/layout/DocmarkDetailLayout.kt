@@ -35,11 +35,11 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import dev.subfly.yaba.core.components.NoContentView
-import dev.subfly.yaba.core.navigation.creation.HighlightCreationRoute
+import dev.subfly.yaba.core.navigation.creation.AnnotationCreationRoute
 import dev.subfly.yaba.core.navigation.main.FolderDetailRoute
 import dev.subfly.yaba.core.navigation.main.TagDetailRoute
 import dev.subfly.yaba.ui.detail.bookmark.doc.models.DocmarkDetailPage
-import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailHighlightItemContent
+import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailAnnotationItemContent
 import dev.subfly.yaba.ui.detail.composables.BookmarkDetailFolderSectionContent
 import dev.subfly.yaba.ui.detail.composables.BookmarkDetailLabel
 import dev.subfly.yaba.ui.detail.composables.BookmarkDetailReminderSectionContent
@@ -208,8 +208,8 @@ internal fun DocmarkDetailLayout(
                     }
                 }
 
-                DocmarkDetailPage.HIGHLIGHTS -> {
-                    if (state.highlights.isEmpty()) {
+                DocmarkDetailPage.ANNOTATIONS -> {
+                    if (state.annotations.isEmpty()) {
                         item {
                             Box(
                                 modifier = Modifier
@@ -236,31 +236,31 @@ internal fun DocmarkDetailLayout(
                         }
                     } else {
                         itemsIndexed(
-                            items = state.highlights,
-                            key = { _, highlight -> highlight.id },
-                        ) { index, highlight ->
-                            LinkmarkDetailHighlightItemContent(
+                            items = state.annotations,
+                            key = { _, annotation -> annotation.id },
+                        ) { index, annotation ->
+                            LinkmarkDetailAnnotationItemContent(
                                 modifier = Modifier
                                     .animateItem()
                                     .padding(vertical = 4.dp),
-                                highlight = highlight,
+                                annotation = annotation,
                                 index = index,
-                                count = state.highlights.size,
-                                onScrollToHighlight = {
+                                count = state.annotations.size,
+                                onScrollToAnnotation = {
                                     onHide()
-                                    onEvent(DocmarkDetailEvent.OnScrollToHighlight(highlight.id))
+                                    onEvent(DocmarkDetailEvent.OnScrollToAnnotation(annotation.id))
                                 },
                                 onEdit = {
                                     creationNavigator.add(
-                                        HighlightCreationRoute(
+                                        AnnotationCreationRoute(
                                             bookmarkId = bookmark.id,
                                             selectionDraft = null,
-                                            highlightId = highlight.id,
+                                            annotationId = annotation.id,
                                         ),
                                     )
                                     appStateManager.onShowCreationContent()
                                 },
-                                onDelete = { onEvent(DocmarkDetailEvent.OnDeleteHighlight(highlight.id)) },
+                                onDelete = { onEvent(DocmarkDetailEvent.OnDeleteAnnotation(annotation.id)) },
                             )
                         }
                     }

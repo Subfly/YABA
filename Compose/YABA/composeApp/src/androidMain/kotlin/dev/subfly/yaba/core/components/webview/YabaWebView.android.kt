@@ -19,7 +19,7 @@ actual fun YabaWebViewHost(
     onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit,
     onReaderBridgeReady: (WebViewReaderBridge?) -> Unit,
     onEditorBridgeReady: (WebViewEditorBridge?) -> Unit,
-    onHighlightTap: (String) -> Unit,
+    onAnnotationTap: (String) -> Unit,
     onMathTap: (MathTapEvent) -> Unit,
 ) {
     when (val f = feature) {
@@ -32,7 +32,7 @@ actual fun YabaWebViewHost(
                 onUrlClick = onUrlClick,
                 onScrollDirectionChanged = onScrollDirectionChanged,
                 onReaderBridgeReady = onReaderBridgeReady,
-                onHighlightTap = onHighlightTap,
+                onAnnotationTap = onAnnotationTap,
             )
         is YabaWebFeature.Editor ->
             YabaEditorFeatureHost(
@@ -42,7 +42,7 @@ actual fun YabaWebViewHost(
                 onHostEvent = onHostEvent,
                 onUrlClick = onUrlClick,
                 onEditorBridgeReady = onEditorBridgeReady,
-                onHighlightTap = onHighlightTap,
+                onAnnotationTap = onAnnotationTap,
                 onMathTap = onMathTap,
             )
         is YabaWebFeature.HtmlConverter ->
@@ -67,7 +67,7 @@ actual fun YabaWebViewHost(
                 onHostEvent = onHostEvent,
                 onScrollDirectionChanged = onScrollDirectionChanged,
                 onReaderBridgeReady = onReaderBridgeReady,
-                onHighlightTap = onHighlightTap,
+                onAnnotationTap = onAnnotationTap,
             )
     }
 }

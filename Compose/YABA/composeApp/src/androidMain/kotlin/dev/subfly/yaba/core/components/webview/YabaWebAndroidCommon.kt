@@ -169,7 +169,7 @@ internal fun yabaWebViewClient(
     onPageFinished: () -> Unit,
     onRenderProcessGone: () -> Boolean,
     onUrlClick: ((String) -> Boolean)?,
-    onHighlightTap: ((String) -> Unit)?,
+    onAnnotationTap: ((String) -> Unit)?,
     onMathTap: ((MathTapEvent) -> Unit)?,
 ): WebViewClient = object : WebViewClient() {
     override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
@@ -232,13 +232,13 @@ internal fun yabaWebViewClient(
     ): Boolean {
         val uri = request?.url ?: return true
         val url = uri.toString()
-        if (url.startsWith(YabaWebBridgeScripts.HIGHLIGHT_TAP_SCHEME_PREFIX)) {
+        if (url.startsWith(YabaWebBridgeScripts.ANNOTATION_TAP_SCHEME_PREFIX)) {
             val id = try {
                 url.toUri().getQueryParameter("id") ?: ""
             } catch (_: Exception) {
                 ""
             }
-            if (id.isNotBlank()) onHighlightTap?.invoke(id)
+            if (id.isNotBlank()) onAnnotationTap?.invoke(id)
             return true
         }
         if (url.startsWith(YabaWebBridgeScripts.MATH_TAP_SCHEME_PREFIX)) {

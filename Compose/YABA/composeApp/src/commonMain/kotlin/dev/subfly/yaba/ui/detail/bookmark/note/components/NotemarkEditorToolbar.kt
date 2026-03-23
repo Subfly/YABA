@@ -3,10 +3,18 @@ package dev.subfly.yaba.ui.detail.bookmark.note.components
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.DropdownMenuGroup
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.DropdownMenuPopup
@@ -16,6 +24,7 @@ import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MenuDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,14 +35,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import dev.subfly.yaba.ui.detail.bookmark.util.bookmarkReaderFloatingToolbarColors
 import dev.subfly.yaba.ui.detail.bookmark.util.bookmarkReaderToolbarIconButtonColors
 import dev.subfly.yaba.ui.detail.bookmark.util.bookmarkReaderToolbarToggleIconButtonColors
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.ui.icon.YabaIcon
+import dev.subfly.yabacore.ui.icon.iconTintArgb
 import dev.subfly.yabacore.webview.EditorFormattingState
 import dev.subfly.yabacore.webview.YabaEditorCommands
 
@@ -49,9 +61,10 @@ private data class FormatMenuRow(
 internal fun NotemarkEditorToolbar(
     modifier: Modifier = Modifier,
     color: YabaColor,
-    canCreateHighlight: Boolean,
+    canCreateTextHighlight: Boolean,
     formatting: EditorFormattingState,
-    onHighlightClick: () -> Unit,
+    onSetTextHighlightColor: (YabaColor) -> Unit,
+    onRemoveTextHighlight: () -> Unit,
     onDispatchCommand: (String) -> Unit,
     onOpenTableInsertSheet: () -> Unit,
     onOpenMathSheet: (isBlock: Boolean) -> Unit,
@@ -71,17 +84,16 @@ internal fun NotemarkEditorToolbar(
             horizontalArrangement = Arrangement.Start,
         ) {
             AnimatedContent(
-                targetState = canCreateHighlight,
-                label = "notemarkHighlight",
+                targetState = canCreateTextHighlight,
+                label = "notemarkTextHighlight",
             ) { can ->
                 if (can) {
-                    IconButton(
-                        onClick = onHighlightClick,
-                        colors = bookmarkReaderToolbarIconButtonColors(color),
-                        shapes = IconButtonDefaults.shapes(),
-                    ) {
-                        YabaIcon(name = "highlighter", color = Color.White)
-                    }
+                    HighlightToolbarColorDropdown(
+                        folderYabaColor = color,
+                        formatting = formatting,
+                        onSetColor = onSetTextHighlightColor,
+                        onRemoveHighlight = onRemoveTextHighlight,
+                    )
                 }
             }
 
@@ -109,6 +121,8 @@ internal fun NotemarkEditorToolbar(
                 folderYabaColor = color,
                 formatting = formatting,
                 onDispatchCommand = onDispatchCommand,
+                onSetTextHighlightColor = onSetTextHighlightColor,
+                onRemoveTextHighlight = onRemoveTextHighlight,
             )
 
             InsertBlocksDropdown(
@@ -172,16 +186,26 @@ private fun HeadingInsertDropdown(
     }
 }
 
+private val TextHighlightPalette: List<YabaColor> =
+    YabaColor.entries.filter { it != YabaColor.NONE }
+
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun TextMarksDropdown(
     folderYabaColor: YabaColor,
     formatting: EditorFormattingState,
     onDispatchCommand: (String) -> Unit,
+    onSetTextHighlightColor: (YabaColor) -> Unit,
+    onRemoveTextHighlight: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
+    var highlightSubExpanded by remember { mutableStateOf(false) }
     val anyActive by remember(formatting) {
         derivedStateOf { YabaEditorCommands.hasAnyTextMark(formatting) }
+    }
+
+    LaunchedEffect(expanded) {
+        if (!expanded) highlightSubExpanded = false
     }
 
     Box {
@@ -211,6 +235,163 @@ private fun TextMarksDropdown(
                         },
                         leadingIcon = { YabaIcon(name = row.icon) },
                         text = { Text(text = row.label) },
+                    )
+                }
+                val highlightTrailingRotation by animateFloatAsState(
+                    targetValue = if (highlightSubExpanded) 90f else 0f,
+                )
+                DropdownMenuItem(
+                    shapes = MenuDefaults.itemShape(6, 7),
+                    checked = formatting.textHighlight,
+                    onCheckedChange = { highlightSubExpanded = true },
+                    leadingIcon = { YabaIcon(name = "highlighter") },
+                    trailingIcon = {
+                        YabaIcon(
+                            modifier = Modifier.rotate(highlightTrailingRotation),
+                            name = "arrow-right-01",
+                        )
+                    },
+                    text = { Text(text = "Highlight") },
+                )
+                DropdownMenuPopup(
+                    expanded = highlightSubExpanded,
+                    onDismissRequest = { highlightSubExpanded = false },
+                ) {
+                    DropdownMenuGroup(shapes = MenuDefaults.groupShape(index = 0, count = 1)) {
+                        DropdownMenuItem(
+                            shapes = MenuDefaults.itemShape(0, TextHighlightPalette.size + 2),
+                            checked = false,
+                            onCheckedChange = {
+                                highlightSubExpanded = false
+                                expanded = false
+                                onSetTextHighlightColor(folderYabaColor)
+                            },
+                            leadingIcon = {
+                                Box(
+                                    modifier = Modifier
+                                        .size(20.dp)
+                                        .clip(CircleShape)
+                                        .background(Color(folderYabaColor.iconTintArgb()))
+                                        .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape),
+                                )
+                            },
+                            text = { Text(text = "Folder color") },
+                        )
+                        TextHighlightPalette.fastForEachIndexed { i, yc ->
+                            DropdownMenuItem(
+                                shapes = MenuDefaults.itemShape(i + 1, TextHighlightPalette.size + 2),
+                                checked = false,
+                                onCheckedChange = {
+                                    highlightSubExpanded = false
+                                    expanded = false
+                                    onSetTextHighlightColor(yc)
+                                },
+                                leadingIcon = {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(20.dp)
+                                            .clip(CircleShape)
+                                            .background(Color(yc.iconTintArgb()))
+                                            .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape),
+                                    )
+                                },
+                                text = { Text(text = yc.name) },
+                            )
+                        }
+                        if (formatting.textHighlight) {
+                            DropdownMenuItem(
+                                shapes = MenuDefaults.itemShape(
+                                    TextHighlightPalette.size + 1,
+                                    TextHighlightPalette.size + 2,
+                                ),
+                                checked = false,
+                                onCheckedChange = {
+                                    highlightSubExpanded = false
+                                    expanded = false
+                                    onRemoveTextHighlight()
+                                },
+                                leadingIcon = { YabaIcon(name = "cancel-01") },
+                                text = { Text(text = "Remove highlight") },
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
+@Composable
+private fun HighlightToolbarColorDropdown(
+    folderYabaColor: YabaColor,
+    formatting: EditorFormattingState,
+    onSetColor: (YabaColor) -> Unit,
+    onRemoveHighlight: () -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    Box {
+        IconButton(
+            onClick = { expanded = expanded.not() },
+            colors = bookmarkReaderToolbarIconButtonColors(folderYabaColor),
+            shapes = IconButtonDefaults.shapes(),
+        ) { YabaIcon(name = "highlighter", color = Color.White) }
+        DropdownMenuPopup(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+        ) {
+            DropdownMenuGroup(shapes = MenuDefaults.groupShape(index = 0, count = 1)) {
+                DropdownMenuItem(
+                    shapes = MenuDefaults.itemShape(0, TextHighlightPalette.size + 2),
+                    checked = false,
+                    onCheckedChange = {
+                        expanded = false
+                        onSetColor(folderYabaColor)
+                    },
+                    leadingIcon = {
+                        Box(
+                            modifier = Modifier
+                                .size(20.dp)
+                                .clip(CircleShape)
+                                .background(Color(folderYabaColor.iconTintArgb()))
+                                .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape),
+                        )
+                    },
+                    text = { Text(text = "Folder color") },
+                )
+                TextHighlightPalette.fastForEachIndexed { i, yc ->
+                    DropdownMenuItem(
+                        shapes = MenuDefaults.itemShape(i + 1, TextHighlightPalette.size + 2),
+                        checked = false,
+                        onCheckedChange = {
+                            expanded = false
+                            onSetColor(yc)
+                        },
+                        leadingIcon = {
+                            Box(
+                                modifier = Modifier
+                                    .size(20.dp)
+                                    .clip(CircleShape)
+                                    .background(Color(yc.iconTintArgb()))
+                                    .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape),
+                            )
+                        },
+                        text = { Text(text = yc.name) },
+                    )
+                }
+                if (formatting.textHighlight) {
+                    DropdownMenuItem(
+                        shapes = MenuDefaults.itemShape(
+                            TextHighlightPalette.size + 1,
+                            TextHighlightPalette.size + 2,
+                        ),
+                        checked = false,
+                        onCheckedChange = {
+                            expanded = false
+                            onRemoveHighlight()
+                        },
+                        leadingIcon = { YabaIcon(name = "cancel-01") },
+                        text = { Text(text = "Remove highlight") },
                     )
                 }
             }

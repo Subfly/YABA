@@ -33,4 +33,5 @@ data class EditorFormattingState(
     val canAddColumnBefore: Boolean = false,
     val canAddColumnAfter: Boolean = false,
     val canDeleteColumn: Boolean = false,
+    val textHighlight: Boolean = false,
 )

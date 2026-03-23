@@ -6,12 +6,12 @@ import {
   type SelectionSnapshot,
 } from "./selection-extractor"
 import {
-  HIGHLIGHTS_META_KEY,
-  selectionOverlapsYabaHighlightMark,
-  setStoredHighlights,
-  type HighlightForRendering,
-} from "@/tiptap/extensions/highlight-decorations"
-import { YabaHighlightMarkName } from "@/tiptap/extensions/yaba-highlight-mark"
+  ANNOTATIONS_META_KEY,
+  selectionOverlapsYabaAnnotationMark,
+  setStoredAnnotations,
+  type AnnotationForRendering,
+} from "@/tiptap/extensions/annotation-decorations"
+import { YabaAnnotationMarkName } from "@/tiptap/extensions/yaba-annotation-mark"
 
 export type ReaderTheme = "system" | "dark" | "light" | "sepia"
 export type ReaderFontSize = "small" | "medium" | "large"
@@ -59,9 +59,9 @@ function rewriteAssetPathsInReaderHtml(html: string, assetsBaseUrl: string): str
 export interface YabaEditorBridge {
   isReady: () => boolean
   getSelectionSnapshot: () => SelectionSnapshot | null
-  getCanCreateHighlight: () => boolean
-  setHighlights: (highlightsJson: string) => void
-  scrollToHighlight: (highlightId: string) => void
+  getCanCreateAnnotation: () => boolean
+  setAnnotations: (annotationsJson: string) => void
+  scrollToAnnotation: (annotationId: string) => void
   setPlatform: (platform: Platform) => void
   setAppearance: (mode: AppearanceMode) => void
   setCursorColor: (color: string) => void
@@ -79,22 +79,23 @@ export interface YabaEditorBridge {
   /** Blurs the editor and dismisses the keyboard; remembers cursor first for [focus]. */
   unFocus: () => void
   dispatch: (command: EditorCommandPayload) => void
-  /** Apply `yabaHighlight` mark with attrs `{ id }` to the current non-empty selection. */
-  applyHighlightToSelection: (highlightId: string) => boolean
-  /** Remove all `yabaHighlight` marks with the given id from the document. Returns number of text nodes updated. */
-  removeHighlightFromDocument: (highlightId: string) => number
+  /** Apply `yabaAnnotation` mark with attrs `{ id }` to the current non-empty selection (viewer / link PDF readable). */
+  applyAnnotationToSelection: (annotationId: string) => boolean
+  /** Remove all `yabaAnnotation` marks with the given id from the document. Returns number of text nodes updated. */
+  removeAnnotationFromDocument: (annotationId: string) => number
+  onAnnotationTap?: (id: string) => void
 }
 
-function removeHighlightMarksWithId(editor: Editor | null, highlightId: string): number {
+function removeAnnotationMarksWithId(editor: Editor | null, annotationId: string): number {
   if (!editor) return 0
   const { state } = editor
-  const markType = state.schema.marks[YabaHighlightMarkName]
+  const markType = state.schema.marks[YabaAnnotationMarkName]
   if (!markType) return 0
   let count = 0
   const tr = state.tr
   state.doc.descendants((node, pos) => {
     if (!node.isText) return
-    const mark = node.marks.find((m) => m.type === markType && m.attrs.id === highlightId)
+    const mark = node.marks.find((m) => m.type === markType && m.attrs.id === annotationId)
     if (mark) {
       tr.removeMark(pos, pos + node.nodeSize, markType)
       count += 1
@@ -130,9 +131,7 @@ export type EditorCommandPayload =
   | { type: "insertBlockMath"; latex: string }
   | { type: "updateInlineMath"; latex: string; pos: number }
   | { type: "updateBlockMath"; latex: string; pos: number }
-  /** Plain text at selection (does not run markdown input rules; use [setHeading] for headings). */
   | { type: "insertText"; text: string }
-  /** Turn the current block into a heading (same as toolbar “Heading N”; avoids insertText bypassing input rules). */
   | { type: "setHeading"; level: number }
   | { type: "insertTable"; rows: number; cols: number; withHeaderRow?: boolean }
   | { type: "insertImage"; src: string }
@@ -142,6 +141,8 @@ export type EditorCommandPayload =
   | { type: "addColumnBefore" }
   | { type: "addColumnAfter" }
   | { type: "deleteColumn" }
+  | { type: "setTextHighlight"; colorRole: string }
+  | { type: "unsetTextHighlight" }
 
 let editorInstance: Editor | null = null
 /** Latest ProseMirror selection (anchor/head) for restoring the caret after [unFocus] / native chrome. */
@@ -282,35 +283,39 @@ export function initEditorBridge(editor: Editor): void {
   win.YabaEditorBridge = {
     isReady: () => !!editorInstance,
     getSelectionSnapshot: () => getSelectionSnapshot(editorInstance),
-    getCanCreateHighlight: () => {
+    getCanCreateAnnotation: () => {
+      const page = document.body?.dataset.yabaPage
       const snap = getSelectionSnapshot(editorInstance)
       if (!snap) return false
       const ed = editorInstance
       if (!ed) return false
       const { from, to } = ed.state.selection
       if (from === to) return false
-      const overlaps = selectionOverlapsYabaHighlightMark(ed.state.doc, from, to)
+      if (page === "editor") {
+        return true
+      }
+      const overlaps = selectionOverlapsYabaAnnotationMark(ed.state.doc, from, to)
       return !overlaps
     },
-    setHighlights: (highlightsJson: string) => {
+    setAnnotations: (annotationsJson: string) => {
       try {
-        const highlights: HighlightForRendering[] =
-          highlightsJson && highlightsJson.trim()
-            ? JSON.parse(highlightsJson)
+        const annotations: AnnotationForRendering[] =
+          annotationsJson && annotationsJson.trim()
+            ? JSON.parse(annotationsJson)
             : []
-        setStoredHighlights(highlights)
+        setStoredAnnotations(annotations)
         if (editorInstance) {
           const tr = editorInstance.state.tr
-          tr.setMeta(HIGHLIGHTS_META_KEY, highlights)
+          tr.setMeta(ANNOTATIONS_META_KEY, annotations)
           editorInstance.view.dispatch(tr)
         }
       } catch {
-        setStoredHighlights([])
+        setStoredAnnotations([])
       }
     },
-    scrollToHighlight: (highlightId: string) => {
+    scrollToAnnotation: (annotationId: string) => {
       const el = document.querySelector(
-        `.yaba-highlight[data-highlight-id="${highlightId}"]`
+        `.yaba-annotation-decoration[data-annotation-id="${annotationId}"]`
       ) as HTMLElement | null
       el?.scrollIntoView({ behavior: "smooth", block: "center" })
     },
@@ -395,6 +400,7 @@ export function initEditorBridge(editor: Editor): void {
           canDeleteColumn: false,
           inlineMath: false,
           blockMath: false,
+          textHighlight: false,
         })
       }
       const inTable = ed.isActive("table")
@@ -424,6 +430,7 @@ export function initEditorBridge(editor: Editor): void {
         canAddColumnBefore: inTable && ed.can().addColumnBefore(),
         canAddColumnAfter: inTable && ed.can().addColumnAfter(),
         canDeleteColumn: inTable && ed.can().deleteColumn(),
+        textHighlight: ed.isActive("highlight"),
       })
     },
     focus: () => {
@@ -552,17 +559,25 @@ export function initEditorBridge(editor: Editor): void {
           chain.setHeading({ level }).run()
           break
         }
+        case "setTextHighlight": {
+          const role = (cmd.colorRole || "YELLOW").toUpperCase()
+          ed.chain().focus().setHighlight({ color: role }).run()
+          break
+        }
+        case "unsetTextHighlight":
+          ed.chain().focus().unsetHighlight().run()
+          break
       }
     },
-    applyHighlightToSelection: (highlightId: string) => {
+    applyAnnotationToSelection: (annotationId: string) => {
       const ed = editorInstance
       if (!ed) return false
       const { from, to } = ed.state.selection
       if (from === to) return false
-      return ed.chain().focus().setMark(YabaHighlightMarkName, { id: highlightId }).run()
+      return ed.chain().focus().setMark(YabaAnnotationMarkName, { id: annotationId }).run()
     },
-    removeHighlightFromDocument: (highlightId: string) =>
-      removeHighlightMarksWithId(editorInstance, highlightId),
+    removeAnnotationFromDocument: (annotationId: string) =>
+      removeAnnotationMarksWithId(editorInstance, annotationId),
   }
 
   applyReaderPreferences()

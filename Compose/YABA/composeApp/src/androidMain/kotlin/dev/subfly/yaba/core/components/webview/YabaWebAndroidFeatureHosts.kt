@@ -45,7 +45,7 @@ internal fun YabaReadableViewerFeatureHost(
     onUrlClick: (String) -> Boolean,
     onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit,
     onReaderBridgeReady: (WebViewReaderBridge?) -> Unit,
-    onHighlightTap: (String) -> Unit,
+    onAnnotationTap: (String) -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -142,13 +142,13 @@ internal fun YabaReadableViewerFeatureHost(
 
     LaunchedEffect(isPageReady) {
         if (!isPageReady || rendererCrashed) return@LaunchedEffect
-        installEditorHighlightTap(webView)
+        installEditorAnnotationTap(webView)
     }
 
-    LaunchedEffect(isPageReady, feature.highlights) {
+    LaunchedEffect(isPageReady, feature.annotations) {
         if (!isPageReady || rendererCrashed) return@LaunchedEffect
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY_LOOSE)) return@LaunchedEffect
-        RichTextWebViewReaderBridge(webView).setHighlights(feature.highlights)
+        RichTextWebViewReaderBridge(webView).setAnnotations(feature.annotations)
     }
 
     LaunchedEffect(activeBridge) {
@@ -157,7 +157,7 @@ internal fun YabaReadableViewerFeatureHost(
         var lastPage = 1
         var lastCount = 1
         while (isActive) {
-            val can = b.getCanCreateHighlight()
+            val can = b.getCanCreateAnnotation()
             val page = b.getCurrentPageNumber()
             val count = b.getPageCount().coerceAtLeast(1)
             if (can != lastCan || page != lastPage || count != lastCount) {
@@ -166,7 +166,7 @@ internal fun YabaReadableViewerFeatureHost(
                 lastCount = count
                 onHostEventState.value(
                     YabaWebHostEvent.ReaderMetrics(
-                        canCreateHighlight = can,
+                        canCreateAnnotation = can,
                         currentPage = page,
                         pageCount = count,
                     ),
@@ -212,7 +212,7 @@ internal fun YabaReadableViewerFeatureHost(
                         true
                     },
                     onUrlClick = onUrlClick,
-                    onHighlightTap = onHighlightTap,
+                    onAnnotationTap = onAnnotationTap,
                     onMathTap = null,
                 )
             }
@@ -238,7 +238,7 @@ internal fun YabaEditorFeatureHost(
     onHostEvent: (YabaWebHostEvent) -> Unit,
     onUrlClick: (String) -> Boolean,
     onEditorBridgeReady: (WebViewEditorBridge?) -> Unit,
-    onHighlightTap: (String) -> Unit,
+    onAnnotationTap: (String) -> Unit,
     onMathTap: (MathTapEvent) -> Unit,
 ) {
     val context = LocalContext.current
@@ -331,13 +331,7 @@ internal fun YabaEditorFeatureHost(
 
     LaunchedEffect(isPageReady) {
         if (!isPageReady || rendererCrashed) return@LaunchedEffect
-        installEditorHighlightTap(webView)
-    }
-
-    LaunchedEffect(isPageReady, feature.highlights) {
-        if (!isPageReady || rendererCrashed) return@LaunchedEffect
-        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY_LOOSE)) return@LaunchedEffect
-        RichTextWebViewEditorBridge(webView).setHighlights(feature.highlights)
+        installEditorAnnotationTap(webView)
     }
 
     LaunchedEffect(activeEditorBridge) {
@@ -345,14 +339,14 @@ internal fun YabaEditorFeatureHost(
         var lastCan = false
         var lastFmt = EditorFormattingState()
         while (isActive) {
-            val can = b.getCanCreateHighlight()
+            val can = b.getCanCreateAnnotation()
             val fmt = getEditorActiveFormatting(webView)
             if (can != lastCan || fmt != lastFmt) {
                 lastCan = can
                 lastFmt = fmt
                 onHostEventState.value(
                     YabaWebHostEvent.ReaderMetrics(
-                        canCreateHighlight = can,
+                        canCreateAnnotation = can,
                         currentPage = 1,
                         pageCount = 1,
                         editorFormatting = fmt,
@@ -403,7 +397,7 @@ internal fun YabaEditorFeatureHost(
                         true
                     },
                     onUrlClick = onUrlClick,
-                    onHighlightTap = onHighlightTap,
+                    onAnnotationTap = onAnnotationTap,
                     onMathTap = onMathTap,
                 )
             }
@@ -493,7 +487,7 @@ internal fun YabaHtmlConverterFeatureHost(
                         true
                     },
                     onUrlClick = null,
-                    onHighlightTap = null,
+                    onAnnotationTap = null,
                     onMathTap = null,
                 )
             }
@@ -581,7 +575,7 @@ internal fun YabaPdfExtractorFeatureHost(
                         true
                     },
                     onUrlClick = null,
-                    onHighlightTap = null,
+                    onAnnotationTap = null,
                     onMathTap = null,
                 )
             }
@@ -605,7 +599,7 @@ internal fun YabaPdfViewerFeatureHost(
     onHostEvent: (YabaWebHostEvent) -> Unit,
     onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit,
     onReaderBridgeReady: (WebViewReaderBridge?) -> Unit,
-    onHighlightTap: (String) -> Unit,
+    onAnnotationTap: (String) -> Unit,
 ) {
     val context = LocalContext.current
     val onHostEventState = rememberUpdatedState(onHostEvent)
@@ -704,13 +698,13 @@ internal fun YabaPdfViewerFeatureHost(
 
     LaunchedEffect(isPageReady) {
         if (!isPageReady || rendererCrashed) return@LaunchedEffect
-        installPdfHighlightTap(webView)
+        installPdfAnnotationTap(webView)
     }
 
-    LaunchedEffect(isPageReady, feature.highlights) {
+    LaunchedEffect(isPageReady, feature.annotations) {
         if (!isPageReady || rendererCrashed) return@LaunchedEffect
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.PDF_BRIDGE_READY_LOOSE)) return@LaunchedEffect
-        PdfWebViewReaderBridge(webView).setHighlights(feature.highlights)
+        PdfWebViewReaderBridge(webView).setAnnotations(feature.annotations)
     }
 
     LaunchedEffect(activeBridge) {
@@ -719,7 +713,7 @@ internal fun YabaPdfViewerFeatureHost(
         var lastPage = 1
         var lastCount = 1
         while (isActive) {
-            val can = b.getCanCreateHighlight()
+            val can = b.getCanCreateAnnotation()
             val page = b.getCurrentPageNumber()
             val count = b.getPageCount().coerceAtLeast(1)
             if (can != lastCan || page != lastPage || count != lastCount) {
@@ -728,7 +722,7 @@ internal fun YabaPdfViewerFeatureHost(
                 lastCount = count
                 onHostEventState.value(
                     YabaWebHostEvent.ReaderMetrics(
-                        canCreateHighlight = can,
+                        canCreateAnnotation = can,
                         currentPage = page,
                         pageCount = count,
                     ),
@@ -774,7 +768,7 @@ internal fun YabaPdfViewerFeatureHost(
                         true
                     },
                     onUrlClick = null,
-                    onHighlightTap = onHighlightTap,
+                    onAnnotationTap = onAnnotationTap,
                     onMathTap = null,
                 )
             }

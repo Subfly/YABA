@@ -9,7 +9,7 @@ import dev.subfly.yabacore.database.converters.CoreTypeConverters
 import dev.subfly.yabacore.database.dao.BookmarkDao
 import dev.subfly.yabacore.database.dao.DocBookmarkDao
 import dev.subfly.yabacore.database.dao.FolderDao
-import dev.subfly.yabacore.database.dao.HighlightDao
+import dev.subfly.yabacore.database.dao.AnnotationDao
 import dev.subfly.yabacore.database.dao.ImageBookmarkDao
 import dev.subfly.yabacore.database.dao.LinkBookmarkDao
 import dev.subfly.yabacore.database.dao.NoteBookmarkDao
@@ -20,7 +20,7 @@ import dev.subfly.yabacore.database.dao.TagDao
 import dev.subfly.yabacore.database.entities.BookmarkEntity
 import dev.subfly.yabacore.database.entities.DocBookmarkEntity
 import dev.subfly.yabacore.database.entities.FolderEntity
-import dev.subfly.yabacore.database.entities.HighlightEntity
+import dev.subfly.yabacore.database.entities.AnnotationEntity
 import dev.subfly.yabacore.database.entities.ImageBookmarkEntity
 import dev.subfly.yabacore.database.entities.LinkBookmarkEntity
 import dev.subfly.yabacore.database.entities.NoteBookmarkEntity
@@ -49,7 +49,7 @@ internal expect object YabaDatabaseCtor : RoomDatabaseConstructor<YabaDatabase> 
         NoteBookmarkEntity::class,
         ReadableVersionEntity::class,
         ReadableAssetEntity::class,
-        HighlightEntity::class,
+        AnnotationEntity::class,
     ],
     version = YABA_DATABASE_VERSION,
     exportSchema = true,
@@ -67,5 +67,5 @@ abstract class YabaDatabase : RoomDatabase() {
     abstract fun tagBookmarkDao(): TagBookmarkDao
     abstract fun readableVersionDao(): ReadableVersionDao
     abstract fun readableAssetDao(): ReadableAssetDao
-    abstract fun highlightDao(): HighlightDao
+    abstract fun annotationDao(): AnnotationDao
 }

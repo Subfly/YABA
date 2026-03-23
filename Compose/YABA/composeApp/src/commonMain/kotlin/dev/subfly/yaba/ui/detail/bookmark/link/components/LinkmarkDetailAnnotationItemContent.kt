@@ -36,7 +36,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.util.yabaRightClick
-import dev.subfly.yabacore.model.ui.HighlightUiModel
+import dev.subfly.yabacore.model.ui.AnnotationUiModel
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.icon.iconTintArgb
@@ -49,12 +49,12 @@ import yaba.composeapp.generated.resources.delete
 // TODO: LOCALIZATIONS
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalFoundationApi::class)
 @Composable
-internal fun LinkmarkDetailHighlightItemContent(
+internal fun LinkmarkDetailAnnotationItemContent(
     modifier: Modifier = Modifier,
-    highlight: HighlightUiModel,
+    annotation: AnnotationUiModel,
     index: Int,
     count: Int,
-    onScrollToHighlight: () -> Unit,
+    onScrollToAnnotation: () -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
 ) {
@@ -62,7 +62,7 @@ internal fun LinkmarkDetailHighlightItemContent(
     var itemHeightPx by remember { mutableFloatStateOf(0f) }
     val density = LocalDensity.current
 
-    val quotePreview = (highlight.quoteText ?: highlight.note)
+    val quotePreview = (annotation.quoteText ?: annotation.note)
         ?.trim()
         ?.take(120)
         ?.let { if (it.length >= 120) "$it…" else it }
@@ -71,7 +71,7 @@ internal fun LinkmarkDetailHighlightItemContent(
     val swipeRightActions = remember(onEdit, onDelete) {
         listOf(
             SwipeAction(
-                key = "edit_highlight",
+                key = "edit_annotation",
                 onClick = onEdit,
             ) {
                 Surface(
@@ -87,7 +87,7 @@ internal fun LinkmarkDetailHighlightItemContent(
                 }
             },
             SwipeAction(
-                key = "delete_highlight",
+                key = "delete_annotation",
                 onClick = onDelete,
             ) {
                 Surface(
@@ -115,7 +115,7 @@ internal fun LinkmarkDetailHighlightItemContent(
                 modifier = Modifier
                     .clip(RoundedCornerShape(12.dp))
                     .yabaRightClick(onRightClick = { isMenuExpanded = true }),
-                onClick = onScrollToHighlight,
+                onClick = onScrollToAnnotation,
                 onLongClick = { isMenuExpanded = true },
                 shapes = ListItemDefaults.segmentedShapes(index = index, count = count),
                 content = {
@@ -131,7 +131,7 @@ internal fun LinkmarkDetailHighlightItemContent(
                                 maxLines = 3,
                                 overflow = TextOverflow.Ellipsis,
                             )
-                            highlight.note?.let { note ->
+                            annotation.note?.let { note ->
                                 if (note.isNotBlank()) {
                                     Spacer(modifier = Modifier.padding(vertical = 4.dp))
                                     Text(
@@ -145,7 +145,7 @@ internal fun LinkmarkDetailHighlightItemContent(
                             }
                         } else {
                             Text(
-                                text = "Highlight",
+                                text = "Annotation",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
@@ -161,7 +161,7 @@ internal fun LinkmarkDetailHighlightItemContent(
                                 else 48.dp
                             )
                             .background(
-                                color = Color(highlight.colorRole.iconTintArgb()),
+                                color = Color(annotation.colorRole.iconTintArgb()),
                                 shape = RoundedCornerShape(8.dp),
                             ),
                     )

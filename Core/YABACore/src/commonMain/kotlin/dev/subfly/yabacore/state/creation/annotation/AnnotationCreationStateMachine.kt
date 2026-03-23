@@ -1,42 +1,42 @@
-package dev.subfly.yabacore.state.creation.highlight
+package dev.subfly.yabacore.state.creation.annotation
 
 import dev.subfly.yabacore.common.IdGenerator
-import dev.subfly.yabacore.database.entities.HighlightEntity
-import dev.subfly.yabacore.managers.HighlightManager
-import dev.subfly.yabacore.model.highlight.HighlightType
-import dev.subfly.yabacore.model.highlight.PdfHighlightExtras
-import dev.subfly.yabacore.model.ui.HighlightUiModel
+import dev.subfly.yabacore.database.entities.AnnotationEntity
+import dev.subfly.yabacore.managers.AnnotationManager
+import dev.subfly.yabacore.model.annotation.AnnotationType
+import dev.subfly.yabacore.model.annotation.PdfAnnotationExtras
+import dev.subfly.yabacore.model.ui.AnnotationUiModel
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.base.BaseStateMachine
 import kotlinx.serialization.json.Json
 
-class HighlightCreationStateMachine :
-    BaseStateMachine<HighlightCreationUIState, HighlightCreationEvent>(
-        initialState = HighlightCreationUIState(),
+class AnnotationCreationStateMachine :
+    BaseStateMachine<AnnotationCreationUIState, AnnotationCreationEvent>(
+        initialState = AnnotationCreationUIState(),
     ) {
     private var isInitialized = false
 
     private val json = Json { ignoreUnknownKeys = true }
 
-    override fun onEvent(event: HighlightCreationEvent) {
+    override fun onEvent(event: AnnotationCreationEvent) {
         when (event) {
-            is HighlightCreationEvent.OnInitWithSelection -> onInitWithSelection(event)
-            is HighlightCreationEvent.OnInitWithHighlight -> onInitWithHighlight(event)
-            is HighlightCreationEvent.OnSelectNewColor -> onSelectNewColor(event)
-            is HighlightCreationEvent.OnChangeNote -> onChangeNote(event)
-            is HighlightCreationEvent.OnSave -> onSave(event)
-            is HighlightCreationEvent.OnDelete -> onDelete(event)
+            is AnnotationCreationEvent.OnInitWithSelection -> onInitWithSelection(event)
+            is AnnotationCreationEvent.OnInitWithAnnotation -> onInitWithAnnotation(event)
+            is AnnotationCreationEvent.OnSelectNewColor -> onSelectNewColor(event)
+            is AnnotationCreationEvent.OnChangeNote -> onChangeNote(event)
+            is AnnotationCreationEvent.OnSave -> onSave(event)
+            is AnnotationCreationEvent.OnDelete -> onDelete(event)
         }
     }
 
-    private fun onInitWithSelection(event: HighlightCreationEvent.OnInitWithSelection) {
+    private fun onInitWithSelection(event: AnnotationCreationEvent.OnInitWithSelection) {
         if (isInitialized) return
         isInitialized = true
 
         updateState {
             it.copy(
                 selectionDraft = event.draft,
-                highlight = null,
+                annotation = null,
                 selectedColor = it.selectedColor,
                 note = "",
                 isLoading = false,
@@ -44,15 +44,15 @@ class HighlightCreationStateMachine :
         }
     }
 
-    private fun onInitWithHighlight(event: HighlightCreationEvent.OnInitWithHighlight) {
+    private fun onInitWithAnnotation(event: AnnotationCreationEvent.OnInitWithAnnotation) {
         if (isInitialized) return
         isInitialized = true
-        if (currentState().highlight?.id == event.highlightId) return
+        if (currentState().annotation?.id == event.annotationId) return
 
         updateState { it.copy(isLoading = true) }
 
         launch {
-            val entity = HighlightManager.getHighlight(event.bookmarkId, event.highlightId)
+            val entity = AnnotationManager.getAnnotation(event.bookmarkId, event.annotationId)
             if (entity != null) {
                 val color = if (entity.colorRole == YabaColor.NONE) {
                     YabaColor.YELLOW
@@ -62,7 +62,7 @@ class HighlightCreationStateMachine :
                 updateState {
                     it.copy(
                         selectionDraft = null,
-                        highlight = mapEntityToUiModel(entity),
+                        annotation = mapEntityToUiModel(entity),
                         bookmarkIdForEdit = event.bookmarkId,
                         selectedColor = color,
                         note = entity.note ?: "",
@@ -75,28 +75,27 @@ class HighlightCreationStateMachine :
         }
     }
 
-    private fun mapEntityToUiModel(entity: HighlightEntity) =
-        HighlightUiModel(
+    private fun mapEntityToUiModel(entity: AnnotationEntity) =
+        AnnotationUiModel(
             id = entity.id,
             type = entity.type,
             colorRole = entity.colorRole,
             note = entity.note,
             quoteText = entity.quoteText,
             extrasJson = entity.extrasJson,
-            absolutePath = null,
             createdAt = entity.createdAt,
             editedAt = entity.editedAt,
         )
 
-    private fun onSelectNewColor(event: HighlightCreationEvent.OnSelectNewColor) {
+    private fun onSelectNewColor(event: AnnotationCreationEvent.OnSelectNewColor) {
         updateState { it.copy(selectedColor = event.newColor) }
     }
 
-    private fun onChangeNote(event: HighlightCreationEvent.OnChangeNote) {
+    private fun onChangeNote(event: AnnotationCreationEvent.OnChangeNote) {
         updateState { it.copy(note = event.note) }
     }
 
-    private fun onSave(event: HighlightCreationEvent.OnSave) {
+    private fun onSave(event: AnnotationCreationEvent.OnSave) {
         val state = currentState()
         if (state.isSaving || !state.hasValidSelection) {
             event.onErrorCallback(IllegalStateException("Cannot save: invalid state"))
@@ -107,11 +106,11 @@ class HighlightCreationStateMachine :
 
         launch {
             try {
-                if (state.highlight != null) {
+                if (state.annotation != null) {
                     val bookmarkId = state.bookmarkIdForEdit ?: return@launch
-                    HighlightManager.updateHighlight(
+                    AnnotationManager.updateAnnotation(
                         bookmarkId = bookmarkId,
-                        highlightId = state.highlight.id,
+                        annotationId = state.annotation.id,
                         colorRole = state.selectedColor,
                         note = state.note.ifBlank { null },
                     )
@@ -122,13 +121,13 @@ class HighlightCreationStateMachine :
                         event.onErrorCallback(IllegalStateException("Expected PDF selection anchor"))
                         return@launch
                     }
-                    val highlightId = IdGenerator.newId()
-                    val extrasJson = json.encodeToString(PdfHighlightExtras.serializer(), anchor)
-                    HighlightManager.createHighlight(
-                        highlightId = highlightId,
+                    val annotationId = IdGenerator.newId()
+                    val extrasJson = json.encodeToString(PdfAnnotationExtras.serializer(), anchor)
+                    AnnotationManager.createAnnotation(
+                        annotationId = annotationId,
                         bookmarkId = draft.bookmarkId,
                         readableVersionId = draft.readableVersionId,
-                        type = HighlightType.PDF,
+                        type = AnnotationType.PDF,
                         colorRole = state.selectedColor,
                         note = state.note.ifBlank { null },
                         quoteText = draft.quote.displayText.ifBlank { null },
@@ -144,9 +143,9 @@ class HighlightCreationStateMachine :
         }
     }
 
-    private fun onDelete(event: HighlightCreationEvent.OnDelete) {
+    private fun onDelete(event: AnnotationCreationEvent.OnDelete) {
         val state = currentState()
-        val highlight = state.highlight ?: run {
+        val annotation = state.annotation ?: run {
             event.onErrorCallback(IllegalStateException("Cannot delete: not editing"))
             return
         }
@@ -154,7 +153,7 @@ class HighlightCreationStateMachine :
             event.onErrorCallback(IllegalStateException("Cannot delete: no bookmark"))
             return
         }
-        HighlightManager.deleteHighlight(bookmarkId = bookmarkId, highlightId = highlight.id)
+        AnnotationManager.deleteAnnotation(bookmarkId = bookmarkId, annotationId = annotation.id)
         event.onDeletedCallback()
     }
 

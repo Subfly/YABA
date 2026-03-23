@@ -1,7 +1,7 @@
 package dev.subfly.yabacore.database.converters
 
 import androidx.room3.TypeConverter
-import dev.subfly.yabacore.model.highlight.HighlightType
+import dev.subfly.yabacore.model.annotation.AnnotationType
 import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.ReadableAssetRole
 import dev.subfly.yabacore.model.utils.YabaColor
@@ -34,9 +34,9 @@ object CoreTypeConverters {
         value?.let { ReadableAssetRole.fromRaw(it) }
 
     @TypeConverter
-    fun highlightTypeToString(value: HighlightType?): String? = value?.name
+    fun annotationTypeToString(value: AnnotationType?): String? = value?.name
 
     @TypeConverter
-    fun stringToHighlightType(value: String?): HighlightType? =
-        value?.let { runCatching { HighlightType.valueOf(it) }.getOrNull() }
+    fun stringToAnnotationType(value: String?): AnnotationType? =
+        value?.let { runCatching { AnnotationType.valueOf(it) }.getOrNull() }
 }

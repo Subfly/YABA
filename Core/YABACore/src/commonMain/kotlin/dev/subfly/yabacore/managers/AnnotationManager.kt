@@ -1,23 +1,23 @@
 package dev.subfly.yabacore.managers
 
 import dev.subfly.yabacore.database.DatabaseProvider
-import dev.subfly.yabacore.database.entities.HighlightEntity
-import dev.subfly.yabacore.model.highlight.HighlightType
+import dev.subfly.yabacore.database.entities.AnnotationEntity
+import dev.subfly.yabacore.model.annotation.AnnotationType
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.queue.CoreOperationQueue
 import kotlin.time.Clock
 
 /**
- * DB-first manager for highlight annotations.
+ * DB-first manager for persisted annotations (read-it-later, PDF).
  */
-object HighlightManager {
-    private val highlightDao get() = DatabaseProvider.highlightDao
+object AnnotationManager {
+    private val annotationDao get() = DatabaseProvider.annotationDao
 
-    fun createHighlight(
-        highlightId: String,
+    fun createAnnotation(
+        annotationId: String,
         bookmarkId: String,
         readableVersionId: String,
-        type: HighlightType,
+        type: AnnotationType,
         colorRole: YabaColor = YabaColor.NONE,
         note: String? = null,
         quoteText: String? = null,
@@ -25,9 +25,9 @@ object HighlightManager {
     ) {
         val now = Clock.System.now().toEpochMilliseconds()
 
-        CoreOperationQueue.queue("CreateHighlight:$highlightId") {
-            val entity = HighlightEntity(
-                id = highlightId,
+        CoreOperationQueue.queue("CreateAnnotation:$annotationId") {
+            val entity = AnnotationEntity(
+                id = annotationId,
                 bookmarkId = bookmarkId,
                 readableVersionId = readableVersionId,
                 type = type,
@@ -38,45 +38,45 @@ object HighlightManager {
                 createdAt = now,
                 editedAt = now,
             )
-            highlightDao.upsert(entity)
+            annotationDao.upsert(entity)
             AllBookmarksManager.touchBookmarkEditedAt(bookmarkId)
         }
     }
 
-    fun updateHighlight(
+    fun updateAnnotation(
         bookmarkId: String,
-        highlightId: String,
+        annotationId: String,
         colorRole: YabaColor,
         note: String?,
     ) {
-        CoreOperationQueue.queue("UpdateHighlight:$highlightId") {
-            val existing = highlightDao.getById(highlightId) ?: return@queue
+        CoreOperationQueue.queue("UpdateAnnotation:$annotationId") {
+            val existing = annotationDao.getById(annotationId) ?: return@queue
             val updated = existing.copy(
                 colorRole = colorRole,
                 note = note,
                 editedAt = Clock.System.now().toEpochMilliseconds(),
             )
-            highlightDao.upsert(updated)
+            annotationDao.upsert(updated)
             AllBookmarksManager.touchBookmarkEditedAt(bookmarkId)
         }
     }
 
-    fun deleteHighlight(bookmarkId: String, highlightId: String) {
-        CoreOperationQueue.queue("DeleteHighlight:$highlightId") {
-            highlightDao.deleteById(highlightId)
+    fun deleteAnnotation(bookmarkId: String, annotationId: String) {
+        CoreOperationQueue.queue("DeleteAnnotation:$annotationId") {
+            annotationDao.deleteById(annotationId)
             AllBookmarksManager.touchBookmarkEditedAt(bookmarkId)
         }
     }
 
-    suspend fun getHighlightsForBookmark(bookmarkId: String): List<HighlightEntity> =
-        highlightDao.getByBookmarkId(bookmarkId)
+    suspend fun getAnnotationsForBookmark(bookmarkId: String): List<AnnotationEntity> =
+        annotationDao.getByBookmarkId(bookmarkId)
 
-    suspend fun getHighlightsForVersion(
+    suspend fun getAnnotationsForVersion(
         bookmarkId: String,
         readableVersionId: String,
-    ): List<HighlightEntity> =
-        highlightDao.getByBookmarkId(bookmarkId, readableVersionId = readableVersionId)
+    ): List<AnnotationEntity> =
+        annotationDao.getByBookmarkId(bookmarkId, readableVersionId = readableVersionId)
 
-    suspend fun getHighlight(bookmarkId: String, highlightId: String): HighlightEntity? =
-        highlightDao.getById(highlightId)
+    suspend fun getAnnotation(bookmarkId: String, annotationId: String): AnnotationEntity? =
+        annotationDao.getById(annotationId)
 }

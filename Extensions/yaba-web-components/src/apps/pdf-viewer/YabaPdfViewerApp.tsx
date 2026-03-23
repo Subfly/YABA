@@ -63,11 +63,11 @@ function getViewerWithBus(): ViewerWithBus | null {
   return viewer ?? null
 }
 
-function emitHighlightTap(id: string): void {
+function emitAnnotationTap(id: string): void {
   const win = window as Window & {
-    YabaPdfBridge?: { onHighlightTap?: (highlightId: string) => void }
+    YabaPdfBridge?: { onAnnotationTap?: (annotationId: string) => void }
   }
-  win.YabaPdfBridge?.onHighlightTap?.(id)
+  win.YabaPdfBridge?.onAnnotationTap?.(id)
 }
 
 function YabaPdfHighlighterPane({
@@ -205,7 +205,7 @@ function YabaPdfHighlighterPane({
               isScrolledTo={isScrolledTo}
               comment={{ text: "", emoji: "" }}
               position={highlight.position}
-              onClick={() => emitHighlightTap(highlight.id)}
+              onClick={() => emitAnnotationTap(highlight.id)}
             />
           </div>
         )

@@ -19,7 +19,7 @@ object YabaWebBridgeScripts {
     const val PDF_BRIDGE_READY_LOOSE: String =
         "(function(){ try { return !!(window.YabaPdfBridge && window.YabaPdfBridge.isReady); } catch(e){ return false; } })();"
 
-    const val HIGHLIGHT_TAP_SCHEME_PREFIX = "yaba://highlight-tap?"
+    const val ANNOTATION_TAP_SCHEME_PREFIX = "yaba://annotation-tap?"
 
     /** Editor math node tap — intercepted in the host WebView client (same pattern as highlight tap). */
     const val MATH_TAP_SCHEME_PREFIX = "yaba://math-tap?"

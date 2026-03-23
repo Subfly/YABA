@@ -1,8 +1,8 @@
 package dev.subfly.yabacore.state.detail.linkmark
 
 import androidx.compose.runtime.Immutable
+import dev.subfly.yabacore.model.ui.AnnotationUiModel
 import dev.subfly.yabacore.model.ui.BookmarkPreviewUiModel
-import dev.subfly.yabacore.model.ui.HighlightUiModel
 import dev.subfly.yabacore.model.ui.ReadableVersionUiModel
 import dev.subfly.yabacore.model.utils.ReaderPreferences
 
@@ -18,7 +18,7 @@ data class LinkmarkDetailUIState(
     /** Base URL for resolving ../assets/ in document JSON (file://... with trailing slash). */
     val assetsBaseUrl: String? = null,
     val readerPreferences: ReaderPreferences = ReaderPreferences(),
-    val highlights: List<HighlightUiModel> = emptyList(),
+    val annotations: List<AnnotationUiModel> = emptyList(),
     val isLoading: Boolean = false,
     val isUpdatingReadable: Boolean = false,
     /** Converter flow: raw HTML to be converted by WebView. */
@@ -28,8 +28,8 @@ data class LinkmarkDetailUIState(
     /** Scheduled reminder fire date as epoch millis, null when no reminder is pending. */
     val reminderDateEpochMillis: Long? = null,
     val hasNotificationPermission: Boolean = false,
-    /** When set, the reader should scroll to this highlight and then clear. */
-    val scrollToHighlightId: String? = null,
+    /** When set, the reader should scroll to this annotation and then clear. */
+    val scrollToAnnotationId: String? = null,
 )
 
 @Immutable

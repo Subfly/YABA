@@ -1,11 +1,11 @@
 package dev.subfly.yabacore.managers
 
 import dev.subfly.yabacore.database.DatabaseProvider
-import dev.subfly.yabacore.database.entities.HighlightEntity
+import dev.subfly.yabacore.database.entities.AnnotationEntity
 import dev.subfly.yabacore.database.entities.LinkBookmarkEntity
 import dev.subfly.yabacore.database.mappers.toUiModel
 import dev.subfly.yabacore.filesystem.BookmarkFileManager
-import dev.subfly.yabacore.model.ui.HighlightUiModel
+import dev.subfly.yabacore.model.ui.AnnotationUiModel
 import dev.subfly.yabacore.model.ui.LinkmarkUiModel
 import dev.subfly.yabacore.queue.CoreOperationQueue
 import kotlinx.coroutines.flow.Flow
@@ -22,7 +22,7 @@ object LinkmarkManager {
     private val linkBookmarkDao get() = DatabaseProvider.linkBookmarkDao
     private val folderDao get() = DatabaseProvider.folderDao
     private val tagDao get() = DatabaseProvider.tagDao
-    private val highlightDao get() = DatabaseProvider.highlightDao
+    private val annotationDao get() = DatabaseProvider.annotationDao
 
     suspend fun getBookmarkUrl(bookmarkId: String): String? =
         linkBookmarkDao.getByBookmarkId(bookmarkId)?.url
@@ -62,9 +62,9 @@ object LinkmarkManager {
         )
     }
 
-    fun observeHighlights(bookmarkId: String): Flow<List<HighlightUiModel>> =
-        highlightDao.observeByBookmarkId(bookmarkId)
-            .map { highlights -> highlights.map { it.toUiModel() } }
+    fun observeAnnotations(bookmarkId: String): Flow<List<AnnotationUiModel>> =
+        annotationDao.observeByBookmarkId(bookmarkId)
+            .map { list -> list.map { it.toUiModel() } }
 
     fun createOrUpdateLinkDetails(
         bookmarkId: String,
@@ -90,15 +90,14 @@ object LinkmarkManager {
         return candidate.substringBefore("?").substringBefore("#")
     }
 
-    private fun HighlightEntity.toUiModel(): HighlightUiModel =
-        HighlightUiModel(
+    private fun AnnotationEntity.toUiModel(): AnnotationUiModel =
+        AnnotationUiModel(
             id = id,
             type = type,
             colorRole = colorRole,
             note = note,
             quoteText = quoteText,
             extrasJson = extrasJson,
-            absolutePath = null,
             createdAt = createdAt,
             editedAt = editedAt,
         )

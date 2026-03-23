@@ -95,12 +95,12 @@ internal fun LinkmarkDetailVersionItemContent(
                 content = {
                     Column {
                         Text(formattedDate)
-                        val count = version.highlights.size
+                        val count = version.annotations.size
                         Text(
                             text = when (count) {
-                                0 -> "No Highlights"
-                                1 -> "1 Highlight"
-                                else -> "$count Highlights"
+                                0 -> "No Annotations"
+                                1 -> "1 Annotation"
+                                else -> "$count Annotations"
                             },
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,

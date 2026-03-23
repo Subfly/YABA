@@ -1,5 +1,7 @@
 package dev.subfly.yabacore.webview
 
+import dev.subfly.yabacore.model.utils.YabaColor
+
 object YabaEditorCommands {
     const val ToggleBold = """{"type":"toggleBold"}"""
     const val ToggleItalic = """{"type":"toggleItalic"}"""
@@ -24,6 +26,7 @@ object YabaEditorCommands {
     const val AddColumnBefore = """{"type":"addColumnBefore"}"""
     const val AddColumnAfter = """{"type":"addColumnAfter"}"""
     const val DeleteColumn = """{"type":"deleteColumn"}"""
+    const val UnsetTextHighlight = """{"type":"unsetTextHighlight"}"""
 
     /** JSON for [window.YabaEditorBridge.dispatch] — inserts raw text at the selection (escapes for JS JSON). */
     fun insertTextPayload(text: String): String {
@@ -85,6 +88,12 @@ object YabaEditorCommands {
     fun setHeadingPayload(level: Int): String {
         val l = level.coerceIn(1, 6)
         return """{"type":"setHeading","level":$l}"""
+    }
+
+    /** Highlight mark; [colorRole] is [YabaColor.name] (e.g. BLUE, NONE maps to folder default in web). */
+    fun setTextHighlightPayload(colorRole: YabaColor): String {
+        val role = escapeJsonString(colorRole.name)
+        return """{"type":"setTextHighlight","colorRole":"$role"}"""
     }
 
     fun hasAnyTextMark(formatting: EditorFormattingState): Boolean =
