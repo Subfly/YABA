@@ -37,6 +37,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.webview.YabaWebView
+import dev.subfly.yaba.core.navigation.creation.ColorSelectionRoute
 import dev.subfly.yaba.core.navigation.creation.NotemarkMathSheetRoute
 import dev.subfly.yaba.core.navigation.creation.NotemarkTableCreationRoute
 import dev.subfly.yaba.ui.detail.bookmark.components.BookmarkDetailContentTopBar
@@ -53,6 +54,7 @@ import dev.subfly.yaba.util.NotemarkTableSheetResult
 import dev.subfly.yaba.util.ResultStoreKeys
 import dev.subfly.yaba.util.rememberUrlLauncher
 import dev.subfly.yabacore.model.utils.ReaderPreferences
+import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.detail.notemark.NotemarkDetailEvent
 import dev.subfly.yabacore.state.detail.notemark.NotemarkDetailUIState
 import dev.subfly.yabacore.ui.icon.YabaIcon
@@ -98,7 +100,6 @@ internal fun NotemarkContentLayout(
     val awaitKeyboardClosedBeforeCreationSheet = rememberAwaitKeyboardClosedBeforeCreationSheet()
 
     var editorBridge by remember { mutableStateOf<WebViewEditorBridge?>(null) }
-    var hasSelection by remember { mutableStateOf(false) }
     var editorFormatting by remember(state.bookmark?.id) { mutableStateOf(EditorFormattingState()) }
     var isMenuExpanded by remember { mutableStateOf(false) }
 
@@ -154,6 +155,17 @@ internal fun NotemarkContentLayout(
         bridge.focus()
     }
 
+    LaunchedEffect(resultStore.getResult(ResultStoreKeys.SELECTED_COLOR), editorBridge) {
+        val picked = resultStore.getResult<YabaColor>(ResultStoreKeys.SELECTED_COLOR) ?: return@LaunchedEffect
+        val bridge = editorBridge ?: return@LaunchedEffect
+        resultStore.removeResult(ResultStoreKeys.SELECTED_COLOR)
+        when (picked) {
+            YabaColor.NONE -> bridge.dispatch(YabaEditorCommands.UnsetTextHighlight)
+            else -> bridge.dispatch(YabaEditorCommands.setTextHighlightPayload(picked))
+        }
+        bridge.focus()
+    }
+
     LaunchedEffect(state.inlineImageDocumentSrc, editorBridge) {
         val src = state.inlineImageDocumentSrc ?: return@LaunchedEffect
         val bridge = editorBridge ?: return@LaunchedEffect
@@ -193,7 +205,6 @@ internal fun NotemarkContentLayout(
                     onHostEvent = { ev ->
                         when (ev) {
                             is YabaWebHostEvent.ReaderMetrics -> {
-                                hasSelection = ev.canCreateAnnotation
                                 ev.editorFormatting?.let { editorFormatting = it }
                             }
 
@@ -273,16 +284,17 @@ internal fun NotemarkContentLayout(
                     if (ready) {
                         NotemarkEditorToolbar(
                             color = folderAccent,
-                            canCreateTextHighlight = hasSelection,
                             formatting = editorFormatting,
-                            onSetTextHighlightColor = { color ->
+                            onHighlightInactiveClick = {
                                 scope.launch {
-                                    editorBridge?.dispatch(YabaEditorCommands.setTextHighlightPayload(color))
+                                    awaitKeyboardClosedBeforeCreationSheet(editorBridge)
+                                    creationNavigator.add(ColorSelectionRoute(selectedColor = YabaColor.NONE))
+                                    appStateManager.onShowCreationContent()
                                 }
                             },
-                            onRemoveTextHighlight = {
+                            onHighlightActiveClick = {
                                 scope.launch {
-                                    editorBridge?.dispatch(YabaEditorCommands.UnsetTextHighlight)
+                                    editorBridge?.dispatch(YabaEditorCommands.ToggleTextHighlight)
                                 }
                             },
                             onDispatchCommand = { payload ->

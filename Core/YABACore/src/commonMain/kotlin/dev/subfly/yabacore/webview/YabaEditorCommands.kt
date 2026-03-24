@@ -27,6 +27,7 @@ object YabaEditorCommands {
     const val AddColumnAfter = """{"type":"addColumnAfter"}"""
     const val DeleteColumn = """{"type":"deleteColumn"}"""
     const val UnsetTextHighlight = """{"type":"unsetTextHighlight"}"""
+    const val ToggleTextHighlight = """{"type":"toggleTextHighlight"}"""
 
     /** JSON for [window.YabaEditorBridge.dispatch] — inserts raw text at the selection (escapes for JS JSON). */
     fun insertTextPayload(text: String): String {
@@ -102,8 +103,7 @@ object YabaEditorCommands {
             formatting.underline ||
             formatting.strikethrough ||
             formatting.subscript ||
-            formatting.superscript ||
-            formatting.textHighlight
+            formatting.superscript
 
     /** Block/list toggles shown under the insert ("add") toolbar menu. */
     fun hasAnyInsertMenuToggle(formatting: EditorFormattingState): Boolean =

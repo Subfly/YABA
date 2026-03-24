@@ -144,6 +144,7 @@ export type EditorCommandPayload =
   | { type: "deleteColumn" }
   | { type: "setTextHighlight"; colorRole: string }
   | { type: "unsetTextHighlight" }
+  | { type: "toggleTextHighlight" }
 
 let editorInstance: Editor | null = null
 /** Latest ProseMirror selection (anchor/head) for restoring the caret after [unFocus] / native chrome. */
@@ -594,11 +595,18 @@ export function initEditorBridge(editor: Editor): void {
         }
         case "setTextHighlight": {
           const role = (cmd.colorRole || "YELLOW").toUpperCase()
-          ed.chain().focus().setHighlight({ color: role }).run()
+          if (role === "NONE") {
+            ed.chain().focus().unsetHighlight().run()
+          } else {
+            ed.chain().focus().setHighlight({ color: role }).run()
+          }
           break
         }
         case "unsetTextHighlight":
           ed.chain().focus().unsetHighlight().run()
+          break
+        case "toggleTextHighlight":
+          ed.chain().focus().toggleHighlight().run()
           break
       }
     },

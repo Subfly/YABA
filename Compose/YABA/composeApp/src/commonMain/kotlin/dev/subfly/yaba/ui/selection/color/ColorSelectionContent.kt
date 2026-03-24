@@ -34,14 +34,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import dev.subfly.yaba.util.ResultStoreKeys
+import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
+import dev.subfly.yaba.util.ResultStoreKeys
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.icon.iconTintArgb
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
+import yaba.composeapp.generated.resources.cancel
 import yaba.composeapp.generated.resources.done
 import yaba.composeapp.generated.resources.select_color_title
 
@@ -52,6 +54,7 @@ fun ColorSelectionContent(
 ) {
     val creationNavigator = LocalCreationContentNavigator.current
     val resultStore = LocalResultStore.current
+    val appStateManager = LocalAppStateManager.current
 
     var selectedColor by rememberSaveable(currentSelectedColor) {
         mutableStateOf(
@@ -70,14 +73,23 @@ fun ColorSelectionContent(
     ) {
         TopBar(
             modifier = Modifier.padding(horizontal = 8.dp),
+            isStartingFlow = creationNavigator.size <= 2,
             onDone = {
                 resultStore.setResult(
                     key = ResultStoreKeys.SELECTED_COLOR,
                     value = selectedColor,
                 )
+                if (creationNavigator.size == 2) {
+                    appStateManager.onHideCreationContent()
+                }
                 creationNavigator.removeLastOrNull()
             },
-            onDismiss = creationNavigator::removeLastOrNull,
+            onDismiss = {
+                if (creationNavigator.size == 2) {
+                    appStateManager.onHideCreationContent()
+                }
+                creationNavigator.removeLastOrNull()
+            },
         )
         Spacer(modifier = Modifier.height(12.dp))
         SelectionContent(
@@ -96,6 +108,7 @@ fun ColorSelectionContent(
 @Composable
 private fun TopBar(
     modifier: Modifier = Modifier,
+    isStartingFlow: Boolean,
     onDone: () -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -106,8 +119,20 @@ private fun TopBar(
         ),
         title = { Text(text = stringResource(Res.string.select_color_title)) },
         navigationIcon = {
-            IconButton(onClick = onDismiss) {
-                YabaIcon(name = "arrow-left-01")
+            if (isStartingFlow) {
+                TextButton(
+                    shapes = ButtonDefaults.shapes(),
+                    onClick = onDismiss,
+                    colors = ButtonDefaults.textButtonColors().copy(
+                        contentColor = MaterialTheme.colorScheme.error,
+                    ),
+                ) {
+                    Text(text = stringResource(Res.string.cancel))
+                }
+            } else {
+                IconButton(onClick = onDismiss) {
+                    YabaIcon(name = "arrow-left-01")
+                }
             }
         },
         actions = {
