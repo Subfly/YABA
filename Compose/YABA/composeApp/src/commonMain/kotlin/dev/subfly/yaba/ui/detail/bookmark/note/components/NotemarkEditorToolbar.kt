@@ -3,14 +3,13 @@ package dev.subfly.yaba.ui.detail.bookmark.note.components
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.DropdownMenuGroup
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.DropdownMenuPopup
@@ -61,79 +60,108 @@ internal fun NotemarkEditorToolbar(
     onOpenMathSheet: (isBlock: Boolean) -> Unit,
     onPickImageFromGallery: () -> Unit,
     onCaptureImageFromCamera: () -> Unit,
+    onSaveDocument: () -> Unit,
 ) {
     val toolbarContainerColor = Color(color.iconTintArgb()).copy(alpha = 0.5f)
+    val toolbarSaveOpaqueColor = Color(color.iconTintArgb())
 
-    Box(
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .background(color = toolbarContainerColor)
-                .navigationBarsPadding(),
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Row(
+        LazyRow(
             modifier =
                 Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState())
-                    .padding(horizontal = 4.dp, vertical = 4.dp),
+                    .weight(1f)
+                    .background(color = toolbarContainerColor)
+                    .padding(horizontal = 8.dp)
+                    .navigationBarsPadding(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start,
         ) {
-            AnimatedContent(
-                targetState = formatting.inTable,
-                label = "notemarkTableEdit",
-            ) { inTable ->
-                if (inTable) {
-                    TableEditDropdown(
-                        folderYabaColor = color,
-                        formatting = formatting,
-                        onDispatchCommand = onDispatchCommand,
-                    )
+            item {
+                AnimatedContent(
+                    targetState = formatting.inTable,
+                    label = "notemarkTableEdit",
+                ) { inTable ->
+                    if (inTable) {
+                        TableEditDropdown(
+                            folderYabaColor = color,
+                            formatting = formatting,
+                            onDispatchCommand = onDispatchCommand,
+                        )
+                    }
                 }
             }
 
-            HeadingInsertDropdown(
-                folderYabaColor = color,
-                onInsertHeadingMarkdown = { level ->
-                    onDispatchCommand(YabaEditorCommands.setHeadingPayload(level))
-                },
-            )
+            item {
+                HeadingInsertDropdown(
+                    folderYabaColor = color,
+                    onInsertHeadingMarkdown = { level ->
+                        onDispatchCommand(YabaEditorCommands.setHeadingPayload(level))
+                    },
+                )
+            }
 
-            TextMarksDropdown(
-                folderYabaColor = color,
-                formatting = formatting,
-                onDispatchCommand = onDispatchCommand,
-            )
+            item {
+                TextMarksDropdown(
+                    folderYabaColor = color,
+                    formatting = formatting,
+                    onDispatchCommand = onDispatchCommand,
+                )
+            }
 
-            InsertBlocksDropdown(
-                folderYabaColor = color,
-                formatting = formatting,
-                onDispatchCommand = onDispatchCommand,
-                onOpenTableInsertSheet = onOpenTableInsertSheet,
-                onOpenMathSheet = onOpenMathSheet,
-                onPickImageFromGallery = onPickImageFromGallery,
-                onCaptureImageFromCamera = onCaptureImageFromCamera,
-            )
+            item {
+                InsertBlocksDropdown(
+                    folderYabaColor = color,
+                    formatting = formatting,
+                    onDispatchCommand = onDispatchCommand,
+                    onOpenTableInsertSheet = onOpenTableInsertSheet,
+                    onOpenMathSheet = onOpenMathSheet,
+                    onPickImageFromGallery = onPickImageFromGallery,
+                    onCaptureImageFromCamera = onCaptureImageFromCamera,
+                )
+            }
 
-            HighlightToolbarButton(
-                folderYabaColor = color,
-                formatting = formatting,
-                onInactiveClick = onHighlightInactiveClick,
-                onActiveClick = onHighlightActiveClick,
-            )
+            item {
+                HighlightToolbarButton(
+                    folderYabaColor = color,
+                    formatting = formatting,
+                    onInactiveClick = onHighlightInactiveClick,
+                    onActiveClick = onHighlightActiveClick,
+                )
+            }
 
-            IndentOutdentDropdown(
-                folderYabaColor = color,
-                formatting = formatting,
-                onDispatchCommand = onDispatchCommand,
-            )
+            item {
+                IndentOutdentDropdown(
+                    folderYabaColor = color,
+                    formatting = formatting,
+                    onDispatchCommand = onDispatchCommand,
+                )
+            }
 
-            UndoRedoDropdown(
-                folderYabaColor = color,
-                formatting = formatting,
-                onDispatchCommand = onDispatchCommand,
-            )
+            item {
+                UndoRedoDropdown(
+                    folderYabaColor = color,
+                    formatting = formatting,
+                    onDispatchCommand = onDispatchCommand,
+                )
+            }
+        }
+
+        Box(
+            modifier =
+                Modifier
+                    .background(color = toolbarSaveOpaqueColor)
+                    .padding(horizontal = 8.dp)
+                    .navigationBarsPadding(),
+            contentAlignment = Alignment.Center,
+        ) {
+            IconButton(
+                onClick = onSaveDocument,
+                colors = bookmarkReaderToolbarIconButtonColors(color),
+                shapes = IconButtonDefaults.shapes(),
+            ) { YabaIcon(name = "floppy-disk", color = Color.White) }
         }
     }
 }

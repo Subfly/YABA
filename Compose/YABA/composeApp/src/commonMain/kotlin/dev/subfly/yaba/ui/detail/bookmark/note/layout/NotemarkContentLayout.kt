@@ -301,6 +301,13 @@ internal fun NotemarkContentLayout(
                             onEvent(NotemarkDetailEvent.OnCaptureImageFromCamera)
                         }
                     },
+                    onSaveDocument = {
+                        scope.launch {
+                            val bridge = editorBridge ?: return@launch
+                            val json = bridge.getDocumentJson()
+                            onEvent(NotemarkDetailEvent.OnSave(documentJson = json))
+                        }
+                    },
                 )
             }
         }
