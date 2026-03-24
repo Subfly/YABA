@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -190,154 +191,157 @@ internal fun NotemarkContentLayout(
             .fillMaxSize()
             .background(color = MaterialTheme.colorScheme.background),
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            if (ready) {
-                YabaWebView(
-                    modifier = Modifier.fillMaxSize(),
-                    baseUrl = WebComponentUris.getEditorUri(),
-                    feature = YabaWebFeature.Editor(
-                        initialDocumentJson = state.initialDocumentJson.orEmpty(),
-                        assetsBaseUrl = state.assetsBaseUrl,
-                        platform = YabaWebPlatform.Compose,
-                        appearance = webAppearance,
-                        readerPreferences = ReaderPreferences(),
-                    ),
-                    onHostEvent = { ev ->
-                        when (ev) {
-                            is YabaWebHostEvent.ReaderMetrics -> {
-                                ev.editorFormatting?.let { editorFormatting = it }
-                            }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .imePadding(),
+        ) {
+            Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                if (ready) {
+                    YabaWebView(
+                        modifier = Modifier.fillMaxSize(),
+                        baseUrl = WebComponentUris.getEditorUri(),
+                        feature = YabaWebFeature.Editor(
+                            initialDocumentJson = state.initialDocumentJson.orEmpty(),
+                            assetsBaseUrl = state.assetsBaseUrl,
+                            platform = YabaWebPlatform.Compose,
+                            appearance = webAppearance,
+                            readerPreferences = ReaderPreferences(),
+                        ),
+                        onHostEvent = { ev ->
+                            when (ev) {
+                                is YabaWebHostEvent.ReaderMetrics -> {
+                                    ev.editorFormatting?.let { editorFormatting = it }
+                                }
 
-                            else -> Unit
+                                else -> Unit
+                            }
+                        },
+                        onUrlClick = openUrl,
+                        onScrollDirectionChanged = { _ -> },
+                        onReaderBridgeReady = {},
+                        onEditorBridgeReady = { editorBridge = it },
+                        onAnnotationTap = {},
+                        onMathTap = { ev: MathTapEvent ->
+                            scope.launch {
+                                awaitKeyboardClosedBeforeCreationSheet(editorBridge)
+                                creationNavigator.add(
+                                    NotemarkMathSheetRoute(
+                                        isBlock = ev.isBlock,
+                                        initialLatex = ev.latex,
+                                        isEdit = true,
+                                        editPos = ev.documentPos,
+                                    ),
+                                )
+                                appStateManager.onShowCreationContent()
+                            }
+                        },
+                    )
+                } else if (!state.isLoading) {
+                    NoContentView(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .wrapContentSize(Alignment.Center),
+                        iconName = "cancel-square",
+                        labelRes = Res.string.reader_not_available_title,
+                    ) { Text(text = stringResource(Res.string.reader_not_available_description)) }
+                }
+            }
+
+            if (ready) {
+                NotemarkEditorToolbar(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = folderAccent,
+                    formatting = editorFormatting,
+                    onHighlightInactiveClick = {
+                        scope.launch {
+                            awaitKeyboardClosedBeforeCreationSheet(editorBridge)
+                            creationNavigator.add(ColorSelectionRoute(selectedColor = YabaColor.NONE))
+                            appStateManager.onShowCreationContent()
                         }
                     },
-                    onUrlClick = openUrl,
-                    onScrollDirectionChanged = { _ -> },
-                    onReaderBridgeReady = {},
-                    onEditorBridgeReady = { editorBridge = it },
-                    onAnnotationTap = {},
-                    onMathTap = { ev: MathTapEvent ->
+                    onHighlightActiveClick = {
+                        scope.launch {
+                            editorBridge?.dispatch(YabaEditorCommands.ToggleTextHighlight)
+                        }
+                    },
+                    onDispatchCommand = { payload ->
+                        scope.launch { editorBridge?.dispatch(payload) }
+                    },
+                    onOpenTableInsertSheet = {
+                        scope.launch {
+                            awaitKeyboardClosedBeforeCreationSheet(editorBridge)
+                            creationNavigator.add(NotemarkTableCreationRoute())
+                            appStateManager.onShowCreationContent()
+                        }
+                    },
+                    onOpenMathSheet = { isBlock ->
                         scope.launch {
                             awaitKeyboardClosedBeforeCreationSheet(editorBridge)
                             creationNavigator.add(
                                 NotemarkMathSheetRoute(
-                                    isBlock = ev.isBlock,
-                                    initialLatex = ev.latex,
-                                    isEdit = true,
-                                    editPos = ev.documentPos,
+                                    isBlock = isBlock,
+                                    initialLatex = "",
+                                    isEdit = false,
+                                    editPos = null,
                                 ),
                             )
                             appStateManager.onShowCreationContent()
                         }
                     },
+                    onPickImageFromGallery = {
+                        scope.launch {
+                            editorBridge?.unFocus()
+                            onEvent(NotemarkDetailEvent.OnPickImageFromGallery)
+                        }
+                    },
+                    onCaptureImageFromCamera = {
+                        scope.launch {
+                            editorBridge?.unFocus()
+                            onEvent(NotemarkDetailEvent.OnCaptureImageFromCamera)
+                        }
+                    },
                 )
-            } else if (!state.isLoading) {
-                NoContentView(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .wrapContentSize(Alignment.Center),
-                    iconName = "cancel-square",
-                    labelRes = Res.string.reader_not_available_title,
-                ) { Text(text = stringResource(Res.string.reader_not_available_description)) }
             }
         }
 
-        Column(
+        BookmarkDetailContentTopBar(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .fillMaxWidth(),
-        ) {
-            BookmarkDetailContentTopBar(
-                color = folderAccent,
-                onBack = navigator::removeLastOrNull,
-                onShowDetail = onShowDetail,
-                overflowMenu = {
-                    Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
-                        IconButton(
-                            onClick = { isMenuExpanded = !isMenuExpanded },
-                            colors = menuIconButtonColors,
-                            shapes = IconButtonDefaults.shapes(),
-                        ) { YabaIcon(name = "more-horizontal-circle-02", color = Color.White) }
+            color = folderAccent,
+            onBack = navigator::removeLastOrNull,
+            onShowDetail = onShowDetail,
+            overflowMenu = {
+                Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
+                    IconButton(
+                        onClick = { isMenuExpanded = !isMenuExpanded },
+                        colors = menuIconButtonColors,
+                        shapes = IconButtonDefaults.shapes(),
+                    ) { YabaIcon(name = "more-horizontal-circle-02", color = Color.White) }
 
-                        NotemarkContentDropdownMenu(
-                            expanded = isMenuExpanded,
-                            onDismissRequest = { isMenuExpanded = false },
-                            state = state,
-                            onEvent = onEvent,
-                            onShowRemindMePicker = onShowRemindMePicker,
-                        )
-                    }
-                },
-                loadingIndicator = {
-                    AnimatedContent(state.isLoading) { loading ->
-                        if (loading) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 4.dp)
-                                    .background(color = MaterialTheme.colorScheme.surface),
-                            ) { LinearWavyProgressIndicator(modifier = Modifier.fillMaxWidth()) }
-                        } else { Box(modifier = Modifier.fillMaxWidth()) }
-                    }
-                },
-                title = {
-                    if (ready) {
-                        NotemarkEditorToolbar(
-                            color = folderAccent,
-                            formatting = editorFormatting,
-                            onHighlightInactiveClick = {
-                                scope.launch {
-                                    awaitKeyboardClosedBeforeCreationSheet(editorBridge)
-                                    creationNavigator.add(ColorSelectionRoute(selectedColor = YabaColor.NONE))
-                                    appStateManager.onShowCreationContent()
-                                }
-                            },
-                            onHighlightActiveClick = {
-                                scope.launch {
-                                    editorBridge?.dispatch(YabaEditorCommands.ToggleTextHighlight)
-                                }
-                            },
-                            onDispatchCommand = { payload ->
-                                scope.launch { editorBridge?.dispatch(payload) }
-                            },
-                            onOpenTableInsertSheet = {
-                                scope.launch {
-                                    awaitKeyboardClosedBeforeCreationSheet(editorBridge)
-                                    creationNavigator.add(NotemarkTableCreationRoute())
-                                    appStateManager.onShowCreationContent()
-                                }
-                            },
-                            onOpenMathSheet = { isBlock ->
-                                scope.launch {
-                                    awaitKeyboardClosedBeforeCreationSheet(editorBridge)
-                                    creationNavigator.add(
-                                        NotemarkMathSheetRoute(
-                                            isBlock = isBlock,
-                                            initialLatex = "",
-                                            isEdit = false,
-                                            editPos = null,
-                                        ),
-                                    )
-                                    appStateManager.onShowCreationContent()
-                                }
-                            },
-                            onPickImageFromGallery = {
-                                scope.launch {
-                                    editorBridge?.unFocus()
-                                    onEvent(NotemarkDetailEvent.OnPickImageFromGallery)
-                                }
-                            },
-                            onCaptureImageFromCamera = {
-                                scope.launch {
-                                    editorBridge?.unFocus()
-                                    onEvent(NotemarkDetailEvent.OnCaptureImageFromCamera)
-                                }
-                            },
-                        )
-                    }
-                },
-            )
-        }
+                    NotemarkContentDropdownMenu(
+                        expanded = isMenuExpanded,
+                        onDismissRequest = { isMenuExpanded = false },
+                        state = state,
+                        onEvent = onEvent,
+                        onShowRemindMePicker = onShowRemindMePicker,
+                    )
+                }
+            },
+            loadingIndicator = {
+                AnimatedContent(state.isLoading) { loading ->
+                    if (loading) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 4.dp)
+                                .background(color = MaterialTheme.colorScheme.surface),
+                        ) { LinearWavyProgressIndicator(modifier = Modifier.fillMaxWidth()) }
+                    } else { Box(modifier = Modifier.fillMaxWidth()) }
+                }
+            },
+        )
     }
 }
 

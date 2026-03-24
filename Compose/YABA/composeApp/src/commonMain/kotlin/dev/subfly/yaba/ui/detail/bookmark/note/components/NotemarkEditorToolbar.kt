@@ -2,17 +2,20 @@ package dev.subfly.yaba.ui.detail.bookmark.note.components
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.DropdownMenuGroup
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.DropdownMenuPopup
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MenuDefaults
@@ -28,12 +31,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
-import dev.subfly.yaba.ui.detail.bookmark.util.bookmarkReaderFloatingToolbarColors
 import dev.subfly.yaba.ui.detail.bookmark.util.bookmarkReaderToolbarIconButtonColors
 import dev.subfly.yaba.ui.detail.bookmark.util.bookmarkReaderToolbarToggleIconButtonColors
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.ui.icon.YabaIcon
+import dev.subfly.yabacore.ui.icon.iconTintArgb
 import dev.subfly.yabacore.webview.EditorFormattingState
 import dev.subfly.yabacore.webview.YabaEditorCommands
 
@@ -58,15 +62,21 @@ internal fun NotemarkEditorToolbar(
     onPickImageFromGallery: () -> Unit,
     onCaptureImageFromCamera: () -> Unit,
 ) {
-    val toolbarColors = bookmarkReaderFloatingToolbarColors(color)
+    val toolbarContainerColor = Color(color.iconTintArgb()).copy(alpha = 0.5f)
 
-    HorizontalFloatingToolbar(
-        modifier = modifier,
-        expanded = true,
-        colors = toolbarColors,
+    Box(
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .background(color = toolbarContainerColor)
+                .navigationBarsPadding(),
     ) {
         Row(
-            modifier = Modifier.horizontalScroll(rememberScrollState()),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState())
+                    .padding(horizontal = 4.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start,
         ) {
@@ -207,11 +217,31 @@ private fun TextMarksDropdown(
             DropdownMenuGroup(shapes = MenuDefaults.groupShape(index = 0, count = 1)) {
                 listOf(
                     FormatMenuRow("text-bold", "Bold", YabaEditorCommands.ToggleBold) { it.bold },
-                    FormatMenuRow("text-italic", "Italic", YabaEditorCommands.ToggleItalic) { it.italic },
-                    FormatMenuRow("text-underline", "Underline", YabaEditorCommands.ToggleUnderline) { it.underline },
-                    FormatMenuRow("text-strikethrough", "Strikethrough", YabaEditorCommands.ToggleStrikethrough) { it.strikethrough },
-                    FormatMenuRow("text-subscript", "Subscript", YabaEditorCommands.ToggleSubscript) { it.subscript },
-                    FormatMenuRow("text-superscript", "Superscript", YabaEditorCommands.ToggleSuperscript) { it.superscript },
+                    FormatMenuRow(
+                        "text-italic",
+                        "Italic",
+                        YabaEditorCommands.ToggleItalic
+                    ) { it.italic },
+                    FormatMenuRow(
+                        "text-underline",
+                        "Underline",
+                        YabaEditorCommands.ToggleUnderline
+                    ) { it.underline },
+                    FormatMenuRow(
+                        "text-strikethrough",
+                        "Strikethrough",
+                        YabaEditorCommands.ToggleStrikethrough
+                    ) { it.strikethrough },
+                    FormatMenuRow(
+                        "text-subscript",
+                        "Subscript",
+                        YabaEditorCommands.ToggleSubscript
+                    ) { it.subscript },
+                    FormatMenuRow(
+                        "text-superscript",
+                        "Superscript",
+                        YabaEditorCommands.ToggleSuperscript
+                    ) { it.superscript },
                 ).fastForEachIndexed { index, row ->
                     DropdownMenuItem(
                         shapes = MenuDefaults.itemShape(index, 6),
@@ -439,7 +469,10 @@ private fun InsertBlocksDropdown(
     Box {
         IconButton(
             onClick = { expanded = expanded.not() },
-            colors = bookmarkReaderToolbarToggleIconButtonColors(folderYabaColor, anyInsertToggleActive),
+            colors = bookmarkReaderToolbarToggleIconButtonColors(
+                folderYabaColor,
+                anyInsertToggleActive,
+            ),
             shapes = IconButtonDefaults.shapes(),
         ) { YabaIcon(name = "add-01", color = Color.White) }
         DropdownMenuPopup(

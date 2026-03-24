@@ -28,6 +28,7 @@ import dev.subfly.yabacore.ui.icon.YabaIcon
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun BookmarkDetailContentTopBar(
+    modifier: Modifier = Modifier,
     color: YabaColor,
     onBack: () -> Unit,
     onShowDetail: () -> Unit,
@@ -43,7 +44,7 @@ internal fun BookmarkDetailContentTopBar(
     Box(modifier = Modifier.fillMaxWidth()) {
         Box(
             modifier =
-                Modifier
+                modifier
                     .align(Alignment.TopCenter)
                     .fillMaxWidth()
                     .height(188.dp)
