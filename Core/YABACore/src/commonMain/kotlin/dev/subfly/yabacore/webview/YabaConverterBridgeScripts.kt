@@ -58,4 +58,38 @@ object YabaConverterBridgeScripts {
         val jobIdEscaped = escapeForJsSingleQuotedString(jobId)
         return "(function(){ try { window.YabaConverterBridge.deletePdfExtractionJob('$jobIdEscaped'); } catch(e){} })();"
     }
+
+    fun startEpubExtractionScript(resolvedEpubUrl: String): String {
+        val epubUrlEscaped = escapeForJsSingleQuotedString(resolvedEpubUrl)
+        return """
+            (function() {
+                try {
+                    return window.YabaConverterBridge.startEpubExtraction({
+                        epubUrl: '$epubUrlEscaped'
+                    });
+                } catch (e) {
+                    return "";
+                }
+            })();
+        """.trimIndent()
+    }
+
+    fun getEpubExtractionJobScript(jobId: String): String {
+        val jobIdEscaped = escapeForJsSingleQuotedString(jobId)
+        return """
+            (function() {
+                try {
+                    var state = window.YabaConverterBridge.getEpubExtractionJob('$jobIdEscaped');
+                    return JSON.stringify(state);
+                } catch (e) {
+                    return JSON.stringify({ status: "error", error: e.message });
+                }
+            })();
+        """.trimIndent()
+    }
+
+    fun deleteEpubExtractionJobScript(jobId: String): String {
+        val jobIdEscaped = escapeForJsSingleQuotedString(jobId)
+        return "(function(){ try { window.YabaConverterBridge.deleteEpubExtractionJob('$jobIdEscaped'); } catch(e){} })();"
+    }
 }

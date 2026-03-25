@@ -28,5 +28,12 @@ data class AnnotationSourceContext(
                 type = AnnotationType.PDF,
                 contentId = readableVersionId,
             )
+
+        fun epub(bookmarkId: String, readableVersionId: String): AnnotationSourceContext =
+            AnnotationSourceContext(
+                bookmarkId = bookmarkId,
+                type = AnnotationType.EPUB,
+                contentId = readableVersionId,
+            )
     }
 }

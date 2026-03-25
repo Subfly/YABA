@@ -22,21 +22,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import dev.subfly.yaba.ui.detail.bookmark.components.ReaderPreferenceToolbarFontSizeItem
+import dev.subfly.yaba.ui.detail.bookmark.components.ReaderPreferenceToolbarLineHeightItem
+import dev.subfly.yaba.ui.detail.bookmark.components.ReaderPreferenceToolbarThemeItem
 import dev.subfly.yaba.ui.detail.bookmark.util.bookmarkReaderFloatingToolbarColors
 import dev.subfly.yaba.ui.detail.bookmark.util.bookmarkReaderToolbarIconButtonColors
 import dev.subfly.yaba.util.LocalPaneInfo
+import dev.subfly.yabacore.model.utils.DocmarkType
+import dev.subfly.yabacore.model.utils.ReaderPreferences
 import dev.subfly.yabacore.model.utils.YabaColor
+import dev.subfly.yabacore.state.detail.docmark.DocmarkDetailEvent
 import dev.subfly.yabacore.ui.icon.YabaIcon
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
 internal fun BoxScope.DocmarkReaderFloatingToolbar(
     modifier: Modifier = Modifier,
+    docmarkType: DocmarkType,
+    readerPreferences: ReaderPreferences,
     color: YabaColor,
     isVisible: Boolean,
     hasSelection: Boolean,
     canGoPrev: Boolean,
     canGoNext: Boolean,
+    onEvent: (DocmarkDetailEvent) -> Unit,
     onPrevPage: () -> Unit,
     onNextPage: () -> Unit,
     onAnnotationClick: () -> Unit,
@@ -45,6 +54,7 @@ internal fun BoxScope.DocmarkReaderFloatingToolbar(
     val isTwoPaneLayout = paneInfo.isTwoPaneLayout
     val toolbarColors = bookmarkReaderFloatingToolbarColors(color)
     val disabledTint = Color.White.copy(alpha = 0.5f)
+    val showReaderPrefs = docmarkType == DocmarkType.EPUB
 
     if (isTwoPaneLayout) {
         AnimatedVisibility(
@@ -64,6 +74,23 @@ internal fun BoxScope.DocmarkReaderFloatingToolbar(
                 expanded = true,
                 colors = toolbarColors,
             ) {
+                if (showReaderPrefs) {
+                    ReaderPreferenceToolbarThemeItem(
+                        folderYabaColor = color,
+                        selectedTheme = readerPreferences.theme,
+                        onSelectTheme = { onEvent(DocmarkDetailEvent.OnSetReaderTheme(it)) },
+                    )
+                    ReaderPreferenceToolbarFontSizeItem(
+                        folderYabaColor = color,
+                        selectedFontSize = readerPreferences.fontSize,
+                        onSelectFontSize = { onEvent(DocmarkDetailEvent.OnSetReaderFontSize(it)) },
+                    )
+                    ReaderPreferenceToolbarLineHeightItem(
+                        folderYabaColor = color,
+                        selectedLineHeight = readerPreferences.lineHeight,
+                        onSelectLineHeight = { onEvent(DocmarkDetailEvent.OnSetReaderLineHeight(it)) },
+                    )
+                }
                 IconButton(
                     onClick = onPrevPage,
                     enabled = canGoPrev,
@@ -120,6 +147,23 @@ internal fun BoxScope.DocmarkReaderFloatingToolbar(
             expanded = true,
             colors = toolbarColors,
         ) {
+            if (showReaderPrefs) {
+                ReaderPreferenceToolbarThemeItem(
+                    folderYabaColor = color,
+                    selectedTheme = readerPreferences.theme,
+                    onSelectTheme = { onEvent(DocmarkDetailEvent.OnSetReaderTheme(it)) },
+                )
+                ReaderPreferenceToolbarFontSizeItem(
+                    folderYabaColor = color,
+                    selectedFontSize = readerPreferences.fontSize,
+                    onSelectFontSize = { onEvent(DocmarkDetailEvent.OnSetReaderFontSize(it)) },
+                )
+                ReaderPreferenceToolbarLineHeightItem(
+                    folderYabaColor = color,
+                    selectedLineHeight = readerPreferences.lineHeight,
+                    onSelectLineHeight = { onEvent(DocmarkDetailEvent.OnSetReaderLineHeight(it)) },
+                )
+            }
             IconButton(
                 onClick = onPrevPage,
                 enabled = canGoPrev,

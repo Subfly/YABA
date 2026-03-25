@@ -1,7 +1,9 @@
 package dev.subfly.yabacore.filesystem.access
 
+import dev.subfly.yabacore.database.DatabaseProvider
 import dev.subfly.yabacore.filesystem.ImagemarkFileManager
 import dev.subfly.yabacore.filesystem.DocmarkFileManager
+import dev.subfly.yabacore.model.utils.DocmarkType
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.dialogs.FileKitDialogSettings
@@ -202,17 +204,20 @@ object YabaFileAccessor {
     }
 
     suspend fun shareDocmark(bookmarkId: String) {
-        val file = DocmarkFileManager.getPdfFile(bookmarkId) ?: return
+        val type = DatabaseProvider.docBookmarkDao.getByBookmarkId(bookmarkId)?.type ?: DocmarkType.PDF
+        val file = DocmarkFileManager.getDocumentFile(bookmarkId, type) ?: return
         platformShareFile(file)
     }
 
     suspend fun exportDocmark(
         bookmarkId: String,
         suggestedName: String,
-        extension: String = "pdf",
+        extension: String? = null,
     ): Boolean {
-        val file = DocmarkFileManager.getPdfFile(bookmarkId) ?: return false
-        return saveFileCopy(file, suggestedName, extension)
+        val type = DatabaseProvider.docBookmarkDao.getByBookmarkId(bookmarkId)?.type ?: DocmarkType.PDF
+        val file = DocmarkFileManager.getDocumentFile(bookmarkId, type) ?: return false
+        val ext = extension ?: DocmarkFileManager.extensionForType(type)
+        return saveFileCopy(file, suggestedName, ext)
     }
 
     /**

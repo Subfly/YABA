@@ -5,10 +5,10 @@ import androidx.compose.runtime.Stable
 @Stable
 sealed class DocmarkCreationError {
     @Stable
-    data object NoPdf : DocmarkCreationError()
+    data object NoDocument : DocmarkCreationError()
 
     @Stable
-    data object PdfReadFailed : DocmarkCreationError()
+    data object DocumentReadFailed : DocmarkCreationError()
 
     @Stable
     data object SaveFailed : DocmarkCreationError()

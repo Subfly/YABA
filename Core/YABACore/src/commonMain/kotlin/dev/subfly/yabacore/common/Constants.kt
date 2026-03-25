@@ -126,7 +126,8 @@ object CoreConstants {
             private const val DOC_BASENAME = "document"
             private const val DEFAULT_DOC_EXTENSION = "pdf"
 
-            fun pdfPath(
+            /** On-disk document: `bookmarks/<id>/file/document.<ext>`. */
+            fun documentPath(
                 bookmarkId: String,
                 extension: String = DEFAULT_DOC_EXTENSION,
             ): String = join(

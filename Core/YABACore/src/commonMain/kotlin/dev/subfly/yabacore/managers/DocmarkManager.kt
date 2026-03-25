@@ -7,6 +7,7 @@ import dev.subfly.yabacore.filesystem.BookmarkFileManager
 import dev.subfly.yabacore.filesystem.DocmarkFileManager
 import dev.subfly.yabacore.model.ui.DocmarkUiModel
 import dev.subfly.yabacore.model.utils.BookmarkKind
+import dev.subfly.yabacore.model.utils.DocmarkType
 import dev.subfly.yabacore.queue.CoreOperationQueue
 import kotlinx.coroutines.flow.Flow
 import kotlin.time.Instant
@@ -31,7 +32,8 @@ object DocmarkManager {
         val localIconAbsolutePath = bookmarkMetaData.localIconPath?.let { relativePath ->
             BookmarkFileManager.getAbsolutePath(relativePath)
         }
-        val localPdfAbsolutePath = resolvePdfAbsolutePath(bookmarkId)
+        val docmarkType = docMetaData?.type ?: DocmarkType.PDF
+        val localDocumentAbsolutePath = resolveDocumentAbsolutePath(bookmarkId, docmarkType)
 
         return DocmarkUiModel(
             id = bookmarkMetaData.id,
@@ -45,7 +47,8 @@ object DocmarkManager {
             isPrivate = bookmarkMetaData.isPrivate,
             isPinned = bookmarkMetaData.isPinned,
             summary = docMetaData?.summary,
-            localPdfPath = localPdfAbsolutePath,
+            docmarkType = docmarkType,
+            localDocumentPath = localDocumentAbsolutePath,
             localImagePath = localImageAbsolutePath,
             localIconPath = localIconAbsolutePath,
             parentFolder = folder,
@@ -56,8 +59,8 @@ object DocmarkManager {
     fun observeDocDetails(bookmarkId: String): Flow<DocBookmarkEntity?> =
         docBookmarkDao.observeByBookmarkId(bookmarkId)
 
-    suspend fun resolvePdfAbsolutePath(bookmarkId: String): String? {
-        val relativePath = DocmarkFileManager.getPdfRelativePath(bookmarkId)
+    suspend fun resolveDocumentAbsolutePath(bookmarkId: String, type: DocmarkType): String? {
+        val relativePath = DocmarkFileManager.getDocumentRelativePath(bookmarkId, type)
         BookmarkFileManager.find(relativePath) ?: return null
         return BookmarkFileManager.getAbsolutePath(relativePath)
     }
@@ -65,11 +68,14 @@ object DocmarkManager {
     fun createOrUpdateDocDetails(
         bookmarkId: String,
         summary: String? = null,
+        docmarkType: DocmarkType? = null,
     ) {
         CoreOperationQueue.queue("CreateOrUpdateDocDetails:$bookmarkId") {
+            val previous = docBookmarkDao.getByBookmarkId(bookmarkId)
             val entity = DocBookmarkEntity(
                 bookmarkId = bookmarkId,
                 summary = summary?.takeIf { it.isNotBlank() },
+                type = docmarkType ?: previous?.type ?: DocmarkType.PDF,
             )
             docBookmarkDao.upsert(entity)
         }

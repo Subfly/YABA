@@ -10,6 +10,7 @@ import dev.subfly.yabacore.managers.TagManager
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.CardImageSizing
+import dev.subfly.yabacore.model.utils.DocmarkType
 import dev.subfly.yabacore.preferences.SettingsStores
 import dev.subfly.yabacore.state.base.BaseStateMachine
 import io.github.vinceglb.filekit.name
@@ -29,9 +30,9 @@ class DocmarkCreationStateMachine :
     override fun onEvent(event: DocmarkCreationEvent) {
         when (event) {
             is DocmarkCreationEvent.OnInit -> onInit(event)
-            DocmarkCreationEvent.OnPickPdf -> onPickPdf()
-            is DocmarkCreationEvent.OnPdfFromShare -> onPdfFromShare(event)
-            DocmarkCreationEvent.OnClearPdf -> onClearPdf()
+            DocmarkCreationEvent.OnPickDocument -> onPickDocument()
+            is DocmarkCreationEvent.OnDocumentFromShare -> onDocumentFromShare(event)
+            DocmarkCreationEvent.OnClearDocument -> onClearDocument()
             DocmarkCreationEvent.OnCyclePreviewAppearance -> onCyclePreviewAppearance()
             is DocmarkCreationEvent.OnSetGeneratedPreview -> onSetGeneratedPreview(event)
             is DocmarkCreationEvent.OnChangeLabel -> onChangeLabel(event)
@@ -67,6 +68,7 @@ class DocmarkCreationStateMachine :
                             selectedFolder = existing.parentFolder,
                             selectedTags = existing.tags,
                             editingDocmark = existing,
+                            docmarkType = existing.docmarkType,
                         )
                     }
                 }
@@ -94,22 +96,35 @@ class DocmarkCreationStateMachine :
         }
     }
 
-    private fun onPickPdf() {
+    private fun onPickDocument() {
         if (currentState().isInEditMode) return
         launch {
             updateState { it.copy(isLoading = true, error = null) }
             try {
-                val file = YabaFileAccessor.pickSingleFile(extensions = listOf("pdf")) ?: run {
-                    updateState { it.copy(isLoading = false) }
+                val file =
+                    YabaFileAccessor.pickSingleFile(extensions = listOf("pdf", "epub")) ?: run {
+                        updateState { it.copy(isLoading = false) }
+                        return@launch
+                    }
+                val bytes =
+                    withContext(Dispatchers.IO) {
+                        file.readBytes()
+                    }
+                val sourceName = file.name
+                val docmarkType = inferDocmarkTypeFromFileName(sourceName)
+                if (docmarkType == null) {
+                    updateState {
+                        it.copy(
+                            isLoading = false,
+                            error = DocmarkCreationError.DocumentReadFailed,
+                        )
+                    }
                     return@launch
                 }
-                val bytes = withContext(Dispatchers.IO) {
-                    file.readBytes()
-                }
-                val sourceName = file.name
                 updateState {
                     it.copy(
-                        pdfBytes = bytes,
+                        documentBytes = bytes,
+                        docmarkType = docmarkType,
                         sourceFileName = sourceName,
                         label = it.label.ifBlank { sourceName.substringBeforeLast('.') },
                         isLoading = false,
@@ -120,14 +135,23 @@ class DocmarkCreationStateMachine :
                 updateState {
                     it.copy(
                         isLoading = false,
-                        error = DocmarkCreationError.PdfReadFailed,
+                        error = DocmarkCreationError.DocumentReadFailed,
                     )
                 }
             }
         }
     }
 
-    private fun onPdfFromShare(event: DocmarkCreationEvent.OnPdfFromShare) {
+    private fun inferDocmarkTypeFromFileName(fileName: String): DocmarkType? {
+        val ext = fileName.substringAfterLast('.', "").lowercase()
+        return when (ext) {
+            "pdf" -> DocmarkType.PDF
+            "epub" -> DocmarkType.EPUB
+            else -> null
+        }
+    }
+
+    private fun onDocumentFromShare(event: DocmarkCreationEvent.OnDocumentFromShare) {
         if (currentState().isInEditMode) return
         val sourceFileName = event.sourceFileName?.trim()?.ifBlank { null }
         updateState { state ->
@@ -138,7 +162,8 @@ class DocmarkCreationStateMachine :
                     state.label
                 }
             state.copy(
-                pdfBytes = event.bytes,
+                documentBytes = event.bytes,
+                docmarkType = event.docmarkType,
                 sourceFileName = sourceFileName,
                 label = autoLabel,
                 previewImageBytes = null,
@@ -149,11 +174,12 @@ class DocmarkCreationStateMachine :
         }
     }
 
-    private fun onClearPdf() {
+    private fun onClearDocument() {
         if (currentState().isInEditMode) return
         updateState {
             it.copy(
-                pdfBytes = null,
+                documentBytes = null,
+                docmarkType = null,
                 sourceFileName = null,
                 previewImageBytes = null,
             )
@@ -216,8 +242,14 @@ class DocmarkCreationStateMachine :
         val state = currentState()
         var selectedFolder = state.selectedFolder ?: return
 
-        if (!state.isInEditMode && state.pdfBytes == null) {
-            updateState { it.copy(error = DocmarkCreationError.NoPdf) }
+        if (!state.isInEditMode && state.documentBytes == null) {
+            updateState { it.copy(error = DocmarkCreationError.NoDocument) }
+            event.onErrorCallback()
+            return
+        }
+
+        if (!state.isInEditMode && state.docmarkType == null) {
+            updateState { it.copy(error = DocmarkCreationError.NoDocument) }
             event.onErrorCallback()
             return
         }
@@ -262,16 +294,19 @@ class DocmarkCreationStateMachine :
                         previewImageExtension = state.previewImageExtension,
                         previewIconBytes = null,
                     )
-                    val pdfBytes = state.pdfBytes ?: error("Missing PDF bytes")
-                    DocmarkFileManager.savePdfBytes(
+                    val docBytes = state.documentBytes ?: error("Missing document bytes")
+                    val docType = state.docmarkType ?: error("Missing docmark type")
+                    DocmarkFileManager.saveDocumentBytes(
                         bookmarkId = bookmarkId,
-                        bytes = pdfBytes,
+                        bytes = docBytes,
+                        type = docType,
                     )
                 }
 
                 DocmarkManager.createOrUpdateDocDetails(
                     bookmarkId = bookmarkId,
                     summary = state.summary.ifBlank { null },
+                    docmarkType = if (state.editingDocmark != null) null else state.docmarkType,
                 )
 
                 updateState { it.copy(isSaving = false, error = null) }

@@ -25,13 +25,14 @@ data class AnnotationCreationUIState(
     val bookmarkId: String?
         get() = selectionDraft?.bookmarkId ?: bookmarkIdForEdit
 
-    /** Enough to save: editing, or new PDF/rich selection with quote (or PDF anchor). */
+    /** Enough to save: editing, or new PDF/EPUB/rich selection with quote (or PDF/EPUB anchor). */
     val hasValidSelection: Boolean
         get() = when {
             annotation != null -> true
             selectionDraft != null ->
                 selectionDraft.quote.displayText.isNotBlank() ||
-                    selectionDraft.pdfAnchor != null
+                    selectionDraft.pdfAnchor != null ||
+                    selectionDraft.epubAnchor != null
             else -> false
         }
 }

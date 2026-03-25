@@ -31,8 +31,20 @@ sealed class YabaWebFeature {
         val input: WebPdfConverterInput?,
     ) : YabaWebFeature()
 
+    data class EpubExtractor(
+        val input: WebEpubConverterInput?,
+    ) : YabaWebFeature()
+
     data class PdfViewer(
         val pdfUrl: String,
+        val platform: YabaWebPlatform,
+        val appearance: YabaWebAppearance,
+        val annotations: List<AnnotationUiModel>,
+    ) : YabaWebFeature()
+
+    data class EpubViewer(
+        val epubUrl: String,
+        val readerPreferences: ReaderPreferences,
         val platform: YabaWebPlatform,
         val appearance: YabaWebAppearance,
         val annotations: List<AnnotationUiModel>,

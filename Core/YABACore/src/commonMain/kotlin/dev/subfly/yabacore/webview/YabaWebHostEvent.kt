@@ -23,4 +23,8 @@ sealed interface YabaWebHostEvent {
     data class PdfConverterSuccess(val result: WebPdfConverterResult) : YabaWebHostEvent
 
     data class PdfConverterFailure(val error: Throwable) : YabaWebHostEvent
+
+    data class EpubConverterSuccess(val result: WebEpubConverterResult) : YabaWebHostEvent
+
+    data class EpubConverterFailure(val error: Throwable) : YabaWebHostEvent
 }

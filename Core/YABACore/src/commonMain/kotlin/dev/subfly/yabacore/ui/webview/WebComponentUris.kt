@@ -19,6 +19,8 @@ object WebComponentUris {
 
     fun getPdfViewerUri(): String = Res.getUri("$WEB_COMPONENTS_BASE/pdf-viewer.html")
 
+    fun getEpubViewerUri(): String = Res.getUri("$WEB_COMPONENTS_BASE/epub-viewer.html")
+
     /**
      * Base URL for loading web-component assets (chunks, CSS, etc.).
      * Use this as the base URL when loading the HTML so relative paths resolve.

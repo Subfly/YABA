@@ -6,10 +6,12 @@ import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.CardImageSizing
+import dev.subfly.yabacore.model.utils.DocmarkType
 
 @Stable
 data class DocmarkCreationUIState(
-    val pdfBytes: ByteArray? = null,
+    val documentBytes: ByteArray? = null,
+    val docmarkType: DocmarkType? = null,
     val sourceFileName: String? = null,
     val label: String = "",
     val description: String = "",
@@ -33,17 +35,18 @@ data class DocmarkCreationUIState(
     val canSave: Boolean
         get() = selectedFolder != null &&
             label.isNotBlank() &&
-            (isInEditMode || pdfBytes != null) &&
+            (isInEditMode || documentBytes != null) &&
             !isLoading
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is DocmarkCreationUIState) return false
 
-        if (pdfBytes != null) {
-            if (other.pdfBytes == null || !pdfBytes.contentEquals(other.pdfBytes)) return false
-        } else if (other.pdfBytes != null) return false
+        if (documentBytes != null) {
+            if (other.documentBytes == null || !documentBytes.contentEquals(other.documentBytes)) return false
+        } else if (other.documentBytes != null) return false
 
+        if (docmarkType != other.docmarkType) return false
         if (sourceFileName != other.sourceFileName) return false
         if (bookmarkAppearance != other.bookmarkAppearance) return false
         if (cardImageSizing != other.cardImageSizing) return false
@@ -65,7 +68,8 @@ data class DocmarkCreationUIState(
     }
 
     override fun hashCode(): Int {
-        var result = pdfBytes?.contentHashCode() ?: 0
+        var result = documentBytes?.contentHashCode() ?: 0
+        result = 31 * result + (docmarkType?.hashCode() ?: 0)
         result = 31 * result + (sourceFileName?.hashCode() ?: 0)
         result = 31 * result + bookmarkAppearance.hashCode()
         result = 31 * result + cardImageSizing.hashCode()

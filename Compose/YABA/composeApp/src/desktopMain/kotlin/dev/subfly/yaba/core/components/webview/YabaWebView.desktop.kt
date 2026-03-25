@@ -34,6 +34,7 @@ actual fun YabaWebViewHost(
 ) {
     val showPlaceholder = feature is YabaWebFeature.ReadableViewer ||
         feature is YabaWebFeature.PdfViewer ||
+        feature is YabaWebFeature.EpubViewer ||
         feature is YabaWebFeature.Editor
 
     if (showPlaceholder) {
@@ -67,6 +68,14 @@ actual fun YabaWebViewHost(
                 if (f.input != null) {
                     onHostEvent(
                         YabaWebHostEvent.PdfConverterFailure(
+                            UnsupportedOperationException("WebView not available on desktop"),
+                        ),
+                    )
+                }
+            is YabaWebFeature.EpubExtractor ->
+                if (f.input != null) {
+                    onHostEvent(
+                        YabaWebHostEvent.EpubConverterFailure(
                             UnsupportedOperationException("WebView not available on desktop"),
                         ),
                     )

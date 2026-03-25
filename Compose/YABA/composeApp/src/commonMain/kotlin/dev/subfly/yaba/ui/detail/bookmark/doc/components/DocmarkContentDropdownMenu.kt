@@ -159,7 +159,7 @@ internal fun DocmarkContentDropdownMenu(
                                 appStateManager.onShowCreationContent()
                             }
 
-                            "export" -> onEvent(DocmarkDetailEvent.OnExportPdf)
+                            "export" -> onEvent(DocmarkDetailEvent.OnExportDocument)
                         }
                     },
                     leadingIcon = {
@@ -187,7 +187,7 @@ internal fun DocmarkContentDropdownMenu(
                         when (action.key) {
                             "remind_me" -> onShowRemindMePicker()
                             "cancel_reminder" -> onEvent(DocmarkDetailEvent.OnCancelReminder)
-                            "share" -> onEvent(DocmarkDetailEvent.OnSharePdf)
+                            "share" -> onEvent(DocmarkDetailEvent.OnShareDocument)
                         }
                     },
                     leadingIcon = {

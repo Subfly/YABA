@@ -50,8 +50,8 @@ object ReadableContentManager {
      * resolve a version id for annotation selection drafts (see [AnnotationEntity.readableVersionId]).
      * Creates a single minimal document JSON placeholder version when the bookmark has none yet.
      */
-    fun ensurePdfDocmarkAnnotationReadableVersionIfNeeded(bookmarkId: String) {
-        CoreOperationQueue.queue("EnsurePdfReadable:$bookmarkId") {
+    fun ensureDocmarkAnnotationReadableVersionIfNeeded(bookmarkId: String) {
+        CoreOperationQueue.queue("EnsureDocmarkReadable:$bookmarkId") {
             val existing = readableVersionDao.getByBookmarkId(bookmarkId)
             if (existing.isNotEmpty()) return@queue
             saveReadableContentInternal(

@@ -4,6 +4,7 @@ import dev.subfly.yabacore.common.IdGenerator
 import dev.subfly.yabacore.database.entities.AnnotationEntity
 import dev.subfly.yabacore.managers.AnnotationManager
 import dev.subfly.yabacore.model.annotation.AnnotationType
+import dev.subfly.yabacore.model.annotation.EpubAnnotationExtras
 import dev.subfly.yabacore.model.annotation.PdfAnnotationExtras
 import dev.subfly.yabacore.model.ui.AnnotationUiModel
 import dev.subfly.yabacore.model.utils.YabaColor
@@ -116,18 +117,36 @@ class AnnotationCreationStateMachine :
                     )
                 } else {
                     val draft = state.selectionDraft ?: return@launch
-                    val anchor = draft.pdfAnchor ?: run {
-                        updateState { it.copy(isSaving = false) }
-                        event.onErrorCallback(IllegalStateException("Expected PDF selection anchor"))
-                        return@launch
+                    val annotationType = draft.sourceContext.type
+                    val (extrasJson, typeForDb) = when (annotationType) {
+                        AnnotationType.PDF -> {
+                            val anchor = draft.pdfAnchor ?: run {
+                                updateState { it.copy(isSaving = false) }
+                                event.onErrorCallback(IllegalStateException("Expected PDF selection anchor"))
+                                return@launch
+                            }
+                            json.encodeToString(PdfAnnotationExtras.serializer(), anchor) to AnnotationType.PDF
+                        }
+                        AnnotationType.EPUB -> {
+                            val anchor = draft.epubAnchor ?: run {
+                                updateState { it.copy(isSaving = false) }
+                                event.onErrorCallback(IllegalStateException("Expected EPUB selection anchor"))
+                                return@launch
+                            }
+                            json.encodeToString(EpubAnnotationExtras.serializer(), anchor) to AnnotationType.EPUB
+                        }
+                        else -> {
+                            updateState { it.copy(isSaving = false) }
+                            event.onErrorCallback(IllegalStateException("Unsupported annotation type for docmark selection"))
+                            return@launch
+                        }
                     }
                     val annotationId = IdGenerator.newId()
-                    val extrasJson = json.encodeToString(PdfAnnotationExtras.serializer(), anchor)
                     AnnotationManager.createAnnotation(
                         annotationId = annotationId,
                         bookmarkId = draft.bookmarkId,
                         readableVersionId = draft.readableVersionId,
-                        type = AnnotationType.PDF,
+                        type = typeForDb,
                         colorRole = state.selectedColor,
                         note = state.note.ifBlank { null },
                         quoteText = draft.quote.displayText.ifBlank { null },

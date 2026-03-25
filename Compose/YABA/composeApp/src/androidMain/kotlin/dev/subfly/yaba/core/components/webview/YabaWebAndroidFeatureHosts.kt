@@ -782,3 +782,286 @@ internal fun YabaPdfViewerFeatureHost(
         },
     )
 }
+
+@SuppressLint("SetJavaScriptEnabled")
+@Composable
+internal fun YabaEpubExtractorFeatureHost(
+    modifier: Modifier,
+    baseUrl: String,
+    feature: YabaWebFeature.EpubExtractor,
+    onHostEvent: (YabaWebHostEvent) -> Unit,
+) {
+    val context = LocalContext.current
+    val onHostEventState = rememberUpdatedState(onHostEvent)
+    var isPageReady by remember { mutableStateOf(false) }
+    var rendererCrashed by remember { mutableStateOf(false) }
+
+    val assetLoaderUrl = remember(baseUrl) { toAssetLoaderUrl(baseUrl) }
+    val assetLoader = remember(context) { rememberAssetLoader(context, includeLocalStorage = true) }
+    val loadUrl = remember(baseUrl, assetLoaderUrl) { assetLoaderUrl ?: baseUrl }
+
+    val webView = remember(context) {
+        WebView(context).apply {
+            applyHardenedWebSettings(this)
+        }
+    }
+
+    LaunchedEffect(isPageReady, feature.input?.epubDataUrl) {
+        if (!isPageReady || rendererCrashed) return@LaunchedEffect
+        val request = feature.input ?: return@LaunchedEffect
+        runEpubExtraction(webView, context, request.epubDataUrl).fold(
+            onSuccess = { result ->
+                onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.BridgeReady))
+                onHostEventState.value(YabaWebHostEvent.EpubConverterSuccess(result))
+            },
+            onFailure = { e ->
+                onHostEventState.value(YabaWebHostEvent.EpubConverterFailure(e))
+            },
+        )
+    }
+
+    AndroidView(
+        modifier = modifier,
+        factory = { ctx ->
+            FrameLayout(ctx).apply {
+                if (webView.parent != null) {
+                    (webView.parent as ViewGroup).removeView(webView)
+                }
+                addView(
+                    webView,
+                    FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                    ),
+                )
+            }
+        },
+        update = {
+            if (!rendererCrashed) {
+                webView.webChromeClient = denyPermissionsWebChromeClient { p ->
+                    onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.Loading(p / 100f)))
+                }
+                webView.webViewClient = yabaWebViewClient(
+                    assetLoader = assetLoader,
+                    onPageStarted = {
+                        onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.Loading(0f)))
+                    },
+                    onPageFinished = {
+                        isPageReady = true
+                        onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.PageFinished))
+                    },
+                    onRenderProcessGone = {
+                        rendererCrashed = true
+                        onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.RendererCrashed))
+                        true
+                    },
+                    onUrlClick = null,
+                    onAnnotationTap = null,
+                    onMathTap = null,
+                )
+            }
+            if (rendererCrashed) return@AndroidView
+            val lastLoadedUrl = webView.tag as? String
+            if (lastLoadedUrl != loadUrl) {
+                isPageReady = false
+                webView.loadUrl(loadUrl)
+                webView.tag = loadUrl
+            }
+        },
+    )
+}
+
+@SuppressLint("SetJavaScriptEnabled", "ClickableViewAccessibility")
+@Composable
+internal fun YabaEpubViewerFeatureHost(
+    modifier: Modifier,
+    baseUrl: String,
+    feature: YabaWebFeature.EpubViewer,
+    onHostEvent: (YabaWebHostEvent) -> Unit,
+    onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit,
+    onReaderBridgeReady: (WebViewReaderBridge?) -> Unit,
+    onAnnotationTap: (String) -> Unit,
+) {
+    val context = LocalContext.current
+    val onHostEventState = rememberUpdatedState(onHostEvent)
+    val onScrollDirectionChangedState = rememberUpdatedState(onScrollDirectionChanged)
+    val onReaderBridgeReadyState = rememberUpdatedState(onReaderBridgeReady)
+    var isPageReady by remember { mutableStateOf(false) }
+    var rendererCrashed by remember { mutableStateOf(false) }
+    var activeBridge by remember { mutableStateOf<WebViewReaderBridge?>(null) }
+    val gestureStartYRef = remember { floatArrayOf(0f) }
+    val lastGestureDirectionRef = remember { intArrayOf(0) }
+    val touchSlop = remember(context) { ViewConfiguration.get(context).scaledTouchSlop }
+
+    val assetLoaderUrl = remember(baseUrl) { toAssetLoaderUrl(baseUrl) }
+    val assetLoader = remember(context) { rememberAssetLoader(context, includeLocalStorage = true) }
+    val loadUrl = remember(baseUrl, assetLoaderUrl) { assetLoaderUrl ?: baseUrl }
+
+    val webView = remember(context) {
+        WebView(context).apply {
+            applyHardenedWebSettings(this, allowZoom = true)
+            setBackgroundColor(Color.TRANSPARENT)
+            setOnTouchListener { _, motionEvent ->
+                if (motionEvent.pointerCount > 1) {
+                    lastGestureDirectionRef[0] = 0
+                    return@setOnTouchListener false
+                }
+                when (motionEvent.actionMasked) {
+                    MotionEvent.ACTION_DOWN -> {
+                        gestureStartYRef[0] = motionEvent.y
+                        lastGestureDirectionRef[0] = 0
+                        false
+                    }
+                    MotionEvent.ACTION_MOVE -> {
+                        val deltaY = motionEvent.y - gestureStartYRef[0]
+                        val threshold = touchSlop * 2
+                        if (abs(deltaY) < threshold) return@setOnTouchListener false
+                        val gestureDirection = if (deltaY < 0f) 1 else -1
+                        if (gestureDirection == lastGestureDirectionRef[0]) return@setOnTouchListener false
+                        if (gestureDirection > 0) {
+                            onScrollDirectionChangedState.value(YabaWebScrollDirection.Down)
+                        } else {
+                            onScrollDirectionChangedState.value(YabaWebScrollDirection.Up)
+                        }
+                        lastGestureDirectionRef[0] = gestureDirection
+                        false
+                    }
+                    MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                        lastGestureDirectionRef[0] = 0
+                        false
+                    }
+                    else -> false
+                }
+            }
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            activeBridge = null
+            onReaderBridgeReadyState.value(null)
+        }
+    }
+
+    LaunchedEffect(rendererCrashed) {
+        if (rendererCrashed) {
+            activeBridge = null
+            onReaderBridgeReadyState.value(null)
+        }
+    }
+
+    LaunchedEffect(isPageReady) {
+        if (!isPageReady) {
+            activeBridge = null
+            onReaderBridgeReadyState.value(null)
+            return@LaunchedEffect
+        }
+        val ready = waitForBridgeReady(webView, YabaWebBridgeScripts.EPUB_BRIDGE_READY)
+        if (!ready) {
+            Log.w(YABA_WEBVIEW_LOG_TAG, "EPUB bridge not ready before timeout")
+            return@LaunchedEffect
+        }
+        onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.BridgeReady))
+        val bridge = EpubWebViewReaderBridge(webView)
+        activeBridge = bridge
+        onReaderBridgeReadyState.value(bridge)
+    }
+
+    LaunchedEffect(isPageReady, feature.epubUrl) {
+        if (!isPageReady || rendererCrashed) return@LaunchedEffect
+        applyEpubUrl(webView, context, feature.epubUrl)
+    }
+
+    LaunchedEffect(isPageReady, feature.readerPreferences, feature.platform, feature.appearance) {
+        if (!isPageReady || rendererCrashed) return@LaunchedEffect
+        applyEpubReaderPreferences(webView, feature.readerPreferences, feature.platform, feature.appearance)
+    }
+
+    LaunchedEffect(isPageReady) {
+        if (!isPageReady || rendererCrashed) return@LaunchedEffect
+        installEpubAnnotationTap(webView)
+    }
+
+    LaunchedEffect(isPageReady, feature.annotations) {
+        if (!isPageReady || rendererCrashed) return@LaunchedEffect
+        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EPUB_BRIDGE_READY_LOOSE)) return@LaunchedEffect
+        EpubWebViewReaderBridge(webView).setAnnotations(feature.annotations)
+    }
+
+    LaunchedEffect(activeBridge) {
+        val b = activeBridge ?: return@LaunchedEffect
+        var lastCan = false
+        var lastPage = 1
+        var lastCount = 1
+        while (isActive) {
+            val can = b.getCanCreateAnnotation()
+            val page = b.getCurrentPageNumber()
+            val count = b.getPageCount().coerceAtLeast(1)
+            if (can != lastCan || page != lastPage || count != lastCount) {
+                lastCan = can
+                lastPage = page
+                lastCount = count
+                onHostEventState.value(
+                    YabaWebHostEvent.ReaderMetrics(
+                        canCreateAnnotation = can,
+                        currentPage = page,
+                        pageCount = count,
+                    ),
+                )
+            }
+            delay(200)
+        }
+    }
+
+    AndroidView(
+        modifier = modifier,
+        factory = { ctx ->
+            FrameLayout(ctx).apply {
+                if (webView.parent != null) {
+                    (webView.parent as ViewGroup).removeView(webView)
+                }
+                addView(
+                    webView,
+                    FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                    ),
+                )
+            }
+        },
+        update = {
+            if (rendererCrashed.not()) {
+                webView.webChromeClient = denyPermissionsWebChromeClient { p ->
+                    onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.Loading(p / 100f)))
+                }
+                webView.webViewClient = yabaWebViewClient(
+                    assetLoader = assetLoader,
+                    onPageStarted = {
+                        onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.Loading(0f)))
+                    },
+                    onPageFinished = {
+                        isPageReady = true
+                        onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.PageFinished))
+                    },
+                    onRenderProcessGone = {
+                        rendererCrashed = true
+                        onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.RendererCrashed))
+                        true
+                    },
+                    onUrlClick = null,
+                    onAnnotationTap = onAnnotationTap,
+                    onMathTap = null,
+                )
+            }
+            if (rendererCrashed) return@AndroidView
+            val lastLoadedUrl = webView.tag as? String
+            if (lastLoadedUrl != loadUrl) {
+                isPageReady = false
+                activeBridge = null
+                onReaderBridgeReadyState.value(null)
+                webView.loadUrl(loadUrl)
+                webView.tag = loadUrl
+            }
+        },
+    )
+}

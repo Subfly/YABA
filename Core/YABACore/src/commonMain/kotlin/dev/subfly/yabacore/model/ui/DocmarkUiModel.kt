@@ -2,6 +2,7 @@ package dev.subfly.yabacore.model.ui
 
 import androidx.compose.runtime.Stable
 import dev.subfly.yabacore.model.utils.BookmarkKind
+import dev.subfly.yabacore.model.utils.DocmarkType
 import kotlin.time.Instant
 
 @Stable
@@ -17,7 +18,8 @@ data class DocmarkUiModel(
     override val isPrivate: Boolean = false,
     override val isPinned: Boolean = false,
     val summary: String? = null,
-    val localPdfPath: String? = null,
+    val docmarkType: DocmarkType = DocmarkType.PDF,
+    val localDocumentPath: String? = null,
     override val localImagePath: String? = null,
     override val localIconPath: String? = null,
     override val parentFolder: FolderUiModel?,

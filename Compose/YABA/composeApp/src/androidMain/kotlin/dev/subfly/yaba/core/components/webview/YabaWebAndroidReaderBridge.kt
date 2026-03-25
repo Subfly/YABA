@@ -4,6 +4,7 @@ import android.webkit.WebView
 import dev.subfly.yabacore.model.annotation.AnnotationQuoteSnapshot
 import dev.subfly.yabacore.model.annotation.AnnotationSourceContext
 import dev.subfly.yabacore.model.annotation.AnnotationType
+import dev.subfly.yabacore.model.annotation.EpubAnnotationExtras
 import dev.subfly.yabacore.model.annotation.PdfAnnotationExtras
 import dev.subfly.yabacore.model.annotation.ReadableSelectionDraft
 import dev.subfly.yabacore.model.ui.AnnotationUiModel
@@ -12,6 +13,7 @@ import dev.subfly.yabacore.webview.EditorFormattingState
 import dev.subfly.yabacore.webview.WebViewEditorBridge
 import dev.subfly.yabacore.webview.WebViewReaderBridge
 import dev.subfly.yabacore.webview.YabaEditorBridgeScripts
+import dev.subfly.yabacore.webview.YabaEpubReaderBridgeScripts
 import dev.subfly.yabacore.webview.YabaPdfReaderBridgeScripts
 import dev.subfly.yabacore.webview.YabaWebAppearance
 import dev.subfly.yabacore.webview.YabaWebBridgeScripts
@@ -198,6 +200,25 @@ internal suspend fun applyEditorReaderPreferences(
     )
 }
 
+internal suspend fun applyEpubReaderPreferences(
+    webView: WebView,
+    readerPreferences: ReaderPreferences,
+    platform: YabaWebPlatform,
+    appearance: YabaWebAppearance,
+) {
+    if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EPUB_BRIDGE_READY)) return
+    evaluateJs(
+        webView,
+        YabaEpubReaderBridgeScripts.applyReaderPreferencesScript(
+            readerTheme = readerPreferences.theme.toJsReaderThemeLiteral(),
+            readerFontSize = readerPreferences.fontSize.toJsReaderFontSizeLiteral(),
+            readerLineHeight = readerPreferences.lineHeight.toJsReaderLineHeightLiteral(),
+            platform = platform.toJsPlatformLiteral(),
+            appearance = appearance.toJsAppearanceLiteral(),
+        ),
+    )
+}
+
 internal suspend fun applyEditorPlaceholder(
     webView: WebView,
     placeholder: String?,
@@ -366,6 +387,79 @@ internal fun PdfWebViewReaderBridge(
     override suspend fun removeAnnotationFromDocument(annotationId: String): Int = 0
 }
 
+@Suppress("FunctionName")
+internal fun EpubWebViewReaderBridge(
+    webView: WebView,
+): WebViewReaderBridge = object : WebViewReaderBridge {
+    override suspend fun getSelectionSnapshot(
+        bookmarkId: String,
+        readableVersionId: String,
+    ): ReadableSelectionDraft? {
+        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EPUB_BRIDGE_READY)) return null
+        val raw = evaluateJs(webView, YabaEpubReaderBridgeScripts.getSelectionSnapshotScript())
+        val jsonStr = decodeJsStringResult(raw)
+        if (jsonStr == "null" || jsonStr.isBlank()) return null
+        return runCatching {
+            val json = JSONObject(jsonStr)
+            val cfiRange = json.optString("cfiRange", "")
+            val selectedText = json.optString("selectedText", "")
+            val prefixText = json.optString("prefixText").takeIf { it.isNotBlank() }
+            val suffixText = json.optString("suffixText").takeIf { it.isNotBlank() }
+            if (cfiRange.isBlank() || selectedText.isBlank()) return@runCatching null
+            ReadableSelectionDraft(
+                sourceContext = AnnotationSourceContext.epub(bookmarkId, readableVersionId),
+                quote = AnnotationQuoteSnapshot(
+                    selectedText = selectedText,
+                    prefixText = prefixText,
+                    suffixText = suffixText,
+                ),
+                epubAnchor = EpubAnnotationExtras(cfiRange = cfiRange),
+            )
+        }.getOrNull()
+    }
+
+    override suspend fun getCanCreateAnnotation(): Boolean {
+        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EPUB_BRIDGE_READY_LOOSE)) return false
+        return evaluateJs(webView, YabaEpubReaderBridgeScripts.getCanCreateAnnotationScript()).trim() == "true"
+    }
+
+    override suspend fun setAnnotations(annotations: List<AnnotationUiModel>) {
+        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EPUB_BRIDGE_READY_LOOSE)) return
+        pushAnnotationsEpub(webView, annotations)
+    }
+
+    override suspend fun scrollToAnnotation(annotationId: String) {
+        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EPUB_BRIDGE_READY_LOOSE)) return
+        evaluateJs(webView, YabaEpubReaderBridgeScripts.scrollToAnnotationScript(annotationId))
+    }
+
+    override suspend fun getPageCount(): Int {
+        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EPUB_BRIDGE_READY_LOOSE)) return 0
+        return evaluateJs(webView, YabaEpubReaderBridgeScripts.GET_PAGE_COUNT_SCRIPT).trim().toIntOrNull() ?: 0
+    }
+
+    override suspend fun getCurrentPageNumber(): Int {
+        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EPUB_BRIDGE_READY_LOOSE)) return 1
+        return evaluateJs(webView, YabaEpubReaderBridgeScripts.GET_CURRENT_PAGE_NUMBER_SCRIPT).trim().toIntOrNull() ?: 1
+    }
+
+    override suspend fun nextPage(): Boolean {
+        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EPUB_BRIDGE_READY_LOOSE)) return false
+        return evaluateJs(webView, YabaEpubReaderBridgeScripts.NEXT_PAGE_SCRIPT).trim() == "true"
+    }
+
+    override suspend fun prevPage(): Boolean {
+        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EPUB_BRIDGE_READY_LOOSE)) return false
+        return evaluateJs(webView, YabaEpubReaderBridgeScripts.PREV_PAGE_SCRIPT).trim() == "true"
+    }
+
+    override suspend fun getDocumentJson(): String = ""
+
+    override suspend fun applyAnnotationToSelection(annotationId: String): Boolean = false
+
+    override suspend fun removeAnnotationFromDocument(annotationId: String): Int = 0
+}
+
 internal suspend fun applyPdfUrl(webView: WebView, context: android.content.Context, pdfUrl: String) {
     if (!waitForBridgeReady(webView, YabaWebBridgeScripts.PDF_BRIDGE_READY)) return
     val resolvedPdfUrl = toInternalStorageAssetLoaderFileUrl(context, pdfUrl) ?: pdfUrl
@@ -386,6 +480,17 @@ internal suspend fun applyPdfTheme(webView: WebView, platform: YabaWebPlatform, 
 internal suspend fun installPdfAnnotationTap(webView: WebView) {
     if (!waitForBridgeReady(webView, YabaWebBridgeScripts.PDF_BRIDGE_READY_LOOSE)) return
     evaluateJs(webView, YabaPdfReaderBridgeScripts.installAnnotationTapScript())
+}
+
+internal suspend fun applyEpubUrl(webView: WebView, context: android.content.Context, epubUrl: String) {
+    if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EPUB_BRIDGE_READY)) return
+    val resolved = toInternalStorageAssetLoaderFileUrl(context, epubUrl) ?: epubUrl
+    evaluateJs(webView, YabaEpubReaderBridgeScripts.setEpubUrlScript(resolved))
+}
+
+internal suspend fun installEpubAnnotationTap(webView: WebView) {
+    if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EPUB_BRIDGE_READY_LOOSE)) return
+    evaluateJs(webView, YabaEpubReaderBridgeScripts.installAnnotationTapScript())
 }
 
 private suspend fun pushAnnotationsPdf(webView: WebView, annotations: List<AnnotationUiModel>) {
@@ -410,5 +515,27 @@ private suspend fun pushAnnotationsPdf(webView: WebView, annotations: List<Annot
     evaluateJs(
         webView,
         YabaPdfReaderBridgeScripts.setAnnotationsStringArgScript(escaped),
+    )
+}
+
+private suspend fun pushAnnotationsEpub(webView: WebView, annotations: List<AnnotationUiModel>) {
+    val arr = JSONArray()
+    annotations.forEach { annotation ->
+        val obj = JSONObject().apply {
+            put("id", annotation.id)
+            put("colorRole", annotation.colorRole.name)
+        }
+        if (annotation.type == AnnotationType.EPUB && !annotation.extrasJson.isNullOrBlank()) {
+            runCatching {
+                val extras = JSONObject(annotation.extrasJson)
+                obj.put("cfiRange", extras.optString("cfiRange", ""))
+            }
+        }
+        arr.put(obj)
+    }
+    val escaped = escapeForJsSingleQuotedString(arr.toString())
+    evaluateJs(
+        webView,
+        YabaEpubReaderBridgeScripts.setAnnotationsStringArgScript(escaped),
     )
 }

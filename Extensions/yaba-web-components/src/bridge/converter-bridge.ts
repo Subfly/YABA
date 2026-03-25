@@ -1,6 +1,7 @@
 import DOMPurify from "dompurify"
 import { Readability } from "@mozilla/readability"
 import { Editor } from "@tiptap/core"
+import ePub from "epubjs"
 import { GlobalWorkerOptions, getDocument } from "pdfjs-dist"
 import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url"
 import { createEditorExtensions } from "../tiptap/editor-extensions"
@@ -41,6 +42,9 @@ export interface YabaConverterBridge {
   startPdfExtraction: (input: PdfExtractionInput) => string
   getPdfExtractionJob: (jobId: string) => PdfExtractionJobState | null
   deletePdfExtractionJob: (jobId: string) => void
+  startEpubExtraction: (input: EpubExtractionInput) => string
+  getEpubExtractionJob: (jobId: string) => EpubExtractionJobState | null
+  deleteEpubExtractionJob: (jobId: string) => void
 }
 
 export interface PdfExtractionInput {
@@ -69,6 +73,22 @@ export interface PdfExtractionJobState {
 }
 
 const pdfExtractionJobs = new Map<string, PdfExtractionJobState>()
+
+export interface EpubExtractionInput {
+  epubUrl: string
+}
+
+export interface EpubExtractionOutput {
+  coverPngDataUrl: StringOrNull
+}
+
+export interface EpubExtractionJobState {
+  status: "pending" | "done" | "error"
+  output?: EpubExtractionOutput
+  error?: string
+}
+
+const epubExtractionJobs = new Map<string, EpubExtractionJobState>()
 
 function resolveUrl(baseUrl: string | undefined, src: string): string {
   if (!baseUrl || src.startsWith("data:") || src.startsWith("http://") || src.startsWith("https://")) {
@@ -324,6 +344,92 @@ function createPdfExtractionJobId(): string {
   return `pdf-job-${Date.now()}-${Math.random().toString(36).slice(2)}`
 }
 
+function createEpubExtractionJobId(): string {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID()
+  }
+  return `epub-job-${Date.now()}-${Math.random().toString(36).slice(2)}`
+}
+
+/**
+ * Inline EPUB (zip) data URL for bookmark preview — `data:application/epub+zip;base64,...`.
+ */
+function epubDataUrlToArrayBuffer(dataUrl: string): ArrayBuffer {
+  if (!dataUrl.startsWith("data:")) {
+    throw new Error("Expected a data: URL for inline EPUB")
+  }
+  const comma = dataUrl.indexOf(",")
+  if (comma < 0) {
+    throw new Error("Invalid data URL")
+  }
+  const meta = dataUrl.slice("data:".length, comma).toLowerCase()
+  const segments = meta.split(";").map((s) => s.trim())
+  const mime = segments[0]
+  if (mime !== "application/epub+zip") {
+    throw new Error("Inline EPUB data URL must use application/epub+zip")
+  }
+  if (!segments.includes("base64")) {
+    throw new Error("Inline EPUB data URL must be base64-encoded")
+  }
+  const b64 = dataUrl.slice(comma + 1).replace(/\s/g, "")
+  let binary: string
+  try {
+    binary = atob(b64)
+  } catch {
+    throw new Error("Invalid base64 in EPUB data URL")
+  }
+  const len = binary.length
+  const bytes = new Uint8Array(len)
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binary.charCodeAt(i)
+  }
+  if (len < 4 || bytes[0] !== 0x50 || bytes[1] !== 0x4b) {
+    throw new Error("Decoded data URL is not a ZIP/EPUB file")
+  }
+  return bytes.buffer
+}
+
+async function loadEpubBytes(epubUrl: string): Promise<ArrayBuffer> {
+  if (epubUrl.startsWith("data:")) {
+    return epubDataUrlToArrayBuffer(epubUrl)
+  }
+  const response = await fetch(epubUrl)
+  if (!response.ok) throw new Error(`Failed to fetch EPUB: ${response.status}`)
+  return response.arrayBuffer()
+}
+
+async function blobToDataUrl(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onloadend = () => resolve(reader.result as string)
+    reader.onerror = () => reject(new Error("read failed"))
+    reader.readAsDataURL(blob)
+  })
+}
+
+async function extractEpubCover(input: EpubExtractionInput): Promise<EpubExtractionOutput> {
+  const data = await loadEpubBytes(input.epubUrl)
+  const book = ePub(data)
+  await book.ready
+  let coverPngDataUrl: StringOrNull = null
+  try {
+    const coverUrl = await book.coverUrl()
+    if (coverUrl) {
+      const r = await fetch(coverUrl)
+      const blob = await r.blob()
+      coverPngDataUrl = await blobToDataUrl(blob)
+    }
+  } catch {
+    coverPngDataUrl = null
+  }
+  try {
+    await book.destroy()
+  } catch {
+    /* ignore */
+  }
+  return { coverPngDataUrl }
+}
+
 /**
  * Decode an inline PDF data URL without fetch() so strict CSP (connect-src without data:) still allows
  * bookmark preview extraction. Only `data:application/pdf;base64,...` is accepted — not arbitrary data: URLs.
@@ -461,6 +567,32 @@ export function initConverterBridge(): void {
     },
     deletePdfExtractionJob(jobId: string): void {
       pdfExtractionJobs.delete(jobId)
+    },
+    startEpubExtraction(input: EpubExtractionInput): string {
+      const jobId = createEpubExtractionJobId()
+      epubExtractionJobs.set(jobId, { status: "pending" })
+
+      void extractEpubCover(input)
+        .then((output) => {
+          epubExtractionJobs.set(jobId, {
+            status: "done",
+            output,
+          })
+        })
+        .catch((error) => {
+          epubExtractionJobs.set(jobId, {
+            status: "error",
+            error: error instanceof Error ? error.message : "Unknown EPUB extraction error",
+          })
+        })
+
+      return jobId
+    },
+    getEpubExtractionJob(jobId: string): EpubExtractionJobState | null {
+      return epubExtractionJobs.get(jobId) ?? null
+    },
+    deleteEpubExtractionJob(jobId: string): void {
+      epubExtractionJobs.delete(jobId)
     },
   }
 }

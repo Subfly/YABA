@@ -1,6 +1,7 @@
 package dev.subfly.yabacore.filesystem
 
 import dev.subfly.yabacore.common.CoreConstants
+import dev.subfly.yabacore.model.utils.DocmarkType
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.readBytes
 import kotlinx.coroutines.Dispatchers
@@ -8,17 +9,19 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 
 object DocmarkFileManager {
-    private const val DEFAULT_PDF_EXTENSION = "pdf"
+    fun extensionForType(type: DocmarkType): String =
+        when (type) {
+            DocmarkType.PDF -> "pdf"
+            DocmarkType.EPUB -> "epub"
+        }
 
-    suspend fun savePdfBytes(
+    suspend fun saveDocumentBytes(
         bookmarkId: String,
         bytes: ByteArray,
+        type: DocmarkType,
     ): PlatformFile {
-        purgePdf(bookmarkId)
-        val targetPath = CoreConstants.FileSystem.Docmark.pdfPath(
-            bookmarkId = bookmarkId,
-            extension = DEFAULT_PDF_EXTENSION,
-        )
+        purgeAllDocumentFiles(bookmarkId)
+        val targetPath = getDocumentRelativePath(bookmarkId, type)
         BookmarkFileManager.writeBytes(
             relativePath = targetPath,
             bytes = bytes,
@@ -26,15 +29,17 @@ object DocmarkFileManager {
         return BookmarkFileManager.resolve(targetPath)
     }
 
+    suspend fun savePdfBytes(
+        bookmarkId: String,
+        bytes: ByteArray,
+    ): PlatformFile = saveDocumentBytes(bookmarkId, bytes, DocmarkType.PDF)
+
     suspend fun importPdfFromFile(
         bookmarkId: String,
         source: PlatformFile,
     ): PlatformFile {
-        purgePdf(bookmarkId)
-        val targetPath = CoreConstants.FileSystem.Docmark.pdfPath(
-            bookmarkId = bookmarkId,
-            extension = DEFAULT_PDF_EXTENSION,
-        )
+        purgeAllDocumentFiles(bookmarkId)
+        val targetPath = getDocumentRelativePath(bookmarkId, DocmarkType.PDF)
         BookmarkFileManager.copyFile(
             source = source,
             destinationRelativePath = targetPath,
@@ -43,23 +48,33 @@ object DocmarkFileManager {
         return BookmarkFileManager.resolve(targetPath)
     }
 
-    suspend fun getPdfFile(bookmarkId: String): PlatformFile? =
-        BookmarkFileManager.find(getPdfRelativePath(bookmarkId))
+    suspend fun getDocumentFile(bookmarkId: String, type: DocmarkType): PlatformFile? =
+        BookmarkFileManager.find(getDocumentRelativePath(bookmarkId, type))
 
-    suspend fun getPdfRelativePath(bookmarkId: String): String =
-        CoreConstants.FileSystem.Docmark.pdfPath(
+    suspend fun getPdfFile(bookmarkId: String): PlatformFile? =
+        getDocumentFile(bookmarkId, DocmarkType.PDF)
+
+    fun getDocumentRelativePath(bookmarkId: String, type: DocmarkType): String =
+        CoreConstants.FileSystem.Docmark.documentPath(
             bookmarkId = bookmarkId,
-            extension = DEFAULT_PDF_EXTENSION,
+            extension = extensionForType(type),
         )
 
-    suspend fun readPdfBytes(bookmarkId: String): ByteArray? {
-        val file = getPdfFile(bookmarkId) ?: return null
+    fun getPdfRelativePath(bookmarkId: String): String =
+        getDocumentRelativePath(bookmarkId, DocmarkType.PDF)
+
+    suspend fun readDocumentBytes(bookmarkId: String, type: DocmarkType): ByteArray? {
+        val file = getDocumentFile(bookmarkId, type) ?: return null
         return withContext(Dispatchers.IO) {
             file.readBytes()
         }
     }
 
-    private suspend fun purgePdf(bookmarkId: String) {
-        BookmarkFileManager.deleteRelativePath(getPdfRelativePath(bookmarkId))
+    suspend fun readPdfBytes(bookmarkId: String): ByteArray? =
+        readDocumentBytes(bookmarkId, DocmarkType.PDF)
+
+    private suspend fun purgeAllDocumentFiles(bookmarkId: String) {
+        BookmarkFileManager.deleteRelativePath(getDocumentRelativePath(bookmarkId, DocmarkType.PDF))
+        BookmarkFileManager.deleteRelativePath(getDocumentRelativePath(bookmarkId, DocmarkType.EPUB))
     }
 }

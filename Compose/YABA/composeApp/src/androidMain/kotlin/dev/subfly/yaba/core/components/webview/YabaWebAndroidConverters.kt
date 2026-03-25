@@ -3,6 +3,7 @@ package dev.subfly.yaba.core.components.webview
 import android.webkit.WebView
 import dev.subfly.yabacore.webview.WebConverterAsset
 import dev.subfly.yabacore.webview.WebConverterResult
+import dev.subfly.yabacore.webview.WebEpubConverterResult
 import dev.subfly.yabacore.webview.WebPdfConverterResult
 import dev.subfly.yabacore.webview.WebPdfTextSection
 import dev.subfly.yabacore.webview.YabaConverterBridgeScripts
@@ -113,4 +114,57 @@ internal suspend fun runPdfExtraction(
         }
     }
     return Result.failure(IllegalStateException("PDF extraction timed out"))
+}
+
+internal suspend fun runEpubExtraction(
+    webView: WebView,
+    context: android.content.Context,
+    epubUrl: String,
+): Result<WebEpubConverterResult> {
+    if (!waitForBridgeReady(webView, YabaWebBridgeScripts.CONVERTER_BRIDGE_DEFINED)) {
+        return Result.failure(IllegalStateException("Converter bridge not ready"))
+    }
+    val resolvedUrl = toInternalStorageAssetLoaderFileUrl(context, epubUrl) ?: epubUrl
+    val rawJobId = evaluateJs(
+        webView,
+        YabaConverterBridgeScripts.startEpubExtractionScript(resolvedUrl),
+    )
+    val jobId = decodeJsStringResult(rawJobId)
+    if (jobId.isBlank()) {
+        return Result.failure(IllegalStateException("Failed to start EPUB extraction job"))
+    }
+    var attempts = 0
+    while (attempts < 300) {
+        attempts += 1
+        val rawStatus = evaluateJs(
+            webView,
+            YabaConverterBridgeScripts.getEpubExtractionJobScript(jobId),
+        )
+        val statusStr = decodeJsStringResult(rawStatus)
+        if (statusStr.isBlank() || statusStr == "null") {
+            delay(100)
+            continue
+        }
+        try {
+            val state = JSONObject(statusStr)
+            val status = state.optString("status")
+            if (status == "pending") {
+                delay(100)
+                continue
+            }
+            evaluateJs(webView, YabaConverterBridgeScripts.deleteEpubExtractionJobScript(jobId))
+            if (status == "error") {
+                return Result.failure(IllegalStateException(state.optString("error", "EPUB extraction failed")))
+            }
+            val output = state.optJSONObject("output") ?: JSONObject()
+            return Result.success(
+                WebEpubConverterResult(
+                    coverPngDataUrl = output.optString("coverPngDataUrl").takeIf { it.isNotBlank() },
+                ),
+            )
+        } catch (e: Exception) {
+            return Result.failure(e)
+        }
+    }
+    return Result.failure(IllegalStateException("EPUB extraction timed out"))
 }

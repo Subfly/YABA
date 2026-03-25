@@ -392,3 +392,122 @@ object YabaPdfReaderBridgeScripts {
         """.trimIndent()
     }
 }
+
+/**
+ * EPUB.js reader — [window.YabaEpubBridge].
+ */
+object YabaEpubReaderBridgeScripts {
+
+    fun getSelectionSnapshotScript(): String =
+        """
+        (function() {
+            try {
+                var snap = window.YabaEpubBridge.getSelectionSnapshot();
+                if (!snap) return null;
+                return JSON.stringify(snap);
+            } catch(e) { return null; }
+        })();
+        """.trimIndent()
+
+    fun getCanCreateAnnotationScript(): String =
+        """
+        (function() {
+            try {
+                return !!(window.YabaEpubBridge && window.YabaEpubBridge.getCanCreateAnnotation && window.YabaEpubBridge.getCanCreateAnnotation());
+            } catch(e) { return false; }
+        })();
+        """.trimIndent()
+
+    fun scrollToAnnotationScript(annotationId: String): String {
+        val escaped = escapeForJsSingleQuotedString(annotationId)
+        return """
+        (function() {
+            try {
+                if (window.YabaEpubBridge && window.YabaEpubBridge.scrollToAnnotation) {
+                    window.YabaEpubBridge.scrollToAnnotation('$escaped');
+                }
+            } catch(e) {}
+        })();
+        """.trimIndent()
+    }
+
+    const val GET_PAGE_COUNT_SCRIPT: String =
+        "(function(){ try { return window.YabaEpubBridge?.getPageCount?.() ?? 0; } catch(e){ return 0; } })();"
+
+    const val GET_CURRENT_PAGE_NUMBER_SCRIPT: String =
+        "(function(){ try { return window.YabaEpubBridge?.getCurrentPageNumber?.() ?? 1; } catch(e){ return 1; } })();"
+
+    const val NEXT_PAGE_SCRIPT: String =
+        "(function(){ try { return window.YabaEpubBridge?.nextPage?.() ?? false; } catch(e){ return false; } })();"
+
+    const val PREV_PAGE_SCRIPT: String =
+        "(function(){ try { return window.YabaEpubBridge?.prevPage?.() ?? false; } catch(e){ return false; } })();"
+
+    fun setEpubUrlScript(resolvedEpubUrl: String): String {
+        val escaped = escapeForJsSingleQuotedString(resolvedEpubUrl)
+        return """
+        (function() {
+            try {
+                if (window.YabaEpubBridge && window.YabaEpubBridge.setEpubUrl) {
+                    window.YabaEpubBridge.setEpubUrl('$escaped');
+                }
+            } catch(e) {}
+        })();
+        """.trimIndent()
+    }
+
+    fun applyReaderPreferencesScript(
+        readerTheme: String,
+        readerFontSize: String,
+        readerLineHeight: String,
+        platform: String,
+        appearance: String,
+    ): String =
+        """
+        (function() {
+            try {
+                if (!window.YabaEpubBridge) return;
+                if (typeof window.YabaEpubBridge.setPlatform === "function") {
+                    window.YabaEpubBridge.setPlatform('$platform');
+                }
+                if (typeof window.YabaEpubBridge.setAppearance === "function") {
+                    window.YabaEpubBridge.setAppearance('$appearance');
+                }
+                if (typeof window.YabaEpubBridge.setReaderPreferences === "function") {
+                    window.YabaEpubBridge.setReaderPreferences({
+                        theme: '$readerTheme',
+                        fontSize: '$readerFontSize',
+                        lineHeight: '$readerLineHeight'
+                    });
+                }
+            } catch(e) {}
+        })();
+        """.trimIndent()
+
+    fun setAnnotationsStringArgScript(annotationsJsonEscaped: String): String =
+        """
+        (function() {
+            try {
+                if (window.YabaEpubBridge && window.YabaEpubBridge.setAnnotations) {
+                    window.YabaEpubBridge.setAnnotations('$annotationsJsonEscaped');
+                }
+            } catch(e) {}
+        })();
+        """.trimIndent()
+
+    fun installAnnotationTapScript(): String {
+        val prefix =
+            escapeForJsSingleQuotedString(
+                YabaWebBridgeScripts.ANNOTATION_TAP_SCHEME_PREFIX + "id=",
+            )
+        return """
+        (function() {
+            if (window.YabaEpubBridge) {
+                window.YabaEpubBridge.onAnnotationTap = function(id) {
+                    if (id) window.location = '$prefix' + encodeURIComponent(id);
+                };
+            }
+        })();
+        """.trimIndent()
+    }
+}

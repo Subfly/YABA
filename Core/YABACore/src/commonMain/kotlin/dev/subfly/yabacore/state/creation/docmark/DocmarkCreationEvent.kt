@@ -2,6 +2,7 @@ package dev.subfly.yabacore.state.creation.docmark
 
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.ui.TagUiModel
+import dev.subfly.yabacore.model.utils.DocmarkType
 
 sealed class DocmarkCreationEvent {
     data class OnInit(
@@ -10,21 +11,23 @@ sealed class DocmarkCreationEvent {
         val initialTagIds: List<String>? = null,
     ) : DocmarkCreationEvent()
 
-    data object OnPickPdf : DocmarkCreationEvent()
+    data object OnPickDocument : DocmarkCreationEvent()
 
-    data object OnClearPdf : DocmarkCreationEvent()
+    data object OnClearDocument : DocmarkCreationEvent()
 
-    data class OnPdfFromShare(
+    data class OnDocumentFromShare(
         val bytes: ByteArray,
         val sourceFileName: String?,
+        val docmarkType: DocmarkType,
     ) : DocmarkCreationEvent() {
         override fun equals(other: Any?): Boolean =
-            other is OnPdfFromShare &&
-                    bytes.contentEquals(other.bytes) &&
-                    sourceFileName == other.sourceFileName
+            other is OnDocumentFromShare &&
+                bytes.contentEquals(other.bytes) &&
+                sourceFileName == other.sourceFileName &&
+                docmarkType == other.docmarkType
 
         override fun hashCode(): Int =
-            bytes.contentHashCode() * 31 + (sourceFileName?.hashCode() ?: 0)
+            bytes.contentHashCode() * 31 + (sourceFileName?.hashCode() ?: 0) + docmarkType.hashCode()
     }
 
     data object OnCyclePreviewAppearance : DocmarkCreationEvent()
@@ -35,11 +38,11 @@ sealed class DocmarkCreationEvent {
     ) : DocmarkCreationEvent() {
         override fun equals(other: Any?): Boolean =
             other is OnSetGeneratedPreview &&
-                    extension == other.extension &&
-                    if (imageBytes == null && other.imageBytes == null) true
-                    else imageBytes != null && other.imageBytes != null && imageBytes.contentEquals(
-                        other.imageBytes
-                    )
+                extension == other.extension &&
+                if (imageBytes == null && other.imageBytes == null) true
+                else imageBytes != null && other.imageBytes != null && imageBytes.contentEquals(
+                    other.imageBytes,
+                )
 
         override fun hashCode(): Int =
             (imageBytes?.contentHashCode() ?: 0) * 31 + extension.hashCode()

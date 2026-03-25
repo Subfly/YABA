@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,6 +41,7 @@ import dev.subfly.yaba.ui.detail.bookmark.doc.components.DocmarkReaderFloatingTo
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalCreationContentNavigator
+import dev.subfly.yabacore.model.utils.DocmarkType
 import dev.subfly.yabacore.state.detail.docmark.DocmarkDetailEvent
 import dev.subfly.yabacore.state.detail.docmark.DocmarkDetailUIState
 import dev.subfly.yabacore.ui.icon.YabaIcon
@@ -75,7 +77,7 @@ internal fun DocmarkContentLayout(
 
     var readerBridge by remember { mutableStateOf<WebViewReaderBridge?>(null) }
     val appearance = if (isSystemInDarkTheme()) YabaWebAppearance.Dark else YabaWebAppearance.Light
-    val hasReaderContent = !state.isLoading && !state.pdfAbsolutePath.isNullOrBlank()
+    val hasReaderContent = !state.isLoading && !state.documentAbsolutePath.isNullOrBlank()
     var isMenuExpanded by remember { mutableStateOf(false) }
     var hasSelection by remember { mutableStateOf(false) }
     var isToolbarVisible by remember(hasReaderContent) { mutableStateOf(true) }
@@ -111,11 +113,14 @@ internal fun DocmarkContentLayout(
 
                 DocmarkReaderFloatingToolbar(
                     modifier = Modifier.padding(bottom = 8.dp),
+                    docmarkType = state.docmarkType,
+                    readerPreferences = state.readerPreferences,
                     color = folderAccent,
                     isVisible = isToolbarVisible || hasSelection,
                     hasSelection = hasSelection,
                     canGoPrev = currentPage > 1,
                     canGoNext = currentPage < pageCount,
+                    onEvent = onEvent,
                     onPrevPage = {
                         scope.launch {
                             readerBridge?.prevPage()
@@ -145,43 +150,88 @@ internal fun DocmarkContentLayout(
                     },
                 )
 
-                YabaWebView(
-                    modifier = Modifier.fillMaxSize(),
-                    baseUrl = WebComponentUris.getPdfViewerUri(),
-                    feature = YabaWebFeature.PdfViewer(
-                        pdfUrl = state.pdfAbsolutePath ?: "",
-                        platform = YabaWebPlatform.Compose,
-                        appearance = appearance,
-                        annotations = state.annotations,
-                    ),
-                    onHostEvent = { ev ->
-                        when (ev) {
-                            is YabaWebHostEvent.ReaderMetrics -> {
-                                hasSelection = ev.canCreateAnnotation
-                                currentPage = ev.currentPage
-                                pageCount = ev.pageCount.coerceAtLeast(1)
-                            }
+                key(state.docmarkType, state.documentAbsolutePath) {
+                    when (state.docmarkType) {
+                        DocmarkType.PDF ->
+                            YabaWebView(
+                                modifier = Modifier.fillMaxSize(),
+                                baseUrl = WebComponentUris.getPdfViewerUri(),
+                                feature = YabaWebFeature.PdfViewer(
+                                    pdfUrl = state.documentAbsolutePath ?: "",
+                                    platform = YabaWebPlatform.Compose,
+                                    appearance = appearance,
+                                    annotations = state.annotations,
+                                ),
+                                onHostEvent = { ev ->
+                                    when (ev) {
+                                        is YabaWebHostEvent.ReaderMetrics -> {
+                                            hasSelection = ev.canCreateAnnotation
+                                            currentPage = ev.currentPage
+                                            pageCount = ev.pageCount.coerceAtLeast(1)
+                                        }
 
-                            else -> Unit
-                        }
-                    },
-                    onScrollDirectionChanged = { direction ->
-                        if (direction == YabaWebScrollDirection.Down) isToolbarVisible = false
-                        if (direction == YabaWebScrollDirection.Up) isToolbarVisible = true
-                    },
-                    onReaderBridgeReady = { bridge -> readerBridge = bridge },
-                    onAnnotationTap = { annotationId ->
-                        val bookmarkId = state.bookmark?.id ?: return@YabaWebView
-                        creationNavigator.add(
-                            AnnotationCreationRoute(
-                                bookmarkId = bookmarkId,
-                                selectionDraft = null,
-                                annotationId = annotationId,
-                            ),
-                        )
-                        appStateManager.onShowCreationContent()
-                    },
-                )
+                                        else -> Unit
+                                    }
+                                },
+                                onScrollDirectionChanged = { direction ->
+                                    if (direction == YabaWebScrollDirection.Down) isToolbarVisible = false
+                                    if (direction == YabaWebScrollDirection.Up) isToolbarVisible = true
+                                },
+                                onReaderBridgeReady = { bridge -> readerBridge = bridge },
+                                onAnnotationTap = { annotationId ->
+                                    val bookmarkId = state.bookmark?.id ?: return@YabaWebView
+                                    creationNavigator.add(
+                                        AnnotationCreationRoute(
+                                            bookmarkId = bookmarkId,
+                                            selectionDraft = null,
+                                            annotationId = annotationId,
+                                        ),
+                                    )
+                                    appStateManager.onShowCreationContent()
+                                },
+                            )
+
+                        DocmarkType.EPUB ->
+                            YabaWebView(
+                                modifier = Modifier.fillMaxSize(),
+                                baseUrl = WebComponentUris.getEpubViewerUri(),
+                                feature = YabaWebFeature.EpubViewer(
+                                    epubUrl = state.documentAbsolutePath ?: "",
+                                    readerPreferences = state.readerPreferences,
+                                    platform = YabaWebPlatform.Compose,
+                                    appearance = appearance,
+                                    annotations = state.annotations,
+                                ),
+                                onHostEvent = { ev ->
+                                    when (ev) {
+                                        is YabaWebHostEvent.ReaderMetrics -> {
+                                            hasSelection = ev.canCreateAnnotation
+                                            currentPage = ev.currentPage
+                                            pageCount = ev.pageCount.coerceAtLeast(1)
+                                        }
+
+                                        else -> Unit
+                                    }
+                                },
+                                onScrollDirectionChanged = { direction ->
+                                    if (direction == YabaWebScrollDirection.Down) isToolbarVisible = false
+                                    if (direction == YabaWebScrollDirection.Up) isToolbarVisible = true
+                                },
+                                onReaderBridgeReady = { bridge -> readerBridge = bridge },
+                                onAnnotationTap = { annotationId ->
+                                    val bookmarkId = state.bookmark?.id ?: return@YabaWebView
+                                    creationNavigator.add(
+                                        AnnotationCreationRoute(
+                                            bookmarkId = bookmarkId,
+                                            selectionDraft = null,
+                                            annotationId = annotationId,
+                                        ),
+                                    )
+                                    appStateManager.onShowCreationContent()
+                                },
+                            )
+                    }
+                }
             } else if (!state.isLoading) {
                 NoContentView(
                     modifier = Modifier

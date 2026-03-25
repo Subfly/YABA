@@ -39,9 +39,10 @@ import dev.subfly.yaba.util.LocalDeletionDialogManager
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.LocalUserPreferences
 import dev.subfly.yaba.util.ResultStoreKeys
+import dev.subfly.yaba.util.SharedDocumentData
 import dev.subfly.yaba.util.SharedImageData
-import dev.subfly.yaba.util.SharedPdfData
 import dev.subfly.yabacore.common.CoreRuntime
+import dev.subfly.yabacore.model.utils.DocmarkType
 import dev.subfly.yabacore.preferences.SettingsStores
 import dev.subfly.yabacore.preferences.UserPreferences
 import java.io.InputStream
@@ -90,14 +91,15 @@ class ShareActivity : ComponentActivity() {
                             return null
                         }
 
-                        if (isPdfMimeType(resolvedType)) {
-                            readPdfBytesFromUri(
+                        if (isPdfMimeType(resolvedType) || isEpubMimeType(resolvedType)) {
+                            readDocumentBytesFromUri(
                                 uri = uri,
-                                declaredType = resolvedType
-                            )?.let { pdfData ->
-                                return SharedContent.PdfBytes(
-                                    bytes = pdfData.bytes,
-                                    sourceFileName = pdfData.sourceFileName,
+                                declaredType = resolvedType,
+                            )?.let { doc ->
+                                return SharedContent.DocumentBytes(
+                                    bytes = doc.bytes,
+                                    sourceFileName = doc.sourceFileName,
+                                    docmarkType = doc.docmarkType,
                                 )
                             }
                             return null
@@ -124,16 +126,18 @@ class ShareActivity : ComponentActivity() {
                         intent.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM)
                     }
                 if (uris.isNullOrEmpty().not()) {
-                    val pdfUri = uris.firstOrNull { uri ->
-                        isPdfMimeType(resolveMimeType(uri = uri, declaredType = type))
+                    val docUri = uris.firstOrNull { uri ->
+                        val mt = resolveMimeType(uri = uri, declaredType = type)
+                        isPdfMimeType(mt) || isEpubMimeType(mt)
                     }
 
-                    if (pdfUri == null) return null
+                    if (docUri == null) return null
 
-                    readPdfBytesFromUri(uri = pdfUri, declaredType = type)?.let { pdfData ->
-                        return SharedContent.PdfBytes(
-                            bytes = pdfData.bytes,
-                            sourceFileName = pdfData.sourceFileName,
+                    readDocumentBytesFromUri(uri = docUri, declaredType = type)?.let { doc ->
+                        return SharedContent.DocumentBytes(
+                            bytes = doc.bytes,
+                            sourceFileName = doc.sourceFileName,
+                            docmarkType = doc.docmarkType,
                         )
                     }
 
@@ -153,6 +157,12 @@ class ShareActivity : ComponentActivity() {
         return mimeType != null && mimeType.lowercase() == "application/pdf"
     }
 
+    private fun isEpubMimeType(mimeType: String?): Boolean {
+        if (mimeType == null) return false
+        val m = mimeType.lowercase()
+        return m == "application/epub+zip" || m == "application/epub"
+    }
+
     private fun resolveMimeType(uri: Uri, declaredType: String?): String? {
         val trimmedType =
             declaredType
@@ -164,14 +174,18 @@ class ShareActivity : ComponentActivity() {
         return runCatching { contentResolver.getType(uri) }.getOrNull()
     }
 
-    private fun readPdfBytesFromUri(uri: Uri, declaredType: String?): SharedPdfData? {
+    private fun readDocumentBytesFromUri(uri: Uri, declaredType: String?): SharedDocumentData? {
         val mimeType = resolveMimeType(uri = uri, declaredType = declaredType)
-        if (isPdfMimeType(mimeType).not()) return null
+        val docmarkType = when {
+            isPdfMimeType(mimeType) -> DocmarkType.PDF
+            isEpubMimeType(mimeType) -> DocmarkType.EPUB
+            else -> return null
+        }
 
         val bytes = readBytesFromUri(uri) ?: return null
         val sourceFileName = getFileNameFromUri(uri)
 
-        return SharedPdfData(bytes = bytes, sourceFileName = sourceFileName)
+        return SharedDocumentData(bytes = bytes, sourceFileName = sourceFileName, docmarkType = docmarkType)
     }
 
     private fun readBytesFromUri(uri: Uri): ByteArray? {
@@ -216,20 +230,25 @@ sealed class SharedContent {
     data class ImageBytes(val bytes: ByteArray, val extension: String) : SharedContent() {
         override fun equals(other: Any?): Boolean =
             other is ImageBytes &&
-                    bytes.contentEquals(other.bytes) &&
-                    extension == other.extension
+                bytes.contentEquals(other.bytes) &&
+                extension == other.extension
 
         override fun hashCode(): Int = bytes.contentHashCode() * 31 + extension.hashCode()
     }
 
-    data class PdfBytes(val bytes: ByteArray, val sourceFileName: String?) : SharedContent() {
+    data class DocumentBytes(
+        val bytes: ByteArray,
+        val sourceFileName: String?,
+        val docmarkType: DocmarkType,
+    ) : SharedContent() {
         override fun equals(other: Any?): Boolean =
-            other is PdfBytes &&
-                    bytes.contentEquals(other.bytes) &&
-                    sourceFileName == other.sourceFileName
+            other is DocumentBytes &&
+                bytes.contentEquals(other.bytes) &&
+                sourceFileName == other.sourceFileName &&
+                docmarkType == other.docmarkType
 
         override fun hashCode(): Int =
-            bytes.contentHashCode() * 31 + (sourceFileName?.hashCode() ?: 0)
+            bytes.contentHashCode() * 31 + (sourceFileName?.hashCode() ?: 0) + docmarkType.hashCode()
     }
 }
 
@@ -242,14 +261,14 @@ private fun extractUrlFromText(text: String): String? {
 
 private fun isValidUrl(text: String): Boolean {
     return text.startsWith("http://", ignoreCase = true) ||
-            text.startsWith("https://", ignoreCase = true)
+        text.startsWith("https://", ignoreCase = true)
 }
 
 private fun handleSharedContent(
     sharedContent: SharedContent?,
     onNavigateToLinkmark: (String) -> Unit,
     onNavigateToImagemark: (SharedImageData) -> Unit,
-    onNavigateToDocmark: (SharedPdfData) -> Unit,
+    onNavigateToDocmark: (SharedDocumentData) -> Unit,
     onNavigateToBookmarkSelection: () -> Unit,
     onShowCreation: () -> Unit,
     onDismiss: () -> Unit,
@@ -266,8 +285,14 @@ private fun handleSharedContent(
         return
     }
 
-    if (sharedContent is SharedContent.PdfBytes) {
-        onNavigateToDocmark(SharedPdfData(sharedContent.bytes, sharedContent.sourceFileName))
+    if (sharedContent is SharedContent.DocumentBytes) {
+        onNavigateToDocmark(
+            SharedDocumentData(
+                bytes = sharedContent.bytes,
+                sourceFileName = sharedContent.sourceFileName,
+                docmarkType = sharedContent.docmarkType,
+            ),
+        )
         onShowCreation()
         return
     }
@@ -297,7 +322,7 @@ private fun handleSharedContent(
             }
 
             is SharedContent.ImageBytes -> null
-            is SharedContent.PdfBytes -> null
+            is SharedContent.DocumentBytes -> null
         }
 
     // Navigate to appropriate route
@@ -319,7 +344,7 @@ private fun ShareActivityContent(
     onDismiss: () -> Unit,
 ) {
     val userPreferences by
-    SettingsStores.userPreferences.preferencesFlow.collectAsState(UserPreferences())
+        SettingsStores.userPreferences.preferencesFlow.collectAsState(UserPreferences())
 
     val appVM = viewModel { AppVM() }
     val deletionVM = viewModel { DeletionVM() }
@@ -346,20 +371,20 @@ private fun ShareActivityContent(
                             LinkmarkCreationRoute(
                                 bookmarkId = null,
                                 initialUrl = url,
-                            )
+                            ),
                         )
                     },
                     onNavigateToImagemark = { imageData ->
                         navigationResultStore.setResult(
                             ResultStoreKeys.SHARED_IMAGE_DATA,
-                            imageData
+                            imageData,
                         )
                         creationNavigator.add(ImagemarkCreationRoute(bookmarkId = null))
                     },
-                    onNavigateToDocmark = { pdfData ->
+                    onNavigateToDocmark = { docData ->
                         navigationResultStore.setResult(
-                            ResultStoreKeys.SHARED_PDF_DATA,
-                            pdfData
+                            ResultStoreKeys.SHARED_DOCUMENT_DATA,
+                            docData,
                         )
                         creationNavigator.add(DocmarkCreationRoute(bookmarkId = null))
                     },

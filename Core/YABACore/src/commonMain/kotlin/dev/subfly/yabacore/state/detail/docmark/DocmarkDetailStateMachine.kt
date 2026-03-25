@@ -11,6 +11,10 @@ import dev.subfly.yabacore.managers.DocmarkManager
 import dev.subfly.yabacore.managers.AnnotationManager
 import dev.subfly.yabacore.managers.ReadableContentManager
 import dev.subfly.yabacore.model.ui.BookmarkPreviewUiModel
+import dev.subfly.yabacore.model.utils.DocmarkType
+import dev.subfly.yabacore.model.utils.ReaderFontSize
+import dev.subfly.yabacore.model.utils.ReaderLineHeight
+import dev.subfly.yabacore.model.utils.ReaderTheme
 import dev.subfly.yabacore.notifications.NotificationManager
 import dev.subfly.yabacore.state.base.BaseStateMachine
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -35,8 +39,14 @@ class DocmarkDetailStateMachine : BaseStateMachine<DocmarkDetailUIState, Docmark
         when (event) {
             is DocmarkDetailEvent.OnInit -> onInit(event.bookmarkId)
             DocmarkDetailEvent.OnDeleteBookmark -> onDeleteBookmark()
-            DocmarkDetailEvent.OnSharePdf -> onSharePdf()
-            DocmarkDetailEvent.OnExportPdf -> onExportPdf()
+            DocmarkDetailEvent.OnShareDocument -> onShareDocument()
+            DocmarkDetailEvent.OnExportDocument -> onExportDocument()
+            DocmarkDetailEvent.OnToggleReaderTheme -> onToggleReaderTheme()
+            DocmarkDetailEvent.OnToggleReaderFontSize -> onToggleReaderFontSize()
+            DocmarkDetailEvent.OnToggleReaderLineHeight -> onToggleReaderLineHeight()
+            is DocmarkDetailEvent.OnSetReaderTheme -> onSetReaderTheme(event.theme)
+            is DocmarkDetailEvent.OnSetReaderFontSize -> onSetReaderFontSize(event.fontSize)
+            is DocmarkDetailEvent.OnSetReaderLineHeight -> onSetReaderLineHeight(event.lineHeight)
             is DocmarkDetailEvent.OnDeleteAnnotation -> onDeleteAnnotation(event.annotationId)
             is DocmarkDetailEvent.OnScrollToAnnotation -> onScrollToAnnotation(event.annotationId)
             DocmarkDetailEvent.OnClearScrollToAnnotation -> onClearScrollToAnnotation()
@@ -72,9 +82,10 @@ class DocmarkDetailStateMachine : BaseStateMachine<DocmarkDetailUIState, Docmark
                 }
             }.collect { (id, size) ->
                 if (size == 0) {
-                    val pdfPath = DocmarkManager.resolvePdfAbsolutePath(id)
-                    if (pdfPath.isNullOrBlank().not()) {
-                        ReadableContentManager.ensurePdfDocmarkAnnotationReadableVersionIfNeeded(id)
+                    val docType = DatabaseProvider.docBookmarkDao.getByBookmarkId(id)?.type ?: DocmarkType.PDF
+                    val docPath = DocmarkManager.resolveDocumentAbsolutePath(id, docType)
+                    if (docPath.isNullOrBlank().not()) {
+                        ReadableContentManager.ensureDocmarkAnnotationReadableVersionIfNeeded(id)
                     }
                 }
             }
@@ -98,12 +109,14 @@ class DocmarkDetailStateMachine : BaseStateMachine<DocmarkDetailUIState, Docmark
                         flow {
                             val selectedVersion = readableVersions.find { it.versionId == selectedReadableVersionId }
                                 ?: readableVersions.firstOrNull()
-                            val pdfPath = DocmarkManager.resolvePdfAbsolutePath(id)
+                            val docmarkType = doc?.type ?: DocmarkType.PDF
+                            val documentPath = DocmarkManager.resolveDocumentAbsolutePath(id, docmarkType)
                             emit(
                                 currentState().copy(
                                     bookmark = bookmark?.toBookmarkPreviewUiModel(),
                                     summary = doc?.summary,
-                                    pdfAbsolutePath = pdfPath,
+                                    docmarkType = docmarkType,
+                                    documentAbsolutePath = documentPath,
                                     selectedReadableVersionId = selectedVersion?.versionId,
                                     annotations = selectedVersion?.annotations ?: emptyList(),
                                     isLoading = false,
@@ -117,7 +130,8 @@ class DocmarkDetailStateMachine : BaseStateMachine<DocmarkDetailUIState, Docmark
                     it.copy(
                         bookmark = newState.bookmark,
                         summary = newState.summary,
-                        pdfAbsolutePath = newState.pdfAbsolutePath,
+                        docmarkType = newState.docmarkType,
+                        documentAbsolutePath = newState.documentAbsolutePath,
                         selectedReadableVersionId = newState.selectedReadableVersionId,
                         annotations = newState.annotations,
                         isLoading = newState.isLoading,
@@ -132,14 +146,14 @@ class DocmarkDetailStateMachine : BaseStateMachine<DocmarkDetailUIState, Docmark
         AllBookmarksManager.deleteBookmarks(listOf(bookmarkId))
     }
 
-    private fun onSharePdf() {
+    private fun onShareDocument() {
         launch {
             val bookmarkId = bookmarkIdFlow.value ?: return@launch
             YabaFileAccessor.shareDocmark(bookmarkId)
         }
     }
 
-    private fun onExportPdf() {
+    private fun onExportDocument() {
         launch {
             val bookmarkId = bookmarkIdFlow.value ?: return@launch
             val bookmark = currentState().bookmark ?: return@launch
@@ -147,7 +161,76 @@ class DocmarkDetailStateMachine : BaseStateMachine<DocmarkDetailUIState, Docmark
             YabaFileAccessor.exportDocmark(
                 bookmarkId = bookmarkId,
                 suggestedName = name,
-                extension = "pdf",
+                extension = null,
+            )
+        }
+    }
+
+    private fun onToggleReaderTheme() {
+        updateState { state ->
+            val currentPreferences = state.readerPreferences
+            state.copy(
+                readerPreferences = currentPreferences.copy(
+                    theme = when (currentPreferences.theme) {
+                        ReaderTheme.SYSTEM -> ReaderTheme.DARK
+                        ReaderTheme.DARK -> ReaderTheme.LIGHT
+                        ReaderTheme.LIGHT -> ReaderTheme.SEPIA
+                        ReaderTheme.SEPIA -> ReaderTheme.SYSTEM
+                    },
+                ),
+            )
+        }
+    }
+
+    private fun onToggleReaderFontSize() {
+        updateState { state ->
+            val currentPreferences = state.readerPreferences
+            state.copy(
+                readerPreferences = currentPreferences.copy(
+                    fontSize = when (currentPreferences.fontSize) {
+                        ReaderFontSize.SMALL -> ReaderFontSize.MEDIUM
+                        ReaderFontSize.MEDIUM -> ReaderFontSize.LARGE
+                        ReaderFontSize.LARGE -> ReaderFontSize.SMALL
+                    },
+                ),
+            )
+        }
+    }
+
+    private fun onToggleReaderLineHeight() {
+        updateState { state ->
+            val currentPreferences = state.readerPreferences
+            state.copy(
+                readerPreferences = currentPreferences.copy(
+                    lineHeight = when (currentPreferences.lineHeight) {
+                        ReaderLineHeight.NORMAL -> ReaderLineHeight.RELAXED
+                        ReaderLineHeight.RELAXED -> ReaderLineHeight.NORMAL
+                    },
+                ),
+            )
+        }
+    }
+
+    private fun onSetReaderTheme(theme: ReaderTheme) {
+        updateState { state ->
+            state.copy(
+                readerPreferences = state.readerPreferences.copy(theme = theme),
+            )
+        }
+    }
+
+    private fun onSetReaderFontSize(fontSize: ReaderFontSize) {
+        updateState { state ->
+            state.copy(
+                readerPreferences = state.readerPreferences.copy(fontSize = fontSize),
+            )
+        }
+    }
+
+    private fun onSetReaderLineHeight(lineHeight: ReaderLineHeight) {
+        updateState { state ->
+            state.copy(
+                readerPreferences = state.readerPreferences.copy(lineHeight = lineHeight),
             )
         }
     }

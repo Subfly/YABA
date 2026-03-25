@@ -59,8 +59,25 @@ actual fun YabaWebViewHost(
                 feature = f,
                 onHostEvent = onHostEvent,
             )
+        is YabaWebFeature.EpubExtractor ->
+            YabaEpubExtractorFeatureHost(
+                modifier = modifier,
+                baseUrl = baseUrl,
+                feature = f,
+                onHostEvent = onHostEvent,
+            )
         is YabaWebFeature.PdfViewer ->
             YabaPdfViewerFeatureHost(
+                modifier = modifier,
+                baseUrl = baseUrl,
+                feature = f,
+                onHostEvent = onHostEvent,
+                onScrollDirectionChanged = onScrollDirectionChanged,
+                onReaderBridgeReady = onReaderBridgeReady,
+                onAnnotationTap = onAnnotationTap,
+            )
+        is YabaWebFeature.EpubViewer ->
+            YabaEpubViewerFeatureHost(
                 modifier = modifier,
                 baseUrl = baseUrl,
                 feature = f,

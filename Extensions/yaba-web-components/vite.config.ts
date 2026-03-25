@@ -33,6 +33,7 @@ export default defineConfig({
         viewer: resolve(__dirname, "viewer.html"),
         converter: resolve(__dirname, "converter.html"),
         "pdf-viewer": resolve(__dirname, "pdf-viewer.html"),
+        "epub-viewer": resolve(__dirname, "epub-viewer.html"),
       },
       output: {
         entryFileNames: "[name].js",

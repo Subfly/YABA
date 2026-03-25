@@ -42,9 +42,10 @@ import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.ResultStoreKeys
-import dev.subfly.yaba.util.SharedPdfData
+import dev.subfly.yaba.util.SharedDocumentData
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.ui.TagUiModel
+import dev.subfly.yabacore.model.utils.DocmarkType
 import dev.subfly.yabacore.model.utils.FolderSelectionMode
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.creation.docmark.DocmarkCreationEvent
@@ -52,6 +53,7 @@ import dev.subfly.yabacore.state.creation.docmark.DocmarkCreationUIState
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.icon.iconTintArgb
 import dev.subfly.yabacore.ui.webview.WebComponentUris
+import dev.subfly.yabacore.webview.WebEpubConverterInput
 import dev.subfly.yabacore.webview.WebPdfConverterInput
 import dev.subfly.yabacore.webview.YabaWebFeature
 import dev.subfly.yabacore.webview.YabaWebHostEvent
@@ -70,11 +72,22 @@ fun DocmarkCreationContent(bookmarkId: String?) {
     val vm = viewModel { DocmarkCreationVM() }
     val state by vm.state.collectAsStateWithLifecycle()
 
-    val pdfDataUrl by remember(state.pdfBytes, state.isInEditMode) {
+    val pdfDataUrl by remember(state.documentBytes, state.docmarkType, state.isInEditMode) {
         derivedStateOf {
             if (state.isInEditMode) return@derivedStateOf null
-            state.pdfBytes?.let { bytes ->
+            if (state.docmarkType != DocmarkType.PDF) return@derivedStateOf null
+            state.documentBytes?.let { bytes ->
                 "data:application/pdf;base64,${Base64.encode(bytes)}"
+            }
+        }
+    }
+
+    val epubDataUrl by remember(state.documentBytes, state.docmarkType, state.isInEditMode) {
+        derivedStateOf {
+            if (state.isInEditMode) return@derivedStateOf null
+            if (state.docmarkType != DocmarkType.EPUB) return@derivedStateOf null
+            state.documentBytes?.let { bytes ->
+                "data:application/epub+zip;base64,${Base64.encode(bytes)}"
             }
         }
     }
@@ -85,6 +98,13 @@ fun DocmarkCreationContent(bookmarkId: String?) {
             pdfDataUrl?.let { url ->
                 WebPdfConverterInput(pdfUrl = url)
             }
+        }
+    }
+
+    val epubConverterInput by remember(epubDataUrl, state.isInEditMode) {
+        derivedStateOf {
+            if (state.isInEditMode || epubDataUrl == null) return@derivedStateOf null
+            epubDataUrl?.let { WebEpubConverterInput(epubDataUrl = it) }
         }
     }
 
@@ -110,15 +130,16 @@ fun DocmarkCreationContent(bookmarkId: String?) {
         }
     }
 
-    LaunchedEffect(resultStore.getResult(ResultStoreKeys.SHARED_PDF_DATA)) {
-        resultStore.getResult<SharedPdfData>(ResultStoreKeys.SHARED_PDF_DATA)?.let { pdfData ->
+    LaunchedEffect(resultStore.getResult(ResultStoreKeys.SHARED_DOCUMENT_DATA)) {
+        resultStore.getResult<SharedDocumentData>(ResultStoreKeys.SHARED_DOCUMENT_DATA)?.let { doc ->
             vm.onEvent(
-                DocmarkCreationEvent.OnPdfFromShare(
-                    bytes = pdfData.bytes,
-                    sourceFileName = pdfData.sourceFileName,
-                )
+                DocmarkCreationEvent.OnDocumentFromShare(
+                    bytes = doc.bytes,
+                    sourceFileName = doc.sourceFileName,
+                    docmarkType = doc.docmarkType,
+                ),
             )
-            resultStore.removeResult(ResultStoreKeys.SHARED_PDF_DATA)
+            resultStore.removeResult(ResultStoreKeys.SHARED_DOCUMENT_DATA)
         }
     }
 
@@ -139,6 +160,29 @@ fun DocmarkCreationContent(bookmarkId: String?) {
                 }
                 is YabaWebHostEvent.PdfConverterFailure -> {
                     // Non-fatal: preview/readable may stay empty
+                }
+                else -> Unit
+            }
+        },
+    )
+
+    YabaWebView(
+        modifier = Modifier.size(0.dp),
+        baseUrl = WebComponentUris.getConverterUri(),
+        feature = YabaWebFeature.EpubExtractor(input = epubConverterInput),
+        onHostEvent = { ev ->
+            when (ev) {
+                is YabaWebHostEvent.EpubConverterSuccess -> {
+                    val previewBytes = ev.result.coverPngDataUrl?.let(::decodeDataUrlToBytes)
+                    vm.onEvent(
+                        DocmarkCreationEvent.OnSetGeneratedPreview(
+                            imageBytes = previewBytes,
+                            extension = "png",
+                        ),
+                    )
+                }
+                is YabaWebHostEvent.EpubConverterFailure -> {
+                    // Non-fatal
                 }
                 else -> Unit
             }
@@ -178,7 +222,7 @@ fun DocmarkCreationContent(bookmarkId: String?) {
                 DocmarkPreviewContent(
                     state = state,
                     onChangePreviewType = { vm.onEvent(DocmarkCreationEvent.OnCyclePreviewAppearance) },
-                    onPickPdf = { vm.onEvent(DocmarkCreationEvent.OnPickPdf) },
+                    onPickDocument = { vm.onEvent(DocmarkCreationEvent.OnPickDocument) },
                 )
             }
             item {
@@ -235,7 +279,7 @@ fun DocmarkCreationContent(bookmarkId: String?) {
 private fun DocmarkPreviewContent(
     state: DocmarkCreationUIState,
     onChangePreviewType: () -> Unit,
-    onPickPdf: () -> Unit,
+    onPickDocument: () -> Unit,
 ) {
     val color = state.selectedFolder?.color ?: YabaColor.BLUE
 
@@ -269,7 +313,7 @@ private fun DocmarkPreviewContent(
             Button(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
                 shapes = ButtonDefaults.shapes(),
-                onClick = onPickPdf,
+                onClick = onPickDocument,
                 enabled = state.isLoading.not() && state.isInEditMode.not(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(color.iconTintArgb())),
             ) {
@@ -279,7 +323,11 @@ private fun DocmarkPreviewContent(
                     color = Color.White,
                 )
                 Text(
-                    text = if (state.pdfBytes == null) "Pick PDF" else "Pick Another PDF",
+                    text = if (state.documentBytes == null) {
+                        "Pick PDF or EPUB"
+                    } else {
+                        "Pick another document"
+                    },
                     color = Color.White,
                 )
             }

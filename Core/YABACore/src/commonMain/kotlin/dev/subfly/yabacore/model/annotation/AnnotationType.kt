@@ -10,4 +10,5 @@ import kotlinx.serialization.Serializable
 enum class AnnotationType {
     READABLE,
     PDF,
+    EPUB,
 }
