@@ -25,6 +25,11 @@ import dev.subfly.yabacore.webview.toJsReaderThemeLiteral
 import org.json.JSONArray
 import org.json.JSONObject
 
+internal data class EditorHostStateUpdate(
+    val canCreateAnnotation: Boolean,
+    val formatting: EditorFormattingState,
+)
+
 @Suppress("FunctionName")
 internal fun RichTextWebViewReaderBridge(
     webView: WebView,
@@ -100,6 +105,11 @@ internal fun RichTextWebViewEditorBridge(
         override suspend fun setEditable(editable: Boolean) {
             if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return
             evaluateJs(webView, YabaEditorBridgeScripts.setEditableScript(editable))
+        }
+
+        override suspend fun setPlaceholder(placeholder: String) {
+            if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return
+            evaluateJs(webView, YabaEditorBridgeScripts.setPlaceholderScript(placeholder))
         }
 
         override suspend fun unFocus() {
@@ -188,6 +198,15 @@ internal suspend fun applyEditorReaderPreferences(
     )
 }
 
+internal suspend fun applyEditorPlaceholder(
+    webView: WebView,
+    placeholder: String?,
+) {
+    val value = placeholder ?: return
+    if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return
+    evaluateJs(webView, YabaEditorBridgeScripts.setPlaceholderScript(value))
+}
+
 internal suspend fun installEditorAnnotationTap(webView: WebView) {
     if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY_LOOSE)) return
     evaluateJs(webView, YabaEditorBridgeScripts.installAnnotationTapScript())
@@ -199,37 +218,53 @@ internal suspend fun getEditorActiveFormatting(webView: WebView): EditorFormatti
     val jsonStr = decodeJsStringResult(raw)
     if (jsonStr.isBlank()) return EditorFormattingState()
     return runCatching {
-        val json = JSONObject(jsonStr)
-        EditorFormattingState(
-            bold = json.optBoolean("bold"),
-            italic = json.optBoolean("italic"),
-            underline = json.optBoolean("underline"),
-            strikethrough = json.optBoolean("strikethrough"),
-            subscript = json.optBoolean("subscript"),
-            superscript = json.optBoolean("superscript"),
-            code = json.optBoolean("code"),
-            codeBlock = json.optBoolean("codeBlock"),
-            blockquote = json.optBoolean("blockquote"),
-            bulletList = json.optBoolean("bulletList"),
-            orderedList = json.optBoolean("orderedList"),
-            taskList = json.optBoolean("taskList"),
-            inlineMath = json.optBoolean("inlineMath"),
-            blockMath = json.optBoolean("blockMath"),
-            canUndo = json.optBoolean("canUndo"),
-            canRedo = json.optBoolean("canRedo"),
-            canIndent = json.optBoolean("canIndent"),
-            canOutdent = json.optBoolean("canOutdent"),
-            inTable = json.optBoolean("inTable"),
-            canAddRowBefore = json.optBoolean("canAddRowBefore"),
-            canAddRowAfter = json.optBoolean("canAddRowAfter"),
-            canDeleteRow = json.optBoolean("canDeleteRow"),
-            canAddColumnBefore = json.optBoolean("canAddColumnBefore"),
-            canAddColumnAfter = json.optBoolean("canAddColumnAfter"),
-            canDeleteColumn = json.optBoolean("canDeleteColumn"),
-            textHighlight = json.optBoolean("textHighlight"),
-        )
+        parseEditorFormattingState(JSONObject(jsonStr))
     }.getOrElse { EditorFormattingState() }
 }
+
+internal fun parseEditorHostStateMessage(message: String?): EditorHostStateUpdate? {
+    val payload = message
+        ?.takeIf { it.startsWith(YabaWebBridgeScripts.EDITOR_HOST_EVENT_PREFIX) }
+        ?.removePrefix(YabaWebBridgeScripts.EDITOR_HOST_EVENT_PREFIX)
+        ?.takeIf { it.isNotBlank() }
+        ?: return null
+    val json = runCatching { JSONObject(payload) }.getOrNull() ?: return null
+    if (json.optString("type") != "editorState") return null
+    return EditorHostStateUpdate(
+        canCreateAnnotation = json.optBoolean("canCreateAnnotation"),
+        formatting = parseEditorFormattingState(json.optJSONObject("formatting") ?: JSONObject()),
+    )
+}
+
+internal fun parseEditorFormattingState(json: JSONObject): EditorFormattingState =
+    EditorFormattingState(
+        bold = json.optBoolean("bold"),
+        italic = json.optBoolean("italic"),
+        underline = json.optBoolean("underline"),
+        strikethrough = json.optBoolean("strikethrough"),
+        subscript = json.optBoolean("subscript"),
+        superscript = json.optBoolean("superscript"),
+        code = json.optBoolean("code"),
+        codeBlock = json.optBoolean("codeBlock"),
+        blockquote = json.optBoolean("blockquote"),
+        bulletList = json.optBoolean("bulletList"),
+        orderedList = json.optBoolean("orderedList"),
+        taskList = json.optBoolean("taskList"),
+        inlineMath = json.optBoolean("inlineMath"),
+        blockMath = json.optBoolean("blockMath"),
+        canUndo = json.optBoolean("canUndo"),
+        canRedo = json.optBoolean("canRedo"),
+        canIndent = json.optBoolean("canIndent"),
+        canOutdent = json.optBoolean("canOutdent"),
+        inTable = json.optBoolean("inTable"),
+        canAddRowBefore = json.optBoolean("canAddRowBefore"),
+        canAddRowAfter = json.optBoolean("canAddRowAfter"),
+        canDeleteRow = json.optBoolean("canDeleteRow"),
+        canAddColumnBefore = json.optBoolean("canAddColumnBefore"),
+        canAddColumnAfter = json.optBoolean("canAddColumnAfter"),
+        canDeleteColumn = json.optBoolean("canDeleteColumn"),
+        textHighlight = json.optBoolean("textHighlight"),
+    )
 
 private suspend fun pushAnnotationsEditor(webView: WebView, annotations: List<AnnotationUiModel>) {
     val arr = JSONArray()

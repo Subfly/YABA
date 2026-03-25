@@ -234,6 +234,19 @@ object YabaEditorBridgeScripts {
         })();
         """.trimIndent()
 
+    fun setPlaceholderScript(placeholder: String): String {
+        val escaped = escapeForJsSingleQuotedString(placeholder)
+        return """
+        (function() {
+            try {
+                if (window.YabaEditorBridge && typeof window.YabaEditorBridge.setPlaceholder === "function") {
+                    window.YabaEditorBridge.setPlaceholder('$escaped');
+                }
+            } catch(e) {}
+        })();
+        """.trimIndent()
+    }
+
     fun unFocusScript(): String =
         """
         (function() {

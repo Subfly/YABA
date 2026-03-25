@@ -9,6 +9,8 @@ interface WebViewEditorBridge : WebViewReaderBridge {
 
     suspend fun setEditable(editable: Boolean)
 
+    suspend fun setPlaceholder(placeholder: String)
+
     /**
      * Calls `window.YabaEditorBridge.unFocus()` so the WebView releases IME focus (Compose keyboard APIs alone are not enough).
      * The web layer remembers the text cursor before unfocusing.

@@ -99,6 +99,7 @@ internal fun NotemarkContentLayout(
     val scope = rememberCoroutineScope()
     val openUrl = rememberUrlLauncher()
     val awaitKeyboardClosedBeforeCreationSheet = rememberAwaitKeyboardClosedBeforeCreationSheet()
+    val notePlaceholderText = "Start your note..." // TODO: localize placeholder text
 
     var editorBridge by remember { mutableStateOf<WebViewEditorBridge?>(null) }
     var editorFormatting by remember(state.bookmark?.id) { mutableStateOf(EditorFormattingState()) }
@@ -153,7 +154,6 @@ internal fun NotemarkContentLayout(
                 }
             }
         }
-        bridge.focus()
     }
 
     LaunchedEffect(resultStore.getResult(ResultStoreKeys.SELECTED_COLOR), editorBridge) {
@@ -204,6 +204,7 @@ internal fun NotemarkContentLayout(
                         feature = YabaWebFeature.Editor(
                             initialDocumentJson = state.initialDocumentJson.orEmpty(),
                             assetsBaseUrl = state.assetsBaseUrl,
+                            placeholderText = notePlaceholderText,
                             platform = YabaWebPlatform.Compose,
                             appearance = webAppearance,
                             readerPreferences = ReaderPreferences(),

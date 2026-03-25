@@ -4,6 +4,8 @@ package dev.subfly.yabacore.webview
  * JS snippets for bridge readiness checks (must match yaba-web-components).
  */
 object YabaWebBridgeScripts {
+    const val EDITOR_HOST_EVENT_PREFIX = "yaba-editor-host:"
+
     const val EDITOR_BRIDGE_READY: String =
         "(function(){ try { return !!(window.YabaEditorBridge && window.YabaEditorBridge.isReady && window.YabaEditorBridge.isReady()); } catch(e){ return false; } })();"
 

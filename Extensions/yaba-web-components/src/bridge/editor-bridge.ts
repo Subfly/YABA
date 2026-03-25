@@ -1,5 +1,5 @@
 import type { Editor } from "@tiptap/core"
-import { Selection } from "@tiptap/pm/state"
+import { Selection, TextSelection } from "@tiptap/pm/state"
 import type { Platform, AppearanceMode } from "@/theme"
 import { applyTheme, parseUrlParams } from "@/theme"
 import {
@@ -13,6 +13,12 @@ import {
   type AnnotationForRendering,
 } from "@/tiptap/extensions/annotation-decorations"
 import { YabaAnnotationMarkName } from "@/tiptap/extensions/yaba-annotation-mark"
+import { setNoteEditorPlaceholderText } from "@/tiptap/editor-extensions"
+import { getActiveFormattingJson } from "./editor-formatting"
+import {
+  publishEditorHostState,
+  resetPublishedEditorHostState,
+} from "./editor-host-events"
 
 export type ReaderTheme = "system" | "dark" | "light" | "sepia"
 export type ReaderFontSize = "small" | "medium" | "large"
@@ -68,6 +74,7 @@ export interface YabaEditorBridge {
   setCursorColor: (color: string) => void
   setReaderPreferences: (preferences: Partial<ReaderPreferences>) => void
   setEditable: (isEditable: boolean) => void
+  setPlaceholder: (placeholder: string) => void
   /** TipTap/ProseMirror document as JSON string. */
   setDocumentJson: (documentJson: string, options?: { assetsBaseUrl?: string }) => void
   /** Sanitized reader HTML for the read-only viewer (TipTap parses HTML → document). */
@@ -229,25 +236,36 @@ function captureStoredCursorFromEditor(): void {
 /** `setContent` often leaves a range selection; collapse to a caret so toggles don't apply to the whole doc. */
 function clearSelectionToCaretAtStart(editor: Editor): void {
   const pos = Selection.atStart(editor.state.doc).from
-  editor.chain().setTextSelection(pos).run()
-}
-
-function isEditorDocumentEmpty(editor: Editor): boolean {
-  return editor.state.doc.textContent.trim().length === 0
+  const selection = TextSelection.create(editor.state.doc, pos)
+  const tr = editor.state.tr.setSelection(selection)
+  editor.view.dispatch(tr)
 }
 
 /**
- * After loading/replacing content: caret at doc start, then either focus (empty doc, ready to type)
- * or blur (has content — avoids spurious selection / keyboard until user taps).
+ * After loading/replacing content: normalize to a caret at doc start, remember it, then blur.
+ * We prefer an explicit user tap plus placeholder text over auto-focusing the note editor on load.
  */
 function applyInitialFocusStateAfterContent(editor: Editor): void {
   clearSelectionToCaretAtStart(editor)
   captureStoredCursorFromEditor()
-  if (isEditorDocumentEmpty(editor)) {
-    editor.commands.focus()
-  } else {
-    editor.commands.blur()
-  }
+  editor.commands.blur()
+}
+
+function getCanCreateAnnotationForCurrentSelection(): boolean {
+  const snap = getSelectionSnapshot(editorInstance)
+  if (!snap) return false
+  const ed = editorInstance
+  if (!ed) return false
+  const { from, to } = ed.state.selection
+  if (from === to) return false
+  const page = document.body?.dataset.yabaPage
+  if (page === "editor") return true
+  const overlaps = selectionOverlapsYabaAnnotationMark(ed.state.doc, from, to)
+  return !overlaps
+}
+
+function publishCurrentEditorState(): void {
+  publishEditorHostState(editorInstance, getCanCreateAnnotationForCurrentSelection)
 }
 
 function focusEditorRestoringCursor(): void {
@@ -265,6 +283,15 @@ function focusEditorRestoringCursor(): void {
     // Invalid range after doc changes — fall through to plain focus.
   }
   ed.commands.focus()
+}
+
+function withPreparedEditorSelection(run: (editor: Editor) => void): void {
+  const ed = editorInstance
+  if (!ed) return
+  focusEditorRestoringCursor()
+  run(ed)
+  captureStoredCursorFromEditor()
+  publishCurrentEditorState()
 }
 
 function applyReaderPreferences(): void {
@@ -298,11 +325,23 @@ function applyReaderPreferences(): void {
 
 export function initEditorBridge(editor: Editor): void {
   editorInstance = editor
+  resetPublishedEditorHostState()
   editor.on("selectionUpdate", () => {
     captureStoredCursorFromEditor()
+    publishCurrentEditorState()
+  })
+  editor.on("transaction", () => {
+    publishCurrentEditorState()
+  })
+  editor.on("focus", () => {
+    publishCurrentEditorState()
+  })
+  editor.on("blur", () => {
+    publishCurrentEditorState()
   })
   queueMicrotask(() => {
     applyInitialFocusStateAfterContent(editor)
+    publishCurrentEditorState()
   })
   const urlParams = parseUrlParams()
   platform = urlParams.platform
@@ -311,20 +350,7 @@ export function initEditorBridge(editor: Editor): void {
   win.YabaEditorBridge = {
     isReady: () => !!editorInstance,
     getSelectionSnapshot: () => getSelectionSnapshot(editorInstance),
-    getCanCreateAnnotation: () => {
-      const page = document.body?.dataset.yabaPage
-      const snap = getSelectionSnapshot(editorInstance)
-      if (!snap) return false
-      const ed = editorInstance
-      if (!ed) return false
-      const { from, to } = ed.state.selection
-      if (from === to) return false
-      if (page === "editor") {
-        return true
-      }
-      const overlaps = selectionOverlapsYabaAnnotationMark(ed.state.doc, from, to)
-      return !overlaps
-    },
+    getCanCreateAnnotation: () => getCanCreateAnnotationForCurrentSelection(),
     setAnnotations: (annotationsJson: string) => {
       try {
         const annotations: AnnotationForRendering[] =
@@ -369,6 +395,11 @@ export function initEditorBridge(editor: Editor): void {
     setEditable: (isEditable: boolean) => {
       editorInstance?.setEditable(isEditable)
     },
+    setPlaceholder: (placeholder: string) => {
+      setNoteEditorPlaceholderText(placeholder)
+      editorInstance?.view.dispatch(editorInstance.state.tr)
+      publishCurrentEditorState()
+    },
     setDocumentJson: (documentJson: string, options?: { assetsBaseUrl?: string }) => {
       if (options?.assetsBaseUrl) {
         lastAssetsBaseUrl = options.assetsBaseUrl
@@ -386,6 +417,7 @@ export function initEditorBridge(editor: Editor): void {
       editorInstance?.commands.setContent(doc, { emitUpdate: false })
       if (editorInstance) {
         applyInitialFocusStateAfterContent(editorInstance)
+        publishCurrentEditorState()
       }
     },
     setReaderHtml: (html: string, options?: { assetsBaseUrl?: string }) => {
@@ -399,6 +431,7 @@ export function initEditorBridge(editor: Editor): void {
       editorInstance?.commands.setContent(payload, { emitUpdate: false })
       if (editorInstance) {
         applyInitialFocusStateAfterContent(editorInstance)
+        publishCurrentEditorState()
       }
     },
     getDocumentJson: () => {
@@ -406,209 +439,150 @@ export function initEditorBridge(editor: Editor): void {
       return normalizeDocumentJsonAssetPathsForPersistence(raw)
     },
     getActiveFormatting: () => {
-      const ed = editorInstance
-      if (!ed) {
-        return JSON.stringify({
-          bold: false,
-          italic: false,
-          underline: false,
-          strikethrough: false,
-          subscript: false,
-          superscript: false,
-          code: false,
-          codeBlock: false,
-          blockquote: false,
-          bulletList: false,
-          orderedList: false,
-          taskList: false,
-          canUndo: false,
-          canRedo: false,
-          canIndent: false,
-          canOutdent: false,
-          inTable: false,
-          canAddRowBefore: false,
-          canAddRowAfter: false,
-          canDeleteRow: false,
-          canAddColumnBefore: false,
-          canAddColumnAfter: false,
-          canDeleteColumn: false,
-          inlineMath: false,
-          blockMath: false,
-          textHighlight: false,
-        })
-      }
-      const inTable = ed.isActive("table")
-      return JSON.stringify({
-        bold: ed.isActive("bold"),
-        italic: ed.isActive("italic"),
-        underline: ed.isActive("underline"),
-        strikethrough: ed.isActive("strike"),
-        subscript: ed.isActive("subscript"),
-        superscript: ed.isActive("superscript"),
-        code: ed.isActive("code"),
-        codeBlock: ed.isActive("codeBlock"),
-        blockquote: ed.isActive("blockquote"),
-        bulletList: ed.isActive("bulletList"),
-        orderedList: ed.isActive("orderedList"),
-        taskList: ed.isActive("taskList"),
-        inlineMath: ed.isActive("inlineMath"),
-        blockMath: ed.isActive("blockMath"),
-        canUndo: ed.can().undo(),
-        canRedo: ed.can().redo(),
-        canIndent: ed.can().sinkListItem("listItem"),
-        canOutdent: ed.can().liftListItem("listItem"),
-        inTable,
-        canAddRowBefore: inTable && ed.can().addRowBefore(),
-        canAddRowAfter: inTable && ed.can().addRowAfter(),
-        canDeleteRow: inTable && ed.can().deleteRow(),
-        canAddColumnBefore: inTable && ed.can().addColumnBefore(),
-        canAddColumnAfter: inTable && ed.can().addColumnAfter(),
-        canDeleteColumn: inTable && ed.can().deleteColumn(),
-        textHighlight: ed.isActive("highlight"),
-      })
+      return getActiveFormattingJson(editorInstance)
     },
     focus: () => {
       focusEditorRestoringCursor()
+      publishCurrentEditorState()
     },
     unFocus: () => {
       captureStoredCursorFromEditor()
       editorInstance?.commands.blur()
+      publishCurrentEditorState()
     },
     dispatch: (cmd: EditorCommandPayload) => {
-      const ed = editorInstance
-      if (!ed) return
+      withPreparedEditorSelection((ed) => {
+        const chain = ed.chain()
 
-      const chain = ed.chain().focus()
-
-      switch (cmd.type) {
-        case "toggleBold":
-          chain.toggleBold().run()
-          break
-        case "toggleItalic":
-          chain.toggleItalic().run()
-          break
-        case "toggleUnderline":
-          chain.toggleUnderline().run()
-          break
-        case "toggleSubscript":
-          chain.toggleSubscript().run()
-          break
-        case "toggleSuperscript":
-          chain.toggleSuperscript().run()
-          break
-        case "toggleStrikethrough":
-          chain.toggleStrike().run()
-          break
-        case "toggleCode":
-          chain.toggleCode().run()
-          break
-        case "toggleCodeBlock":
-          chain.toggleCodeBlock().run()
-          break
-        case "toggleQuote":
-          chain.toggleBlockquote().run()
-          break
-        case "insertHr":
-          chain.setHorizontalRule().run()
-          break
-        case "toggleBulletedList":
-          chain.toggleBulletList().run()
-          break
-        case "toggleNumberedList":
-          chain.toggleOrderedList().run()
-          break
-        case "toggleTaskList":
-          chain.toggleTaskList().run()
-          break
-        case "indent":
-          chain.sinkListItem("listItem").run()
-          break
-        case "outdent":
-          chain.liftListItem("listItem").run()
-          break
-        case "undo":
-          chain.undo().run()
-          break
-        case "redo":
-          chain.redo().run()
-          break
-        case "insertLink":
-          chain.setLink({ href: cmd.url }).run()
-          break
-        case "removeLink":
-          chain.unsetLink().run()
-          break
-        case "insertInlineMath":
-          ed.commands.insertInlineMath({ latex: cmd.latex })
-          break
-        case "insertBlockMath":
-          ed.commands.insertBlockMath({ latex: cmd.latex })
-          break
-        case "updateInlineMath":
-          ed.commands.updateInlineMath({ latex: cmd.latex, pos: cmd.pos })
-          break
-        case "updateBlockMath":
-          ed.commands.updateBlockMath({ latex: cmd.latex, pos: cmd.pos })
-          break
-        case "insertTable": {
-          const rows = Math.max(1, Math.min(20, Math.floor(cmd.rows)))
-          const cols = Math.max(1, Math.min(20, Math.floor(cmd.cols)))
-          ed.commands.insertTable({
-            rows,
-            cols,
-            withHeaderRow: cmd.withHeaderRow ?? false,
-          })
-          break
-        }
-        case "insertImage":
-          ed.commands.setImage({ src: resolveImageSrcForEditor(cmd.src) })
-          break
-        case "addRowBefore":
-          ed.commands.addRowBefore()
-          break
-        case "addRowAfter":
-          ed.commands.addRowAfter()
-          break
-        case "deleteRow":
-          ed.commands.deleteRow()
-          break
-        case "addColumnBefore":
-          ed.commands.addColumnBefore()
-          break
-        case "addColumnAfter":
-          ed.commands.addColumnAfter()
-          break
-        case "deleteColumn":
-          ed.commands.deleteColumn()
-          break
-        case "insertText": {
-          const { from, to } = ed.state.selection
-          const tr = ed.state.tr.insertText(cmd.text, from, to)
-          ed.view.dispatch(tr)
-          ed.commands.focus()
-          break
-        }
-        case "setHeading": {
-          const level = Math.min(6, Math.max(1, Math.floor(cmd.level))) as 1 | 2 | 3 | 4 | 5 | 6
-          chain.setHeading({ level }).run()
-          break
-        }
-        case "setTextHighlight": {
-          const role = (cmd.colorRole || "YELLOW").toUpperCase()
-          if (role === "NONE") {
-            ed.chain().focus().unsetHighlight().run()
-          } else {
-            ed.chain().focus().setHighlight({ color: role }).run()
+        switch (cmd.type) {
+          case "toggleBold":
+            chain.toggleBold().run()
+            break
+          case "toggleItalic":
+            chain.toggleItalic().run()
+            break
+          case "toggleUnderline":
+            chain.toggleUnderline().run()
+            break
+          case "toggleSubscript":
+            chain.toggleSubscript().run()
+            break
+          case "toggleSuperscript":
+            chain.toggleSuperscript().run()
+            break
+          case "toggleStrikethrough":
+            chain.toggleStrike().run()
+            break
+          case "toggleCode":
+            chain.toggleCode().run()
+            break
+          case "toggleCodeBlock":
+            chain.toggleCodeBlock().run()
+            break
+          case "toggleQuote":
+            chain.toggleBlockquote().run()
+            break
+          case "insertHr":
+            chain.setHorizontalRule().run()
+            break
+          case "toggleBulletedList":
+            chain.toggleBulletList().run()
+            break
+          case "toggleNumberedList":
+            chain.toggleOrderedList().run()
+            break
+          case "toggleTaskList":
+            chain.toggleTaskList().run()
+            break
+          case "indent":
+            chain.sinkListItem("listItem").run()
+            break
+          case "outdent":
+            chain.liftListItem("listItem").run()
+            break
+          case "undo":
+            chain.undo().run()
+            break
+          case "redo":
+            chain.redo().run()
+            break
+          case "insertLink":
+            chain.setLink({ href: cmd.url }).run()
+            break
+          case "removeLink":
+            chain.unsetLink().run()
+            break
+          case "insertInlineMath":
+            ed.commands.insertInlineMath({ latex: cmd.latex })
+            break
+          case "insertBlockMath":
+            ed.commands.insertBlockMath({ latex: cmd.latex })
+            break
+          case "updateInlineMath":
+            ed.commands.updateInlineMath({ latex: cmd.latex, pos: cmd.pos })
+            break
+          case "updateBlockMath":
+            ed.commands.updateBlockMath({ latex: cmd.latex, pos: cmd.pos })
+            break
+          case "insertTable": {
+            const rows = Math.max(1, Math.min(20, Math.floor(cmd.rows)))
+            const cols = Math.max(1, Math.min(20, Math.floor(cmd.cols)))
+            ed.commands.insertTable({
+              rows,
+              cols,
+              withHeaderRow: cmd.withHeaderRow ?? false,
+            })
+            break
           }
-          break
+          case "insertImage":
+            ed.commands.setImage({ src: resolveImageSrcForEditor(cmd.src) })
+            break
+          case "addRowBefore":
+            ed.commands.addRowBefore()
+            break
+          case "addRowAfter":
+            ed.commands.addRowAfter()
+            break
+          case "deleteRow":
+            ed.commands.deleteRow()
+            break
+          case "addColumnBefore":
+            ed.commands.addColumnBefore()
+            break
+          case "addColumnAfter":
+            ed.commands.addColumnAfter()
+            break
+          case "deleteColumn":
+            ed.commands.deleteColumn()
+            break
+          case "insertText": {
+            const { from, to } = ed.state.selection
+            const tr = ed.state.tr.insertText(cmd.text, from, to)
+            ed.view.dispatch(tr)
+            break
+          }
+          case "setHeading": {
+            const level = Math.min(6, Math.max(1, Math.floor(cmd.level))) as 1 | 2 | 3 | 4 | 5 | 6
+            chain.setHeading({ level }).run()
+            break
+          }
+          case "setTextHighlight": {
+            const role = (cmd.colorRole || "YELLOW").toUpperCase()
+            if (role === "NONE") {
+              ed.chain().unsetHighlight().run()
+            } else {
+              ed.chain().setHighlight({ color: role }).run()
+            }
+            break
+          }
+          case "unsetTextHighlight":
+            ed.chain().unsetHighlight().run()
+            break
+          case "toggleTextHighlight":
+            ed.chain().toggleHighlight().run()
+            break
         }
-        case "unsetTextHighlight":
-          ed.chain().focus().unsetHighlight().run()
-          break
-        case "toggleTextHighlight":
-          ed.chain().focus().toggleHighlight().run()
-          break
-      }
+      })
     },
     applyAnnotationToSelection: (annotationId: string) => {
       const ed = editorInstance

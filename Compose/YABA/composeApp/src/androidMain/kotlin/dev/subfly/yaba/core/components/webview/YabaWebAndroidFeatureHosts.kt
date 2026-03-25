@@ -319,6 +319,15 @@ internal fun YabaEditorFeatureHost(
         )
     }
 
+    LaunchedEffect(isPageReady, feature.placeholderText) {
+        if (!isPageReady || rendererCrashed) return@LaunchedEffect
+        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) {
+            Log.w(YABA_WEBVIEW_LOG_TAG, "Editor bridge not ready before timeout")
+            return@LaunchedEffect
+        }
+        applyEditorPlaceholder(webView, feature.placeholderText)
+    }
+
     LaunchedEffect(isPageReady, feature.initialDocumentJson, feature.assetsBaseUrl) {
         if (!isPageReady || rendererCrashed) return@LaunchedEffect
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) {
@@ -332,29 +341,6 @@ internal fun YabaEditorFeatureHost(
     LaunchedEffect(isPageReady) {
         if (!isPageReady || rendererCrashed) return@LaunchedEffect
         installEditorAnnotationTap(webView)
-    }
-
-    LaunchedEffect(activeEditorBridge) {
-        val b = activeEditorBridge ?: return@LaunchedEffect
-        var lastCan = false
-        var lastFmt = EditorFormattingState()
-        while (isActive) {
-            val can = b.getCanCreateAnnotation()
-            val fmt = getEditorActiveFormatting(webView)
-            if (can != lastCan || fmt != lastFmt) {
-                lastCan = can
-                lastFmt = fmt
-                onHostEventState.value(
-                    YabaWebHostEvent.ReaderMetrics(
-                        canCreateAnnotation = can,
-                        currentPage = 1,
-                        pageCount = 1,
-                        editorFormatting = fmt,
-                    ),
-                )
-            }
-            delay(200)
-        }
     }
 
     AndroidView(
@@ -381,6 +367,18 @@ internal fun YabaEditorFeatureHost(
                     },
                     pendingPermissionRequestRef = pendingPermissionRequestRef,
                     onLaunchPermissionRequest = { perms -> permissionLauncher.launch(perms) },
+                    onEditorHostEvent = { message ->
+                        parseEditorHostStateMessage(message)?.let { state ->
+                            onHostEventState.value(
+                                YabaWebHostEvent.ReaderMetrics(
+                                    canCreateAnnotation = state.canCreateAnnotation,
+                                    currentPage = 1,
+                                    pageCount = 1,
+                                    editorFormatting = state.formatting,
+                                ),
+                            )
+                        }
+                    },
                 )
                 webView.webViewClient = yabaWebViewClient(
                     assetLoader = assetLoader,

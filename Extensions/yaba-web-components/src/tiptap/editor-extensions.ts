@@ -23,6 +23,11 @@ import { YabaAnnotationMark } from "./extensions/yaba-annotation-mark"
 import { CodeBlockEnterBehaviorExtension } from "./extensions/code-block-enter-behavior"
 
 const lowlight = createLowlight(all)
+let noteEditorPlaceholderText = ""
+
+export function setNoteEditorPlaceholderText(text: string): void {
+  noteEditorPlaceholderText = text
+}
 
 function createSharedBaseExtensions(): Extensions {
   return [
@@ -89,7 +94,7 @@ function createSharedBaseExtensions(): Extensions {
       },
     }),
     Placeholder.configure({
-      placeholder: "",
+      placeholder: () => noteEditorPlaceholderText,
       showOnlyWhenEditable: true,
       showOnlyCurrent: false,
     }),

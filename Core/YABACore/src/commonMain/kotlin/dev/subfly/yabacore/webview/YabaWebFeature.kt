@@ -17,6 +17,7 @@ sealed class YabaWebFeature {
     data class Editor(
         val initialDocumentJson: String,
         val assetsBaseUrl: String?,
+        val placeholderText: String? = null,
         val platform: YabaWebPlatform = YabaWebPlatform.Compose,
         val appearance: YabaWebAppearance = YabaWebAppearance.Auto,
         val readerPreferences: ReaderPreferences = ReaderPreferences(),
