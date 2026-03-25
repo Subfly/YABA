@@ -114,18 +114,37 @@ function applyEpubReaderPipeline(): void {
 function syncReaderVarsFromHostToIframeDoc(doc: Document): void {
   const host = document.documentElement
   const iframeRoot = doc.documentElement
-  const names = [
+  const cs = getComputedStyle(host)
+
+  iframeRoot.setAttribute("data-yaba-reader-theme", mergedReaderPrefs.theme)
+
+  const shared = [
     "--yaba-reader-font-size",
     "--yaba-reader-line-height",
-    "--yaba-reader-bg",
-    "--yaba-reader-on-bg",
     "--yaba-font-family",
     "--yaba-primary",
-  ]
-  iframeRoot.setAttribute("data-yaba-reader-theme", mergedReaderPrefs.theme)
-  for (const name of names) {
-    const v = getComputedStyle(host).getPropertyValue(name).trim()
+  ] as const
+  for (const name of shared) {
+    const v = cs.getPropertyValue(name).trim()
     if (v !== "") iframeRoot.style.setProperty(name, v)
+  }
+
+  if (mergedReaderPrefs.theme === "system") {
+    /**
+     * Read-it-later [viewer.html] is one document: --yaba-reader-bg stays transparent and Compose shows through.
+     * EPUB spine documents live in iframes; transparency does not reveal the host surface, so the canvas stays
+     * effectively light and resolved --yaba-on-bg (e.g. dark mode) reads as pale text on white. Map system theme
+     * to the same resolved shell palette as [applyTheme] (--yaba-bg / --yaba-on-bg) for correct contrast.
+     */
+    const shellBg = cs.getPropertyValue("--yaba-bg").trim()
+    const shellOnBg = cs.getPropertyValue("--yaba-on-bg").trim()
+    if (shellBg !== "") iframeRoot.style.setProperty("--yaba-reader-bg", shellBg)
+    if (shellOnBg !== "") iframeRoot.style.setProperty("--yaba-reader-on-bg", shellOnBg)
+  } else {
+    const rb = cs.getPropertyValue("--yaba-reader-bg").trim()
+    const rob = cs.getPropertyValue("--yaba-reader-on-bg").trim()
+    if (rb !== "") iframeRoot.style.setProperty("--yaba-reader-bg", rb)
+    if (rob !== "") iframeRoot.style.setProperty("--yaba-reader-on-bg", rob)
   }
 }
 

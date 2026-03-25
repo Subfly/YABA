@@ -49,7 +49,7 @@ export function getEpubFontFaceCss(): string {
 
 /**
  * Reader typography + layout overrides inside EPUB spine iframes.
- * [data-yaba-reader-theme] on the iframe root mirrors host prefs; system uses extra transparency overrides.
+ * [data-yaba-reader-theme] on the iframe root mirrors host prefs.
  */
 export function getEpubContentOverrideCss(): string {
   return `
@@ -116,15 +116,6 @@ table {
 img, svg, video {
   max-width: 100% !important;
   height: auto !important;
-}
-
-/* System reader theme: strip publisher opaque wrappers so Compose chrome shows through (matches read-it-later viewer). */
-html[data-yaba-reader-theme="system"] body,
-html[data-yaba-reader-theme="system"] body > div,
-html[data-yaba-reader-theme="system"] body > section,
-html[data-yaba-reader-theme="system"] body > article {
-  background-color: transparent !important;
-  background-image: none !important;
 }
 `
 }

@@ -63,7 +63,11 @@ body[data-yaba-page="pdf-viewer"] {
   color: var(--yaba-on-bg);
 }
 
-/* EPUB viewer: reader surface + text color (same pipeline as read-it-later viewer). */
+/*
+ * EPUB viewer shell: same outer rules as read-it-later viewer (viewer.html).
+ * Host page stays transparent for system theme so Compose shows through; EPUB spine iframes get solid shell
+ * colors in epub-viewer-bridge (iframes cannot composite the host surface like a single-document viewer).
+ */
 body[data-yaba-page="epub-viewer"] {
   background: var(--yaba-reader-bg, transparent);
   color: var(--yaba-reader-on-bg, var(--yaba-on-bg));

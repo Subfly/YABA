@@ -77,10 +77,11 @@ internal fun DocmarkContentLayout(
 
     var readerBridge by remember { mutableStateOf<WebViewReaderBridge?>(null) }
     val appearance = if (isSystemInDarkTheme()) YabaWebAppearance.Dark else YabaWebAppearance.Light
-    val hasReaderContent = !state.isLoading && !state.documentAbsolutePath.isNullOrBlank()
+    val hasDocumentPath = !state.documentAbsolutePath.isNullOrBlank()
+    val showNoDocumentPlaceholder = !state.isLoading && !hasDocumentPath
     var isMenuExpanded by remember { mutableStateOf(false) }
     var hasSelection by remember { mutableStateOf(false) }
-    var isToolbarVisible by remember(hasReaderContent) { mutableStateOf(true) }
+    var isToolbarVisible by remember { mutableStateOf(true) }
     var currentPage by remember { mutableIntStateOf(1) }
     var pageCount by remember { mutableIntStateOf(1) }
 
@@ -89,8 +90,8 @@ internal fun DocmarkContentLayout(
     }
     val menuIconButtonColors = bookmarkDetailIconButtonColors(folderAccent)
 
-    LaunchedEffect(hasReaderContent) {
-        if (!hasReaderContent) {
+    LaunchedEffect(hasDocumentPath) {
+        if (!hasDocumentPath) {
             hasSelection = false
             currentPage = 1
             pageCount = 1
@@ -103,7 +104,7 @@ internal fun DocmarkContentLayout(
             .background(color = MaterialTheme.colorScheme.background),
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            if (hasReaderContent) {
+            if (hasDocumentPath) {
                 LaunchedEffect(state.scrollToAnnotationId) {
                     val annotationId = state.scrollToAnnotationId ?: return@LaunchedEffect
                     val bridge = readerBridge ?: return@LaunchedEffect
@@ -150,7 +151,7 @@ internal fun DocmarkContentLayout(
                     },
                 )
 
-                key(state.docmarkType, state.documentAbsolutePath) {
+                key(state.docmarkType) {
                     when (state.docmarkType) {
                         DocmarkType.PDF ->
                             YabaWebView(
@@ -232,7 +233,7 @@ internal fun DocmarkContentLayout(
                             )
                     }
                 }
-            } else if (!state.isLoading) {
+            } else if (showNoDocumentPlaceholder) {
                 NoContentView(
                     modifier = Modifier
                         .fillMaxSize()
