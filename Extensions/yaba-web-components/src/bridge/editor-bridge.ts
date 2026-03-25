@@ -3,6 +3,10 @@ import { Selection, TextSelection } from "@tiptap/pm/state"
 import type { Platform, AppearanceMode } from "@/theme"
 import { applyTheme, parseUrlParams } from "@/theme"
 import {
+  applyReaderThemeCssVars,
+  applyReaderTypographyCssVars,
+} from "@/theme/reader-document-vars"
+import {
   getSelectionSnapshot,
   type SelectionSnapshot,
 } from "./selection-extractor"
@@ -167,17 +171,6 @@ let readerPreferences: ReaderPreferences = {
 let systemColorSchemeMedia: MediaQueryList | null = null
 let systemColorSchemeListener: (() => void) | null = null
 
-const readerFontSizeCssByMode: Record<ReaderFontSize, string> = {
-  small: "16px",
-  medium: "18px",
-  large: "22px",
-}
-
-const readerLineHeightCssByMode: Record<ReaderLineHeight, string> = {
-  normal: "1.6",
-  relaxed: "1.8",
-}
-
 function clearSystemColorSchemeListener(): void {
   if (!systemColorSchemeMedia || !systemColorSchemeListener) return
 
@@ -194,36 +187,11 @@ function ensureSystemColorSchemeListener(): void {
   const onChange = () => {
     if (readerPreferences.theme !== "system") return
     applyTheme(platform, appearance, cursorColor)
-    applyReaderThemeVars(readerPreferences.theme)
+    applyReaderThemeCssVars(readerPreferences.theme)
   }
 
   systemColorSchemeMedia.addEventListener("change", onChange)
   systemColorSchemeListener = onChange
-}
-
-function applyReaderThemeVars(theme: ReaderTheme): void {
-  const root = document.documentElement
-
-  if (theme === "system") {
-    root.style.setProperty("--yaba-reader-bg", "transparent")
-    root.style.setProperty("--yaba-reader-on-bg", "var(--yaba-on-bg)")
-    return
-  }
-
-  if (theme === "dark" || theme === "light") {
-    root.style.setProperty("--yaba-reader-bg", "var(--yaba-bg)")
-    root.style.setProperty("--yaba-reader-on-bg", "var(--yaba-on-bg)")
-    return
-  }
-
-  root.style.setProperty("--yaba-reader-bg", "#f4ecd8")
-  root.style.setProperty("--yaba-reader-on-bg", "#5b4636")
-}
-
-function applyReaderTypographyVars(prefs: ReaderPreferences): void {
-  const root = document.documentElement
-  root.style.setProperty("--yaba-reader-font-size", readerFontSizeCssByMode[prefs.fontSize])
-  root.style.setProperty("--yaba-reader-line-height", readerLineHeightCssByMode[prefs.lineHeight])
 }
 
 function captureStoredCursorFromEditor(): void {
@@ -319,8 +287,8 @@ function applyReaderPreferences(): void {
     clearSystemColorSchemeListener()
   }
 
-  applyReaderThemeVars(readerPreferences.theme)
-  applyReaderTypographyVars(readerPreferences)
+  applyReaderThemeCssVars(readerPreferences.theme)
+  applyReaderTypographyCssVars(readerPreferences)
 }
 
 export function initEditorBridge(editor: Editor): void {

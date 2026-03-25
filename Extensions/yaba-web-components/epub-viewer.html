@@ -6,7 +6,11 @@
     <title>YABA EPUB Viewer</title>
   </head>
   <body data-yaba-page="epub-viewer">
-    <div id="epub-root" class="yaba-epub-root"></div>
+    <div class="yaba-epub-shell">
+      <div class="yaba-web-chrome-spacer yaba-web-chrome-spacer--top" aria-hidden="true"></div>
+      <div id="epub-root" class="yaba-epub-root"></div>
+      <div class="yaba-web-chrome-spacer yaba-web-chrome-spacer--bottom" aria-hidden="true"></div>
+    </div>
     <script type="module" src="/src/apps/epub-viewer/main.ts"></script>
   </body>
 </html>

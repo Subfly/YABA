@@ -63,6 +63,12 @@ body[data-yaba-page="pdf-viewer"] {
   color: var(--yaba-on-bg);
 }
 
+/* EPUB viewer: reader surface + text color (same pipeline as read-it-later viewer). */
+body[data-yaba-page="epub-viewer"] {
+  background: var(--yaba-reader-bg, transparent);
+  color: var(--yaba-reader-on-bg, var(--yaba-on-bg));
+}
+
 #root {
   width: 100%;
   height: 100%;

@@ -74,6 +74,17 @@ internal fun BoxScope.DocmarkReaderFloatingToolbar(
                 expanded = true,
                 colors = toolbarColors,
             ) {
+                IconButton(
+                    onClick = onPrevPage,
+                    enabled = canGoPrev,
+                    colors = bookmarkReaderToolbarIconButtonColors(color),
+                    shapes = IconButtonDefaults.shapes(),
+                ) {
+                    YabaIcon(
+                        name = "previous",
+                        color = if (canGoPrev) Color.White else disabledTint,
+                    )
+                }
                 if (showReaderPrefs) {
                     ReaderPreferenceToolbarThemeItem(
                         folderYabaColor = color,
@@ -89,17 +100,6 @@ internal fun BoxScope.DocmarkReaderFloatingToolbar(
                         folderYabaColor = color,
                         selectedLineHeight = readerPreferences.lineHeight,
                         onSelectLineHeight = { onEvent(DocmarkDetailEvent.OnSetReaderLineHeight(it)) },
-                    )
-                }
-                IconButton(
-                    onClick = onPrevPage,
-                    enabled = canGoPrev,
-                    colors = bookmarkReaderToolbarIconButtonColors(color),
-                    shapes = IconButtonDefaults.shapes(),
-                ) {
-                    YabaIcon(
-                        name = "previous",
-                        color = if (canGoPrev) Color.White else disabledTint,
                     )
                 }
                 AnimatedContent(targetState = hasSelection) { has ->
@@ -147,6 +147,17 @@ internal fun BoxScope.DocmarkReaderFloatingToolbar(
             expanded = true,
             colors = toolbarColors,
         ) {
+            IconButton(
+                onClick = onPrevPage,
+                enabled = canGoPrev,
+                colors = bookmarkReaderToolbarIconButtonColors(color),
+                shapes = IconButtonDefaults.shapes(),
+            ) {
+                YabaIcon(
+                    name = "previous",
+                    color = if (canGoPrev) Color.White else disabledTint,
+                )
+            }
             if (showReaderPrefs) {
                 ReaderPreferenceToolbarThemeItem(
                     folderYabaColor = color,
@@ -162,17 +173,6 @@ internal fun BoxScope.DocmarkReaderFloatingToolbar(
                     folderYabaColor = color,
                     selectedLineHeight = readerPreferences.lineHeight,
                     onSelectLineHeight = { onEvent(DocmarkDetailEvent.OnSetReaderLineHeight(it)) },
-                )
-            }
-            IconButton(
-                onClick = onPrevPage,
-                enabled = canGoPrev,
-                colors = bookmarkReaderToolbarIconButtonColors(color),
-                shapes = IconButtonDefaults.shapes(),
-            ) {
-                YabaIcon(
-                    name = "previous",
-                    color = if (canGoPrev) Color.White else disabledTint,
                 )
             }
             AnimatedContent(targetState = hasSelection) { has ->
