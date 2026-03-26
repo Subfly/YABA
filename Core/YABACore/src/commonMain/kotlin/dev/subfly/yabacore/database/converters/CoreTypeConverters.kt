@@ -4,7 +4,6 @@ import androidx.room3.TypeConverter
 import dev.subfly.yabacore.model.annotation.AnnotationType
 import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.DocmarkType
-import dev.subfly.yabacore.model.utils.ReadableAssetRole
 import dev.subfly.yabacore.model.utils.YabaColor
 import kotlin.time.Instant
 
@@ -26,13 +25,6 @@ object CoreTypeConverters {
 
     @TypeConverter
     fun intToYabaColor(value: Int?): YabaColor? = value?.let { YabaColor.fromCode(it) }
-
-    @TypeConverter
-    fun readableAssetRoleToString(value: ReadableAssetRole?): String? = value?.name
-
-    @TypeConverter
-    fun stringToReadableAssetRole(value: String?): ReadableAssetRole? =
-        value?.let { ReadableAssetRole.fromRaw(it) }
 
     @TypeConverter
     fun annotationTypeToString(value: AnnotationType?): String? = value?.name

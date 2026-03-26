@@ -4,7 +4,6 @@ import androidx.room3.Entity
 import androidx.room3.ForeignKey
 import androidx.room3.Index
 import androidx.room3.PrimaryKey
-import dev.subfly.yabacore.model.utils.ReadableAssetRole
 
 /**
  * Room entity for readable content assets (images).
@@ -31,6 +30,5 @@ import dev.subfly.yabacore.model.utils.ReadableAssetRole
 data class ReadableAssetEntity(
     @PrimaryKey val id: String,
     val bookmarkId: String,
-    val role: ReadableAssetRole,
     val relativePath: String,
 )

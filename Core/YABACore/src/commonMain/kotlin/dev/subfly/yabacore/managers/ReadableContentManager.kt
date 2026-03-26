@@ -11,7 +11,6 @@ import dev.subfly.yabacore.filesystem.access.FileAccessProvider
 import dev.subfly.yabacore.model.ui.AnnotationUiModel
 import dev.subfly.yabacore.model.ui.ReadableAssetUiModel
 import dev.subfly.yabacore.model.ui.ReadableVersionUiModel
-import dev.subfly.yabacore.model.utils.ReadableAssetRole
 import dev.subfly.yabacore.queue.CoreOperationQueue
 import dev.subfly.yabacore.unfurl.ReadableAsset
 import dev.subfly.yabacore.unfurl.ReadableUnfurl
@@ -152,7 +151,6 @@ object ReadableContentManager {
             val assetEntity = ReadableAssetEntity(
                 id = asset.assetId,
                 bookmarkId = bookmarkId,
-                role = ReadableAssetRole.INLINE,
                 relativePath = asset.relativePath,
             )
             readableAssetDao.upsert(assetEntity)
@@ -201,7 +199,6 @@ object ReadableContentManager {
             assetsUi.add(
                 ReadableAssetUiModel(
                     assetId = entity.id,
-                    role = entity.role,
                     absolutePath = BookmarkFileManager.getAbsolutePath(entity.relativePath),
                 ),
             )
