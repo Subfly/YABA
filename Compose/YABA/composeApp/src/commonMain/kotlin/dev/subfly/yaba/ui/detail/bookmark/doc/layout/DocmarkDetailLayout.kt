@@ -39,7 +39,7 @@ import dev.subfly.yaba.core.navigation.creation.AnnotationCreationRoute
 import dev.subfly.yaba.core.navigation.main.FolderDetailRoute
 import dev.subfly.yaba.core.navigation.main.TagDetailRoute
 import dev.subfly.yaba.ui.detail.bookmark.doc.models.DocmarkDetailPage
-import dev.subfly.yaba.ui.detail.composables.BookmarkDetailAnnotationItemContent
+import dev.subfly.yaba.core.components.item.annotation.AnnotationItemView
 import dev.subfly.yaba.ui.detail.composables.BookmarkDetailFolderSectionContent
 import dev.subfly.yaba.ui.detail.composables.BookmarkDetailLabel
 import dev.subfly.yaba.ui.detail.composables.BookmarkDetailReminderSectionContent
@@ -239,14 +239,14 @@ internal fun DocmarkDetailLayout(
                             items = state.annotations,
                             key = { _, annotation -> annotation.id },
                         ) { index, annotation ->
-                            BookmarkDetailAnnotationItemContent(
+                            AnnotationItemView(
                                 modifier = Modifier
                                     .animateItem()
                                     .padding(vertical = 4.dp),
-                                annotation = annotation,
+                                model = annotation,
                                 index = index,
                                 count = state.annotations.size,
-                                onScrollToAnnotation = {
+                                onPress = {
                                     onHide()
                                     onEvent(DocmarkDetailEvent.OnScrollToAnnotation(annotation.id))
                                 },

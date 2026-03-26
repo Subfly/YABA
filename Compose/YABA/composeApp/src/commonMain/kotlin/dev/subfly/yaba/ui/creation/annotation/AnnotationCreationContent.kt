@@ -4,10 +4,8 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -37,11 +35,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import dev.subfly.yaba.core.components.item.annotation.AnnotationPreviewItemView
 import dev.subfly.yaba.core.navigation.creation.ColorSelectionRoute
+import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkCreationLabel
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
@@ -49,6 +48,7 @@ import dev.subfly.yaba.util.ResultStoreKeys
 import dev.subfly.yabacore.model.annotation.AnnotationReadableCreateRequest
 import dev.subfly.yabacore.model.annotation.AnnotationType
 import dev.subfly.yabacore.model.annotation.ReadableSelectionDraft
+import dev.subfly.yabacore.model.ui.AnnotationUiModel
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.creation.annotation.AnnotationCreationEvent
 import dev.subfly.yabacore.ui.icon.YabaIcon
@@ -57,6 +57,7 @@ import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.cancel
 import yaba.composeapp.generated.resources.done
+import yaba.composeapp.generated.resources.preview
 
 // TODO: LOCALIZATIONS
 @Composable
@@ -149,29 +150,36 @@ fun AnnotationCreationContent(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        if (state.quoteText.isNotBlank()) {
-            QuotePreview(
-                modifier = Modifier.padding(horizontal = 12.dp),
-                quoteText = state.quoteText,
-                selectedColor = state.selectedColor,
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-        }
+        BookmarkCreationLabel(
+            iconName = "image-03",
+            label = stringResource(Res.string.preview)
+        )
 
-        ColorSelectionContent(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            selectedColor = state.selectedColor,
-            onPressed = {
-                creationNavigator.add(
-                    ColorSelectionRoute(
-                        selectedColor = state.selectedColor,
-                        allowTransparent = false,
-                    ),
-                )
-            },
+        Spacer(modifier = Modifier.height(12.dp))
+
+        AnnotationPreviewItemView(
+            model = AnnotationUiModel(
+                id = "creation-preview",
+                type = AnnotationType.READABLE,
+                colorRole = state.selectedColor,
+                note = state.note.ifBlank { null },
+                quoteText = state.quoteText,
+                extrasJson = null,
+                createdAt = 0L,
+                editedAt = 0L,
+            ),
+            index = 0,
+            count = 1,
         )
 
         Spacer(modifier = Modifier.height(24.dp))
+
+        BookmarkCreationLabel(
+            iconName = "sticky-note-03",
+            label = "Note"
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
 
         OutlinedTextField(
             modifier = Modifier
@@ -195,8 +203,23 @@ fun AnnotationCreationContent(
             },
         )
 
+        Spacer(modifier = Modifier.height(24.dp))
+
+        ColorSelectionContent(
+            selectedColor = state.selectedColor,
+            onPressed = {
+                creationNavigator.add(
+                    ColorSelectionRoute(
+                        selectedColor = state.selectedColor,
+                        allowTransparent = false,
+                    ),
+                )
+            },
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
         if (state.isEditing) {
-            Spacer(modifier = Modifier.height(16.dp))
             TextButton(
                 modifier = Modifier
                     .padding(horizontal = 12.dp)
@@ -237,35 +260,6 @@ fun AnnotationCreationContent(
         }
 
         Spacer(modifier = Modifier.height(24.dp))
-    }
-}
-
-@Composable
-private fun QuotePreview(
-    modifier: Modifier = Modifier,
-    quoteText: String,
-    selectedColor: YabaColor,
-) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(
-                color = Color(selectedColor.iconTintArgb()).copy(alpha = 0.15F),
-                shape = RoundedCornerShape(12.dp),
-            )
-            .border(
-                width = 1.dp,
-                color = Color(selectedColor.iconTintArgb()).copy(alpha = 0.4F),
-                shape = RoundedCornerShape(12.dp),
-            )
-            .padding(12.dp),
-    ) {
-        Text(
-            text = quoteText,
-            style = MaterialTheme.typography.bodyMedium,
-            maxLines = 4,
-            overflow = TextOverflow.Ellipsis,
-        )
     }
 }
 
@@ -336,32 +330,27 @@ private fun ColorSelectionContent(
     selectedColor: YabaColor,
     onPressed: () -> Unit,
 ) {
-    Row(
+    BookmarkCreationLabel(
         modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            YabaIcon(name = "paint-board")
-            Text(text = "Selected Color:")
+        label = "Selected Color:",
+        iconName = "paint-board",
+        extraContent = {
+            Box(
+                modifier = Modifier
+                    .padding(end = 12.dp)
+                    .size(24.dp)
+                    .background(
+                        color = Color(selectedColor.iconTintArgb()),
+                        shape = CircleShape,
+                    )
+                    .border(
+                        width = 2.dp,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        shape = CircleShape,
+                    )
+                    .clip(CircleShape)
+                    .clickable(onClick = onPressed),
+            )
         }
-        Box(
-            modifier = Modifier
-                .size(24.dp)
-                .background(
-                    color = Color(selectedColor.iconTintArgb()),
-                    shape = CircleShape,
-                )
-                .border(
-                    width = 2.dp,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    shape = CircleShape,
-                )
-                .clip(CircleShape)
-                .clickable(onClick = onPressed),
-        )
-    }
+    )
 }

@@ -27,7 +27,7 @@ import dev.subfly.yaba.core.navigation.main.FolderDetailRoute
 import dev.subfly.yaba.core.navigation.main.TagDetailRoute
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailActionsContent
 import dev.subfly.yaba.ui.detail.composables.BookmarkDetailFolderSectionContent
-import dev.subfly.yaba.ui.detail.composables.BookmarkDetailAnnotationItemContent
+import dev.subfly.yaba.core.components.item.annotation.AnnotationItemView
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailImageSectionContent
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailInfoSectionContent
 import dev.subfly.yaba.ui.detail.composables.BookmarkDetailReminderSectionContent
@@ -204,14 +204,14 @@ internal fun LinkmarkDetailLayout(
                             items = state.annotations,
                             key = { _, a -> a.id },
                         ) { index, annotation ->
-                            BookmarkDetailAnnotationItemContent(
+                            AnnotationItemView(
                                 modifier = Modifier
                                     .animateItem()
                                     .padding(vertical = 4.dp),
-                                annotation = annotation,
+                                model = annotation,
                                 index = index,
                                 count = state.annotations.size,
-                                onScrollToAnnotation = {
+                                onPress = {
                                     onHide()
                                     onEvent(LinkmarkDetailEvent.OnScrollToAnnotation(annotation.id))
                                 },
