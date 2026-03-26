@@ -4,10 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.CircularWavyProgressIndicator
@@ -19,20 +17,20 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
+import androidx.navigation3.runtime.NavKey
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.webview.YabaWebView
 import dev.subfly.yaba.core.navigation.creation.ColorSelectionRoute
@@ -65,12 +63,11 @@ import dev.subfly.yabacore.webview.YabaWebAppearance
 import dev.subfly.yabacore.webview.YabaWebFeature
 import dev.subfly.yabacore.webview.YabaWebHostEvent
 import dev.subfly.yabacore.webview.YabaWebPlatform
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.awaitCancellation
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeoutOrNull
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.reader_not_available_description
@@ -91,16 +88,31 @@ internal fun NotemarkContentLayout(
     val navigator = LocalContentNavigator.current
     val creationNavigator = LocalCreationContentNavigator.current
     val appStateManager = LocalAppStateManager.current
+    val appState by appStateManager.state.collectAsState()
     val resultStore = LocalResultStore.current
 
     val scope = rememberCoroutineScope()
     val openUrl = rememberUrlLauncher()
-    val awaitKeyboardClosedBeforeCreationSheet = rememberAwaitKeyboardClosedBeforeCreationSheet()
+    val prepareEditorForCreationSheet = rememberPrepareEditorForCreationSheet()
     val notePlaceholderText = "Start your note..." // TODO: localize placeholder text
 
     var editorBridge by remember { mutableStateOf<WebViewEditorBridge?>(null) }
     var editorFormatting by remember(state.bookmark?.id) { mutableStateOf(EditorFormattingState()) }
     var isMenuExpanded by remember { mutableStateOf(false) }
+    var isCreationSheetOpening by remember { mutableStateOf(false) }
+    var previousShowCreationContent by remember { mutableStateOf(false) }
+
+    suspend fun openCreationSheet(route: NavKey) {
+        if (appState.showCreationContent || isCreationSheetOpening) return
+        isCreationSheetOpening = true
+        try {
+            prepareEditorForCreationSheet(editorBridge)
+            creationNavigator.add(route)
+            appStateManager.onShowCreationContent()
+        } finally {
+            isCreationSheetOpening = false
+        }
+    }
 
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
         val bridge = editorBridge ?: return@LifecycleEventEffect
@@ -120,6 +132,14 @@ internal fun NotemarkContentLayout(
                 onEvent(NotemarkDetailEvent.OnSave(documentJson = json))
             }
         }
+    }
+
+    LaunchedEffect(appState.showCreationContent, editorBridge) {
+        val show = appState.showCreationContent
+        if (previousShowCreationContent && show.not()) {
+            editorBridge?.focus()
+        }
+        previousShowCreationContent = show
     }
 
     LaunchedEffect(resultStore.getResult(ResultStoreKeys.NOTEMARK_TABLE_INSERT), editorBridge) {
@@ -235,8 +255,7 @@ internal fun NotemarkContentLayout(
                         onAnnotationTap = {},
                         onMathTap = { ev: MathTapEvent ->
                             scope.launch {
-                                awaitKeyboardClosedBeforeCreationSheet(editorBridge)
-                                creationNavigator.add(
+                                openCreationSheet(
                                     NotemarkMathSheetRoute(
                                         isBlock = ev.isBlock,
                                         initialLatex = ev.latex,
@@ -244,7 +263,6 @@ internal fun NotemarkContentLayout(
                                         editPos = ev.documentPos,
                                     ),
                                 )
-                                appStateManager.onShowCreationContent()
                             }
                         },
                     )
@@ -272,9 +290,7 @@ internal fun NotemarkContentLayout(
                     formatting = editorFormatting,
                     onHighlightInactiveClick = {
                         scope.launch {
-                            awaitKeyboardClosedBeforeCreationSheet(editorBridge)
-                            creationNavigator.add(ColorSelectionRoute(selectedColor = YabaColor.NONE))
-                            appStateManager.onShowCreationContent()
+                            openCreationSheet(ColorSelectionRoute(selectedColor = YabaColor.NONE))
                         }
                     },
                     onHighlightActiveClick = {
@@ -287,15 +303,12 @@ internal fun NotemarkContentLayout(
                     },
                     onOpenTableInsertSheet = {
                         scope.launch {
-                            awaitKeyboardClosedBeforeCreationSheet(editorBridge)
-                            creationNavigator.add(NotemarkTableCreationRoute())
-                            appStateManager.onShowCreationContent()
+                            openCreationSheet(NotemarkTableCreationRoute())
                         }
                     },
                     onOpenMathSheet = { isBlock ->
                         scope.launch {
-                            awaitKeyboardClosedBeforeCreationSheet(editorBridge)
-                            creationNavigator.add(
+                            openCreationSheet(
                                 NotemarkMathSheetRoute(
                                     isBlock = isBlock,
                                     initialLatex = "",
@@ -303,7 +316,6 @@ internal fun NotemarkContentLayout(
                                     editPos = null,
                                 ),
                             )
-                            appStateManager.onShowCreationContent()
                         }
                     },
                     onPickImageFromGallery = {
@@ -360,21 +372,18 @@ internal fun NotemarkContentLayout(
 
 /**
  * [LocalSoftwareKeyboardController] does not dismiss the IME while the WebView editor holds focus.
- * We unFocus the WebView editor first, then hide, then wait until IME insets are gone (with a timeout so the sheet
- * still opens if insets never update).
+ * We unFocus first, then hide keyboard and give Compose a short frame budget before opening a sheet.
+ * Waiting for IME insets to reach zero can race on Compose Multiplatform bottom sheets and produce
+ * open-then-close glitches.
  */
 @Composable
-private fun rememberAwaitKeyboardClosedBeforeCreationSheet(): suspend (WebViewEditorBridge?) -> Unit {
-    val density = LocalDensity.current
+private fun rememberPrepareEditorForCreationSheet(): suspend (WebViewEditorBridge?) -> Unit {
     val keyboardController = LocalSoftwareKeyboardController.current
-    val ime = WindowInsets.ime
-    return remember(density, keyboardController, ime) {
+    return remember(keyboardController) {
         suspend { editorBridge ->
             editorBridge?.unFocus()
             keyboardController?.hide()
-            withTimeoutOrNull(4_000) {
-                snapshotFlow { ime.getBottom(density) }.first { it == 0 }
-            }
+            delay(150)
         }
     }
 }

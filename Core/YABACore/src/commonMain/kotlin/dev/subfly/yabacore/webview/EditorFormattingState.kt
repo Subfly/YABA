@@ -8,6 +8,7 @@ import androidx.compose.runtime.Stable
  */
 @Stable
 data class EditorFormattingState(
+    val headingLevel: Int = 0,
     val bold: Boolean = false,
     val italic: Boolean = false,
     val underline: Boolean = false,

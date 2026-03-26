@@ -1,5 +1,6 @@
 import type { Editor } from "@tiptap/core"
 import { Selection, TextSelection } from "@tiptap/pm/state"
+import type { Node as ProseMirrorNode } from "@tiptap/pm/model"
 import type { Platform, AppearanceMode } from "@/theme"
 import { applyTheme, parseUrlParams } from "@/theme"
 import {
@@ -265,6 +266,21 @@ function withPreparedEditorSelection(run: (editor: Editor) => void): void {
   publishCurrentEditorState()
 }
 
+function insertInlineMathKeepingCaretAfterNode(ed: Editor, latex: string): void {
+  const inlineMathType = ed.state.schema.nodes.inlineMath
+  if (!inlineMathType) {
+    ed.commands.insertInlineMath({ latex })
+    return
+  }
+
+  const { from, to } = ed.state.selection
+  const mathNode: ProseMirrorNode = inlineMathType.create({ latex })
+  const tr = ed.state.tr.replaceRangeWith(from, to, mathNode)
+  const caretPos = from + mathNode.nodeSize
+  tr.setSelection(TextSelection.create(tr.doc, caretPos))
+  ed.view.dispatch(tr)
+}
+
 function applyReaderPreferences(): void {
   const page = document.body?.dataset.yabaPage
   /** Read-it-later viewer + note editor: same reader theme + typography pipeline (incl. automatic / system). */
@@ -507,7 +523,7 @@ export function initEditorBridge(editor: Editor): void {
             chain.unsetLink().run()
             break
           case "insertInlineMath":
-            ed.commands.insertInlineMath({ latex: cmd.latex })
+            insertInlineMathKeepingCaretAfterNode(ed, cmd.latex)
             break
           case "insertBlockMath":
             ed.commands.insertBlockMath({ latex: cmd.latex })

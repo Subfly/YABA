@@ -276,6 +276,7 @@ internal fun parseEditorHostStateMessage(message: String?): EditorHostStateUpdat
 
 internal fun parseEditorFormattingState(json: JSONObject): EditorFormattingState =
     EditorFormattingState(
+        headingLevel = json.optInt("headingLevel"),
         bold = json.optBoolean("bold"),
         italic = json.optBoolean("italic"),
         underline = json.optBoolean("underline"),

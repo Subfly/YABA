@@ -47,6 +47,11 @@ private enum class InsertNestedGroup {
     Math,
 }
 
+private enum class TableNestedGroup {
+    Row,
+    Column,
+}
+
 private data class ToolbarAction(
     val key: String,
     val icon: String,
@@ -62,6 +67,7 @@ private enum class ExtraPadding {
 
 private const val ToolbarBaseAlpha = 0.5f
 private const val ToolbarSelectedOverlayAlpha = 0.42f
+private const val ToolbarSelectedOnSegmentOverlayAlpha = 0.28f
 private const val ToolbarNestedDepthStep = 0.1f
 private const val ToolbarExpandedAreaOffset = 0.05f
 private const val ToolbarExpandedToggleOffset = 0.1f
@@ -92,6 +98,7 @@ internal fun NotemarkEditorToolbar(
     val toolbarSaveOpaqueColor = Color(color.iconTintArgb())
     var activeGroup by remember { mutableStateOf<ToolbarGroup?>(null) }
     var activeInsertNestedGroup by remember { mutableStateOf<InsertNestedGroup?>(null) }
+    var activeTableNestedGroup by remember { mutableStateOf<TableNestedGroup?>(null) }
 
     LaunchedEffect(formatting.inTable) {
         if (!formatting.inTable && activeGroup == ToolbarGroup.TableEdit) {
@@ -103,12 +110,16 @@ internal fun NotemarkEditorToolbar(
         if (activeGroup != ToolbarGroup.Insert) {
             activeInsertNestedGroup = null
         }
+        if (activeGroup != ToolbarGroup.TableEdit) {
+            activeTableNestedGroup = null
+        }
     }
 
     val actions = remember(
         formatting,
         activeGroup,
         activeInsertNestedGroup,
+        activeTableNestedGroup,
         onDispatchCommand,
         onOpenTableInsertSheet,
         onOpenMathSheet,
@@ -130,6 +141,11 @@ internal fun NotemarkEditorToolbar(
                 activeInsertNestedGroup = if (activeInsertNestedGroup == group) null else group
             }
 
+            fun toggleTableNestedGroup(group: TableNestedGroup) {
+                activeGroup = ToolbarGroup.TableEdit
+                activeTableNestedGroup = if (activeTableNestedGroup == group) null else group
+            }
+
             if (formatting.inTable) {
                 val isExpanded = activeGroup == ToolbarGroup.TableEdit
                 add(
@@ -142,46 +158,77 @@ internal fun NotemarkEditorToolbar(
                     ),
                 )
                 if (isExpanded) {
+                    val rowExpanded = activeTableNestedGroup == TableNestedGroup.Row
                     add(
                         ToolbarAction(
-                            key = "table-row-after",
-                            icon = "row-insert",
-                            enabled = formatting.canAddRowAfter,
-                            segmentAlpha = expandedAreaAlpha(depth = 0),
-                            onClick = { onDispatchCommand(YabaEditorCommands.AddRowAfter) },
+                            key = "table-insert-row",
+                            icon = "insert-row",
+                            selected = rowExpanded,
+                            segmentAlpha =
+                                if (rowExpanded) expandedToggleAlpha(depth = 1) else expandedAreaAlpha(depth = 0),
+                            onClick = { toggleTableNestedGroup(TableNestedGroup.Row) },
                         ),
                     )
+                    if (rowExpanded) {
+                        add(
+                            ToolbarAction(
+                                key = "table-row-before",
+                                icon = "insert-row-up",
+                                enabled = formatting.canAddRowBefore,
+                                segmentAlpha = expandedAreaAlpha(depth = 1),
+                                onClick = { onDispatchCommand(YabaEditorCommands.AddRowBefore) },
+                            ),
+                        )
+                        add(
+                            ToolbarAction(
+                                key = "table-row-after",
+                                icon = "insert-row-down",
+                                enabled = formatting.canAddRowAfter,
+                                segmentAlpha = expandedAreaAlpha(depth = 1),
+                                onClick = { onDispatchCommand(YabaEditorCommands.AddRowAfter) },
+                            ),
+                        )
+                    }
+
+                    val columnExpanded = activeTableNestedGroup == TableNestedGroup.Column
                     add(
                         ToolbarAction(
-                            key = "table-row-before",
-                            icon = "row-insert",
-                            enabled = formatting.canAddRowBefore,
-                            segmentAlpha = expandedAreaAlpha(depth = 0),
-                            onClick = { onDispatchCommand(YabaEditorCommands.AddRowBefore) },
+                            key = "table-insert-column",
+                            icon = "insert-column",
+                            selected = columnExpanded,
+                            segmentAlpha =
+                                if (columnExpanded) {
+                                    expandedToggleAlpha(depth = 1)
+                                } else {
+                                    expandedAreaAlpha(depth = 0)
+                                },
+                            onClick = { toggleTableNestedGroup(TableNestedGroup.Column) },
                         ),
                     )
-                    add(
-                        ToolbarAction(
-                            key = "table-column-after",
-                            icon = "column-insert",
-                            enabled = formatting.canAddColumnAfter,
-                            segmentAlpha = expandedAreaAlpha(depth = 0),
-                            onClick = { onDispatchCommand(YabaEditorCommands.AddColumnAfter) },
-                        ),
-                    )
-                    add(
-                        ToolbarAction(
-                            key = "table-column-before",
-                            icon = "column-insert",
-                            enabled = formatting.canAddColumnBefore,
-                            segmentAlpha = expandedAreaAlpha(depth = 0),
-                            onClick = { onDispatchCommand(YabaEditorCommands.AddColumnBefore) },
-                        ),
-                    )
+                    if (columnExpanded) {
+                        add(
+                            ToolbarAction(
+                                key = "table-column-before",
+                                icon = "insert-column-left",
+                                enabled = formatting.canAddColumnBefore,
+                                segmentAlpha = expandedAreaAlpha(depth = 1),
+                                onClick = { onDispatchCommand(YabaEditorCommands.AddColumnBefore) },
+                            ),
+                        )
+                        add(
+                            ToolbarAction(
+                                key = "table-column-after",
+                                icon = "insert-column-right",
+                                enabled = formatting.canAddColumnAfter,
+                                segmentAlpha = expandedAreaAlpha(depth = 1),
+                                onClick = { onDispatchCommand(YabaEditorCommands.AddColumnAfter) },
+                            ),
+                        )
+                    }
                     add(
                         ToolbarAction(
                             key = "table-delete-row",
-                            icon = "row-delete",
+                            icon = "delete-row",
                             enabled = formatting.canDeleteRow,
                             segmentAlpha = expandedAreaAlpha(depth = 0),
                             onClick = { onDispatchCommand(YabaEditorCommands.DeleteRow) },
@@ -190,7 +237,7 @@ internal fun NotemarkEditorToolbar(
                     add(
                         ToolbarAction(
                             key = "table-delete-column",
-                            icon = "column-delete",
+                            icon = "delete-column",
                             enabled = formatting.canDeleteColumn,
                             segmentAlpha = expandedAreaAlpha(depth = 0),
                             onClick = { onDispatchCommand(YabaEditorCommands.DeleteColumn) },
@@ -204,7 +251,7 @@ internal fun NotemarkEditorToolbar(
                 ToolbarAction(
                     key = "group-heading",
                     icon = "heading",
-                    selected = headingExpanded,
+                    selected = headingExpanded || formatting.headingLevel > 0,
                     segmentAlpha = if (headingExpanded) expandedToggleAlpha(depth = 0) else null,
                     onClick = { toggleGroup(ToolbarGroup.Heading) },
                 ),
@@ -639,7 +686,7 @@ private fun rememberNotemarkToolbarButtonColors(
     val folderColor = Color(color.iconTintArgb())
     val containerColor =
         when {
-            segmentAlpha != null -> Color.Transparent
+            selected && segmentAlpha != null -> Color.White.copy(alpha = ToolbarSelectedOnSegmentOverlayAlpha)
             selected -> folderColor.copy(alpha = ToolbarSelectedOverlayAlpha)
             else -> Color.Transparent
         }

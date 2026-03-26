@@ -1,6 +1,7 @@
 import type { Editor } from "@tiptap/core"
 
 export interface EditorFormattingState {
+  headingLevel: number
   bold: boolean
   italic: boolean
   underline: boolean
@@ -31,6 +32,7 @@ export interface EditorFormattingState {
 
 export function getEmptyFormattingState(): EditorFormattingState {
   return {
+    headingLevel: 0,
     bold: false,
     italic: false,
     underline: false,
@@ -63,7 +65,12 @@ export function getEmptyFormattingState(): EditorFormattingState {
 export function getActiveFormattingState(editor: Editor | null): EditorFormattingState {
   if (!editor) return getEmptyFormattingState()
   const inTable = editor.isActive("table")
+  const headingLevel =
+    (editor.isActive("heading")
+      ? Number(editor.getAttributes("heading")?.level ?? 0)
+      : 0) || 0
   return {
+    headingLevel: Math.max(0, Math.min(6, headingLevel)),
     bold: editor.isActive("bold"),
     italic: editor.isActive("italic"),
     underline: editor.isActive("underline"),
