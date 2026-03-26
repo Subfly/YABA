@@ -442,6 +442,7 @@ body[data-yaba-page="editor"]
 .yaba-editor-container .ProseMirror mark.yaba-editor-text-highlight {
 	border-radius: 2px;
 	cursor: pointer;
+	color: inherit;
 }
 .yaba-editor-container .ProseMirror .yaba-highlight-yellow {
 	background: rgba(255, 235, 59, 0.45);
