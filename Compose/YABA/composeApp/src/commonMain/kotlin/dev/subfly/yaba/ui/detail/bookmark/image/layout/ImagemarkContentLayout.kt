@@ -1,6 +1,5 @@
 package dev.subfly.yaba.ui.detail.bookmark.image.layout
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.tween
@@ -12,13 +11,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.LinearWavyProgressIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -38,7 +36,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.ui.detail.bookmark.components.BookmarkDetailContentTopBar
 import dev.subfly.yaba.ui.detail.bookmark.util.bookmarkDetailIconButtonColors
 import dev.subfly.yaba.ui.detail.bookmark.components.bookmarkFolderAccentColor
@@ -128,9 +125,12 @@ internal fun ImagemarkContentLayout(
                     .onSizeChanged { containerSize = it },
             contentAlignment = Alignment.Center,
         ) {
-            YabaImage(
-                modifier =
-                    Modifier.fillMaxSize()
+            if (state.isLoading) {
+                CircularWavyProgressIndicator()
+            } else {
+                YabaImage(
+                    modifier = Modifier
+                        .fillMaxSize()
                         .graphicsLayer(
                             scaleX = scale,
                             scaleY = scale,
@@ -227,9 +227,10 @@ internal fun ImagemarkContentLayout(
                                 }
                             )
                         },
-                filePath = state.imageAbsolutePath,
-                contentScale = ContentScale.Fit,
-            )
+                    filePath = state.imageAbsolutePath,
+                    contentScale = ContentScale.Fit,
+                )
+            }
         }
 
         Column(
@@ -258,24 +259,7 @@ internal fun ImagemarkContentLayout(
                         )
                     }
                 },
-                loadingIndicator = {
-                    AnimatedContent(state.isLoading) { loading ->
-                        if (loading) {
-                            Box(
-                                modifier =
-                                    Modifier.fillMaxWidth()
-                                        .padding(bottom = 4.dp)
-                                        .background(
-                                            color =
-                                                MaterialTheme.colorScheme
-                                                    .surface
-                                        )
-                            ) { LinearWavyProgressIndicator(modifier = Modifier.fillMaxWidth()) }
-                        } else {
-                            Box(modifier = Modifier.fillMaxWidth())
-                        }
-                    }
-                },
+                loadingIndicator = {},
             )
         }
     }

@@ -12,6 +12,7 @@ import dev.subfly.yabacore.managers.ReadableContentManager
 import dev.subfly.yabacore.model.ui.BookmarkPreviewUiModel
 import dev.subfly.yabacore.notifications.NotificationManager
 import dev.subfly.yabacore.state.base.BaseStateMachine
+import dev.subfly.yabacore.webview.WebShellLoadResult
 import io.github.vinceglb.filekit.name
 import io.github.vinceglb.filekit.readBytes
 import kotlinx.coroutines.Dispatchers
@@ -42,6 +43,7 @@ class NotemarkDetailStateMachine :
         when (event) {
             is NotemarkDetailEvent.OnInit -> onInit(event.bookmarkId)
             is NotemarkDetailEvent.OnSave -> onSave(event)
+            is NotemarkDetailEvent.OnWebInitialContentLoad -> onWebInitialContentLoad(event)
             NotemarkDetailEvent.OnDeleteBookmark -> onDeleteBookmark()
             NotemarkDetailEvent.OnRequestNotificationPermission -> onRequestNotificationPermission()
             is NotemarkDetailEvent.OnScheduleReminder -> onScheduleReminder(event)
@@ -105,7 +107,8 @@ class NotemarkDetailStateMachine :
                                                 readableVersionId = vid,
                                                 assetsBaseUrl = assetsBaseUrl,
                                                 initialDocumentJson = docJson,
-                                                isLoading = false,
+                                                isLoading = true,
+                                                webContentLoadFailed = false,
                                             ),
                                     )
                                 } else {
@@ -116,6 +119,7 @@ class NotemarkDetailStateMachine :
                                                 readableVersionId = vid,
                                                 assetsBaseUrl = assetsBaseUrl,
                                                 isLoading = false,
+                                                webContentLoadFailed = false,
                                             ),
                                     )
                                 }
@@ -136,6 +140,15 @@ class NotemarkDetailStateMachine :
 
     private fun onSave(event: NotemarkDetailEvent.OnSave) {
         persistNoteDocumentJsonIfChanged(event.documentJson)
+    }
+
+    private fun onWebInitialContentLoad(event: NotemarkDetailEvent.OnWebInitialContentLoad) {
+        updateState {
+            it.copy(
+                isLoading = false,
+                webContentLoadFailed = event.result == WebShellLoadResult.Error,
+            )
+        }
     }
 
     private fun persistNoteDocumentJsonIfChanged(json: String) {

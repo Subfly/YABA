@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
+import { publishShellLoad } from "@/bridge/shell-host-events"
 import {
   Highlight,
   PdfHighlighter,
@@ -68,6 +69,16 @@ function emitAnnotationTap(id: string): void {
     YabaPdfBridge?: { onAnnotationTap?: (annotationId: string) => void }
   }
   win.YabaPdfBridge?.onAnnotationTap?.(id)
+}
+
+/** Uses `unknown` so we do not depend on root `pdfjs-dist` vs react-pdf-highlighter's nested copy. */
+function PdfShellLoadReporter({ pdfDocument }: { pdfDocument: unknown }) {
+  useEffect(() => {
+    if (pdfDocument != null) {
+      publishShellLoad("loaded")
+    }
+  }, [pdfDocument])
+  return null
 }
 
 function YabaPdfHighlighterPane({
@@ -260,12 +271,22 @@ export default function YabaPdfViewerApp() {
       <div className="yaba-web-chrome-spacer yaba-web-chrome-spacer--top" aria-hidden />
       <div className="yaba-pdf-main-column">
         <div className="yaba-pdf-react-root">
-          <PdfLoader url={pdfUrl} workerSrc={pdfWorkerUrl} beforeLoad={null}>
+          <PdfLoader
+            url={pdfUrl}
+            workerSrc={pdfWorkerUrl}
+            beforeLoad={null}
+            onError={() => {
+              publishShellLoad("error")
+            }}
+          >
             {(pdfDocument) => (
-              <YabaPdfHighlighterPane
-                pdfDocument={pdfDocument}
-                yabaHighlights={yabaHighlights}
-              />
+              <>
+                <PdfShellLoadReporter pdfDocument={pdfDocument} />
+                <YabaPdfHighlighterPane
+                  pdfDocument={pdfDocument}
+                  yabaHighlights={yabaHighlights}
+                />
+              </>
             )}
           </PdfLoader>
         </div>

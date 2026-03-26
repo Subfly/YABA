@@ -7,6 +7,7 @@ import {
   type ReaderThemeName,
 } from "@/theme/reader-document-vars"
 import { getEpubContentOverrideCss } from "./epub-content-styles"
+import { publishShellLoad } from "@/bridge/shell-host-events"
 
 interface EpubHighlightInput {
   id: string
@@ -232,7 +233,10 @@ export function initEpubViewerBridge(platform: Platform, appearance: AppearanceM
           book = null
 
           const root = document.getElementById("epub-root")
-          if (!root) return
+          if (!root) {
+            publishShellLoad("error")
+            return
+          }
           root.innerHTML = ""
 
           book = ePub(url)
@@ -271,8 +275,10 @@ export function initEpubViewerBridge(platform: Platform, appearance: AppearanceM
           await rendition.display()
           currentPageNum = 1
           syncReaderVarsIntoAllEpubContents()
+          publishShellLoad("loaded")
         } catch (e) {
           console.error("EPUB load failed", e)
+          publishShellLoad("error")
         }
       })()
       return true

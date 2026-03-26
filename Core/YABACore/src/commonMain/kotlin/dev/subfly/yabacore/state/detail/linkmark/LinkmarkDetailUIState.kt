@@ -20,6 +20,8 @@ data class LinkmarkDetailUIState(
     val readerPreferences: ReaderPreferences = ReaderPreferences(),
     val annotations: List<AnnotationUiModel> = emptyList(),
     val isLoading: Boolean = false,
+    /** True when the readable WebView reported a failed initial load (one-shot). */
+    val readerWebContentLoadFailed: Boolean = false,
     val isUpdatingReadable: Boolean = false,
     /** Converter flow: raw HTML to be converted by WebView. */
     val converterHtml: String? = null,

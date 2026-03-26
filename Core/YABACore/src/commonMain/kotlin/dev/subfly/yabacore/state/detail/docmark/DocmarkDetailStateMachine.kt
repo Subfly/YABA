@@ -17,6 +17,7 @@ import dev.subfly.yabacore.model.utils.ReaderLineHeight
 import dev.subfly.yabacore.model.utils.ReaderTheme
 import dev.subfly.yabacore.notifications.NotificationManager
 import dev.subfly.yabacore.state.base.BaseStateMachine
+import dev.subfly.yabacore.webview.WebShellLoadResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -53,6 +54,7 @@ class DocmarkDetailStateMachine : BaseStateMachine<DocmarkDetailUIState, Docmark
             DocmarkDetailEvent.OnRequestNotificationPermission -> {}
             is DocmarkDetailEvent.OnScheduleReminder -> onScheduleReminder(event)
             DocmarkDetailEvent.OnCancelReminder -> onCancelReminder()
+            is DocmarkDetailEvent.OnWebInitialContentLoad -> onWebInitialContentLoad(event)
         }
     }
 
@@ -119,25 +121,43 @@ class DocmarkDetailStateMachine : BaseStateMachine<DocmarkDetailUIState, Docmark
                                     documentAbsolutePath = documentPath,
                                     selectedReadableVersionId = selectedVersion?.versionId,
                                     annotations = selectedVersion?.annotations ?: emptyList(),
-                                    isLoading = false,
+                                    isLoading = documentPath.isNullOrBlank().not(),
+                                    webContentLoadFailed = false,
                                 ),
                             )
                         }
                     }.flatMapLatest { it }
                 }
             }.collectLatest { newState ->
-                updateState {
-                    it.copy(
+                updateState { current ->
+                    val sameReaderTarget =
+                        current.documentAbsolutePath == newState.documentAbsolutePath &&
+                            current.selectedReadableVersionId == newState.selectedReadableVersionId
+                    val preserveShell =
+                        sameReaderTarget && !current.isLoading
+                    current.copy(
                         bookmark = newState.bookmark,
                         summary = newState.summary,
                         docmarkType = newState.docmarkType,
                         documentAbsolutePath = newState.documentAbsolutePath,
                         selectedReadableVersionId = newState.selectedReadableVersionId,
                         annotations = newState.annotations,
-                        isLoading = newState.isLoading,
+                        isLoading = if (preserveShell) false else newState.isLoading,
+                        webContentLoadFailed =
+                            if (preserveShell) current.webContentLoadFailed
+                            else newState.webContentLoadFailed,
                     )
                 }
             }
+        }
+    }
+
+    private fun onWebInitialContentLoad(event: DocmarkDetailEvent.OnWebInitialContentLoad) {
+        updateState {
+            it.copy(
+                isLoading = false,
+                webContentLoadFailed = event.result == WebShellLoadResult.Error,
+            )
         }
     }
 

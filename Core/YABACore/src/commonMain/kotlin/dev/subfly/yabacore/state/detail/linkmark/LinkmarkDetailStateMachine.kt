@@ -19,6 +19,7 @@ import dev.subfly.yabacore.model.utils.ReaderFontSize
 import dev.subfly.yabacore.model.utils.ReaderLineHeight
 import dev.subfly.yabacore.model.utils.ReaderTheme
 import dev.subfly.yabacore.state.base.BaseStateMachine
+import dev.subfly.yabacore.webview.WebShellLoadResult
 import dev.subfly.yabacore.unfurl.Unfurler
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -54,6 +55,7 @@ class LinkmarkDetailStateMachine :
             LinkmarkDetailEvent.OnUpdateReadableRequested -> onUpdateReadableRequested()
             is LinkmarkDetailEvent.OnConverterSucceeded -> onConverterSucceeded(event)
             is LinkmarkDetailEvent.OnConverterFailed -> onConverterFailed(event)
+            is LinkmarkDetailEvent.OnReaderWebInitialContentLoad -> onReaderWebInitialContentLoad(event)
             is LinkmarkDetailEvent.OnSelectReadableVersion -> onSelectReadableVersion(event.versionId)
             is LinkmarkDetailEvent.OnDeleteReadableVersion -> onDeleteReadableVersion(event.versionId)
             LinkmarkDetailEvent.OnDeleteBookmark -> onDeleteBookmark()
@@ -139,14 +141,27 @@ class LinkmarkDetailStateMachine :
                                     readableDocumentJson = documentJson,
                                     assetsBaseUrl = assetsBaseUrl,
                                     annotations = selectedVersion?.annotations ?: emptyList(),
-                                    isLoading = false,
+                                    isLoading = documentJson.isNullOrBlank().not(),
+                                    readerWebContentLoadFailed = false,
                                 ),
                             )
                         }
                     }
                 }
             }.collectLatest { newState ->
-                updateState { newState }
+                updateState { current ->
+                    val sameReadableBody =
+                        current.readableDocumentJson == newState.readableDocumentJson
+                    // Avoid resetting [isLoading] to true when DB re-emits after shell load settled.
+                    if (sameReadableBody && !current.isLoading) {
+                        newState.copy(
+                            isLoading = false,
+                            readerWebContentLoadFailed = current.readerWebContentLoadFailed,
+                        )
+                    } else {
+                        newState
+                    }
+                }
             }
         }
     }
@@ -219,6 +234,15 @@ class LinkmarkDetailStateMachine :
                 converterBaseUrl = null,
                 converterError = event.error.message ?: "Conversion failed",
                 isUpdatingReadable = false,
+            )
+        }
+    }
+
+    private fun onReaderWebInitialContentLoad(event: LinkmarkDetailEvent.OnReaderWebInitialContentLoad) {
+        updateState {
+            it.copy(
+                isLoading = false,
+                readerWebContentLoadFailed = event.result == WebShellLoadResult.Error,
             )
         }
     }

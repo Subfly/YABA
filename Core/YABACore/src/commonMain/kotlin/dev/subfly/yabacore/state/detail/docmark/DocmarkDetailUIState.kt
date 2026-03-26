@@ -17,6 +17,7 @@ data class DocmarkDetailUIState(
     val selectedReadableVersionId: String? = null,
     val annotations: List<AnnotationUiModel> = emptyList(),
     val isLoading: Boolean = false,
+    val webContentLoadFailed: Boolean = false,
     val reminderDateEpochMillis: Long? = null,
     val scrollToAnnotationId: String? = null,
 )

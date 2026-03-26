@@ -1,6 +1,5 @@
 package dev.subfly.yaba.ui.detail.bookmark.doc.layout
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -13,7 +12,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -79,6 +78,8 @@ internal fun DocmarkContentLayout(
     val appearance = if (isSystemInDarkTheme()) YabaWebAppearance.Dark else YabaWebAppearance.Light
     val hasDocumentPath = !state.documentAbsolutePath.isNullOrBlank()
     val showNoDocumentPlaceholder = !state.isLoading && !hasDocumentPath
+    val canRenderReader = hasDocumentPath && state.webContentLoadFailed.not()
+    val showReader = canRenderReader && state.isLoading.not()
     var isMenuExpanded by remember { mutableStateOf(false) }
     var hasSelection by remember { mutableStateOf(false) }
     var isToolbarVisible by remember { mutableStateOf(true) }
@@ -104,53 +105,54 @@ internal fun DocmarkContentLayout(
             .background(color = MaterialTheme.colorScheme.background),
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            if (hasDocumentPath) {
-                LaunchedEffect(state.scrollToAnnotationId) {
-                    val annotationId = state.scrollToAnnotationId ?: return@LaunchedEffect
-                    val bridge = readerBridge ?: return@LaunchedEffect
-                    bridge.scrollToAnnotation(annotationId)
-                    onEvent(DocmarkDetailEvent.OnClearScrollToAnnotation)
+            if (canRenderReader) {
+                if (showReader) {
+                    LaunchedEffect(state.scrollToAnnotationId) {
+                        val annotationId = state.scrollToAnnotationId ?: return@LaunchedEffect
+                        val bridge = readerBridge ?: return@LaunchedEffect
+                        bridge.scrollToAnnotation(annotationId)
+                        onEvent(DocmarkDetailEvent.OnClearScrollToAnnotation)
+                    }
+
+                    DocmarkReaderFloatingToolbar(
+                        modifier = Modifier.padding(bottom = 8.dp),
+                        docmarkType = state.docmarkType,
+                        readerPreferences = state.readerPreferences,
+                        color = folderAccent,
+                        isVisible = isToolbarVisible || hasSelection,
+                        hasSelection = hasSelection,
+                        canGoPrev = currentPage > 1,
+                        canGoNext = currentPage < pageCount,
+                        onEvent = onEvent,
+                        onPrevPage = {
+                            scope.launch {
+                                readerBridge?.prevPage()
+                            }
+                        },
+                        onNextPage = {
+                            scope.launch {
+                                readerBridge?.nextPage()
+                            }
+                        },
+                        onAnnotationClick = {
+                            val bridge = readerBridge ?: return@DocmarkReaderFloatingToolbar
+                            val bookmarkId = state.bookmark?.id ?: return@DocmarkReaderFloatingToolbar
+                            val readableVersionId =
+                                state.selectedReadableVersionId ?: return@DocmarkReaderFloatingToolbar
+                            scope.launch {
+                                val draft = bridge.getSelectionSnapshot(bookmarkId, readableVersionId)
+                                creationNavigator.add(
+                                    AnnotationCreationRoute(
+                                        bookmarkId = bookmarkId,
+                                        selectionDraft = draft,
+                                        annotationId = null,
+                                    ),
+                                )
+                                appStateManager.onShowCreationContent()
+                            }
+                        },
+                    )
                 }
-
-                DocmarkReaderFloatingToolbar(
-                    modifier = Modifier.padding(bottom = 8.dp),
-                    docmarkType = state.docmarkType,
-                    readerPreferences = state.readerPreferences,
-                    color = folderAccent,
-                    isVisible = isToolbarVisible || hasSelection,
-                    hasSelection = hasSelection,
-                    canGoPrev = currentPage > 1,
-                    canGoNext = currentPage < pageCount,
-                    onEvent = onEvent,
-                    onPrevPage = {
-                        scope.launch {
-                            readerBridge?.prevPage()
-                        }
-                    },
-                    onNextPage = {
-                        scope.launch {
-                            readerBridge?.nextPage()
-                        }
-                    },
-                    onAnnotationClick = {
-                        val bridge = readerBridge ?: return@DocmarkReaderFloatingToolbar
-                        val bookmarkId = state.bookmark?.id ?: return@DocmarkReaderFloatingToolbar
-                        val readableVersionId =
-                            state.selectedReadableVersionId ?: return@DocmarkReaderFloatingToolbar
-                        scope.launch {
-                            val draft = bridge.getSelectionSnapshot(bookmarkId, readableVersionId)
-                            creationNavigator.add(
-                                AnnotationCreationRoute(
-                                    bookmarkId = bookmarkId,
-                                    selectionDraft = draft,
-                                    annotationId = null,
-                                ),
-                            )
-                            appStateManager.onShowCreationContent()
-                        }
-                    },
-                )
-
                 key(state.docmarkType) {
                     when (state.docmarkType) {
                         DocmarkType.PDF ->
@@ -170,6 +172,9 @@ internal fun DocmarkContentLayout(
                                             currentPage = ev.currentPage
                                             pageCount = ev.pageCount.coerceAtLeast(1)
                                         }
+
+                                        is YabaWebHostEvent.InitialContentLoad ->
+                                            onEvent(DocmarkDetailEvent.OnWebInitialContentLoad(ev.result))
 
                                         else -> Unit
                                     }
@@ -211,6 +216,9 @@ internal fun DocmarkContentLayout(
                                             pageCount = ev.pageCount.coerceAtLeast(1)
                                         }
 
+                                        is YabaWebHostEvent.InitialContentLoad ->
+                                            onEvent(DocmarkDetailEvent.OnWebInitialContentLoad(ev.result))
+
                                         else -> Unit
                                     }
                                 },
@@ -233,7 +241,13 @@ internal fun DocmarkContentLayout(
                             )
                     }
                 }
-            } else if (showNoDocumentPlaceholder) {
+            }
+            if (state.isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) { CircularWavyProgressIndicator() }
+            } else if (showNoDocumentPlaceholder || state.webContentLoadFailed) {
                 NoContentView(
                     modifier = Modifier
                         .fillMaxSize()
@@ -272,20 +286,7 @@ internal fun DocmarkContentLayout(
                         )
                     }
                 },
-                loadingIndicator = {
-                    AnimatedContent(state.isLoading) { loading ->
-                        if (loading) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 4.dp)
-                                    .background(color = MaterialTheme.colorScheme.surface),
-                            ) { LinearProgressIndicator(modifier = Modifier.fillMaxWidth()) }
-                        } else {
-                            Box(modifier = Modifier.fillMaxWidth())
-                        }
-                    }
-                },
+                loadingIndicator = {},
             )
         }
     }

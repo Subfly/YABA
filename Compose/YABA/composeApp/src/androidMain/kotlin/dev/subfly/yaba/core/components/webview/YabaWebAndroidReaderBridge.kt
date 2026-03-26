@@ -16,6 +16,7 @@ import dev.subfly.yabacore.webview.YabaEditorBridgeScripts
 import dev.subfly.yabacore.webview.YabaEpubReaderBridgeScripts
 import dev.subfly.yabacore.webview.YabaPdfReaderBridgeScripts
 import dev.subfly.yabacore.webview.YabaWebAppearance
+import dev.subfly.yabacore.webview.WebShellLoadResult
 import dev.subfly.yabacore.webview.YabaWebBridgeScripts
 import dev.subfly.yabacore.webview.YabaWebPlatform
 import dev.subfly.yabacore.webview.escapeForJsSingleQuotedString
@@ -241,6 +242,22 @@ internal suspend fun getEditorActiveFormatting(webView: WebView): EditorFormatti
     return runCatching {
         parseEditorFormattingState(JSONObject(jsonStr))
     }.getOrElse { EditorFormattingState() }
+}
+
+internal fun parseShellLoadMessage(message: String?): WebShellLoadResult? {
+    val payload =
+        message
+            ?.takeIf { it.startsWith(YabaWebBridgeScripts.SHELL_LOAD_EVENT_PREFIX) }
+            ?.removePrefix(YabaWebBridgeScripts.SHELL_LOAD_EVENT_PREFIX)
+            ?.takeIf { it.isNotBlank() }
+            ?: return null
+    val json = runCatching { JSONObject(payload) }.getOrNull() ?: return null
+    if (json.optString("type") != "shellLoad") return null
+    return when (json.optString("result")) {
+        "loaded" -> WebShellLoadResult.Loaded
+        "error" -> WebShellLoadResult.Error
+        else -> null
+    }
 }
 
 internal fun parseEditorHostStateMessage(message: String?): EditorHostStateUpdate? {

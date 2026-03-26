@@ -23,6 +23,7 @@ import {
   publishEditorHostState,
   resetPublishedEditorHostState,
 } from "./editor-host-events"
+import { publishShellLoad } from "./shell-host-events"
 
 export type ReaderTheme = "system" | "dark" | "light" | "sepia"
 export type ReaderFontSize = "small" | "medium" | "large"
@@ -158,6 +159,8 @@ export type EditorCommandPayload =
   | { type: "toggleTextHighlight" }
 
 let editorInstance: Editor | null = null
+/** First successful or failed application of document/HTML to the shell (one-shot per page load). */
+let editorShellLoadNotified = false
 /** Latest ProseMirror selection (anchor/head) for restoring the caret after [unFocus] / native chrome. */
 let lastStoredCursor: { anchor: number; head: number } | null = null
 let platform: Platform = "compose"
@@ -293,6 +296,7 @@ function applyReaderPreferences(): void {
 
 export function initEditorBridge(editor: Editor): void {
   editorInstance = editor
+  editorShellLoadNotified = false
   resetPublishedEditorHostState()
   editor.on("selectionUpdate", () => {
     captureStoredCursorFromEditor()
@@ -369,37 +373,59 @@ export function initEditorBridge(editor: Editor): void {
       publishCurrentEditorState()
     },
     setDocumentJson: (documentJson: string, options?: { assetsBaseUrl?: string }) => {
-      if (options?.assetsBaseUrl) {
-        lastAssetsBaseUrl = options.assetsBaseUrl
-      }
-      let payload = documentJson?.trim() ? documentJson : EMPTY_DOC_JSON
-      if (options?.assetsBaseUrl) {
-        payload = rewriteAssetPathsInDocumentJson(payload, options.assetsBaseUrl)
-      }
-      let doc: Record<string, unknown>
       try {
-        doc = JSON.parse(payload) as Record<string, unknown>
+        if (options?.assetsBaseUrl) {
+          lastAssetsBaseUrl = options.assetsBaseUrl
+        }
+        let payload = documentJson?.trim() ? documentJson : EMPTY_DOC_JSON
+        if (options?.assetsBaseUrl) {
+          payload = rewriteAssetPathsInDocumentJson(payload, options.assetsBaseUrl)
+        }
+        let doc: Record<string, unknown>
+        try {
+          doc = JSON.parse(payload) as Record<string, unknown>
+        } catch {
+          doc = JSON.parse(EMPTY_DOC_JSON) as Record<string, unknown>
+        }
+        editorInstance?.commands.setContent(doc, { emitUpdate: false })
+        if (editorInstance) {
+          applyInitialFocusStateAfterContent(editorInstance)
+          publishCurrentEditorState()
+        }
+        if (!editorShellLoadNotified) {
+          editorShellLoadNotified = true
+          publishShellLoad("loaded")
+        }
       } catch {
-        doc = JSON.parse(EMPTY_DOC_JSON) as Record<string, unknown>
-      }
-      editorInstance?.commands.setContent(doc, { emitUpdate: false })
-      if (editorInstance) {
-        applyInitialFocusStateAfterContent(editorInstance)
-        publishCurrentEditorState()
+        if (!editorShellLoadNotified) {
+          editorShellLoadNotified = true
+          publishShellLoad("error")
+        }
       }
     },
     setReaderHtml: (html: string, options?: { assetsBaseUrl?: string }) => {
-      if (options?.assetsBaseUrl) {
-        lastAssetsBaseUrl = options.assetsBaseUrl
-      }
-      let payload = html?.trim() ? html : "<p></p>"
-      if (options?.assetsBaseUrl) {
-        payload = rewriteAssetPathsInReaderHtml(payload, options.assetsBaseUrl)
-      }
-      editorInstance?.commands.setContent(payload, { emitUpdate: false })
-      if (editorInstance) {
-        applyInitialFocusStateAfterContent(editorInstance)
-        publishCurrentEditorState()
+      try {
+        if (options?.assetsBaseUrl) {
+          lastAssetsBaseUrl = options.assetsBaseUrl
+        }
+        let payload = html?.trim() ? html : "<p></p>"
+        if (options?.assetsBaseUrl) {
+          payload = rewriteAssetPathsInReaderHtml(payload, options.assetsBaseUrl)
+        }
+        editorInstance?.commands.setContent(payload, { emitUpdate: false })
+        if (editorInstance) {
+          applyInitialFocusStateAfterContent(editorInstance)
+          publishCurrentEditorState()
+        }
+        if (!editorShellLoadNotified) {
+          editorShellLoadNotified = true
+          publishShellLoad("loaded")
+        }
+      } catch {
+        if (!editorShellLoadNotified) {
+          editorShellLoadNotified = true
+          publishShellLoad("error")
+        }
       }
     },
     getDocumentJson: () => {

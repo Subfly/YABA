@@ -22,7 +22,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
-import dev.subfly.yabacore.webview.EditorFormattingState
 import dev.subfly.yabacore.webview.WebLoadState
 import dev.subfly.yabacore.webview.WebViewEditorBridge
 import dev.subfly.yabacore.webview.WebViewReaderBridge
@@ -31,6 +30,7 @@ import dev.subfly.yabacore.webview.YabaWebBridgeScripts
 import dev.subfly.yabacore.webview.YabaWebFeature
 import dev.subfly.yabacore.webview.YabaWebHostEvent
 import dev.subfly.yabacore.webview.YabaWebScrollDirection
+import dev.subfly.yabacore.webview.WebShellLoadResult
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlin.math.abs
@@ -62,6 +62,10 @@ internal fun YabaReadableViewerFeatureHost(
     val assetLoaderUrl = remember(baseUrl) { toAssetLoaderUrl(baseUrl) }
     val assetLoader = remember(context) { rememberAssetLoader(context, includeLocalStorage = true) }
     val loadUrl = remember(baseUrl, assetLoaderUrl) { assetLoaderUrl ?: baseUrl }
+
+    var initialShellLoadConsumed by remember(loadUrl, feature.initialDocumentJson) {
+        mutableStateOf(false)
+    }
 
     val webView = remember(context) {
         WebView(context).apply {
@@ -131,6 +135,7 @@ internal fun YabaReadableViewerFeatureHost(
 
     LaunchedEffect(isPageReady, feature.initialDocumentJson, feature.assetsBaseUrl) {
         if (!isPageReady || rendererCrashed) return@LaunchedEffect
+        initialShellLoadConsumed = false
         applyEditorDocumentJson(webView, context, feature.initialDocumentJson, feature.assetsBaseUrl)
         RichTextWebViewEditorBridge(webView).setEditable(false)
     }
@@ -194,9 +199,18 @@ internal fun YabaReadableViewerFeatureHost(
         },
         update = {
             if (rendererCrashed.not()) {
-                webView.webChromeClient = denyPermissionsWebChromeClient { progress ->
-                    onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.Loading(progress / 100f)))
-                }
+                webView.webChromeClient = denyPermissionsWebChromeClient(
+                    onProgressChanged = { progress ->
+                        onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.Loading(progress / 100f)))
+                    },
+                    onConsoleMessage = shell@{ msg ->
+                        if (initialShellLoadConsumed) return@shell
+                        parseShellLoadMessage(msg)?.let { result ->
+                            initialShellLoadConsumed = true
+                            onHostEventState.value(YabaWebHostEvent.InitialContentLoad(result))
+                        }
+                    },
+                )
                 webView.webViewClient = yabaWebViewClient(
                     assetLoader = assetLoader,
                     onPageStarted = {
@@ -220,6 +234,7 @@ internal fun YabaReadableViewerFeatureHost(
             val lastLoadedUrl = webView.tag as? String
             if (lastLoadedUrl != loadUrl) {
                 isPageReady = false
+                initialShellLoadConsumed = false
                 activeBridge = null
                 onBridgeReadyState.value(null)
                 webView.loadUrl(loadUrl)
@@ -263,6 +278,10 @@ internal fun YabaEditorFeatureHost(
     val assetLoaderUrl = remember(baseUrl) { toAssetLoaderUrl(baseUrl) }
     val assetLoader = remember(context) { rememberAssetLoader(context, includeLocalStorage = true) }
     val loadUrl = remember(baseUrl, assetLoaderUrl) { assetLoaderUrl ?: baseUrl }
+
+    var initialShellLoadConsumed by remember(loadUrl, feature.initialDocumentJson) {
+        mutableStateOf(false)
+    }
 
     val webView = remember(context) {
         WebView(context).apply {
@@ -334,6 +353,7 @@ internal fun YabaEditorFeatureHost(
             Log.w(YABA_WEBVIEW_LOG_TAG, "Editor bridge not ready before timeout")
             return@LaunchedEffect
         }
+        initialShellLoadConsumed = false
         applyEditorDocumentJson(webView, context, feature.initialDocumentJson, feature.assetsBaseUrl)
         RichTextWebViewEditorBridge(webView).setEditable(true)
     }
@@ -367,7 +387,14 @@ internal fun YabaEditorFeatureHost(
                     },
                     pendingPermissionRequestRef = pendingPermissionRequestRef,
                     onLaunchPermissionRequest = { perms -> permissionLauncher.launch(perms) },
-                    onEditorHostEvent = { message ->
+                    onConsoleMessage = shell@{ message ->
+                        if (!initialShellLoadConsumed) {
+                            parseShellLoadMessage(message)?.let { result ->
+                                initialShellLoadConsumed = true
+                                onHostEventState.value(YabaWebHostEvent.InitialContentLoad(result))
+                                return@shell
+                            }
+                        }
                         parseEditorHostStateMessage(message)?.let { state ->
                             onHostEventState.value(
                                 YabaWebHostEvent.ReaderMetrics(
@@ -403,6 +430,7 @@ internal fun YabaEditorFeatureHost(
             val lastLoadedUrl = webView.tag as? String
             if (lastLoadedUrl != loadUrl) {
                 isPageReady = false
+                initialShellLoadConsumed = false
                 activeEditorBridge = null
                 onEditorBridgeReadyState.value(null)
                 webView.loadUrl(loadUrl)
@@ -440,10 +468,12 @@ internal fun YabaHtmlConverterFeatureHost(
         val request = feature.input ?: return@LaunchedEffect
         runHtmlConversion(webView, request.html, request.baseUrl).fold(
             onSuccess = { result ->
+                onHostEventState.value(YabaWebHostEvent.InitialContentLoad(WebShellLoadResult.Loaded))
                 onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.BridgeReady))
                 onHostEventState.value(YabaWebHostEvent.HtmlConverterSuccess(result))
             },
             onFailure = { e ->
+                onHostEventState.value(YabaWebHostEvent.InitialContentLoad(WebShellLoadResult.Error))
                 onHostEventState.value(YabaWebHostEvent.HtmlConverterFailure(e))
             },
         )
@@ -467,9 +497,11 @@ internal fun YabaHtmlConverterFeatureHost(
         },
         update = {
             if (!rendererCrashed) {
-                webView.webChromeClient = denyPermissionsWebChromeClient { p ->
-                    onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.Loading(p / 100f)))
-                }
+                webView.webChromeClient = denyPermissionsWebChromeClient(
+                    onProgressChanged = { p ->
+                        onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.Loading(p / 100f)))
+                    },
+                )
                 webView.webViewClient = yabaWebViewClient(
                     assetLoader = assetLoader,
                     onPageStarted = {
@@ -528,10 +560,12 @@ internal fun YabaPdfExtractorFeatureHost(
         val request = feature.input ?: return@LaunchedEffect
         runPdfExtraction(webView, context, request.pdfUrl, request.renderScale).fold(
             onSuccess = { result ->
+                onHostEventState.value(YabaWebHostEvent.InitialContentLoad(WebShellLoadResult.Loaded))
                 onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.BridgeReady))
                 onHostEventState.value(YabaWebHostEvent.PdfConverterSuccess(result))
             },
             onFailure = { e ->
+                onHostEventState.value(YabaWebHostEvent.InitialContentLoad(WebShellLoadResult.Error))
                 onHostEventState.value(YabaWebHostEvent.PdfConverterFailure(e))
             },
         )
@@ -555,9 +589,11 @@ internal fun YabaPdfExtractorFeatureHost(
         },
         update = {
             if (!rendererCrashed) {
-                webView.webChromeClient = denyPermissionsWebChromeClient { p ->
-                    onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.Loading(p / 100f)))
-                }
+                webView.webChromeClient = denyPermissionsWebChromeClient(
+                    onProgressChanged = { p ->
+                        onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.Loading(p / 100f)))
+                    },
+                )
                 webView.webViewClient = yabaWebViewClient(
                     assetLoader = assetLoader,
                     onPageStarted = {
@@ -613,6 +649,10 @@ internal fun YabaPdfViewerFeatureHost(
     val assetLoaderUrl = remember(baseUrl) { toAssetLoaderUrl(baseUrl) }
     val assetLoader = remember(context) { rememberAssetLoader(context, includeLocalStorage = true) }
     val loadUrl = remember(baseUrl, assetLoaderUrl) { assetLoaderUrl ?: baseUrl }
+
+    var initialShellLoadConsumed by remember(loadUrl, feature.pdfUrl) {
+        mutableStateOf(false)
+    }
 
     val webView = remember(context) {
         WebView(context).apply {
@@ -686,6 +726,7 @@ internal fun YabaPdfViewerFeatureHost(
 
     LaunchedEffect(isPageReady, feature.pdfUrl) {
         if (!isPageReady || rendererCrashed) return@LaunchedEffect
+        initialShellLoadConsumed = false
         applyPdfUrl(webView, context, feature.pdfUrl)
     }
 
@@ -748,9 +789,18 @@ internal fun YabaPdfViewerFeatureHost(
         },
         update = {
             if (rendererCrashed.not()) {
-                webView.webChromeClient = denyPermissionsWebChromeClient { p ->
-                    onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.Loading(p / 100f)))
-                }
+                webView.webChromeClient = denyPermissionsWebChromeClient(
+                    onProgressChanged = { p ->
+                        onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.Loading(p / 100f)))
+                    },
+                    onConsoleMessage = shell@{ msg ->
+                        if (initialShellLoadConsumed) return@shell
+                        parseShellLoadMessage(msg)?.let { result ->
+                            initialShellLoadConsumed = true
+                            onHostEventState.value(YabaWebHostEvent.InitialContentLoad(result))
+                        }
+                    },
+                )
                 webView.webViewClient = yabaWebViewClient(
                     assetLoader = assetLoader,
                     onPageStarted = {
@@ -774,6 +824,7 @@ internal fun YabaPdfViewerFeatureHost(
             val lastLoadedUrl = webView.tag as? String
             if (lastLoadedUrl != loadUrl) {
                 isPageReady = false
+                initialShellLoadConsumed = false
                 activeBridge = null
                 onReaderBridgeReadyState.value(null)
                 webView.loadUrl(loadUrl)
@@ -811,10 +862,12 @@ internal fun YabaEpubExtractorFeatureHost(
         val request = feature.input ?: return@LaunchedEffect
         runEpubExtraction(webView, context, request.epubDataUrl).fold(
             onSuccess = { result ->
+                onHostEventState.value(YabaWebHostEvent.InitialContentLoad(WebShellLoadResult.Loaded))
                 onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.BridgeReady))
                 onHostEventState.value(YabaWebHostEvent.EpubConverterSuccess(result))
             },
             onFailure = { e ->
+                onHostEventState.value(YabaWebHostEvent.InitialContentLoad(WebShellLoadResult.Error))
                 onHostEventState.value(YabaWebHostEvent.EpubConverterFailure(e))
             },
         )
@@ -838,9 +891,11 @@ internal fun YabaEpubExtractorFeatureHost(
         },
         update = {
             if (!rendererCrashed) {
-                webView.webChromeClient = denyPermissionsWebChromeClient { p ->
-                    onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.Loading(p / 100f)))
-                }
+                webView.webChromeClient = denyPermissionsWebChromeClient(
+                    onProgressChanged = { p ->
+                        onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.Loading(p / 100f)))
+                    },
+                )
                 webView.webViewClient = yabaWebViewClient(
                     assetLoader = assetLoader,
                     onPageStarted = {
@@ -896,6 +951,10 @@ internal fun YabaEpubViewerFeatureHost(
     val assetLoaderUrl = remember(baseUrl) { toAssetLoaderUrl(baseUrl) }
     val assetLoader = remember(context) { rememberAssetLoader(context, includeLocalStorage = true) }
     val loadUrl = remember(baseUrl, assetLoaderUrl) { assetLoaderUrl ?: baseUrl }
+
+    var initialShellLoadConsumed by remember(loadUrl, feature.epubUrl) {
+        mutableStateOf(false)
+    }
 
     val webView = remember(context) {
         WebView(context).apply {
@@ -969,6 +1028,7 @@ internal fun YabaEpubViewerFeatureHost(
 
     LaunchedEffect(isPageReady, feature.epubUrl) {
         if (!isPageReady || rendererCrashed) return@LaunchedEffect
+        initialShellLoadConsumed = false
         applyEpubUrl(webView, context, feature.epubUrl)
     }
 
@@ -1031,9 +1091,18 @@ internal fun YabaEpubViewerFeatureHost(
         },
         update = {
             if (rendererCrashed.not()) {
-                webView.webChromeClient = denyPermissionsWebChromeClient { p ->
-                    onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.Loading(p / 100f)))
-                }
+                webView.webChromeClient = denyPermissionsWebChromeClient(
+                    onProgressChanged = { p ->
+                        onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.Loading(p / 100f)))
+                    },
+                    onConsoleMessage = shell@{ msg ->
+                        if (initialShellLoadConsumed) return@shell
+                        parseShellLoadMessage(msg)?.let { result ->
+                            initialShellLoadConsumed = true
+                            onHostEventState.value(YabaWebHostEvent.InitialContentLoad(result))
+                        }
+                    },
+                )
                 webView.webViewClient = yabaWebViewClient(
                     assetLoader = assetLoader,
                     onPageStarted = {
@@ -1057,6 +1126,7 @@ internal fun YabaEpubViewerFeatureHost(
             val lastLoadedUrl = webView.tag as? String
             if (lastLoadedUrl != loadUrl) {
                 isPageReady = false
+                initialShellLoadConsumed = false
                 activeBridge = null
                 onReaderBridgeReadyState.value(null)
                 webView.loadUrl(loadUrl)

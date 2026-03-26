@@ -161,6 +161,8 @@ fun DocmarkCreationContent(bookmarkId: String?) {
                 is YabaWebHostEvent.PdfConverterFailure -> {
                     // Non-fatal: preview/readable may stay empty
                 }
+                is YabaWebHostEvent.InitialContentLoad ->
+                    vm.onEvent(DocmarkCreationEvent.OnWebInitialContentLoad(ev.result))
                 else -> Unit
             }
         },
@@ -184,6 +186,8 @@ fun DocmarkCreationContent(bookmarkId: String?) {
                 is YabaWebHostEvent.EpubConverterFailure -> {
                     // Non-fatal
                 }
+                is YabaWebHostEvent.InitialContentLoad ->
+                    vm.onEvent(DocmarkCreationEvent.OnWebInitialContentLoad(ev.result))
                 else -> Unit
             }
         },

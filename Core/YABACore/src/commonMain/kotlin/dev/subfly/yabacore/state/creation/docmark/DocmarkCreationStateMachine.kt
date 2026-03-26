@@ -13,6 +13,7 @@ import dev.subfly.yabacore.model.utils.CardImageSizing
 import dev.subfly.yabacore.model.utils.DocmarkType
 import dev.subfly.yabacore.preferences.SettingsStores
 import dev.subfly.yabacore.state.base.BaseStateMachine
+import dev.subfly.yabacore.webview.WebShellLoadResult
 import io.github.vinceglb.filekit.name
 import io.github.vinceglb.filekit.readBytes
 import kotlinx.coroutines.Dispatchers
@@ -41,6 +42,7 @@ class DocmarkCreationStateMachine :
             is DocmarkCreationEvent.OnSelectFolder -> onSelectFolder(event)
             is DocmarkCreationEvent.OnSelectTags -> onSelectTags(event)
             is DocmarkCreationEvent.OnSave -> onSave(event)
+            is DocmarkCreationEvent.OnWebInitialContentLoad -> onWebInitialContentLoad(event)
         }
     }
 
@@ -127,7 +129,7 @@ class DocmarkCreationStateMachine :
                         docmarkType = docmarkType,
                         sourceFileName = sourceName,
                         label = it.label.ifBlank { sourceName.substringBeforeLast('.') },
-                        isLoading = false,
+                        isLoading = true,
                         error = null,
                     )
                 }
@@ -168,7 +170,7 @@ class DocmarkCreationStateMachine :
                 label = autoLabel,
                 previewImageBytes = null,
                 previewImageExtension = "png",
-                isLoading = false,
+                isLoading = true,
                 error = null,
             )
         }
@@ -182,6 +184,8 @@ class DocmarkCreationStateMachine :
                 docmarkType = null,
                 sourceFileName = null,
                 previewImageBytes = null,
+                isLoading = false,
+                error = null,
             )
         }
     }
@@ -209,6 +213,15 @@ class DocmarkCreationStateMachine :
             it.copy(
                 previewImageBytes = event.imageBytes,
                 previewImageExtension = event.extension.lowercase().removePrefix(".").ifBlank { "png" },
+            )
+        }
+    }
+
+    private fun onWebInitialContentLoad(event: DocmarkCreationEvent.OnWebInitialContentLoad) {
+        updateState {
+            it.copy(
+                isLoading = false,
+                error = if (event.result == WebShellLoadResult.Error) DocmarkCreationError.PreviewExtractionFailed else null,
             )
         }
     }

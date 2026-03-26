@@ -1,6 +1,5 @@
 package dev.subfly.yaba.ui.detail.bookmark.note.layout
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -10,13 +9,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.LinearWavyProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import dev.subfly.yaba.core.components.NoContentView
@@ -182,8 +179,18 @@ internal fun NotemarkContentLayout(
 
     val webAppearance = if (isSystemInDarkTheme()) YabaWebAppearance.Dark else YabaWebAppearance.Light
 
-    val ready by remember(state.isLoading, state.initialDocumentJson) {
-        derivedStateOf { !state.isLoading && state.initialDocumentJson != null }
+    val ready by remember(state.isLoading, state.initialDocumentJson, state.webContentLoadFailed) {
+        derivedStateOf {
+            !state.isLoading &&
+                state.initialDocumentJson != null &&
+                state.webContentLoadFailed.not()
+        }
+    }
+    val canRenderEditor by remember(state.initialDocumentJson, state.webContentLoadFailed) {
+        derivedStateOf {
+            state.initialDocumentJson != null &&
+                state.webContentLoadFailed.not()
+        }
     }
 
     Box(
@@ -197,7 +204,7 @@ internal fun NotemarkContentLayout(
                 .imePadding(),
         ) {
             Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-                if (ready) {
+                if (canRenderEditor) {
                     YabaWebView(
                         modifier = Modifier.fillMaxSize(),
                         baseUrl = WebComponentUris.getEditorUri(),
@@ -214,6 +221,9 @@ internal fun NotemarkContentLayout(
                                 is YabaWebHostEvent.ReaderMetrics -> {
                                     ev.editorFormatting?.let { editorFormatting = it }
                                 }
+
+                                is YabaWebHostEvent.InitialContentLoad ->
+                                    onEvent(NotemarkDetailEvent.OnWebInitialContentLoad(ev.result))
 
                                 else -> Unit
                             }
@@ -238,7 +248,13 @@ internal fun NotemarkContentLayout(
                             }
                         },
                     )
-                } else if (!state.isLoading) {
+                }
+                if (state.isLoading) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                    ) { CircularWavyProgressIndicator() }
+                } else if (state.webContentLoadFailed || state.initialDocumentJson == null) {
                     NoContentView(
                         modifier = Modifier
                             .fillMaxSize()
@@ -337,18 +353,7 @@ internal fun NotemarkContentLayout(
                     )
                 }
             },
-            loadingIndicator = {
-                AnimatedContent(state.isLoading) { loading ->
-                    if (loading) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 4.dp)
-                                .background(color = MaterialTheme.colorScheme.surface),
-                        ) { LinearWavyProgressIndicator(modifier = Modifier.fillMaxWidth()) }
-                    } else { Box(modifier = Modifier.fillMaxWidth()) }
-                }
-            },
+            loadingIndicator = {},
         )
     }
 }

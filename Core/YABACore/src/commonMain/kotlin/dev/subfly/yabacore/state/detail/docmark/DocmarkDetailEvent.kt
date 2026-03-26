@@ -4,6 +4,7 @@ import dev.subfly.yabacore.model.utils.ReaderFontSize
 import dev.subfly.yabacore.model.utils.ReaderLineHeight
 import dev.subfly.yabacore.model.utils.ReaderTheme
 import dev.subfly.yabacore.notifications.PlatformNotificationText
+import dev.subfly.yabacore.webview.WebShellLoadResult
 
 sealed interface DocmarkDetailEvent {
     data class OnInit(val bookmarkId: String) : DocmarkDetailEvent
@@ -26,4 +27,6 @@ sealed interface DocmarkDetailEvent {
         val triggerAtEpochMillis: Long,
     ) : DocmarkDetailEvent
     data object OnCancelReminder : DocmarkDetailEvent
+
+    data class OnWebInitialContentLoad(val result: WebShellLoadResult) : DocmarkDetailEvent
 }

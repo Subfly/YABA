@@ -6,6 +6,9 @@ package dev.subfly.yabacore.webview
 object YabaWebBridgeScripts {
     const val EDITOR_HOST_EVENT_PREFIX = "yaba-editor-host:"
 
+    /** Must match [Extensions/yaba-web-components/src/bridge/shell-host-events.ts] */
+    const val SHELL_LOAD_EVENT_PREFIX = "yaba-shell-load:"
+
     const val EDITOR_BRIDGE_READY: String =
         "(function(){ try { return !!(window.YabaEditorBridge && window.YabaEditorBridge.isReady && window.YabaEditorBridge.isReady()); } catch(e){ return false; } })();"
 

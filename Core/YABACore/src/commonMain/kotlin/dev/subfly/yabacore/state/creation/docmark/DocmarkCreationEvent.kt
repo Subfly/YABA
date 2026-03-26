@@ -3,6 +3,7 @@ package dev.subfly.yabacore.state.creation.docmark
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.model.utils.DocmarkType
+import dev.subfly.yabacore.webview.WebShellLoadResult
 
 sealed class DocmarkCreationEvent {
     data class OnInit(
@@ -62,4 +63,6 @@ sealed class DocmarkCreationEvent {
         val onSavedCallback: () -> Unit,
         val onErrorCallback: () -> Unit,
     ) : DocmarkCreationEvent()
+
+    data class OnWebInitialContentLoad(val result: WebShellLoadResult) : DocmarkCreationEvent()
 }

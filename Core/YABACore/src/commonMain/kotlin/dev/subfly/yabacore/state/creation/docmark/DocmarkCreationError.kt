@@ -11,5 +11,8 @@ sealed class DocmarkCreationError {
     data object DocumentReadFailed : DocmarkCreationError()
 
     @Stable
+    data object PreviewExtractionFailed : DocmarkCreationError()
+
+    @Stable
     data object SaveFailed : DocmarkCreationError()
 }

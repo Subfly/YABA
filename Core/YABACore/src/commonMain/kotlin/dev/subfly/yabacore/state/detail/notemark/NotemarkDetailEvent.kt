@@ -1,6 +1,7 @@
 package dev.subfly.yabacore.state.detail.notemark
 
 import dev.subfly.yabacore.notifications.PlatformNotificationText
+import dev.subfly.yabacore.webview.WebShellLoadResult
 
 sealed interface NotemarkDetailEvent {
     data class OnInit(val bookmarkId: String) : NotemarkDetailEvent
@@ -40,4 +41,7 @@ sealed interface NotemarkDetailEvent {
      * image.
      */
     data object OnConsumedInlineImageInsert : NotemarkDetailEvent
+
+    /** One-shot: WebView editor finished initial document application (success or error). */
+    data class OnWebInitialContentLoad(val result: WebShellLoadResult) : NotemarkDetailEvent
 }

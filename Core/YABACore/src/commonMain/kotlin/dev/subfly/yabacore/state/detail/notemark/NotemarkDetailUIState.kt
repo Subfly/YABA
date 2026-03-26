@@ -16,6 +16,8 @@ data class NotemarkDetailUIState(
      */
     val initialDocumentJson: String? = null,
     val isLoading: Boolean = false,
+    /** Set when [OnWebInitialContentLoad] reports [dev.subfly.yabacore.webview.WebShellLoadResult.Error]. */
+    val webContentLoadFailed: Boolean = false,
     val reminderDateEpochMillis: Long? = null,
     /**
      * One-shot: canonical document `src` (`../assets/<id>.<ext>`) after Core saved a

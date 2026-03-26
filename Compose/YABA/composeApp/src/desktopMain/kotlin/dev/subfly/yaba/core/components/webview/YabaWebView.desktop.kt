@@ -13,6 +13,7 @@ import dev.subfly.yabacore.webview.WebViewEditorBridge
 import dev.subfly.yabacore.webview.WebViewReaderBridge
 import dev.subfly.yabacore.webview.MathTapEvent
 import dev.subfly.yabacore.webview.YabaWebFeature
+import dev.subfly.yabacore.webview.WebShellLoadResult
 import dev.subfly.yabacore.webview.YabaWebHostEvent
 import dev.subfly.yabacore.webview.YabaWebScrollDirection
 
@@ -55,9 +56,13 @@ actual fun YabaWebViewHost(
     LaunchedEffect(feature) {
         onReaderBridgeReady(null)
         onEditorBridgeReady(null)
+        if (showPlaceholder) {
+            onHostEvent(YabaWebHostEvent.InitialContentLoad(WebShellLoadResult.Error))
+        }
         when (val f = feature) {
             is YabaWebFeature.HtmlConverter ->
                 if (f.input != null) {
+                    onHostEvent(YabaWebHostEvent.InitialContentLoad(WebShellLoadResult.Error))
                     onHostEvent(
                         YabaWebHostEvent.HtmlConverterFailure(
                             UnsupportedOperationException("WebView not available on desktop"),
@@ -66,6 +71,7 @@ actual fun YabaWebViewHost(
                 }
             is YabaWebFeature.PdfExtractor ->
                 if (f.input != null) {
+                    onHostEvent(YabaWebHostEvent.InitialContentLoad(WebShellLoadResult.Error))
                     onHostEvent(
                         YabaWebHostEvent.PdfConverterFailure(
                             UnsupportedOperationException("WebView not available on desktop"),
@@ -74,6 +80,7 @@ actual fun YabaWebViewHost(
                 }
             is YabaWebFeature.EpubExtractor ->
                 if (f.input != null) {
+                    onHostEvent(YabaWebHostEvent.InitialContentLoad(WebShellLoadResult.Error))
                     onHostEvent(
                         YabaWebHostEvent.EpubConverterFailure(
                             UnsupportedOperationException("WebView not available on desktop"),

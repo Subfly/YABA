@@ -280,6 +280,7 @@ internal fun yabaWebViewClient(
 
 internal fun denyPermissionsWebChromeClient(
     onProgressChanged: (Int) -> Unit,
+    onConsoleMessage: (String) -> Unit = {},
 ): WebChromeClient = object : WebChromeClient() {
     override fun onProgressChanged(view: WebView?, newProgress: Int) {
         onProgressChanged(newProgress)
@@ -298,6 +299,7 @@ internal fun denyPermissionsWebChromeClient(
 
     override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
         if (consoleMessage != null) {
+            onConsoleMessage(consoleMessage.message())
             Log.d(
                 YABA_WEBVIEW_LOG_TAG,
                 "JS ${consoleMessage.messageLevel()} ${consoleMessage.sourceId()}:${consoleMessage.lineNumber()} ${consoleMessage.message()}",

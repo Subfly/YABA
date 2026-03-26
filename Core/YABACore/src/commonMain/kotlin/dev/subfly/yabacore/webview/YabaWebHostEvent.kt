@@ -27,4 +27,6 @@ sealed interface YabaWebHostEvent {
     data class EpubConverterSuccess(val result: WebEpubConverterResult) : YabaWebHostEvent
 
     data class EpubConverterFailure(val error: Throwable) : YabaWebHostEvent
+
+    data class InitialContentLoad(val result: WebShellLoadResult) : YabaWebHostEvent
 }
