@@ -83,34 +83,40 @@ body[data-yaba-page="editor"] .yaba-editor-container {
 }
 
 .yaba-editor-container .ProseMirror .yaba-inline-rich-item {
-	display: inline-flex;
-	align-items: center;
-	gap: 0.2rem;
-	padding: 0 0.1rem;
-	border-radius: 4px;
-	background: color-mix(in srgb, var(--yaba-primary) 14%, transparent);
+	display: inline;
+	background: transparent;
 	color: var(--yaba-primary);
+	text-decoration: underline;
+	text-underline-offset: 0.12em;
 	cursor: pointer;
-	user-select: none;
+	user-select: text;
 }
 
 .yaba-editor-container .ProseMirror .yaba-inline-rich-item::after {
 	content: "";
 	display: inline-block;
-	width: 0.85em;
-	height: 0.85em;
-	background-repeat: no-repeat;
-	background-position: center;
-	background-size: contain;
-	opacity: 0.85;
+	width: 0.86em;
+	height: 0.86em;
+	margin-left: 0.22em;
+	vertical-align: -0.12em;
+	background-color: currentColor;
+	opacity: 0.75;
+	mask-repeat: no-repeat;
+	mask-position: center;
+	mask-size: contain;
+	-webkit-mask-repeat: no-repeat;
+	-webkit-mask-position: center;
+	-webkit-mask-size: contain;
 }
 
 .yaba-editor-container .ProseMirror .yaba-inline-link::after {
-	background-image: url("../assets/link-square-01.svg");
+	mask-image: url("../assets/link-square-01.svg");
+	-webkit-mask-image: url("../assets/link-square-01.svg");
 }
 
 .yaba-editor-container .ProseMirror .yaba-inline-mention::after {
-	background-image: url("../assets/arrow-turn-backward.svg");
+	mask-image: url("../assets/arrow-turn-backward.svg");
+	-webkit-mask-image: url("../assets/arrow-turn-backward.svg");
 }
 
 .yaba-editor-container .ProseMirror strong {

@@ -2,6 +2,7 @@ import { Node, mergeAttributes } from "@tiptap/core"
 import { Plugin } from "@tiptap/pm/state"
 import { TextSelection } from "@tiptap/pm/state"
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model"
+import type { EditorView } from "@tiptap/pm/view"
 
 type InlineRange = { from: number; to: number; node: ProseMirrorNode }
 
@@ -24,6 +25,39 @@ function findInlineNodeRange(
   return null
 }
 
+function placeCaretAroundInlineNode(
+  view: EditorView,
+  pos: number,
+  node: ProseMirrorNode,
+  event: MouseEvent
+): boolean {
+  const target = event.target as HTMLElement | null
+  const inlineEl = target?.closest("[data-yaba-inline-link], [data-yaba-inline-mention]") as
+    | HTMLElement
+    | null
+  if (!inlineEl) return false
+
+  const rect = inlineEl.getBoundingClientRect()
+  const edgeZonePx = Math.min(12, rect.width * 0.22)
+  const clickX = event.clientX
+
+  let caretPos: number | null = null
+  if (clickX <= rect.left + edgeZonePx) {
+    caretPos = pos
+  } else if (clickX >= rect.right - edgeZonePx) {
+    caretPos = pos + node.nodeSize
+  }
+
+  if (caretPos == null) return false
+
+  const clamped = clampPos(view.state.doc.content.size, caretPos)
+  const tr = view.state.tr.setSelection(TextSelection.create(view.state.doc, clamped))
+  view.dispatch(tr)
+  view.focus()
+  event.preventDefault()
+  return true
+}
+
 const InlineLinkNodeName = "yabaInlineLink"
 const InlineMentionNodeName = "yabaInlineMention"
 
@@ -32,7 +66,7 @@ export const YabaInlineLinkNode = Node.create({
   group: "inline",
   inline: true,
   atom: true,
-  selectable: true,
+  selectable: false,
 
   addAttributes() {
     return {
@@ -107,8 +141,11 @@ export const YabaInlineLinkNode = Node.create({
     return [
       new Plugin({
         props: {
-          handleClickOn(_view, pos, node, _nodePos, event) {
+          handleClickOn(view, pos, node, _nodePos, event) {
             if (node.type.name !== InlineLinkNodeName) return false
+            if (event instanceof MouseEvent && placeCaretAroundInlineNode(view, pos, node, event)) {
+              return true
+            }
             const text = encodeURIComponent(String(node.attrs.text || ""))
             const url = encodeURIComponent(String(node.attrs.url || ""))
             event.preventDefault()
@@ -126,7 +163,7 @@ export const YabaInlineMentionNode = Node.create({
   group: "inline",
   inline: true,
   atom: true,
-  selectable: true,
+  selectable: false,
 
   addAttributes() {
     return {
@@ -223,8 +260,11 @@ export const YabaInlineMentionNode = Node.create({
     return [
       new Plugin({
         props: {
-          handleClickOn(_view, pos, node, _nodePos, event) {
+          handleClickOn(view, pos, node, _nodePos, event) {
             if (node.type.name !== InlineMentionNodeName) return false
+            if (event instanceof MouseEvent && placeCaretAroundInlineNode(view, pos, node, event)) {
+              return true
+            }
             const text = encodeURIComponent(String(node.attrs.text || ""))
             const bookmarkId = encodeURIComponent(String(node.attrs.bookmarkId || ""))
             const bookmarkKindCode = Number(node.attrs.bookmarkKindCode || 0)
