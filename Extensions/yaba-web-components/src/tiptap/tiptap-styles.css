@@ -2,7 +2,8 @@
 .yaba-editor-container {
 	width: 100%;
 	height: 100%;
-	overflow: auto;
+	overflow-y: auto;
+	overflow-x: hidden;
 	padding: 1rem;
 	font-family: var(--yaba-font-family);
 	font-size: 16px;
@@ -338,10 +339,36 @@ body[data-yaba-page="editor"]
 	color: #e06c75;
 }
 
+/* Table container from TipTap table extension: keep large/nested tables scrollable in both axes. */
+.yaba-editor-container .ProseMirror .tableWrapper {
+	margin: 0.5em 0;
+	max-width: 100%;
+	max-height: min(55vh, 420px);
+	overflow-x: auto;
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
 .yaba-editor-container .ProseMirror table {
 	border-collapse: collapse;
-	width: 100%;
+	display: block;
+	width: auto;
+	max-width: 100%;
+	max-height: min(55vh, 420px);
+	overflow-x: auto;
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
 	margin: 0.5em 0;
+}
+
+/* Keep real table layout inside block-scroll fallback. */
+.yaba-editor-container .ProseMirror table > thead,
+.yaba-editor-container .ProseMirror table > tbody,
+.yaba-editor-container .ProseMirror table > tfoot {
+	display: table;
+	width: max-content;
+	min-width: 100%;
+	border-collapse: collapse;
 }
 
 .yaba-editor-container .ProseMirror th,
@@ -349,6 +376,8 @@ body[data-yaba-page="editor"]
 	border: 1px solid var(--yaba-outline);
 	padding: 0.5em 0.75em;
 	text-align: left;
+	min-width: 7rem;
+	vertical-align: top;
 }
 
 .yaba-editor-container .ProseMirror th {
