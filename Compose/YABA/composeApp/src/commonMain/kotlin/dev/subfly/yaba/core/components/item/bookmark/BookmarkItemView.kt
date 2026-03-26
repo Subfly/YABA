@@ -41,8 +41,8 @@ import dev.subfly.yaba.core.components.item.base.BaseBookmarkItemView
 import dev.subfly.yaba.core.components.item.base.BookmarkOptionsMenu
 import dev.subfly.yaba.core.navigation.alert.DeletionState
 import dev.subfly.yaba.core.navigation.alert.DeletionType
-import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
 import dev.subfly.yaba.core.navigation.creation.DocmarkCreationRoute
+import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
 import dev.subfly.yaba.core.navigation.creation.ImagemarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.LinkmarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.NotemarkCreationRoute
@@ -81,6 +81,8 @@ import kotlin.uuid.ExperimentalUuidApi
  * @param onClick Callback when the item is clicked
  * @param onDeleteBookmark Callback when the bookmark should be deleted
  * @param onShareBookmark Callback when the bookmark should be shared
+ * @param isInSelectionMode When true, disables swipe actions, overflow menus, and long-press / secondary-click
+ *   affordances so the row is selection-only (tap still uses [onClick]).
  * @param containerColor The background color for the list item container
  */
 @Composable
@@ -92,6 +94,7 @@ fun BookmarkItemView(
     imageFilePath: String? = model.localImagePath,
     iconFilePath: String? = model.localIconPath,
     isAddedToSelection: Boolean = false,
+    isInSelectionMode: Boolean = false,
     onClick: () -> Unit = {},
     onDeleteBookmark: (BookmarkUiModel) -> Unit = {},
     onShareBookmark: (BookmarkUiModel) -> Unit = {},
@@ -117,75 +120,80 @@ fun BookmarkItemView(
     val deleteText = stringResource(Res.string.delete)
 
     // Create menu actions for this bookmark
-    val menuActions = remember(model.id, editText, moveText, shareText, deleteText) {
-        listOf(
-            BookmarkMenuAction(
-                key = "edit_${model.id}",
-                icon = "edit-02",
-                text = editText,
-                color = YabaColor.ORANGE,
-                onClick = {
-                    when (model.kind) {
-                        BookmarkKind.LINK -> {
-                            creationNavigator.add(LinkmarkCreationRoute(bookmarkId = model.id))
-                        }
+    val menuActions =
+        remember(model.id, editText, moveText, shareText, deleteText, isInSelectionMode) {
+            if (isInSelectionMode) {
+                emptyList()
+            } else {
+                listOf(
+                    BookmarkMenuAction(
+                        key = "edit_${model.id}",
+                        icon = "edit-02",
+                        text = editText,
+                        color = YabaColor.ORANGE,
+                        onClick = {
+                            when (model.kind) {
+                                BookmarkKind.LINK -> {
+                                    creationNavigator.add(LinkmarkCreationRoute(bookmarkId = model.id))
+                                }
 
-                        BookmarkKind.NOTE -> {
-                            creationNavigator.add(NotemarkCreationRoute(bookmarkId = model.id))
-                        }
+                                BookmarkKind.NOTE -> {
+                                    creationNavigator.add(NotemarkCreationRoute(bookmarkId = model.id))
+                                }
 
-                        BookmarkKind.IMAGE -> {
-                            creationNavigator.add(ImagemarkCreationRoute(bookmarkId = model.id))
-                        }
+                                BookmarkKind.IMAGE -> {
+                                    creationNavigator.add(ImagemarkCreationRoute(bookmarkId = model.id))
+                                }
 
-                        BookmarkKind.FILE -> {
-                            creationNavigator.add(DocmarkCreationRoute(bookmarkId = model.id))
+                                BookmarkKind.FILE -> {
+                                    creationNavigator.add(DocmarkCreationRoute(bookmarkId = model.id))
+                                }
+                            }
+                            appStateManager.onShowCreationContent()
                         }
-                    }
-                    appStateManager.onShowCreationContent()
-                }
-            ),
-            BookmarkMenuAction(
-                key = "move_${model.id}",
-                icon = "arrow-move-up-right",
-                text = moveText,
-                color = YabaColor.TEAL,
-                onClick = {
-                    creationNavigator.add(
-                        FolderSelectionRoute(
-                            mode = FolderSelectionMode.BOOKMARKS_MOVE,
-                            contextFolderId = model.folderId,
-                            contextBookmarkIds = listOf(model.id),
-                        )
-                    )
-                    appStateManager.onShowCreationContent()
-                }
-            ),
-            BookmarkMenuAction(
-                key = "share_${model.id}",
-                icon = "share-03",
-                text = shareText,
-                color = YabaColor.INDIGO,
-                onClick = { onShareBookmark(model) }
-            ),
-            BookmarkMenuAction(
-                key = "delete_${model.id}",
-                icon = "delete-02",
-                text = deleteText,
-                color = YabaColor.RED,
-                isDangerous = true,
-                onClick = {
-                    deletionDialogManager.send(
-                        DeletionState(
-                            deletionType = DeletionType.BOOKMARK,
-                            bookmarkToBeDeleted = model,
-                            onConfirm = { onDeleteBookmark(model) },
-                        )
-                    )
-                }
-            ),
-        )
-    }
+                    ),
+                    BookmarkMenuAction(
+                        key = "move_${model.id}",
+                        icon = "arrow-move-up-right",
+                        text = moveText,
+                        color = YabaColor.TEAL,
+                        onClick = {
+                            creationNavigator.add(
+                                FolderSelectionRoute(
+                                    mode = FolderSelectionMode.BOOKMARKS_MOVE,
+                                    contextFolderId = model.folderId,
+                                    contextBookmarkIds = listOf(model.id),
+                                )
+                            )
+                            appStateManager.onShowCreationContent()
+                        }
+                    ),
+                    BookmarkMenuAction(
+                        key = "share_${model.id}",
+                        icon = "share-03",
+                        text = shareText,
+                        color = YabaColor.INDIGO,
+                        onClick = { onShareBookmark(model) }
+                    ),
+                    BookmarkMenuAction(
+                        key = "delete_${model.id}",
+                        icon = "delete-02",
+                        text = deleteText,
+                        color = YabaColor.RED,
+                        isDangerous = true,
+                        onClick = {
+                            deletionDialogManager.send(
+                                DeletionState(
+                                    deletionType = DeletionType.BOOKMARK,
+                                    bookmarkToBeDeleted = model,
+                                    onConfirm = { onDeleteBookmark(model) },
+                                )
+                            )
+                        }
+                    ),
+                )
+            }
+        }
 
     // Swipe actions (only for list view)
     val leftSwipeActions = remember(model.id) {
@@ -263,8 +271,12 @@ fun BookmarkItemView(
         appearance = appearance,
         cardImageSizing = cardImageSizing,
         menuActions = menuActions,
-        leftSwipeActions = if (appearance == BookmarkAppearance.LIST) leftSwipeActions else emptyList(),
-        rightSwipeActions = if (appearance == BookmarkAppearance.LIST) rightSwipeActions else emptyList(),
+        leftSwipeActions = if (appearance == BookmarkAppearance.LIST && !isInSelectionMode) {
+            leftSwipeActions
+        } else { emptyList() },
+        rightSwipeActions = if (appearance == BookmarkAppearance.LIST && !isInSelectionMode) {
+            rightSwipeActions
+        } else { emptyList() },
         isOptionsExpanded = isOptionsExpanded,
         onDismissOptions = { isOptionsExpanded = false },
     ) {
@@ -275,6 +287,7 @@ fun BookmarkItemView(
                     folderColor = folderColor,
                     imageFilePath = imageFilePath,
                     isAddedToSelection = isAddedToSelection,
+                    isInSelectionMode = isInSelectionMode,
                     onClick = onClick,
                     onLongClick = { isOptionsExpanded = true },
                     index = index,
@@ -292,6 +305,7 @@ fun BookmarkItemView(
                             imageFilePath = imageFilePath,
                             iconFilePath = iconFilePath,
                             isAddedToSelection = isAddedToSelection,
+                            isInSelectionMode = isInSelectionMode,
                             menuActions = menuActions,
                             onClick = onClick,
                             onLongClick = { isOptionsExpanded = true },
@@ -305,6 +319,7 @@ fun BookmarkItemView(
                             imageFilePath = imageFilePath,
                             iconFilePath = iconFilePath,
                             isAddedToSelection = isAddedToSelection,
+                            isInSelectionMode = isInSelectionMode,
                             menuActions = menuActions,
                             onClick = onClick,
                             onLongClick = { isOptionsExpanded = true },
@@ -319,6 +334,7 @@ fun BookmarkItemView(
                     folderColor = folderColor,
                     imageFilePath = imageFilePath,
                     isAddedToSelection = isAddedToSelection,
+                    isInSelectionMode = isInSelectionMode,
                     onClick = onClick,
                     onLongClick = { isOptionsExpanded = true },
                 )
@@ -338,6 +354,7 @@ private fun ListItemContent(
     folderColor: YabaColor,
     imageFilePath: String?,
     isAddedToSelection: Boolean,
+    isInSelectionMode: Boolean,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
     index: Int,
@@ -347,9 +364,18 @@ private fun ListItemContent(
     SegmentedListItem(
         modifier = Modifier
             .clip(RoundedCornerShape(12.dp))
-            .yabaRightClick(onRightClick = onLongClick),
+            .then(
+                if (!isInSelectionMode) {
+                    Modifier.yabaRightClick(onRightClick = onLongClick)
+                } else {
+                    Modifier
+                },
+            ),
         onClick = onClick,
-        onLongClick = onLongClick,
+        onLongClick = {
+            if (isInSelectionMode.not())
+                onLongClick()
+        },
         colors = ListItemDefaults.colors(containerColor = containerColor),
         shapes = ListItemDefaults.segmentedShapes(index = index, count = count),
         content = {
@@ -403,6 +429,7 @@ private fun CardBigItemContent(
     imageFilePath: String?,
     iconFilePath: String?,
     isAddedToSelection: Boolean,
+    isInSelectionMode: Boolean,
     menuActions: List<BookmarkMenuAction>,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
@@ -412,7 +439,7 @@ private fun CardBigItemContent(
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
             .combinedClickable(
-                onLongClick = onLongClick,
+                onLongClick = if (isInSelectionMode) null else onLongClick,
                 onClick = onClick,
             ),
         shape = RoundedCornerShape(12.dp),
@@ -482,10 +509,12 @@ private fun CardBigItemContent(
                             .clip(RoundedCornerShape(4.dp)),
                         filePath = iconFilePath
                     )
-                    CardOptionsButton(
-                        menuActions = menuActions,
-                        folderColor = folderColor,
-                    )
+                    if (menuActions.isNotEmpty()) {
+                        CardOptionsButton(
+                            menuActions = menuActions,
+                            folderColor = folderColor,
+                        )
+                    }
                 }
             }
         }
@@ -504,6 +533,7 @@ private fun CardSmallItemContent(
     imageFilePath: String?,
     iconFilePath: String?,
     isAddedToSelection: Boolean,
+    isInSelectionMode: Boolean,
     menuActions: List<BookmarkMenuAction>,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
@@ -513,7 +543,7 @@ private fun CardSmallItemContent(
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
             .combinedClickable(
-                onLongClick = onLongClick,
+                onLongClick = if (isInSelectionMode) null else onLongClick,
                 onClick = onClick,
             ),
         shape = RoundedCornerShape(12.dp),
@@ -586,10 +616,12 @@ private fun CardSmallItemContent(
                             .clip(RoundedCornerShape(8.dp)),
                         filePath = iconFilePath
                     )
-                    CardOptionsButton(
-                        menuActions = menuActions,
-                        folderColor = folderColor,
-                    )
+                    if (menuActions.isNotEmpty()) {
+                        CardOptionsButton(
+                            menuActions = menuActions,
+                            folderColor = folderColor,
+                        )
+                    }
                 }
             }
         }
@@ -608,6 +640,7 @@ private fun GridItemContent(
     folderColor: YabaColor,
     imageFilePath: String?,
     isAddedToSelection: Boolean,
+    isInSelectionMode: Boolean,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
 ) {
@@ -616,7 +649,7 @@ private fun GridItemContent(
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
             .combinedClickable(
-                onLongClick = onLongClick,
+                onLongClick = if (isInSelectionMode) null else onLongClick,
                 onClick = onClick,
             ),
         shape = RoundedCornerShape(12.dp),

@@ -7,6 +7,8 @@ package dev.subfly.yabacore.webview
 interface WebViewEditorBridge : WebViewReaderBridge {
     override suspend fun getDocumentJson(): String
 
+    suspend fun getSelectedText(): String
+
     suspend fun setEditable(editable: Boolean)
 
     suspend fun setPlaceholder(placeholder: String)

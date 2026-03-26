@@ -25,6 +25,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import dev.subfly.yabacore.webview.WebLoadState
 import dev.subfly.yabacore.webview.WebViewEditorBridge
 import dev.subfly.yabacore.webview.WebViewReaderBridge
+import dev.subfly.yabacore.webview.InlineLinkTapEvent
+import dev.subfly.yabacore.webview.InlineMentionTapEvent
 import dev.subfly.yabacore.webview.MathTapEvent
 import dev.subfly.yabacore.webview.YabaWebBridgeScripts
 import dev.subfly.yabacore.webview.YabaWebFeature
@@ -46,6 +48,8 @@ internal fun YabaReadableViewerFeatureHost(
     onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit,
     onReaderBridgeReady: (WebViewReaderBridge?) -> Unit,
     onAnnotationTap: (String) -> Unit,
+    onInlineLinkTap: (InlineLinkTapEvent) -> Unit,
+    onInlineMentionTap: (InlineMentionTapEvent) -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -228,6 +232,8 @@ internal fun YabaReadableViewerFeatureHost(
                     onUrlClick = onUrlClick,
                     onAnnotationTap = onAnnotationTap,
                     onMathTap = null,
+                    onInlineLinkTap = onInlineLinkTap,
+                    onInlineMentionTap = onInlineMentionTap,
                 )
             }
             if (rendererCrashed) return@AndroidView
@@ -255,6 +261,8 @@ internal fun YabaEditorFeatureHost(
     onEditorBridgeReady: (WebViewEditorBridge?) -> Unit,
     onAnnotationTap: (String) -> Unit,
     onMathTap: (MathTapEvent) -> Unit,
+    onInlineLinkTap: (InlineLinkTapEvent) -> Unit,
+    onInlineMentionTap: (InlineMentionTapEvent) -> Unit,
 ) {
     val context = LocalContext.current
     val onHostEventState = rememberUpdatedState(onHostEvent)
@@ -424,6 +432,8 @@ internal fun YabaEditorFeatureHost(
                     onUrlClick = onUrlClick,
                     onAnnotationTap = onAnnotationTap,
                     onMathTap = onMathTap,
+                    onInlineLinkTap = onInlineLinkTap,
+                    onInlineMentionTap = onInlineMentionTap,
                 )
             }
             if (rendererCrashed) return@AndroidView
@@ -519,6 +529,8 @@ internal fun YabaHtmlConverterFeatureHost(
                     onUrlClick = null,
                     onAnnotationTap = null,
                     onMathTap = null,
+                    onInlineLinkTap = null,
+                    onInlineMentionTap = null,
                 )
             }
             if (rendererCrashed) return@AndroidView
@@ -611,6 +623,8 @@ internal fun YabaPdfExtractorFeatureHost(
                     onUrlClick = null,
                     onAnnotationTap = null,
                     onMathTap = null,
+                    onInlineLinkTap = null,
+                    onInlineMentionTap = null,
                 )
             }
             if (rendererCrashed) return@AndroidView
@@ -634,6 +648,8 @@ internal fun YabaPdfViewerFeatureHost(
     onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit,
     onReaderBridgeReady: (WebViewReaderBridge?) -> Unit,
     onAnnotationTap: (String) -> Unit,
+    onInlineLinkTap: (InlineLinkTapEvent) -> Unit,
+    onInlineMentionTap: (InlineMentionTapEvent) -> Unit,
 ) {
     val context = LocalContext.current
     val onHostEventState = rememberUpdatedState(onHostEvent)
@@ -818,6 +834,8 @@ internal fun YabaPdfViewerFeatureHost(
                     onUrlClick = null,
                     onAnnotationTap = onAnnotationTap,
                     onMathTap = null,
+                    onInlineLinkTap = onInlineLinkTap,
+                    onInlineMentionTap = onInlineMentionTap,
                 )
             }
             if (rendererCrashed) return@AndroidView
@@ -913,6 +931,8 @@ internal fun YabaEpubExtractorFeatureHost(
                     onUrlClick = null,
                     onAnnotationTap = null,
                     onMathTap = null,
+                    onInlineLinkTap = null,
+                    onInlineMentionTap = null,
                 )
             }
             if (rendererCrashed) return@AndroidView
@@ -936,6 +956,8 @@ internal fun YabaEpubViewerFeatureHost(
     onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit,
     onReaderBridgeReady: (WebViewReaderBridge?) -> Unit,
     onAnnotationTap: (String) -> Unit,
+    onInlineLinkTap: (InlineLinkTapEvent) -> Unit,
+    onInlineMentionTap: (InlineMentionTapEvent) -> Unit,
 ) {
     val context = LocalContext.current
     val onHostEventState = rememberUpdatedState(onHostEvent)
@@ -1120,6 +1142,8 @@ internal fun YabaEpubViewerFeatureHost(
                     onUrlClick = null,
                     onAnnotationTap = onAnnotationTap,
                     onMathTap = null,
+                    onInlineLinkTap = onInlineLinkTap,
+                    onInlineMentionTap = onInlineMentionTap,
                 )
             }
             if (rendererCrashed) return@AndroidView

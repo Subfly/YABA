@@ -72,6 +72,46 @@ object YabaEditorCommands {
         return """{"type":"updateBlockMath","latex":"$escaped","pos":$p}"""
     }
 
+    fun insertLinkPayload(text: String, url: String): String {
+        val escapedText = escapeJsonString(text)
+        val escapedUrl = escapeJsonString(url)
+        return """{"type":"insertLink","text":"$escapedText","url":"$escapedUrl"}"""
+    }
+
+    fun updateLinkPayload(text: String, url: String, pos: Int): String {
+        val escapedText = escapeJsonString(text)
+        val escapedUrl = escapeJsonString(url)
+        val p = pos.coerceAtLeast(0)
+        return """{"type":"updateLink","text":"$escapedText","url":"$escapedUrl","pos":$p}"""
+    }
+
+    fun removeLinkPayload(pos: Int): String {
+        val p = pos.coerceAtLeast(0)
+        return """{"type":"removeLink","pos":$p}"""
+    }
+
+    fun insertMentionPayload(text: String, bookmarkId: String, bookmarkKindCode: Int, bookmarkLabel: String): String {
+        val escapedText = escapeJsonString(text)
+        val escapedBookmarkId = escapeJsonString(bookmarkId)
+        val escapedBookmarkLabel = escapeJsonString(bookmarkLabel)
+        val kindCode = bookmarkKindCode.coerceAtLeast(0)
+        return """{"type":"insertMention","text":"$escapedText","bookmarkId":"$escapedBookmarkId","bookmarkKindCode":$kindCode,"bookmarkLabel":"$escapedBookmarkLabel"}"""
+    }
+
+    fun updateMentionPayload(text: String, bookmarkId: String, bookmarkKindCode: Int, bookmarkLabel: String, pos: Int): String {
+        val escapedText = escapeJsonString(text)
+        val escapedBookmarkId = escapeJsonString(bookmarkId)
+        val escapedBookmarkLabel = escapeJsonString(bookmarkLabel)
+        val kindCode = bookmarkKindCode.coerceAtLeast(0)
+        val p = pos.coerceAtLeast(0)
+        return """{"type":"updateMention","text":"$escapedText","bookmarkId":"$escapedBookmarkId","bookmarkKindCode":$kindCode,"bookmarkLabel":"$escapedBookmarkLabel","pos":$p}"""
+    }
+
+    fun removeMentionPayload(pos: Int): String {
+        val p = pos.coerceAtLeast(0)
+        return """{"type":"removeMention","pos":$p}"""
+    }
+
     private fun escapeJsonString(text: String): String =
         buildString {
             for (c in text) {

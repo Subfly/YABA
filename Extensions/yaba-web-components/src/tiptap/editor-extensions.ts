@@ -21,6 +21,7 @@ import type { Extensions } from "@tiptap/core"
 import { AnnotationDecorationsExtension } from "./extensions/annotation-decorations"
 import { YabaAnnotationMark } from "./extensions/yaba-annotation-mark"
 import { CodeBlockEnterBehaviorExtension } from "./extensions/code-block-enter-behavior"
+import { YabaInlineLinkNode, YabaInlineMentionNode } from "./extensions/inline-rich-items"
 
 const lowlight = createLowlight(all)
 let noteEditorPlaceholderText = ""
@@ -45,6 +46,8 @@ function createSharedBaseExtensions(): Extensions {
         class: "yaba-editor-link",
       },
     }),
+    YabaInlineLinkNode,
+    YabaInlineMentionNode,
     Image.configure({
       inline: false,
       allowBase64: true,

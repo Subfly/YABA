@@ -31,11 +31,19 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.navigation3.runtime.NavKey
+import dev.subfly.yaba.core.navigation.creation.NotemarkLinkActionSheetRoute
+import dev.subfly.yaba.core.navigation.creation.NotemarkLinkSheetRoute
+import dev.subfly.yaba.core.navigation.creation.NotemarkMentionActionSheetRoute
+import dev.subfly.yaba.core.navigation.creation.NotemarkMentionSheetRoute
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.webview.YabaWebView
 import dev.subfly.yaba.core.navigation.creation.ColorSelectionRoute
 import dev.subfly.yaba.core.navigation.creation.NotemarkMathSheetRoute
 import dev.subfly.yaba.core.navigation.creation.NotemarkTableCreationRoute
+import dev.subfly.yaba.core.navigation.main.DocDetailRoute
+import dev.subfly.yaba.core.navigation.main.ImageDetailRoute
+import dev.subfly.yaba.core.navigation.main.LinkDetailRoute
+import dev.subfly.yaba.core.navigation.main.NoteDetailRoute
 import dev.subfly.yaba.ui.detail.bookmark.components.BookmarkDetailContentTopBar
 import dev.subfly.yaba.ui.detail.bookmark.components.bookmarkFolderAccentColor
 import dev.subfly.yaba.ui.detail.bookmark.note.components.NotemarkContentDropdownMenu
@@ -45,14 +53,21 @@ import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
+import dev.subfly.yaba.util.NotemarkInlineAction
+import dev.subfly.yaba.util.NotemarkInlineActionChoice
+import dev.subfly.yaba.util.NotemarkLinkSheetResult
 import dev.subfly.yaba.util.NotemarkMathSheetResult
+import dev.subfly.yaba.util.NotemarkMentionSheetResult
 import dev.subfly.yaba.util.NotemarkTableSheetResult
 import dev.subfly.yaba.util.ResultStoreKeys
 import dev.subfly.yaba.util.rememberUrlLauncher
+import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.ReaderPreferences
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.detail.notemark.NotemarkDetailEvent
 import dev.subfly.yabacore.state.detail.notemark.NotemarkDetailUIState
+import dev.subfly.yabacore.webview.InlineLinkTapEvent
+import dev.subfly.yabacore.webview.InlineMentionTapEvent
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.webview.WebComponentUris
 import dev.subfly.yabacore.webview.EditorFormattingState
@@ -101,6 +116,8 @@ internal fun NotemarkContentLayout(
     var isMenuExpanded by remember { mutableStateOf(false) }
     var isCreationSheetOpening by remember { mutableStateOf(false) }
     var previousShowCreationContent by remember { mutableStateOf(false) }
+    var pendingLinkTap by remember { mutableStateOf<InlineLinkTapEvent?>(null) }
+    var pendingMentionTap by remember { mutableStateOf<InlineMentionTapEvent?>(null) }
 
     suspend fun openCreationSheet(route: NavKey) {
         if (appState.showCreationContent || isCreationSheetOpening) return
@@ -112,6 +129,16 @@ internal fun NotemarkContentLayout(
         } finally {
             isCreationSheetOpening = false
         }
+    }
+
+    fun openBookmarkByKind(kindCode: Int, bookmarkId: String) {
+        val route = when (BookmarkKind.fromCode(kindCode)) {
+            BookmarkKind.LINK -> LinkDetailRoute(bookmarkId = bookmarkId)
+            BookmarkKind.NOTE -> NoteDetailRoute(bookmarkId = bookmarkId)
+            BookmarkKind.IMAGE -> ImageDetailRoute(bookmarkId = bookmarkId)
+            BookmarkKind.FILE -> DocDetailRoute(bookmarkId = bookmarkId)
+        }
+        navigator.add(route)
     }
 
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
@@ -169,6 +196,125 @@ internal fun NotemarkContentLayout(
                 } else {
                     bridge.dispatch(YabaEditorCommands.insertInlineMathPayload(r.latex))
                 }
+            }
+        }
+    }
+
+    LaunchedEffect(resultStore.getResult(ResultStoreKeys.NOTEMARK_LINK_INSERT), editorBridge) {
+        val r = resultStore.getResult<NotemarkLinkSheetResult>(ResultStoreKeys.NOTEMARK_LINK_INSERT)
+            ?: return@LaunchedEffect
+        val bridge = editorBridge ?: return@LaunchedEffect
+        resultStore.removeResult(ResultStoreKeys.NOTEMARK_LINK_INSERT)
+        when {
+            r.action == NotemarkInlineAction.REMOVE && r.editPos != null -> {
+                bridge.dispatch(YabaEditorCommands.removeLinkPayload(r.editPos))
+            }
+            r.editPos != null -> {
+                bridge.dispatch(YabaEditorCommands.updateLinkPayload(r.text, r.url, r.editPos))
+            }
+            else -> {
+                bridge.dispatch(YabaEditorCommands.insertLinkPayload(r.text, r.url))
+            }
+        }
+        bridge.focus()
+    }
+
+    LaunchedEffect(resultStore.getResult(ResultStoreKeys.NOTEMARK_MENTION_INSERT), editorBridge) {
+        val r = resultStore.getResult<NotemarkMentionSheetResult>(ResultStoreKeys.NOTEMARK_MENTION_INSERT)
+            ?: return@LaunchedEffect
+        val bridge = editorBridge ?: return@LaunchedEffect
+        resultStore.removeResult(ResultStoreKeys.NOTEMARK_MENTION_INSERT)
+        when {
+            r.action == NotemarkInlineAction.REMOVE && r.editPos != null -> {
+                bridge.dispatch(YabaEditorCommands.removeMentionPayload(r.editPos))
+            }
+            r.editPos != null -> {
+                bridge.dispatch(
+                    YabaEditorCommands.updateMentionPayload(
+                        text = r.text,
+                        bookmarkId = r.bookmarkId,
+                        bookmarkKindCode = r.bookmarkKindCode,
+                        bookmarkLabel = r.bookmarkLabel,
+                        pos = r.editPos,
+                    ),
+                )
+            }
+            else -> {
+                bridge.dispatch(
+                    YabaEditorCommands.insertMentionPayload(
+                        text = r.text,
+                        bookmarkId = r.bookmarkId,
+                        bookmarkKindCode = r.bookmarkKindCode,
+                        bookmarkLabel = r.bookmarkLabel,
+                    ),
+                )
+            }
+        }
+        bridge.focus()
+    }
+
+    LaunchedEffect(resultStore.getResult(ResultStoreKeys.NOTEMARK_LINK_ACTION), pendingLinkTap, editorBridge) {
+        val action = resultStore.getResult<NotemarkInlineActionChoice>(ResultStoreKeys.NOTEMARK_LINK_ACTION)
+            ?: return@LaunchedEffect
+        val tap = pendingLinkTap ?: return@LaunchedEffect
+        if (action == NotemarkInlineActionChoice.REMOVE && editorBridge == null) {
+            return@LaunchedEffect
+        }
+        resultStore.removeResult(ResultStoreKeys.NOTEMARK_LINK_ACTION)
+        when (action) {
+            NotemarkInlineActionChoice.OPEN -> {
+                openUrl(tap.url)
+                pendingLinkTap = null
+            }
+            NotemarkInlineActionChoice.EDIT -> {
+                openCreationSheet(
+                    NotemarkLinkSheetRoute(
+                        initialText = tap.text,
+                        initialUrl = tap.url,
+                        isEdit = true,
+                        editPos = tap.documentPos,
+                    ),
+                )
+                pendingLinkTap = null
+            }
+            NotemarkInlineActionChoice.REMOVE -> {
+                val bridge = editorBridge ?: return@LaunchedEffect
+                bridge.dispatch(YabaEditorCommands.removeLinkPayload(tap.documentPos))
+                pendingLinkTap = null
+                bridge.focus()
+            }
+        }
+    }
+
+    LaunchedEffect(resultStore.getResult(ResultStoreKeys.NOTEMARK_MENTION_ACTION), pendingMentionTap, editorBridge) {
+        val action = resultStore.getResult<NotemarkInlineActionChoice>(ResultStoreKeys.NOTEMARK_MENTION_ACTION)
+            ?: return@LaunchedEffect
+        val tap = pendingMentionTap ?: return@LaunchedEffect
+        if (action == NotemarkInlineActionChoice.REMOVE && editorBridge == null) {
+            return@LaunchedEffect
+        }
+        resultStore.removeResult(ResultStoreKeys.NOTEMARK_MENTION_ACTION)
+        when (action) {
+            NotemarkInlineActionChoice.OPEN -> {
+                openBookmarkByKind(tap.bookmarkKindCode, tap.bookmarkId)
+                pendingMentionTap = null
+            }
+            NotemarkInlineActionChoice.EDIT -> {
+                openCreationSheet(
+                    NotemarkMentionSheetRoute(
+                        initialText = tap.text,
+                        initialBookmarkId = tap.bookmarkId,
+                        isEdit = true,
+                        editPos = tap.documentPos,
+                    ),
+                )
+                pendingMentionTap = null
+            }
+            NotemarkInlineActionChoice.REMOVE -> {
+                val bridge = editorBridge ?: return@LaunchedEffect
+                bridge.dispatch(YabaEditorCommands.removeMentionPayload(tap.documentPos))
+                pendingMentionTap = null
+                bridge.focus()
             }
         }
     }
@@ -265,6 +411,31 @@ internal fun NotemarkContentLayout(
                                 )
                             }
                         },
+                        onInlineLinkTap = { ev ->
+                            pendingLinkTap = ev
+                            scope.launch {
+                                openCreationSheet(
+                                    NotemarkLinkActionSheetRoute(
+                                        text = ev.text,
+                                        url = ev.url,
+                                        editPos = ev.documentPos,
+                                    ),
+                                )
+                            }
+                        },
+                        onInlineMentionTap = { ev ->
+                            pendingMentionTap = ev
+                            scope.launch {
+                                openCreationSheet(
+                                    NotemarkMentionActionSheetRoute(
+                                        text = ev.text,
+                                        bookmarkId = ev.bookmarkId,
+                                        bookmarkKindCode = ev.bookmarkKindCode,
+                                        editPos = ev.documentPos,
+                                    ),
+                                )
+                            }
+                        },
                     )
                 }
                 if (state.isLoading) {
@@ -314,6 +485,26 @@ internal fun NotemarkContentLayout(
                                     initialLatex = "",
                                     isEdit = false,
                                     editPos = null,
+                                ),
+                            )
+                        }
+                    },
+                    onOpenLinkSheet = {
+                        scope.launch {
+                            val selectedText = editorBridge?.getSelectedText().orEmpty()
+                            openCreationSheet(
+                                NotemarkLinkSheetRoute(
+                                    initialText = selectedText,
+                                ),
+                            )
+                        }
+                    },
+                    onOpenMentionSheet = {
+                        scope.launch {
+                            val selectedText = editorBridge?.getSelectedText().orEmpty()
+                            openCreationSheet(
+                                NotemarkMentionSheetRoute(
+                                    initialText = selectedText,
                                 ),
                             )
                         }

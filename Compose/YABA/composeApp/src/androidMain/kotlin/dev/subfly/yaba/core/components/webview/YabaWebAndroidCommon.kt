@@ -21,6 +21,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.json.JSONTokener
 import kotlin.coroutines.resume
+import dev.subfly.yabacore.webview.InlineLinkTapEvent
+import dev.subfly.yabacore.webview.InlineMentionTapEvent
 import dev.subfly.yabacore.webview.MathTapEvent
 import dev.subfly.yabacore.webview.YabaWebBridgeScripts
 
@@ -171,6 +173,8 @@ internal fun yabaWebViewClient(
     onUrlClick: ((String) -> Boolean)?,
     onAnnotationTap: ((String) -> Unit)?,
     onMathTap: ((MathTapEvent) -> Unit)?,
+    onInlineLinkTap: ((InlineLinkTapEvent) -> Unit)?,
+    onInlineMentionTap: ((InlineMentionTapEvent) -> Unit)?,
 ): WebViewClient = object : WebViewClient() {
     override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
         onPageStarted()
@@ -256,6 +260,50 @@ internal fun yabaWebViewClient(
                         isBlock = kind == "block",
                         documentPos = pos,
                         latex = latex,
+                    ),
+                )
+            }
+            return true
+        }
+        if (url.startsWith(YabaWebBridgeScripts.INLINE_LINK_TAP_SCHEME_PREFIX)) {
+            val u = try {
+                url.toUri()
+            } catch (_: Exception) {
+                return true
+            }
+            val pos = u.getQueryParameter("pos")?.toIntOrNull()
+            val text = u.getQueryParameter("text").orEmpty()
+            val targetUrl = u.getQueryParameter("url").orEmpty()
+            if (pos != null && targetUrl.isNotBlank()) {
+                onInlineLinkTap?.invoke(
+                    InlineLinkTapEvent(
+                        documentPos = pos,
+                        text = text,
+                        url = targetUrl,
+                    ),
+                )
+            }
+            return true
+        }
+        if (url.startsWith(YabaWebBridgeScripts.INLINE_MENTION_TAP_SCHEME_PREFIX)) {
+            val u = try {
+                url.toUri()
+            } catch (_: Exception) {
+                return true
+            }
+            val pos = u.getQueryParameter("pos")?.toIntOrNull()
+            val text = u.getQueryParameter("text").orEmpty()
+            val bookmarkId = u.getQueryParameter("bookmarkId").orEmpty()
+            val bookmarkKindCode = u.getQueryParameter("bookmarkKindCode")?.toIntOrNull() ?: 0
+            val bookmarkLabel = u.getQueryParameter("bookmarkLabel").orEmpty()
+            if (pos != null && bookmarkId.isNotBlank()) {
+                onInlineMentionTap?.invoke(
+                    InlineMentionTapEvent(
+                        documentPos = pos,
+                        text = text,
+                        bookmarkId = bookmarkId,
+                        bookmarkKindCode = bookmarkKindCode,
+                        bookmarkLabel = bookmarkLabel,
                     ),
                 )
             }

@@ -4,6 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import dev.subfly.yabacore.webview.WebViewEditorBridge
 import dev.subfly.yabacore.webview.WebViewReaderBridge
+import dev.subfly.yabacore.webview.InlineLinkTapEvent
+import dev.subfly.yabacore.webview.InlineMentionTapEvent
 import dev.subfly.yabacore.webview.MathTapEvent
 import dev.subfly.yabacore.webview.YabaWebFeature
 import dev.subfly.yabacore.webview.YabaWebHostEvent
@@ -21,6 +23,8 @@ actual fun YabaWebViewHost(
     onEditorBridgeReady: (WebViewEditorBridge?) -> Unit,
     onAnnotationTap: (String) -> Unit,
     onMathTap: (MathTapEvent) -> Unit,
+    onInlineLinkTap: (InlineLinkTapEvent) -> Unit,
+    onInlineMentionTap: (InlineMentionTapEvent) -> Unit,
 ) {
     when (val f = feature) {
         is YabaWebFeature.ReadableViewer ->
@@ -33,6 +37,8 @@ actual fun YabaWebViewHost(
                 onScrollDirectionChanged = onScrollDirectionChanged,
                 onReaderBridgeReady = onReaderBridgeReady,
                 onAnnotationTap = onAnnotationTap,
+                onInlineLinkTap = onInlineLinkTap,
+                onInlineMentionTap = onInlineMentionTap,
             )
         is YabaWebFeature.Editor ->
             YabaEditorFeatureHost(
@@ -44,6 +50,8 @@ actual fun YabaWebViewHost(
                 onEditorBridgeReady = onEditorBridgeReady,
                 onAnnotationTap = onAnnotationTap,
                 onMathTap = onMathTap,
+                onInlineLinkTap = onInlineLinkTap,
+                onInlineMentionTap = onInlineMentionTap,
             )
         is YabaWebFeature.HtmlConverter ->
             YabaHtmlConverterFeatureHost(
@@ -75,6 +83,8 @@ actual fun YabaWebViewHost(
                 onScrollDirectionChanged = onScrollDirectionChanged,
                 onReaderBridgeReady = onReaderBridgeReady,
                 onAnnotationTap = onAnnotationTap,
+                onInlineLinkTap = onInlineLinkTap,
+                onInlineMentionTap = onInlineMentionTap,
             )
         is YabaWebFeature.EpubViewer ->
             YabaEpubViewerFeatureHost(
@@ -85,6 +95,8 @@ actual fun YabaWebViewHost(
                 onScrollDirectionChanged = onScrollDirectionChanged,
                 onReaderBridgeReady = onReaderBridgeReady,
                 onAnnotationTap = onAnnotationTap,
+                onInlineLinkTap = onInlineLinkTap,
+                onInlineMentionTap = onInlineMentionTap,
             )
     }
 }

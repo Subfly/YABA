@@ -91,6 +91,8 @@ internal fun NotemarkEditorToolbar(
     onDispatchCommand: (String) -> Unit,
     onOpenTableInsertSheet: () -> Unit,
     onOpenMathSheet: (isBlock: Boolean) -> Unit,
+    onOpenLinkSheet: () -> Unit,
+    onOpenMentionSheet: () -> Unit,
     onPickImageFromGallery: () -> Unit,
     onCaptureImageFromCamera: () -> Unit,
     onSaveDocument: () -> Unit,
@@ -123,6 +125,8 @@ internal fun NotemarkEditorToolbar(
         onDispatchCommand,
         onOpenTableInsertSheet,
         onOpenMathSheet,
+        onOpenLinkSheet,
+        onOpenMentionSheet,
         onPickImageFromGallery,
         onCaptureImageFromCamera,
         onHighlightInactiveClick,
@@ -353,6 +357,22 @@ internal fun NotemarkEditorToolbar(
                         icon = "grid-table",
                         segmentAlpha = expandedAreaAlpha(depth = 0),
                         onClick = onOpenTableInsertSheet,
+                    ),
+                )
+                add(
+                    ToolbarAction(
+                        key = "insert-link",
+                        icon = "link-04",
+                        segmentAlpha = expandedAreaAlpha(depth = 0),
+                        onClick = onOpenLinkSheet,
+                    ),
+                )
+                add(
+                    ToolbarAction(
+                        key = "insert-mention",
+                        icon = "at",
+                        segmentAlpha = expandedAreaAlpha(depth = 0),
+                        onClick = onOpenMentionSheet,
                     ),
                 )
 

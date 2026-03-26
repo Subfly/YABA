@@ -12,16 +12,21 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import dev.subfly.yaba.ui.creation.annotation.AnnotationCreationContent
 import dev.subfly.yaba.ui.creation.bookmark.BookmarkCreationRouteSelectionContent
 import dev.subfly.yaba.ui.creation.bookmark.docmark.DocmarkCreationContent
 import dev.subfly.yaba.ui.creation.bookmark.imagemark.ImagemarkCreationContent
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.LinkmarkCreationContent
 import dev.subfly.yaba.ui.creation.bookmark.notemark.NotemarkCreationContent
 import dev.subfly.yaba.ui.creation.folder.FolderCreationContent
-import dev.subfly.yaba.ui.creation.annotation.AnnotationCreationContent
+import dev.subfly.yaba.ui.creation.notemark.link.NotemarkLinkActionSheetContent
+import dev.subfly.yaba.ui.creation.notemark.link.NotemarkLinkCreationContent
 import dev.subfly.yaba.ui.creation.notemark.math.NotemarkMathCreationContent
+import dev.subfly.yaba.ui.creation.notemark.mention.NotemarkMentionActionSheetContent
+import dev.subfly.yaba.ui.creation.notemark.mention.NotemarkMentionCreationContent
 import dev.subfly.yaba.ui.creation.notemark.table.NotemarkTableCreationContent
 import dev.subfly.yaba.ui.creation.tag.TagCreationContent
+import dev.subfly.yaba.ui.selection.bookmark.BookmarkSelectionContent
 import dev.subfly.yaba.ui.selection.color.ColorSelectionContent
 import dev.subfly.yaba.ui.selection.folder.FolderSelectionContent
 import dev.subfly.yaba.ui.selection.icon.IconCategorySelectionContent
@@ -131,6 +136,21 @@ fun YabaCreationNavigationView(
             }
             entry<NotemarkMathSheetRoute> { key ->
                 NotemarkMathCreationContent(route = key)
+            }
+            entry<NotemarkLinkSheetRoute> { key ->
+                NotemarkLinkCreationContent(route = key)
+            }
+            entry<NotemarkLinkActionSheetRoute> { key ->
+                NotemarkLinkActionSheetContent()
+            }
+            entry<NotemarkMentionSheetRoute> { key ->
+                NotemarkMentionCreationContent(route = key)
+            }
+            entry<NotemarkMentionActionSheetRoute> { key ->
+                NotemarkMentionActionSheetContent()
+            }
+            entry<BookmarkSelectionRoute> { key ->
+                BookmarkSelectionContent(selectedBookmarkId = key.selectedBookmarkId)
             }
             entry<EmptyCretionRoute> {
                 // Only old Compose users will remember why we had to put 1.dp boxes in sheets...

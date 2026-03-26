@@ -11,6 +11,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import dev.subfly.yabacore.webview.WebViewEditorBridge
 import dev.subfly.yabacore.webview.WebViewReaderBridge
+import dev.subfly.yabacore.webview.InlineLinkTapEvent
+import dev.subfly.yabacore.webview.InlineMentionTapEvent
 import dev.subfly.yabacore.webview.MathTapEvent
 import dev.subfly.yabacore.webview.YabaWebFeature
 import dev.subfly.yabacore.webview.WebShellLoadResult
@@ -32,6 +34,8 @@ actual fun YabaWebViewHost(
     onEditorBridgeReady: (WebViewEditorBridge?) -> Unit,
     onAnnotationTap: (String) -> Unit,
     onMathTap: (MathTapEvent) -> Unit,
+    onInlineLinkTap: (InlineLinkTapEvent) -> Unit,
+    onInlineMentionTap: (InlineMentionTapEvent) -> Unit,
 ) {
     val showPlaceholder = feature is YabaWebFeature.ReadableViewer ||
         feature is YabaWebFeature.PdfViewer ||

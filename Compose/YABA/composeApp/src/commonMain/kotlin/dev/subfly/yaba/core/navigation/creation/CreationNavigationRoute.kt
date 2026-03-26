@@ -33,6 +33,11 @@ val creationNavigationConfig = SavedStateConfiguration {
             subclass(AnnotationCreationRoute::class, AnnotationCreationRoute.serializer())
             subclass(NotemarkTableCreationRoute::class, NotemarkTableCreationRoute.serializer())
             subclass(NotemarkMathSheetRoute::class, NotemarkMathSheetRoute.serializer())
+            subclass(NotemarkLinkSheetRoute::class, NotemarkLinkSheetRoute.serializer())
+            subclass(NotemarkLinkActionSheetRoute::class, NotemarkLinkActionSheetRoute.serializer())
+            subclass(NotemarkMentionSheetRoute::class, NotemarkMentionSheetRoute.serializer())
+            subclass(NotemarkMentionActionSheetRoute::class, NotemarkMentionActionSheetRoute.serializer())
+            subclass(BookmarkSelectionRoute::class, BookmarkSelectionRoute.serializer())
             subclass(EmptyCretionRoute::class, EmptyCretionRoute.serializer())
         }
     }
@@ -141,6 +146,47 @@ data class NotemarkMathSheetRoute(
     val initialLatex: String = "",
     val isEdit: Boolean = false,
     val editPos: Int? = null,
+) : NavKey
+
+@Serializable
+data class NotemarkLinkSheetRoute(
+    val routeId: String = Uuid.generateV4().toString(),
+    val initialText: String = "",
+    val initialUrl: String = "",
+    val isEdit: Boolean = false,
+    val editPos: Int? = null,
+) : NavKey
+
+@Serializable
+data class NotemarkLinkActionSheetRoute(
+    val routeId: String = Uuid.generateV4().toString(),
+    val text: String,
+    val url: String,
+    val editPos: Int,
+) : NavKey
+
+@Serializable
+data class NotemarkMentionSheetRoute(
+    val routeId: String = Uuid.generateV4().toString(),
+    val initialText: String = "",
+    val initialBookmarkId: String? = null,
+    val isEdit: Boolean = false,
+    val editPos: Int? = null,
+) : NavKey
+
+@Serializable
+data class NotemarkMentionActionSheetRoute(
+    val routeId: String = Uuid.generateV4().toString(),
+    val text: String,
+    val bookmarkId: String,
+    val bookmarkKindCode: Int,
+    val editPos: Int,
+) : NavKey
+
+@Serializable
+data class BookmarkSelectionRoute(
+    val routeId: String = Uuid.generateV4().toString(),
+    val selectedBookmarkId: String? = null,
 ) : NavKey
 
 @Serializable

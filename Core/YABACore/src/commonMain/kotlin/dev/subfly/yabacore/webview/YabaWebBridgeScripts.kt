@@ -9,6 +9,12 @@ object YabaWebBridgeScripts {
     /** Must match [Extensions/yaba-web-components/src/bridge/shell-host-events.ts] */
     const val SHELL_LOAD_EVENT_PREFIX = "yaba-shell-load:"
 
+    /** Editor inline link node tap. */
+    const val INLINE_LINK_TAP_SCHEME_PREFIX = "yaba://inline-link-tap?"
+
+    /** Editor inline mention node tap. */
+    const val INLINE_MENTION_TAP_SCHEME_PREFIX = "yaba://inline-mention-tap?"
+
     const val EDITOR_BRIDGE_READY: String =
         "(function(){ try { return !!(window.YabaEditorBridge && window.YabaEditorBridge.isReady && window.YabaEditorBridge.isReady()); } catch(e){ return false; } })();"
 

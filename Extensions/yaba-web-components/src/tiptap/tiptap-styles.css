@@ -82,6 +82,37 @@ body[data-yaba-page="editor"] .yaba-editor-container {
 	cursor: pointer;
 }
 
+.yaba-editor-container .ProseMirror .yaba-inline-rich-item {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.2rem;
+	padding: 0 0.1rem;
+	border-radius: 4px;
+	background: color-mix(in srgb, var(--yaba-primary) 14%, transparent);
+	color: var(--yaba-primary);
+	cursor: pointer;
+	user-select: none;
+}
+
+.yaba-editor-container .ProseMirror .yaba-inline-rich-item::after {
+	content: "";
+	display: inline-block;
+	width: 0.85em;
+	height: 0.85em;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: contain;
+	opacity: 0.85;
+}
+
+.yaba-editor-container .ProseMirror .yaba-inline-link::after {
+	background-image: url("../assets/link-square-01.svg");
+}
+
+.yaba-editor-container .ProseMirror .yaba-inline-mention::after {
+	background-image: url("../assets/arrow-turn-backward.svg");
+}
+
 .yaba-editor-container .ProseMirror strong {
 	font-weight: 700;
 }

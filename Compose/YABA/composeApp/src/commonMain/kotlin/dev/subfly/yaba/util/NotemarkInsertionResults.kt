@@ -16,3 +16,34 @@ data class NotemarkMathSheetResult(
     val isEdit: Boolean,
     val editPos: Int? = null,
 )
+
+@Serializable
+enum class NotemarkInlineAction {
+    INSERT_OR_UPDATE,
+    REMOVE,
+}
+
+@Serializable
+data class NotemarkLinkSheetResult(
+    val text: String,
+    val url: String,
+    val action: NotemarkInlineAction = NotemarkInlineAction.INSERT_OR_UPDATE,
+    val editPos: Int? = null,
+)
+
+@Serializable
+data class NotemarkMentionSheetResult(
+    val text: String,
+    val bookmarkId: String,
+    val bookmarkKindCode: Int,
+    val bookmarkLabel: String,
+    val action: NotemarkInlineAction = NotemarkInlineAction.INSERT_OR_UPDATE,
+    val editPos: Int? = null,
+)
+
+@Serializable
+enum class NotemarkInlineActionChoice {
+    EDIT,
+    OPEN,
+    REMOVE,
+}

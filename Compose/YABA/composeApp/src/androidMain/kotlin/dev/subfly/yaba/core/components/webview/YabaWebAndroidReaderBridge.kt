@@ -105,6 +105,12 @@ internal fun RichTextWebViewEditorBridge(
     return object : WebViewEditorBridge {
         override suspend fun getDocumentJson(): String = reader.getDocumentJson()
 
+        override suspend fun getSelectedText(): String {
+            if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return ""
+            val raw = evaluateJs(webView, YabaEditorBridgeScripts.getSelectedTextScript())
+            return decodeJsStringResult(raw)
+        }
+
         override suspend fun setEditable(editable: Boolean) {
             if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return
             evaluateJs(webView, YabaEditorBridgeScripts.setEditableScript(editable))

@@ -72,6 +72,7 @@ function rewriteAssetPathsInReaderHtml(html: string, assetsBaseUrl: string): str
 export interface YabaEditorBridge {
   isReady: () => boolean
   getSelectionSnapshot: () => SelectionSnapshot | null
+  getSelectedText: () => string
   getCanCreateAnnotation: () => boolean
   setAnnotations: (annotationsJson: string) => void
   scrollToAnnotation: (annotationId: string) => void
@@ -139,8 +140,25 @@ export type EditorCommandPayload =
   | { type: "outdent" }
   | { type: "undo" }
   | { type: "redo" }
-  | { type: "insertLink"; url: string }
-  | { type: "removeLink" }
+  | { type: "insertLink"; text: string; url: string }
+  | { type: "updateLink"; text: string; url: string; pos: number }
+  | { type: "removeLink"; pos: number }
+  | {
+      type: "insertMention"
+      text: string
+      bookmarkId: string
+      bookmarkKindCode: number
+      bookmarkLabel: string
+    }
+  | {
+      type: "updateMention"
+      text: string
+      bookmarkId: string
+      bookmarkKindCode: number
+      bookmarkLabel: string
+      pos: number
+    }
+  | { type: "removeMention"; pos: number }
   | { type: "insertInlineMath"; latex: string }
   | { type: "insertBlockMath"; latex: string }
   | { type: "updateInlineMath"; latex: string; pos: number }
@@ -338,6 +356,13 @@ export function initEditorBridge(editor: Editor): void {
   win.YabaEditorBridge = {
     isReady: () => !!editorInstance,
     getSelectionSnapshot: () => getSelectionSnapshot(editorInstance),
+    getSelectedText: () => {
+      const ed = editorInstance
+      if (!ed) return ""
+      const { from, to } = ed.state.selection
+      if (from === to) return ""
+      return ed.state.doc.textBetween(from, to, "\n").trim()
+    },
     getCanCreateAnnotation: () => getCanCreateAnnotationForCurrentSelection(),
     setAnnotations: (annotationsJson: string) => {
       try {
@@ -517,10 +542,37 @@ export function initEditorBridge(editor: Editor): void {
             chain.redo().run()
             break
           case "insertLink":
-            chain.setLink({ href: cmd.url }).run()
+            ed.commands.insertYabaInlineLink({ text: cmd.text, url: cmd.url })
+            break
+          case "updateLink":
+            ed.commands.updateYabaInlineLinkAt({
+              text: cmd.text,
+              url: cmd.url,
+              pos: cmd.pos,
+            })
             break
           case "removeLink":
-            chain.unsetLink().run()
+            ed.commands.removeYabaInlineLinkAt({ pos: cmd.pos })
+            break
+          case "insertMention":
+            ed.commands.insertYabaInlineMention({
+              text: cmd.text,
+              bookmarkId: cmd.bookmarkId,
+              bookmarkKindCode: cmd.bookmarkKindCode,
+              bookmarkLabel: cmd.bookmarkLabel,
+            })
+            break
+          case "updateMention":
+            ed.commands.updateYabaInlineMentionAt({
+              text: cmd.text,
+              bookmarkId: cmd.bookmarkId,
+              bookmarkKindCode: cmd.bookmarkKindCode,
+              bookmarkLabel: cmd.bookmarkLabel,
+              pos: cmd.pos,
+            })
+            break
+          case "removeMention":
+            ed.commands.removeYabaInlineMentionAt({ pos: cmd.pos })
             break
           case "insertInlineMath":
             insertInlineMathKeepingCaretAfterNode(ed, cmd.latex)

@@ -70,6 +70,15 @@ object AllBookmarksManager {
             .map { rows -> rows.map { it.toBookmarkPreviewUiModel() } }
     }
 
+    /**
+     * Observes a single bookmark as [BookmarkUiModel], or null if it does not exist.
+     */
+    fun observeBookmarkById(bookmarkId: String): Flow<BookmarkUiModel?> {
+        return bookmarkDao.observeByIdWithRelations(bookmarkId).map { row ->
+            row?.toBookmarkPreviewUiModel()
+        }
+    }
+
     fun searchBookmarksFlow(
         query: String,
         filters: BookmarkSearchFilters = BookmarkSearchFilters(),

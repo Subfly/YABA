@@ -56,6 +56,18 @@ object YabaEditorBridgeScripts {
         })();
         """.trimIndent()
 
+    fun getSelectedTextScript(): String =
+        """
+        (function() {
+            try {
+                if (!window.YabaEditorBridge || typeof window.YabaEditorBridge.getSelectedText !== "function") {
+                    return "";
+                }
+                return window.YabaEditorBridge.getSelectedText() || "";
+            } catch(e) { return ""; }
+        })();
+        """.trimIndent()
+
     fun getCanCreateAnnotationScript(): String =
         """
         (function() {
