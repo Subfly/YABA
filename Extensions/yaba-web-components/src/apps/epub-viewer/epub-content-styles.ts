@@ -59,6 +59,8 @@ html {
   -webkit-text-size-adjust: 100%;
   overflow-wrap: anywhere;
   word-wrap: break-word;
+  -webkit-user-select: text;
+  user-select: text;
 }
 
 html, body {
@@ -69,6 +71,8 @@ html, body {
   background: var(--yaba-reader-bg, transparent) !important;
   box-sizing: border-box !important;
   max-width: 100% !important;
+  -webkit-user-select: text;
+  user-select: text;
 }
 
 *, *::before, *::after {

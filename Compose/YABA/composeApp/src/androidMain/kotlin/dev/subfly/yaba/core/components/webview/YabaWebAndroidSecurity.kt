@@ -17,6 +17,11 @@ internal object YabaWebAndroidSecurity {
     /**
      * Stricter than the stock PdfViewer HTML shell where possible, while still allowing
      * Vite-bundled readers (wasm workers, inline styles from component libs, blob/data media).
+     *
+     * EPUB.js renders spine HTML in `about:srcdoc` iframes and sets `<base href>` for relative
+     * OPS paths; it also loads layout stylesheets via `blob:` URLs, and injected `@font-face`
+     * rules load font files as `blob:` URLs. Those require [base-uri 'self'] (not `'none'`),
+     * and `blob:` on [style-src] and [font-src].
      */
     const val CONTENT_SECURITY_POLICY: String =
         "default-src 'none'; " +
@@ -24,12 +29,12 @@ internal object YabaWebAndroidSecurity {
             "connect-src 'self' blob:; " +
             "img-src 'self' blob: data:; " +
             "script-src 'self' 'wasm-unsafe-eval'; " +
-            "style-src 'self' 'unsafe-inline'; " +
-            "font-src 'self' data:; " +
+            "style-src 'self' 'unsafe-inline' blob:; " +
+            "font-src 'self' data: blob:; " +
             "worker-src 'self' blob:; " +
             "media-src 'self' blob:; " +
             "frame-ancestors 'none'; " +
-            "base-uri 'none'"
+            "base-uri 'self'"
 
     /** Mirrors GrapheneOS PdfViewer [Permissions-Policy] (all sensitive features denied). */
     const val PERMISSIONS_POLICY: String =

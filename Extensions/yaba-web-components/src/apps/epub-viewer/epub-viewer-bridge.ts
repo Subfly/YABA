@@ -49,6 +49,9 @@ let currentPageNum = 1
 let spineLength = 1
 const annotationCfiById = new Map<string, string>()
 
+/** Avoid duplicate selection listeners if content hook runs more than once per document. */
+const selectionClearRegisteredDocs = new WeakSet<Document>()
+
 interface MergedEpubReaderPrefs {
   theme: ReaderThemeName
   fontSize: string
@@ -180,7 +183,17 @@ function clearHighlights(): void {
   annotationCfiById.clear()
 }
 
-function registerSelectionClearOnTapAway(contents: Contents): void {
+/**
+ * epub.js debounces selection internally (~250ms) before emitting `selected`.
+ * A faster `selectionchange` handler can race and clear [lastSelection] before the bridge
+ * receives the CFI, so we only clear after a longer debounce and only when the DOM
+ * selection is actually gone (tap away / collapse).
+ */
+function registerSelectionClearWhenCollapsed(contents: Contents): void {
+  const doc = contents.document
+  if (selectionClearRegisteredDocs.has(doc)) return
+  selectionClearRegisteredDocs.add(doc)
+
   let t: ReturnType<typeof setTimeout> | null = null
   const onSel = (): void => {
     if (t) clearTimeout(t)
@@ -190,9 +203,9 @@ function registerSelectionClearOnTapAway(contents: Contents): void {
       if (!sel || sel.rangeCount === 0 || sel.isCollapsed || !sel.toString().trim()) {
         lastSelection = null
       }
-    }, 120)
+    }, 500)
   }
-  contents.document.addEventListener("selectionchange", onSel, { passive: true })
+  doc.addEventListener("selectionchange", onSel, { passive: true })
 }
 
 export function initEpubViewerBridge(platform: Platform, appearance: AppearanceMode): void {
@@ -254,7 +267,7 @@ export function initEpubViewerBridge(platform: Platform, appearance: AppearanceM
           rendition.hooks.content.register((contents: Contents) => {
             const doc = contents.document
             syncReaderVarsFromHostToIframeDoc(doc)
-            registerSelectionClearOnTapAway(contents)
+            registerSelectionClearWhenCollapsed(contents)
             const style = doc.createElement("style")
             style.id = "yaba-epub-content-style"
             style.textContent = getEpubContentOverrideCss()
@@ -262,10 +275,14 @@ export function initEpubViewerBridge(platform: Platform, appearance: AppearanceM
           })
 
           rendition.on("relocated", (location: Location) => {
-            currentPageNum = (location.start.index ?? 0) + 1
+            lastSelection = null
+            const relocatedIndex = location.start.index
+            if (typeof relocatedIndex === "number" && Number.isFinite(relocatedIndex)) {
+              currentPageNum = relocatedIndex + 1
+            }
           })
 
-          rendition.on("selected", (cfiRange: string, contents: { window: Window }) => {
+          rendition.on("selected", (cfiRange: string, contents: Contents) => {
             const selectedText = contents.window.getSelection()?.toString() ?? ""
             if (cfiRange && selectedText.trim().length > 0) {
               lastSelection = { cfiRange, selectedText: selectedText.trim() }
