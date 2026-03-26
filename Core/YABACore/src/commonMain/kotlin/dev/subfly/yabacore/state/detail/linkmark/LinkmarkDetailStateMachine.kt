@@ -43,6 +43,7 @@ class LinkmarkDetailStateMachine :
         initialState = LinkmarkDetailUIState()
     ) {
     private var isInitialized = false
+    private var initialReaderLoadSettled = false
     private var dataSubscriptionJob: Job? = null
     private val bookmarkIdFlow = MutableStateFlow<String?>(null)
     private val selectedReadableVersionIdFlow = MutableStateFlow<String?>(null)
@@ -81,6 +82,7 @@ class LinkmarkDetailStateMachine :
     private fun onInit(bookmarkId: String) {
         if (isInitialized) return
         isInitialized = true
+        initialReaderLoadSettled = false
         bookmarkIdFlow.value = bookmarkId
 
         launch {
@@ -141,7 +143,9 @@ class LinkmarkDetailStateMachine :
                                     readableDocumentJson = documentJson,
                                     assetsBaseUrl = assetsBaseUrl,
                                     annotations = selectedVersion?.annotations ?: emptyList(),
-                                    isLoading = documentJson.isNullOrBlank().not(),
+                                    isLoading =
+                                        documentJson.isNullOrBlank().not() &&
+                                            initialReaderLoadSettled.not(),
                                     readerWebContentLoadFailed = false,
                                 ),
                             )
@@ -239,6 +243,7 @@ class LinkmarkDetailStateMachine :
     }
 
     private fun onReaderWebInitialContentLoad(event: LinkmarkDetailEvent.OnReaderWebInitialContentLoad) {
+        initialReaderLoadSettled = true
         updateState {
             it.copy(
                 isLoading = false,
@@ -452,6 +457,7 @@ class LinkmarkDetailStateMachine :
 
     override fun clear() {
         isInitialized = false
+        initialReaderLoadSettled = false
         dataSubscriptionJob?.cancel()
         dataSubscriptionJob = null
         bookmarkIdFlow.value = null
