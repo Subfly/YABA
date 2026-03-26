@@ -24,7 +24,11 @@ import {
   publishEditorHostState,
   resetPublishedEditorHostState,
 } from "./editor-host-events"
-import { publishShellLoad } from "./shell-host-events"
+import {
+  publishShellLoad,
+  scheduleNoteAutosaveAfterEditorActivity,
+  setNoteEditorAutosaveIdleEnabled,
+} from "./shell-host-events"
 
 export type ReaderTheme = "system" | "dark" | "light" | "sepia"
 export type ReaderFontSize = "small" | "medium" | "large"
@@ -331,6 +335,7 @@ function applyReaderPreferences(): void {
 export function initEditorBridge(editor: Editor): void {
   editorInstance = editor
   editorShellLoadNotified = false
+  setNoteEditorAutosaveIdleEnabled(false)
   resetPublishedEditorHostState()
   editor.on("selectionUpdate", () => {
     captureStoredCursorFromEditor()
@@ -338,6 +343,7 @@ export function initEditorBridge(editor: Editor): void {
   })
   editor.on("transaction", () => {
     publishCurrentEditorState()
+    scheduleNoteAutosaveAfterEditorActivity()
   })
   editor.on("focus", () => {
     publishCurrentEditorState()
@@ -415,6 +421,7 @@ export function initEditorBridge(editor: Editor): void {
     },
     setDocumentJson: (documentJson: string, options?: { assetsBaseUrl?: string }) => {
       try {
+        setNoteEditorAutosaveIdleEnabled(false)
         if (options?.assetsBaseUrl) {
           lastAssetsBaseUrl = options.assetsBaseUrl
         }
@@ -437,6 +444,11 @@ export function initEditorBridge(editor: Editor): void {
           editorShellLoadNotified = true
           publishShellLoad("loaded")
         }
+        queueMicrotask(() => {
+          if (document.body?.dataset.yabaPage === "editor") {
+            setNoteEditorAutosaveIdleEnabled(true)
+          }
+        })
       } catch {
         if (!editorShellLoadNotified) {
           editorShellLoadNotified = true

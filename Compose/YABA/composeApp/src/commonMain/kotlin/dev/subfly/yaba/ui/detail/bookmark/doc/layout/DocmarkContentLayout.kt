@@ -210,9 +210,9 @@ internal fun DocmarkContentLayout(
                         }
                     },
                     onScrollDirectionChanged = { direction ->
-                        when (direction) {
-                            YabaWebScrollDirection.Down -> isToolbarVisible = false
-                            YabaWebScrollDirection.Up -> isToolbarVisible = true
+                        isToolbarVisible = when (direction) {
+                            YabaWebScrollDirection.Down -> false
+                            YabaWebScrollDirection.Up -> true
                         }
                     },
                     onReaderBridgeReady = { bridge -> readerBridge = bridge },

@@ -29,4 +29,6 @@ sealed interface YabaWebHostEvent {
     data class EpubConverterFailure(val error: Throwable) : YabaWebHostEvent
 
     data class InitialContentLoad(val result: WebShellLoadResult) : YabaWebHostEvent
+
+    data object NoteEditorIdleForAutosave : YabaWebHostEvent
 }

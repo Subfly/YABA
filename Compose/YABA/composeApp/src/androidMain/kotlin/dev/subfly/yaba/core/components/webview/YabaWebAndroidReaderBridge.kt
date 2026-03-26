@@ -250,6 +250,17 @@ internal suspend fun getEditorActiveFormatting(webView: WebView): EditorFormatti
     }.getOrElse { EditorFormattingState() }
 }
 
+internal fun parseNoteAutosaveIdleMessage(message: String?): Boolean {
+    val payload =
+        message
+            ?.takeIf { it.startsWith(YabaWebBridgeScripts.NOTE_AUTOSAVE_IDLE_EVENT_PREFIX) }
+            ?.removePrefix(YabaWebBridgeScripts.NOTE_AUTOSAVE_IDLE_EVENT_PREFIX)
+            ?.takeIf { it.isNotBlank() }
+            ?: return false
+    val json = runCatching { JSONObject(payload) }.getOrNull() ?: return false
+    return json.optString("type") == "noteAutosaveIdle"
+}
+
 internal fun parseShellLoadMessage(message: String?): WebShellLoadResult? {
     val payload =
         message

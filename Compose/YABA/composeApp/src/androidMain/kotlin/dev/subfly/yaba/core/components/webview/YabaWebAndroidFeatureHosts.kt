@@ -397,11 +397,16 @@ internal fun YabaEditorFeatureHost(
                     onLaunchPermissionRequest = { perms -> permissionLauncher.launch(perms) },
                     onConsoleMessage = shell@{ message ->
                         if (!initialShellLoadConsumed) {
-                            parseShellLoadMessage(message)?.let { result ->
+                            val loadResult = parseShellLoadMessage(message)
+                            if (loadResult != null) {
                                 initialShellLoadConsumed = true
-                                onHostEventState.value(YabaWebHostEvent.InitialContentLoad(result))
+                                onHostEventState.value(YabaWebHostEvent.InitialContentLoad(loadResult))
                                 return@shell
                             }
+                        }
+                        if (parseNoteAutosaveIdleMessage(message)) {
+                            onHostEventState.value(YabaWebHostEvent.NoteEditorIdleForAutosave)
+                            return@shell
                         }
                         parseEditorHostStateMessage(message)?.let { state ->
                             onHostEventState.value(

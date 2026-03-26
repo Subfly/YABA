@@ -391,6 +391,14 @@ internal fun NotemarkContentLayout(
                                 is YabaWebHostEvent.InitialContentLoad ->
                                     onEvent(NotemarkDetailEvent.OnWebInitialContentLoad(ev.result))
 
+                                is YabaWebHostEvent.NoteEditorIdleForAutosave -> {
+                                    scope.launch {
+                                        val bridge = editorBridge ?: return@launch
+                                        val json = bridge.getDocumentJson()
+                                        onEvent(NotemarkDetailEvent.OnSave(documentJson = json))
+                                    }
+                                }
+
                                 else -> Unit
                             }
                         },
