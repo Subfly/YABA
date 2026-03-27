@@ -197,7 +197,7 @@ class LinkmarkCreationStateMachine :
                         converterBaseUrl = if (needsConverter) preview.url else null,
                         converterError = null,
                         lastFetchedUrl = urlString,
-                        isLoading = !needsConverter,
+                        isLoading = needsConverter,
                         error = null,
                     )
                 }

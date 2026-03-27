@@ -37,12 +37,6 @@ object Unfurler {
     }
 
     /**
-     * Fetches HTML and returns readable content. Deprecated: conversion now happens
-     * via WebView converter. Returns null; use creation flow with converter for new content.
-     */
-    suspend fun unfurlReadable(urlString: String): ReadableUnfurl? = null
-
-    /**
      * Downloads image bytes for bookmark preview (main image or domain icon).
      */
     suspend fun downloadPreviewImageBytes(urlString: String?): ByteArray? {
@@ -54,13 +48,7 @@ object Unfurler {
             } else {
                 null
             }
-        }.getOrNull()?.takeIf { isAcceptablePreviewImage(it) }
-    }
-
-    private fun isAcceptablePreviewImage(data: ByteArray): Boolean {
-        if (data.size < 1024) return false
-        if (data.size > 5 * 1024 * 1024) return false
-        return true
+        }.getOrNull()
     }
 
     private fun normalizeURL(urlString: String): String {

@@ -411,9 +411,9 @@ function htmlToDocumentJson(html: string): string {
 
 async function sanitizeAndConvertWithAssets(html: string, baseUrl?: string): Promise<ConverterOutput> {
   const pageUrl = (baseUrl && baseUrl.trim().length > 0 ? baseUrl.trim() : "https://invalid.invalid") as string
-  const linkMetadata = await extractLinkMetadata(html, pageUrl)
   const { htmlWithPlaceholders, assets } = sanitizeReaderHtmlWithPlaceholders(html, baseUrl)
   const documentJson = htmlToDocumentJson(htmlWithPlaceholders)
+  const linkMetadata = await extractLinkMetadata(html, pageUrl)
   return { documentJson, assets, linkMetadata }
 }
 

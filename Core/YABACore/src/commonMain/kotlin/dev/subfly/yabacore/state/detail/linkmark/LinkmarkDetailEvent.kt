@@ -13,7 +13,6 @@ import dev.subfly.yabacore.webview.WebShellLoadResult
 sealed interface LinkmarkDetailEvent {
     data class OnInit(val bookmarkId: String) : LinkmarkDetailEvent
     data class OnSaveReadableContent(val readable: ReadableUnfurl) : LinkmarkDetailEvent
-    data object OnFetchReadableContent : LinkmarkDetailEvent
     data object OnUpdateReadableRequested : LinkmarkDetailEvent
     data class OnConverterSucceeded(
         val documentJson: String,

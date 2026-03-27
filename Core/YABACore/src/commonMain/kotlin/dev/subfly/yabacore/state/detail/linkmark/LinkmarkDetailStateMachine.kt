@@ -52,7 +52,6 @@ class LinkmarkDetailStateMachine :
         when (event) {
             is LinkmarkDetailEvent.OnInit -> onInit(event.bookmarkId)
             is LinkmarkDetailEvent.OnSaveReadableContent -> onSaveReadableContent(event)
-            LinkmarkDetailEvent.OnFetchReadableContent -> onFetchReadableContent()
             LinkmarkDetailEvent.OnUpdateReadableRequested -> onUpdateReadableRequested()
             is LinkmarkDetailEvent.OnConverterSucceeded -> onConverterSucceeded(event)
             is LinkmarkDetailEvent.OnConverterFailed -> onConverterFailed(event)
@@ -173,16 +172,6 @@ class LinkmarkDetailStateMachine :
     private fun onSaveReadableContent(event: LinkmarkDetailEvent.OnSaveReadableContent) {
         val bookmarkId = bookmarkIdFlow.value ?: return
         launch { ReadableContentManager.saveReadableContent(bookmarkId, event.readable) }
-    }
-
-    private fun onFetchReadableContent() {
-        val linkUrl = currentState().linkDetails?.url ?: return
-        val bookmarkId = bookmarkIdFlow.value ?: return
-        launch {
-            runCatching { Unfurler.unfurlReadable(linkUrl) }
-                .getOrNull()
-                ?.let { readable -> ReadableContentManager.saveReadableContent(bookmarkId, readable) }
-        }
     }
 
     private fun onUpdateReadableRequested() {
