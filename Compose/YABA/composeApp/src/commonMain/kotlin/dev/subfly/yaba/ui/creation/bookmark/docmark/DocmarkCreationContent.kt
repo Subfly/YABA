@@ -166,7 +166,6 @@ fun DocmarkCreationContent(bookmarkId: String?) {
                             metadataDescription = ev.result.subject,
                             metadataAuthor = ev.result.author,
                             metadataDate = ev.result.creationDate,
-                            metadataIdentifier = null,
                         ),
                     )
                 }
@@ -200,7 +199,6 @@ fun DocmarkCreationContent(bookmarkId: String?) {
                             metadataDescription = ev.result.description,
                             metadataAuthor = ev.result.author,
                             metadataDate = ev.result.pubdate,
-                            metadataIdentifier = ev.result.identifier,
                         ),
                     )
                 }
@@ -277,7 +275,6 @@ fun DocmarkCreationContent(bookmarkId: String?) {
                     metadataDate = state.metadataDate,
                     audioUrl = null,
                     videoUrl = null,
-                    identifier = state.metadataIdentifier,
                 )
             }
             item {

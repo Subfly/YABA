@@ -51,7 +51,6 @@ object DocmarkManager {
             metadataDescription = docMetaData?.metadataDescription,
             metadataAuthor = docMetaData?.metadataAuthor,
             metadataDate = docMetaData?.metadataDate,
-            metadataIdentifier = docMetaData?.metadataIdentifier,
             docmarkType = docmarkType,
             localDocumentPath = localDocumentAbsolutePath,
             localImagePath = localImageAbsolutePath,
@@ -78,7 +77,6 @@ object DocmarkManager {
         metadataDescription: String? = null,
         metadataAuthor: String? = null,
         metadataDate: String? = null,
-        metadataIdentifier: String? = null,
     ) {
         CoreOperationQueue.queue("CreateOrUpdateDocDetails:$bookmarkId") {
             val previous = docBookmarkDao.getByBookmarkId(bookmarkId)
@@ -91,8 +89,6 @@ object DocmarkManager {
                     metadataDescription?.takeIf { it.isNotBlank() } ?: previous?.metadataDescription,
                 metadataAuthor = metadataAuthor?.takeIf { it.isNotBlank() } ?: previous?.metadataAuthor,
                 metadataDate = metadataDate?.takeIf { it.isNotBlank() } ?: previous?.metadataDate,
-                metadataIdentifier =
-                    metadataIdentifier?.takeIf { it.isNotBlank() } ?: previous?.metadataIdentifier,
             )
             docBookmarkDao.upsert(entity)
         }

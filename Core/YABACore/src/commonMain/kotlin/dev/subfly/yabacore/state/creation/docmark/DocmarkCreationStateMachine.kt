@@ -72,7 +72,6 @@ class DocmarkCreationStateMachine :
                             metadataDescription = existing.metadataDescription,
                             metadataAuthor = existing.metadataAuthor,
                             metadataDate = existing.metadataDate,
-                            metadataIdentifier = existing.metadataIdentifier,
                             selectedFolder = existing.parentFolder,
                             selectedTags = existing.tags,
                             editingDocmark = existing,
@@ -138,7 +137,6 @@ class DocmarkCreationStateMachine :
                         metadataDescription = null,
                         metadataAuthor = null,
                         metadataDate = null,
-                        metadataIdentifier = null,
                         isLoading = true,
                         error = null,
                     )
@@ -175,7 +173,6 @@ class DocmarkCreationStateMachine :
                 metadataDescription = null,
                 metadataAuthor = null,
                 metadataDate = null,
-                metadataIdentifier = null,
                 previewImageBytes = null,
                 previewImageExtension = "png",
                 isLoading = true,
@@ -195,7 +192,6 @@ class DocmarkCreationStateMachine :
                 metadataDescription = null,
                 metadataAuthor = null,
                 metadataDate = null,
-                metadataIdentifier = null,
                 previewImageBytes = null,
                 isLoading = false,
                 error = null,
@@ -228,7 +224,6 @@ class DocmarkCreationStateMachine :
                 metadataDescription = event.metadataDescription,
                 metadataAuthor = event.metadataAuthor,
                 metadataDate = event.metadataDate,
-                metadataIdentifier = event.metadataIdentifier,
             )
         }
     }
@@ -349,7 +344,6 @@ class DocmarkCreationStateMachine :
                     metadataDescription = state.metadataDescription,
                     metadataAuthor = state.metadataAuthor,
                     metadataDate = state.metadataDate,
-                    metadataIdentifier = state.metadataIdentifier,
                 )
 
                 updateState { it.copy(isSaving = false, error = null) }

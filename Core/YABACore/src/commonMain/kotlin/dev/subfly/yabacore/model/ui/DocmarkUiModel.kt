@@ -22,7 +22,6 @@ data class DocmarkUiModel(
     val metadataDescription: String? = null,
     val metadataAuthor: String? = null,
     val metadataDate: String? = null,
-    val metadataIdentifier: String? = null,
     val docmarkType: DocmarkType = DocmarkType.PDF,
     val localDocumentPath: String? = null,
     override val localImagePath: String? = null,

@@ -20,7 +20,6 @@ data class DocmarkCreationUIState(
     val metadataDescription: String? = null,
     val metadataAuthor: String? = null,
     val metadataDate: String? = null,
-    val metadataIdentifier: String? = null,
     val bookmarkAppearance: BookmarkAppearance = BookmarkAppearance.LIST,
     val cardImageSizing: CardImageSizing = CardImageSizing.SMALL,
 
@@ -61,7 +60,6 @@ data class DocmarkCreationUIState(
         if (metadataDescription != other.metadataDescription) return false
         if (metadataAuthor != other.metadataAuthor) return false
         if (metadataDate != other.metadataDate) return false
-        if (metadataIdentifier != other.metadataIdentifier) return false
         if (previewImageBytes != null) {
             if (other.previewImageBytes == null || !previewImageBytes.contentEquals(other.previewImageBytes)) return false
         } else if (other.previewImageBytes != null) return false
@@ -89,7 +87,6 @@ data class DocmarkCreationUIState(
         result = 31 * result + (metadataDescription?.hashCode() ?: 0)
         result = 31 * result + (metadataAuthor?.hashCode() ?: 0)
         result = 31 * result + (metadataDate?.hashCode() ?: 0)
-        result = 31 * result + (metadataIdentifier?.hashCode() ?: 0)
         result = 31 * result + (previewImageBytes?.contentHashCode() ?: 0)
         result = 31 * result + previewImageExtension.hashCode()
         result = 31 * result + (selectedFolder?.hashCode() ?: 0)

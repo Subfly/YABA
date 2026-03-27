@@ -14,7 +14,6 @@ data class DocmarkDetailUIState(
     val metadataDescription: String? = null,
     val metadataAuthor: String? = null,
     val metadataDate: String? = null,
-    val metadataIdentifier: String? = null,
     val docmarkType: DocmarkType = DocmarkType.PDF,
     val documentAbsolutePath: String? = null,
     val readerPreferences: ReaderPreferences = ReaderPreferences(),

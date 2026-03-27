@@ -41,6 +41,7 @@ fun BookmarkInfoContent(
     labelPlaceholder: StringResource = Res.string.create_bookmark_title_placeholder,
     descriptionPlaceholder: StringResource = Res.string.create_bookmark_description_placeholder,
     showClearLabelButton: Boolean = false,
+    showInfoLabel: Boolean = true,
     onClearLabel: (() -> Unit)? = null,
     nullModelPresentableColor: YabaColor = YabaColor.BLUE,
 ) {
@@ -48,11 +49,16 @@ fun BookmarkInfoContent(
         mutableStateOf(selectedFolder?.color ?: nullModelPresentableColor)
     }
 
-    Spacer(modifier = Modifier.height(24.dp))
-    BookmarkCreationLabel(
-        label = stringResource(Res.string.info),
-        iconName = "information-circle"
-    )
+    if (showInfoLabel) {
+        Spacer(modifier = Modifier.height(24.dp))
+        BookmarkCreationLabel(
+            label = stringResource(Res.string.info),
+            iconName = "information-circle"
+        )
+    } else {
+        Spacer(modifier = Modifier.height(8.dp))
+    }
+
     Spacer(modifier = Modifier.height(12.dp))
     OutlinedTextField(
         modifier = Modifier

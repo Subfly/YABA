@@ -72,7 +72,15 @@ data class LinkmarkCreationUIState(
         get() = error != null
 
     val canSave: Boolean
-        get() = cleanedUrl.isNotBlank() && selectedFolder != null && !isLoading
+        get() =
+            label.trim().isNotEmpty() &&
+                cleanedUrl.isNotBlank() &&
+                selectedFolder != null &&
+                !isLoading
+
+    /** True when the converter provided a title or description to copy into user fields. */
+    val hasApplyableMetadata: Boolean
+        get() = metadataTitle.isNullOrBlank().not() || metadataDescription.isNullOrBlank().not()
 
     // Override equals/hashCode to handle ByteArray comparison
     override fun equals(other: Any?): Boolean {

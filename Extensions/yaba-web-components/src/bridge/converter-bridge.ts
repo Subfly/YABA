@@ -100,7 +100,6 @@ export interface EpubExtractionOutput {
   author: StringOrNull
   description: StringOrNull
   pubdate: StringOrNull
-  identifier: StringOrNull
 }
 
 export interface EpubExtractionJobState {
@@ -534,7 +533,6 @@ async function extractEpubCover(input: EpubExtractionInput): Promise<EpubExtract
   if (!author) author = epubMetaText(md.publisher)
   const description = epubMetaText(md.description)
   const pubdate = epubMetaText(md.pubdate) ?? epubMetaText(md["dc:date"])
-  const identifier = epubMetaText(md.identifier) ?? epubMetaText(md["dc:identifier"])
 
   try {
     await book.destroy()
@@ -547,7 +545,6 @@ async function extractEpubCover(input: EpubExtractionInput): Promise<EpubExtract
     author,
     description,
     pubdate,
-    identifier,
   }
 }
 

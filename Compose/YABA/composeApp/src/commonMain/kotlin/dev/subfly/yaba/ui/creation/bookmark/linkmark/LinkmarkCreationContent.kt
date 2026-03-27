@@ -1,5 +1,6 @@
 package dev.subfly.yaba.ui.creation.bookmark.linkmark
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -9,13 +10,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -44,6 +50,7 @@ import dev.subfly.yabacore.model.utils.FolderSelectionMode
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.creation.linkmark.LinkmarkCreationEvent
 import dev.subfly.yabacore.state.creation.linkmark.LinkmarkCreationToastMessages
+import dev.subfly.yabacore.ui.icon.iconTintArgb
 import dev.subfly.yabacore.ui.webview.WebComponentUris
 import dev.subfly.yabacore.webview.WebConverterInput
 import dev.subfly.yabacore.webview.YabaWebFeature
@@ -59,6 +66,7 @@ import yaba.composeapp.generated.resources.preview
 import yaba.composeapp.generated.resources.unfurl_error_text
 import yaba.composeapp.generated.resources.url_error_text
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun LinkmarkCreationContent(bookmarkId: String?, initialUrl: String? = null) {
     val creationNavigator = LocalCreationContentNavigator.current
@@ -199,8 +207,30 @@ fun LinkmarkCreationContent(bookmarkId: String?, initialUrl: String? = null) {
                 BookmarkCreationLabel(
                     label = stringResource(Res.string.info),
                     iconName = "information-circle",
+                    extraContent = {
+                        if (state.isInEditMode.not()) {
+                            AnimatedVisibility(visible = state.hasApplyableMetadata) {
+                                TextButton(
+                                    shapes = ButtonDefaults.shapes(),
+                                    onClick = {
+                                        vm.onEvent(LinkmarkCreationEvent.OnApplyFromMetadata)
+                                    }
+                                ) {
+                                    val color = state.selectedFolder?.color ?: YabaColor.BLUE
+                                    Text(
+                                        text = "Apply from metadata",
+                                        color = Color(color.iconTintArgb())
+                                    )
+                                }
+                            }
+                        }
+                    }
                 )
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(
+                    modifier = Modifier.height(
+                        if (state.isInEditMode.not() && state.hasApplyableMetadata) 0.dp else 12.dp
+                    )
+                )
                 LinkmarkLinkContent(
                     state = state,
                     onChangeUrl = { newUrl ->
@@ -224,6 +254,7 @@ fun LinkmarkCreationContent(bookmarkId: String?, initialUrl: String? = null) {
                     enabled = state.isLoading.not(),
                     labelPlaceholder = Res.string.create_bookmark_title_placeholder,
                     showClearLabelButton = true,
+                    showInfoLabel = false,
                     onClearLabel = {
                         vm.onEvent(LinkmarkCreationEvent.OnClearLabel)
                     },
@@ -239,7 +270,6 @@ fun LinkmarkCreationContent(bookmarkId: String?, initialUrl: String? = null) {
                     metadataDate = state.metadataDate,
                     audioUrl = state.audioUrl,
                     videoUrl = state.videoUrl,
-                    identifier = null,
                 )
             }
             item {

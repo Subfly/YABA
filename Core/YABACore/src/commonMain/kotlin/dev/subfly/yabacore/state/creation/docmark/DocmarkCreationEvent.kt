@@ -38,7 +38,6 @@ sealed class DocmarkCreationEvent {
         val metadataDescription: String? = null,
         val metadataAuthor: String? = null,
         val metadataDate: String? = null,
-        val metadataIdentifier: String? = null,
     ) : DocmarkCreationEvent()
 
     data class OnSetGeneratedPreview(

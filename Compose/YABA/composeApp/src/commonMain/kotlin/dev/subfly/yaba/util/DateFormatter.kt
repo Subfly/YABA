@@ -16,3 +16,14 @@ fun formatDateTime(instant: Instant): String {
     val date = Date(instant.toEpochMilliseconds())
     return dateFormat.format(date)
 }
+
+/**
+ * Parses ISO-8601-style timestamps from scraped metadata (e.g. article dates) and formats them like
+ * [formatDateTime]. If parsing fails, returns [raw] trimmed.
+ */
+fun formatExtractedMetadataDate(raw: String): String {
+    val trimmed = raw.trim()
+    if (trimmed.isEmpty()) return trimmed
+    val instant = runCatching { Instant.parse(trimmed) }.getOrNull()
+    return if (instant != null) formatDateTime(instant) else trimmed
+}

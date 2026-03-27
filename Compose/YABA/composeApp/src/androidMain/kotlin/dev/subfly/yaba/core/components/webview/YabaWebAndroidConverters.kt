@@ -5,6 +5,7 @@ import dev.subfly.yabacore.webview.WebConverterAsset
 import dev.subfly.yabacore.webview.WebConverterResult
 import dev.subfly.yabacore.webview.WebEpubConverterResult
 import dev.subfly.yabacore.webview.WebLinkMetadata
+import dev.subfly.yabacore.webview.normalizeBridgeOptionalString
 import dev.subfly.yabacore.webview.WebPdfConverterResult
 import dev.subfly.yabacore.webview.WebPdfTextSection
 import dev.subfly.yabacore.webview.YabaConverterBridgeScripts
@@ -76,16 +77,18 @@ internal suspend fun runHtmlConversion(
             val linkMetaJson = json.optJSONObject("linkMetadata") ?: JSONObject()
             val linkMetadata =
                     WebLinkMetadata(
-                            cleanedUrl = linkMetaJson.optString("cleanedUrl", ""),
-                            title = linkMetaJson.optString("title").takeIf { it.isNotEmpty() },
+                            cleanedUrl =
+                                    linkMetaJson.optString("cleanedUrl", "").normalizeBridgeOptionalString()
+                                            ?: "",
+                            title = linkMetaJson.optString("title").normalizeBridgeOptionalString(),
                             description =
-                                    linkMetaJson.optString("description").takeIf { it.isNotEmpty() },
-                            author = linkMetaJson.optString("author").takeIf { it.isNotEmpty() },
-                            date = linkMetaJson.optString("date").takeIf { it.isNotEmpty() },
-                            audio = linkMetaJson.optString("audio").takeIf { it.isNotEmpty() },
-                            video = linkMetaJson.optString("video").takeIf { it.isNotEmpty() },
-                            image = linkMetaJson.optString("image").takeIf { it.isNotEmpty() },
-                            logo = linkMetaJson.optString("logo").takeIf { it.isNotEmpty() },
+                                    linkMetaJson.optString("description").normalizeBridgeOptionalString(),
+                            author = linkMetaJson.optString("author").normalizeBridgeOptionalString(),
+                            date = linkMetaJson.optString("date").normalizeBridgeOptionalString(),
+                            audio = linkMetaJson.optString("audio").normalizeBridgeOptionalString(),
+                            video = linkMetaJson.optString("video").normalizeBridgeOptionalString(),
+                            image = linkMetaJson.optString("image").normalizeBridgeOptionalString(),
+                            logo = linkMetaJson.optString("logo").normalizeBridgeOptionalString(),
                     )
             return Result.success(
                     WebConverterResult(
@@ -164,16 +167,15 @@ internal suspend fun runPdfExtraction(
             }
             return Result.success(
                     WebPdfConverterResult(
-                            title = output.optString("title").takeIf { it.isNotBlank() },
-                            author = output.optString("author").takeIf { it.isNotBlank() },
-                            subject = output.optString("subject").takeIf { it.isNotBlank() },
+                            title = output.optString("title").normalizeBridgeOptionalString(),
+                            author = output.optString("author").normalizeBridgeOptionalString(),
+                            subject = output.optString("subject").normalizeBridgeOptionalString(),
                             creationDate =
-                                    output.optString("creationDate").takeIf { it.isNotBlank() },
+                                    output.optString("creationDate").normalizeBridgeOptionalString(),
                             pageCount = output.optInt("pageCount", 0),
                             firstPagePngDataUrl =
-                                    output.optString("firstPagePngDataUrl").takeIf {
-                                        it.isNotBlank()
-                                    },
+                                    output.optString("firstPagePngDataUrl")
+                                            .normalizeBridgeOptionalString(),
                             sections = sections,
                     ),
             )
@@ -232,13 +234,12 @@ internal suspend fun runEpubExtraction(
             return Result.success(
                     WebEpubConverterResult(
                             coverPngDataUrl =
-                                    output.optString("coverPngDataUrl").takeIf { it.isNotBlank() },
-                            title = output.optString("title").takeIf { it.isNotBlank() },
-                            author = output.optString("author").takeIf { it.isNotBlank() },
+                                    output.optString("coverPngDataUrl").normalizeBridgeOptionalString(),
+                            title = output.optString("title").normalizeBridgeOptionalString(),
+                            author = output.optString("author").normalizeBridgeOptionalString(),
                             description =
-                                    output.optString("description").takeIf { it.isNotBlank() },
-                            pubdate = output.optString("pubdate").takeIf { it.isNotBlank() },
-                            identifier = output.optString("identifier").takeIf { it.isNotBlank() },
+                                    output.optString("description").normalizeBridgeOptionalString(),
+                            pubdate = output.optString("pubdate").normalizeBridgeOptionalString(),
                     ),
             )
         } catch (e: Exception) {

@@ -14,5 +14,4 @@ data class WebEpubConverterResult(
     val author: String?,
     val description: String?,
     val pubdate: String?,
-    val identifier: String?,
 )

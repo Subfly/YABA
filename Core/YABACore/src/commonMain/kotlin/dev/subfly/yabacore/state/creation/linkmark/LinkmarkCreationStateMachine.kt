@@ -18,6 +18,7 @@ import dev.subfly.yabacore.toast.PlatformToastText
 import dev.subfly.yabacore.toast.ToastIconType
 import dev.subfly.yabacore.toast.ToastManager
 import dev.subfly.yabacore.unfurl.ConverterResultProcessor
+import dev.subfly.yabacore.webview.normalizeBridgeOptionalString
 import dev.subfly.yabacore.unfurl.UnfurlError
 import dev.subfly.yabacore.unfurl.Unfurler
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -56,6 +57,7 @@ class LinkmarkCreationStateMachine :
             is LinkmarkCreationEvent.OnSave -> onSave(event)
             LinkmarkCreationEvent.OnClearLabel -> onClearLabel()
             LinkmarkCreationEvent.OnClearDescription -> onClearDescription()
+            LinkmarkCreationEvent.OnApplyFromMetadata -> onApplyFromMetadata()
             LinkmarkCreationEvent.OnRefetch -> onRefetch()
             is LinkmarkCreationEvent.OnConverterSucceeded -> onConverterSucceeded(event)
             is LinkmarkCreationEvent.OnConverterFailed -> onConverterFailed(event)
@@ -339,6 +341,18 @@ class LinkmarkCreationStateMachine :
         updateState { it.copy(description = "") }
     }
 
+    private fun onApplyFromMetadata() {
+        val state = currentState()
+        val metaTitle = state.metadataTitle?.trim().orEmpty()
+        val metaDesc = state.metadataDescription?.trim().orEmpty()
+        updateState {
+            it.copy(
+                label = if (metaTitle.isNotEmpty()) metaTitle else it.label,
+                description = if (metaDesc.isNotEmpty()) metaDesc else it.description,
+            )
+        }
+    }
+
     private fun onRefetch() {
         if (currentState().isInEditMode) return
         val currentUrl = currentState().url
@@ -357,8 +371,9 @@ class LinkmarkCreationStateMachine :
         if (currentState().isInEditMode) return
         launch {
             val meta = event.linkMetadata
-            val imageBytes = Unfurler.downloadPreviewImageBytes(meta.image)
-            val logoBytes = Unfurler.downloadPreviewImageBytes(meta.logo)
+            val imageBytes =
+                Unfurler.downloadPreviewImageBytes(meta.image.normalizeBridgeOptionalString())
+            val logoBytes = Unfurler.downloadPreviewImageBytes(meta.logo.normalizeBridgeOptionalString())
             val readable = ConverterResultProcessor.process(
                 documentJson = event.documentJson,
                 assets = event.assets,
@@ -367,12 +382,12 @@ class LinkmarkCreationStateMachine :
                 it.copy(
                     cleanedUrl = meta.cleanedUrl,
                     host = extractDomain(meta.cleanedUrl),
-                    metadataTitle = meta.title,
-                    metadataDescription = meta.description,
-                    metadataAuthor = meta.author,
-                    metadataDate = meta.date,
-                    videoUrl = meta.video,
-                    audioUrl = meta.audio,
+                    metadataTitle = meta.title?.normalizeBridgeOptionalString(),
+                    metadataDescription = meta.description?.normalizeBridgeOptionalString(),
+                    metadataAuthor = meta.author?.normalizeBridgeOptionalString(),
+                    metadataDate = meta.date?.normalizeBridgeOptionalString(),
+                    videoUrl = meta.video?.normalizeBridgeOptionalString(),
+                    audioUrl = meta.audio?.normalizeBridgeOptionalString(),
                     imageData = imageBytes ?: it.imageData,
                     iconData = logoBytes ?: it.iconData,
                     readable = readable,
@@ -398,6 +413,8 @@ class LinkmarkCreationStateMachine :
 
     private fun onSave(event: LinkmarkCreationEvent.OnSave) {
         val state = currentState()
+        val title = state.label.trim()
+        if (title.isEmpty()) return
         var selectedFolder = state.selectedFolder ?: return
 
         launch {
@@ -416,7 +433,7 @@ class LinkmarkCreationStateMachine :
                         bookmarkId = bookmarkId,
                         folderId = selectedFolder.id,
                         kind = BookmarkKind.LINK,
-                        label = state.label.ifBlank { state.cleanedUrl },
+                        label = title,
                         description = state.description.ifBlank { null },
                         previewImageBytes = null,
                         previewImageExtension = null,
@@ -455,7 +472,7 @@ class LinkmarkCreationStateMachine :
                         id = bookmarkId,
                         folderId = selectedFolder.id,
                         kind = BookmarkKind.LINK,
-                        label = state.label.ifBlank { state.cleanedUrl },
+                        label = title,
                         description = state.description.ifBlank { null },
                         tagIds = state.selectedTags.map { it.id },
                         previewImageBytes = state.imageData,

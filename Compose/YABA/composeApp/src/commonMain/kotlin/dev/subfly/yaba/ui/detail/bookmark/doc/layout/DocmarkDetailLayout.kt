@@ -189,7 +189,6 @@ internal fun DocmarkDetailLayout(
                             metadataDate = state.metadataDate,
                             audioUrl = null,
                             videoUrl = null,
-                            identifier = state.metadataIdentifier,
                         )
                     }
                     item { Spacer(modifier = Modifier.height(24.dp)) }

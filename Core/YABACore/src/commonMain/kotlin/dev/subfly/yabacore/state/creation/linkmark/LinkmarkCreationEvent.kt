@@ -81,6 +81,12 @@ sealed class LinkmarkCreationEvent {
     data object OnClearDescription : LinkmarkCreationEvent()
 
     /**
+     * Copy extracted metadata into the user-editable title and description fields.
+     * Only non-blank metadata fields are applied; others keep their current values.
+     */
+    data object OnApplyFromMetadata : LinkmarkCreationEvent()
+
+    /**
      * Manually trigger a re-fetch of link metadata.
      */
     data object OnRefetch : LinkmarkCreationEvent()

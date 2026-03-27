@@ -30,5 +30,4 @@ data class DocBookmarkEntity(
     val metadataDescription: String? = null,
     val metadataAuthor: String? = null,
     val metadataDate: String? = null,
-    val metadataIdentifier: String? = null,
 )

@@ -108,7 +108,6 @@ internal fun LinkmarkDetailLayout(
                                 metadataDate = link.metadataDate,
                                 audioUrl = link.audioUrl,
                                 videoUrl = link.videoUrl,
-                                identifier = null,
                             )
                         }
                     }

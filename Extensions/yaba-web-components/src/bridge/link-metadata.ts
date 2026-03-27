@@ -28,11 +28,18 @@ export interface LinkMetadata {
 function toSingle(value: unknown): string | null {
   if (value == null) return null
   if (Array.isArray(value)) {
-    const first = value.map((v) => String(v).trim()).find((s) => s.length > 0)
+    const first = value.map((v) => normalizeScalarString(v)).find((s) => s != null)
     return first ?? null
   }
+  return normalizeScalarString(value)
+}
+
+function normalizeScalarString(value: unknown): string | null {
   const s = String(value).trim()
-  return s.length > 0 ? s : null
+  if (s.length === 0) return null
+  const lower = s.toLowerCase()
+  if (lower === "null" || lower === "undefined") return null
+  return s
 }
 
 /** Clean URL for display and as base URL for resolving relative metadata. */
