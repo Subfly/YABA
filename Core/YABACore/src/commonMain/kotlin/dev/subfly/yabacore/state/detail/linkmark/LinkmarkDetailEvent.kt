@@ -8,15 +8,18 @@ import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.notifications.PlatformNotificationText
 import dev.subfly.yabacore.unfurl.ReadableUnfurl
 import dev.subfly.yabacore.webview.WebConverterAsset
+import dev.subfly.yabacore.webview.WebLinkMetadata
 import dev.subfly.yabacore.webview.WebShellLoadResult
 
 sealed interface LinkmarkDetailEvent {
     data class OnInit(val bookmarkId: String) : LinkmarkDetailEvent
     data class OnSaveReadableContent(val readable: ReadableUnfurl) : LinkmarkDetailEvent
     data object OnUpdateReadableRequested : LinkmarkDetailEvent
+    data object OnUpdateLinkMetadataRequested : LinkmarkDetailEvent
     data class OnConverterSucceeded(
         val documentJson: String,
         val assets: List<WebConverterAsset>,
+        val linkMetadata: WebLinkMetadata,
     ) : LinkmarkDetailEvent
     data class OnConverterFailed(val error: Throwable) : LinkmarkDetailEvent
     data class OnReaderWebInitialContentLoad(val result: WebShellLoadResult) : LinkmarkDetailEvent

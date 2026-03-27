@@ -10,6 +10,7 @@ import dev.subfly.yabacore.common.CoreConstants
 import dev.subfly.yabacore.common.computeTriggerMillisFromDatePicker
 import dev.subfly.yabacore.managers.AllBookmarksManager
 import dev.subfly.yabacore.managers.AnnotationManager
+import dev.subfly.yabacore.managers.LinkmarkManager
 import dev.subfly.yabacore.model.annotation.AnnotationType
 import dev.subfly.yabacore.managers.ReadableContentManager
 import dev.subfly.yabacore.notifications.NotificationManager
@@ -20,6 +21,7 @@ import dev.subfly.yabacore.model.utils.ReaderLineHeight
 import dev.subfly.yabacore.model.utils.ReaderTheme
 import dev.subfly.yabacore.state.base.BaseStateMachine
 import dev.subfly.yabacore.webview.WebShellLoadResult
+import dev.subfly.yabacore.webview.normalizeBridgeOptionalString
 import dev.subfly.yabacore.unfurl.Unfurler
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -29,6 +31,11 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+
+private enum class LinkmarkRefreshPurpose {
+    Version,
+    Metadata,
+}
 
 private data class LinkmarkDetailCombine(
     val bookmark: BookmarkPreviewUiModel?,
@@ -44,6 +51,7 @@ class LinkmarkDetailStateMachine :
     ) {
     private var isInitialized = false
     private var initialReaderLoadSettled = false
+    private var pendingRefreshPurpose: LinkmarkRefreshPurpose? = null
     private var dataSubscriptionJob: Job? = null
     private val bookmarkIdFlow = MutableStateFlow<String?>(null)
     private val selectedReadableVersionIdFlow = MutableStateFlow<String?>(null)
@@ -53,6 +61,7 @@ class LinkmarkDetailStateMachine :
             is LinkmarkDetailEvent.OnInit -> onInit(event.bookmarkId)
             is LinkmarkDetailEvent.OnSaveReadableContent -> onSaveReadableContent(event)
             LinkmarkDetailEvent.OnUpdateReadableRequested -> onUpdateReadableRequested()
+            LinkmarkDetailEvent.OnUpdateLinkMetadataRequested -> onUpdateLinkMetadataRequested()
             is LinkmarkDetailEvent.OnConverterSucceeded -> onConverterSucceeded(event)
             is LinkmarkDetailEvent.OnConverterFailed -> onConverterFailed(event)
             is LinkmarkDetailEvent.OnReaderWebInitialContentLoad -> onReaderWebInitialContentLoad(event)
@@ -175,7 +184,16 @@ class LinkmarkDetailStateMachine :
     }
 
     private fun onUpdateReadableRequested() {
+        startWebRefresh(LinkmarkRefreshPurpose.Version)
+    }
+
+    private fun onUpdateLinkMetadataRequested() {
+        startWebRefresh(LinkmarkRefreshPurpose.Metadata)
+    }
+
+    private fun startWebRefresh(purpose: LinkmarkRefreshPurpose) {
         val linkUrl = currentState().linkDetails?.url ?: return
+        pendingRefreshPurpose = purpose
         launch {
             updateState { it.copy(isUpdatingReadable = true, converterError = null) }
             runCatching { Unfurler.unfurl(linkUrl) }
@@ -190,6 +208,7 @@ class LinkmarkDetailStateMachine :
                     }
                 }
                 ?: run {
+                    pendingRefreshPurpose = null
                     updateState {
                         it.copy(
                             isUpdatingReadable = false,
@@ -202,13 +221,35 @@ class LinkmarkDetailStateMachine :
 
     private fun onConverterSucceeded(event: LinkmarkDetailEvent.OnConverterSucceeded) {
         val bookmarkId = bookmarkIdFlow.value ?: return
+        val purpose = pendingRefreshPurpose ?: return
+        pendingRefreshPurpose = null
+        val meta = event.linkMetadata
         launch {
-            val readable = ConverterResultProcessor.process(
-                documentJson = event.documentJson,
-                assets = event.assets,
-            )
-            val versionId = ReadableContentManager.saveReadableContentInternal(bookmarkId, readable)
-            selectedReadableVersionIdFlow.value = versionId
+            when (purpose) {
+                LinkmarkRefreshPurpose.Version -> {
+                    val readable = ConverterResultProcessor.process(
+                        documentJson = event.documentJson,
+                        assets = event.assets,
+                    )
+                    val versionId = ReadableContentManager.saveReadableContentInternal(bookmarkId, readable)
+                    selectedReadableVersionIdFlow.value = versionId
+                    AllBookmarksManager.touchBookmarkEditedAt(bookmarkId)
+                }
+                LinkmarkRefreshPurpose.Metadata -> {
+                    LinkmarkManager.createOrUpdateLinkDetails(
+                        bookmarkId = bookmarkId,
+                        url = meta.cleanedUrl,
+                        domain = null,
+                        videoUrl = meta.video.normalizeBridgeOptionalString(),
+                        audioUrl = meta.audio.normalizeBridgeOptionalString(),
+                        metadataTitle = meta.title.normalizeBridgeOptionalString(),
+                        metadataDescription = meta.description.normalizeBridgeOptionalString(),
+                        metadataAuthor = meta.author.normalizeBridgeOptionalString(),
+                        metadataDate = meta.date.normalizeBridgeOptionalString(),
+                    )
+                    AllBookmarksManager.touchBookmarkEditedAt(bookmarkId)
+                }
+            }
             updateState {
                 it.copy(
                     converterHtml = null,
@@ -221,6 +262,7 @@ class LinkmarkDetailStateMachine :
     }
 
     private fun onConverterFailed(event: LinkmarkDetailEvent.OnConverterFailed) {
+        pendingRefreshPurpose = null
         updateState {
             it.copy(
                 converterHtml = null,
@@ -447,6 +489,7 @@ class LinkmarkDetailStateMachine :
     override fun clear() {
         isInitialized = false
         initialReaderLoadSettled = false
+        pendingRefreshPurpose = null
         dataSubscriptionJob?.cancel()
         dataSubscriptionJob = null
         bookmarkIdFlow.value = null

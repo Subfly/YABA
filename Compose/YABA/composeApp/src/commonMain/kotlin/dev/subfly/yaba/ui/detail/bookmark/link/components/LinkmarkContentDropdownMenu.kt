@@ -1,5 +1,7 @@
 package dev.subfly.yaba.ui.detail.bookmark.link.components
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.DropdownMenuGroup
@@ -9,8 +11,13 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
@@ -69,21 +76,30 @@ internal fun LinkmarkContentDropdownMenu(
     val moveText = stringResource(Res.string.move)
     val remindMeText = stringResource(Res.string.remind_me)
     val cancelReminderText = "Cancel Reminder" // TODO: LOCALIZATION
-    val updateText = "Update" // TODO: LOCALIZATION
+    val updateSectionTitle = "Update" // TODO: LOCALIZATION
+    val metadataLabel = "Metadata" // TODO: LOCALIZATION
+    val versionLabel = "Version" // TODO: LOCALIZATION
     val shareText = stringResource(Res.string.share)
     val deleteText = stringResource(Res.string.delete)
 
     val isAndroid = Platform == YabaPlatform.ANDROID
     val hasActiveReminder = state.reminderDateEpochMillis != null
 
-    val primaryActions = remember(openText, editText, moveText, updateText) {
+    val primaryActions = remember(openText, editText, moveText) {
         listOf(
             DetailMenuAction(key = "open", icon = "link-04", text = openText, color = YabaColor.GREEN),
             DetailMenuAction(key = "edit", icon = "edit-02", text = editText, color = YabaColor.ORANGE),
             DetailMenuAction(key = "move", icon = "arrow-move-up-right", text = moveText, color = YabaColor.TEAL),
-            DetailMenuAction(key = "update", icon = "arrow-reload-horizontal", text = updateText, color = YabaColor.BLUE),
         )
     }
+
+    val updateAccentColor = Color(YabaColor.BLUE.iconTintArgb())
+    var isUpdateSubmenuExpanded by remember { mutableStateOf(false) }
+    LaunchedEffect(expanded) {
+        if (!expanded) isUpdateSubmenuExpanded = false
+    }
+
+    val primaryRowCount = primaryActions.size + 1
 
     val secondaryActions = remember(isAndroid, hasActiveReminder, remindMeText, cancelReminderText, shareText) {
         buildList {
@@ -107,7 +123,7 @@ internal fun LinkmarkContentDropdownMenu(
         ) {
             primaryActions.fastForEachIndexed { index, action ->
                 DropdownMenuItem(
-                    shapes = MenuDefaults.itemShape(index, primaryActions.size),
+                    shapes = MenuDefaults.itemShape(index, primaryRowCount),
                     checked = false,
                     onCheckedChange = { _ ->
                         onDismissRequest()
@@ -132,7 +148,6 @@ internal fun LinkmarkContentDropdownMenu(
                                 )
                                 appStateManager.onShowCreationContent()
                             }
-                            "update" -> onEvent(LinkmarkDetailEvent.OnUpdateReadableRequested)
                         }
                     },
                     leadingIcon = {
@@ -144,6 +159,20 @@ internal fun LinkmarkContentDropdownMenu(
                     text = { Text(text = action.text) }
                 )
             }
+
+            LinkmarkUpdateSubmenuSection(
+                itemIndex = primaryActions.size,
+                siblingCount = primaryRowCount,
+                title = updateSectionTitle,
+                metadataLabel = metadataLabel,
+                versionLabel = versionLabel,
+                accentColor = updateAccentColor,
+                isExpanded = isUpdateSubmenuExpanded,
+                onToggleExpand = { isUpdateSubmenuExpanded = !isUpdateSubmenuExpanded },
+                onDismissSubmenu = { isUpdateSubmenuExpanded = false },
+                onDismissRootMenu = onDismissRequest,
+                onEvent = onEvent,
+            )
         }
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -212,6 +241,84 @@ internal fun LinkmarkContentDropdownMenu(
                     )
                 }
             )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun LinkmarkUpdateSubmenuSection(
+    itemIndex: Int,
+    siblingCount: Int,
+    title: String,
+    metadataLabel: String,
+    versionLabel: String,
+    accentColor: Color,
+    isExpanded: Boolean,
+    onToggleExpand: () -> Unit,
+    onDismissSubmenu: () -> Unit,
+    onDismissRootMenu: () -> Unit,
+    onEvent: (LinkmarkDetailEvent) -> Unit,
+) {
+    Box {
+        DropdownMenuItem(
+            shapes = MenuDefaults.itemShape(itemIndex, siblingCount),
+            checked = false,
+            onCheckedChange = { _ -> onToggleExpand() },
+            leadingIcon = {
+                YabaIcon(
+                    name = "arrow-reload-horizontal",
+                    color = accentColor,
+                )
+            },
+            trailingIcon = {
+                val expandedRotation by animateFloatAsState(
+                    targetValue = if (isExpanded) 90F else 0F,
+                )
+                YabaIcon(
+                    modifier = Modifier.rotate(expandedRotation),
+                    name = "arrow-right-01",
+                )
+            },
+            text = { Text(text = title) },
+        )
+        DropdownMenuPopup(
+            expanded = isExpanded,
+            onDismissRequest = onDismissSubmenu,
+        ) {
+            DropdownMenuGroup(
+                shapes = MenuDefaults.groupShape(
+                    index = 0,
+                    count = 1,
+                ),
+            ) {
+                DropdownMenuItem(
+                    shapes = MenuDefaults.itemShape(0, 2),
+                    checked = false,
+                    onCheckedChange = { _ ->
+                        onDismissSubmenu()
+                        onDismissRootMenu()
+                        onEvent(LinkmarkDetailEvent.OnUpdateLinkMetadataRequested)
+                    },
+                    leadingIcon = {
+                        YabaIcon(name = "database-01", color = accentColor)
+                    },
+                    text = { Text(text = metadataLabel) },
+                )
+                DropdownMenuItem(
+                    shapes = MenuDefaults.itemShape(1, 2),
+                    checked = false,
+                    onCheckedChange = { _ ->
+                        onDismissSubmenu()
+                        onDismissRootMenu()
+                        onEvent(LinkmarkDetailEvent.OnUpdateReadableRequested)
+                    },
+                    leadingIcon = {
+                        YabaIcon(name = "book-open-01", color = accentColor)
+                    },
+                    text = { Text(text = versionLabel) },
+                )
+            }
         }
     }
 }

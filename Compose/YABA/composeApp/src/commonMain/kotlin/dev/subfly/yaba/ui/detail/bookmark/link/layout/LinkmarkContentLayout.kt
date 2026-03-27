@@ -172,6 +172,7 @@ internal fun LinkmarkContentLayout(
                         LinkmarkDetailEvent.OnConverterSucceeded(
                             documentJson = ev.result.documentJson,
                             assets = ev.result.assets,
+                            linkMetadata = ev.result.linkMetadata,
                         ),
                     )
 
