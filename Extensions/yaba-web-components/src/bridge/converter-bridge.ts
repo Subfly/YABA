@@ -42,6 +42,9 @@ export interface ConverterOutput {
 
 export interface YabaConverterBridge {
   sanitizeAndConvertHtmlToReaderHtml: (input: ConverterInput) => Promise<ConverterOutput>
+  startHtmlConversion: (input: ConverterInput) => string
+  getHtmlConversionJob: (jobId: string) => HtmlConversionJobState | null
+  deleteHtmlConversionJob: (jobId: string) => void
   startPdfExtraction: (input: PdfExtractionInput) => string
   getPdfExtractionJob: (jobId: string) => PdfExtractionJobState | null
   deletePdfExtractionJob: (jobId: string) => void
@@ -78,7 +81,14 @@ export interface PdfExtractionJobState {
   error?: string
 }
 
+export interface HtmlConversionJobState {
+  status: "pending" | "done" | "error"
+  output?: ConverterOutput
+  error?: string
+}
+
 const pdfExtractionJobs = new Map<string, PdfExtractionJobState>()
+const htmlConversionJobs = new Map<string, HtmlConversionJobState>()
 
 export interface EpubExtractionInput {
   epubUrl: string
@@ -408,6 +418,13 @@ async function sanitizeAndConvertWithAssets(html: string, baseUrl?: string): Pro
   return { documentJson, assets, linkMetadata }
 }
 
+function createHtmlConversionJobId(): string {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID()
+  }
+  return `html-job-${Date.now()}-${Math.random().toString(36).slice(2)}`
+}
+
 function createPdfExtractionJobId(): string {
   if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
     return crypto.randomUUID()
@@ -662,6 +679,30 @@ export function initConverterBridge(): void {
   win.YabaConverterBridge = {
     sanitizeAndConvertHtmlToReaderHtml(input: ConverterInput): Promise<ConverterOutput> {
       return sanitizeAndConvertWithAssets(input.html, input.baseUrl)
+    },
+    startHtmlConversion(input: ConverterInput): string {
+      const jobId = createHtmlConversionJobId()
+      htmlConversionJobs.set(jobId, { status: "pending" })
+      void sanitizeAndConvertWithAssets(input.html, input.baseUrl)
+        .then((output) => {
+          htmlConversionJobs.set(jobId, {
+            status: "done",
+            output,
+          })
+        })
+        .catch((error) => {
+          htmlConversionJobs.set(jobId, {
+            status: "error",
+            error: error instanceof Error ? error.message : "Unknown HTML conversion error",
+          })
+        })
+      return jobId
+    },
+    getHtmlConversionJob(jobId: string): HtmlConversionJobState | null {
+      return htmlConversionJobs.get(jobId) ?? null
+    },
+    deleteHtmlConversionJob(jobId: string): void {
+      htmlConversionJobs.delete(jobId)
     },
     startPdfExtraction(input: PdfExtractionInput): string {
       const jobId = createPdfExtractionJobId()

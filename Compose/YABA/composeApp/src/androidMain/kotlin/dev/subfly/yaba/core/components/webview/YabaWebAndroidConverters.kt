@@ -21,7 +21,7 @@ internal suspend fun runHtmlConversion(
     if (!waitForBridgeReady(webView, YabaWebBridgeScripts.CONVERTER_BRIDGE_DEFINED)) {
         return Result.failure(IllegalStateException("Converter bridge not ready"))
     }
-    val rawResult =
+    val rawJobId =
             evaluateJs(
                     webView,
                     YabaConverterBridgeScripts.sanitizeAndConvertHtmlToReaderHtmlScript(
@@ -29,45 +29,76 @@ internal suspend fun runHtmlConversion(
                             baseUrl
                     ),
             )
-    val jsonStr = decodeJsStringResult(rawResult)
-    return runCatching {
-        val json = JSONObject(jsonStr)
-        if (json.has("error")) {
-            error(json.optString("error"))
-        }
-        val documentJson = json.optString("documentJson", "")
-        val assetsArray = json.optJSONArray("assets") ?: JSONArray()
-        val assets = mutableListOf<WebConverterAsset>()
-        for (i in 0 until assetsArray.length()) {
-            val item = assetsArray.optJSONObject(i) ?: continue
-            assets.add(
-                    WebConverterAsset(
-                            placeholder = item.optString("placeholder", ""),
-                            url = item.optString("url", ""),
-                            alt = item.optString("alt").takeIf { it.isNotEmpty() },
-                    ),
-            )
-        }
-        val linkMetaJson = json.optJSONObject("linkMetadata") ?: JSONObject()
-        val linkMetadata =
-                WebLinkMetadata(
-                        cleanedUrl = linkMetaJson.optString("cleanedUrl", ""),
-                        title = linkMetaJson.optString("title").takeIf { it.isNotEmpty() },
-                        description =
-                                linkMetaJson.optString("description").takeIf { it.isNotEmpty() },
-                        author = linkMetaJson.optString("author").takeIf { it.isNotEmpty() },
-                        date = linkMetaJson.optString("date").takeIf { it.isNotEmpty() },
-                        audio = linkMetaJson.optString("audio").takeIf { it.isNotEmpty() },
-                        video = linkMetaJson.optString("video").takeIf { it.isNotEmpty() },
-                        image = linkMetaJson.optString("image").takeIf { it.isNotEmpty() },
-                        logo = linkMetaJson.optString("logo").takeIf { it.isNotEmpty() },
-                )
-        WebConverterResult(
-                documentJson = documentJson,
-                assets = assets,
-                linkMetadata = linkMetadata
-        )
+    val jobId = decodeJsStringResult(rawJobId)
+    if (jobId.isBlank()) {
+        return Result.failure(IllegalStateException("Failed to start HTML conversion job"))
     }
+    var attempts = 0
+    while (attempts < 300) {
+        attempts += 1
+        val rawStatus =
+                evaluateJs(
+                        webView,
+                        YabaConverterBridgeScripts.getHtmlConversionJobScript(jobId),
+                )
+        val statusStr = decodeJsStringResult(rawStatus)
+        if (statusStr.isBlank() || statusStr == "null") {
+            delay(100)
+            continue
+        }
+        try {
+            val state = JSONObject(statusStr)
+            val status = state.optString("status")
+            if (status == "pending") {
+                delay(100)
+                continue
+            }
+            evaluateJs(webView, YabaConverterBridgeScripts.deleteHtmlConversionJobScript(jobId))
+            if (status == "error") {
+                return Result.failure(
+                        IllegalStateException(state.optString("error", "HTML conversion failed"))
+                )
+            }
+            val json = state.optJSONObject("output") ?: JSONObject()
+            val documentJson = json.optString("documentJson", "")
+            val assetsArray = json.optJSONArray("assets") ?: JSONArray()
+            val assets = mutableListOf<WebConverterAsset>()
+            for (i in 0 until assetsArray.length()) {
+                val item = assetsArray.optJSONObject(i) ?: continue
+                assets.add(
+                        WebConverterAsset(
+                                placeholder = item.optString("placeholder", ""),
+                                url = item.optString("url", ""),
+                                alt = item.optString("alt").takeIf { it.isNotEmpty() },
+                        ),
+                )
+            }
+            val linkMetaJson = json.optJSONObject("linkMetadata") ?: JSONObject()
+            val linkMetadata =
+                    WebLinkMetadata(
+                            cleanedUrl = linkMetaJson.optString("cleanedUrl", ""),
+                            title = linkMetaJson.optString("title").takeIf { it.isNotEmpty() },
+                            description =
+                                    linkMetaJson.optString("description").takeIf { it.isNotEmpty() },
+                            author = linkMetaJson.optString("author").takeIf { it.isNotEmpty() },
+                            date = linkMetaJson.optString("date").takeIf { it.isNotEmpty() },
+                            audio = linkMetaJson.optString("audio").takeIf { it.isNotEmpty() },
+                            video = linkMetaJson.optString("video").takeIf { it.isNotEmpty() },
+                            image = linkMetaJson.optString("image").takeIf { it.isNotEmpty() },
+                            logo = linkMetaJson.optString("logo").takeIf { it.isNotEmpty() },
+                    )
+            return Result.success(
+                    WebConverterResult(
+                            documentJson = documentJson,
+                            assets = assets,
+                            linkMetadata = linkMetadata
+                    )
+            )
+        } catch (e: Exception) {
+            return Result.failure(e)
+        }
+    }
+    return Result.failure(IllegalStateException("HTML conversion timed out"))
 }
 
 internal suspend fun runPdfExtraction(

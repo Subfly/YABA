@@ -8,19 +8,35 @@ object YabaConverterBridgeScripts {
         val baseUrlLiteral = baseUrl?.let { "'${escapeForJsSingleQuotedString(it)}'" } ?: "null"
         return """
             (function() {
-                return (async function() {
-                    try {
-                        var result = await window.YabaConverterBridge.sanitizeAndConvertHtmlToReaderHtml({
-                            html: '$htmlEscaped',
-                            baseUrl: $baseUrlLiteral
-                        });
-                        return JSON.stringify(result);
-                    } catch (e) {
-                        return JSON.stringify({ error: e.message });
-                    }
-                })();
+                try {
+                    return window.YabaConverterBridge.startHtmlConversion({
+                        html: '$htmlEscaped',
+                        baseUrl: $baseUrlLiteral
+                    });
+                } catch (e) {
+                    return "";
+                }
             })();
         """.trimIndent()
+    }
+
+    fun getHtmlConversionJobScript(jobId: String): String {
+        val jobIdEscaped = escapeForJsSingleQuotedString(jobId)
+        return """
+            (function() {
+                try {
+                    var state = window.YabaConverterBridge.getHtmlConversionJob('$jobIdEscaped');
+                    return JSON.stringify(state);
+                } catch (e) {
+                    return JSON.stringify({ status: "error", error: e.message });
+                }
+            })();
+        """.trimIndent()
+    }
+
+    fun deleteHtmlConversionJobScript(jobId: String): String {
+        val jobIdEscaped = escapeForJsSingleQuotedString(jobId)
+        return "(function(){ try { window.YabaConverterBridge.deleteHtmlConversionJob('$jobIdEscaped'); } catch(e){} })();"
     }
 
     fun startPdfExtractionScript(resolvedPdfUrl: String, renderScale: Float): String {
