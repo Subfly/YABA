@@ -2,6 +2,7 @@
 
 package dev.subfly.yaba.ui.creation.bookmark.docmark
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +17,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -31,15 +33,15 @@ import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
 import dev.subfly.yaba.core.navigation.creation.TagCreationRoute
 import dev.subfly.yaba.core.navigation.creation.TagSelectionRoute
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkCreationLabel
+import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkCreationTopBar
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkFolderSelectionContent
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkInfoContent
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewAppearanceSwitcher
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewCard
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewContent
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkTagSelectionContent
-import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkTopBar
-import dev.subfly.yaba.ui.detail.composables.BookmarkExtractedMetadataSection
 import dev.subfly.yaba.ui.creation.bookmark.model.BookmarkPreviewData
+import dev.subfly.yaba.ui.detail.composables.BookmarkExtractedMetadataSection
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
@@ -67,6 +69,7 @@ import yaba.composeapp.generated.resources.preview
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun DocmarkCreationContent(bookmarkId: String?) {
     val creationNavigator = LocalCreationContentNavigator.current
@@ -218,8 +221,7 @@ fun DocmarkCreationContent(bookmarkId: String?) {
             .fillMaxHeight(0.9f)
             .background(color = MaterialTheme.colorScheme.surfaceContainerLow),
     ) {
-        LinkmarkTopBar(
-            modifier = Modifier.padding(horizontal = 8.dp),
+        BookmarkCreationTopBar(
             canPerformDone = state.canSave,
             isEditing = state.isInEditMode,
             isSaving = state.isSaving,
@@ -233,10 +235,6 @@ fun DocmarkCreationContent(bookmarkId: String?) {
                         onErrorCallback = {},
                     ),
                 )
-            },
-            onDismiss = {
-                if (creationNavigator.size == 2) appStateManager.onHideCreationContent()
-                creationNavigator.removeLastOrNull()
             },
         )
 
@@ -253,11 +251,34 @@ fun DocmarkCreationContent(bookmarkId: String?) {
                 BookmarkCreationLabel(
                     label = stringResource(Res.string.info),
                     iconName = "information-circle",
+                    extraContent = {
+                        if (state.isInEditMode.not()) {
+                            AnimatedVisibility(visible = state.hasApplyableMetadata) {
+                                TextButton(
+                                    shapes = ButtonDefaults.shapes(),
+                                    onClick = {
+                                        vm.onEvent(DocmarkCreationEvent.OnApplyFromMetadata)
+                                    }
+                                ) {
+                                    val color = state.selectedFolder?.color ?: YabaColor.BLUE
+                                    Text(
+                                        text = "Apply from metadata",
+                                        color = Color(color.iconTintArgb())
+                                    )
+                                }
+                            }
+                        }
+                    }
                 )
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(
+                    modifier = Modifier.height(
+                        if (state.isInEditMode.not() && state.hasApplyableMetadata) 0.dp else 12.dp
+                    )
+                )
                 BookmarkInfoContent(
                     label = state.label,
                     description = state.description,
+                    showInfoLabel = false,
                     onChangeLabel = { vm.onEvent(DocmarkCreationEvent.OnChangeLabel(it)) },
                     onChangeDescription = { vm.onEvent(DocmarkCreationEvent.OnChangeDescription(it)) },
                     selectedFolder = state.selectedFolder,

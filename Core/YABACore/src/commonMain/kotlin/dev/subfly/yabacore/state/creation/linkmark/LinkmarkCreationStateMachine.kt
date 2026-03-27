@@ -347,8 +347,8 @@ class LinkmarkCreationStateMachine :
         val metaDesc = state.metadataDescription?.trim().orEmpty()
         updateState {
             it.copy(
-                label = if (metaTitle.isNotEmpty()) metaTitle else it.label,
-                description = if (metaDesc.isNotEmpty()) metaDesc else it.description,
+                label = metaTitle.ifEmpty { it.label },
+                description = metaDesc.ifEmpty { it.description },
             )
         }
     }

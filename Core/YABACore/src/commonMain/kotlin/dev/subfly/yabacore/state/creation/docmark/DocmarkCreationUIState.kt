@@ -41,6 +41,9 @@ data class DocmarkCreationUIState(
             (isInEditMode || documentBytes != null) &&
             !isLoading
 
+    val hasApplyableMetadata: Boolean
+        get() = metadataTitle.isNullOrBlank().not() || metadataDescription.isNullOrBlank().not()
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is DocmarkCreationUIState) return false

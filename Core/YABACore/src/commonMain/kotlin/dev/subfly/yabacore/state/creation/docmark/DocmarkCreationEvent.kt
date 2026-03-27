@@ -62,6 +62,8 @@ sealed class DocmarkCreationEvent {
 
     data class OnChangeSummary(val newSummary: String) : DocmarkCreationEvent()
 
+    data object OnApplyFromMetadata : DocmarkCreationEvent()
+
     data class OnSelectFolder(val folder: FolderUiModel) : DocmarkCreationEvent()
 
     data class OnSelectTags(val tags: List<TagUiModel>) : DocmarkCreationEvent()

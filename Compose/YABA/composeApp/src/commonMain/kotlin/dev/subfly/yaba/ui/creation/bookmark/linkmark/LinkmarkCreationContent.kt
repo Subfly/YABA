@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ButtonDefaults
@@ -30,6 +29,7 @@ import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
 import dev.subfly.yaba.core.navigation.creation.TagCreationRoute
 import dev.subfly.yaba.core.navigation.creation.TagSelectionRoute
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkCreationLabel
+import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkCreationTopBar
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkFolderSelectionContent
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkInfoContent
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewAppearanceSwitcher
@@ -37,7 +37,6 @@ import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewCard
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewContent
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkTagSelectionContent
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkLinkContent
-import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkTopBar
 import dev.subfly.yaba.ui.creation.bookmark.model.BookmarkPreviewData
 import dev.subfly.yaba.ui.detail.composables.BookmarkExtractedMetadataSection
 import dev.subfly.yaba.util.LocalAppStateManager
@@ -141,8 +140,7 @@ fun LinkmarkCreationContent(bookmarkId: String?, initialUrl: String? = null) {
             .fillMaxHeight(0.9F)
             .background(color = MaterialTheme.colorScheme.surfaceContainerLow)
     ) {
-        LinkmarkTopBar(
-            modifier = Modifier.padding(horizontal = 8.dp),
+        BookmarkCreationTopBar(
             canPerformDone = state.canSave,
             isEditing = state.editingLinkmark != null,
             isSaving = state.isSaving,
@@ -160,14 +158,6 @@ fun LinkmarkCreationContent(bookmarkId: String?, initialUrl: String? = null) {
                         }
                     )
                 )
-            },
-            onDismiss = {
-                // Means next pop up destination is Empty Route,
-                // so dismiss first, then remove the last item
-                if (creationNavigator.size == 2) {
-                    appStateManager.onHideCreationContent()
-                }
-                creationNavigator.removeLastOrNull()
             },
         )
         LazyColumn {

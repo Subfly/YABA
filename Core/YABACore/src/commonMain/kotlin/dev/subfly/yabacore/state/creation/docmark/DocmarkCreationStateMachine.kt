@@ -40,6 +40,7 @@ class DocmarkCreationStateMachine :
             is DocmarkCreationEvent.OnChangeLabel -> onChangeLabel(event)
             is DocmarkCreationEvent.OnChangeDescription -> onChangeDescription(event)
             is DocmarkCreationEvent.OnChangeSummary -> onChangeSummary(event)
+            DocmarkCreationEvent.OnApplyFromMetadata -> onApplyFromMetadata()
             is DocmarkCreationEvent.OnSelectFolder -> onSelectFolder(event)
             is DocmarkCreationEvent.OnSelectTags -> onSelectTags(event)
             is DocmarkCreationEvent.OnSave -> onSave(event)
@@ -256,6 +257,18 @@ class DocmarkCreationStateMachine :
 
     private fun onChangeSummary(event: DocmarkCreationEvent.OnChangeSummary) {
         updateState { it.copy(summary = event.newSummary) }
+    }
+
+    private fun onApplyFromMetadata() {
+        val state = currentState()
+        val metaTitle = state.metadataTitle?.trim().orEmpty()
+        val metaDesc = state.metadataDescription?.trim().orEmpty()
+        updateState {
+            it.copy(
+                label = metaTitle.ifEmpty { it.label },
+                description = metaDesc.ifEmpty { it.description },
+            )
+        }
     }
 
     private fun onSelectFolder(event: DocmarkCreationEvent.OnSelectFolder) {

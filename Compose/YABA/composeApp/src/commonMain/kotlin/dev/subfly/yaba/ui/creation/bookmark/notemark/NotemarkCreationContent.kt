@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -25,8 +24,8 @@ import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkInfoContent
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewAppearanceSwitcher
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewCard
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewContent
+import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkCreationTopBar
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkTagSelectionContent
-import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkTopBar
 import dev.subfly.yaba.ui.creation.bookmark.model.BookmarkPreviewData
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalContentNavigator
@@ -81,8 +80,7 @@ fun NotemarkCreationContent(bookmarkId: String?) {
             .fillMaxHeight(0.9f)
             .background(color = MaterialTheme.colorScheme.surfaceContainerLow),
     ) {
-        LinkmarkTopBar(
-            modifier = Modifier.padding(horizontal = 8.dp),
+        BookmarkCreationTopBar(
             canPerformDone = state.canSave,
             isEditing = state.isInEditMode,
             isSaving = state.isSaving,
@@ -99,12 +97,6 @@ fun NotemarkCreationContent(bookmarkId: String?) {
                         onErrorCallback = {},
                     ),
                 )
-            },
-            onDismiss = {
-                if (creationNavigator.size == 2) {
-                    appStateManager.onHideCreationContent()
-                }
-                creationNavigator.removeLastOrNull()
             },
         )
 

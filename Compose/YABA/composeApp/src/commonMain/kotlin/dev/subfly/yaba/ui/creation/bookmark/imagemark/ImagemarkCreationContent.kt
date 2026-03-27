@@ -30,8 +30,8 @@ import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkInfoContent
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewAppearanceSwitcher
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewCard
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewContent
+import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkCreationTopBar
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkTagSelectionContent
-import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkTopBar
 import dev.subfly.yaba.ui.creation.bookmark.model.BookmarkPreviewData
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
@@ -103,8 +103,7 @@ fun ImagemarkCreationContent(bookmarkId: String?) {
             .fillMaxHeight(0.9f)
             .background(color = MaterialTheme.colorScheme.surfaceContainerLow)
     ) {
-        LinkmarkTopBar(
-            modifier = Modifier.padding(horizontal = 8.dp),
+        BookmarkCreationTopBar(
             canPerformDone = state.canSave,
             isEditing = state.editingImagemark != null,
             isSaving = state.isSaving,
@@ -120,12 +119,6 @@ fun ImagemarkCreationContent(bookmarkId: String?) {
                         onErrorCallback = {}
                     )
                 )
-            },
-            onDismiss = {
-                if (creationNavigator.size == 2) {
-                    appStateManager.onHideCreationContent()
-                }
-                creationNavigator.removeLastOrNull()
             },
         )
         LazyColumn {
