@@ -55,8 +55,6 @@ fun BookmarkInfoContent(
             label = stringResource(Res.string.info),
             iconName = "information-circle"
         )
-    } else {
-        Spacer(modifier = Modifier.height(8.dp))
     }
 
     Spacer(modifier = Modifier.height(12.dp))

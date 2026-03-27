@@ -270,11 +270,6 @@ fun DocmarkCreationContent(bookmarkId: String?) {
                         }
                     }
                 )
-                Spacer(
-                    modifier = Modifier.height(
-                        if (state.isInEditMode.not() && state.hasApplyableMetadata) 0.dp else 12.dp
-                    )
-                )
                 BookmarkInfoContent(
                     label = state.label,
                     description = state.description,

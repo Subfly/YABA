@@ -2,7 +2,7 @@ import DOMPurify from "dompurify"
 import { Readability } from "@mozilla/readability"
 import { Editor } from "@tiptap/core"
 import ePub from "epubjs"
-import { GlobalWorkerOptions, getDocument } from "pdfjs-dist"
+import { GlobalWorkerOptions, getDocument, PDFDateString } from "pdfjs-dist"
 import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url"
 import { createEditorExtensions } from "../tiptap/editor-extensions"
 import { extractLinkMetadata, type LinkMetadata } from "./link-metadata"
@@ -597,6 +597,25 @@ async function loadPdfBytes(pdfUrl: string): Promise<ArrayBuffer> {
   return response.arrayBuffer()
 }
 
+/** Non-empty trimmed string from PDF info fields (may be string, array, or other from pdf.js). */
+function pdfInfoText(v: unknown): string | null {
+  if (v == null) return null
+  const s = String(v).trim()
+  return s.length > 0 ? s : null
+}
+
+/**
+ * Converts PDF metadata date strings (`D:YYYYMMDDHHmmSSOHH'mm'`, etc.) to an ISO 8601 UTC string.
+ * Uses pdf.js `PDFDateString` for parsing; host (Kotlin) formats for display.
+ */
+function formatPdfMetadataDate(raw: unknown): string | null {
+  const t = pdfInfoText(raw)
+  if (!t) return null
+  const date = PDFDateString.toDateObject(t)
+  if (!date || Number.isNaN(date.getTime())) return null
+  return date.toISOString()
+}
+
 async function extractPdfPreviewAndText(input: PdfExtractionInput): Promise<PdfExtractionOutput> {
   const data = await loadPdfBytes(input.pdfUrl)
   const loadingTask = getDocument({ data })
@@ -609,18 +628,17 @@ async function extractPdfPreviewAndText(input: PdfExtractionInput): Promise<PdfE
       Author?: string
       Subject?: string
       CreationDate?: string
+      Producer?: string
     } | undefined
     const titleCandidate = info?.Title ?? null
     const title = titleCandidate && titleCandidate.trim().length > 0 ? titleCandidate.trim() : null
-    const authorRaw = info?.Author
-    const author =
-      authorRaw && String(authorRaw).trim().length > 0 ? String(authorRaw).trim() : null
+    const authorFromDoc = pdfInfoText(info?.Author)
+    const producer = pdfInfoText(info?.Producer)
+    const author = authorFromDoc ?? producer ?? null
     const subjectRaw = info?.Subject
     const subject =
       subjectRaw && String(subjectRaw).trim().length > 0 ? String(subjectRaw).trim() : null
-    const creationRaw = info?.CreationDate
-    const creationDate =
-      creationRaw && String(creationRaw).trim().length > 0 ? String(creationRaw).trim() : null
+    const creationDate = formatPdfMetadataDate(info?.CreationDate)
     const sections: PdfTextSection[] = []
     const pageCount = pdfDocument.numPages
     const renderScale = input.renderScale && input.renderScale > 0 ? input.renderScale : 1.2
