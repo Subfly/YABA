@@ -31,7 +31,6 @@ import dev.subfly.yaba.ui.selection.color.ColorSelectionContent
 import dev.subfly.yaba.ui.selection.folder.FolderSelectionContent
 import dev.subfly.yaba.ui.selection.icon.IconCategorySelectionContent
 import dev.subfly.yaba.ui.selection.icon.IconSelectionContent
-import dev.subfly.yaba.ui.selection.image.ImageSelectionContent
 import dev.subfly.yaba.ui.selection.tag.TagSelectionContent
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
@@ -117,12 +116,6 @@ fun YabaCreationNavigationView(
             }
             entry<TagSelectionRoute> { key ->
                 TagSelectionContent(alreadySelectedTagIds = key.selectedTagIds)
-            }
-            entry<ImageSelectionRoute> { key ->
-                ImageSelectionContent(
-                    currentSelectedImageURL = key.selectedImage,
-                    imageDataMap = key.imageDataMap,
-                )
             }
             entry<AnnotationCreationRoute> { key ->
                 AnnotationCreationContent(

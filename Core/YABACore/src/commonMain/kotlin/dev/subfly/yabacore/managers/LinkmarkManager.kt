@@ -54,6 +54,11 @@ object LinkmarkManager {
             url = linkMetaData.url,
             domain = linkMetaData.domain,
             videoUrl = linkMetaData.videoUrl,
+            audioUrl = linkMetaData.audioUrl,
+            metadataTitle = linkMetaData.metadataTitle,
+            metadataDescription = linkMetaData.metadataDescription,
+            metadataAuthor = linkMetaData.metadataAuthor,
+            metadataDate = linkMetaData.metadataDate,
             localImagePath = localImageAbsolutePath,
             localIconPath = localIconAbsolutePath,
             parentFolder = folder,
@@ -71,14 +76,25 @@ object LinkmarkManager {
         url: String,
         domain: String? = null,
         videoUrl: String?,
+        audioUrl: String? = null,
+        metadataTitle: String? = null,
+        metadataDescription: String? = null,
+        metadataAuthor: String? = null,
+        metadataDate: String? = null,
     ) {
         CoreOperationQueue.queue("CreateOrUpdateLinkDetails:$bookmarkId") {
+            val previous = linkBookmarkDao.getByBookmarkId(bookmarkId)
             val resolvedDomain = domain?.takeIf { it.isNotBlank() } ?: extractDomain(url)
             val entity = LinkBookmarkEntity(
                 bookmarkId = bookmarkId,
                 url = url,
                 domain = resolvedDomain,
                 videoUrl = videoUrl,
+                audioUrl = audioUrl ?: previous?.audioUrl,
+                metadataTitle = metadataTitle ?: previous?.metadataTitle,
+                metadataDescription = metadataDescription ?: previous?.metadataDescription,
+                metadataAuthor = metadataAuthor ?: previous?.metadataAuthor,
+                metadataDate = metadataDate ?: previous?.metadataDate,
             )
             linkBookmarkDao.upsert(entity)
         }

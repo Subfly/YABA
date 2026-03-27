@@ -40,6 +40,7 @@ import dev.subfly.yaba.core.navigation.main.FolderDetailRoute
 import dev.subfly.yaba.core.navigation.main.TagDetailRoute
 import dev.subfly.yaba.ui.detail.bookmark.doc.models.DocmarkDetailPage
 import dev.subfly.yaba.core.components.item.annotation.AnnotationItemView
+import dev.subfly.yaba.ui.detail.composables.BookmarkExtractedMetadataSection
 import dev.subfly.yaba.ui.detail.composables.BookmarkDetailFolderSectionContent
 import dev.subfly.yaba.ui.detail.composables.BookmarkDetailLabel
 import dev.subfly.yaba.ui.detail.composables.BookmarkDetailReminderSectionContent
@@ -178,6 +179,18 @@ internal fun DocmarkDetailLayout(
                                 )
                             }
                         }
+                    }
+                    item {
+                        BookmarkExtractedMetadataSection(
+                            mainColor = mainColor,
+                            metadataTitle = state.metadataTitle,
+                            metadataDescription = state.metadataDescription,
+                            metadataAuthor = state.metadataAuthor,
+                            metadataDate = state.metadataDate,
+                            audioUrl = null,
+                            videoUrl = null,
+                            identifier = state.metadataIdentifier,
+                        )
                     }
                     item { Spacer(modifier = Modifier.height(24.dp)) }
                     bookmark.parentFolder?.let { folder ->

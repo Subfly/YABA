@@ -33,6 +33,14 @@ sealed class DocmarkCreationEvent {
 
     data object OnCyclePreviewAppearance : DocmarkCreationEvent()
 
+    data class OnDocumentMetadataExtracted(
+        val metadataTitle: String? = null,
+        val metadataDescription: String? = null,
+        val metadataAuthor: String? = null,
+        val metadataDate: String? = null,
+        val metadataIdentifier: String? = null,
+    ) : DocmarkCreationEvent()
+
     data class OnSetGeneratedPreview(
         val imageBytes: ByteArray?,
         val extension: String = "png",

@@ -35,6 +35,7 @@ class DocmarkCreationStateMachine :
             is DocmarkCreationEvent.OnDocumentFromShare -> onDocumentFromShare(event)
             DocmarkCreationEvent.OnClearDocument -> onClearDocument()
             DocmarkCreationEvent.OnCyclePreviewAppearance -> onCyclePreviewAppearance()
+            is DocmarkCreationEvent.OnDocumentMetadataExtracted -> onDocumentMetadataExtracted(event)
             is DocmarkCreationEvent.OnSetGeneratedPreview -> onSetGeneratedPreview(event)
             is DocmarkCreationEvent.OnChangeLabel -> onChangeLabel(event)
             is DocmarkCreationEvent.OnChangeDescription -> onChangeDescription(event)
@@ -67,6 +68,11 @@ class DocmarkCreationStateMachine :
                             label = existing.label,
                             description = existing.description ?: "",
                             summary = existing.summary ?: "",
+                            metadataTitle = existing.metadataTitle,
+                            metadataDescription = existing.metadataDescription,
+                            metadataAuthor = existing.metadataAuthor,
+                            metadataDate = existing.metadataDate,
+                            metadataIdentifier = existing.metadataIdentifier,
                             selectedFolder = existing.parentFolder,
                             selectedTags = existing.tags,
                             editingDocmark = existing,
@@ -128,7 +134,11 @@ class DocmarkCreationStateMachine :
                         documentBytes = bytes,
                         docmarkType = docmarkType,
                         sourceFileName = sourceName,
-                        label = it.label.ifBlank { sourceName.substringBeforeLast('.') },
+                        metadataTitle = null,
+                        metadataDescription = null,
+                        metadataAuthor = null,
+                        metadataDate = null,
+                        metadataIdentifier = null,
                         isLoading = true,
                         error = null,
                     )
@@ -157,17 +167,15 @@ class DocmarkCreationStateMachine :
         if (currentState().isInEditMode) return
         val sourceFileName = event.sourceFileName?.trim()?.ifBlank { null }
         updateState { state ->
-            val autoLabel =
-                if (state.label.isBlank() && sourceFileName != null) {
-                    sourceFileName.substringBeforeLast('.', sourceFileName)
-                } else {
-                    state.label
-                }
             state.copy(
                 documentBytes = event.bytes,
                 docmarkType = event.docmarkType,
                 sourceFileName = sourceFileName,
-                label = autoLabel,
+                metadataTitle = null,
+                metadataDescription = null,
+                metadataAuthor = null,
+                metadataDate = null,
+                metadataIdentifier = null,
                 previewImageBytes = null,
                 previewImageExtension = "png",
                 isLoading = true,
@@ -183,6 +191,11 @@ class DocmarkCreationStateMachine :
                 documentBytes = null,
                 docmarkType = null,
                 sourceFileName = null,
+                metadataTitle = null,
+                metadataDescription = null,
+                metadataAuthor = null,
+                metadataDate = null,
+                metadataIdentifier = null,
                 previewImageBytes = null,
                 isLoading = false,
                 error = null,
@@ -204,6 +217,18 @@ class DocmarkCreationStateMachine :
             it.copy(
                 bookmarkAppearance = nextAppearance,
                 cardImageSizing = nextSizing,
+            )
+        }
+    }
+
+    private fun onDocumentMetadataExtracted(event: DocmarkCreationEvent.OnDocumentMetadataExtracted) {
+        updateState {
+            it.copy(
+                metadataTitle = event.metadataTitle,
+                metadataDescription = event.metadataDescription,
+                metadataAuthor = event.metadataAuthor,
+                metadataDate = event.metadataDate,
+                metadataIdentifier = event.metadataIdentifier,
             )
         }
     }
@@ -276,7 +301,7 @@ class DocmarkCreationStateMachine :
                 }
 
                 val bookmarkId = state.editingDocmark?.id ?: IdGenerator.newId()
-                val label = state.label.ifBlank { state.sourceFileName?.substringBeforeLast('.') ?: "Document" }
+                val label = state.label.ifBlank { "Document" }
                 if (state.editingDocmark != null) {
                     AllBookmarksManager.updateBookmarkMetadata(
                         bookmarkId = bookmarkId,
@@ -320,6 +345,11 @@ class DocmarkCreationStateMachine :
                     bookmarkId = bookmarkId,
                     summary = state.summary.ifBlank { null },
                     docmarkType = if (state.editingDocmark != null) null else state.docmarkType,
+                    metadataTitle = state.metadataTitle,
+                    metadataDescription = state.metadataDescription,
+                    metadataAuthor = state.metadataAuthor,
+                    metadataDate = state.metadataDate,
+                    metadataIdentifier = state.metadataIdentifier,
                 )
 
                 updateState { it.copy(isSaving = false, error = null) }

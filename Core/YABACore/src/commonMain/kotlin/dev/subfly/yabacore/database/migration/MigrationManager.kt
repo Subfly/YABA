@@ -67,6 +67,11 @@ object MigrationManager {
                     url = legacy.url,
                     domain = legacy.domain,
                     videoUrl = legacy.videoUrl,
+                    audioUrl = null,
+                    metadataTitle = null,
+                    metadataDescription = null,
+                    metadataAuthor = null,
+                    metadataDate = null,
                 )
             )
         }

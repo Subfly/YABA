@@ -117,6 +117,11 @@ class DocmarkDetailStateMachine : BaseStateMachine<DocmarkDetailUIState, Docmark
                                 currentState().copy(
                                     bookmark = bookmark?.toBookmarkPreviewUiModel(),
                                     summary = doc?.summary,
+                                    metadataTitle = doc?.metadataTitle,
+                                    metadataDescription = doc?.metadataDescription,
+                                    metadataAuthor = doc?.metadataAuthor,
+                                    metadataDate = doc?.metadataDate,
+                                    metadataIdentifier = doc?.metadataIdentifier,
                                     docmarkType = docmarkType,
                                     documentAbsolutePath = documentPath,
                                     selectedReadableVersionId = selectedVersion?.versionId,
@@ -138,6 +143,11 @@ class DocmarkDetailStateMachine : BaseStateMachine<DocmarkDetailUIState, Docmark
                     current.copy(
                         bookmark = newState.bookmark,
                         summary = newState.summary,
+                        metadataTitle = newState.metadataTitle,
+                        metadataDescription = newState.metadataDescription,
+                        metadataAuthor = newState.metadataAuthor,
+                        metadataDate = newState.metadataDate,
+                        metadataIdentifier = newState.metadataIdentifier,
                         docmarkType = newState.docmarkType,
                         documentAbsolutePath = newState.documentAbsolutePath,
                         selectedReadableVersionId = newState.selectedReadableVersionId,

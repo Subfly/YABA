@@ -5,7 +5,6 @@ object ResultStoreKeys {
     const val SELECTED_ICON = "selected_icon"
     const val SELECTED_FOLDER = "selected_folder"
     const val SELECTED_TAGS = "selected_tags"
-    const val SELECTED_IMAGE = "selected_image"
     const val SELECTED_BOOKMARK = "selected_bookmark"
     const val SHARED_IMAGE_DATA = "shared_image_data"
     const val SHARED_DOCUMENT_DATA = "shared_document_data"

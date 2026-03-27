@@ -19,6 +19,11 @@ data class LinkmarkUiModel(
     val url: String,
     val domain: String,
     val videoUrl: String?,
+    val audioUrl: String? = null,
+    val metadataTitle: String? = null,
+    val metadataDescription: String? = null,
+    val metadataAuthor: String? = null,
+    val metadataDate: String? = null,
     /** Local file path for the bookmark's preview image, if saved to disk. */
     override val localImagePath: String? = null,
     /** Local file path for the bookmark's icon (domain icon for Linkmarks), if saved to disk. */

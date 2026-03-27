@@ -16,6 +16,11 @@ data class DocmarkCreationUIState(
     val label: String = "",
     val description: String = "",
     val summary: String = "",
+    val metadataTitle: String? = null,
+    val metadataDescription: String? = null,
+    val metadataAuthor: String? = null,
+    val metadataDate: String? = null,
+    val metadataIdentifier: String? = null,
     val bookmarkAppearance: BookmarkAppearance = BookmarkAppearance.LIST,
     val cardImageSizing: CardImageSizing = CardImageSizing.SMALL,
 
@@ -34,7 +39,6 @@ data class DocmarkCreationUIState(
 
     val canSave: Boolean
         get() = selectedFolder != null &&
-            label.isNotBlank() &&
             (isInEditMode || documentBytes != null) &&
             !isLoading
 
@@ -53,6 +57,11 @@ data class DocmarkCreationUIState(
         if (label != other.label) return false
         if (description != other.description) return false
         if (summary != other.summary) return false
+        if (metadataTitle != other.metadataTitle) return false
+        if (metadataDescription != other.metadataDescription) return false
+        if (metadataAuthor != other.metadataAuthor) return false
+        if (metadataDate != other.metadataDate) return false
+        if (metadataIdentifier != other.metadataIdentifier) return false
         if (previewImageBytes != null) {
             if (other.previewImageBytes == null || !previewImageBytes.contentEquals(other.previewImageBytes)) return false
         } else if (other.previewImageBytes != null) return false
@@ -76,6 +85,11 @@ data class DocmarkCreationUIState(
         result = 31 * result + label.hashCode()
         result = 31 * result + description.hashCode()
         result = 31 * result + summary.hashCode()
+        result = 31 * result + (metadataTitle?.hashCode() ?: 0)
+        result = 31 * result + (metadataDescription?.hashCode() ?: 0)
+        result = 31 * result + (metadataAuthor?.hashCode() ?: 0)
+        result = 31 * result + (metadataDate?.hashCode() ?: 0)
+        result = 31 * result + (metadataIdentifier?.hashCode() ?: 0)
         result = 31 * result + (previewImageBytes?.contentHashCode() ?: 0)
         result = 31 * result + previewImageExtension.hashCode()
         result = 31 * result + (selectedFolder?.hashCode() ?: 0)

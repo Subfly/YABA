@@ -27,7 +27,7 @@ internal object YabaWebAndroidSecurity {
         "default-src 'none'; " +
             "form-action 'none'; " +
             "connect-src 'self' blob:; " +
-            "img-src 'self' blob: data:; " +
+            "img-src 'self' blob: data: yaba-asset:; " +
             "script-src 'self' 'wasm-unsafe-eval'; " +
             "style-src 'self' 'unsafe-inline' blob:; " +
             "font-src 'self' data: blob:; " +

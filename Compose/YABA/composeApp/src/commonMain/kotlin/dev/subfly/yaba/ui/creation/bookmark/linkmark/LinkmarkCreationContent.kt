@@ -20,11 +20,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.core.components.webview.YabaWebView
-import dev.subfly.yaba.util.ResultStoreKeys
 import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
-import dev.subfly.yaba.core.navigation.creation.ImageSelectionRoute
 import dev.subfly.yaba.core.navigation.creation.TagCreationRoute
 import dev.subfly.yaba.core.navigation.creation.TagSelectionRoute
+import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkCreationLabel
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkFolderSelectionContent
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkInfoContent
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewAppearanceSwitcher
@@ -34,24 +33,27 @@ import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkTagSelectionConte
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkLinkContent
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkTopBar
 import dev.subfly.yaba.ui.creation.bookmark.model.BookmarkPreviewData
-import dev.subfly.yabacore.model.utils.FolderSelectionMode
-import dev.subfly.yabacore.model.utils.YabaColor
-import org.jetbrains.compose.resources.stringResource
-import yaba.composeapp.generated.resources.Res
+import dev.subfly.yaba.ui.detail.composables.BookmarkExtractedMetadataSection
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
+import dev.subfly.yaba.util.ResultStoreKeys
 import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.ui.TagUiModel
+import dev.subfly.yabacore.model.utils.FolderSelectionMode
+import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.creation.linkmark.LinkmarkCreationEvent
 import dev.subfly.yabacore.state.creation.linkmark.LinkmarkCreationToastMessages
 import dev.subfly.yabacore.ui.webview.WebComponentUris
 import dev.subfly.yabacore.webview.WebConverterInput
 import dev.subfly.yabacore.webview.YabaWebFeature
 import dev.subfly.yabacore.webview.YabaWebHostEvent
-import yaba.composeapp.generated.resources.create_bookmark_url_placeholder
+import org.jetbrains.compose.resources.stringResource
+import yaba.composeapp.generated.resources.Res
+import yaba.composeapp.generated.resources.create_bookmark_title_placeholder
 import yaba.composeapp.generated.resources.generic_unfurl_error_text
 import yaba.composeapp.generated.resources.generic_unfurl_success_text
+import yaba.composeapp.generated.resources.info
 import yaba.composeapp.generated.resources.ok
 import yaba.composeapp.generated.resources.preview
 import yaba.composeapp.generated.resources.unfurl_error_text
@@ -104,13 +106,6 @@ fun LinkmarkCreationContent(bookmarkId: String?, initialUrl: String? = null) {
         }
     }
 
-    LaunchedEffect(resultStore.getResult(ResultStoreKeys.SELECTED_IMAGE)) {
-        resultStore.getResult<String>(ResultStoreKeys.SELECTED_IMAGE)?.let { newUrl ->
-            vm.onEvent(LinkmarkCreationEvent.OnSelectImage(imageUrl = newUrl))
-            resultStore.removeResult(ResultStoreKeys.SELECTED_IMAGE)
-        }
-    }
-
     YabaWebView(
         modifier = Modifier.size(0.dp),
         baseUrl = WebComponentUris.getConverterUri(),
@@ -122,6 +117,7 @@ fun LinkmarkCreationContent(bookmarkId: String?, initialUrl: String? = null) {
                         LinkmarkCreationEvent.OnConverterSucceeded(
                             documentJson = ev.result.documentJson,
                             assets = ev.result.assets,
+                            linkMetadata = ev.result.linkMetadata,
                         ),
                     )
                 is YabaWebHostEvent.HtmlConverterFailure ->
@@ -139,7 +135,7 @@ fun LinkmarkCreationContent(bookmarkId: String?, initialUrl: String? = null) {
     ) {
         LinkmarkTopBar(
             modifier = Modifier.padding(horizontal = 8.dp),
-            canPerformDone = state.label.isNotBlank(),
+            canPerformDone = state.canSave,
             isEditing = state.editingLinkmark != null,
             isSaving = state.isSaving,
             onDone = {
@@ -193,19 +189,18 @@ fun LinkmarkCreationContent(bookmarkId: String?, initialUrl: String? = null) {
                             ),
                             bookmarkAppearance = state.bookmarkAppearance,
                             cardImageSizing = state.cardImageSizing,
-                            onClick = {
-                                creationNavigator.add(
-                                    ImageSelectionRoute(
-                                        selectedImage = state.imageUrl,
-                                        imageDataMap = state.selectableImages,
-                                    )
-                                )
-                            },
+                            onClick = {},
                         )
                     },
                 )
             }
             item {
+                Spacer(modifier = Modifier.height(12.dp))
+                BookmarkCreationLabel(
+                    label = stringResource(Res.string.info),
+                    iconName = "information-circle",
+                )
+                Spacer(modifier = Modifier.height(12.dp))
                 LinkmarkLinkContent(
                     state = state,
                     onChangeUrl = { newUrl ->
@@ -227,12 +222,24 @@ fun LinkmarkCreationContent(bookmarkId: String?, initialUrl: String? = null) {
                     },
                     selectedFolder = state.selectedFolder,
                     enabled = state.isLoading.not(),
-                    labelPlaceholder = Res.string.create_bookmark_url_placeholder,
+                    labelPlaceholder = Res.string.create_bookmark_title_placeholder,
                     showClearLabelButton = true,
                     onClearLabel = {
                         vm.onEvent(LinkmarkCreationEvent.OnClearLabel)
                     },
                     nullModelPresentableColor = YabaColor.BLUE,
+                )
+            }
+            item {
+                BookmarkExtractedMetadataSection(
+                    mainColor = state.selectedFolder?.color ?: YabaColor.BLUE,
+                    metadataTitle = state.metadataTitle,
+                    metadataDescription = state.metadataDescription,
+                    metadataAuthor = state.metadataAuthor,
+                    metadataDate = state.metadataDate,
+                    audioUrl = state.audioUrl,
+                    videoUrl = state.videoUrl,
+                    identifier = null,
                 )
             }
             item {

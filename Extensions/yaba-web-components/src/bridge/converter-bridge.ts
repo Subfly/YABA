@@ -5,6 +5,7 @@ import ePub from "epubjs"
 import { GlobalWorkerOptions, getDocument } from "pdfjs-dist"
 import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url"
 import { createEditorExtensions } from "../tiptap/editor-extensions"
+import { extractLinkMetadata, type LinkMetadata } from "./link-metadata"
 
 GlobalWorkerOptions.workerSrc = pdfWorkerUrl
 
@@ -35,10 +36,12 @@ export interface ConverterOutput {
   /** TipTap/ProseMirror JSON string (canonical reader document). */
   documentJson: string
   assets: ConverterAsset[]
+  /** web-meta-scraper + tidy-url on Core-fetched HTML (no URL fetch in the bridge; HTML-only scrape). */
+  linkMetadata: LinkMetadata
 }
 
 export interface YabaConverterBridge {
-  sanitizeAndConvertHtmlToReaderHtml: (input: ConverterInput) => ConverterOutput
+  sanitizeAndConvertHtmlToReaderHtml: (input: ConverterInput) => Promise<ConverterOutput>
   startPdfExtraction: (input: PdfExtractionInput) => string
   getPdfExtractionJob: (jobId: string) => PdfExtractionJobState | null
   deletePdfExtractionJob: (jobId: string) => void
@@ -59,6 +62,9 @@ export interface PdfTextSection {
 
 export interface PdfExtractionOutput {
   title: StringOrNull
+  author: StringOrNull
+  subject: StringOrNull
+  creationDate: StringOrNull
   pageCount: number
   firstPagePngDataUrl: StringOrNull
   sections: PdfTextSection[]
@@ -80,6 +86,11 @@ export interface EpubExtractionInput {
 
 export interface EpubExtractionOutput {
   coverPngDataUrl: StringOrNull
+  title: StringOrNull
+  author: StringOrNull
+  description: StringOrNull
+  pubdate: StringOrNull
+  identifier: StringOrNull
 }
 
 export interface EpubExtractionJobState {
@@ -99,6 +110,66 @@ function resolveUrl(baseUrl: string | undefined, src: string): string {
   } catch {
     return src
   }
+}
+
+/**
+ * Resolves relative `href` / `src` / `srcset` / `poster` against `baseUrl` in-place.
+ * We intentionally do **not** inject `<base href>`: Android WebView CSP uses `base-uri 'self'`, and
+ * setting the document base to an article origin is blocked. Readability still needs absolute URLs.
+ */
+function resolveRelativeUrlsInDocument(doc: Document, baseUrl: string): void {
+  const base = baseUrl.trim()
+  if (!base) return
+
+  const toAbs = (raw: string): string => {
+    const u = raw.trim()
+    if (
+      !u ||
+      u.startsWith("#") ||
+      u.startsWith("data:") ||
+      u.startsWith("mailto:") ||
+      u.startsWith("javascript:") ||
+      u.startsWith("http://") ||
+      u.startsWith("https://")
+    ) {
+      return raw
+    }
+    try {
+      return new URL(u, base).href
+    } catch {
+      return raw
+    }
+  }
+
+  const resolveSrcset = (v: string): string =>
+    v
+      .split(",")
+      .map((part) => {
+        const p = part.trim()
+        if (!p) return part
+        const sp = p.indexOf(" ")
+        if (sp === -1) return toAbs(p)
+        return `${toAbs(p.slice(0, sp))}${p.slice(sp)}`
+      })
+      .join(", ")
+
+  doc.querySelectorAll("base").forEach((el) => el.remove())
+  doc.querySelectorAll("[href]").forEach((el) => {
+    const h = el.getAttribute("href")
+    if (h) el.setAttribute("href", toAbs(h))
+  })
+  doc.querySelectorAll("[src]").forEach((el) => {
+    const s = el.getAttribute("src")
+    if (s && !s.startsWith("data:")) el.setAttribute("src", toAbs(s))
+  })
+  doc.querySelectorAll("[srcset]").forEach((el) => {
+    const s = el.getAttribute("srcset")
+    if (s) el.setAttribute("srcset", resolveSrcset(s))
+  })
+  doc.querySelectorAll("[poster]").forEach((el) => {
+    const p = el.getAttribute("poster")
+    if (p) el.setAttribute("poster", toAbs(p))
+  })
 }
 
 interface CodeNodeStats {
@@ -214,10 +285,8 @@ function toReaderModeHtml(html: string, baseUrl?: string): string {
     `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>${html}</body></html>`,
     "text/html"
   )
-  if (baseUrl) {
-    const base = doc.createElement("base")
-    base.setAttribute("href", baseUrl)
-    doc.head.appendChild(base)
+  if (baseUrl?.trim()) {
+    resolveRelativeUrlsInDocument(doc, baseUrl.trim())
   }
   normalizeCodeWrappers(doc.body)
   const normalizedOriginalHtml = doc.body.innerHTML
@@ -331,10 +400,12 @@ function htmlToDocumentJson(html: string): string {
   }
 }
 
-function sanitizeAndConvertWithAssets(html: string, baseUrl?: string): ConverterOutput {
+async function sanitizeAndConvertWithAssets(html: string, baseUrl?: string): Promise<ConverterOutput> {
+  const pageUrl = (baseUrl && baseUrl.trim().length > 0 ? baseUrl.trim() : "https://invalid.invalid") as string
+  const linkMetadata = await extractLinkMetadata(html, pageUrl)
   const { htmlWithPlaceholders, assets } = sanitizeReaderHtmlWithPlaceholders(html, baseUrl)
   const documentJson = htmlToDocumentJson(htmlWithPlaceholders)
-  return { documentJson, assets }
+  return { documentJson, assets, linkMetadata }
 }
 
 function createPdfExtractionJobId(): string {
@@ -407,6 +478,23 @@ async function blobToDataUrl(blob: Blob): Promise<string> {
   })
 }
 
+function epubMetaText(v: unknown): string | null {
+  if (v == null) return null
+  if (typeof v === "string") {
+    const t = v.trim()
+    return t.length > 0 ? t : null
+  }
+  if (typeof v === "object" && v !== null) {
+    const o = v as Record<string, unknown>
+    if (typeof o["#text"] === "string") {
+      const t = o["#text"].trim()
+      return t.length > 0 ? t : null
+    }
+  }
+  const s = String(v).trim()
+  return s.length > 0 ? s : null
+}
+
 async function extractEpubCover(input: EpubExtractionInput): Promise<EpubExtractionOutput> {
   const data = await loadEpubBytes(input.epubUrl)
   const book = ePub(data)
@@ -422,12 +510,28 @@ async function extractEpubCover(input: EpubExtractionInput): Promise<EpubExtract
   } catch {
     coverPngDataUrl = null
   }
+
+  const md = (book.packaging?.metadata || {}) as unknown as Record<string, unknown>
+  const title = epubMetaText(md.title)
+  let author = epubMetaText(md.creator)
+  if (!author) author = epubMetaText(md.publisher)
+  const description = epubMetaText(md.description)
+  const pubdate = epubMetaText(md.pubdate) ?? epubMetaText(md["dc:date"])
+  const identifier = epubMetaText(md.identifier) ?? epubMetaText(md["dc:identifier"])
+
   try {
     await book.destroy()
   } catch {
     /* ignore */
   }
-  return { coverPngDataUrl }
+  return {
+    coverPngDataUrl,
+    title,
+    author,
+    description,
+    pubdate,
+    identifier,
+  }
 }
 
 /**
@@ -486,9 +590,23 @@ async function extractPdfPreviewAndText(input: PdfExtractionInput): Promise<PdfE
 
   try {
     const metadata = await pdfDocument.getMetadata().catch(() => null)
-    const info = metadata?.info as { Title?: string } | undefined
+    const info = metadata?.info as {
+      Title?: string
+      Author?: string
+      Subject?: string
+      CreationDate?: string
+    } | undefined
     const titleCandidate = info?.Title ?? null
     const title = titleCandidate && titleCandidate.trim().length > 0 ? titleCandidate.trim() : null
+    const authorRaw = info?.Author
+    const author =
+      authorRaw && String(authorRaw).trim().length > 0 ? String(authorRaw).trim() : null
+    const subjectRaw = info?.Subject
+    const subject =
+      subjectRaw && String(subjectRaw).trim().length > 0 ? String(subjectRaw).trim() : null
+    const creationRaw = info?.CreationDate
+    const creationDate =
+      creationRaw && String(creationRaw).trim().length > 0 ? String(creationRaw).trim() : null
     const sections: PdfTextSection[] = []
     const pageCount = pdfDocument.numPages
     const renderScale = input.renderScale && input.renderScale > 0 ? input.renderScale : 1.2
@@ -527,6 +645,9 @@ async function extractPdfPreviewAndText(input: PdfExtractionInput): Promise<PdfE
 
     return {
       title,
+      author,
+      subject,
+      creationDate,
       pageCount,
       firstPagePngDataUrl,
       sections,
@@ -539,7 +660,7 @@ async function extractPdfPreviewAndText(input: PdfExtractionInput): Promise<PdfE
 export function initConverterBridge(): void {
   const win = window as Window & { YabaConverterBridge?: YabaConverterBridge }
   win.YabaConverterBridge = {
-    sanitizeAndConvertHtmlToReaderHtml(input: ConverterInput): ConverterOutput {
+    sanitizeAndConvertHtmlToReaderHtml(input: ConverterInput): Promise<ConverterOutput> {
       return sanitizeAndConvertWithAssets(input.html, input.baseUrl)
     },
     startPdfExtraction(input: PdfExtractionInput): string {

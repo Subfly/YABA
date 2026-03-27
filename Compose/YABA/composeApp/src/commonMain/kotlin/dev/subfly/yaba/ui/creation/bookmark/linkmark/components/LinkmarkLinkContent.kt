@@ -17,7 +17,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkCreationLabel
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.creation.linkmark.LinkmarkCreationUIState
 import dev.subfly.yabacore.ui.icon.YabaIcon
@@ -27,7 +26,6 @@ import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.bookmark_creation_link_info_message
 import yaba.composeapp.generated.resources.create_bookmark_cleaned_url_placeholder
 import yaba.composeapp.generated.resources.create_bookmark_url_placeholder
-import yaba.composeapp.generated.resources.link
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -39,12 +37,7 @@ internal fun LinkmarkLinkContent(
         mutableStateOf(state.selectedFolder?.color ?: YabaColor.BLUE)
     }
 
-    Spacer(modifier = Modifier.height(24.dp))
-    BookmarkCreationLabel(
-        label = stringResource(Res.string.link),
-        iconName = "link-04"
-    )
-    Spacer(modifier = Modifier.height(12.dp))
+    Spacer(modifier = Modifier.height(8.dp))
     OutlinedTextField(
         modifier = Modifier
             .fillMaxWidth()

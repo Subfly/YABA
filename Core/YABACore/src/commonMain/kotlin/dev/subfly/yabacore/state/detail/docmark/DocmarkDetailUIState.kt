@@ -10,8 +10,12 @@ import dev.subfly.yabacore.model.utils.ReaderPreferences
 data class DocmarkDetailUIState(
     val bookmark: BookmarkPreviewUiModel? = null,
     val summary: String? = null,
+    val metadataTitle: String? = null,
+    val metadataDescription: String? = null,
+    val metadataAuthor: String? = null,
+    val metadataDate: String? = null,
+    val metadataIdentifier: String? = null,
     val docmarkType: DocmarkType = DocmarkType.PDF,
-    /** Absolute path to `document.pdf` or `document.epub`. */
     val documentAbsolutePath: String? = null,
     val readerPreferences: ReaderPreferences = ReaderPreferences(),
     val selectedReadableVersionId: String? = null,

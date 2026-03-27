@@ -26,4 +26,9 @@ data class DocBookmarkEntity(
     val summary: String? = null,
     @ColumnInfo(defaultValue = "PDF")
     val type: DocmarkType = DocmarkType.PDF,
+    val metadataTitle: String? = null,
+    val metadataDescription: String? = null,
+    val metadataAuthor: String? = null,
+    val metadataDate: String? = null,
+    val metadataIdentifier: String? = null,
 )

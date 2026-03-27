@@ -10,4 +10,9 @@ data class WebEpubConverterInput(
 @Stable
 data class WebEpubConverterResult(
     val coverPngDataUrl: String?,
+    val title: String?,
+    val author: String?,
+    val description: String?,
+    val pubdate: String?,
+    val identifier: String?,
 )

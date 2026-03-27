@@ -39,4 +39,9 @@ data class LinkmarkLinkDetailsUiModel(
     val url: String,
     val domain: String,
     val videoUrl: String?,
+    val audioUrl: String? = null,
+    val metadataTitle: String? = null,
+    val metadataDescription: String? = null,
+    val metadataAuthor: String? = null,
+    val metadataDate: String? = null,
 )

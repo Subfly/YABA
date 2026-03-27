@@ -4,6 +4,7 @@ import dev.subfly.yabacore.model.ui.FolderUiModel
 import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.toast.PlatformToastText
 import dev.subfly.yabacore.webview.WebConverterAsset
+import dev.subfly.yabacore.webview.WebLinkMetadata
 
 /**
  * Events for linkmark creation/editing state machine.
@@ -42,17 +43,6 @@ sealed class LinkmarkCreationEvent {
      * LIST -> CARD (SMALL) -> CARD (BIG) -> GRID -> LIST...
      */
     data object OnCyclePreviewAppearance : LinkmarkCreationEvent()
-
-    /**
-     * Select a different preview image.
-     *
-     * @param imageUrl The URL of the selected image.
-     * @param imageData Optional image data if available (from image selection screen).
-     */
-    data class OnSelectImage(
-        val imageUrl: String,
-        val imageData: ByteArray? = null,
-    ) : LinkmarkCreationEvent()
 
     /**
      * Change the URL. This triggers debounced cleaning and re-fetching of link metadata.
@@ -96,19 +86,12 @@ sealed class LinkmarkCreationEvent {
     data object OnRefetch : LinkmarkCreationEvent()
 
     /**
-     * Apply unfurl-detected updates (preview image/icon, videoUrl, readable content).
-     *
-     * This is intended for edit mode: we can fetch new remote-derived content without overwriting
-     * the user's title/description automatically.
-     */
-    data object OnApplyContentUpdates : LinkmarkCreationEvent()
-
-    /**
      * Converter (WebView) finished successfully with rich-text document JSON + asset mappings.
      */
     data class OnConverterSucceeded(
         val documentJson: String,
         val assets: List<WebConverterAsset>,
+        val linkMetadata: WebLinkMetadata,
     ) : LinkmarkCreationEvent()
 
     /**

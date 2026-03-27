@@ -1,29 +1,17 @@
 package dev.subfly.yabacore.unfurl
 
 /**
- * Result of unfurling a URL.
+ * Result of fetching a link page for preview and reader conversion.
  *
- * Contains extracted metadata for previews plus structured readable content
- * for the reader view.
- *
- * [rawHtml] is the fetched HTML, used by the converter (WebView) to produce
- * sanitized reader HTML when the converter flow is used (Compose creation).
+ * HTML parsing, URL cleanup, and structured metadata extraction run in the WebView
+ * converter. [Unfurler] only performs the HTTP fetch and supplies [rawHtml] to the bridge.
  */
 data class YabaLinkPreview(
     val url: String,
-    val title: String?,
-    val description: String?,
     val host: String?,
-    val iconUrl: String?,
-    val imageUrl: String?,
-    val videoUrl: String?,
-    val iconData: ByteArray?,
-    val imageData: ByteArray?,
-    val imageOptions: Map<String, ByteArray>,
+    val rawHtml: String?,
     /** Structured readable content extracted from HTML (legacy path; null when using converter). */
     val readable: ReadableUnfurl?,
-    /** Raw HTML for converter-based reader HTML extraction (Compose creation flow). */
-    val rawHtml: String? = null,
 )
 
 sealed class UnfurlError(message: String) : Exception(message) {

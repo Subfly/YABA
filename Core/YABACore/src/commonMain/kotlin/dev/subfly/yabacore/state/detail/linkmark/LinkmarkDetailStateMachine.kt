@@ -490,5 +490,10 @@ class LinkmarkDetailStateMachine :
             url = url,
             domain = domain,
             videoUrl = videoUrl,
+            audioUrl = audioUrl,
+            metadataTitle = metadataTitle,
+            metadataDescription = metadataDescription,
+            metadataAuthor = metadataAuthor,
+            metadataDate = metadataDate,
         )
 }

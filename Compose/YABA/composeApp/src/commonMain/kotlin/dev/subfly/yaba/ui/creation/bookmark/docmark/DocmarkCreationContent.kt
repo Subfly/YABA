@@ -30,6 +30,7 @@ import dev.subfly.yaba.core.components.webview.YabaWebView
 import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
 import dev.subfly.yaba.core.navigation.creation.TagCreationRoute
 import dev.subfly.yaba.core.navigation.creation.TagSelectionRoute
+import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkCreationLabel
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkFolderSelectionContent
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkInfoContent
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewAppearanceSwitcher
@@ -37,6 +38,7 @@ import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewCard
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewContent
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkTagSelectionContent
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkTopBar
+import dev.subfly.yaba.ui.detail.composables.BookmarkExtractedMetadataSection
 import dev.subfly.yaba.ui.creation.bookmark.model.BookmarkPreviewData
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
@@ -60,6 +62,7 @@ import dev.subfly.yabacore.webview.YabaWebHostEvent
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.create_bookmark_title_placeholder
+import yaba.composeapp.generated.resources.info
 import yaba.composeapp.generated.resources.preview
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
@@ -157,6 +160,15 @@ fun DocmarkCreationContent(bookmarkId: String?) {
                             extension = "png",
                         ),
                     )
+                    vm.onEvent(
+                        DocmarkCreationEvent.OnDocumentMetadataExtracted(
+                            metadataTitle = ev.result.title,
+                            metadataDescription = ev.result.subject,
+                            metadataAuthor = ev.result.author,
+                            metadataDate = ev.result.creationDate,
+                            metadataIdentifier = null,
+                        ),
+                    )
                 }
                 is YabaWebHostEvent.PdfConverterFailure -> {
                     // Non-fatal: preview/readable may stay empty
@@ -180,6 +192,15 @@ fun DocmarkCreationContent(bookmarkId: String?) {
                         DocmarkCreationEvent.OnSetGeneratedPreview(
                             imageBytes = previewBytes,
                             extension = "png",
+                        ),
+                    )
+                    vm.onEvent(
+                        DocmarkCreationEvent.OnDocumentMetadataExtracted(
+                            metadataTitle = ev.result.title,
+                            metadataDescription = ev.result.description,
+                            metadataAuthor = ev.result.author,
+                            metadataDate = ev.result.pubdate,
+                            metadataIdentifier = ev.result.identifier,
                         ),
                     )
                 }
@@ -230,6 +251,12 @@ fun DocmarkCreationContent(bookmarkId: String?) {
                 )
             }
             item {
+                Spacer(modifier = Modifier.height(12.dp))
+                BookmarkCreationLabel(
+                    label = stringResource(Res.string.info),
+                    iconName = "information-circle",
+                )
+                Spacer(modifier = Modifier.height(12.dp))
                 BookmarkInfoContent(
                     label = state.label,
                     description = state.description,
@@ -239,6 +266,18 @@ fun DocmarkCreationContent(bookmarkId: String?) {
                     enabled = state.isLoading.not(),
                     labelPlaceholder = Res.string.create_bookmark_title_placeholder,
                     nullModelPresentableColor = YabaColor.BLUE,
+                )
+            }
+            item {
+                BookmarkExtractedMetadataSection(
+                    mainColor = state.selectedFolder?.color ?: YabaColor.BLUE,
+                    metadataTitle = state.metadataTitle,
+                    metadataDescription = state.metadataDescription,
+                    metadataAuthor = state.metadataAuthor,
+                    metadataDate = state.metadataDate,
+                    audioUrl = null,
+                    videoUrl = null,
+                    identifier = state.metadataIdentifier,
                 )
             }
             item {

@@ -30,6 +30,7 @@ import dev.subfly.yaba.ui.detail.composables.BookmarkDetailFolderSectionContent
 import dev.subfly.yaba.core.components.item.annotation.AnnotationItemView
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailImageSectionContent
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailInfoSectionContent
+import dev.subfly.yaba.ui.detail.composables.BookmarkExtractedMetadataSection
 import dev.subfly.yaba.ui.detail.composables.BookmarkDetailReminderSectionContent
 import dev.subfly.yaba.ui.detail.composables.BookmarkDetailTagSectionContent
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailVersionItemContent
@@ -95,6 +96,21 @@ internal fun LinkmarkDetailLayout(
                             bookmarkDetails = bookmarkDetails,
                             mainColor = mainColor,
                         )
+                    }
+                    item(key = "LINK_METADATA") {
+                        state.linkDetails?.let { link ->
+                            BookmarkExtractedMetadataSection(
+                                modifier = Modifier.animateItem(),
+                                mainColor = mainColor,
+                                metadataTitle = link.metadataTitle,
+                                metadataDescription = link.metadataDescription,
+                                metadataAuthor = link.metadataAuthor,
+                                metadataDate = link.metadataDate,
+                                audioUrl = link.audioUrl,
+                                videoUrl = link.videoUrl,
+                                identifier = null,
+                            )
+                        }
                     }
                     item { Spacer(modifier = Modifier.height(24.dp)) }
                     bookmarkDetails.parentFolder?.let { folder ->

@@ -17,6 +17,9 @@ data class WebPdfTextSection(
 @Stable
 data class WebPdfConverterResult(
     val title: String?,
+    val author: String?,
+    val subject: String?,
+    val creationDate: String?,
     val pageCount: Int,
     val firstPagePngDataUrl: String?,
     val sections: List<WebPdfTextSection>,

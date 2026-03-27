@@ -1,25 +1,24 @@
 package dev.subfly.yabacore.webview
 
-/**
- * JavaScript source for [window.YabaConverterBridge] calls. No WebView types.
- */
+/** JavaScript source for [window.YabaConverterBridge] calls. No WebView types. */
 object YabaConverterBridgeScripts {
 
     fun sanitizeAndConvertHtmlToReaderHtmlScript(html: String, baseUrl: String?): String {
         val htmlEscaped = escapeForJsSingleQuotedString(html)
-        val baseUrlLiteral =
-            baseUrl?.let { "'${escapeForJsSingleQuotedString(it)}'" } ?: "null"
+        val baseUrlLiteral = baseUrl?.let { "'${escapeForJsSingleQuotedString(it)}'" } ?: "null"
         return """
             (function() {
-                try {
-                    var result = window.YabaConverterBridge.sanitizeAndConvertHtmlToReaderHtml({
-                        html: '$htmlEscaped',
-                        baseUrl: $baseUrlLiteral
-                    });
-                    return JSON.stringify(result);
-                } catch (e) {
-                    return JSON.stringify({ error: e.message });
-                }
+                return (async function() {
+                    try {
+                        var result = await window.YabaConverterBridge.sanitizeAndConvertHtmlToReaderHtml({
+                            html: '$htmlEscaped',
+                            baseUrl: $baseUrlLiteral
+                        });
+                        return JSON.stringify(result);
+                    } catch (e) {
+                        return JSON.stringify({ error: e.message });
+                    }
+                })();
             })();
         """.trimIndent()
     }

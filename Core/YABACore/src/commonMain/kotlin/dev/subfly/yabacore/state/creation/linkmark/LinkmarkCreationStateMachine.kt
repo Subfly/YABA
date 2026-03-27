@@ -18,7 +18,6 @@ import dev.subfly.yabacore.toast.PlatformToastText
 import dev.subfly.yabacore.toast.ToastIconType
 import dev.subfly.yabacore.toast.ToastManager
 import dev.subfly.yabacore.unfurl.ConverterResultProcessor
-import dev.subfly.yabacore.unfurl.LinkCleaner
 import dev.subfly.yabacore.unfurl.UnfurlError
 import dev.subfly.yabacore.unfurl.Unfurler
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -49,7 +48,6 @@ class LinkmarkCreationStateMachine :
         when (event) {
             is LinkmarkCreationEvent.OnInit -> onInit(event)
             LinkmarkCreationEvent.OnCyclePreviewAppearance -> onCyclePreviewAppearance()
-            is LinkmarkCreationEvent.OnSelectImage -> onSelectImage(event)
             is LinkmarkCreationEvent.OnChangeUrl -> onChangeUrl(event)
             is LinkmarkCreationEvent.OnChangeLabel -> onChangeLabel(event)
             is LinkmarkCreationEvent.OnChangeDescription -> onChangeDescription(event)
@@ -59,7 +57,6 @@ class LinkmarkCreationStateMachine :
             LinkmarkCreationEvent.OnClearLabel -> onClearLabel()
             LinkmarkCreationEvent.OnClearDescription -> onClearDescription()
             LinkmarkCreationEvent.OnRefetch -> onRefetch()
-            LinkmarkCreationEvent.OnApplyContentUpdates -> onApplyContentUpdates()
             is LinkmarkCreationEvent.OnConverterSucceeded -> onConverterSucceeded(event)
             is LinkmarkCreationEvent.OnConverterFailed -> onConverterFailed(event)
         }
@@ -94,9 +91,12 @@ class LinkmarkCreationStateMachine :
                             host = existing.domain,
                             label = existing.label,
                             description = existing.description ?: "",
-                            iconUrl = null,
-                            imageUrl = null,
+                            metadataTitle = existing.metadataTitle,
+                            metadataDescription = existing.metadataDescription,
+                            metadataAuthor = existing.metadataAuthor,
+                            metadataDate = existing.metadataDate,
                             videoUrl = existing.videoUrl,
+                            audioUrl = existing.audioUrl,
                             selectedFolder = existing.parentFolder,
                             selectedTags = existing.tags,
                             editingLinkmark = existing,
@@ -104,7 +104,6 @@ class LinkmarkCreationStateMachine :
                         )
                     }
 
-                    // Use the new helper methods that don't expose FileKit
                     val savedImageBytes = LinkmarkFileManager.readLinkImageBytes(linkmarkId)
                     val savedIconBytes = LinkmarkFileManager.readDomainIconBytes(linkmarkId)
 
@@ -116,7 +115,6 @@ class LinkmarkCreationStateMachine :
                             )
                         }
                     }
-
                 }
             }
 
@@ -144,8 +142,6 @@ class LinkmarkCreationStateMachine :
 
             // Ensure a folder is selected (use uncategorized if none)
             if (currentState().selectedFolder == null) {
-                // Use in-memory model immediately; actual persistence + visibility restoration happens on save.
-                // This ensures: if Uncategorized is currently hidden, we unhide it via UPDATE before using it.
                 val temporaryUncategorized = FolderManager.createUncategorizedFolderModel()
                 updateState {
                     it.copy(
@@ -170,117 +166,55 @@ class LinkmarkCreationStateMachine :
     private suspend fun fetchLinkData(
         urlString: String,
         force: Boolean = false,
-        previewOnly: Boolean = false,
     ) {
         val state = currentState()
 
-        // Skip if empty or same as last fetched
-        if (urlString.isBlank() || (force.not() && urlString == state.lastFetchedUrl)) {
+        if (urlString.isBlank() || (!force && urlString == state.lastFetchedUrl)) {
             return
         }
 
         updateState {
-            if (previewOnly) {
-                // Editing should feel instant: don't flip the UI into a loading/shimmer state
-                // while we background-refresh selectable images / update candidates.
-                it.copy(error = null)
-            } else {
-                it.copy(
-                    isLoading = true,
-                    error = null,
-                )
-            }
+            it.copy(
+                isLoading = true,
+                error = null,
+            )
         }
 
         try {
             val preview = Unfurler.unfurl(urlString)
 
             if (preview != null) {
-                val currentLabel = currentState().label
-                val currentDescription = currentState().description
+                val rawHtml = preview.rawHtml
+                val needsConverter = rawHtml.isNullOrBlank().not()
 
                 updateState {
-                    if (previewOnly) {
-                        val imageUpdate = computeByteArrayUpdate(it.imageData, preview.imageData)
-                        val iconUpdate = computeByteArrayUpdate(it.iconData, preview.iconData)
-                        val videoDiff = preview.videoUrl != it.videoUrl
-                        val rawHtml = preview.rawHtml
-                        val needsConverter = rawHtml != null && rawHtml.isNotBlank()
-                        // When needsConverter, updateReadable will be set via OnConverterSucceeded
-                        val hasUpdates =
-                            (imageUpdate != null) ||
-                                    (iconUpdate != null) ||
-                                    videoDiff
-                        it.copy(
-                            selectableImages = preview.imageOptions,
-                            hasContentUpdates = hasUpdates,
-                            updateImageData = imageUpdate,
-                            updateIconData = iconUpdate,
-                            shouldUpdateVideoUrl = videoDiff,
-                            updateVideoUrl = if (videoDiff) preview.videoUrl else null,
-                            converterHtml = if (needsConverter) rawHtml else null,
-                            converterBaseUrl = if (needsConverter) preview.url else null,
-                            lastFetchedUrl = urlString,
-                            isLoading = false,
-                            error = null,
-                        )
-                    } else {
-                        // Converter flow: pass rawHtml to WebView; wait for OnConverterSucceeded
-                        val rawHtml = preview.rawHtml
-                        val needsConverter = rawHtml != null && rawHtml.isNotBlank()
-                        it.copy(
-                            cleanedUrl = preview.url,
-                            host = preview.host ?: "",
-                            label = currentLabel.ifBlank { preview.title ?: "" },
-                            description =
-                                currentDescription.ifBlank { preview.description ?: "" },
-                            iconUrl = preview.iconUrl,
-                            imageUrl = preview.imageUrl,
-                            videoUrl = preview.videoUrl,
-                            iconData = preview.iconData,
-                            imageData = preview.imageData,
-                            selectableImages = preview.imageOptions,
-                            readable = if (needsConverter) null else preview.readable,
-                            converterHtml = if (needsConverter) rawHtml else null,
-                            converterBaseUrl = if (needsConverter) preview.url else null,
-                            converterError = null,
-                            hasContentUpdates = false,
-                            updateImageData = null,
-                            updateIconData = null,
-                            shouldUpdateVideoUrl = false,
-                            updateVideoUrl = null,
-                            shouldUpdateReadable = false,
-                            updateReadable = null,
-                            lastFetchedUrl = urlString,
-                            isLoading = !needsConverter,
-                            error = null,
-                        )
-                    }
+                    it.copy(
+                        cleanedUrl = preview.url,
+                        host = extractDomain(preview.url),
+                        converterHtml = if (needsConverter) rawHtml else null,
+                        converterBaseUrl = if (needsConverter) preview.url else null,
+                        converterError = null,
+                        lastFetchedUrl = urlString,
+                        isLoading = !needsConverter,
+                        error = null,
+                    )
                 }
-                if (!previewOnly) showUnfurlToast(
+                showUnfurlToast(
                     message = toastMessages?.unfurlSuccess,
                     iconType = ToastIconType.SUCCESS,
                 )
             } else {
+                val fallback = urlString.trim()
                 updateState {
-                    if (previewOnly) {
-                        it.copy(
-                            lastFetchedUrl = urlString,
-                            isLoading = false,
-                            error = null,
-                        )
-                    } else {
-                        // Clean URL even if unfurl failed
-                        val cleaned = LinkCleaner.clean(urlString)
-                        it.copy(
-                            cleanedUrl = cleaned,
-                            lastFetchedUrl = urlString,
-                            isLoading = false,
-                            error = LinkmarkCreationError.UnableToUnfurl,
-                        )
-                    }
+                    it.copy(
+                        cleanedUrl = fallback,
+                        host = extractDomain(fallback),
+                        lastFetchedUrl = urlString,
+                        isLoading = false,
+                        error = LinkmarkCreationError.UnableToUnfurl,
+                    )
                 }
-                if (!previewOnly) showUnfurlToast(
+                showUnfurlToast(
                     message = toastMessages?.unableToUnfurl,
                     iconType = ToastIconType.ERROR,
                 )
@@ -289,58 +223,50 @@ class LinkmarkCreationStateMachine :
             updateState {
                 it.copy(
                     isLoading = false,
-                    error = if (previewOnly) null else LinkmarkCreationError.InvalidUrl(e.raw),
+                    error = LinkmarkCreationError.InvalidUrl(e.raw),
                 )
             }
-            if (!previewOnly) showUnfurlToast(
+            showUnfurlToast(
                 message = toastMessages?.invalidUrl,
                 iconType = ToastIconType.ERROR,
             )
-        } catch (e: UnfurlError) {
+        } catch (_: UnfurlError) {
+            val fallback = urlString.trim()
             updateState {
-                if (previewOnly) {
-                    it.copy(
-                        lastFetchedUrl = urlString,
-                        isLoading = false,
-                        error = null,
-                    )
-                } else {
-                    val cleaned = LinkCleaner.clean(urlString)
-                    it.copy(
-                        cleanedUrl = cleaned,
-                        lastFetchedUrl = urlString,
-                        isLoading = false,
-                        error = LinkmarkCreationError.UnableToUnfurl,
-                    )
-                }
+                it.copy(
+                    cleanedUrl = fallback,
+                    host = extractDomain(fallback),
+                    lastFetchedUrl = urlString,
+                    isLoading = false,
+                    error = LinkmarkCreationError.UnableToUnfurl,
+                )
             }
-            if (!previewOnly) showUnfurlToast(
+            showUnfurlToast(
                 message = toastMessages?.unableToUnfurl,
                 iconType = ToastIconType.ERROR,
             )
-        } catch (e: Exception) {
+        } catch (_: Exception) {
+            val fallback = urlString.trim()
             updateState {
-                if (previewOnly) {
-                    it.copy(
-                        lastFetchedUrl = urlString,
-                        isLoading = false,
-                        error = null,
-                    )
-                } else {
-                    val cleaned = LinkCleaner.clean(urlString)
-                    it.copy(
-                        cleanedUrl = cleaned,
-                        lastFetchedUrl = urlString,
-                        isLoading = false,
-                        error = LinkmarkCreationError.FetchFailed,
-                    )
-                }
+                it.copy(
+                    cleanedUrl = fallback,
+                    host = extractDomain(fallback),
+                    lastFetchedUrl = urlString,
+                    isLoading = false,
+                    error = LinkmarkCreationError.FetchFailed,
+                )
             }
-            if (!previewOnly) showUnfurlToast(
+            showUnfurlToast(
                 message = toastMessages?.genericUnfurlError,
                 iconType = ToastIconType.ERROR,
             )
         }
+    }
+
+    private fun extractDomain(url: String): String {
+        val withoutProtocol = url.substringAfter("://", url)
+        val candidate = withoutProtocol.substringBefore("/")
+        return candidate.substringBefore("?").substringBefore("#")
     }
 
     private fun showUnfurlToast(
@@ -357,10 +283,6 @@ class LinkmarkCreationStateMachine :
         )
     }
 
-    /**
-     * Cycles through preview appearances in order: LIST -> CARD (SMALL) -> CARD (BIG) -> GRID ->
-     * LIST...
-     */
     private fun onCyclePreviewAppearance() {
         val state = currentState()
 
@@ -385,24 +307,9 @@ class LinkmarkCreationStateMachine :
         }
     }
 
-    private fun onSelectImage(event: LinkmarkCreationEvent.OnSelectImage) {
-        if (currentState().isInEditMode) return
-        val state = currentState()
-        // If imageData is not provided, try to look it up from selectableImages
-        val imageData = event.imageData ?: event.imageUrl.let { url -> state.selectableImages[url] }
-
-        updateState {
-            it.copy(
-                imageUrl = event.imageUrl,
-                imageData = imageData,
-            )
-        }
-    }
-
     private fun onChangeUrl(event: LinkmarkCreationEvent.OnChangeUrl) {
         if (currentState().isInEditMode) return
         updateState { it.copy(url = event.newUrl) }
-        // Emit to debounce flow
         launch { urlDebounceFlow.emit(event.newUrl) }
     }
 
@@ -436,14 +343,11 @@ class LinkmarkCreationStateMachine :
         if (currentState().isInEditMode) return
         val currentUrl = currentState().url
         if (currentUrl.isNotBlank()) {
-            // Reset lastFetchedUrl to force re-fetch
             updateState { it.copy(lastFetchedUrl = "") }
             launch {
-                val state = currentState()
                 fetchLinkData(
                     urlString = currentUrl,
                     force = true,
-                    previewOnly = state.isInEditMode,
                 )
             }
         }
@@ -452,30 +356,31 @@ class LinkmarkCreationStateMachine :
     private fun onConverterSucceeded(event: LinkmarkCreationEvent.OnConverterSucceeded) {
         if (currentState().isInEditMode) return
         launch {
+            val meta = event.linkMetadata
+            val imageBytes = Unfurler.downloadPreviewImageBytes(meta.image)
+            val logoBytes = Unfurler.downloadPreviewImageBytes(meta.logo)
             val readable = ConverterResultProcessor.process(
                 documentJson = event.documentJson,
                 assets = event.assets,
             )
             updateState {
-                if (it.isInEditMode) {
-                    it.copy(
-                        hasContentUpdates = true,
-                        shouldUpdateReadable = true,
-                        updateReadable = readable,
-                        converterHtml = null,
-                        converterBaseUrl = null,
-                        converterError = null,
-                        isLoading = false,
-                    )
-                } else {
-                    it.copy(
-                        readable = readable,
-                        converterHtml = null,
-                        converterBaseUrl = null,
-                        converterError = null,
-                        isLoading = false,
-                    )
-                }
+                it.copy(
+                    cleanedUrl = meta.cleanedUrl,
+                    host = extractDomain(meta.cleanedUrl),
+                    metadataTitle = meta.title,
+                    metadataDescription = meta.description,
+                    metadataAuthor = meta.author,
+                    metadataDate = meta.date,
+                    videoUrl = meta.video,
+                    audioUrl = meta.audio,
+                    imageData = imageBytes ?: it.imageData,
+                    iconData = logoBytes ?: it.iconData,
+                    readable = readable,
+                    converterHtml = null,
+                    converterBaseUrl = null,
+                    converterError = null,
+                    isLoading = false,
+                )
             }
         }
     }
@@ -491,34 +396,6 @@ class LinkmarkCreationStateMachine :
         }
     }
 
-    private fun onApplyContentUpdates() {
-        val state = currentState()
-        if (state.isInEditMode) return
-        if (!state.hasContentUpdates) return
-
-        updateState {
-            it.copy(
-                imageData = it.updateImageData ?: it.imageData,
-                iconData = it.updateIconData ?: it.iconData,
-                videoUrl = if (it.shouldUpdateVideoUrl) it.updateVideoUrl else it.videoUrl,
-                readable = if (it.shouldUpdateReadable) it.updateReadable else it.readable,
-                hasContentUpdates = false,
-                updateImageData = null,
-                updateIconData = null,
-                shouldUpdateVideoUrl = false,
-                updateVideoUrl = null,
-                shouldUpdateReadable = false,
-                updateReadable = null,
-            )
-        }
-    }
-
-    private fun computeByteArrayUpdate(current: ByteArray?, candidate: ByteArray?): ByteArray? {
-        if (candidate == null) return null
-        if (current == null) return candidate
-        return if (current.contentEquals(candidate)) null else candidate
-    }
-
     private fun onSave(event: LinkmarkCreationEvent.OnSave) {
         val state = currentState()
         var selectedFolder = state.selectedFolder ?: return
@@ -527,7 +404,6 @@ class LinkmarkCreationStateMachine :
             updateState { it.copy(isSaving = true) }
 
             try {
-                // If uncategorized folder needs to be created, persist it now
                 if (state.uncategorizedFolderCreationRequired) {
                     selectedFolder = FolderManager.ensureUncategorizedFolderVisible()
                 }
@@ -536,7 +412,6 @@ class LinkmarkCreationStateMachine :
                 if (state.editingLinkmark != null) {
                     bookmarkId = state.editingLinkmark.id
 
-                    // Update base bookmark metadata first (list/grid source of truth)
                     AllBookmarksManager.updateBookmarkMetadata(
                         bookmarkId = bookmarkId,
                         folderId = selectedFolder.id,
@@ -548,12 +423,16 @@ class LinkmarkCreationStateMachine :
                         previewIconBytes = null,
                     )
 
-                    // Then upsert link-specific details (detail screen extras)
                     LinkmarkManager.createOrUpdateLinkDetails(
                         bookmarkId = bookmarkId,
                         url = state.editingLinkmark.url,
                         domain = state.editingLinkmark.domain,
                         videoUrl = state.editingLinkmark.videoUrl,
+                        audioUrl = state.editingLinkmark.audioUrl,
+                        metadataTitle = state.editingLinkmark.metadataTitle,
+                        metadataDescription = state.editingLinkmark.metadataDescription,
+                        metadataAuthor = state.editingLinkmark.metadataAuthor,
+                        metadataDate = state.editingLinkmark.metadataDate,
                     )
 
                     // Handle tag changes
@@ -590,6 +469,11 @@ class LinkmarkCreationStateMachine :
                         url = state.cleanedUrl,
                         domain = state.host,
                         videoUrl = state.videoUrl,
+                        audioUrl = state.audioUrl,
+                        metadataTitle = state.metadataTitle,
+                        metadataDescription = state.metadataDescription,
+                        metadataAuthor = state.metadataAuthor,
+                        metadataDate = state.metadataDate,
                     )
                 }
 
@@ -600,7 +484,7 @@ class LinkmarkCreationStateMachine :
 
                 updateState { it.copy(isSaving = false, error = null) }
                 event.onSavedCallback()
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 updateState {
                     it.copy(
                         isSaving = false,
