@@ -49,4 +49,16 @@ sealed interface NotemarkDetailEvent {
     data class OnTocChanged(val toc: Toc?) : NotemarkDetailEvent
     data class OnNavigateToTocItem(val id: String, val extrasJson: String?) : NotemarkDetailEvent
     data object OnClearTocNavigation : NotemarkDetailEvent
+
+    /**
+     * UI ran [dev.subfly.yabacore.webview.WebViewEditorBridge.exportNoteMarkdownBundleJson];
+     * Core opens the directory picker and writes `.md` + assets via [dev.subfly.yabacore.filesystem.access.YabaFileAccessor].
+     */
+    data class OnExportMarkdownReady(val bundleJson: String) : NotemarkDetailEvent
+
+    /**
+     * UI ran [dev.subfly.yabacore.webview.WebViewEditorBridge.exportNotePdfBase64];
+     * Core opens the file saver via [dev.subfly.yabacore.filesystem.access.YabaFileAccessor].
+     */
+    data class OnExportPdfReady(val pdfBase64: String) : NotemarkDetailEvent
 }

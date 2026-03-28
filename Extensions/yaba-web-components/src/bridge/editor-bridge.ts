@@ -109,9 +109,9 @@ export interface YabaEditorBridge {
   onAnnotationTap?: (id: string) => void
   navigateToTocItem: (id: string, extrasJson?: string | null) => void
   /** JSON string: `{ markdown, assets: [{ relativePath, dataBase64 }] }` for Save Copy → MD. */
-  exportMarkdownBundleJson: () => Promise<string>
+  exportMarkdownBundleJson: () => string
   /** Base64 PDF bytes (no data: prefix) for Save Copy → PDF. */
-  exportPdfBase64: () => Promise<string>
+  exportPdfBase64: () => string
 }
 
 function removeAnnotationMarksWithId(editor: Editor | null, annotationId: string): number {
@@ -999,16 +999,28 @@ export function initEditorBridge(editor: Editor): void {
         /* ignore */
       }
     },
-    exportMarkdownBundleJson: async () => {
+    exportMarkdownBundleJson: () => {
       const ed = editorInstance
       if (!ed) return JSON.stringify({ markdown: "", assets: [] })
-      const bundle = await exportMarkdownBundleFromEditor(ed)
-      return JSON.stringify(bundle)
+      try {
+        const bundle = exportMarkdownBundleFromEditor(ed)
+        // Never omit keys — JSON.stringify drops undefined, which becomes "{}" and breaks Kotlin decode.
+        return JSON.stringify({
+          markdown: bundle.markdown ?? "",
+          assets: bundle.assets ?? [],
+        })
+      } catch {
+        return JSON.stringify({ markdown: "", assets: [] })
+      }
     },
-    exportPdfBase64: async () => {
+    exportPdfBase64: () => {
       const ed = editorInstance
       if (!ed) return ""
-      return exportPdfBase64FromEditor(ed)
+      try {
+        return exportPdfBase64FromEditor(ed)
+      } catch {
+        return ""
+      }
     },
   }
 

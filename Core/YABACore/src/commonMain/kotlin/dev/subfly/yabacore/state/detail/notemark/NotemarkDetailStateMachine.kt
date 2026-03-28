@@ -55,6 +55,8 @@ class NotemarkDetailStateMachine :
             NotemarkDetailEvent.OnPickImageFromGallery -> onPickImageFromGallery()
             NotemarkDetailEvent.OnCaptureImageFromCamera -> onCaptureImageFromCamera()
             NotemarkDetailEvent.OnConsumedInlineImageInsert -> onConsumedInlineImageInsert()
+            is NotemarkDetailEvent.OnExportMarkdownReady -> onExportMarkdownReady(event)
+            is NotemarkDetailEvent.OnExportPdfReady -> onExportPdfReady(event)
         }
     }
 
@@ -240,14 +242,48 @@ class NotemarkDetailStateMachine :
                     )
                 val docSrc = NotemarkManager.saveInlineImageBytes(bookmarkId, bytes, ext)
                 updateState { it.copy(inlineImageDocumentSrc = docSrc) }
-            } catch (_: Exception) {
-                // Capture cancelled or read failed
+            } catch (e: Exception) {
+                println("LELE: ${e.printStackTrace()}")
             }
         }
     }
 
     private fun onConsumedInlineImageInsert() {
         updateState { it.copy(inlineImageDocumentSrc = null) }
+    }
+
+    private fun onExportMarkdownReady(event: NotemarkDetailEvent.OnExportMarkdownReady) {
+        if (event.bundleJson.isBlank()) return
+        val label = currentState().bookmark?.label.orEmpty()
+        launch {
+            try {
+                val dir = YabaFileAccessor.pickDirectory() ?: return@launch
+                YabaFileAccessor.saveNotemarkMarkdownExport(
+                    directory = dir,
+                    suggestedBaseName = label,
+                    bundleJson = event.bundleJson,
+                )
+            } catch (e: Exception) {
+                println("LELE: ${e.printStackTrace()}")
+            }
+        }
+    }
+
+    private fun onExportPdfReady(event: NotemarkDetailEvent.OnExportPdfReady) {
+        if (event.pdfBase64.isBlank()) return
+        val label = currentState().bookmark?.label.orEmpty()
+        launch {
+            try {
+                val dir = YabaFileAccessor.pickDirectory() ?: return@launch
+                YabaFileAccessor.saveNotemarkPdfExport(
+                    directory = dir,
+                    suggestedBaseName = label,
+                    pdfBase64 = event.pdfBase64,
+                )
+            } catch (e: Exception) {
+                println("LELE: ${e.printStackTrace()}")
+            }
+        }
     }
 
     override fun clear() {

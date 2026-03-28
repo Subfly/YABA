@@ -31,14 +31,14 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.navigation3.runtime.NavKey
-import dev.subfly.yaba.core.navigation.creation.NotemarkLinkActionSheetRoute
-import dev.subfly.yaba.core.navigation.creation.NotemarkLinkSheetRoute
-import dev.subfly.yaba.core.navigation.creation.NotemarkMentionActionSheetRoute
-import dev.subfly.yaba.core.navigation.creation.NotemarkMentionSheetRoute
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.webview.YabaWebView
 import dev.subfly.yaba.core.navigation.creation.ColorSelectionRoute
+import dev.subfly.yaba.core.navigation.creation.NotemarkLinkActionSheetRoute
+import dev.subfly.yaba.core.navigation.creation.NotemarkLinkSheetRoute
 import dev.subfly.yaba.core.navigation.creation.NotemarkMathSheetRoute
+import dev.subfly.yaba.core.navigation.creation.NotemarkMentionActionSheetRoute
+import dev.subfly.yaba.core.navigation.creation.NotemarkMentionSheetRoute
 import dev.subfly.yaba.core.navigation.creation.NotemarkTableCreationRoute
 import dev.subfly.yaba.core.navigation.main.DocDetailRoute
 import dev.subfly.yaba.core.navigation.main.ImageDetailRoute
@@ -61,17 +61,16 @@ import dev.subfly.yaba.util.NotemarkMentionSheetResult
 import dev.subfly.yaba.util.NotemarkTableSheetResult
 import dev.subfly.yaba.util.ResultStoreKeys
 import dev.subfly.yaba.util.rememberUrlLauncher
-import dev.subfly.yabacore.filesystem.access.YabaFileAccessor
 import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.ReaderPreferences
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.detail.notemark.NotemarkDetailEvent
 import dev.subfly.yabacore.state.detail.notemark.NotemarkDetailUIState
-import dev.subfly.yabacore.webview.InlineLinkTapEvent
-import dev.subfly.yabacore.webview.InlineMentionTapEvent
 import dev.subfly.yabacore.ui.icon.YabaIcon
 import dev.subfly.yabacore.ui.webview.WebComponentUris
 import dev.subfly.yabacore.webview.EditorFormattingState
+import dev.subfly.yabacore.webview.InlineLinkTapEvent
+import dev.subfly.yabacore.webview.InlineMentionTapEvent
 import dev.subfly.yabacore.webview.MathTapEvent
 import dev.subfly.yabacore.webview.WebViewEditorBridge
 import dev.subfly.yabacore.webview.YabaEditorCommands
@@ -79,9 +78,9 @@ import dev.subfly.yabacore.webview.YabaWebAppearance
 import dev.subfly.yabacore.webview.YabaWebFeature
 import dev.subfly.yabacore.webview.YabaWebHostEvent
 import dev.subfly.yabacore.webview.YabaWebPlatform
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
@@ -261,7 +260,11 @@ internal fun NotemarkContentLayout(
         bridge.focus()
     }
 
-    LaunchedEffect(resultStore.getResult(ResultStoreKeys.NOTEMARK_LINK_ACTION), pendingLinkTap, editorBridge) {
+    LaunchedEffect(
+        resultStore.getResult(ResultStoreKeys.NOTEMARK_LINK_ACTION),
+        pendingLinkTap,
+        editorBridge
+    ) {
         val action = resultStore.getResult<NotemarkInlineActionChoice>(ResultStoreKeys.NOTEMARK_LINK_ACTION)
             ?: return@LaunchedEffect
         val tap = pendingLinkTap ?: return@LaunchedEffect
@@ -294,7 +297,11 @@ internal fun NotemarkContentLayout(
         }
     }
 
-    LaunchedEffect(resultStore.getResult(ResultStoreKeys.NOTEMARK_MENTION_ACTION), pendingMentionTap, editorBridge) {
+    LaunchedEffect(
+        resultStore.getResult(ResultStoreKeys.NOTEMARK_MENTION_ACTION),
+        pendingMentionTap,
+        editorBridge
+    ) {
         val action = resultStore.getResult<NotemarkInlineActionChoice>(ResultStoreKeys.NOTEMARK_MENTION_ACTION)
             ?: return@LaunchedEffect
         val tap = pendingMentionTap ?: return@LaunchedEffect
@@ -576,14 +583,8 @@ internal fun NotemarkContentLayout(
                             scope.launch {
                                 editorBridge?.unFocus()
                                 val bridge = editorBridge ?: return@launch
-                                val dir = YabaFileAccessor.pickDirectory() ?: return@launch
                                 val json = bridge.exportNoteMarkdownBundleJson()
-                                val label = state.bookmark?.label.orEmpty()
-                                YabaFileAccessor.saveNotemarkMarkdownExport(
-                                    directory = dir,
-                                    suggestedBaseName = label,
-                                    bundleJson = json,
-                                )
+                                onEvent(NotemarkDetailEvent.OnExportMarkdownReady(bundleJson = json))
                             }
                         },
                         onExportPdf = {
@@ -591,11 +592,7 @@ internal fun NotemarkContentLayout(
                                 editorBridge?.unFocus()
                                 val bridge = editorBridge ?: return@launch
                                 val b64 = bridge.exportNotePdfBase64()
-                                val label = state.bookmark?.label.orEmpty()
-                                YabaFileAccessor.saveNotemarkPdfExport(
-                                    suggestedBaseName = label,
-                                    pdfBase64 = b64,
-                                )
+                                onEvent(NotemarkDetailEvent.OnExportPdfReady(pdfBase64 = b64))
                             }
                         },
                     )

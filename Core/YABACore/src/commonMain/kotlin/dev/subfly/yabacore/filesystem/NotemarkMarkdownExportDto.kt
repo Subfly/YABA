@@ -10,6 +10,6 @@ data class NotemarkMarkdownExportAssetDto(
 
 @Serializable
 data class NotemarkMarkdownExportBundleDto(
-    val markdown: String,
+    val markdown: String = "",
     val assets: List<NotemarkMarkdownExportAssetDto> = emptyList(),
 )

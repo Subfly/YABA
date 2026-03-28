@@ -261,17 +261,44 @@ object YabaFileAccessor {
     }
 
     /**
-     * Saves a base64-encoded PDF (from the note editor WebView) via the file saver dialog.
+     * Writes `*.pdf` into a user-selected directory (same flow as [saveNotemarkMarkdownExport]).
+     * Accepts raw base64 or `data:application/pdf;base64,...` from [jsPDF] output.
      */
     @OptIn(ExperimentalEncodingApi::class)
     suspend fun saveNotemarkPdfExport(
+        directory: PlatformFile,
         suggestedBaseName: String,
         pdfBase64: String,
     ): Boolean {
-        if (pdfBase64.isBlank()) return false
-        val bytes = Base64.decode(pdfBase64)
-        val name = sanitizeExportBaseName(suggestedBaseName)
-        return saveFileCopy(bytes, name, "pdf")
+        val payload = sanitizePdfBase64Payload(pdfBase64) ?: return false
+        val bytes =
+            runCatching { Base64.decode(payload) }.getOrNull() ?: return false
+        if (bytes.isEmpty()) return false
+        val base = sanitizeExportBaseName(suggestedBaseName)
+        return runCatching {
+            withContext(Dispatchers.IO) {
+                val pdfFile = directory / "$base.pdf"
+                pdfFile.parent()?.createDirectories()
+                pdfFile.write(bytes)
+            }
+            true
+        }.getOrDefault(false)
+    }
+
+    /**
+     * Strips data-URL prefix; rejects JSON (e.g. markdown bundle sent to the PDF path by mistake).
+     */
+    private fun sanitizePdfBase64Payload(pdfBase64: String): String? {
+        var t = pdfBase64.trim()
+        if (t.isEmpty()) return null
+        if (t.startsWith('{')) return null
+        if (t.startsWith("data:", ignoreCase = true)) {
+            val idx = t.indexOf("base64,")
+            if (idx >= 0) {
+                t = t.substring(idx + "base64,".length)
+            }
+        }
+        return t.ifBlank { null }
     }
 
     private fun sanitizeExportBaseName(label: String): String =

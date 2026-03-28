@@ -1,12 +1,12 @@
 /**
  * Export note editor content to Markdown (with assets) or PDF.
  *
- * HTML→Markdown uses Showdown's [Converter.makeMarkdown] (same stack as Markdown→HTML for paste).
- * YABA-only spans are normalized to plain `<a>` / text before conversion.
+ * Primary path: Showdown [makeMarkdown] on preprocessed HTML (same family as paste HTML→MD).
+ * Fallback: TipTap [@tiptap/markdown] full-document serialize — Showdown can yield empty/undefined on some TipTap HTML.
  */
-import type { Editor } from "@tiptap/core"
+import type { Editor, JSONContent } from "@tiptap/core"
+import type { Node as ProseMirrorNode } from "@tiptap/pm/model"
 import DOMPurify from "dompurify"
-import html2canvas from "html2canvas"
 import { jsPDF } from "jspdf"
 import showdown from "showdown"
 
@@ -38,20 +38,28 @@ function guessImageExtension(url: string): string {
   return "png"
 }
 
-async function fetchUrlAsBase64(url: string): Promise<string> {
-  const res = await fetch(url)
-  if (!res.ok) throw new Error(`fetch failed ${res.status}`)
-  const blob = await res.blob()
-  return await new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      const dataUrl = reader.result as string
-      const idx = dataUrl.indexOf(",")
-      resolve(idx >= 0 ? dataUrl.slice(idx + 1) : dataUrl)
+/**
+ * Synchronous fetch for WebView `evaluateJavascript` — async Promises are not returned to Kotlin.
+ * Falls back to null on failure (caller keeps remote URL in markdown).
+ */
+function fetchUrlAsBase64Sync(url: string): string | null {
+  try {
+    const xhr = new XMLHttpRequest()
+    xhr.open("GET", url, false)
+    xhr.responseType = "arraybuffer"
+    xhr.send(null)
+    if (xhr.status !== 200 && xhr.status !== 0) return null
+    const buf = xhr.response as ArrayBuffer | null
+    if (!buf || buf.byteLength === 0) return null
+    const bytes = new Uint8Array(buf)
+    let binary = ""
+    for (let i = 0; i < bytes.byteLength; i++) {
+      binary += String.fromCharCode(bytes[i]!)
     }
-    reader.onerror = () => reject(reader.error)
-    reader.readAsDataURL(blob)
-  })
+    return btoa(binary)
+  } catch {
+    return null
+  }
 }
 
 /**
@@ -102,13 +110,84 @@ function preprocessHtmlForShowdownExport(html: string): string {
 }
 
 /**
- * Full-document HTML → Markdown via Showdown [makeMarkdown], then inline images as relative files under `assets/`.
+ * Same strategy as [getSelectionMarkdownFromEditor] in editor-bridge, but for the whole document.
  */
-export async function exportMarkdownBundleFromEditor(editor: Editor): Promise<MarkdownExportBundle> {
+function getPlainTextFallbackFromEditor(ed: Editor): string {
+  try {
+    const t = ed.getText({ blockSeparator: "\n\n" })
+    if (t.trim().length > 0) return t
+  } catch {
+    /* fall through */
+  }
+  try {
+    const dom = ed.view.dom as HTMLElement
+    const inner = dom.innerText?.trim()
+    if (inner) return inner
+  } catch {
+    /* ignore */
+  }
+  return ""
+}
+
+function getFullDocumentMarkdownFromEditor(ed: Editor): string {
+  const doc = ed.state.doc
+  try {
+    const slice = doc.slice(0, doc.content.size)
+    const json = slice.content.toJSON() as JSONContent[] | JSONContent | null | undefined
+    const content: JSONContent[] = Array.isArray(json) ? json : json != null ? [json] : []
+    const docJson: JSONContent = { type: "doc", content }
+    const pmDoc = ed.state.schema.nodeFromJSON(docJson)
+
+    const storage = (
+      ed as unknown as {
+        storage?: {
+          markdown?: {
+            serializer?: { serialize?: (doc: ProseMirrorNode) => string }
+          }
+        }
+      }
+    ).storage?.markdown
+    const serializedByStorage = storage?.serializer?.serialize?.(pmDoc)
+    if (serializedByStorage != null && serializedByStorage.trim().length > 0) {
+      return serializedByStorage
+    }
+
+    const mgr = ed.markdown as { serialize?: (doc: JSONContent | ProseMirrorNode) => string } | undefined
+    if (mgr?.serialize) {
+      const serializedByManager = mgr.serialize(pmDoc)
+      if (serializedByManager.trim().length > 0) return serializedByManager
+      const serializedJson = mgr.serialize(docJson)
+      if (serializedJson.trim().length > 0) return serializedJson
+    }
+  } catch {
+    /* fall through */
+  }
+  try {
+    const t = doc.textBetween(0, doc.content.size, "\n")
+    if (t.trim().length > 0) return t
+  } catch {
+    /* fall through */
+  }
+  return getPlainTextFallbackFromEditor(ed)
+}
+
+/**
+ * Full-document HTML → Markdown via Showdown [makeMarkdown], then inline images as relative files under `assets/`.
+ * Synchronous — [WebView.evaluateJavascript] does not deliver Promise results to Kotlin.
+ */
+export function exportMarkdownBundleFromEditor(editor: Editor): MarkdownExportBundle {
   const rawHtml = editor.getHTML()
-  const safeHtml = DOMPurify.sanitize(rawHtml, { USE_PROFILES: { html: true } })
-  const preprocessed = preprocessHtmlForShowdownExport(safeHtml)
-  let markdown = exportMarkdownConverter.makeMarkdown(preprocessed)
+  // Preprocess before DOMPurify so YABA inline nodes (links, mentions, KaTeX) are not stripped first.
+  const preprocessed = preprocessHtmlForShowdownExport(rawHtml)
+  const safeHtml = DOMPurify.sanitize(preprocessed, { USE_PROFILES: { html: true } })
+  const showdownOut = exportMarkdownConverter.makeMarkdown(safeHtml)
+  let markdown = typeof showdownOut === "string" ? showdownOut.trim() : String(showdownOut ?? "").trim()
+  if (!markdown) {
+    markdown = getFullDocumentMarkdownFromEditor(editor).trim()
+  }
+  if (!markdown) {
+    markdown = getPlainTextFallbackFromEditor(editor).trim()
+  }
 
   const assets: MarkdownExportAsset[] = []
   const urlToRel = new Map<string, string>()
@@ -128,11 +207,10 @@ export async function exportMarkdownBundleFromEditor(editor: Editor): Promise<Ma
   for (const url of uniqueUrls) {
     const rel = urlToRel.get(url)
     if (!rel) continue
-    try {
-      const dataBase64 = await fetchUrlAsBase64(url)
+    const dataBase64 = fetchUrlAsBase64Sync(url)
+    if (dataBase64 != null) {
       assets.push({ relativePath: rel, dataBase64 })
-    } catch {
-      /* keep remote URL in markdown if fetch fails */
+    } else {
       urlToRel.delete(url)
     }
   }
@@ -144,61 +222,37 @@ export async function exportMarkdownBundleFromEditor(editor: Editor): Promise<Ma
     })
   }
 
-  return { markdown: markdown.trim() + "\n", assets }
+  const body = (markdown || "").trim() + "\n"
+  return { markdown: body, assets }
 }
 
 /**
- * Renders the editor DOM to PDF: DOMPurify → html2canvas → jsPDF (multi-page when needed).
+ * Plain-text PDF via jsPDF (synchronous). Pixel-accurate HTML→canvas would require async html2canvas,
+ * which cannot return through [WebView.evaluateJavascript] on Android.
  */
-export async function exportPdfBase64FromEditor(editor: Editor): Promise<string> {
-  const root = editor.view.dom as HTMLElement
-  const host = document.createElement("div")
-  host.style.boxSizing = "border-box"
-  host.style.width = `${Math.max(root.scrollWidth, root.offsetWidth)}px`
-  host.style.padding = "16px"
-  host.style.background = "#ffffff"
-  host.style.color = "#111111"
-  host.innerHTML = DOMPurify.sanitize(root.innerHTML, { USE_PROFILES: { html: true } })
-  host.style.position = "fixed"
-  host.style.left = "-12000px"
-  host.style.top = "0"
-  host.style.zIndex = "-1"
-  document.body.appendChild(host)
+export function exportPdfBase64FromEditor(editor: Editor): string {
+  const text = getPlainTextFallbackFromEditor(editor).trim()
+  if (!text) return ""
 
-  try {
-    const canvas = await html2canvas(host, {
-      scale: 2,
-      useCORS: true,
-      allowTaint: true,
-      logging: false,
-      backgroundColor: "#ffffff",
-    })
-
-    const pdf = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" })
-    const pageWidth = pdf.internal.pageSize.getWidth()
-    const pageHeight = pdf.internal.pageSize.getHeight()
-    const margin = 24
-    const imgWidth = pageWidth - margin * 2
-    const imgHeight = (canvas.height * imgWidth) / canvas.width
-
-    const imgData = canvas.toDataURL("image/png", 1.0)
-    let heightLeft = imgHeight
-    let position = margin
-
-    pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight)
-    heightLeft -= pageHeight - margin * 2
-
-    while (heightLeft > 0) {
-      position = heightLeft - imgHeight
+  const pdf = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" })
+  const pageWidth = pdf.internal.pageSize.getWidth()
+  const pageHeight = pdf.internal.pageSize.getHeight()
+  const margin = 40
+  const maxWidth = pageWidth - margin * 2
+  const lineHeight = 14
+  const lines = pdf.splitTextToSize(text, maxWidth)
+  let y = margin
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]!
+    if (y + lineHeight > pageHeight - margin) {
       pdf.addPage()
-      pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight)
-      heightLeft -= pageHeight - margin * 2
+      y = margin
     }
-
-    const out = pdf.output("datauristring") as string
-    const comma = out.indexOf(",")
-    return comma >= 0 ? out.slice(comma + 1) : out
-  } finally {
-    document.body.removeChild(host)
+    pdf.text(line, margin, y)
+    y += lineHeight
   }
+
+  const out = pdf.output("datauristring") as string
+  const comma = out.indexOf(",")
+  return comma >= 0 ? out.slice(comma + 1) : out
 }
