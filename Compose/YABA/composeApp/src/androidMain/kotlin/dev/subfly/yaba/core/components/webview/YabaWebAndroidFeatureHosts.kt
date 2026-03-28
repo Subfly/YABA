@@ -208,10 +208,18 @@ internal fun YabaReadableViewerFeatureHost(
                         onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.Loading(progress / 100f)))
                     },
                     onConsoleMessage = shell@{ msg ->
-                        if (initialShellLoadConsumed) return@shell
-                        parseShellLoadMessage(msg)?.let { result ->
-                            initialShellLoadConsumed = true
-                            onHostEventState.value(YabaWebHostEvent.InitialContentLoad(result))
+                        when (val tocParse = parseTocConsoleMessage(msg)) {
+                            is TocConsoleParseResult.Matched -> {
+                                onHostEventState.value(YabaWebHostEvent.TableOfContentsChanged(tocParse.toc))
+                                return@shell
+                            }
+                            TocConsoleParseResult.NotToc -> Unit
+                        }
+                        if (initialShellLoadConsumed.not()) {
+                            parseShellLoadMessage(msg)?.let { result ->
+                                initialShellLoadConsumed = true
+                                onHostEventState.value(YabaWebHostEvent.InitialContentLoad(result))
+                            }
                         }
                     },
                 )
@@ -396,6 +404,13 @@ internal fun YabaEditorFeatureHost(
                     pendingPermissionRequestRef = pendingPermissionRequestRef,
                     onLaunchPermissionRequest = { perms -> permissionLauncher.launch(perms) },
                     onConsoleMessage = shell@{ message ->
+                        when (val tocParse = parseTocConsoleMessage(message)) {
+                            is TocConsoleParseResult.Matched -> {
+                                onHostEventState.value(YabaWebHostEvent.TableOfContentsChanged(tocParse.toc))
+                                return@shell
+                            }
+                            TocConsoleParseResult.NotToc -> Unit
+                        }
                         if (!initialShellLoadConsumed) {
                             val loadResult = parseShellLoadMessage(message)
                             if (loadResult != null) {
@@ -815,10 +830,18 @@ internal fun YabaPdfViewerFeatureHost(
                         onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.Loading(p / 100f)))
                     },
                     onConsoleMessage = shell@{ msg ->
-                        if (initialShellLoadConsumed) return@shell
-                        parseShellLoadMessage(msg)?.let { result ->
-                            initialShellLoadConsumed = true
-                            onHostEventState.value(YabaWebHostEvent.InitialContentLoad(result))
+                        when (val tocParse = parseTocConsoleMessage(msg)) {
+                            is TocConsoleParseResult.Matched -> {
+                                onHostEventState.value(YabaWebHostEvent.TableOfContentsChanged(tocParse.toc))
+                                return@shell
+                            }
+                            TocConsoleParseResult.NotToc -> Unit
+                        }
+                        if (!initialShellLoadConsumed) {
+                            parseShellLoadMessage(msg)?.let { result ->
+                                initialShellLoadConsumed = true
+                                onHostEventState.value(YabaWebHostEvent.InitialContentLoad(result))
+                            }
                         }
                     },
                 )
@@ -1123,10 +1146,18 @@ internal fun YabaEpubViewerFeatureHost(
                         onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.Loading(p / 100f)))
                     },
                     onConsoleMessage = shell@{ msg ->
-                        if (initialShellLoadConsumed) return@shell
-                        parseShellLoadMessage(msg)?.let { result ->
-                            initialShellLoadConsumed = true
-                            onHostEventState.value(YabaWebHostEvent.InitialContentLoad(result))
+                        when (val tocParse = parseTocConsoleMessage(msg)) {
+                            is TocConsoleParseResult.Matched -> {
+                                onHostEventState.value(YabaWebHostEvent.TableOfContentsChanged(tocParse.toc))
+                                return@shell
+                            }
+                            TocConsoleParseResult.NotToc -> Unit
+                        }
+                        if (!initialShellLoadConsumed) {
+                            parseShellLoadMessage(msg)?.let { result ->
+                                initialShellLoadConsumed = true
+                                onHostEventState.value(YabaWebHostEvent.InitialContentLoad(result))
+                            }
                         }
                     },
                 )

@@ -18,6 +18,8 @@ import dev.subfly.yabacore.webview.YabaPdfReaderBridgeScripts
 import dev.subfly.yabacore.webview.YabaWebAppearance
 import dev.subfly.yabacore.webview.WebShellLoadResult
 import dev.subfly.yabacore.webview.YabaWebBridgeScripts
+import dev.subfly.yabacore.webview.Toc
+import dev.subfly.yabacore.webview.TocItem
 import dev.subfly.yabacore.webview.YabaWebPlatform
 import dev.subfly.yabacore.webview.escapeForJsSingleQuotedString
 import dev.subfly.yabacore.webview.toJsAppearanceLiteral
@@ -95,6 +97,11 @@ internal fun RichTextWebViewReaderBridge(
         val raw = evaluateJs(webView, YabaEditorBridgeScripts.removeAnnotationFromDocumentScript(annotationId))
         return decodeJsStringResult(raw).trim().toIntOrNull() ?: 0
     }
+
+    override suspend fun navigateToTocItem(id: String, extrasJson: String?) {
+        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY_LOOSE)) return
+        evaluateJs(webView, YabaEditorBridgeScripts.navigateToTocItemScript(id, extrasJson))
+    }
 }
 
 @Suppress("FunctionName")
@@ -155,6 +162,9 @@ internal fun RichTextWebViewEditorBridge(
 
         override suspend fun removeAnnotationFromDocument(annotationId: String): Int =
             reader.removeAnnotationFromDocument(annotationId)
+
+        override suspend fun navigateToTocItem(id: String, extrasJson: String?) =
+            reader.navigateToTocItem(id, extrasJson)
     }
 }
 
@@ -291,6 +301,49 @@ internal fun parseEditorHostStateMessage(message: String?): EditorHostStateUpdat
     )
 }
 
+internal sealed interface TocConsoleParseResult {
+    data object NotToc : TocConsoleParseResult
+
+    /** [toc] is null when the web shell cleared the outline. */
+    data class Matched(
+        val toc: Toc?,
+    ) : TocConsoleParseResult
+}
+
+internal fun parseTocConsoleMessage(message: String?): TocConsoleParseResult {
+    val payload =
+        message
+            ?.takeIf { it.startsWith(YabaWebBridgeScripts.TOC_EVENT_PREFIX) }
+            ?.removePrefix(YabaWebBridgeScripts.TOC_EVENT_PREFIX)
+            ?.takeIf { it.isNotBlank() }
+            ?: return TocConsoleParseResult.NotToc
+    val json = runCatching { JSONObject(payload) }.getOrNull() ?: return TocConsoleParseResult.NotToc
+    if (json.optString("type") != "toc") return TocConsoleParseResult.NotToc
+    if (json.isNull("toc")) return TocConsoleParseResult.Matched(toc = null)
+    val tocObj = json.optJSONObject("toc") ?: return TocConsoleParseResult.Matched(Toc())
+    val itemsArr = tocObj.optJSONArray("items") ?: return TocConsoleParseResult.Matched(Toc())
+    return TocConsoleParseResult.Matched(Toc(parseTocItems(itemsArr)))
+}
+
+private fun parseTocItems(arr: JSONArray): List<TocItem> {
+    val out = ArrayList<TocItem>(arr.length())
+    for (i in 0 until arr.length()) {
+        val o = arr.optJSONObject(i) ?: continue
+        val children = parseTocItems(o.optJSONArray("children") ?: JSONArray())
+        val extras = o.optString("extrasJson", "").takeIf { it.isNotBlank() }
+        out.add(
+            TocItem(
+                id = o.optString("id", ""),
+                title = o.optString("title", ""),
+                level = o.optInt("level", 1),
+                children = children,
+                extrasJson = extras,
+            ),
+        )
+    }
+    return out
+}
+
 internal fun parseEditorFormattingState(json: JSONObject): EditorFormattingState =
     EditorFormattingState(
         headingLevel = json.optInt("headingLevel"),
@@ -420,6 +473,11 @@ internal fun PdfWebViewReaderBridge(
     override suspend fun applyAnnotationToSelection(annotationId: String): Boolean = false
 
     override suspend fun removeAnnotationFromDocument(annotationId: String): Int = 0
+
+    override suspend fun navigateToTocItem(id: String, extrasJson: String?) {
+        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.PDF_BRIDGE_READY_LOOSE)) return
+        evaluateJs(webView, YabaPdfReaderBridgeScripts.navigateToTocItemScript(id, extrasJson))
+    }
 }
 
 @Suppress("FunctionName")
@@ -493,6 +551,11 @@ internal fun EpubWebViewReaderBridge(
     override suspend fun applyAnnotationToSelection(annotationId: String): Boolean = false
 
     override suspend fun removeAnnotationFromDocument(annotationId: String): Int = 0
+
+    override suspend fun navigateToTocItem(id: String, extrasJson: String?) {
+        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EPUB_BRIDGE_READY_LOOSE)) return
+        evaluateJs(webView, YabaEpubReaderBridgeScripts.navigateToTocItemScript(id, extrasJson))
+    }
 }
 
 internal suspend fun applyPdfUrl(webView: WebView, context: android.content.Context, pdfUrl: String) {

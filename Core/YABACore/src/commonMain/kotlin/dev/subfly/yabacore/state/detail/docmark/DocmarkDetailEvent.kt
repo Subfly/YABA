@@ -4,6 +4,7 @@ import dev.subfly.yabacore.model.utils.ReaderFontSize
 import dev.subfly.yabacore.model.utils.ReaderLineHeight
 import dev.subfly.yabacore.model.utils.ReaderTheme
 import dev.subfly.yabacore.notifications.PlatformNotificationText
+import dev.subfly.yabacore.webview.Toc
 import dev.subfly.yabacore.webview.WebShellLoadResult
 
 sealed interface DocmarkDetailEvent {
@@ -20,6 +21,9 @@ sealed interface DocmarkDetailEvent {
     data class OnDeleteAnnotation(val annotationId: String) : DocmarkDetailEvent
     data class OnScrollToAnnotation(val annotationId: String) : DocmarkDetailEvent
     data object OnClearScrollToAnnotation : DocmarkDetailEvent
+    data class OnTocChanged(val toc: Toc?) : DocmarkDetailEvent
+    data class OnNavigateToTocItem(val id: String, val extrasJson: String?) : DocmarkDetailEvent
+    data object OnClearTocNavigation : DocmarkDetailEvent
     data object OnRequestNotificationPermission : DocmarkDetailEvent
     data class OnScheduleReminder(
         val title: PlatformNotificationText,

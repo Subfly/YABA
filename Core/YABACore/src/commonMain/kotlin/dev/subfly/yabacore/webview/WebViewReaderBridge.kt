@@ -31,4 +31,6 @@ interface WebViewReaderBridge {
     suspend fun applyAnnotationToSelection(annotationId: String): Boolean = false
 
     suspend fun removeAnnotationFromDocument(annotationId: String): Int = 0
+
+    suspend fun navigateToTocItem(id: String, extrasJson: String?) = Unit
 }

@@ -147,6 +147,13 @@ internal fun DocmarkContentLayout(
                         onEvent(DocmarkDetailEvent.OnClearScrollToAnnotation)
                     }
 
+                    LaunchedEffect(state.pendingTocNavigate, readerBridge) {
+                        val pending = state.pendingTocNavigate ?: return@LaunchedEffect
+                        val bridge = readerBridge ?: return@LaunchedEffect
+                        bridge.navigateToTocItem(pending.first, pending.second)
+                        onEvent(DocmarkDetailEvent.OnClearTocNavigation)
+                    }
+
                     DocmarkReaderFloatingToolbar(
                         modifier = Modifier.padding(bottom = 8.dp),
                         docmarkType = state.docmarkType,
@@ -205,6 +212,9 @@ internal fun DocmarkContentLayout(
 
                             is YabaWebHostEvent.InitialContentLoad ->
                                 onEvent(DocmarkDetailEvent.OnWebInitialContentLoad(ev.result))
+
+                            is YabaWebHostEvent.TableOfContentsChanged ->
+                                onEvent(DocmarkDetailEvent.OnTocChanged(ev.toc))
 
                             else -> Unit
                         }

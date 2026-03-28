@@ -12,6 +12,7 @@ import dev.subfly.yabacore.managers.ReadableContentManager
 import dev.subfly.yabacore.model.ui.BookmarkPreviewUiModel
 import dev.subfly.yabacore.notifications.NotificationManager
 import dev.subfly.yabacore.state.base.BaseStateMachine
+import dev.subfly.yabacore.webview.Toc
 import dev.subfly.yabacore.webview.WebShellLoadResult
 import io.github.vinceglb.filekit.name
 import io.github.vinceglb.filekit.readBytes
@@ -44,6 +45,9 @@ class NotemarkDetailStateMachine :
             is NotemarkDetailEvent.OnInit -> onInit(event.bookmarkId)
             is NotemarkDetailEvent.OnSave -> onSave(event)
             is NotemarkDetailEvent.OnWebInitialContentLoad -> onWebInitialContentLoad(event)
+            is NotemarkDetailEvent.OnTocChanged -> onTocChanged(event.toc)
+            is NotemarkDetailEvent.OnNavigateToTocItem -> onNavigateToTocItem(event)
+            NotemarkDetailEvent.OnClearTocNavigation -> onClearTocNavigation()
             NotemarkDetailEvent.OnDeleteBookmark -> onDeleteBookmark()
             NotemarkDetailEvent.OnRequestNotificationPermission -> onRequestNotificationPermission()
             is NotemarkDetailEvent.OnScheduleReminder -> onScheduleReminder(event)
@@ -149,6 +153,18 @@ class NotemarkDetailStateMachine :
                 webContentLoadFailed = event.result == WebShellLoadResult.Error,
             )
         }
+    }
+
+    private fun onTocChanged(toc: Toc?) {
+        updateState { it.copy(toc = toc) }
+    }
+
+    private fun onNavigateToTocItem(event: NotemarkDetailEvent.OnNavigateToTocItem) {
+        updateState { it.copy(pendingTocNavigate = event.id to event.extrasJson) }
+    }
+
+    private fun onClearTocNavigation() {
+        updateState { it.copy(pendingTocNavigate = null) }
     }
 
     private fun persistNoteDocumentJsonIfChanged(json: String) {

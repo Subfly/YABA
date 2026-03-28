@@ -169,6 +169,13 @@ internal fun NotemarkContentLayout(
         previousShowCreationContent = show
     }
 
+    LaunchedEffect(state.pendingTocNavigate, editorBridge) {
+        val pending = state.pendingTocNavigate ?: return@LaunchedEffect
+        val bridge = editorBridge ?: return@LaunchedEffect
+        bridge.navigateToTocItem(pending.first, pending.second)
+        onEvent(NotemarkDetailEvent.OnClearTocNavigation)
+    }
+
     LaunchedEffect(resultStore.getResult(ResultStoreKeys.NOTEMARK_TABLE_INSERT), editorBridge) {
         val r = resultStore.getResult<NotemarkTableSheetResult>(ResultStoreKeys.NOTEMARK_TABLE_INSERT)
             ?: return@LaunchedEffect
@@ -390,6 +397,9 @@ internal fun NotemarkContentLayout(
 
                                 is YabaWebHostEvent.InitialContentLoad ->
                                     onEvent(NotemarkDetailEvent.OnWebInitialContentLoad(ev.result))
+
+                                is YabaWebHostEvent.TableOfContentsChanged ->
+                                    onEvent(NotemarkDetailEvent.OnTocChanged(ev.toc))
 
                                 is YabaWebHostEvent.NoteEditorIdleForAutosave -> {
                                     scope.launch {

@@ -38,6 +38,7 @@ import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.navigation.creation.AnnotationCreationRoute
 import dev.subfly.yaba.core.navigation.main.FolderDetailRoute
 import dev.subfly.yaba.core.navigation.main.TagDetailRoute
+import dev.subfly.yaba.ui.detail.bookmark.components.BookmarkDetailTocTreeContent
 import dev.subfly.yaba.ui.detail.bookmark.doc.models.DocmarkDetailPage
 import dev.subfly.yaba.core.components.item.annotation.AnnotationItemView
 import dev.subfly.yaba.ui.detail.composables.BookmarkExtractedMetadataSection
@@ -215,6 +216,35 @@ internal fun DocmarkDetailLayout(
                                 reminderDateEpochMillis = reminderMillis,
                                 mainColor = mainColor,
                                 onCancelReminder = { onEvent(DocmarkDetailEvent.OnCancelReminder) },
+                            )
+                        }
+                    }
+                }
+
+                DocmarkDetailPage.CONTENTS -> {
+                    item(key = "DOC_TOC") {
+                        Box(
+                            modifier = Modifier
+                                .animateItem()
+                                .fillMaxWidth()
+                                .padding(horizontal = 12.dp)
+                                .background(
+                                    color = MaterialTheme.colorScheme.surface,
+                                    shape = RoundedCornerShape(12.dp),
+                                ),
+                        ) {
+                            BookmarkDetailTocTreeContent(
+                                toc = state.toc,
+                                mainColor = mainColor,
+                                onItemClick = { id, extrasJson ->
+                                    onHide()
+                                    onEvent(DocmarkDetailEvent.OnNavigateToTocItem(id, extrasJson))
+                                },
+                                emptyIconName = "displeased",
+                                emptyLabelRes = Res.string.bookmark_detail_no_tags_added_title,
+                                emptyMessage = {
+                                    Text(text = stringResource(Res.string.bookmark_detail_no_tags_added_description))
+                                },
                             )
                         }
                     }

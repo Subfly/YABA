@@ -29,6 +29,7 @@ import {
   scheduleNoteAutosaveAfterEditorActivity,
   setNoteEditorAutosaveIdleEnabled,
 } from "./shell-host-events"
+import { publishToc, resetPublishedToc, type TocJson } from "./toc-host-events"
 
 export type ReaderTheme = "system" | "dark" | "light" | "sepia"
 export type ReaderFontSize = "small" | "medium" | "large"
@@ -103,6 +104,7 @@ export interface YabaEditorBridge {
   /** Remove all `yabaAnnotation` marks with the given id from the document. Returns number of text nodes updated. */
   removeAnnotationFromDocument: (annotationId: string) => number
   onAnnotationTap?: (id: string) => void
+  navigateToTocItem: (id: string, extrasJson?: string | null) => void
 }
 
 function removeAnnotationMarksWithId(editor: Editor | null, annotationId: string): number {
@@ -184,6 +186,80 @@ export type EditorCommandPayload =
 let editorInstance: Editor | null = null
 /** First successful or failed application of document/HTML to the shell (one-shot per page load). */
 let editorShellLoadNotified = false
+/** Debounced ToC publish (matches note autosave idle ~1s). */
+let tocPublishTimer: ReturnType<typeof setTimeout> | null = null
+const TOC_PUBLISH_DEBOUNCE_MS = 1000
+
+function clearTocPublishTimer(): void {
+  if (tocPublishTimer !== null) {
+    clearTimeout(tocPublishTimer)
+    tocPublishTimer = null
+  }
+}
+
+function scheduleHeadingTocPublish(): void {
+  const page = typeof document !== "undefined" ? document.body?.dataset.yabaPage : undefined
+  if (page !== "editor" && page !== "viewer") return
+  clearTocPublishTimer()
+  tocPublishTimer = setTimeout(() => {
+    tocPublishTimer = null
+    publishHeadingTocFromEditor()
+  }, TOC_PUBLISH_DEBOUNCE_MS)
+}
+
+function buildHeadingTocJson(ed: Editor): TocJson | null {
+  const doc = ed.state.doc
+  const headings: { pos: number; level: number; text: string }[] = []
+  doc.descendants((node, pos) => {
+    if (node.type.name === "heading") {
+      const level = Math.min(6, Math.max(1, Number(node.attrs.level) || 1))
+      const text = node.textContent.trim()
+      if (text.length > 0) {
+        headings.push({ pos, level, text })
+      }
+    }
+    return true
+  })
+  if (headings.length === 0) return null
+
+  type Item = {
+    id: string
+    title: string
+    level: number
+    children: Item[]
+    extrasJson?: string | null
+  }
+  const root: Item[] = []
+  const stack: { level: number; children: Item[] }[] = [{ level: 0, children: root }]
+  let idCounter = 0
+  for (const h of headings) {
+    const id = `toc-h-${idCounter++}`
+    const extrasJson = JSON.stringify({ pos: h.pos })
+    const item: Item = {
+      id,
+      title: h.text,
+      level: h.level,
+      children: [],
+      extrasJson,
+    }
+    while (stack.length > 1 && stack[stack.length - 1].level >= h.level) {
+      stack.pop()
+    }
+    stack[stack.length - 1].children.push(item)
+    stack.push({ level: h.level, children: item.children })
+  }
+  return { items: root }
+}
+
+function publishHeadingTocFromEditor(): void {
+  const ed = editorInstance
+  if (!ed) {
+    publishToc(null)
+    return
+  }
+  const toc = buildHeadingTocJson(ed)
+  publishToc(toc)
+}
 /** Latest ProseMirror selection (anchor/head) for restoring the caret after [unFocus] / native chrome. */
 let lastStoredCursor: { anchor: number; head: number } | null = null
 let platform: Platform = "compose"
@@ -335,6 +411,8 @@ function applyReaderPreferences(): void {
 export function initEditorBridge(editor: Editor): void {
   editorInstance = editor
   editorShellLoadNotified = false
+  clearTocPublishTimer()
+  resetPublishedToc()
   setNoteEditorAutosaveIdleEnabled(false)
   resetPublishedEditorHostState()
   editor.on("selectionUpdate", () => {
@@ -344,6 +422,7 @@ export function initEditorBridge(editor: Editor): void {
   editor.on("transaction", () => {
     publishCurrentEditorState()
     scheduleNoteAutosaveAfterEditorActivity()
+    scheduleHeadingTocPublish()
   })
   editor.on("focus", () => {
     publishCurrentEditorState()
@@ -445,6 +524,7 @@ export function initEditorBridge(editor: Editor): void {
           publishShellLoad("loaded")
         }
         queueMicrotask(() => {
+          publishHeadingTocFromEditor()
           if (document.body?.dataset.yabaPage === "editor") {
             setNoteEditorAutosaveIdleEnabled(true)
           }
@@ -474,6 +554,9 @@ export function initEditorBridge(editor: Editor): void {
           editorShellLoadNotified = true
           publishShellLoad("loaded")
         }
+        queueMicrotask(() => {
+          publishHeadingTocFromEditor()
+        })
       } catch {
         if (!editorShellLoadNotified) {
           editorShellLoadNotified = true
@@ -667,6 +750,21 @@ export function initEditorBridge(editor: Editor): void {
     },
     removeAnnotationFromDocument: (annotationId: string) =>
       removeAnnotationMarksWithId(editorInstance, annotationId),
+    navigateToTocItem: (_id: string, extrasJson?: string | null) => {
+      const ed = editorInstance
+      if (!ed || extrasJson == null || extrasJson.trim() === "") return
+      try {
+        const o = JSON.parse(extrasJson) as { pos?: number }
+        if (typeof o.pos !== "number" || !Number.isFinite(o.pos)) return
+        const nodePos = Math.max(0, Math.min(o.pos, ed.state.doc.content.size))
+        const inside = Math.min(nodePos + 1, ed.state.doc.content.size)
+        const sel = TextSelection.create(ed.state.doc, inside)
+        ed.view.dispatch(ed.state.tr.setSelection(sel).scrollIntoView())
+        ed.view.focus()
+      } catch {
+        /* ignore */
+      }
+    },
   }
 
   applyReaderPreferences()

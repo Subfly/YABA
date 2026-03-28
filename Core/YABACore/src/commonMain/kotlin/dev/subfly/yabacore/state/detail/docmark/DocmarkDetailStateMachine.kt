@@ -17,6 +17,7 @@ import dev.subfly.yabacore.model.utils.ReaderLineHeight
 import dev.subfly.yabacore.model.utils.ReaderTheme
 import dev.subfly.yabacore.notifications.NotificationManager
 import dev.subfly.yabacore.state.base.BaseStateMachine
+import dev.subfly.yabacore.webview.Toc
 import dev.subfly.yabacore.webview.WebShellLoadResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,6 +52,9 @@ class DocmarkDetailStateMachine : BaseStateMachine<DocmarkDetailUIState, Docmark
             is DocmarkDetailEvent.OnDeleteAnnotation -> onDeleteAnnotation(event.annotationId)
             is DocmarkDetailEvent.OnScrollToAnnotation -> onScrollToAnnotation(event.annotationId)
             DocmarkDetailEvent.OnClearScrollToAnnotation -> onClearScrollToAnnotation()
+            is DocmarkDetailEvent.OnTocChanged -> onTocChanged(event.toc)
+            is DocmarkDetailEvent.OnNavigateToTocItem -> onNavigateToTocItem(event)
+            DocmarkDetailEvent.OnClearTocNavigation -> onClearTocNavigation()
             DocmarkDetailEvent.OnRequestNotificationPermission -> {}
             is DocmarkDetailEvent.OnScheduleReminder -> onScheduleReminder(event)
             DocmarkDetailEvent.OnCancelReminder -> onCancelReminder()
@@ -277,6 +281,18 @@ class DocmarkDetailStateMachine : BaseStateMachine<DocmarkDetailUIState, Docmark
 
     private fun onClearScrollToAnnotation() {
         updateState { it.copy(scrollToAnnotationId = null) }
+    }
+
+    private fun onTocChanged(toc: Toc?) {
+        updateState { it.copy(toc = toc) }
+    }
+
+    private fun onNavigateToTocItem(event: DocmarkDetailEvent.OnNavigateToTocItem) {
+        updateState { it.copy(pendingTocNavigate = event.id to event.extrasJson) }
+    }
+
+    private fun onClearTocNavigation() {
+        updateState { it.copy(pendingTocNavigate = null) }
     }
 
     private fun onScheduleReminder(event: DocmarkDetailEvent.OnScheduleReminder) {

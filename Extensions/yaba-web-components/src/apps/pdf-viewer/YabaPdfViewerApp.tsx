@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { publishShellLoad } from "@/bridge/shell-host-events"
+import { publishToc, resetPublishedToc } from "@/bridge/toc-host-events"
+import { buildPdfOutlineToc } from "./pdf-outline-toc"
 import {
   Highlight,
   PdfHighlighter,
@@ -76,6 +78,22 @@ function PdfShellLoadReporter({ pdfDocument }: { pdfDocument: unknown }) {
   useEffect(() => {
     if (pdfDocument != null) {
       publishShellLoad("loaded")
+    }
+  }, [pdfDocument])
+  return null
+}
+
+function PdfOutlineTocPublisher({ pdfDocument }: { pdfDocument: unknown }) {
+  useEffect(() => {
+    let cancelled = false
+    const run = async (): Promise<void> => {
+      const toc = await buildPdfOutlineToc(pdfDocument)
+      if (cancelled) return
+      publishToc(toc)
+    }
+    void run()
+    return () => {
+      cancelled = true
     }
   }, [pdfDocument])
   return null
@@ -256,6 +274,13 @@ export default function YabaPdfViewerApp() {
     pdfBridgeRuntime.yabaHighlights = yabaHighlights
   }, [yabaHighlights])
 
+  useEffect(() => {
+    if (!pdfUrl) {
+      resetPublishedToc()
+      publishToc(null)
+    }
+  }, [pdfUrl])
+
   if (!pdfUrl) {
     return (
       <>
@@ -282,6 +307,7 @@ export default function YabaPdfViewerApp() {
             {(pdfDocument) => (
               <>
                 <PdfShellLoadReporter pdfDocument={pdfDocument} />
+                <PdfOutlineTocPublisher pdfDocument={pdfDocument} />
                 <YabaPdfHighlighterPane
                   pdfDocument={pdfDocument}
                   yabaHighlights={yabaHighlights}

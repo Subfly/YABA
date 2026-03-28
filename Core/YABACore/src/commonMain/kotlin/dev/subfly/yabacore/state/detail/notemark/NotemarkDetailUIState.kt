@@ -2,6 +2,7 @@ package dev.subfly.yabacore.state.detail.notemark
 
 import androidx.compose.runtime.Immutable
 import dev.subfly.yabacore.model.ui.BookmarkPreviewUiModel
+import dev.subfly.yabacore.webview.Toc
 
 @Immutable
 data class NotemarkDetailUIState(
@@ -26,4 +27,6 @@ data class NotemarkDetailUIState(
      * [OnConsumedInlineImageInsert].
      */
     val inlineImageDocumentSrc: String? = null,
+    val toc: Toc? = null,
+    val pendingTocNavigate: Pair<String, String?>? = null,
 )

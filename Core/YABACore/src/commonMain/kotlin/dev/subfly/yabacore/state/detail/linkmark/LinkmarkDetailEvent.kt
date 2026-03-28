@@ -9,6 +9,7 @@ import dev.subfly.yabacore.notifications.PlatformNotificationText
 import dev.subfly.yabacore.unfurl.ReadableUnfurl
 import dev.subfly.yabacore.webview.WebConverterAsset
 import dev.subfly.yabacore.webview.WebLinkMetadata
+import dev.subfly.yabacore.webview.Toc
 import dev.subfly.yabacore.webview.WebShellLoadResult
 
 sealed interface LinkmarkDetailEvent {
@@ -56,7 +57,9 @@ sealed interface LinkmarkDetailEvent {
     ) : LinkmarkDetailEvent
     data class OnScrollToAnnotation(val annotationId: String) : LinkmarkDetailEvent
     data object OnClearScrollToAnnotation : LinkmarkDetailEvent
-
+    data class OnTocChanged(val toc: Toc?) : LinkmarkDetailEvent
+    data class OnNavigateToTocItem(val id: String, val extrasJson: String?) : LinkmarkDetailEvent
+    data object OnClearTocNavigation : LinkmarkDetailEvent
     data object OnRequestNotificationPermission : LinkmarkDetailEvent
     data class OnScheduleReminder(
         val selectedDateMillis: Long,

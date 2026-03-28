@@ -8,6 +8,7 @@ import {
 } from "@/theme/reader-document-vars"
 import { getEpubContentOverrideCss } from "./epub-content-styles"
 import { publishShellLoad } from "@/bridge/shell-host-events"
+import { publishToc, resetPublishedToc, type TocItemJson, type TocJson } from "@/bridge/toc-host-events"
 
 interface EpubHighlightInput {
   id: string
@@ -36,6 +37,13 @@ interface YabaEpubBridge {
   setAppearance: (appearance: AppearanceMode) => void
   setReaderPreferences: (preferences: Partial<ReaderPreferencesInput>) => void
   onAnnotationTap?: (id: string) => void
+  navigateToTocItem: (id: string, extrasJson?: string | null) => void
+}
+
+interface EpubNavItem {
+  href?: string
+  label?: string
+  subitems?: EpubNavItem[]
 }
 
 /** True after [initEpubViewerBridge] installed `window.YabaEpubBridge` (matches PDF viewer — host must see ready before calling setEpubUrl). */
@@ -157,6 +165,40 @@ function getRenditionContentsList(r: Rendition): Contents[] {
   return Array.isArray(raw) ? (raw as Contents[]) : []
 }
 
+function mapEpubNavToToc(items: EpubNavItem[], depth: number, path: string): TocItemJson[] {
+  if (!Array.isArray(items) || items.length === 0) return []
+  return items.map((item, i) => {
+    const href = (item.href ?? "").trim()
+    const id = `${path}-${i}-${href || "nohref"}`
+    const title = (item.label ?? "").trim() || "Untitled"
+    const extrasJson = href.length > 0 ? JSON.stringify({ href }) : null
+    const children = mapEpubNavToToc(item.subitems ?? [], depth + 1, id)
+    return {
+      id,
+      title,
+      level: depth,
+      children,
+      extrasJson,
+    }
+  })
+}
+
+async function buildAndPublishEpubToc(b: Book): Promise<void> {
+  try {
+    resetPublishedToc()
+    const navigation = await b.loaded.navigation
+    const raw = navigation?.toc as EpubNavItem[] | undefined
+    if (!raw || raw.length === 0) {
+      publishToc({ items: [] })
+      return
+    }
+    const items = mapEpubNavToToc(raw, 1, "epub")
+    publishToc({ items } satisfies TocJson)
+  } catch {
+    publishToc({ items: [] })
+  }
+}
+
 function syncReaderVarsIntoAllEpubContents(): void {
   const r = rendition
   if (!r) return
@@ -226,6 +268,7 @@ export function initEpubViewerBridge(platform: Platform, appearance: AppearanceM
       if (!url) return false
       void (async () => {
         try {
+          resetPublishedToc()
           clearHighlights()
           lastSelection = null
           if (rendition) {
@@ -256,6 +299,8 @@ export function initEpubViewerBridge(platform: Platform, appearance: AppearanceM
           await book.ready
           const spineItems = await book.loaded.spine
           spineLength = Math.max(1, spineItems.length)
+
+          await buildAndPublishEpubToc(book)
 
           rendition = book.renderTo(root, {
             width: "100%",
@@ -295,6 +340,8 @@ export function initEpubViewerBridge(platform: Platform, appearance: AppearanceM
           publishShellLoad("loaded")
         } catch (e) {
           console.error("EPUB load failed", e)
+          resetPublishedToc()
+          publishToc({ items: [] })
           publishShellLoad("error")
         }
       })()
@@ -376,6 +423,20 @@ export function initEpubViewerBridge(platform: Platform, appearance: AppearanceM
         lineHeight: prefs.lineHeight ?? mergedReaderPrefs.lineHeight,
       }
       applyEpubReaderPipeline()
+    },
+    navigateToTocItem(_id: string, extrasJson?: string | null): void {
+      const r = rendition
+      if (!r) return
+      try {
+        const raw = extrasJson?.trim()
+        if (!raw) return
+        const o = JSON.parse(raw) as { href?: string }
+        const href = o.href
+        if (!href || typeof href !== "string") return
+        void r.display(href)
+      } catch {
+        /* ignore */
+      }
     },
   }
   shellReady = true

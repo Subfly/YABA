@@ -35,6 +35,7 @@ import dev.subfly.yaba.ui.detail.composables.BookmarkDetailReminderSectionConten
 import dev.subfly.yaba.ui.detail.composables.BookmarkDetailTagSectionContent
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailVersionItemContent
 import dev.subfly.yaba.ui.detail.bookmark.link.models.DetailPage
+import dev.subfly.yaba.ui.detail.bookmark.components.BookmarkDetailTocTreeContent
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalCreationContentNavigator
@@ -138,6 +139,40 @@ internal fun LinkmarkDetailLayout(
                                 reminderDateEpochMillis = reminderMillis,
                                 mainColor = mainColor,
                                 onCancelReminder = { onEvent(LinkmarkDetailEvent.OnCancelReminder) },
+                            )
+                        }
+                    }
+                }
+
+                DetailPage.CONTENTS -> {
+                    item(key = "CONTENTS_TOC") {
+                        Box(
+                            modifier = Modifier
+                                .animateItem()
+                                .fillMaxWidth()
+                                .padding(horizontal = 12.dp)
+                                .background(
+                                    color = MaterialTheme.colorScheme.surface,
+                                    shape = RoundedCornerShape(12.dp),
+                                ),
+                        ) {
+                            BookmarkDetailTocTreeContent(
+                                toc = state.toc,
+                                mainColor = mainColor,
+                                onItemClick = { id, extrasJson ->
+                                    onHide()
+                                    onEvent(
+                                        LinkmarkDetailEvent.OnNavigateToTocItem(
+                                            id = id,
+                                            extrasJson = extrasJson,
+                                        ),
+                                    )
+                                },
+                                emptyIconName = "displeased",
+                                emptyLabelRes = Res.string.bookmark_detail_no_tags_added_title,
+                                emptyMessage = {
+                                    Text(text = stringResource(Res.string.bookmark_detail_no_tags_added_description))
+                                },
                             )
                         }
                     }

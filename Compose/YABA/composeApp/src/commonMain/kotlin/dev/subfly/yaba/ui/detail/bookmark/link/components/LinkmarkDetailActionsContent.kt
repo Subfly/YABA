@@ -58,7 +58,7 @@ internal fun LinkmarkDetailActionsContent(
                 SegmentedButton(
                     selected = currentPage == page,
                     onClick = { onPageChange(page) },
-                    shape = SegmentedButtonDefaults.itemShape(index = i, count = 3),
+                    shape = SegmentedButtonDefaults.itemShape(index = i, count = DetailPage.entries.size),
                     label = { Text(text = page.label) },
                     icon = { YabaIcon(name = page.iconName) }
                 )

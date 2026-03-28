@@ -5,6 +5,7 @@ import dev.subfly.yabacore.model.ui.AnnotationUiModel
 import dev.subfly.yabacore.model.ui.BookmarkPreviewUiModel
 import dev.subfly.yabacore.model.utils.DocmarkType
 import dev.subfly.yabacore.model.utils.ReaderPreferences
+import dev.subfly.yabacore.webview.Toc
 
 @Immutable
 data class DocmarkDetailUIState(
@@ -23,4 +24,6 @@ data class DocmarkDetailUIState(
     val webContentLoadFailed: Boolean = false,
     val reminderDateEpochMillis: Long? = null,
     val scrollToAnnotationId: String? = null,
+    val toc: Toc? = null,
+    val pendingTocNavigate: Pair<String, String?>? = null,
 )

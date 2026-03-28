@@ -31,4 +31,6 @@ sealed interface YabaWebHostEvent {
     data class InitialContentLoad(val result: WebShellLoadResult) : YabaWebHostEvent
 
     data object NoteEditorIdleForAutosave : YabaWebHostEvent
+
+    data class TableOfContentsChanged(val toc: Toc?) : YabaWebHostEvent
 }

@@ -12,6 +12,9 @@ object YabaWebBridgeScripts {
     /** Must match [Extensions/yaba-web-components/src/bridge/shell-host-events.ts] */
     const val NOTE_AUTOSAVE_IDLE_EVENT_PREFIX = "yaba-note-autosave-idle:"
 
+    /** Must match [Extensions/yaba-web-components/src/bridge/toc-host-events.ts] */
+    const val TOC_EVENT_PREFIX = "yaba-toc:"
+
     /** Editor inline link node tap. */
     const val INLINE_LINK_TAP_SCHEME_PREFIX = "yaba://inline-link-tap?"
 

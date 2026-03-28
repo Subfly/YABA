@@ -20,6 +20,7 @@ import dev.subfly.yabacore.model.utils.ReaderFontSize
 import dev.subfly.yabacore.model.utils.ReaderLineHeight
 import dev.subfly.yabacore.model.utils.ReaderTheme
 import dev.subfly.yabacore.state.base.BaseStateMachine
+import dev.subfly.yabacore.webview.Toc
 import dev.subfly.yabacore.webview.WebShellLoadResult
 import dev.subfly.yabacore.webview.normalizeBridgeOptionalString
 import dev.subfly.yabacore.unfurl.Unfurler
@@ -81,6 +82,9 @@ class LinkmarkDetailStateMachine :
             is LinkmarkDetailEvent.OnAnnotationReadableDeleteCommitted -> onAnnotationReadableDeleteCommitted(event)
             is LinkmarkDetailEvent.OnScrollToAnnotation -> onScrollToAnnotation(event)
             LinkmarkDetailEvent.OnClearScrollToAnnotation -> onClearScrollToAnnotation()
+            is LinkmarkDetailEvent.OnTocChanged -> onTocChanged(event.toc)
+            is LinkmarkDetailEvent.OnNavigateToTocItem -> onNavigateToTocItem(event)
+            LinkmarkDetailEvent.OnClearTocNavigation -> onClearTocNavigation()
             LinkmarkDetailEvent.OnRequestNotificationPermission -> onRequestNotificationPermission()
             is LinkmarkDetailEvent.OnScheduleReminder -> onScheduleReminder(event)
             LinkmarkDetailEvent.OnCancelReminder -> onCancelReminder()
@@ -447,6 +451,18 @@ class LinkmarkDetailStateMachine :
 
     private fun onClearScrollToAnnotation() {
         updateState { it.copy(scrollToAnnotationId = null) }
+    }
+
+    private fun onTocChanged(toc: Toc?) {
+        updateState { it.copy(toc = toc) }
+    }
+
+    private fun onNavigateToTocItem(event: LinkmarkDetailEvent.OnNavigateToTocItem) {
+        updateState { it.copy(pendingTocNavigate = event.id to event.extrasJson) }
+    }
+
+    private fun onClearTocNavigation() {
+        updateState { it.copy(pendingTocNavigate = null) }
     }
 
     private fun onRequestNotificationPermission() {

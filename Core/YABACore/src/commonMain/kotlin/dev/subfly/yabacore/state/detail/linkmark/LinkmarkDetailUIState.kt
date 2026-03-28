@@ -5,6 +5,7 @@ import dev.subfly.yabacore.model.ui.AnnotationUiModel
 import dev.subfly.yabacore.model.ui.BookmarkPreviewUiModel
 import dev.subfly.yabacore.model.ui.ReadableVersionUiModel
 import dev.subfly.yabacore.model.utils.ReaderPreferences
+import dev.subfly.yabacore.webview.Toc
 
 @Immutable
 data class LinkmarkDetailUIState(
@@ -32,6 +33,10 @@ data class LinkmarkDetailUIState(
     val hasNotificationPermission: Boolean = false,
     /** When set, the reader should scroll to this annotation and then clear. */
     val scrollToAnnotationId: String? = null,
+    /** In-memory table of contents from the readable WebView; null until first payload or when cleared. */
+    val toc: Toc? = null,
+    /** One-shot: navigate reader to this ToC entry ([first] = id, [second] = [TocItem.extrasJson]). */
+    val pendingTocNavigate: Pair<String, String?>? = null,
 )
 
 @Immutable

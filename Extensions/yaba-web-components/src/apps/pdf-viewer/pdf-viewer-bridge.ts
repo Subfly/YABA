@@ -30,6 +30,7 @@ interface YabaPdfBridge {
   setPlatform: (platform: Platform) => void
   setAppearance: (appearance: AppearanceMode) => void
   onAnnotationTap?: (id: string) => void
+  navigateToTocItem: (id: string, extrasJson?: string | null) => void
 }
 
 let isReady = false
@@ -144,6 +145,21 @@ export function initPdfViewerBridge(
     setAppearance(nextAppearance: AppearanceMode): void {
       currentAppearance = nextAppearance
       applyTheme(currentPlatform, currentAppearance, null)
+    },
+    navigateToTocItem(_id: string, extrasJson?: string | null): void {
+      try {
+        const raw = extrasJson?.trim()
+        if (!raw) return
+        const o = JSON.parse(raw) as { page?: number }
+        const page = o.page
+        if (typeof page !== "number" || !Number.isFinite(page)) return
+        const viewer = window.__YABA_PDF_VIEWER__
+        if (!viewer || viewer.pagesCount <= 0) return
+        const p = Math.max(1, Math.min(Math.floor(page), viewer.pagesCount))
+        viewer.currentPageNumber = p
+      } catch {
+        /* ignore */
+      }
     },
   }
   isReady = true
