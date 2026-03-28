@@ -145,9 +145,13 @@ const annotationCfiById = new Map<string, string>()
 let pendingAnnotationsJson: string | null = null
 let viewportRecoveryTimer: ReturnType<typeof setTimeout> | null = null
 let viewportStabilityHandlersInstalled = false
+let annotationRefreshTimer: ReturnType<typeof setTimeout> | null = null
+let lastAnnotationTapMeta: { id: string; atMs: number } | null = null
+let lastAppliedAnnotations: EpubHighlightInput[] = []
 
 /** Avoid duplicate selection listeners if content hook runs more than once per document. */
 const selectionClearRegisteredDocs = new WeakSet<Document>()
+const ANNOTATION_TAP_DEDUP_MS = 450
 
 interface MergedEpubReaderPrefs {
   theme: ReaderThemeName
@@ -321,6 +325,26 @@ function clearViewportRecoveryTimer(): void {
   }
 }
 
+function clearAnnotationRefreshTimer(): void {
+  if (annotationRefreshTimer) {
+    clearTimeout(annotationRefreshTimer)
+    annotationRefreshTimer = null
+  }
+}
+
+function shouldDispatchAnnotationTap(annotationId: string): boolean {
+  const now = typeof performance !== "undefined" ? performance.now() : Date.now()
+  const last = lastAnnotationTapMeta
+  if (last && last.id === annotationId && now - last.atMs < ANNOTATION_TAP_DEDUP_MS) {
+    return false
+  }
+  lastAnnotationTapMeta = {
+    id: annotationId,
+    atMs: now,
+  }
+  return true
+}
+
 /**
  * Android IME insets can resize the WebView while creation UI is focused.
  * epub.js may relocate to a previous spread after that resize, so we redisplay
@@ -384,16 +408,10 @@ export function initEpubViewerBridge(platform: Platform, appearance: AppearanceM
 
   const win = window as Window & { YabaEpubBridge?: YabaEpubBridge }
 
-  function applyAnnotationsPayload(annotationsJson: string): void {
+  function renderHighlights(list: EpubHighlightInput[]): void {
     const r = rendition
     if (!r) return
     clearHighlights()
-    let list: EpubHighlightInput[] = []
-    try {
-      list = annotationsJson.trim().length > 0 ? (JSON.parse(annotationsJson) as EpubHighlightInput[]) : []
-    } catch {
-      list = []
-    }
     for (const h of list) {
       if (!h.cfiRange) continue
       annotationCfiById.set(h.id, h.cfiRange)
@@ -403,7 +421,9 @@ export function initEpubViewerBridge(platform: Platform, appearance: AppearanceM
           h.cfiRange,
           { id: h.id },
           (e: Event) => {
+            e.preventDefault()
             e.stopPropagation()
+            if (!shouldDispatchAnnotationTap(h.id)) return
             win.YabaEpubBridge?.onAnnotationTap?.(h.id)
           },
           EPUB_HIGHLIGHT_DEFAULT_CLASS,
@@ -415,6 +435,25 @@ export function initEpubViewerBridge(platform: Platform, appearance: AppearanceM
     }
   }
 
+  function scheduleHighlightRefresh(delayMs = 100): void {
+    clearAnnotationRefreshTimer()
+    annotationRefreshTimer = setTimeout(() => {
+      annotationRefreshTimer = null
+      renderHighlights(lastAppliedAnnotations)
+    }, delayMs)
+  }
+
+  function applyAnnotationsPayload(annotationsJson: string): void {
+    let list: EpubHighlightInput[] = []
+    try {
+      list = annotationsJson.trim().length > 0 ? (JSON.parse(annotationsJson) as EpubHighlightInput[]) : []
+    } catch {
+      list = []
+    }
+    lastAppliedAnnotations = list
+    renderHighlights(list)
+  }
+
   win.YabaEpubBridge = {
     isReady: () => shellReady,
     setEpubUrl(url: string): boolean {
@@ -423,9 +462,12 @@ export function initEpubViewerBridge(platform: Platform, appearance: AppearanceM
         try {
           resetPublishedToc()
           clearHighlights()
+          clearAnnotationRefreshTimer()
+          lastAppliedAnnotations = []
           lastSelection = null
           clearViewportRecoveryTimer()
           lastRelocatedStartCfi = null
+          lastAnnotationTapMeta = null
           if (rendition) {
             try {
               rendition.destroy()
@@ -485,6 +527,8 @@ export function initEpubViewerBridge(platform: Platform, appearance: AppearanceM
             if (typeof relocatedIndex === "number" && Number.isFinite(relocatedIndex)) {
               currentPageNum = relocatedIndex + 1
             }
+            // Re-apply highlights after pagination settles to keep CFI overlays aligned.
+            scheduleHighlightRefresh(16)
           })
 
           rendition.on("selected", (cfiRange: string, contents: Contents) => {
@@ -492,6 +536,10 @@ export function initEpubViewerBridge(platform: Platform, appearance: AppearanceM
             if (cfiRange && selectedText.trim().length > 0) {
               lastSelection = { cfiRange, selectedText: selectedText.trim() }
             }
+          })
+
+          rendition.on("rendered", () => {
+            scheduleHighlightRefresh(16)
           })
 
           await rendition.display()
