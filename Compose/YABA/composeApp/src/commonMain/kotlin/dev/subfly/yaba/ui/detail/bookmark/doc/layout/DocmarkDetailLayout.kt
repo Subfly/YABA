@@ -16,13 +16,12 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SegmentedListItem
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,19 +32,20 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEachIndexed
 import dev.subfly.yaba.core.components.NoContentView
+import dev.subfly.yaba.core.components.item.annotation.AnnotationItemView
 import dev.subfly.yaba.core.navigation.creation.AnnotationCreationRoute
 import dev.subfly.yaba.core.navigation.main.FolderDetailRoute
 import dev.subfly.yaba.core.navigation.main.TagDetailRoute
-import dev.subfly.yaba.ui.detail.bookmark.components.BookmarkDetailTocTreeContent
+import dev.subfly.yaba.ui.detail.bookmark.components.BookmarkDetailPageSegmentedRow
+import dev.subfly.yaba.ui.detail.bookmark.components.bookmarkDetailTocLazyItems
+import dev.subfly.yaba.ui.detail.bookmark.components.flattenTocForLazyItems
 import dev.subfly.yaba.ui.detail.bookmark.doc.models.DocmarkDetailPage
-import dev.subfly.yaba.core.components.item.annotation.AnnotationItemView
-import dev.subfly.yaba.ui.detail.composables.BookmarkExtractedMetadataSection
 import dev.subfly.yaba.ui.detail.composables.BookmarkDetailFolderSectionContent
 import dev.subfly.yaba.ui.detail.composables.BookmarkDetailLabel
 import dev.subfly.yaba.ui.detail.composables.BookmarkDetailReminderSectionContent
 import dev.subfly.yaba.ui.detail.composables.BookmarkDetailTagSectionContent
+import dev.subfly.yaba.ui.detail.composables.BookmarkExtractedMetadataSection
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalCreationContentNavigator
@@ -82,6 +82,17 @@ internal fun DocmarkDetailLayout(
     var currentPage by remember { mutableStateOf(DocmarkDetailPage.INFO) }
     val bookmark = state.bookmark
 
+    var collapsedTocIds by remember { mutableStateOf(setOf<String>()) }
+    val tocRows by remember(state.toc, collapsedTocIds) {
+        derivedStateOf {
+            state.toc?.items?.let { flattenTocForLazyItems(it, collapsedTocIds) } ?: emptyList()
+        }
+    }
+
+    LaunchedEffect(state.toc) {
+        collapsedTocIds = emptySet()
+    }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
@@ -92,11 +103,12 @@ internal fun DocmarkDetailLayout(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(color = MaterialTheme.colorScheme.surfaceContainerLow)
-                    .padding(horizontal = 12.dp)
                     .padding(bottom = 8.dp),
             ) {
                 TextButton(
-                    modifier = Modifier.align(Alignment.End),
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(horizontal = 12.dp),
                     shapes = ButtonDefaults.shapes(),
                     colors = ButtonDefaults.textButtonColors().copy(
                         contentColor = Color(mainColor.iconTintArgb()),
@@ -104,17 +116,13 @@ internal fun DocmarkDetailLayout(
                     onClick = onHide,
                 ) { Text(stringResource(Res.string.done)) }
 
-                SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-                    DocmarkDetailPage.entries.fastForEachIndexed { index, page ->
-                        SegmentedButton(
-                            selected = currentPage == page,
-                            onClick = { currentPage = page },
-                            shape = SegmentedButtonDefaults.itemShape(index = index, count = DocmarkDetailPage.entries.size),
-                            label = { Text(page.label) },
-                            icon = { YabaIcon(name = page.iconName) },
-                        )
-                    }
-                }
+                BookmarkDetailPageSegmentedRow(
+                    pages = DocmarkDetailPage.entries.toList(),
+                    currentPage = currentPage,
+                    onPageChange = { currentPage = it },
+                    label = { it.label },
+                    iconName = { it.iconName },
+                )
             }
         }
         item { Spacer(modifier = Modifier.height(18.dp)) }
@@ -222,32 +230,25 @@ internal fun DocmarkDetailLayout(
                 }
 
                 DocmarkDetailPage.CONTENTS -> {
-                    item(key = "DOC_TOC") {
-                        Box(
-                            modifier = Modifier
-                                .animateItem()
-                                .fillMaxWidth()
-                                .padding(horizontal = 12.dp)
-                                .background(
-                                    color = MaterialTheme.colorScheme.surface,
-                                    shape = RoundedCornerShape(12.dp),
-                                ),
-                        ) {
-                            BookmarkDetailTocTreeContent(
-                                toc = state.toc,
-                                mainColor = mainColor,
-                                onItemClick = { id, extrasJson ->
-                                    onHide()
-                                    onEvent(DocmarkDetailEvent.OnNavigateToTocItem(id, extrasJson))
-                                },
-                                emptyIconName = "displeased",
-                                emptyLabelRes = Res.string.bookmark_detail_no_tags_added_title,
-                                emptyMessage = {
-                                    Text(text = stringResource(Res.string.bookmark_detail_no_tags_added_description))
-                                },
-                            )
-                        }
-                    }
+                    bookmarkDetailTocLazyItems(
+                        toc = state.toc,
+                        rows = tocRows,
+                        collapsedIds = collapsedTocIds,
+                        onToggleCollapse = { id ->
+                            collapsedTocIds =
+                                if (id in collapsedTocIds) collapsedTocIds - id else collapsedTocIds + id
+                        },
+                        mainColor = mainColor,
+                        onItemClick = { id, extrasJson ->
+                            onHide()
+                            onEvent(DocmarkDetailEvent.OnNavigateToTocItem(id, extrasJson))
+                        },
+                        emptyIconName = "displeased",
+                        emptyLabelRes = Res.string.bookmark_detail_no_tags_added_title,
+                        emptyMessage = {
+                            Text(text = stringResource(Res.string.bookmark_detail_no_tags_added_description))
+                        },
+                    )
                 }
 
                 DocmarkDetailPage.ANNOTATIONS -> {

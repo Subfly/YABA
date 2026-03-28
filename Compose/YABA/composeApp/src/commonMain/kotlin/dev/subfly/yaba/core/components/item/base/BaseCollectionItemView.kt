@@ -229,7 +229,11 @@ private fun ListCollectionItemView(
                         colors = ListItemDefaults.colors(containerColor = containerColor),
                         shapes = ListItemDefaults.segmentedShapes(index = index, count = count),
                         content = { Text(label) },
-                        leadingContent = { YabaIcon(name = icon, color = itemColor) },
+                        leadingContent = {
+                            if (icon.isNotEmpty()) {
+                                YabaIcon(name = icon, color = itemColor)
+                            }
+                        },
                         trailingContent = {
                             if (trailingContent != null) {
                                 trailingContent()
