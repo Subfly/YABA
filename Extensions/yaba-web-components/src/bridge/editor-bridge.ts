@@ -251,6 +251,67 @@ function buildHeadingTocJson(ed: Editor): TocJson | null {
   return { items: root }
 }
 
+/**
+ * Same traversal and filters as [buildHeadingTocJson] (`heading` nodes with non-empty trimmed text).
+ * Resolves `toc-h-${n}` at navigation time so we do not rely on [extrasJson] `pos`, which drifts after
+ * document updates (annotations, marks) — same idea as [scrollToAnnotation] using live identity, not stale coords.
+ */
+function findHeadingDocPosForTocItemId(ed: Editor, tocItemId: string): number | null {
+  const m = /^toc-h-(\d+)$/.exec(tocItemId)
+  if (!m) return null
+  const targetIndex = parseInt(m[1], 10)
+  if (targetIndex < 0 || !Number.isFinite(targetIndex)) return null
+  const headingStarts: number[] = []
+  ed.state.doc.descendants((node, pos) => {
+    if (node.type.name === "heading") {
+      const text = node.textContent.trim()
+      if (text.length > 0) {
+        headingStarts.push(pos)
+      }
+    }
+    return true
+  })
+  return headingStarts[targetIndex] ?? null
+}
+
+function getHeadingIndexFromTocItemId(tocItemId: string): number | null {
+  const m = /^toc-h-(\d+)$/.exec(tocItemId)
+  if (!m) return null
+  const index = parseInt(m[1], 10)
+  if (!Number.isFinite(index) || index < 0) return null
+  return index
+}
+
+function findHeadingElementForTocItemId(ed: Editor, tocItemId: string): HTMLElement | null {
+  const headingIndex = getHeadingIndexFromTocItemId(tocItemId)
+  if (headingIndex == null) return null
+  const headingElements = Array.from(
+    ed.view.dom.querySelectorAll<HTMLElement>("h1, h2, h3, h4, h5, h6")
+  ).filter((el) => el.textContent?.trim().length)
+  return headingElements[headingIndex] ?? null
+}
+
+function scrollHeadingIntoEditorView(ed: Editor, headingEl: HTMLElement): void {
+  const container =
+    (ed.view.dom.closest("[data-yaba-editor-root]") as HTMLElement | null) ??
+    (document.querySelector(".yaba-editor-container") as HTMLElement | null)
+
+  if (!container) {
+    headingEl.scrollIntoView({ behavior: "smooth", block: "center" })
+    return
+  }
+
+  const containerRect = container.getBoundingClientRect()
+  const headingRect = headingEl.getBoundingClientRect()
+  const desiredTop =
+    container.scrollTop +
+    (headingRect.top - containerRect.top) -
+    (container.clientHeight / 2 - headingRect.height / 2)
+  const maxTop = Math.max(0, container.scrollHeight - container.clientHeight)
+  const top = Math.max(0, Math.min(desiredTop, maxTop))
+  container.scrollTo({ top, behavior: "smooth" })
+}
+
 function publishHeadingTocFromEditor(): void {
   const ed = editorInstance
   if (!ed) {
@@ -750,17 +811,22 @@ export function initEditorBridge(editor: Editor): void {
     },
     removeAnnotationFromDocument: (annotationId: string) =>
       removeAnnotationMarksWithId(editorInstance, annotationId),
-    navigateToTocItem: (_id: string, extrasJson?: string | null) => {
+    navigateToTocItem: (id: string, _extrasJson?: string | null) => {
       const ed = editorInstance
-      if (!ed || extrasJson == null || extrasJson.trim() === "") return
+      if (!ed) return
+      const nodePos = findHeadingDocPosForTocItemId(ed, id)
+      if (nodePos == null) return
       try {
-        const o = JSON.parse(extrasJson) as { pos?: number }
-        if (typeof o.pos !== "number" || !Number.isFinite(o.pos)) return
-        const nodePos = Math.max(0, Math.min(o.pos, ed.state.doc.content.size))
-        const inside = Math.min(nodePos + 1, ed.state.doc.content.size)
+        const docSize = ed.state.doc.content.size
+        const headingEl = findHeadingElementForTocItemId(ed, id)
+        queueMicrotask(() => {
+          if (headingEl) {
+            scrollHeadingIntoEditorView(ed, headingEl)
+          }
+        })
+        const inside = Math.min(nodePos + 1, docSize)
         const sel = TextSelection.create(ed.state.doc, inside)
-        ed.view.dispatch(ed.state.tr.setSelection(sel).scrollIntoView())
-        ed.view.focus()
+        ed.view.dispatch(ed.state.tr.setSelection(sel))
       } catch {
         /* ignore */
       }
