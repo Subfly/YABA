@@ -1,4 +1,6 @@
-import type { Editor } from "@tiptap/core"
+import type { Editor, JSONContent } from "@tiptap/core"
+import DOMPurify from "dompurify"
+import showdown from "showdown"
 import { Selection, TextSelection } from "@tiptap/pm/state"
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model"
 import type { Platform, AppearanceMode } from "@/theme"
@@ -440,6 +442,167 @@ function insertInlineMathKeepingCaretAfterNode(ed: Editor, latex: string): void 
   ed.view.dispatch(tr)
 }
 
+/** Clipboard paste normalization converter (input treated as HTML-oriented content). */
+const pasteHtmlConverter = new showdown.Converter({
+  tables: true,
+  tasklists: true,
+  strikethrough: true,
+  ghCodeBlocks: true,
+})
+
+/** DOMPurify on plain text can escape markdown markers (`>` -> `&gt;`); decode before Showdown. */
+function decodeHtmlEntities(value: string): string {
+  const textarea = document.createElement("textarea")
+  textarea.innerHTML = value
+  return textarea.value
+}
+
+/** Minimal markdown-it style helpers for superscript/subscript before Showdown conversion. */
+function applySupSubMarkdownSyntax(value: string): string {
+  const withSup = value.replace(/(^|[^\^])\^([^^\n]+)\^/g, "$1<sup>$2</sup>")
+  return withSup.replace(/(^|[^~])~([^~\n]+)~(?!~)/g, "$1<sub>$2</sub>")
+}
+
+/**
+ * Serialize the current selection to Markdown using the TipTap Markdown extension.
+ */
+function getSelectionMarkdownFromEditor(ed: Editor): string {
+  const { from, to } = ed.state.selection
+  if (from === to) return ""
+  try {
+    const slice = ed.state.doc.slice(from, to)
+    const json = slice.content.toJSON() as JSONContent[] | JSONContent | null | undefined
+    const content: JSONContent[] = Array.isArray(json) ? json : json != null ? [json] : []
+    const docJson: JSONContent = { type: "doc", content }
+    const pmDoc = ed.state.schema.nodeFromJSON(docJson)
+
+    const storage = (
+      ed as unknown as {
+        storage?: {
+          markdown?: {
+            serializer?: { serialize?: (doc: ProseMirrorNode) => string }
+          }
+        }
+      }
+    ).storage?.markdown
+    const serializedByStorage = storage?.serializer?.serialize?.(pmDoc)
+    if (serializedByStorage != null && serializedByStorage.trim().length > 0) {
+      return serializedByStorage
+    }
+
+    const mgr = ed.markdown as { serialize?: (doc: JSONContent | ProseMirrorNode) => string } | undefined
+    if (mgr?.serialize) {
+      const serializedByManager = mgr.serialize(pmDoc)
+      if (serializedByManager.trim().length > 0) return serializedByManager
+      const serializedJson = mgr.serialize(docJson)
+      if (serializedJson.trim().length > 0) return serializedJson
+    }
+  } catch {
+    /* fall through */
+  }
+  return ed.state.doc.textBetween(from, to, "\n")
+}
+
+/**
+ * Replace selection with pasted text interpreted by Markdown pipeline:
+ * DOMPurify(text) -> Showdown(makeHtml) -> DOMPurify(html) -> TipTap insert.
+ */
+function insertPastedTextAsHtml(ed: Editor, clipboardText: string): void {
+  const { from, to } = ed.state.selection
+  const trimmed = clipboardText.trim()
+  if (trimmed.length === 0) return
+
+  const sanitizedText = DOMPurify.sanitize(trimmed, { USE_PROFILES: { html: true } })
+  const decodedText = decodeHtmlEntities(sanitizedText)
+  const markdownReadyText = applySupSubMarkdownSyntax(decodedText)
+  let html = pasteHtmlConverter.makeHtml(markdownReadyText)
+  html = DOMPurify.sanitize(html, { USE_PROFILES: { html: true } })
+  if (!html.trim()) {
+    const tr = ed.state.tr.insertText(decodedText, from, to)
+    ed.view.dispatch(tr)
+    return
+  }
+
+  ed.chain().focus().insertContentAt({ from, to }, html).run()
+}
+
+/** Clipboard source for paste: always treat clipboard content as text. */
+function getClipboardTextForPaste(ev: ClipboardEvent): string {
+  const plain = ev.clipboardData?.getData("text/plain")
+  if (plain != null && plain.trim() !== "") return plain
+
+  const html = ev.clipboardData?.getData("text/html")
+  if (html == null || html.trim() === "") return ""
+
+  try {
+    const doc = new DOMParser().parseFromString(html, "text/html")
+    return (doc.body?.textContent ?? "").trim()
+  } catch {
+    return html
+      .replace(/<[^>]+>/g, " ")
+      .replace(/&nbsp;/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+  }
+}
+
+/**
+ * Default copy = Markdown on clipboard; default paste = always consume clipboard as text,
+ * sanitize text via DOMPurify, normalize with Showdown, then insert sanitized HTML.
+ */
+function wireDefaultMarkdownClipboard(ed: Editor): void {
+  const dom = ed.view.dom
+
+  const onCopy = (event: Event) => {
+    const ev = event as ClipboardEvent
+    if (!ed.isEditable) return
+    const { from, to } = ed.state.selection
+    if (from === to) return
+    const md = getSelectionMarkdownFromEditor(ed)
+    if (md.length === 0) return
+    ev.preventDefault()
+    ev.clipboardData?.setData("text/plain", md)
+    ev.clipboardData?.setData("text/markdown", md)
+  }
+
+  dom.addEventListener("copy", onCopy)
+
+  const handlePasteWithMarkdownPipeline = (ev: ClipboardEvent): boolean => {
+    if (!ed.isEditable) return false
+    const text = getClipboardTextForPaste(ev)
+    if (text.trim() === "") return false
+    ev.preventDefault()
+    insertPastedTextAsHtml(ed, text)
+    return true
+  }
+
+  /**
+   * Prefer ProseMirror `handlePaste` (TipTap-supported override point). Keep `handleDOMEvents.paste`
+   * as a fallback for environments where only DOM paste events fire.
+   */
+  const prevProps = ed.options.editorProps
+  const inheritedHandlePaste = prevProps.handlePaste
+  const inheritedDomPaste = prevProps.handleDOMEvents?.paste
+  ed.setOptions({
+    editorProps: {
+      ...prevProps,
+      handlePaste: (view, event, slice) => {
+        const ev = event as ClipboardEvent
+        if (handlePasteWithMarkdownPipeline(ev)) return true
+        return inheritedHandlePaste?.(view, event, slice) ?? false
+      },
+      handleDOMEvents: {
+        ...prevProps.handleDOMEvents,
+        paste: (view, event) => {
+          const ev = event as ClipboardEvent
+          if (handlePasteWithMarkdownPipeline(ev)) return true
+          return inheritedDomPaste?.(view, event) ?? false
+        },
+      },
+    },
+  })
+}
+
 function applyReaderPreferences(): void {
   const page = document.body?.dataset.yabaPage
   /** Read-it-later viewer + note editor: same reader theme + typography pipeline (incl. automatic / system). */
@@ -833,5 +996,6 @@ export function initEditorBridge(editor: Editor): void {
     },
   }
 
+  wireDefaultMarkdownClipboard(editor)
   applyReaderPreferences()
 }
