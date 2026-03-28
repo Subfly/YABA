@@ -1,5 +1,7 @@
 package dev.subfly.yaba.ui.detail.bookmark.note.components
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.DropdownMenuGroup
@@ -9,8 +11,13 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
@@ -52,6 +59,8 @@ internal fun NotemarkContentDropdownMenu(
     state: NotemarkDetailUIState,
     onEvent: (NotemarkDetailEvent) -> Unit,
     onShowRemindMePicker: () -> Unit,
+    onExportMarkdown: () -> Unit,
+    onExportPdf: () -> Unit,
 ) {
     val navigator = LocalContentNavigator.current
     val creationNavigator = LocalCreationContentNavigator.current
@@ -63,10 +72,18 @@ internal fun NotemarkContentDropdownMenu(
     val remindMeText = stringResource(Res.string.remind_me)
     // TODO: LOCALIZATION
     val cancelReminderText = "Cancel Reminder"
+    val saveCopyText = "Save Copy"
+    val mdLabel = "MD"
+    val pdfLabel = "PDF"
     val deleteText = stringResource(Res.string.delete)
 
     val isAndroid = Platform == YabaPlatform.ANDROID
     val hasActiveReminder = state.reminderDateEpochMillis != null
+
+    var isSaveCopyExpanded by remember { mutableStateOf(false) }
+    LaunchedEffect(expanded) {
+        if (!expanded) isSaveCopyExpanded = false
+    }
 
     val primaryActions = remember(editText, moveText) {
         listOf(
@@ -80,30 +97,38 @@ internal fun NotemarkContentDropdownMenu(
                 key = "move",
                 icon = "arrow-move-up-right",
                 text = moveText,
-                color = YabaColor.BLUE,
+                color = YabaColor.TEAL,
             ),
         )
     }
 
-    val secondaryActions = remember(remindMeText, cancelReminderText, hasActiveReminder) {
+    val secondaryActions = remember(
+        remindMeText,
+        cancelReminderText,
+        hasActiveReminder,
+        isAndroid,
+    ) {
         buildList {
-            add(
-                DetailMenuAction(
-                    key = "remind_me",
-                    icon = "notification-02",
-                    text = remindMeText,
-                    color = YabaColor.PURPLE,
-                ),
-            )
-            if (hasActiveReminder) {
-                add(
-                    DetailMenuAction(
-                        key = "cancel_reminder",
-                        icon = "notification-off-02",
-                        text = cancelReminderText,
-                        color = YabaColor.RED,
-                    ),
-                )
+            if (isAndroid) {
+                if (hasActiveReminder) {
+                    add(
+                        DetailMenuAction(
+                            key = "cancel_reminder",
+                            icon = "notification-off-03",
+                            text = cancelReminderText,
+                            color = YabaColor.YELLOW,
+                        ),
+                    )
+                } else {
+                    add(
+                        DetailMenuAction(
+                            key = "remind_me",
+                            icon = "notification-01",
+                            text = remindMeText,
+                            color = YabaColor.YELLOW,
+                        ),
+                    )
+                }
             }
         }
     }
@@ -117,7 +142,7 @@ internal fun NotemarkContentDropdownMenu(
         ) {
             primaryActions.fastForEachIndexed { index, action ->
                 DropdownMenuItem(
-                    shapes = MenuDefaults.itemShape(index, primaryActions.size),
+                    shapes = MenuDefaults.itemShape(index, 3),
                     checked = false,
                     onCheckedChange = {
                         onDismissRequest()
@@ -149,32 +174,47 @@ internal fun NotemarkContentDropdownMenu(
                     text = { Text(text = action.text) },
                 )
             }
+            NotemarkSaveCopySubmenuSection(
+                itemIndex = 2,
+                siblingCount = 3,
+                saveCopyText = saveCopyText,
+                mdLabel = mdLabel,
+                pdfLabel = pdfLabel,
+                isExpanded = isSaveCopyExpanded,
+                onToggleExpand = { isSaveCopyExpanded = !isSaveCopyExpanded },
+                onDismissSubmenu = { isSaveCopyExpanded = false },
+                onDismissRootMenu = onDismissRequest,
+                onExportMarkdown = onExportMarkdown,
+                onExportPdf = onExportPdf,
+            )
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        if (secondaryActions.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(8.dp))
 
-        DropdownMenuGroup(
-            shapes = MenuDefaults.groupShape(index = 1, count = 3),
-        ) {
-            secondaryActions.fastForEachIndexed { index, action ->
-                DropdownMenuItem(
-                    shapes = MenuDefaults.itemShape(index, secondaryActions.size),
-                    checked = false,
-                    onCheckedChange = {
-                        onDismissRequest()
-                        when (action.key) {
-                            "remind_me" -> onShowRemindMePicker()
-                            "cancel_reminder" -> onEvent(NotemarkDetailEvent.OnCancelReminder)
-                        }
-                    },
-                    leadingIcon = {
-                        YabaIcon(
-                            name = action.icon,
-                            color = Color(action.color.iconTintArgb()),
-                        )
-                    },
-                    text = { Text(text = action.text) },
-                )
+            DropdownMenuGroup(
+                shapes = MenuDefaults.groupShape(index = 1, count = 3),
+            ) {
+                secondaryActions.fastForEachIndexed { index, action ->
+                    DropdownMenuItem(
+                        shapes = MenuDefaults.itemShape(index, secondaryActions.size),
+                        checked = false,
+                        onCheckedChange = {
+                            onDismissRequest()
+                            when (action.key) {
+                                "remind_me" -> onShowRemindMePicker()
+                                "cancel_reminder" -> onEvent(NotemarkDetailEvent.OnCancelReminder)
+                            }
+                        },
+                        leadingIcon = {
+                            YabaIcon(
+                                name = action.icon,
+                                color = Color(action.color.iconTintArgb()),
+                            )
+                        },
+                        text = { Text(text = action.text) },
+                    )
+                }
             }
         }
 
@@ -213,6 +253,91 @@ internal fun NotemarkContentDropdownMenu(
                     )
                 },
             )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun NotemarkSaveCopySubmenuSection(
+    itemIndex: Int,
+    siblingCount: Int,
+    saveCopyText: String,
+    mdLabel: String,
+    pdfLabel: String,
+    isExpanded: Boolean,
+    onToggleExpand: () -> Unit,
+    onDismissSubmenu: () -> Unit,
+    onDismissRootMenu: () -> Unit,
+    onExportMarkdown: () -> Unit,
+    onExportPdf: () -> Unit,
+) {
+    val saveCopyAccent = Color(YabaColor.BLUE.iconTintArgb())
+    Box {
+        DropdownMenuItem(
+            shapes = MenuDefaults.itemShape(itemIndex, siblingCount),
+            checked = false,
+            onCheckedChange = { onToggleExpand() },
+            leadingIcon = {
+                YabaIcon(
+                    name = "download-01",
+                    color = saveCopyAccent,
+                )
+            },
+            trailingIcon = {
+                val expandedRotation by animateFloatAsState(
+                    targetValue = if (isExpanded) 90F else 0F,
+                )
+                YabaIcon(
+                    modifier = Modifier.rotate(expandedRotation),
+                    name = "arrow-right-01",
+                )
+            },
+            text = { Text(text = saveCopyText) },
+        )
+        DropdownMenuPopup(
+            expanded = isExpanded,
+            onDismissRequest = onDismissSubmenu,
+        ) {
+            DropdownMenuGroup(
+                shapes = MenuDefaults.groupShape(
+                    index = 0,
+                    count = 1,
+                ),
+            ) {
+                DropdownMenuItem(
+                    shapes = MenuDefaults.itemShape(0, 2),
+                    checked = false,
+                    onCheckedChange = {
+                        onDismissSubmenu()
+                        onDismissRootMenu()
+                        onExportMarkdown()
+                    },
+                    leadingIcon = {
+                        YabaIcon(
+                            name = "document-attachment",
+                            color = Color(YabaColor.GRAY.iconTintArgb()),
+                        )
+                    },
+                    text = { Text(text = mdLabel) },
+                )
+                DropdownMenuItem(
+                    shapes = MenuDefaults.itemShape(1, 2),
+                    checked = false,
+                    onCheckedChange = {
+                        onDismissSubmenu()
+                        onDismissRootMenu()
+                        onExportPdf()
+                    },
+                    leadingIcon = {
+                        YabaIcon(
+                            name = "pdf-02",
+                            color = Color(YabaColor.RED.iconTintArgb()),
+                        )
+                    },
+                    text = { Text(text = pdfLabel) },
+                )
+            }
         }
     }
 }

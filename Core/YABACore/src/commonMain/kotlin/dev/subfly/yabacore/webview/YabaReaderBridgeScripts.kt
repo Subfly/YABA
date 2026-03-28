@@ -314,6 +314,40 @@ object YabaEditorBridgeScripts {
         })();
         """.trimIndent()
     }
+
+    /**
+     * Returns a Promise that resolves to JSON text (Markdown export bundle).
+     */
+    fun exportMarkdownBundleJsonScript(): String =
+        """
+        (function() {
+            try {
+                if (window.YabaEditorBridge && typeof window.YabaEditorBridge.exportMarkdownBundleJson === "function") {
+                    return window.YabaEditorBridge.exportMarkdownBundleJson();
+                }
+                return Promise.resolve(JSON.stringify({ markdown: "", assets: [] }));
+            } catch(e) {
+                return Promise.resolve(JSON.stringify({ markdown: "", assets: [] }));
+            }
+        })();
+        """.trimIndent()
+
+    /**
+     * Returns a Promise that resolves to base64 PDF bytes (no data: prefix).
+     */
+    fun exportPdfBase64Script(): String =
+        """
+        (function() {
+            try {
+                if (window.YabaEditorBridge && typeof window.YabaEditorBridge.exportPdfBase64 === "function") {
+                    return window.YabaEditorBridge.exportPdfBase64();
+                }
+                return Promise.resolve("");
+            } catch(e) {
+                return Promise.resolve("");
+            }
+        })();
+        """.trimIndent()
 }
 
 /**

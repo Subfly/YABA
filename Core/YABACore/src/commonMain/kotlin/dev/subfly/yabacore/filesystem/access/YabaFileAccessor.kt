@@ -1,11 +1,13 @@
 package dev.subfly.yabacore.filesystem.access
 
 import dev.subfly.yabacore.database.DatabaseProvider
-import dev.subfly.yabacore.filesystem.ImagemarkFileManager
 import dev.subfly.yabacore.filesystem.DocmarkFileManager
+import dev.subfly.yabacore.filesystem.ImagemarkFileManager
+import dev.subfly.yabacore.filesystem.NotemarkMarkdownExportBundleDto
 import dev.subfly.yabacore.model.utils.DocmarkType
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.PlatformFile
+import io.github.vinceglb.filekit.createDirectories
 import io.github.vinceglb.filekit.dialogs.FileKitDialogSettings
 import io.github.vinceglb.filekit.dialogs.FileKitMode
 import io.github.vinceglb.filekit.dialogs.FileKitType
@@ -13,11 +15,16 @@ import io.github.vinceglb.filekit.dialogs.openDirectoryPicker
 import io.github.vinceglb.filekit.dialogs.openFilePicker
 import io.github.vinceglb.filekit.dialogs.openFileSaver
 import io.github.vinceglb.filekit.dialogs.openFileWithDefaultApplication
+import io.github.vinceglb.filekit.div
+import io.github.vinceglb.filekit.parent
 import io.github.vinceglb.filekit.readBytes
 import io.github.vinceglb.filekit.write
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 /**
  * Centralized accessor for FileKit dialogs and file actions.
@@ -29,6 +36,8 @@ import kotlinx.coroutines.withContext
  * under the YABA working directory.
  */
 object YabaFileAccessor {
+
+    private val jsonParser = Json { ignoreUnknownKeys = true }
 
     private val emptyTitleSettings: FileKitDialogSettings
         get() = FileKitDialogSettings.createDefault()
@@ -219,6 +228,54 @@ object YabaFileAccessor {
         val ext = extension ?: DocmarkFileManager.extensionForType(type)
         return saveFileCopy(file, suggestedName, ext)
     }
+
+    /**
+     * Writes `*.md` and optional `assets/` files into a user-selected directory from
+     * [NotemarkMarkdownExportBundleDto] JSON produced by the editor WebView.
+     */
+    @OptIn(ExperimentalEncodingApi::class)
+    suspend fun saveNotemarkMarkdownExport(
+        directory: PlatformFile,
+        suggestedBaseName: String,
+        bundleJson: String,
+    ): Boolean {
+        val dto =
+            runCatching {
+                jsonParser.decodeFromString<NotemarkMarkdownExportBundleDto>(bundleJson)
+            }.getOrNull() ?: return false
+        val base = sanitizeExportBaseName(suggestedBaseName)
+        return runCatching {
+            withContext(Dispatchers.IO) {
+                val mdFile = directory / "$base.md"
+                mdFile.parent()?.createDirectories()
+                mdFile.write(dto.markdown.encodeToByteArray())
+                for (asset in dto.assets) {
+                    val target = directory / asset.relativePath
+                    target.parent()?.createDirectories()
+                    val bytes = Base64.decode(asset.dataBase64)
+                    target.write(bytes)
+                }
+            }
+            true
+        }.getOrDefault(false)
+    }
+
+    /**
+     * Saves a base64-encoded PDF (from the note editor WebView) via the file saver dialog.
+     */
+    @OptIn(ExperimentalEncodingApi::class)
+    suspend fun saveNotemarkPdfExport(
+        suggestedBaseName: String,
+        pdfBase64: String,
+    ): Boolean {
+        if (pdfBase64.isBlank()) return false
+        val bytes = Base64.decode(pdfBase64)
+        val name = sanitizeExportBaseName(suggestedBaseName)
+        return saveFileCopy(bytes, name, "pdf")
+    }
+
+    private fun sanitizeExportBaseName(label: String): String =
+        label.ifBlank { "note" }.replace(Regex("[^a-zA-Z0-9_-]"), "_")
 
     /**
      * Opens the native share dialog for a single file.

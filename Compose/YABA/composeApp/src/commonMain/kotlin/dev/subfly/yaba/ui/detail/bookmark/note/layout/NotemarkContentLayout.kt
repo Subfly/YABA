@@ -61,6 +61,7 @@ import dev.subfly.yaba.util.NotemarkMentionSheetResult
 import dev.subfly.yaba.util.NotemarkTableSheetResult
 import dev.subfly.yaba.util.ResultStoreKeys
 import dev.subfly.yaba.util.rememberUrlLauncher
+import dev.subfly.yabacore.filesystem.access.YabaFileAccessor
 import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.ReaderPreferences
 import dev.subfly.yabacore.model.utils.YabaColor
@@ -571,6 +572,32 @@ internal fun NotemarkContentLayout(
                         state = state,
                         onEvent = onEvent,
                         onShowRemindMePicker = onShowRemindMePicker,
+                        onExportMarkdown = {
+                            scope.launch {
+                                editorBridge?.unFocus()
+                                val bridge = editorBridge ?: return@launch
+                                val dir = YabaFileAccessor.pickDirectory() ?: return@launch
+                                val json = bridge.exportNoteMarkdownBundleJson()
+                                val label = state.bookmark?.label.orEmpty()
+                                YabaFileAccessor.saveNotemarkMarkdownExport(
+                                    directory = dir,
+                                    suggestedBaseName = label,
+                                    bundleJson = json,
+                                )
+                            }
+                        },
+                        onExportPdf = {
+                            scope.launch {
+                                editorBridge?.unFocus()
+                                val bridge = editorBridge ?: return@launch
+                                val b64 = bridge.exportNotePdfBase64()
+                                val label = state.bookmark?.label.orEmpty()
+                                YabaFileAccessor.saveNotemarkPdfExport(
+                                    suggestedBaseName = label,
+                                    pdfBase64 = b64,
+                                )
+                            }
+                        },
                     )
                 }
             },

@@ -32,6 +32,7 @@ import {
   setNoteEditorAutosaveIdleEnabled,
 } from "./shell-host-events"
 import { publishToc, resetPublishedToc, type TocJson } from "./toc-host-events"
+import { exportMarkdownBundleFromEditor, exportPdfBase64FromEditor } from "./editor-export"
 
 export type ReaderTheme = "system" | "dark" | "light" | "sepia"
 export type ReaderFontSize = "small" | "medium" | "large"
@@ -107,6 +108,10 @@ export interface YabaEditorBridge {
   removeAnnotationFromDocument: (annotationId: string) => number
   onAnnotationTap?: (id: string) => void
   navigateToTocItem: (id: string, extrasJson?: string | null) => void
+  /** JSON string: `{ markdown, assets: [{ relativePath, dataBase64 }] }` for Save Copy → MD. */
+  exportMarkdownBundleJson: () => Promise<string>
+  /** Base64 PDF bytes (no data: prefix) for Save Copy → PDF. */
+  exportPdfBase64: () => Promise<string>
 }
 
 function removeAnnotationMarksWithId(editor: Editor | null, annotationId: string): number {
@@ -993,6 +998,17 @@ export function initEditorBridge(editor: Editor): void {
       } catch {
         /* ignore */
       }
+    },
+    exportMarkdownBundleJson: async () => {
+      const ed = editorInstance
+      if (!ed) return JSON.stringify({ markdown: "", assets: [] })
+      const bundle = await exportMarkdownBundleFromEditor(ed)
+      return JSON.stringify(bundle)
+    },
+    exportPdfBase64: async () => {
+      const ed = editorInstance
+      if (!ed) return ""
+      return exportPdfBase64FromEditor(ed)
     },
   }
 

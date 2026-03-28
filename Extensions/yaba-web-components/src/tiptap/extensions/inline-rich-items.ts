@@ -81,11 +81,13 @@ export const YabaInlineLinkNode = Node.create({
 
   renderHTML({ HTMLAttributes }) {
     const text = String(HTMLAttributes.text || "")
+    const url = String(HTMLAttributes.url || "")
     return [
       "span",
       mergeAttributes(HTMLAttributes, {
         "data-yaba-inline-link": "true",
         "data-text": text,
+        "data-url": url,
         class: "yaba-inline-rich-item yaba-inline-link",
       }),
       text,

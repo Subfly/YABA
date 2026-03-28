@@ -24,4 +24,13 @@ interface WebViewEditorBridge : WebViewReaderBridge {
 
     /** JSON object text for `window.YabaEditorBridge.dispatch` (matches web `EditorCommandPayload`). */
     suspend fun dispatch(payloadJson: String)
+
+    /**
+     * JSON string from `window.YabaEditorBridge.exportMarkdownBundleJson()`:
+     * `{ "markdown": "...", "assets": [ { "relativePath": "...", "dataBase64": "..." } ] }`.
+     */
+    suspend fun exportNoteMarkdownBundleJson(): String
+
+    /** Base64-encoded PDF bytes (no `data:` prefix) from `window.YabaEditorBridge.exportPdfBase64()`. */
+    suspend fun exportNotePdfBase64(): String
 }
