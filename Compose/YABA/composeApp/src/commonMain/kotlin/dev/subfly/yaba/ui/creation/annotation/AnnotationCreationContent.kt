@@ -111,7 +111,9 @@ fun AnnotationCreationContent(
             isSaving = state.isSaving,
             onDone = {
                 when {
-                    state.isEditing || state.selectionDraft?.pdfAnchor != null -> {
+                    state.isEditing ||
+                        state.selectionDraft?.pdfAnchor != null ||
+                        state.selectionDraft?.epubAnchor != null -> {
                         vm.onEvent(
                             AnnotationCreationEvent.OnSave(
                                 onSavedCallback = {
