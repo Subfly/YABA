@@ -6,7 +6,7 @@ package dev.subfly.yabacore.util
  * Call [init] once at app startup, typically from [CoreRuntime.initialize].
  *
  * - Android: Initializes FileKit core and dialogs with the given Context/Activity.
- * - JVM (Desktop): Initializes with app ID.
+ * - JVM: Initializes with app ID.
  * - Apple (iOS): No-op; FileKit works without explicit init.
  */
 expect object FileKitHelper {

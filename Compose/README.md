@@ -5,32 +5,22 @@ The Android/JVM platform implementation of YABA using Compose Multiplatform for 
 ## 🤖 Platform Support
 
 - **Android**: API 24+ (Android 7.0+)
-- **JVM**: Desktop applications (Windows, macOS, Linux)
+- **JVM**: Shared Compose UI on the JVM (Windows, macOS, Linux); builds as a JAR for reuse
 - **Web**: Browser-based applications (planned)
 
-## 📁 Planned Project Structure
+## 📁 Project structure (YABA)
 
 ```
-Compose/
-├── androidApp/              # Android-specific implementation
-│   ├── src/main/
-│   │   ├── java/           # Android-specific code
-│   │   ├── res/            # Android resources
-│   │   └── AndroidManifest.xml
-│   └── build.gradle.kts    # Android build configuration
-├── desktopApp/             # Desktop application
-│   ├── src/main/kotlin/    # Desktop-specific code
-│   └── build.gradle.kts    # Desktop build configuration
-├── shared/                 # Shared Compose Multiplatform code
-│   ├── src/commonMain/     # Common Kotlin code
-│   ├── src/androidMain/    # Android-specific implementations
-│   ├── src/desktopMain/    # Desktop-specific implementations
-│   ├── src/webMain/        # Web-specific implementations (future)
-│   └── build.gradle.kts    # Shared module configuration
-├── buildSrc/               # Build logic and dependencies
-├── gradle/                 # Gradle wrapper and configuration
-├── build.gradle.kts        # Root build configuration
-└── settings.gradle.kts     # Project settings
+Compose/YABA/
+├── composeApp/              # Compose Multiplatform app (Android + JVM)
+│   ├── src/commonMain/      # Shared UI and logic
+│   ├── src/androidMain/     # Android-specific code
+│   ├── src/jvmMain/         # JVM-specific code (Compose Multiplatform JVM / Skiko window)
+│   └── build.gradle.kts
+├── gradle/
+│   └── libs.versions.toml
+├── build.gradle.kts
+└── settings.gradle.kts
 ```
 
 ## 🏗️ Architecture
@@ -119,12 +109,9 @@ User Action → Compose UI → ViewModel → UseCase → Repository → DataSour
 - Shortcuts integration
 - Background sync
 
-#### Desktop
-- Native desktop window management
-- Keyboard shortcuts
-- System tray integration
-- Drag and drop support
-- Native file dialogs
+#### JVM
+- JVM window hosting via Compose Multiplatform (`jvmMain`)
+- Same shared UI as Android where applicable
 
 #### Web (Future)
 - Progressive Web App (PWA)
@@ -166,8 +153,8 @@ User Action → Compose UI → ViewModel → UseCase → Repository → DataSour
    # Android
    ./gradlew androidApp:installDebug
    
-   # Desktop
-   ./gradlew desktopApp:run
+   # JVM (from `Compose/YABA`)
+   ./gradlew :composeApp:run
    ```
 
 ### Configuration
@@ -176,10 +163,9 @@ User Action → Compose UI → ViewModel → UseCase → Repository → DataSour
 1. Configure signing in `androidApp/build.gradle.kts`
 2. Configure deep linking in `AndroidManifest.xml`
 
-#### Desktop Setup
-1. Configure application metadata
-2. Set up native packaging
-3. Configure system integration
+#### JVM setup
+1. JDK 17+ on the host
+2. Run `./gradlew :composeApp:run` for the local window, or `./gradlew :composeApp:jvmJar` for a JAR
 
 ## 📦 Building & Distribution
 
@@ -195,13 +181,13 @@ User Action → Compose UI → ViewModel → UseCase → Repository → DataSour
 ./gradlew androidApp:bundleRelease
 ```
 
-### Desktop Build
+### JVM build
 ```bash
-# Run desktop app
-./gradlew desktopApp:run
+# Run JVM app (Compose window)
+cd YABA && ./gradlew :composeApp:run
 
-# Create distribution
-./gradlew desktopApp:packageDistributionForCurrentOS
+# Produce JVM JAR (e.g. for embedding elsewhere)
+./gradlew :composeApp:jvmJar
 ```
 
 ### Web Build (Future)
@@ -225,9 +211,7 @@ User Action → Compose UI → ViewModel → UseCase → Repository → DataSour
 - **Staging**: Testing configuration
 
 ### Platform-Specific Config
-- **Android**: `androidApp/build.gradle.kts`
-- **Desktop**: `desktopApp/build.gradle.kts`
-- **Shared**: `shared/build.gradle.kts`
+- **Android / JVM app**: `YABA/composeApp/build.gradle.kts`
 
 ## 📚 Code Examples
 
@@ -324,4 +308,4 @@ This project is licensed under the MIT License - see the [LICENSE](../LICENSE) f
 
 ---
 
-**Compose Platform** - Modern Android and desktop experiences with Kotlin Multiplatform and complete privacy. 🤖✨ 
+**Compose Platform** - Modern Android and JVM experiences with Kotlin Multiplatform and complete privacy. 🤖✨ 

@@ -20,7 +20,7 @@ import dev.subfly.yabacore.webview.YabaWebHostEvent
 import dev.subfly.yabacore.webview.YabaWebScrollDirection
 
 /**
- * Desktop stub: WebView integration is not implemented yet.
+ * JVM stub: WebView integration is not implemented yet.
  */
 @Composable
 actual fun YabaWebViewHost(
@@ -50,7 +50,7 @@ actual fun YabaWebViewHost(
             contentAlignment = Alignment.Center,
         ) {
             Text(
-                text = "WebView not available on desktop yet",
+                text = "WebView not available on JVM yet",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -69,7 +69,7 @@ actual fun YabaWebViewHost(
                     onHostEvent(YabaWebHostEvent.InitialContentLoad(WebShellLoadResult.Error))
                     onHostEvent(
                         YabaWebHostEvent.HtmlConverterFailure(
-                            UnsupportedOperationException("WebView not available on desktop"),
+                            UnsupportedOperationException("WebView not available on JVM"),
                         ),
                     )
                 }
@@ -78,7 +78,7 @@ actual fun YabaWebViewHost(
                     onHostEvent(YabaWebHostEvent.InitialContentLoad(WebShellLoadResult.Error))
                     onHostEvent(
                         YabaWebHostEvent.PdfConverterFailure(
-                            UnsupportedOperationException("WebView not available on desktop"),
+                            UnsupportedOperationException("WebView not available on JVM"),
                         ),
                     )
                 }
@@ -87,7 +87,7 @@ actual fun YabaWebViewHost(
                     onHostEvent(YabaWebHostEvent.InitialContentLoad(WebShellLoadResult.Error))
                     onHostEvent(
                         YabaWebHostEvent.EpubConverterFailure(
-                            UnsupportedOperationException("WebView not available on desktop"),
+                            UnsupportedOperationException("WebView not available on JVM"),
                         ),
                     )
                 }

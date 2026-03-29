@@ -6,7 +6,7 @@ package dev.subfly.yabacore.notifications
  *
  * Delegates to platform-specific [expect] functions declared in
  * [NotificationPlatformHandler.kt]. Android and iOS provide real implementations;
- * JVM is a no-op until native desktop support is added.
+ * JVM is a no-op until a JVM UI layer provides notifications.
  */
 object NotificationManager {
 

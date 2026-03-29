@@ -15,9 +15,9 @@ actual fun rememberShareHandler(): (String) -> Unit {
             clipboard.setContents(StringSelection(url), null)
 
             if (Desktop.isDesktopSupported()) {
-                val desktop = Desktop.getDesktop()
-                if (desktop.isSupported(Desktop.Action.BROWSE)) {
-                    runCatching { desktop.browse(URI(url)) }
+                val awtDesktop = Desktop.getDesktop()
+                if (awtDesktop.isSupported(Desktop.Action.BROWSE)) {
+                    runCatching { awtDesktop.browse(URI(url)) }
                 }
             }
         }

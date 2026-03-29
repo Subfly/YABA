@@ -110,7 +110,7 @@ android {
 dependencies {
     // Android
     add("kspAndroid", libs.room.compiler)
-    // JVM (Desktop)
+    // JVM
     add("kspJvm", libs.room.compiler)
     // Linux
     // add("kspLinuxX64", libs.room.compiler)

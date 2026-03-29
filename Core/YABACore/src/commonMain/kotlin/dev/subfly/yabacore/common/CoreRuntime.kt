@@ -18,7 +18,7 @@ import kotlin.concurrent.Volatile
  * // Android (in Application or Activity onCreate)
  * CoreRuntime.initialize(platformContext = context)
  *
- * // Desktop/JVM
+ * // JVM
  * CoreRuntime.initialize()
  *
  * // iOS (called from Swift)

@@ -32,7 +32,7 @@ data class PaneLayoutInfo(
  * - List pane is typically fixed at around 360dp
  *
  * @param supportLargeAndXLargeWidth Whether to support large and extra-large width breakpoints.
- * Defaults to true for better desktop support.
+ * Defaults to true for better support on JVM and other large-window form factors.
  *
  * @return [PaneLayoutInfo] containing information about the current pane layout.
  *

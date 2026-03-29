@@ -1,7 +1,7 @@
 package dev.subfly.yabacore.notifications
 
 internal actual fun initializePlatformNotifications(platformContext: Any?) {
-    // No-op on JVM; notifications not supported until native desktop UI is implemented.
+    // No-op on JVM; notifications not supported until a JVM UI layer is implemented.
 }
 
 internal actual suspend fun platformScheduleReminder(

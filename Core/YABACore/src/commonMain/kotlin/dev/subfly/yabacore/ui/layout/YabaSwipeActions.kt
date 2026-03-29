@@ -43,7 +43,7 @@ import kotlin.math.roundToInt
  *
  * Supports up to 3 actions per side. Swipes only reveal actions; they do not auto-trigger on full
  * swipe. Provide your own action content per platform (e.g., Liquid Glass on iOS, Material on
- * Android/desktop).
+ * Android/JVM).
  *
  * Usage (list items only):
  *

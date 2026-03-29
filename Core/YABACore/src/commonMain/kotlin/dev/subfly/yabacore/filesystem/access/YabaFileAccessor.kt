@@ -72,7 +72,7 @@ object YabaFileAccessor {
         )
 
     /**
-     * Opens the camera picker to capture a photo. On Android/iOS: native camera. On Desktop: falls
+     * Opens the camera picker to capture a photo. On Android/iOS: native camera. On JVM: falls
      * back to image file picker.
      *
      * @return The captured image file, or null if cancelled or capture failed.
@@ -288,7 +288,7 @@ object YabaFileAccessor {
 
     /**
      * Opens the native share dialog for a single file. On Android/iOS: system share sheet. On
-     * Desktop: opens with default app.
+     * JVM: opens with default app.
      *
      * @param file The file to share. Must exist and be accessible.
      */
@@ -298,7 +298,7 @@ object YabaFileAccessor {
 
     /**
      * Opens the native share dialog for multiple files. On Android/iOS: system share sheet. On
-     * Desktop: opens first file with default app.
+     * JVM: opens first file with default app.
      *
      * @param files The files to share. Must exist and be accessible.
      */

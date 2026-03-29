@@ -6,8 +6,7 @@ import java.awt.Desktop
 import java.net.URI
 
 /**
- * Desktop implementation of URL launcher.
- * Opens the URL in the default browser using java.awt.Desktop.
+ * JVM implementation: opens the URL in the default browser via [java.awt.Desktop].
  */
 @Composable
 actual fun rememberUrlLauncher(): (String) -> Boolean {
@@ -15,9 +14,9 @@ actual fun rememberUrlLauncher(): (String) -> Boolean {
         { url: String ->
             try {
                 if (Desktop.isDesktopSupported()) {
-                    val desktop = Desktop.getDesktop()
-                    if (desktop.isSupported(Desktop.Action.BROWSE)) {
-                        desktop.browse(URI(url))
+                    val awtDesktop = Desktop.getDesktop()
+                    if (awtDesktop.isSupported(Desktop.Action.BROWSE)) {
+                        awtDesktop.browse(URI(url))
                         true
                     } else {
                         false
