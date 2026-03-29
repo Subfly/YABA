@@ -29,5 +29,3 @@ dependencyResolutionManagement {
     }
 }
 include(":YABACore")
-include(":sample:composeApp")
-

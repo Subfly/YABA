@@ -32,12 +32,6 @@ kotlin {
             isStatic = true
         }
     }
-    iosSimulatorArm64 {
-        binaries.framework {
-            baseName = xcfName
-            isStatic = true
-        }
-    }
 
     sourceSets {
         all {
@@ -56,6 +50,7 @@ kotlin {
             implementation(libs.ktor.serialization.json)
             implementation(libs.ktor.client.logging)
             implementation(libs.room.runtime)
+            implementation(libs.sqlite)
             implementation(libs.androidx.datastore)
             implementation(libs.androidx.datastore.preferences)
             implementation(libs.filekit.core)

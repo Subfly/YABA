@@ -16,6 +16,7 @@ kotlinx-serialization = "1.10.0"
 androidx-core-splashscreen = "1.2.0"
 androidx-webkit = "1.15.0"
 yabacore = "0.1.0-SNAPSHOT"
+compose-native-webview = "1.0.0-beta-01"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -34,6 +35,7 @@ jetbrains-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:naviga
 compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
 androidx-webkit = { module = "androidx.webkit:webkit", version.ref = "androidx-webkit" }
 yabacore = { module = "dev.subfly.yabacore:yabacore", version.ref = "yabacore" }
+webview = { module = "io.github.kdroidfilter:composewebview", version.ref = "compose-native-webview" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
