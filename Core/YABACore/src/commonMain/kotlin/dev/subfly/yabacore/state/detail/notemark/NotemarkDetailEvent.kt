@@ -54,11 +54,11 @@ sealed interface NotemarkDetailEvent {
      * UI ran [dev.subfly.yabacore.webview.WebViewEditorBridge.exportNoteMarkdownBundleJson];
      * Core opens the directory picker and writes `.md` + assets via [dev.subfly.yabacore.filesystem.access.YabaFileAccessor].
      */
-    data class OnExportMarkdownReady(val bundleJson: String) : NotemarkDetailEvent
+    data class OnExportMarkdownReady(val markdown: String) : NotemarkDetailEvent
 
     /**
      * UI ran [dev.subfly.yabacore.webview.WebViewEditorBridge.exportNotePdfBase64];
-     * Core opens the file saver via [dev.subfly.yabacore.filesystem.access.YabaFileAccessor].
+     * Core writes `.pdf` via [dev.subfly.yabacore.filesystem.access.YabaFileAccessor.saveFileCopy].
      */
     data class OnExportPdfReady(val pdfBase64: String) : NotemarkDetailEvent
 }

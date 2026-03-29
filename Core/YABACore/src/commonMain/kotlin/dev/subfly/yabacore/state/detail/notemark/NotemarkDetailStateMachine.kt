@@ -26,6 +26,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class NotemarkDetailStateMachine :
@@ -242,8 +244,8 @@ class NotemarkDetailStateMachine :
                     )
                 val docSrc = NotemarkManager.saveInlineImageBytes(bookmarkId, bytes, ext)
                 updateState { it.copy(inlineImageDocumentSrc = docSrc) }
-            } catch (e: Exception) {
-                println("LELE: ${e.printStackTrace()}")
+            } catch (_: Exception) {
+                /* Show Error Toast */
             }
         }
     }
@@ -253,35 +255,46 @@ class NotemarkDetailStateMachine :
     }
 
     private fun onExportMarkdownReady(event: NotemarkDetailEvent.OnExportMarkdownReady) {
-        if (event.bundleJson.isBlank()) return
-        val label = currentState().bookmark?.label.orEmpty()
         launch {
+            if (event.markdown.isBlank()) return@launch
+            val bookmarkId = bookmarkIdFlow.value ?: return@launch
+
+            val label = currentState().bookmark?.label.orEmpty()
+            val base = sanitizeExportBaseName(label)
+
             try {
-                val dir = YabaFileAccessor.pickDirectory() ?: return@launch
-                YabaFileAccessor.saveNotemarkMarkdownExport(
-                    directory = dir,
-                    suggestedBaseName = label,
-                    bundleJson = event.bundleJson,
+                YabaFileAccessor.exportNotemarkMarkdownBundle(
+                    markdown = event.markdown,
+                    bookmarkId = bookmarkId,
+                    suggestedMarkdownBaseName = base,
                 )
-            } catch (e: Exception) {
-                println("LELE: ${e.printStackTrace()}")
+                /* Show Success Toast */
+            } catch (_: Exception) {
+                /* Show Error Toast */
             }
         }
     }
 
+    @OptIn(ExperimentalEncodingApi::class)
     private fun onExportPdfReady(event: NotemarkDetailEvent.OnExportPdfReady) {
-        if (event.pdfBase64.isBlank()) return
-        val label = currentState().bookmark?.label.orEmpty()
         launch {
+            if (event.pdfBase64.isBlank()) return@launch
+            val payload = sanitizePdfBase64Payload(event.pdfBase64) ?: return@launch
+            val bytes = runCatching { Base64.decode(payload) }.getOrNull() ?: return@launch
+            if (bytes.isEmpty()) return@launch
+
+            val label = currentState().bookmark?.label.orEmpty()
+            val base = sanitizeExportBaseName(label)
+
             try {
-                val dir = YabaFileAccessor.pickDirectory() ?: return@launch
-                YabaFileAccessor.saveNotemarkPdfExport(
-                    directory = dir,
-                    suggestedBaseName = label,
-                    pdfBase64 = event.pdfBase64,
+                YabaFileAccessor.saveFileCopy(
+                    bytes = bytes,
+                    suggestedName = base,
+                    extension = "pdf",
                 )
-            } catch (e: Exception) {
-                println("LELE: ${e.printStackTrace()}")
+                /* Show Success Toast */
+            } catch (_: Exception) {
+                /* Show Error Toast */
             }
         }
     }
@@ -309,5 +322,24 @@ class NotemarkDetailStateMachine :
             localImagePath = localImageAbsolutePath,
             localIconPath = localIconAbsolutePath,
         )
+    }
+
+    private fun sanitizeExportBaseName(label: String): String =
+        label.ifBlank { "note" }.replace(Regex("[^a-zA-Z0-9_-]"), "_")
+
+    /**
+     * Strips data-URL prefix; rejects JSON (e.g. markdown sent to the PDF path by mistake).
+     */
+    private fun sanitizePdfBase64Payload(pdfBase64: String): String? {
+        var t = pdfBase64.trim()
+        if (t.isEmpty()) return null
+        if (t.startsWith('{')) return null
+        if (t.startsWith("data:", ignoreCase = true)) {
+            val idx = t.indexOf("base64,")
+            if (idx >= 0) {
+                t = t.substring(idx + "base64,".length)
+            }
+        }
+        return t.ifBlank { null }
     }
 }

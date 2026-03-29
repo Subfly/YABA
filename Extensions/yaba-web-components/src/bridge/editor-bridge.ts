@@ -32,7 +32,7 @@ import {
   setNoteEditorAutosaveIdleEnabled,
 } from "./shell-host-events"
 import { publishToc, resetPublishedToc, type TocJson } from "./toc-host-events"
-import { exportMarkdownBundleFromEditor, exportPdfBase64FromEditor } from "./editor-export"
+import { exportMarkdownFromEditor, exportPdfBase64FromEditor } from "./editor-export"
 
 export type ReaderTheme = "system" | "dark" | "light" | "sepia"
 export type ReaderFontSize = "small" | "medium" | "large"
@@ -108,8 +108,8 @@ export interface YabaEditorBridge {
   removeAnnotationFromDocument: (annotationId: string) => number
   onAnnotationTap?: (id: string) => void
   navigateToTocItem: (id: string, extrasJson?: string | null) => void
-  /** JSON string: `{ markdown, assets: [{ relativePath, dataBase64 }] }` for Save Copy → MD. */
-  exportMarkdownBundleJson: () => string
+  /** Markdown text for Save Copy → `.md` (images embedded as `data:` URLs in the markdown). */
+  exportMarkdown: () => string
   /** Base64 PDF bytes (no data: prefix) for Save Copy → PDF. */
   exportPdfBase64: () => string
 }
@@ -999,18 +999,13 @@ export function initEditorBridge(editor: Editor): void {
         /* ignore */
       }
     },
-    exportMarkdownBundleJson: () => {
+    exportMarkdown: () => {
       const ed = editorInstance
-      if (!ed) return JSON.stringify({ markdown: "", assets: [] })
+      if (!ed) return ""
       try {
-        const bundle = exportMarkdownBundleFromEditor(ed)
-        // Never omit keys — JSON.stringify drops undefined, which becomes "{}" and breaks Kotlin decode.
-        return JSON.stringify({
-          markdown: bundle.markdown ?? "",
-          assets: bundle.assets ?? [],
-        })
+        return exportMarkdownFromEditor(ed)
       } catch {
-        return JSON.stringify({ markdown: "", assets: [] })
+        return ""
       }
     },
     exportPdfBase64: () => {

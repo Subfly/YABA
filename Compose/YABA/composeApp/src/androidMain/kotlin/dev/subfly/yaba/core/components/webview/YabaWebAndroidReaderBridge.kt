@@ -166,11 +166,9 @@ internal fun RichTextWebViewEditorBridge(
         override suspend fun navigateToTocItem(id: String, extrasJson: String?) =
             reader.navigateToTocItem(id, extrasJson)
 
-        override suspend fun exportNoteMarkdownBundleJson(): String {
-            if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) {
-                return "{\"markdown\":\"\",\"assets\":[]}"
-            }
-            val raw = evaluateJs(webView, YabaEditorBridgeScripts.exportMarkdownBundleJsonScript())
+        override suspend fun exportNoteMarkdown(): String {
+            if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return ""
+            val raw = evaluateJs(webView, YabaEditorBridgeScripts.exportMarkdownScript())
             return decodeJsStringResult(raw)
         }
 

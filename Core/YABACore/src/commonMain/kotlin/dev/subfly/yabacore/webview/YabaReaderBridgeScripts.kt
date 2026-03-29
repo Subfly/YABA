@@ -316,25 +316,25 @@ object YabaEditorBridgeScripts {
     }
 
     /**
-     * JSON text (Markdown export bundle). Must be synchronous — [WebView.evaluateJavascript] does not
-     * deliver Promise results to Kotlin (same contract as [getDocumentJsonScript]).
+     * Markdown text. Must be synchronous — [WebView.evaluateJavascript] does not deliver Promise
+     * results to Kotlin (same contract as [getDocumentJsonScript]).
      */
-    fun exportMarkdownBundleJsonScript(): String =
+    fun exportMarkdownScript(): String =
         """
         (function() {
             try {
-                if (window.YabaEditorBridge && typeof window.YabaEditorBridge.exportMarkdownBundleJson === "function") {
-                    return window.YabaEditorBridge.exportMarkdownBundleJson();
+                if (window.YabaEditorBridge && typeof window.YabaEditorBridge.exportMarkdown === "function") {
+                    return window.YabaEditorBridge.exportMarkdown() || "";
                 }
-                return JSON.stringify({ markdown: "", assets: [] });
+                return "";
             } catch(e) {
-                return JSON.stringify({ markdown: "", assets: [] });
+                return "";
             }
         })();
         """.trimIndent()
 
     /**
-     * Base64 PDF bytes (no `data:` prefix). Must be synchronous — same as [exportMarkdownBundleJsonScript].
+     * Base64 PDF bytes (no `data:` prefix). Must be synchronous — same as [exportMarkdownScript].
      */
     fun exportPdfBase64Script(): String =
         """

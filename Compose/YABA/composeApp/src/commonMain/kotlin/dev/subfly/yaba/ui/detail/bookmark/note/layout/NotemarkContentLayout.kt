@@ -87,6 +87,7 @@ import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.reader_not_available_description
 import yaba.composeapp.generated.resources.reader_not_available_title
+import kotlin.time.TimeSource
 
 @OptIn(
     ExperimentalMaterial3Api::class,
@@ -118,6 +119,41 @@ internal fun NotemarkContentLayout(
     var previousShowCreationContent by remember { mutableStateOf(false) }
     var pendingLinkTap by remember { mutableStateOf<InlineLinkTapEvent?>(null) }
     var pendingMentionTap by remember { mutableStateOf<InlineMentionTapEvent?>(null) }
+
+    suspend fun awaitEditorBridge(
+        timeoutMs: Long = 4_000L,
+        pollMs: Long = 75L,
+    ): WebViewEditorBridge? {
+        val start = TimeSource.Monotonic.markNow()
+        while (start.elapsedNow().inWholeMilliseconds < timeoutMs) {
+            val bridge = editorBridge
+            if (bridge != null) return bridge
+            delay(pollMs)
+        }
+        return editorBridge
+    }
+
+    suspend fun exportMarkdownWithRetry(): String {
+        val bridge = awaitEditorBridge() ?: return ""
+        bridge.unFocus()
+        repeat(4) { attempt ->
+            val markdown = bridge.exportNoteMarkdown()
+            if (markdown.isNotBlank()) return markdown
+            if (attempt < 3) delay(120)
+        }
+        return ""
+    }
+
+    suspend fun exportPdfBase64WithRetry(): String {
+        val bridge = awaitEditorBridge() ?: return ""
+        bridge.unFocus()
+        repeat(4) { attempt ->
+            val base64 = bridge.exportNotePdfBase64()
+            if (base64.isNotBlank()) return base64
+            if (attempt < 3) delay(120)
+        }
+        return ""
+    }
 
     suspend fun openCreationSheet(route: NavKey) {
         if (appState.showCreationContent || isCreationSheetOpening) return
@@ -581,17 +617,13 @@ internal fun NotemarkContentLayout(
                         onShowRemindMePicker = onShowRemindMePicker,
                         onExportMarkdown = {
                             scope.launch {
-                                editorBridge?.unFocus()
-                                val bridge = editorBridge ?: return@launch
-                                val json = bridge.exportNoteMarkdownBundleJson()
-                                onEvent(NotemarkDetailEvent.OnExportMarkdownReady(bundleJson = json))
+                                val markdown = exportMarkdownWithRetry()
+                                onEvent(NotemarkDetailEvent.OnExportMarkdownReady(markdown = markdown))
                             }
                         },
                         onExportPdf = {
                             scope.launch {
-                                editorBridge?.unFocus()
-                                val bridge = editorBridge ?: return@launch
-                                val b64 = bridge.exportNotePdfBase64()
+                                val b64 = exportPdfBase64WithRetry()
                                 onEvent(NotemarkDetailEvent.OnExportPdfReady(pdfBase64 = b64))
                             }
                         },

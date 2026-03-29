@@ -1,24 +1,16 @@
 /**
- * Export note editor content to Markdown (with assets) or PDF.
+ * Export note editor content to Markdown or PDF.
  *
  * Primary path: Showdown [makeMarkdown] on preprocessed HTML (same family as paste HTML→MD).
  * Fallback: TipTap [@tiptap/markdown] full-document serialize — Showdown can yield empty/undefined on some TipTap HTML.
+ *
+ * After export, image links are rewritten to `./assets/<filename>` so the host can copy files from app storage.
  */
 import type { Editor, JSONContent } from "@tiptap/core"
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model"
 import DOMPurify from "dompurify"
 import { jsPDF } from "jspdf"
 import showdown from "showdown"
-
-export interface MarkdownExportAsset {
-  relativePath: string
-  dataBase64: string
-}
-
-export interface MarkdownExportBundle {
-  markdown: string
-  assets: MarkdownExportAsset[]
-}
 
 /** Matches [editor-bridge] paste HTML converter options so export behaves like the rest of the note pipeline. */
 const exportMarkdownConverter = new showdown.Converter({
@@ -27,40 +19,6 @@ const exportMarkdownConverter = new showdown.Converter({
   strikethrough: true,
   ghCodeBlocks: true,
 })
-
-function guessImageExtension(url: string): string {
-  const lower = url.split("?")[0]?.toLowerCase() ?? ""
-  if (lower.endsWith(".png")) return "png"
-  if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) return "jpg"
-  if (lower.endsWith(".gif")) return "gif"
-  if (lower.endsWith(".webp")) return "webp"
-  if (lower.endsWith(".svg")) return "svg"
-  return "png"
-}
-
-/**
- * Synchronous fetch for WebView `evaluateJavascript` — async Promises are not returned to Kotlin.
- * Falls back to null on failure (caller keeps remote URL in markdown).
- */
-function fetchUrlAsBase64Sync(url: string): string | null {
-  try {
-    const xhr = new XMLHttpRequest()
-    xhr.open("GET", url, false)
-    xhr.responseType = "arraybuffer"
-    xhr.send(null)
-    if (xhr.status !== 200 && xhr.status !== 0) return null
-    const buf = xhr.response as ArrayBuffer | null
-    if (!buf || buf.byteLength === 0) return null
-    const bytes = new Uint8Array(buf)
-    let binary = ""
-    for (let i = 0; i < bytes.byteLength; i++) {
-      binary += String.fromCharCode(bytes[i]!)
-    }
-    return btoa(binary)
-  } catch {
-    return null
-  }
-}
 
 /**
  * Showdown only knows standard HTML — turn YABA inline nodes and KaTeX into shapes `makeMarkdown` can walk.
@@ -109,9 +67,6 @@ function preprocessHtmlForShowdownExport(html: string): string {
   return wrap.innerHTML
 }
 
-/**
- * Same strategy as [getSelectionMarkdownFromEditor] in editor-bridge, but for the whole document.
- */
 function getPlainTextFallbackFromEditor(ed: Editor): string {
   try {
     const t = ed.getText({ blockSeparator: "\n\n" })
@@ -172,16 +127,34 @@ function getFullDocumentMarkdownFromEditor(ed: Editor): string {
 }
 
 /**
- * Full-document HTML → Markdown via Showdown [makeMarkdown], then inline images as relative files under `assets/`.
+ * Rewrites markdown image targets to `./assets/<filename>` for any URL that points at the note's `assets/` file.
+ */
+function rewriteMarkdownImageUrlsToRelativeAssets(markdown: string): string {
+  const imageRe = /!\[([^\]]*)\]\(([^)]+)\)/g
+  return markdown.replace(imageRe, (full, alt, urlRaw) => {
+    const url = urlRaw.trim().replace(/^<|>$/g, "").trim()
+    const m = url.match(/assets\/([^/?#]+)/)
+    if (!m?.[1]) return full
+    const fileName = m[1].replace(/>$/, "").trim()
+    if (!fileName) return full
+    return `![${alt}](./assets/${fileName})`
+  })
+}
+
+/**
+ * Full-document HTML → Markdown via Showdown [makeMarkdown].
  * Synchronous — [WebView.evaluateJavascript] does not deliver Promise results to Kotlin.
  */
-export function exportMarkdownBundleFromEditor(editor: Editor): MarkdownExportBundle {
-  const rawHtml = editor.getHTML()
-  // Preprocess before DOMPurify so YABA inline nodes (links, mentions, KaTeX) are not stripped first.
-  const preprocessed = preprocessHtmlForShowdownExport(rawHtml)
-  const safeHtml = DOMPurify.sanitize(preprocessed, { USE_PROFILES: { html: true } })
-  const showdownOut = exportMarkdownConverter.makeMarkdown(safeHtml)
-  let markdown = typeof showdownOut === "string" ? showdownOut.trim() : String(showdownOut ?? "").trim()
+export function exportMarkdownFromEditor(editor: Editor): string {
+  const html = preprocessHtmlForShowdownExport(editor.getHTML())
+  const safeHtml = DOMPurify.sanitize(html, { USE_PROFILES: { html: true } })
+  let markdown = ""
+  try {
+    const showdownOut = exportMarkdownConverter.makeMarkdown(safeHtml)
+    markdown = typeof showdownOut === "string" ? showdownOut.trim() : String(showdownOut ?? "").trim()
+  } catch {
+    markdown = ""
+  }
   if (!markdown) {
     markdown = getFullDocumentMarkdownFromEditor(editor).trim()
   }
@@ -189,49 +162,23 @@ export function exportMarkdownBundleFromEditor(editor: Editor): MarkdownExportBu
     markdown = getPlainTextFallbackFromEditor(editor).trim()
   }
 
-  const assets: MarkdownExportAsset[] = []
-  const urlToRel = new Map<string, string>()
-  let nextIdx = 0
+  markdown = rewriteMarkdownImageUrlsToRelativeAssets((markdown || "").trim())
 
-  const imgPattern = /!\[([^\]]*)\]\(([^)\s]+)\)/g
-  let match: RegExpExecArray | null
-  const uniqueUrls: string[] = []
-  while ((match = imgPattern.exec(markdown)) !== null) {
-    const url = match[2]
-    if (!urlToRel.has(url)) {
-      urlToRel.set(url, `assets/note-img-${nextIdx++}.${guessImageExtension(url)}`)
-      uniqueUrls.push(url)
-    }
-  }
-
-  for (const url of uniqueUrls) {
-    const rel = urlToRel.get(url)
-    if (!rel) continue
-    const dataBase64 = fetchUrlAsBase64Sync(url)
-    if (dataBase64 != null) {
-      assets.push({ relativePath: rel, dataBase64 })
-    } else {
-      urlToRel.delete(url)
-    }
-  }
-
-  for (const [url, rel] of urlToRel) {
-    const escaped = url.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-    markdown = markdown.replace(new RegExp(`!\\[([^\\]]*)\\]\\(${escaped}\\)`, "g"), (_m, alt) => {
-      return `![${alt}](./${rel})`
-    })
-  }
-
-  const body = (markdown || "").trim() + "\n"
-  return { markdown: body, assets }
+  return markdown.trim() + "\n"
 }
 
 /**
- * Plain-text PDF via jsPDF (synchronous). Pixel-accurate HTML→canvas would require async html2canvas,
- * which cannot return through [WebView.evaluateJavascript] on Android.
+ * Plain-text PDF via jsPDF (synchronous). Images are replaced with placeholders; no base64 in WebView.
  */
 export function exportPdfBase64FromEditor(editor: Editor): string {
-  const text = getPlainTextFallbackFromEditor(editor).trim()
+  const wrap = document.createElement("div")
+  wrap.innerHTML = preprocessHtmlForShowdownExport(editor.getHTML())
+  wrap.querySelectorAll("img").forEach((img) => {
+    const alt = img.getAttribute("alt")?.trim()
+    const marker = document.createTextNode(alt && alt.length > 0 ? `[Image: ${alt}]` : "[Image]")
+    img.replaceWith(marker)
+  })
+  const text = (wrap.innerText || getPlainTextFallbackFromEditor(editor)).trim()
   if (!text) return ""
 
   const pdf = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" })
