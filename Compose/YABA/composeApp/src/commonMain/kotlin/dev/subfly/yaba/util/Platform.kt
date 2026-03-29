@@ -1,8 +1,7 @@
 package dev.subfly.yaba.util
 
 enum class YabaPlatform {
-    JVM,
     ANDROID,
 }
 
-expect val Platform: YabaPlatform
+val Platform: YabaPlatform = YabaPlatform.ANDROID

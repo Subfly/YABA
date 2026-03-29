@@ -1,21 +1,19 @@
 # Compose Platform - YABA
 
-The Android/JVM platform implementation of YABA using Compose Multiplatform for modern, native Android experiences with privacy and offline-first principles.
+The Android platform implementation of YABA using Compose Multiplatform for modern, native Android experiences with privacy and offline-first principles.
 
 ## 🤖 Platform Support
 
 - **Android**: API 24+ (Android 7.0+)
-- **JVM**: Shared Compose UI on the JVM (Windows, macOS, Linux); builds as a JAR for reuse
 - **Web**: Browser-based applications (planned)
 
 ## 📁 Project structure (YABA)
 
 ```
 Compose/YABA/
-├── composeApp/              # Compose Multiplatform app (Android + JVM)
+├── composeApp/              # Compose Multiplatform app (Android)
 │   ├── src/commonMain/      # Shared UI and logic
 │   ├── src/androidMain/     # Android-specific code
-│   ├── src/jvmMain/         # JVM-specific code (Compose Multiplatform JVM / Skiko window)
 │   └── build.gradle.kts
 ├── gradle/
 │   └── libs.versions.toml
@@ -109,10 +107,6 @@ User Action → Compose UI → ViewModel → UseCase → Repository → DataSour
 - Shortcuts integration
 - Background sync
 
-#### JVM
-- JVM window hosting via Compose Multiplatform (`jvmMain`)
-- Same shared UI as Android where applicable
-
 #### Web (Future)
 - Progressive Web App (PWA)
 - Service worker for offline support
@@ -150,11 +144,8 @@ User Action → Compose UI → ViewModel → UseCase → Repository → DataSour
 
 3. **Run the application**:
    ```bash
-   # Android
-   ./gradlew androidApp:installDebug
-   
-   # JVM (from `Compose/YABA`)
-   ./gradlew :composeApp:run
+   # Android (from `Compose/YABA`)
+   ./gradlew :composeApp:installDebug
    ```
 
 ### Configuration
@@ -162,10 +153,6 @@ User Action → Compose UI → ViewModel → UseCase → Repository → DataSour
 #### Android Setup
 1. Configure signing in `androidApp/build.gradle.kts`
 2. Configure deep linking in `AndroidManifest.xml`
-
-#### JVM setup
-1. JDK 17+ on the host
-2. Run `./gradlew :composeApp:run` for the local window, or `./gradlew :composeApp:jvmJar` for a JAR
 
 ## 📦 Building & Distribution
 
@@ -179,15 +166,6 @@ User Action → Compose UI → ViewModel → UseCase → Repository → DataSour
 
 # Bundle for Play Store
 ./gradlew androidApp:bundleRelease
-```
-
-### JVM build
-```bash
-# Run JVM app (Compose window)
-cd YABA && ./gradlew :composeApp:run
-
-# Produce JVM JAR (e.g. for embedding elsewhere)
-./gradlew :composeApp:jvmJar
 ```
 
 ### Web Build (Future)
@@ -211,7 +189,7 @@ cd YABA && ./gradlew :composeApp:run
 - **Staging**: Testing configuration
 
 ### Platform-Specific Config
-- **Android / JVM app**: `YABA/composeApp/build.gradle.kts`
+- **Android app**: `YABA/composeApp/build.gradle.kts`
 
 ## 📚 Code Examples
 
@@ -308,4 +286,4 @@ This project is licensed under the MIT License - see the [LICENSE](../LICENSE) f
 
 ---
 
-**Compose Platform** - Modern Android and JVM experiences with Kotlin Multiplatform and complete privacy. 🤖✨ 
+**Compose Platform** - Modern Android experiences with Kotlin Multiplatform and complete privacy. 🤖✨ 
