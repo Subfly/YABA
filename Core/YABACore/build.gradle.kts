@@ -121,11 +121,9 @@ dependencies {
     // add("kspLinuxX64", libs.room.compiler)
     // add("kspLinuxArm64", libs.room.compiler)
     // Mac
-    // add("kspMacosX64", libs.room.compiler)
     // add("kspMacosArm64", libs.room.compiler)
     // iOS
     add("kspIosArm64", libs.room.compiler)
-    add("kspIosSimulatorArm64", libs.room.compiler)
 }
 
 room3 {
