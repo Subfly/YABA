@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
+
 plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.android.library)
@@ -11,7 +13,7 @@ plugins {
 
 group = "dev.subfly.yabacore"
 version = "0.1.0-SNAPSHOT"
-val xcfName = "YabaCore"
+val xcfName = "YABACore"
 
 mavenPublishing {
     coordinates(
@@ -22,6 +24,7 @@ mavenPublishing {
 }
 
 kotlin {
+    val xcf = XCFramework()
     jvmToolchain(17)
 
     androidTarget { publishLibraryVariants("release") }
@@ -30,8 +33,18 @@ kotlin {
         binaries.framework {
             baseName = xcfName
             isStatic = true
+            xcf.add(this)
         }
     }
+    macosArm64 {
+        binaries.framework {
+            baseName = xcfName
+            isStatic = true
+            xcf.add(this)
+        }
+    }
+
+    applyDefaultHierarchyTemplate()
 
     sourceSets {
         all {
@@ -81,7 +94,8 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
         }
 
-        iosMain.dependencies {
+        val appleMain by getting
+        appleMain.dependencies {
             implementation(libs.ktor.client.darwin)
         }
 
@@ -115,8 +129,8 @@ dependencies {
     // Linux
     // add("kspLinuxX64", libs.room.compiler)
     // add("kspLinuxArm64", libs.room.compiler)
-    // Mac
-    // add("kspMacosArm64", libs.room.compiler)
+    // Mac (Apple Silicon only; macosX64 is not supported)
+    add("kspMacosArm64", libs.room.compiler)
     // iOS
     add("kspIosArm64", libs.room.compiler)
 }
