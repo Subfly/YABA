@@ -53,10 +53,8 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(libs.kotlinx.coroutines.core)
-            implementation(libs.kotlinx.coroutines.test)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.datetime)
-            implementation(libs.kermit)
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.client.serialization)
@@ -67,15 +65,10 @@ kotlin {
             implementation(libs.androidx.datastore)
             implementation(libs.androidx.datastore.preferences)
             implementation(libs.filekit.core)
-            implementation(libs.filekit.coil)
             implementation(libs.filekit.dialogs)
             implementation(libs.okio)
             implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
             implementation(compose.components.resources)
-            implementation(libs.coil.compose)
-            implementation(libs.coil.svg)
         }
 
         commonTest.dependencies {

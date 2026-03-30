@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.components.NoContentView
+import dev.subfly.yaba.core.components.YabaIcon
 import dev.subfly.yaba.core.components.webview.YabaWebView
 import dev.subfly.yaba.core.navigation.creation.AnnotationCreationRoute
 import dev.subfly.yaba.ui.detail.bookmark.components.BookmarkDetailContentTopBar
@@ -40,8 +41,7 @@ import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yabacore.model.utils.DocmarkType
 import dev.subfly.yabacore.state.detail.docmark.DocmarkDetailEvent
 import dev.subfly.yabacore.state.detail.docmark.DocmarkDetailUIState
-import dev.subfly.yabacore.ui.icon.YabaIcon
-import dev.subfly.yabacore.ui.webview.WebComponentUris
+import dev.subfly.yabacore.webview.WebComponentUris
 import dev.subfly.yabacore.webview.WebViewReaderBridge
 import dev.subfly.yabacore.webview.YabaWebAppearance
 import dev.subfly.yabacore.webview.YabaWebFeature

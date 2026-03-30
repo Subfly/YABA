@@ -19,8 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import dev.subfly.yabacore.model.ui.TagUiModel
 import dev.subfly.yabacore.model.utils.YabaColor
-import dev.subfly.yabacore.ui.icon.YabaIcon
-import dev.subfly.yabacore.ui.icon.iconTintArgb
+import dev.subfly.yabacore.util.iconTintArgb
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 

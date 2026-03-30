@@ -1,6 +1,5 @@
 package dev.subfly.yabacore.queue
 
-import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +24,6 @@ import kotlin.concurrent.Volatile
  * The queue is started from [CoreRuntime.initialize] and lives until the app is terminated.
  */
 object CoreOperationQueue {
-    private val logger = Logger
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val channel = Channel<CoreEvent>(Channel.UNLIMITED)
 
@@ -59,8 +57,6 @@ object CoreOperationQueue {
                 } catch (e: Throwable) {
                     event.complete(Result.failure(e))
                     _lastError.value = e
-                    // Log but don't crash - continue processing queue
-                    logger.e("CoreOperationQueue: Error executing ${event.name}: ${e.message}")
                 } finally {
                     _queueSize.value = (_queueSize.value - 1).coerceAtLeast(0)
                     _currentEventName.value = null
@@ -85,7 +81,6 @@ object CoreOperationQueue {
         if (result.isFailure) {
             // Should not happen with UNLIMITED channel, but handle gracefully
             _queueSize.value = (_queueSize.value - 1).coerceAtLeast(0)
-            logger.e("CoreOperationQueue: Failed to enqueue ${event.name}")
         }
     }
 

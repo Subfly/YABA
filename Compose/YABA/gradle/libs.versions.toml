@@ -5,6 +5,7 @@ android-minSdk = "26"
 android-targetSdk = "36"
 androidx-activity = "1.13.0"
 androidx-lifecycle = "2.10.0"
+coil = "3.4.0"
 composeHotReload = "1.0.0"
 composeMultiplatform = "1.11.0-beta01"
 cmpNavigation3 = "1.1.0-beta01"
@@ -32,6 +33,8 @@ material3-adaptive-layout = { module = "org.jetbrains.compose.material3.adaptive
 material3-adaptive-nav3 = { module = "org.jetbrains.compose.material3.adaptive:adaptive-navigation3", version.ref = "adaptive" }
 jetbrains-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "cmpNavigation3" }
 compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-svg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coil" }
 androidx-webkit = { module = "androidx.webkit:webkit", version.ref = "androidx-webkit" }
 yabacore = { module = "dev.subfly.yabacore:yabacore", version.ref = "yabacore" }
 webview = { module = "io.github.kdroidfilter:composewebview", version.ref = "compose-native-webview" }

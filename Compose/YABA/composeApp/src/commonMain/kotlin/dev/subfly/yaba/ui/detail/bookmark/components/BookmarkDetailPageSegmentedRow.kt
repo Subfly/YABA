@@ -16,7 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
-import dev.subfly.yabacore.ui.icon.YabaIcon
+import dev.subfly.yaba.core.components.YabaIcon
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable

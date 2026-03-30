@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import dev.subfly.yaba.core.components.YabaIcon
 import dev.subfly.yaba.core.components.webview.YabaWebView
 import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
 import dev.subfly.yaba.core.navigation.creation.TagCreationRoute
@@ -54,9 +55,8 @@ import dev.subfly.yabacore.model.utils.FolderSelectionMode
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.creation.docmark.DocmarkCreationEvent
 import dev.subfly.yabacore.state.creation.docmark.DocmarkCreationUIState
-import dev.subfly.yabacore.ui.icon.YabaIcon
-import dev.subfly.yabacore.ui.icon.iconTintArgb
-import dev.subfly.yabacore.ui.webview.WebComponentUris
+import dev.subfly.yabacore.util.iconTintArgb
+import dev.subfly.yabacore.webview.WebComponentUris
 import dev.subfly.yabacore.webview.WebEpubConverterInput
 import dev.subfly.yabacore.webview.WebPdfConverterInput
 import dev.subfly.yabacore.webview.YabaWebFeature

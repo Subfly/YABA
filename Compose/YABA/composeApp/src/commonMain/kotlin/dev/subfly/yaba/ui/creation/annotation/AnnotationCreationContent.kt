@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import dev.subfly.yaba.core.components.YabaIcon
 import dev.subfly.yaba.core.components.item.annotation.AnnotationPreviewItemView
 import dev.subfly.yaba.core.navigation.creation.ColorSelectionRoute
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkCreationLabel
@@ -51,8 +52,7 @@ import dev.subfly.yabacore.model.annotation.ReadableSelectionDraft
 import dev.subfly.yabacore.model.ui.AnnotationUiModel
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.creation.annotation.AnnotationCreationEvent
-import dev.subfly.yabacore.ui.icon.YabaIcon
-import dev.subfly.yabacore.ui.icon.iconTintArgb
+import dev.subfly.yabacore.util.iconTintArgb
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.cancel

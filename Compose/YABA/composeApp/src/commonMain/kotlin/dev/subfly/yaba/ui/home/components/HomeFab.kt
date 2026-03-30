@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import dev.subfly.yaba.core.components.YabaIcon
 import dev.subfly.yaba.core.navigation.creation.BookmarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.FolderCreationRoute
 import dev.subfly.yaba.core.navigation.creation.TagCreationRoute
@@ -22,8 +23,7 @@ import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalUserPreferences
 import dev.subfly.yabacore.model.utils.FabPosition
 import dev.subfly.yabacore.model.utils.YabaColor
-import dev.subfly.yabacore.ui.icon.YabaIcon
-import dev.subfly.yabacore.ui.icon.iconTintArgb
+import dev.subfly.yabacore.util.iconTintArgb
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalUuidApi::class)

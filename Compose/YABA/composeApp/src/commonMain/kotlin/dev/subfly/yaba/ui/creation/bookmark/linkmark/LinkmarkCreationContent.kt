@@ -49,8 +49,8 @@ import dev.subfly.yabacore.model.utils.FolderSelectionMode
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.creation.linkmark.LinkmarkCreationEvent
 import dev.subfly.yabacore.state.creation.linkmark.LinkmarkCreationToastMessages
-import dev.subfly.yabacore.ui.icon.iconTintArgb
-import dev.subfly.yabacore.ui.webview.WebComponentUris
+import dev.subfly.yabacore.util.iconTintArgb
+import dev.subfly.yabacore.webview.WebComponentUris
 import dev.subfly.yabacore.webview.WebConverterInput
 import dev.subfly.yabacore.webview.YabaWebFeature
 import dev.subfly.yabacore.webview.YabaWebHostEvent

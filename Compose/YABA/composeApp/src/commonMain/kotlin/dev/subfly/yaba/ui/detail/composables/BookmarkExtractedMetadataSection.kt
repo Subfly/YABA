@@ -16,9 +16,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import dev.subfly.yaba.core.components.YabaIcon
 import dev.subfly.yaba.util.formatExtractedMetadataDate
 import dev.subfly.yabacore.model.utils.YabaColor
-import dev.subfly.yabacore.ui.icon.YabaIcon
 
 /**
  * Read-only extracted metadata (link scrape or PDF/EPUB), shown as a segmented list.

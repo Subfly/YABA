@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import dev.subfly.yaba.core.components.YabaIcon
 import dev.subfly.yaba.ui.detail.bookmark.components.ReaderPreferenceToolbarFontSizeItem
 import dev.subfly.yaba.ui.detail.bookmark.components.ReaderPreferenceToolbarLineHeightItem
 import dev.subfly.yaba.ui.detail.bookmark.components.ReaderPreferenceToolbarThemeItem
@@ -32,7 +33,6 @@ import dev.subfly.yabacore.model.utils.DocmarkType
 import dev.subfly.yabacore.model.utils.ReaderPreferences
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.detail.docmark.DocmarkDetailEvent
-import dev.subfly.yabacore.ui.icon.YabaIcon
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable

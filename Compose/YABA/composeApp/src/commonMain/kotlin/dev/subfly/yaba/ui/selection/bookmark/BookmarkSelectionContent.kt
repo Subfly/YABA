@@ -33,13 +33,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.core.components.NoContentView
+import dev.subfly.yaba.core.components.YabaIcon
 import dev.subfly.yaba.core.components.item.bookmark.BookmarkItemView
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.ResultStoreKeys
 import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.state.selection.bookmark.BookmarkSelectionEvent
-import dev.subfly.yabacore.ui.icon.YabaIcon
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.done

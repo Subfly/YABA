@@ -23,7 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import dev.subfly.yabacore.model.utils.YabaColor
-import dev.subfly.yabacore.ui.icon.iconTintArgb
+import dev.subfly.yabacore.util.iconTintArgb
 
 private const val TOP_SCRIM_HEIGHT_DP = 56
 

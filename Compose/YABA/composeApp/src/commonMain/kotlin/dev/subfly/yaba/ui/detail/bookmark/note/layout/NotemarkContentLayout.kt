@@ -32,6 +32,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.navigation3.runtime.NavKey
 import dev.subfly.yaba.core.components.NoContentView
+import dev.subfly.yaba.core.components.YabaIcon
 import dev.subfly.yaba.core.components.webview.YabaWebView
 import dev.subfly.yaba.core.navigation.creation.ColorSelectionRoute
 import dev.subfly.yaba.core.navigation.creation.NotemarkLinkActionSheetRoute
@@ -66,12 +67,11 @@ import dev.subfly.yabacore.model.utils.ReaderPreferences
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.state.detail.notemark.NotemarkDetailEvent
 import dev.subfly.yabacore.state.detail.notemark.NotemarkDetailUIState
-import dev.subfly.yabacore.ui.icon.YabaIcon
-import dev.subfly.yabacore.ui.webview.WebComponentUris
 import dev.subfly.yabacore.webview.EditorFormattingState
 import dev.subfly.yabacore.webview.InlineLinkTapEvent
 import dev.subfly.yabacore.webview.InlineMentionTapEvent
 import dev.subfly.yabacore.webview.MathTapEvent
+import dev.subfly.yabacore.webview.WebComponentUris
 import dev.subfly.yabacore.webview.WebViewEditorBridge
 import dev.subfly.yabacore.webview.YabaEditorCommands
 import dev.subfly.yabacore.webview.YabaWebAppearance

@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import dev.subfly.yaba.core.components.YabaIcon
 import dev.subfly.yaba.core.navigation.creation.NotemarkLinkSheetRoute
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
@@ -36,8 +37,7 @@ import dev.subfly.yaba.util.NotemarkInlineAction
 import dev.subfly.yaba.util.NotemarkLinkSheetResult
 import dev.subfly.yaba.util.ResultStoreKeys
 import dev.subfly.yabacore.model.utils.YabaColor
-import dev.subfly.yabacore.ui.icon.YabaIcon
-import dev.subfly.yabacore.ui.icon.iconTintArgb
+import dev.subfly.yabacore.util.iconTintArgb
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.cancel

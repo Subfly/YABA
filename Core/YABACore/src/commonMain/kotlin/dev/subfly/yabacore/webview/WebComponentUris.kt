@@ -1,4 +1,4 @@
-package dev.subfly.yabacore.ui.webview
+package dev.subfly.yabacore.webview
 
 import dev.subfly.yabacore.yabacore.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi

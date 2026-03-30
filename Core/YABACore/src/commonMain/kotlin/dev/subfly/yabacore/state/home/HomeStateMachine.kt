@@ -1,6 +1,5 @@
 package dev.subfly.yabacore.state.home
 
-import androidx.compose.ui.util.fastForEach
 import dev.subfly.yabacore.managers.AllBookmarksManager
 import dev.subfly.yabacore.managers.FolderManager
 import dev.subfly.yabacore.managers.TagManager
@@ -228,7 +227,7 @@ private fun buildVisibleFolderRows(
     if (allFolders.isEmpty()) return emptyList()
 
     val childrenByParentId = mutableMapOf<String?, MutableList<FolderUiModel>>()
-    allFolders.fastForEach { folder ->
+    allFolders.forEach { folder ->
         childrenByParentId.getOrPut(folder.parentId) { mutableListOf() }.add(folder)
     }
 
@@ -255,10 +254,10 @@ private fun buildVisibleFolderRows(
         if (!hasChildren || !isExpanded) return
 
         colorStack.add(folder.color)
-        children.fastForEach(::visit)
+        children.forEach(::visit)
         if (colorStack.isNotEmpty()) colorStack.removeAt(colorStack.lastIndex)
     }
 
-    childrenByParentId[null].orEmpty().fastForEach(::visit)
+    childrenByParentId[null].orEmpty().forEach(::visit)
     return result
 }

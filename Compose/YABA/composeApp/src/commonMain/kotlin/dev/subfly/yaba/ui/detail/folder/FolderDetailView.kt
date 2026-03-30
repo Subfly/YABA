@@ -49,6 +49,7 @@ import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.core.components.NoContentView
+import dev.subfly.yaba.core.components.YabaIcon
 import dev.subfly.yaba.core.components.item.bookmark.BookmarkItemView
 import dev.subfly.yaba.core.navigation.alert.DeletionState
 import dev.subfly.yaba.core.navigation.alert.DeletionType
@@ -58,6 +59,8 @@ import dev.subfly.yaba.core.navigation.main.DocDetailRoute
 import dev.subfly.yaba.core.navigation.main.ImageDetailRoute
 import dev.subfly.yaba.core.navigation.main.LinkDetailRoute
 import dev.subfly.yaba.core.navigation.main.NoteDetailRoute
+import dev.subfly.yaba.layout.ContentLayoutConfig
+import dev.subfly.yaba.layout.YabaBookmarkLayout
 import dev.subfly.yaba.ui.detail.composables.CollectionDetailSearchTopBar
 import dev.subfly.yaba.ui.detail.composables.collectionDetailAccentColor
 import dev.subfly.yaba.ui.detail.composables.collectionDetailIconButtonColors
@@ -84,9 +87,6 @@ import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.model.utils.uiIconName
 import dev.subfly.yabacore.state.detail.folder.FolderDetailEvent
 import dev.subfly.yabacore.state.detail.folder.FolderDetailUIState
-import dev.subfly.yabacore.ui.icon.YabaIcon
-import dev.subfly.yabacore.ui.layout.ContentLayoutConfig
-import dev.subfly.yabacore.ui.layout.YabaBookmarkLayout
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res

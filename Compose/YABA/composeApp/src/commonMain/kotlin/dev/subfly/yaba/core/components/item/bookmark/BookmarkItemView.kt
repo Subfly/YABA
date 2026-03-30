@@ -37,6 +37,8 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.components.TagsRowContent
+import dev.subfly.yaba.core.components.YabaIcon
+import dev.subfly.yaba.core.components.YabaImage
 import dev.subfly.yaba.core.components.item.base.BaseBookmarkItemView
 import dev.subfly.yaba.core.components.item.base.BookmarkOptionsMenu
 import dev.subfly.yaba.core.navigation.alert.DeletionState
@@ -57,9 +59,7 @@ import dev.subfly.yabacore.model.utils.CardImageSizing
 import dev.subfly.yabacore.model.utils.FolderSelectionMode
 import dev.subfly.yabacore.model.utils.YabaColor
 import dev.subfly.yabacore.model.utils.uiIconName
-import dev.subfly.yabacore.ui.icon.YabaIcon
-import dev.subfly.yabacore.ui.icon.iconTintArgb
-import dev.subfly.yabacore.ui.image.YabaImage
+import dev.subfly.yabacore.util.iconTintArgb
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.bookmark_detail_no_description_provided

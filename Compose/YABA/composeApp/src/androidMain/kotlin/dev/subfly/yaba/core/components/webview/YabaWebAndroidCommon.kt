@@ -17,14 +17,14 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.core.net.toUri
 import androidx.webkit.WebViewAssetLoader
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.suspendCancellableCoroutine
-import org.json.JSONTokener
-import kotlin.coroutines.resume
 import dev.subfly.yabacore.webview.InlineLinkTapEvent
 import dev.subfly.yabacore.webview.InlineMentionTapEvent
 import dev.subfly.yabacore.webview.MathTapEvent
 import dev.subfly.yabacore.webview.YabaWebBridgeScripts
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.suspendCancellableCoroutine
+import org.json.JSONTokener
+import kotlin.coroutines.resume
 
 /**
  * Hardened settings and permissions are taken from:

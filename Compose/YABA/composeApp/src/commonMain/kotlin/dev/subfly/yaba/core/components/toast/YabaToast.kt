@@ -30,9 +30,9 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import dev.subfly.yaba.core.components.YabaIcon
 import dev.subfly.yabacore.toast.ToastIconType
 import dev.subfly.yabacore.toast.ToastItem
-import dev.subfly.yabacore.ui.icon.YabaIcon
 import kotlin.math.roundToInt
 
 @Composable

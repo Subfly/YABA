@@ -5,13 +5,13 @@ package dev.subfly.yaba.core.components.item.base
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -39,12 +39,12 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import dev.subfly.yaba.core.components.YabaIcon
+import dev.subfly.yaba.layout.SwipeAction
+import dev.subfly.yaba.layout.YabaSwipeActions
 import dev.subfly.yaba.util.yabaRightClick
 import dev.subfly.yabacore.model.ui.AnnotationUiModel
-import dev.subfly.yabacore.ui.icon.YabaIcon
-import dev.subfly.yabacore.ui.icon.iconTintArgb
-import dev.subfly.yabacore.ui.layout.SwipeAction
-import dev.subfly.yabacore.ui.layout.YabaSwipeActions
+import dev.subfly.yabacore.util.iconTintArgb
 
 /**
  * Base composable for annotation rows: shared layout (color bar + quote/note) with optional

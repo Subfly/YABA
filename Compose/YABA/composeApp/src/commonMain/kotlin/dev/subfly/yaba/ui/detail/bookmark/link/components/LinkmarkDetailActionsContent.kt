@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.ui.detail.bookmark.components.BookmarkDetailPageSegmentedRow
 import dev.subfly.yaba.ui.detail.bookmark.link.models.DetailPage
 import dev.subfly.yabacore.model.utils.YabaColor
-import dev.subfly.yabacore.ui.icon.iconTintArgb
+import dev.subfly.yabacore.util.iconTintArgb
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.done

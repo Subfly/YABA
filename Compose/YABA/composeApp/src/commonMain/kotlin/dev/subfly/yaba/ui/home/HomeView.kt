@@ -29,13 +29,14 @@ import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.item.bookmark.BookmarkItemView
 import dev.subfly.yaba.core.components.item.folder.FolderItemView
 import dev.subfly.yaba.core.components.item.tag.TagItemView
-import dev.subfly.yaba.core.navigation.main.FolderDetailRoute
 import dev.subfly.yaba.core.navigation.main.DocDetailRoute
+import dev.subfly.yaba.core.navigation.main.FolderDetailRoute
 import dev.subfly.yaba.core.navigation.main.ImageDetailRoute
 import dev.subfly.yaba.core.navigation.main.LinkDetailRoute
 import dev.subfly.yaba.core.navigation.main.NoteDetailRoute
 import dev.subfly.yaba.core.navigation.main.SearchRoute
 import dev.subfly.yaba.core.navigation.main.TagDetailRoute
+import dev.subfly.yaba.layout.YabaContentLayout
 import dev.subfly.yaba.ui.home.components.HomeFab
 import dev.subfly.yaba.ui.home.components.HomeTitleContent
 import dev.subfly.yaba.ui.home.components.HomeTopBar
@@ -50,7 +51,6 @@ import dev.subfly.yabacore.model.utils.BookmarkAppearance
 import dev.subfly.yabacore.model.utils.BookmarkKind
 import dev.subfly.yabacore.model.utils.FabPosition
 import dev.subfly.yabacore.state.home.HomeEvent
-import dev.subfly.yabacore.ui.layout.YabaContentLayout
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res

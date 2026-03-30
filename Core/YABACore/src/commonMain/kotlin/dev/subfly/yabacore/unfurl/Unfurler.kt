@@ -1,6 +1,5 @@
 package dev.subfly.yabacore.unfurl
 
-import co.touchlab.kermit.Logger
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.header
@@ -15,12 +14,10 @@ import io.ktor.http.Url
  */
 object Unfurler {
     private val client = UnfurlHttpClient.client
-    private val logger = Logger.withTag("Unfurler")
 
     suspend fun unfurl(urlString: String): YabaLinkPreview? {
         val normalized = normalizeURL(urlString)
         val baseUrl = runCatching { Url(normalized) }.getOrElse {
-            logger.e { "Cannot create url for: $normalized (original: $urlString)" }
             throw UnfurlError.CannotCreateUrl(normalized)
         }
 

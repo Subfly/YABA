@@ -9,9 +9,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import dev.subfly.yaba.core.components.YabaIcon
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalDeletionDialogManager
-import dev.subfly.yabacore.ui.icon.YabaIcon
 import org.jetbrains.compose.resources.stringResource
 import yaba.composeapp.generated.resources.Res
 import yaba.composeapp.generated.resources.announcements_delete_title

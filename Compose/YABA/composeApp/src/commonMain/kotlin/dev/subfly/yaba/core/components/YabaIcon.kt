@@ -1,4 +1,4 @@
-package dev.subfly.yabacore.ui.icon
+package dev.subfly.yaba.core.components
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.size
@@ -10,7 +10,8 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import dev.subfly.yabacore.model.utils.YabaColor
-import dev.subfly.yabacore.yabacore.generated.resources.Res
+import dev.subfly.yabacore.util.BundleReader
+import dev.subfly.yabacore.util.iconTintArgb
 
 /**
  * Cross-platform icon renderer that will load SVG assets bundled in KMP resources.
@@ -30,7 +31,7 @@ fun YabaIcon(
     }
     AsyncImage(
         modifier = modifier.size(24.dp),
-        model = Res.getUri("files/icons/${name}.svg"),
+        model = BundleReader.getIconUri(name),
         contentDescription = name,
         colorFilter = ColorFilter.tint(color = tint)
     )
@@ -44,7 +45,7 @@ fun YabaIcon(
 ) {
     AsyncImage(
         modifier = modifier.size(24.dp),
-        model = Res.getUri("files/icons/${name}.svg"),
+        model = BundleReader.getIconUri(name),
         contentDescription = name,
         colorFilter = ColorFilter.tint(color = color)
     )

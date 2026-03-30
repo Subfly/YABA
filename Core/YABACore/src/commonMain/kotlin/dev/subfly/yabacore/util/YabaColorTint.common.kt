@@ -1,4 +1,4 @@
-package dev.subfly.yabacore.ui.icon
+package dev.subfly.yabacore.util
 
 import dev.subfly.yabacore.model.utils.YabaColor
 

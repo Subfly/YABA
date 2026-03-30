@@ -1,9 +1,9 @@
-package dev.subfly.yabacore.ui.icon
+package dev.subfly.yabacore.util
 
 import dev.subfly.yabacore.model.utils.YabaColor
 
 /**
- * Apple platform system colors from Apple Human Interface Guidelines (Default Light mode).
+ * iOS system colors from Apple Human Interface Guidelines (Default Light mode).
  * Source: https://developer.apple.com/design/human-interface-guidelines/color
  */
 actual fun YabaColor.iconTintArgb(): Long =
