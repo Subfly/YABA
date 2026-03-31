@@ -123,51 +123,55 @@ object YabaFileAccessor {
     suspend fun pickSingleImage(): YabaFile? {
         val act = hostActivity ?: return null
         val launcher = pickImageSingle ?: return null
-        return suspendCancellableCoroutine { cont ->
-            if (pending != null) {
-                cont.resume(null)
-                return@suspendCancellableCoroutine
+        return withContext(Dispatchers.Main) {
+            suspendCancellableCoroutine { cont ->
+                if (pending != null) {
+                    cont.resume(null)
+                    return@suspendCancellableCoroutine
+                }
+                val callback: (Any?) -> Unit = { result ->
+                    val uri = result as? Uri
+                    cont.resume(uri?.let { YabaFile.fromUri(act, it) })
+                }
+                pending = callback
+                cont.invokeOnCancellation {
+                    if (pending === callback) pending = null
+                }
+                launcher.launch(
+                    PickVisualMediaRequest(
+                        ActivityResultContracts.PickVisualMedia.ImageOnly,
+                    ),
+                )
             }
-            val callback: (Any?) -> Unit = { result ->
-                val uri = result as? Uri
-                cont.resume(uri?.let { YabaFile.fromUri(act, it) })
-            }
-            pending = callback
-            cont.invokeOnCancellation {
-                if (pending === callback) pending = null
-            }
-            launcher.launch(
-                PickVisualMediaRequest(
-                    ActivityResultContracts.PickVisualMedia.ImageOnly,
-                ),
-            )
         }
     }
 
     suspend fun pickMultipleImages(maxItems: Int? = null): List<YabaFile>? {
         val act = hostActivity ?: return null
         val launcher = pickImageMultiple ?: return null
-        return suspendCancellableCoroutine { cont ->
-            if (pending != null) {
-                cont.resume(null)
-                return@suspendCancellableCoroutine
+        return withContext(Dispatchers.Main) {
+            suspendCancellableCoroutine { cont ->
+                if (pending != null) {
+                    cont.resume(null)
+                    return@suspendCancellableCoroutine
+                }
+                val callback: (Any?) -> Unit = { result ->
+                    val uris = result as? List<Uri> ?: emptyList()
+                    val mapped = uris.map { YabaFile.fromUri(act, it) }
+                    val cap = maxItems ?: 50
+                    val limited = mapped.take(cap)
+                    cont.resume(limited)
+                }
+                pending = callback
+                cont.invokeOnCancellation {
+                    if (pending === callback) pending = null
+                }
+                launcher.launch(
+                    PickVisualMediaRequest(
+                        ActivityResultContracts.PickVisualMedia.ImageOnly,
+                    ),
+                )
             }
-            val callback: (Any?) -> Unit = { result ->
-                val uris = result as? List<Uri> ?: emptyList()
-                val mapped = uris.map { YabaFile.fromUri(act, it) }
-                val cap = maxItems ?: 50
-                val limited = mapped.take(cap)
-                cont.resume(limited)
-            }
-            pending = callback
-            cont.invokeOnCancellation {
-                if (pending === callback) pending = null
-            }
-            launcher.launch(
-                PickVisualMediaRequest(
-                    ActivityResultContracts.PickVisualMedia.ImageOnly,
-                ),
-            )
         }
     }
 
@@ -176,31 +180,33 @@ object YabaFileAccessor {
         val launcher = takePicture ?: return null
         val cameraPermissionGranted = ensureCameraPermission()
         if (!cameraPermissionGranted) return null
-        return suspendCancellableCoroutine { cont ->
-            if (pending != null) {
-                cont.resume(null)
-                return@suspendCancellableCoroutine
-            }
-            val out = File(act.cacheDir, "yaba_capture_${System.currentTimeMillis()}.jpg")
-            cameraOutputFile = out
-            val uri = FileProvider.getUriForFile(
-                act,
-                "${act.packageName}.fileprovider",
-                out,
-            )
-            val callback: (Any?) -> Unit = { result ->
-                cont.resume(result as? YabaFile)
-            }
-            pending = callback
-            cont.invokeOnCancellation {
-                if (pending === callback) pending = null
-            }
-            try {
-                launcher.launch(uri)
-            } catch (_: Exception) {
-                if (pending === callback) pending = null
-                cameraOutputFile = null
-                cont.resume(null)
+        return withContext(Dispatchers.Main) {
+            suspendCancellableCoroutine { cont ->
+                if (pending != null) {
+                    cont.resume(null)
+                    return@suspendCancellableCoroutine
+                }
+                val out = File(act.cacheDir, "yaba_capture_${System.currentTimeMillis()}.jpg")
+                cameraOutputFile = out
+                val uri = FileProvider.getUriForFile(
+                    act,
+                    "${act.packageName}.fileprovider",
+                    out,
+                )
+                val callback: (Any?) -> Unit = { result ->
+                    cont.resume(result as? YabaFile)
+                }
+                pending = callback
+                cont.invokeOnCancellation {
+                    if (pending === callback) pending = null
+                }
+                try {
+                    launcher.launch(uri)
+                } catch (_: Exception) {
+                    if (pending === callback) pending = null
+                    cameraOutputFile = null
+                    cont.resume(null)
+                }
             }
         }
     }
@@ -212,20 +218,22 @@ object YabaFileAccessor {
     suspend fun pickSingleFile(extensions: List<String>? = null): YabaFile? {
         val act = hostActivity ?: return null
         val launcher = openDocument ?: return null
-        return suspendCancellableCoroutine { cont ->
-            if (pending != null) {
-                cont.resume(null)
-                return@suspendCancellableCoroutine
+        return withContext(Dispatchers.Main) {
+            suspendCancellableCoroutine { cont ->
+                if (pending != null) {
+                    cont.resume(null)
+                    return@suspendCancellableCoroutine
+                }
+                val callback: (Any?) -> Unit = { result ->
+                    val uri = result as? Uri
+                    cont.resume(uri?.let { YabaFile.fromUri(act, it) })
+                }
+                pending = callback
+                cont.invokeOnCancellation {
+                    if (pending === callback) pending = null
+                }
+                launcher.launch(mimeTypesForExtensions(extensions))
             }
-            val callback: (Any?) -> Unit = { result ->
-                val uri = result as? Uri
-                cont.resume(uri?.let { YabaFile.fromUri(act, it) })
-            }
-            pending = callback
-            cont.invokeOnCancellation {
-                if (pending === callback) pending = null
-            }
-            launcher.launch(mimeTypesForExtensions(extensions))
         }
     }
 
@@ -235,43 +243,47 @@ object YabaFileAccessor {
     ): List<YabaFile>? {
         val act = hostActivity ?: return null
         val launcher = openMultipleDocuments ?: return null
-        return suspendCancellableCoroutine { cont ->
-            if (pending != null) {
-                cont.resume(null)
-                return@suspendCancellableCoroutine
+        return withContext(Dispatchers.Main) {
+            suspendCancellableCoroutine { cont ->
+                if (pending != null) {
+                    cont.resume(null)
+                    return@suspendCancellableCoroutine
+                }
+                val callback: (Any?) -> Unit = { result ->
+                    val uris = result as? List<Uri> ?: emptyList()
+                    val mapped = uris.map { YabaFile.fromUri(act, it) }
+                    val limited = if (maxItems != null) mapped.take(maxItems) else mapped
+                    cont.resume(limited)
+                }
+                pending = callback
+                cont.invokeOnCancellation {
+                    if (pending === callback) pending = null
+                }
+                launcher.launch(mimeTypesForExtensions(extensions))
             }
-            val callback: (Any?) -> Unit = { result ->
-                val uris = result as? List<Uri> ?: emptyList()
-                val mapped = uris.map { YabaFile.fromUri(act, it) }
-                val limited = if (maxItems != null) mapped.take(maxItems) else mapped
-                cont.resume(limited)
-            }
-            pending = callback
-            cont.invokeOnCancellation {
-                if (pending === callback) pending = null
-            }
-            launcher.launch(mimeTypesForExtensions(extensions))
         }
     }
 
     suspend fun pickDirectory(): YabaFile? {
         val act = hostActivity ?: return null
         val launcher = openTree ?: return null
-        return suspendCancellableCoroutine { cont ->
-            if (pending != null) {
-                cont.resume(null)
-                return@suspendCancellableCoroutine
+        return withContext(Dispatchers.Main) {
+            suspendCancellableCoroutine { cont ->
+                if (pending != null) {
+                    cont.resume(null)
+                    return@suspendCancellableCoroutine
+                }
+                val callback: (Any?) -> Unit = { result ->
+                    val uri = result as? Uri
+                    val tree = uri?.let { YabaFile.fromTreeUri(act, it) }
+                    cont.resume(tree)
+                }
+                pending = callback
+                cont.invokeOnCancellation {
+                    if (pending === callback) pending = null
+                }
+                launcher.launch(null)
             }
-            val callback: (Any?) -> Unit = { result ->
-                val uri = result as? Uri
-                val tree = uri?.let { YabaFile.fromTreeUri(act, it) }
-                cont.resume(tree)
-            }
-            pending = callback
-            cont.invokeOnCancellation {
-                if (pending === callback) pending = null
-            }
-            launcher.launch(null)
         }
     }
 
@@ -287,32 +299,34 @@ object YabaFileAccessor {
         val act = hostActivity ?: return null
         val launcher = createDocument ?: return null
         val mime = mimeForExtension(extension)
-        return suspendCancellableCoroutine { cont ->
-            if (pending != null) {
-                cont.resume(null)
-                return@suspendCancellableCoroutine
-            }
-            val callback: (Any?) -> Unit = { result ->
-                val uri = result as? Uri
-                cont.resume(uri?.let { YabaFile.fromUri(act, it) })
-            }
-            pending = callback
-            cont.invokeOnCancellation {
-                if (pending === callback) pending = null
-            }
-            val filename =
-                if (suggestedName.endsWith(".$extension", ignoreCase = true)) {
-                    suggestedName
-                } else {
-                    "$suggestedName.$extension"
+        return withContext(Dispatchers.Main) {
+            suspendCancellableCoroutine { cont ->
+                if (pending != null) {
+                    cont.resume(null)
+                    return@suspendCancellableCoroutine
                 }
-            val intent =
-                Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-                    addCategory(Intent.CATEGORY_OPENABLE)
-                    type = mime
-                    putExtra(Intent.EXTRA_TITLE, filename)
+                val callback: (Any?) -> Unit = { result ->
+                    val uri = result as? Uri
+                    cont.resume(uri?.let { YabaFile.fromUri(act, it) })
                 }
-            launcher.launch(intent)
+                pending = callback
+                cont.invokeOnCancellation {
+                    if (pending === callback) pending = null
+                }
+                val filename =
+                    if (suggestedName.endsWith(".$extension", ignoreCase = true)) {
+                        suggestedName
+                    } else {
+                        "$suggestedName.$extension"
+                    }
+                val intent =
+                    Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                        type = mime
+                        putExtra(Intent.EXTRA_TITLE, filename)
+                    }
+                launcher.launch(intent)
+            }
         }
     }
 
@@ -363,19 +377,20 @@ object YabaFileAccessor {
         if (markdown.isBlank()) return false
         val base = suggestedMarkdownBaseName.ifBlank { "note" }
         val result = runCatching {
-            // TODO: FIX THERE
             val assetsRel = CoreConstants.FileSystem.Linkmark.assetsDir(bookmarkId)
             val sourceAssets = BookmarkFileManager.resolve(assetsRel, ensureParentExists = false)
-            val assetsDir = directory / "assets"
+            val exportRoot = directory / base
+            exportRoot.createDirectories()
+            val assetsDir = exportRoot / "assets"
             assetsDir.createDirectories()
             if (sourceAssets.exists() && sourceAssets.isDirectory()) {
                 for (child in sourceAssets.list()) {
                     if (child.isDirectory().not()) {
-                        child.copyTo(directory / child.name)
+                        child.copyTo(assetsDir / child.name)
                     }
                 }
             }
-            val mdFile = directory / "$base.md"
+            val mdFile = exportRoot / "note.md"
             mdFile.write(markdown.encodeToByteArray())
         }.onFailure { e ->
             e.printStackTrace()
@@ -484,28 +499,31 @@ object YabaFileAccessor {
 
     private suspend fun ensureCameraPermission(): Boolean {
         val act = hostActivity ?: return false
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return true
 
-        val granted = ContextCompat.checkSelfPermission(
-            act,
-            Manifest.permission.CAMERA,
-        ) == PackageManager.PERMISSION_GRANTED
+        return withContext(Dispatchers.Main) {
+            val granted = ContextCompat.checkSelfPermission(
+                act,
+                Manifest.permission.CAMERA,
+            ) == PackageManager.PERMISSION_GRANTED
 
-        if (granted) return true
-        val launcher = requestCameraPermission ?: return false
-        
-        return suspendCancellableCoroutine { cont ->
-            if (pending != null) {
-                cont.resume(false)
-                return@suspendCancellableCoroutine
+            if (granted) return@withContext true
+            val launcher = requestCameraPermission ?: return@withContext false
+
+            suspendCancellableCoroutine { cont ->
+                if (pending != null) {
+                    cont.resume(false)
+                    return@suspendCancellableCoroutine
+                }
+                val callback: (Any?) -> Unit = { result ->
+                    cont.resume(result as? Boolean == true)
+                }
+                pending = callback
+                cont.invokeOnCancellation {
+                    if (pending === callback) pending = null
+                }
+                launcher.launch(Manifest.permission.CAMERA)
             }
-            val callback: (Any?) -> Unit = { result ->
-                cont.resume(result as? Boolean == true)
-            }
-            pending = callback
-            cont.invokeOnCancellation {
-                if (pending === callback) pending = null
-            }
-            launcher.launch(Manifest.permission.CAMERA)
         }
     }
 }

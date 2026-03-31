@@ -69,7 +69,7 @@ internal fun NotemarkContentDropdownMenu(
     val remindMeText = stringResource(R.string.remind_me)
     // TODO: LOCALIZATION
     val cancelReminderText = "Cancel Reminder"
-    val saveCopyText = "Save Copy"
+    val saveCopyText = "Export"
     val mdLabel = "MD"
     val pdfLabel = "PDF"
     val deleteText = stringResource(R.string.delete)
