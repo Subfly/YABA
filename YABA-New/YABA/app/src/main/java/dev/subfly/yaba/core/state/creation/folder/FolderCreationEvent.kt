@@ -1,0 +1,16 @@
+package dev.subfly.yaba.core.state.creation.folder
+
+import dev.subfly.yaba.core.model.utils.YabaColor
+
+sealed class FolderCreationEvent {
+    data class OnInitWithFolder(val folderIdString: String?) : FolderCreationEvent()
+    data class OnSelectNewParent(val newParentId: String?) : FolderCreationEvent()
+    data class OnSelectNewColor(val newColor: YabaColor) : FolderCreationEvent()
+    data class OnSelectNewIcon(val newIcon: String) : FolderCreationEvent()
+    data class OnChangeLabel(val newLabel: String) : FolderCreationEvent()
+    data class OnChangeDescription(val newDescription: String) : FolderCreationEvent()
+    data class OnSave(
+        val onSavedCallback: () -> Unit,
+        val onErrorCallback: () -> Unit,
+    ): FolderCreationEvent()
+}
