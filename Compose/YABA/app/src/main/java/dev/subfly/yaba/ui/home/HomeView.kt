@@ -40,7 +40,7 @@ import dev.subfly.yaba.core.navigation.main.LinkDetailRoute
 import dev.subfly.yaba.core.navigation.main.NoteDetailRoute
 import dev.subfly.yaba.core.navigation.main.SearchRoute
 import dev.subfly.yaba.core.navigation.main.TagDetailRoute
-import dev.subfly.yaba.layout.YabaContentLayout
+import dev.subfly.yaba.core.components.layout.YabaContentLayout
 import dev.subfly.yaba.ui.home.components.HomeFab
 import dev.subfly.yaba.ui.home.components.HomeTitleContent
 import dev.subfly.yaba.ui.home.components.HomeTopBar

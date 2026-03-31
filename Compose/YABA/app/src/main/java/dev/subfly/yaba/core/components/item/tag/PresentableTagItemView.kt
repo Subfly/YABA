@@ -29,8 +29,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.components.YabaIcon
-import dev.subfly.yaba.layout.SwipeAction
-import dev.subfly.yaba.layout.YabaSwipeActions
+import dev.subfly.yaba.core.components.layout.SwipeAction
+import dev.subfly.yaba.core.components.layout.YabaSwipeActions
 import dev.subfly.yaba.util.yabaRightClick
 import dev.subfly.yaba.core.model.ui.TagUiModel
 import dev.subfly.yaba.core.model.utils.YabaColor

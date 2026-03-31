@@ -23,8 +23,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.components.YabaIcon
-import dev.subfly.yaba.layout.SwipeAction
-import dev.subfly.yaba.layout.YabaSwipeActions
+import dev.subfly.yaba.core.components.layout.SwipeAction
+import dev.subfly.yaba.core.components.layout.YabaSwipeActions
 import dev.subfly.yaba.util.formatDateTime
 import dev.subfly.yaba.core.model.utils.YabaColor
 import kotlin.time.Instant

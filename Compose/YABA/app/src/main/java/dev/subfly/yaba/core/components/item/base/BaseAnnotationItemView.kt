@@ -40,8 +40,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.components.YabaIcon
-import dev.subfly.yaba.layout.SwipeAction
-import dev.subfly.yaba.layout.YabaSwipeActions
+import dev.subfly.yaba.core.components.layout.SwipeAction
+import dev.subfly.yaba.core.components.layout.YabaSwipeActions
 import dev.subfly.yaba.util.yabaRightClick
 import dev.subfly.yaba.core.model.ui.AnnotationUiModel
 

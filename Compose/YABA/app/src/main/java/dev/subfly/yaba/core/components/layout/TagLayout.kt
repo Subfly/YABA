@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalFoundationApi::class, ExperimentalUuidApi::class)
 
-package dev.subfly.yaba.layout
+package dev.subfly.yaba.core.components.layout
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.Orientation

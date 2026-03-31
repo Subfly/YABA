@@ -63,8 +63,8 @@ import dev.subfly.yaba.core.navigation.main.DocDetailRoute
 import dev.subfly.yaba.core.navigation.main.ImageDetailRoute
 import dev.subfly.yaba.core.navigation.main.LinkDetailRoute
 import dev.subfly.yaba.core.navigation.main.NoteDetailRoute
-import dev.subfly.yaba.layout.ContentLayoutConfig
-import dev.subfly.yaba.layout.YabaBookmarkLayout
+import dev.subfly.yaba.core.components.layout.ContentLayoutConfig
+import dev.subfly.yaba.core.components.layout.YabaBookmarkLayout
 import dev.subfly.yaba.ui.detail.composables.CollectionDetailSearchTopBar
 import dev.subfly.yaba.ui.detail.composables.collectionDetailAccentColor
 import dev.subfly.yaba.ui.detail.composables.collectionDetailIconButtonColors

@@ -1,4 +1,4 @@
-package dev.subfly.yaba.layout
+package dev.subfly.yaba.core.components.layout
 
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.unit.Dp

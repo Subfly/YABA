@@ -15,7 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.components.YabaIcon
-import dev.subfly.yaba.layout.YabaContentLayoutScope
+import dev.subfly.yaba.core.components.layout.YabaContentLayoutScope
 
 @Composable
 internal fun YabaContentLayoutScope.HomeTitleContent(
