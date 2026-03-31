@@ -10,9 +10,6 @@ import dev.subfly.yaba.core.model.annotation.ReadableSelectionDraft
 import dev.subfly.yaba.core.model.ui.AnnotationUiModel
 import dev.subfly.yaba.core.model.utils.ReaderPreferences
 import dev.subfly.yaba.core.webview.EditorFormattingState
-import dev.subfly.yaba.core.webview.Toc
-import dev.subfly.yaba.core.webview.TocItem
-import dev.subfly.yaba.core.webview.WebShellLoadResult
 import dev.subfly.yaba.core.webview.WebViewEditorBridge
 import dev.subfly.yaba.core.webview.WebViewReaderBridge
 import dev.subfly.yaba.core.webview.YabaEditorBridgeScripts
@@ -29,11 +26,6 @@ import dev.subfly.yaba.core.webview.toJsReaderLineHeightLiteral
 import dev.subfly.yaba.core.webview.toJsReaderThemeLiteral
 import org.json.JSONArray
 import org.json.JSONObject
-
-internal data class EditorHostStateUpdate(
-    val canCreateAnnotation: Boolean,
-    val formatting: EditorFormattingState,
-)
 
 @Suppress("FunctionName")
 internal fun RichTextWebViewReaderBridge(
@@ -270,90 +262,6 @@ internal suspend fun getEditorActiveFormatting(webView: WebView): EditorFormatti
     return runCatching {
         parseEditorFormattingState(JSONObject(jsonStr))
     }.getOrElse { EditorFormattingState() }
-}
-
-internal fun parseNoteAutosaveIdleMessage(message: String?): Boolean {
-    val payload =
-        message
-            ?.takeIf { it.startsWith(YabaWebBridgeScripts.NOTE_AUTOSAVE_IDLE_EVENT_PREFIX) }
-            ?.removePrefix(YabaWebBridgeScripts.NOTE_AUTOSAVE_IDLE_EVENT_PREFIX)
-            ?.takeIf { it.isNotBlank() }
-            ?: return false
-    val json = runCatching { JSONObject(payload) }.getOrNull() ?: return false
-    return json.optString("type") == "noteAutosaveIdle"
-}
-
-internal fun parseShellLoadMessage(message: String?): WebShellLoadResult? {
-    val payload =
-        message
-            ?.takeIf { it.startsWith(YabaWebBridgeScripts.SHELL_LOAD_EVENT_PREFIX) }
-            ?.removePrefix(YabaWebBridgeScripts.SHELL_LOAD_EVENT_PREFIX)
-            ?.takeIf { it.isNotBlank() }
-            ?: return null
-    val json = runCatching { JSONObject(payload) }.getOrNull() ?: return null
-    if (json.optString("type") != "shellLoad") return null
-    return when (json.optString("result")) {
-        "loaded" -> WebShellLoadResult.Loaded
-        "error" -> WebShellLoadResult.Error
-        else -> null
-    }
-}
-
-internal fun parseEditorHostStateMessage(message: String?): EditorHostStateUpdate? {
-    val payload = message
-        ?.takeIf { it.startsWith(YabaWebBridgeScripts.EDITOR_HOST_EVENT_PREFIX) }
-        ?.removePrefix(YabaWebBridgeScripts.EDITOR_HOST_EVENT_PREFIX)
-        ?.takeIf { it.isNotBlank() }
-        ?: return null
-    val json = runCatching { JSONObject(payload) }.getOrNull() ?: return null
-    if (json.optString("type") != "editorState") return null
-    return EditorHostStateUpdate(
-        canCreateAnnotation = json.optBoolean("canCreateAnnotation"),
-        formatting = parseEditorFormattingState(json.optJSONObject("formatting") ?: JSONObject()),
-    )
-}
-
-internal sealed interface TocConsoleParseResult {
-    data object NotToc : TocConsoleParseResult
-
-    /** [toc] is null when the web shell cleared the outline. */
-    data class Matched(
-        val toc: Toc?,
-    ) : TocConsoleParseResult
-}
-
-internal fun parseTocConsoleMessage(message: String?): TocConsoleParseResult {
-    val payload =
-        message
-            ?.takeIf { it.startsWith(YabaWebBridgeScripts.TOC_EVENT_PREFIX) }
-            ?.removePrefix(YabaWebBridgeScripts.TOC_EVENT_PREFIX)
-            ?.takeIf { it.isNotBlank() }
-            ?: return TocConsoleParseResult.NotToc
-    val json = runCatching { JSONObject(payload) }.getOrNull() ?: return TocConsoleParseResult.NotToc
-    if (json.optString("type") != "toc") return TocConsoleParseResult.NotToc
-    if (json.isNull("toc")) return TocConsoleParseResult.Matched(toc = null)
-    val tocObj = json.optJSONObject("toc") ?: return TocConsoleParseResult.Matched(Toc())
-    val itemsArr = tocObj.optJSONArray("items") ?: return TocConsoleParseResult.Matched(Toc())
-    return TocConsoleParseResult.Matched(Toc(parseTocItems(itemsArr)))
-}
-
-private fun parseTocItems(arr: JSONArray): List<TocItem> {
-    val out = ArrayList<TocItem>(arr.length())
-    for (i in 0 until arr.length()) {
-        val o = arr.optJSONObject(i) ?: continue
-        val children = parseTocItems(o.optJSONArray("children") ?: JSONArray())
-        val extras = o.optString("extrasJson", "").takeIf { it.isNotBlank() }
-        out.add(
-            TocItem(
-                id = o.optString("id", ""),
-                title = o.optString("title", ""),
-                level = o.optInt("level", 1),
-                children = children,
-                extrasJson = extras,
-            ),
-        )
-    }
-    return out
 }
 
 internal fun parseEditorFormattingState(json: JSONObject): EditorFormattingState =

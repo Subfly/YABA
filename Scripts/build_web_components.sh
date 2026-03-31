@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Build yaba-web-components and copy dist to Core composeResources.
+# Build yaba-web-components and copy dist into the Android app assets.
 # Run this before building the app when web components have changed.
 #
 # Usage: ./Scripts/build_web_components.sh
@@ -9,7 +9,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 WEB_COMPONENTS_DIR="$ROOT/Extensions/yaba-web-components"
 DIST_DIR="$WEB_COMPONENTS_DIR/dist"
-TARGET_DIR="$ROOT/Core/YABACore/src/commonMain/composeResources/files/web-components"
+TARGET_DIR="$ROOT/Compose/YABA/app/src/main/assets/files/web-components"
 
 if [[ ! -d "$WEB_COMPONENTS_DIR" ]]; then
     echo "Error: Web components directory not found: $WEB_COMPONENTS_DIR"
@@ -29,7 +29,7 @@ if [[ ! -d "$DIST_DIR" ]]; then
     exit 1
 fi
 
-echo "Copying dist to Core composeResources..."
+echo "Copying dist to Compose app assets..."
 mkdir -p "$TARGET_DIR"
 cp -R "$DIST_DIR"/* "$TARGET_DIR"
 

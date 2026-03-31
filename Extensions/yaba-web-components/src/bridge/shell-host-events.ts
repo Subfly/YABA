@@ -1,8 +1,7 @@
 /**
  * One-shot initial content load signal for native WebView hosts.
- * Must match Core [YabaWebBridgeScripts.SHELL_LOAD_EVENT_PREFIX].
  */
-export const YABA_SHELL_LOAD_EVENT_PREFIX = "yaba-shell-load:"
+import { postToYabaNativeHost } from "./yaba-native-host"
 
 export interface ShellLoadHostEvent {
   type: "shellLoad"
@@ -10,15 +9,12 @@ export interface ShellLoadHostEvent {
 }
 
 export function publishShellLoad(result: "loaded" | "error"): void {
-  const payload: ShellLoadHostEvent = { type: "shellLoad", result }
-  console.info(`${YABA_SHELL_LOAD_EVENT_PREFIX}${JSON.stringify(payload)}`)
+  postToYabaNativeHost({ type: "shellLoad", result })
 }
 
 /**
  * Note editor only: after [NOTE_AUTOSAVE_IDLE_MS] with no editor transactions, native should persist.
- * Must match Core [YabaWebBridgeScripts.NOTE_AUTOSAVE_IDLE_EVENT_PREFIX].
  */
-export const YABA_NOTE_AUTOSAVE_IDLE_EVENT_PREFIX = "yaba-note-autosave-idle:"
 
 const NOTE_AUTOSAVE_IDLE_MS = 1000
 
@@ -49,8 +45,6 @@ export function scheduleNoteAutosaveAfterEditorActivity(): void {
   clearNoteAutosaveIdleTimer()
   noteAutosaveIdleTimer = setTimeout(() => {
     noteAutosaveIdleTimer = null
-    const payload: NoteAutosaveIdleHostEvent = { type: "noteAutosaveIdle" }
-    console.info(`${YABA_NOTE_AUTOSAVE_IDLE_EVENT_PREFIX}${JSON.stringify(payload)}`)
+    postToYabaNativeHost({ type: "noteAutosaveIdle" })
   }, NOTE_AUTOSAVE_IDLE_MS)
 }
-

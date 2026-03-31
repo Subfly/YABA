@@ -81,6 +81,10 @@ Native platforms call the bridge via their WebView evaluation APIs:
 - **Android**: `webView.evaluateJavascript("window.YabaEditorBridge?.getDocumentJson()", callback)`
 - **iOS**: `webView.evaluateJavaScript("window.YabaEditorBridge?.getDocumentJson()", completionHandler)`
 
+### Web → native events (Android)
+
+Host apps inject `window.YabaNativeHost.postMessage(jsonString)` (Android can also expose `window.YabaAndroidHost` as an alias; see `src/bridge/yaba-native-host.ts`). The web layer emits structured JSON for shell load, ToC, editor/reader metrics, `bridgeReady`, taps (annotation, math, inline link/mention), autosave idle, and converter job completion—**not** via `console.info` or custom URL schemes.
+
 The `converter.html` page is loaded in a hidden WebView when link saving needs extraction. Call `sanitizeAndConvertHtmlToReaderHtml` after the page has loaded; native persists `documentJson` (not HTML).
 
 ## Features

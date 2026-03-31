@@ -13,6 +13,7 @@ import {
   type PdfHighlightForRendering,
   type PdfSelectionSnapshot,
 } from "./pdf-text-utils"
+import { postToYabaNativeHost } from "@/bridge/yaba-native-host"
 
 export type { PdfHighlightForRendering, PdfSelectionSnapshot } from "./pdf-text-utils"
 
@@ -163,4 +164,5 @@ export function initPdfViewerBridge(
     },
   }
   isReady = true
+  postToYabaNativeHost({ type: "bridgeReady", feature: "pdf" })
 }

@@ -17,11 +17,6 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.core.net.toUri
 import androidx.webkit.WebViewAssetLoader
-import dev.subfly.yaba.core.webview.InlineLinkTapEvent
-import dev.subfly.yaba.core.webview.InlineMentionTapEvent
-import dev.subfly.yaba.core.webview.MathTapEvent
-import dev.subfly.yaba.core.webview.YabaWebBridgeScripts
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.json.JSONTokener
 import kotlin.coroutines.resume
@@ -35,8 +30,6 @@ internal const val YABA_WEBVIEW_LOG_TAG = "YabaWebView"
 
 private const val ASSET_LOADER_DOMAIN = "https://appassets.androidplatform.net"
 private const val ASSET_LOADER_HOST = "appassets.androidplatform.net"
-internal const val BRIDGE_READY_POLL_MS = 50L
-internal const val BRIDGE_READY_TIMEOUT_MS = 5_000L
 
 internal fun toAssetLoaderUrl(rawUrl: String): String? {
     val pathInAssets = extractAndroidAssetPath(rawUrl) ?: return null
@@ -127,14 +120,9 @@ internal suspend fun evaluateJs(webView: WebView, script: String): String =
         }
     }
 
+/** Lightweight defensive check; bridge readiness should be driven by Web -> native `bridgeReady` events. */
 internal suspend fun waitForBridgeReady(webView: WebView, bridgeReadyCheckScript: String): Boolean {
-    val attempts = (BRIDGE_READY_TIMEOUT_MS / BRIDGE_READY_POLL_MS).toInt()
-    repeat(attempts) {
-        val ready = evaluateJs(webView, bridgeReadyCheckScript).trim() == "true"
-        if (ready) return true
-        delay(BRIDGE_READY_POLL_MS)
-    }
-    return false
+    return evaluateJs(webView, bridgeReadyCheckScript).trim() == "true"
 }
 
 internal fun rememberAssetLoader(context: Context, includeLocalStorage: Boolean): WebViewAssetLoader {
@@ -171,10 +159,6 @@ internal fun yabaWebViewClient(
     onPageFinished: () -> Unit,
     onRenderProcessGone: () -> Boolean,
     onUrlClick: ((String) -> Boolean)?,
-    onAnnotationTap: ((String) -> Unit)?,
-    onMathTap: ((MathTapEvent) -> Unit)?,
-    onInlineLinkTap: ((InlineLinkTapEvent) -> Unit)?,
-    onInlineMentionTap: ((InlineMentionTapEvent) -> Unit)?,
 ): WebViewClient = object : WebViewClient() {
     override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
         onPageStarted()
@@ -236,79 +220,6 @@ internal fun yabaWebViewClient(
     ): Boolean {
         val uri = request?.url ?: return true
         val url = uri.toString()
-        if (url.startsWith(YabaWebBridgeScripts.ANNOTATION_TAP_SCHEME_PREFIX)) {
-            val id = try {
-                url.toUri().getQueryParameter("id") ?: ""
-            } catch (_: Exception) {
-                ""
-            }
-            if (id.isNotBlank()) onAnnotationTap?.invoke(id)
-            return true
-        }
-        if (url.startsWith(YabaWebBridgeScripts.MATH_TAP_SCHEME_PREFIX)) {
-            val u = try {
-                url.toUri()
-            } catch (_: Exception) {
-                return true
-            }
-            val kind = u.getQueryParameter("kind").orEmpty()
-            val pos = u.getQueryParameter("pos")?.toIntOrNull()
-            val latex = u.getQueryParameter("latex").orEmpty()
-            if (pos != null) {
-                onMathTap?.invoke(
-                    MathTapEvent(
-                        isBlock = kind == "block",
-                        documentPos = pos,
-                        latex = latex,
-                    ),
-                )
-            }
-            return true
-        }
-        if (url.startsWith(YabaWebBridgeScripts.INLINE_LINK_TAP_SCHEME_PREFIX)) {
-            val u = try {
-                url.toUri()
-            } catch (_: Exception) {
-                return true
-            }
-            val pos = u.getQueryParameter("pos")?.toIntOrNull()
-            val text = u.getQueryParameter("text").orEmpty()
-            val targetUrl = u.getQueryParameter("url").orEmpty()
-            if (pos != null && targetUrl.isNotBlank()) {
-                onInlineLinkTap?.invoke(
-                    InlineLinkTapEvent(
-                        documentPos = pos,
-                        text = text,
-                        url = targetUrl,
-                    ),
-                )
-            }
-            return true
-        }
-        if (url.startsWith(YabaWebBridgeScripts.INLINE_MENTION_TAP_SCHEME_PREFIX)) {
-            val u = try {
-                url.toUri()
-            } catch (_: Exception) {
-                return true
-            }
-            val pos = u.getQueryParameter("pos")?.toIntOrNull()
-            val text = u.getQueryParameter("text").orEmpty()
-            val bookmarkId = u.getQueryParameter("bookmarkId").orEmpty()
-            val bookmarkKindCode = u.getQueryParameter("bookmarkKindCode")?.toIntOrNull() ?: 0
-            val bookmarkLabel = u.getQueryParameter("bookmarkLabel").orEmpty()
-            if (pos != null && bookmarkId.isNotBlank()) {
-                onInlineMentionTap?.invoke(
-                    InlineMentionTapEvent(
-                        documentPos = pos,
-                        text = text,
-                        bookmarkId = bookmarkId,
-                        bookmarkKindCode = bookmarkKindCode,
-                        bookmarkLabel = bookmarkLabel,
-                    ),
-                )
-            }
-            return true
-        }
         // In-package navigations only; never load arbitrary external URLs inside the WebView (PdfViewer
         // always returns true — we allow same-host asset URLs for multipage / SPA edge cases).
         if (isAssetLoaderRequest(uri)) {
@@ -324,6 +235,18 @@ internal fun yabaWebViewClient(
         }
         return false
     }
+}
+
+internal fun WebView.attachYabaAndroidHostBridge(onJsonMessage: (String) -> Unit) {
+    // Keep both names for compatibility while web transport converges on the host-agnostic symbol.
+    val bridge = YabaAndroidHostJsBridge(onJsonMessage)
+    addJavascriptInterface(bridge, "YabaNativeHost")
+    addJavascriptInterface(bridge, "YabaAndroidHost")
+}
+
+internal fun WebView.detachYabaAndroidHostBridge() {
+    removeJavascriptInterface("YabaNativeHost")
+    removeJavascriptInterface("YabaAndroidHost")
 }
 
 internal fun denyPermissionsWebChromeClient(

@@ -1,8 +1,7 @@
 /**
  * Table of contents updates for native WebView hosts.
- * Must match Core [YabaWebBridgeScripts.TOC_EVENT_PREFIX].
  */
-export const YABA_TOC_EVENT_PREFIX = "yaba-toc:"
+import { postToYabaNativeHost } from "./yaba-native-host"
 
 export interface TocHostPayload {
   type: "toc"
@@ -28,7 +27,7 @@ export function publishToc(toc: TocJson | null): void {
   const json = JSON.stringify(payload)
   if (json === lastPublishedTocJson) return
   lastPublishedTocJson = json
-  console.info(`${YABA_TOC_EVENT_PREFIX}${json}`)
+  postToYabaNativeHost({ type: "toc", toc })
 }
 
 export function resetPublishedToc(): void {

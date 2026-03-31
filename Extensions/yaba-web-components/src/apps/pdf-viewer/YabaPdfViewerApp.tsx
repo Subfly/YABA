@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { publishShellLoad } from "@/bridge/shell-host-events"
+import { publishPdfReaderMetrics } from "@/bridge/reader-metrics-host"
 import { publishToc, resetPublishedToc } from "@/bridge/toc-host-events"
 import { buildPdfOutlineToc } from "./pdf-outline-toc"
 import {
@@ -126,6 +127,7 @@ function YabaPdfHighlighterPane({
     let bindTimer: number | null = null
     const onViewerEvent = (): void => {
       bumpViewerRevision()
+      publishPdfReaderMetrics()
     }
 
     const unbindBus = (): void => {

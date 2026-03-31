@@ -6,6 +6,7 @@ import { GlobalWorkerOptions, getDocument, PDFDateString } from "pdfjs-dist"
 import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url"
 import { createEditorExtensions } from "../tiptap/editor-extensions"
 import { extractLinkMetadata, type LinkMetadata } from "./link-metadata"
+import { postToYabaNativeHost } from "./yaba-native-host"
 
 GlobalWorkerOptions.workerSrc = pdfWorkerUrl
 
@@ -704,11 +705,30 @@ export function initConverterBridge(): void {
             status: "done",
             output,
           })
+          queueMicrotask(() => {
+            postToYabaNativeHost({
+              type: "converterJob",
+              jobId,
+              kind: "html",
+              status: "done",
+              outputJson: JSON.stringify(output),
+            })
+          })
         })
         .catch((error) => {
+          const msg = error instanceof Error ? error.message : "Unknown HTML conversion error"
           htmlConversionJobs.set(jobId, {
             status: "error",
-            error: error instanceof Error ? error.message : "Unknown HTML conversion error",
+            error: msg,
+          })
+          queueMicrotask(() => {
+            postToYabaNativeHost({
+              type: "converterJob",
+              jobId,
+              kind: "html",
+              status: "error",
+              error: msg,
+            })
           })
         })
       return jobId
@@ -729,11 +749,30 @@ export function initConverterBridge(): void {
             status: "done",
             output,
           })
+          queueMicrotask(() => {
+            postToYabaNativeHost({
+              type: "converterJob",
+              jobId,
+              kind: "pdf",
+              status: "done",
+              outputJson: JSON.stringify(output),
+            })
+          })
         })
         .catch((error) => {
+          const msg = error instanceof Error ? error.message : "Unknown PDF extraction error"
           pdfExtractionJobs.set(jobId, {
             status: "error",
-            error: error instanceof Error ? error.message : "Unknown PDF extraction error",
+            error: msg,
+          })
+          queueMicrotask(() => {
+            postToYabaNativeHost({
+              type: "converterJob",
+              jobId,
+              kind: "pdf",
+              status: "error",
+              error: msg,
+            })
           })
         })
 
@@ -755,11 +794,30 @@ export function initConverterBridge(): void {
             status: "done",
             output,
           })
+          queueMicrotask(() => {
+            postToYabaNativeHost({
+              type: "converterJob",
+              jobId,
+              kind: "epub",
+              status: "done",
+              outputJson: JSON.stringify(output),
+            })
+          })
         })
         .catch((error) => {
+          const msg = error instanceof Error ? error.message : "Unknown EPUB extraction error"
           epubExtractionJobs.set(jobId, {
             status: "error",
-            error: error instanceof Error ? error.message : "Unknown EPUB extraction error",
+            error: msg,
+          })
+          queueMicrotask(() => {
+            postToYabaNativeHost({
+              type: "converterJob",
+              jobId,
+              kind: "epub",
+              status: "error",
+              error: msg,
+            })
           })
         })
 
@@ -772,4 +830,5 @@ export function initConverterBridge(): void {
       epubExtractionJobs.delete(jobId)
     },
   }
+  postToYabaNativeHost({ type: "bridgeReady", feature: "converter" })
 }

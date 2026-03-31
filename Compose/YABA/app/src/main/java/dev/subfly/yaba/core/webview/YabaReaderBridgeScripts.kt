@@ -178,21 +178,18 @@ object YabaEditorBridgeScripts {
         })();
         """.trimIndent()
 
-    fun installAnnotationTapScript(): String {
-        val prefix =
-            escapeForJsSingleQuotedString(
-                YabaWebBridgeScripts.ANNOTATION_TAP_SCHEME_PREFIX + "id=",
-            )
-        return """
+    fun installAnnotationTapScript(): String =
+        """
         (function() {
             if (window.YabaEditorBridge) {
                 window.YabaEditorBridge.onAnnotationTap = function(id) {
-                    if (id) window.location = '$prefix' + encodeURIComponent(id);
+                    if (id && window.YabaAndroidHost && window.YabaAndroidHost.postMessage) {
+                        window.YabaAndroidHost.postMessage(JSON.stringify({type:'annotationTap',id:id}));
+                    }
                 };
             }
         })();
         """.trimIndent()
-    }
 
     fun getDocumentJsonScript(): String =
         """
@@ -441,21 +438,18 @@ object YabaPdfReaderBridgeScripts {
         })();
         """.trimIndent()
 
-    fun installAnnotationTapScript(): String {
-        val prefix =
-            escapeForJsSingleQuotedString(
-                YabaWebBridgeScripts.ANNOTATION_TAP_SCHEME_PREFIX + "id=",
-            )
-        return """
+    fun installAnnotationTapScript(): String =
+        """
         (function() {
             if (window.YabaPdfBridge) {
                 window.YabaPdfBridge.onAnnotationTap = function(id) {
-                    if (id) window.location = '$prefix' + encodeURIComponent(id);
+                    if (id && window.YabaAndroidHost && window.YabaAndroidHost.postMessage) {
+                        window.YabaAndroidHost.postMessage(JSON.stringify({type:'annotationTap',id:id}));
+                    }
                 };
             }
         })();
         """.trimIndent()
-    }
 
     fun navigateToTocItemScript(id: String, extrasJson: String?): String {
         val idEscaped = escapeForJsSingleQuotedString(id)
@@ -579,21 +573,18 @@ object YabaEpubReaderBridgeScripts {
         })();
         """.trimIndent()
 
-    fun installAnnotationTapScript(): String {
-        val prefix =
-            escapeForJsSingleQuotedString(
-                YabaWebBridgeScripts.ANNOTATION_TAP_SCHEME_PREFIX + "id=",
-            )
-        return """
+    fun installAnnotationTapScript(): String =
+        """
         (function() {
             if (window.YabaEpubBridge) {
                 window.YabaEpubBridge.onAnnotationTap = function(id) {
-                    if (id) window.location = '$prefix' + encodeURIComponent(id);
+                    if (id && window.YabaAndroidHost && window.YabaAndroidHost.postMessage) {
+                        window.YabaAndroidHost.postMessage(JSON.stringify({type:'annotationTap',id:id}));
+                    }
                 };
             }
         })();
         """.trimIndent()
-    }
 
     fun navigateToTocItemScript(id: String, extrasJson: String?): String {
         val idEscaped = escapeForJsSingleQuotedString(id)

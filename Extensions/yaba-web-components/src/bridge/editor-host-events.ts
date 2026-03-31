@@ -1,13 +1,6 @@
 import type { Editor } from "@tiptap/core"
 import { getActiveFormattingState } from "./editor-formatting"
-
-export const YABA_EDITOR_HOST_EVENT_PREFIX = "yaba-editor-host:"
-
-export interface EditorHostStateEvent {
-  type: "editorState"
-  formatting: ReturnType<typeof getActiveFormattingState>
-  canCreateAnnotation: boolean
-}
+import { postToYabaNativeHost } from "./yaba-native-host"
 
 let lastPublishedEditorStateJson: string | null = null
 
@@ -17,15 +10,19 @@ export function resetPublishedEditorHostState(): void {
 
 export function publishEditorHostState(
   editor: Editor | null,
-  canCreateAnnotation: () => boolean
+  canCreateAnnotation: () => boolean,
 ): void {
-  const payload: EditorHostStateEvent = {
-    type: "editorState",
-    formatting: getActiveFormattingState(editor),
-    canCreateAnnotation: canCreateAnnotation(),
+  const formatting = getActiveFormattingState(editor)
+  const can = canCreateAnnotation()
+  const payload = {
+    type: "readerMetrics" as const,
+    canCreateAnnotation: can,
+    currentPage: 1,
+    pageCount: 1,
+    formatting,
   }
   const json = JSON.stringify(payload)
   if (json === lastPublishedEditorStateJson) return
   lastPublishedEditorStateJson = json
-  console.info(`${YABA_EDITOR_HOST_EVENT_PREFIX}${json}`)
+  postToYabaNativeHost(payload)
 }

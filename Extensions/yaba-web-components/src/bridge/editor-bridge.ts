@@ -33,6 +33,7 @@ import {
 } from "./shell-host-events"
 import { publishToc, resetPublishedToc, type TocJson } from "./toc-host-events"
 import { exportMarkdownFromEditor, exportPdfBase64FromEditor } from "./editor-export"
+import { postToYabaNativeHost } from "./yaba-native-host"
 
 export type ReaderTheme = "system" | "dark" | "light" | "sepia"
 export type ReaderFontSize = "small" | "medium" | "large"
@@ -1021,4 +1022,11 @@ export function initEditorBridge(editor: Editor): void {
 
   wireDefaultMarkdownClipboard(editor)
   applyReaderPreferences()
+
+  const page = document.body?.dataset.yabaPage
+  if (page === "editor") {
+    postToYabaNativeHost({ type: "bridgeReady", feature: "editor" })
+  } else if (page === "viewer") {
+    postToYabaNativeHost({ type: "bridgeReady", feature: "viewer" })
+  }
 }

@@ -22,6 +22,7 @@ import { AnnotationDecorationsExtension } from "./extensions/annotation-decorati
 import { YabaAnnotationMark } from "./extensions/yaba-annotation-mark"
 import { CodeBlockEnterBehaviorExtension } from "./extensions/code-block-enter-behavior"
 import { YabaInlineLinkNode, YabaInlineMentionNode } from "./extensions/inline-rich-items"
+import { postToYabaNativeHost } from "@/bridge/yaba-native-host"
 
 const lowlight = createLowlight(all)
 let noteEditorPlaceholderText = ""
@@ -61,14 +62,22 @@ function createSharedBaseExtensions(): Extensions {
       katexOptions: { throwOnError: false },
       inlineOptions: {
         onClick: (node, pos) => {
-          const latex = encodeURIComponent(node.attrs.latex ?? "")
-          window.location.href = `yaba://math-tap?kind=inline&pos=${pos}&latex=${latex}`
+          postToYabaNativeHost({
+            type: "mathTap",
+            kind: "inline",
+            pos,
+            latex: String(node.attrs.latex ?? ""),
+          })
         },
       },
       blockOptions: {
         onClick: (node, pos) => {
-          const latex = encodeURIComponent(node.attrs.latex ?? "")
-          window.location.href = `yaba://math-tap?kind=block&pos=${pos}&latex=${latex}`
+          postToYabaNativeHost({
+            type: "mathTap",
+            kind: "block",
+            pos,
+            latex: String(node.attrs.latex ?? ""),
+          })
         },
       },
     }),

@@ -1,3 +1,4 @@
+import { postToYabaNativeHost } from "@/bridge/yaba-native-host"
 import { Node, mergeAttributes } from "@tiptap/core"
 import { Plugin } from "@tiptap/pm/state"
 import { TextSelection } from "@tiptap/pm/state"
@@ -148,10 +149,13 @@ export const YabaInlineLinkNode = Node.create({
             if (event instanceof MouseEvent && placeCaretAroundInlineNode(view, pos, node, event)) {
               return true
             }
-            const text = encodeURIComponent(String(node.attrs.text || ""))
-            const url = encodeURIComponent(String(node.attrs.url || ""))
             event.preventDefault()
-            window.location.href = `yaba://inline-link-tap?pos=${pos}&text=${text}&url=${url}`
+            postToYabaNativeHost({
+              type: "inlineLinkTap",
+              pos,
+              text: String(node.attrs.text || ""),
+              url: String(node.attrs.url || ""),
+            })
             return true
           },
         },
@@ -267,14 +271,15 @@ export const YabaInlineMentionNode = Node.create({
             if (event instanceof MouseEvent && placeCaretAroundInlineNode(view, pos, node, event)) {
               return true
             }
-            const text = encodeURIComponent(String(node.attrs.text || ""))
-            const bookmarkId = encodeURIComponent(String(node.attrs.bookmarkId || ""))
-            const bookmarkKindCode = Number(node.attrs.bookmarkKindCode || 0)
-            const bookmarkLabel = encodeURIComponent(String(node.attrs.bookmarkLabel || ""))
             event.preventDefault()
-            window.location.href =
-              `yaba://inline-mention-tap?pos=${pos}&text=${text}` +
-              `&bookmarkId=${bookmarkId}&bookmarkKindCode=${bookmarkKindCode}&bookmarkLabel=${bookmarkLabel}`
+            postToYabaNativeHost({
+              type: "inlineMentionTap",
+              pos,
+              text: String(node.attrs.text || ""),
+              bookmarkId: String(node.attrs.bookmarkId || ""),
+              bookmarkKindCode: Number(node.attrs.bookmarkKindCode || 0),
+              bookmarkLabel: String(node.attrs.bookmarkLabel || ""),
+            })
             return true
           },
         },

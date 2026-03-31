@@ -8,7 +8,9 @@ import {
 } from "@/theme/reader-document-vars"
 import { getEpubContentOverrideCss } from "./epub-content-styles"
 import { publishShellLoad } from "@/bridge/shell-host-events"
+import { publishEpubReaderMetrics } from "@/bridge/reader-metrics-host"
 import { publishToc, resetPublishedToc, type TocItemJson, type TocJson } from "@/bridge/toc-host-events"
+import { postToYabaNativeHost } from "@/bridge/yaba-native-host"
 
 interface EpubHighlightInput {
   id: string
@@ -529,6 +531,7 @@ export function initEpubViewerBridge(platform: Platform, appearance: AppearanceM
             }
             // Re-apply highlights after pagination settles to keep CFI overlays aligned.
             scheduleHighlightRefresh(16)
+            queueMicrotask(() => publishEpubReaderMetrics())
           })
 
           rendition.on("selected", (cfiRange: string, contents: Contents) => {
@@ -536,6 +539,7 @@ export function initEpubViewerBridge(platform: Platform, appearance: AppearanceM
             if (cfiRange && selectedText.trim().length > 0) {
               lastSelection = { cfiRange, selectedText: selectedText.trim() }
             }
+            queueMicrotask(() => publishEpubReaderMetrics())
           })
 
           rendition.on("rendered", () => {
@@ -635,4 +639,5 @@ export function initEpubViewerBridge(platform: Platform, appearance: AppearanceM
     },
   }
   shellReady = true
+  postToYabaNativeHost({ type: "bridgeReady", feature: "epub" })
 }
