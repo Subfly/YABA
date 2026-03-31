@@ -33,4 +33,21 @@ interface WebViewReaderBridge {
     suspend fun removeAnnotationFromDocument(annotationId: String): Int = 0
 
     suspend fun navigateToTocItem(id: String, extrasJson: String?) = Unit
+
+    /**
+     * Rich-text readable shell only: calls `window.YabaEditorBridge.unFocus()`. No-op for PDF/EPUB.
+     */
+    suspend fun unFocus() {}
+
+    /**
+     * Markdown from `window.YabaEditorBridge.exportMarkdown()` when the rich-text reader is active.
+     * PDF/EPUB readers return an empty string.
+     */
+    suspend fun exportReadableMarkdown(): String = ""
+
+    /**
+     * Base64 PDF bytes from `window.YabaEditorBridge.exportPdfBase64()` for the rich-text reader.
+     * PDF/EPUB readers return an empty string.
+     */
+    suspend fun exportReadablePdfBase64(): String = ""
 }

@@ -68,4 +68,6 @@ sealed interface LinkmarkDetailEvent {
         val message: String,
     ) : LinkmarkDetailEvent
     data object OnCancelReminder : LinkmarkDetailEvent
+    data class OnExportMarkdownReady(val markdown: String) : LinkmarkDetailEvent
+    data class OnExportPdfReady(val pdfBase64: String) : LinkmarkDetailEvent
 }

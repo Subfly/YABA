@@ -60,11 +60,15 @@ import dev.subfly.yaba.core.webview.YabaWebFeature
 import dev.subfly.yaba.core.webview.YabaWebHostEvent
 import dev.subfly.yaba.core.webview.YabaWebPlatform
 import dev.subfly.yaba.core.webview.YabaWebScrollDirection
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.ExperimentalTime
+import kotlin.time.TimeSource
 
 @OptIn(
     ExperimentalMaterial3Api::class,
-    ExperimentalMaterial3ExpressiveApi::class
+    ExperimentalMaterial3ExpressiveApi::class,
+    ExperimentalTime::class,
 )
 @Composable
 internal fun LinkmarkContentLayout(
@@ -85,6 +89,41 @@ internal fun LinkmarkContentLayout(
 
     var readerBridge by remember { mutableStateOf<WebViewReaderBridge?>(null) }
     val appearance = if (isSystemInDarkTheme()) YabaWebAppearance.Dark else YabaWebAppearance.Light
+
+    suspend fun awaitReaderBridge(
+        timeoutMs: Long = 4_000L,
+        pollMs: Long = 75L,
+    ): WebViewReaderBridge? {
+        val start = TimeSource.Monotonic.markNow()
+        while (start.elapsedNow().inWholeMilliseconds < timeoutMs) {
+            val bridge = readerBridge
+            if (bridge != null) return bridge
+            delay(pollMs)
+        }
+        return readerBridge
+    }
+
+    suspend fun exportMarkdownWithRetry(): String {
+        val bridge = awaitReaderBridge() ?: return ""
+        bridge.unFocus()
+        repeat(4) { attempt ->
+            val markdown = bridge.exportReadableMarkdown()
+            if (markdown.isNotBlank()) return markdown
+            if (attempt < 3) delay(120)
+        }
+        return ""
+    }
+
+    suspend fun exportPdfBase64WithRetry(): String {
+        val bridge = awaitReaderBridge() ?: return ""
+        bridge.unFocus()
+        repeat(4) { attempt ->
+            val base64 = bridge.exportReadablePdfBase64()
+            if (base64.isNotBlank()) return base64
+            if (attempt < 3) delay(120)
+        }
+        return ""
+    }
 
     val canRenderReader by remember(
         state.readableDocumentJson,
@@ -320,6 +359,18 @@ internal fun LinkmarkContentLayout(
                             state = state,
                             onEvent = onEvent,
                             onShowRemindMePicker = onShowRemindMePicker,
+                            onExportMarkdown = {
+                                scope.launch {
+                                    val markdown = exportMarkdownWithRetry()
+                                    onEvent(LinkmarkDetailEvent.OnExportMarkdownReady(markdown = markdown))
+                                }
+                            },
+                            onExportPdf = {
+                                scope.launch {
+                                    val b64 = exportPdfBase64WithRetry()
+                                    onEvent(LinkmarkDetailEvent.OnExportPdfReady(pdfBase64 = b64))
+                                }
+                            },
                         )
                     }
                 },

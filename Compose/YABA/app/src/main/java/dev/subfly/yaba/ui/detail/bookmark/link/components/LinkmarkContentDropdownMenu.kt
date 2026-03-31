@@ -58,6 +58,8 @@ internal fun LinkmarkContentDropdownMenu(
     state: LinkmarkDetailUIState,
     onEvent: (LinkmarkDetailEvent) -> Unit,
     onShowRemindMePicker: () -> Unit,
+    onExportMarkdown: () -> Unit,
+    onExportPdf: () -> Unit,
 ) {
     val navigator = LocalContentNavigator.current
     val creationNavigator = LocalCreationContentNavigator.current
@@ -76,6 +78,10 @@ internal fun LinkmarkContentDropdownMenu(
     val versionLabel = "Version" // TODO: LOCALIZATION
     val shareText = stringResource(R.string.share)
     val deleteText = stringResource(R.string.delete)
+    // TODO: LOCALIZATION
+    val saveCopyText = "Export"
+    val mdLabel = "MD"
+    val pdfLabel = "PDF"
 
     val isAndroid = Platform == YabaPlatform.ANDROID
     val hasActiveReminder = state.reminderDateEpochMillis != null
@@ -88,13 +94,16 @@ internal fun LinkmarkContentDropdownMenu(
         )
     }
 
-    val updateAccentColor = Color(YabaColor.BLUE.iconTintArgb())
     var isUpdateSubmenuExpanded by remember { mutableStateOf(false) }
+    var isSaveCopyExpanded by remember { mutableStateOf(false) }
     LaunchedEffect(expanded) {
-        if (!expanded) isUpdateSubmenuExpanded = false
+        if (!expanded) {
+            isUpdateSubmenuExpanded = false
+            isSaveCopyExpanded = false
+        }
     }
 
-    val primaryRowCount = primaryActions.size + 1
+    val primaryRowCount = primaryActions.size + 2
 
     val secondaryActions = remember(isAndroid, hasActiveReminder, remindMeText, cancelReminderText, shareText) {
         buildList {
@@ -155,13 +164,27 @@ internal fun LinkmarkContentDropdownMenu(
                 )
             }
 
-            LinkmarkUpdateSubmenuSection(
+            LinkmarkSaveCopySubmenuSection(
                 itemIndex = primaryActions.size,
+                siblingCount = primaryRowCount,
+                saveCopyText = saveCopyText,
+                mdLabel = mdLabel,
+                pdfLabel = pdfLabel,
+                isExpanded = isSaveCopyExpanded,
+                onToggleExpand = { isSaveCopyExpanded = !isSaveCopyExpanded },
+                onDismissSubmenu = { isSaveCopyExpanded = false },
+                onDismissRootMenu = onDismissRequest,
+                onExportMarkdown = onExportMarkdown,
+                onExportPdf = onExportPdf,
+            )
+
+            LinkmarkUpdateSubmenuSection(
+                itemIndex = primaryActions.size + 1,
                 siblingCount = primaryRowCount,
                 title = updateSectionTitle,
                 metadataLabel = metadataLabel,
                 versionLabel = versionLabel,
-                accentColor = updateAccentColor,
+                accentColor = Color(YabaColor.MINT.iconTintArgb()),
                 isExpanded = isUpdateSubmenuExpanded,
                 onToggleExpand = { isUpdateSubmenuExpanded = !isUpdateSubmenuExpanded },
                 onDismissSubmenu = { isUpdateSubmenuExpanded = false },
@@ -236,6 +259,91 @@ internal fun LinkmarkContentDropdownMenu(
                     )
                 }
             )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun LinkmarkSaveCopySubmenuSection(
+    itemIndex: Int,
+    siblingCount: Int,
+    saveCopyText: String,
+    mdLabel: String,
+    pdfLabel: String,
+    isExpanded: Boolean,
+    onToggleExpand: () -> Unit,
+    onDismissSubmenu: () -> Unit,
+    onDismissRootMenu: () -> Unit,
+    onExportMarkdown: () -> Unit,
+    onExportPdf: () -> Unit,
+) {
+    val saveCopyAccent = Color(YabaColor.BLUE.iconTintArgb())
+    Box {
+        DropdownMenuItem(
+            shapes = MenuDefaults.itemShape(itemIndex, siblingCount),
+            checked = false,
+            onCheckedChange = { onToggleExpand() },
+            leadingIcon = {
+                YabaIcon(
+                    name = "download-01",
+                    color = saveCopyAccent,
+                )
+            },
+            trailingIcon = {
+                val expandedRotation by animateFloatAsState(
+                    targetValue = if (isExpanded) 90F else 0F,
+                )
+                YabaIcon(
+                    modifier = Modifier.rotate(expandedRotation),
+                    name = "arrow-right-01",
+                )
+            },
+            text = { Text(text = saveCopyText) },
+        )
+        DropdownMenuPopup(
+            expanded = isExpanded,
+            onDismissRequest = onDismissSubmenu,
+        ) {
+            DropdownMenuGroup(
+                shapes = MenuDefaults.groupShape(
+                    index = 0,
+                    count = 1,
+                ),
+            ) {
+                DropdownMenuItem(
+                    shapes = MenuDefaults.itemShape(0, 2),
+                    checked = false,
+                    onCheckedChange = {
+                        onDismissSubmenu()
+                        onDismissRootMenu()
+                        onExportMarkdown()
+                    },
+                    leadingIcon = {
+                        YabaIcon(
+                            name = "document-attachment",
+                            color = Color(YabaColor.GRAY.iconTintArgb()),
+                        )
+                    },
+                    text = { Text(text = mdLabel) },
+                )
+                DropdownMenuItem(
+                    shapes = MenuDefaults.itemShape(1, 2),
+                    checked = false,
+                    onCheckedChange = {
+                        onDismissSubmenu()
+                        onDismissRootMenu()
+                        onExportPdf()
+                    },
+                    leadingIcon = {
+                        YabaIcon(
+                            name = "pdf-02",
+                            color = Color(YabaColor.RED.iconTintArgb()),
+                        )
+                    },
+                    text = { Text(text = pdfLabel) },
+                )
+            }
         }
     }
 }

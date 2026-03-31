@@ -6,6 +6,7 @@ import dev.subfly.yaba.core.database.mappers.toPreviewUiModel
 import dev.subfly.yaba.core.database.mappers.toUiModel
 import dev.subfly.yaba.core.database.models.BookmarkWithRelations
 import dev.subfly.yaba.core.filesystem.BookmarkFileManager
+import dev.subfly.yaba.core.filesystem.access.YabaFileAccessor
 import dev.subfly.yaba.core.common.CoreConstants
 import dev.subfly.yaba.core.common.computeTriggerMillisFromDatePicker
 import dev.subfly.yaba.core.managers.AllBookmarksManager
@@ -33,6 +34,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 private enum class LinkmarkRefreshPurpose {
     Version,
@@ -89,6 +92,8 @@ class LinkmarkDetailStateMachine :
             LinkmarkDetailEvent.OnRequestNotificationPermission -> onRequestNotificationPermission()
             is LinkmarkDetailEvent.OnScheduleReminder -> onScheduleReminder(event)
             LinkmarkDetailEvent.OnCancelReminder -> onCancelReminder()
+            is LinkmarkDetailEvent.OnExportMarkdownReady -> onExportMarkdownReady(event)
+            is LinkmarkDetailEvent.OnExportPdfReady -> onExportPdfReady(event)
         }
     }
 
@@ -501,6 +506,70 @@ class LinkmarkDetailStateMachine :
             NotificationManager.cancelReminder(bookmarkId)
         }
         updateState { it.copy(reminderDateEpochMillis = null) }
+    }
+
+    private fun onExportMarkdownReady(event: LinkmarkDetailEvent.OnExportMarkdownReady) {
+        launch {
+            if (event.markdown.isBlank()) return@launch
+            val bookmarkId = bookmarkIdFlow.value ?: return@launch
+
+            val label = currentState().bookmark?.label.orEmpty()
+            val base = sanitizeExportBaseName(label)
+
+            try {
+                YabaFileAccessor.exportNotemarkMarkdownBundle(
+                    markdown = event.markdown,
+                    bookmarkId = bookmarkId,
+                    suggestedMarkdownBaseName = base,
+                )
+                /* Show Success Toast */
+            } catch (_: Exception) {
+                /* Show Error Toast */
+            }
+        }
+    }
+
+    @OptIn(ExperimentalEncodingApi::class)
+    private fun onExportPdfReady(event: LinkmarkDetailEvent.OnExportPdfReady) {
+        launch {
+            if (event.pdfBase64.isBlank()) return@launch
+            val payload = sanitizePdfBase64Payload(event.pdfBase64) ?: return@launch
+            val bytes = runCatching { Base64.decode(payload) }.getOrNull() ?: return@launch
+            if (bytes.isEmpty()) return@launch
+
+            val label = currentState().bookmark?.label.orEmpty()
+            val base = sanitizeExportBaseName(label)
+
+            try {
+                YabaFileAccessor.saveFileCopy(
+                    bytes = bytes,
+                    suggestedName = base,
+                    extension = "pdf",
+                )
+                /* Show Success Toast */
+            } catch (_: Exception) {
+                /* Show Error Toast */
+            }
+        }
+    }
+
+    private fun sanitizeExportBaseName(label: String): String =
+        label.ifBlank { "note" }.replace(Regex("[^a-zA-Z0-9_-]"), "_")
+
+    /**
+     * Strips data-URL prefix; rejects JSON (e.g. markdown sent to the PDF path by mistake).
+     */
+    private fun sanitizePdfBase64Payload(pdfBase64: String): String? {
+        var t = pdfBase64.trim()
+        if (t.isEmpty()) return null
+        if (t.startsWith('{')) return null
+        if (t.startsWith("data:", ignoreCase = true)) {
+            val idx = t.indexOf("base64,")
+            if (idx >= 0) {
+                t = t.substring(idx + "base64,".length)
+            }
+        }
+        return t.ifBlank { null }
     }
 
     override fun clear() {

@@ -94,6 +94,23 @@ internal fun RichTextWebViewReaderBridge(
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY_LOOSE)) return
         evaluateJs(webView, YabaEditorBridgeScripts.navigateToTocItemScript(id, extrasJson))
     }
+
+    override suspend fun unFocus() {
+        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return
+        evaluateJs(webView, YabaEditorBridgeScripts.unFocusScript())
+    }
+
+    override suspend fun exportReadableMarkdown(): String {
+        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return ""
+        val raw = evaluateJs(webView, YabaEditorBridgeScripts.exportMarkdownScript())
+        return decodeJsStringResult(raw)
+    }
+
+    override suspend fun exportReadablePdfBase64(): String {
+        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return ""
+        val raw = evaluateJs(webView, YabaEditorBridgeScripts.exportPdfBase64Script())
+        return decodeJsStringResult(raw)
+    }
 }
 
 @Suppress("FunctionName")
