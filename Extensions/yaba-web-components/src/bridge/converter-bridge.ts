@@ -25,6 +25,12 @@ const READABILITY_OPTIONS = {
 export interface ConverterInput {
   html: string
   baseUrl?: string
+  /**
+   * Android WebView: optional id supplied by the host so native can register the job before
+   * `evaluateJavascript` returns. Avoids a race where `converterJob` posts before Kotlin registers
+   * (common for HTML because metadata scrape can resolve in the same microtask batch as the eval).
+   */
+  jobId?: string
 }
 
 export interface ConverterAsset {
@@ -697,7 +703,10 @@ export function initConverterBridge(): void {
       return sanitizeAndConvertWithAssets(input.html, input.baseUrl)
     },
     startHtmlConversion(input: ConverterInput): string {
-      const jobId = createHtmlConversionJobId()
+      const jobId =
+        typeof input.jobId === "string" && input.jobId.trim().length > 0
+          ? input.jobId.trim()
+          : createHtmlConversionJobId()
       htmlConversionJobs.set(jobId, { status: "pending" })
       void sanitizeAndConvertWithAssets(input.html, input.baseUrl)
         .then((output) => {

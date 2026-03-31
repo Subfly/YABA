@@ -8,9 +8,12 @@ import dev.subfly.yaba.core.webview.YabaConverterBridgeScripts
 import dev.subfly.yaba.core.webview.YabaWebBridgeScripts
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.withTimeout
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 private const val CONVERTER_JOB_TIMEOUT_MS = 120_000L
 
+@OptIn(ExperimentalUuidApi::class)
 internal suspend fun runHtmlConversion(
     webView: WebView,
     html: String,
@@ -19,21 +22,24 @@ internal suspend fun runHtmlConversion(
     if (!waitForBridgeReady(webView, YabaWebBridgeScripts.CONVERTER_BRIDGE_DEFINED)) {
         return Result.failure(IllegalStateException("Converter bridge not ready"))
     }
-    val rawJobId = evaluateJs(
-        webView,
-        YabaConverterBridgeScripts.sanitizeAndConvertHtmlToReaderHtmlScript(
-            html,
-            baseUrl,
-        ),
-    )
-    val jobId = decodeJsStringResult(rawJobId)
-    if (jobId.isBlank()) {
-        return Result.failure(IllegalStateException("Failed to start HTML conversion job"))
-    }
+    val jobId = Uuid.generateV4().toString()
     val deferred = CompletableDeferred<Result<WebConverterResult>>()
     YabaConverterJobBridge.registerHtmlJob(jobId, deferred)
     return try {
-        withTimeout(CONVERTER_JOB_TIMEOUT_MS) { deferred.await() }
+        val rawJobId = evaluateJs(
+            webView,
+            YabaConverterBridgeScripts.sanitizeAndConvertHtmlToReaderHtmlScript(
+                html,
+                baseUrl,
+                jobId,
+            ),
+        )
+        val returnedJobId = decodeJsStringResult(rawJobId)
+        if (returnedJobId.isBlank() || returnedJobId != jobId) {
+            Result.failure(IllegalStateException("Failed to start HTML conversion job"))
+        } else {
+            withTimeout(CONVERTER_JOB_TIMEOUT_MS) { deferred.await() }
+        }
     } catch (e: Exception) {
         Result.failure(e)
     } finally {

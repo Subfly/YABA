@@ -3,15 +3,17 @@ package dev.subfly.yaba.core.webview
 /** JavaScript source for [window.YabaConverterBridge] calls. No WebView types. */
 object YabaConverterBridgeScripts {
 
-    fun sanitizeAndConvertHtmlToReaderHtmlScript(html: String, baseUrl: String?): String {
+    fun sanitizeAndConvertHtmlToReaderHtmlScript(html: String, baseUrl: String?, jobId: String): String {
         val htmlEscaped = escapeForJsSingleQuotedString(html)
         val baseUrlLiteral = baseUrl?.let { "'${escapeForJsSingleQuotedString(it)}'" } ?: "null"
+        val jobIdEscaped = escapeForJsSingleQuotedString(jobId)
         return """
             (function() {
                 try {
                     return window.YabaConverterBridge.startHtmlConversion({
                         html: '$htmlEscaped',
-                        baseUrl: $baseUrlLiteral
+                        baseUrl: $baseUrlLiteral,
+                        jobId: '$jobIdEscaped'
                     });
                 } catch (e) {
                     return "";
