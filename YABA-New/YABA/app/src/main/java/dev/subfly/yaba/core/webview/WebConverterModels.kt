@@ -22,7 +22,7 @@ data class WebConverterAsset(
 )
 
 /**
- * Link metadata from the WebView bridge (web-meta-scraper + tidy-url on fetched HTML).
+ * Link metadata from the WebView bridge (web-meta-scraper + tidy-url on Core-fetched HTML).
  */
 @Stable
 data class WebLinkMetadata(

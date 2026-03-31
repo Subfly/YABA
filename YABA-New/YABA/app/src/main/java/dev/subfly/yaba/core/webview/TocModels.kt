@@ -4,7 +4,7 @@ import androidx.compose.runtime.Stable
 
 /**
  * Table of contents tree emitted from WebView shells (TipTap, PDF.js, epub.js).
- * [extrasJson] is opaque to Kotlin; pass it back to the WebView bridge for navigation.
+ * [extrasJson] is opaque to Kotlin; pass it back to [WebViewReaderBridge.navigateToTocItem] for navigation.
  */
 @Stable
 data class Toc(
