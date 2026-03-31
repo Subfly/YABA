@@ -12,40 +12,26 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import dev.subfly.yaba.core.database.DatabaseProvider
 import dev.subfly.yaba.ui.theme.YABATheme
 
 class MainActivity : ComponentActivity() {
+    private var keepSplash: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
+        val splash = installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        splash.setKeepOnScreenCondition { keepSplash }
+
+        DatabaseProvider.initialize(this)
+        keepSplash = false
+
         setContent {
             YABATheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    YABATheme {
-        Greeting("Android")
     }
 }
