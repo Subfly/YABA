@@ -1,13 +1,17 @@
 package dev.subfly.yaba.core.filesystem.access
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.webkit.MimeTypeMap
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import dev.subfly.yaba.core.common.CoreConstants
 import dev.subfly.yaba.core.database.DatabaseProvider
@@ -42,6 +46,7 @@ object YabaFileAccessor {
     private var openMultipleDocuments: ActivityResultLauncher<Array<String>>? = null
     private var openTree: ActivityResultLauncher<Uri?>? = null
     private var createDocument: ActivityResultLauncher<Intent>? = null
+    private var requestCameraPermission: ActivityResultLauncher<String>? = null
     private var takePicture: ActivityResultLauncher<Uri>? = null
 
     private var cameraOutputFile: File? = null
@@ -83,6 +88,12 @@ object YabaFileAccessor {
                     null
                 }
             completePending(uri)
+        }
+
+        requestCameraPermission = activity.registerForActivityResult(
+            ActivityResultContracts.RequestPermission(),
+        ) { granted ->
+            completePending(granted)
         }
 
         takePicture = activity.registerForActivityResult(
@@ -163,6 +174,8 @@ object YabaFileAccessor {
     suspend fun capturePhoto(): YabaFile? {
         val act = hostActivity ?: return null
         val launcher = takePicture ?: return null
+        val cameraPermissionGranted = ensureCameraPermission()
+        if (!cameraPermissionGranted) return null
         return suspendCancellableCoroutine { cont ->
             if (pending != null) {
                 cont.resume(null)
@@ -182,7 +195,13 @@ object YabaFileAccessor {
             cont.invokeOnCancellation {
                 if (pending === callback) pending = null
             }
-            launcher.launch(uri)
+            try {
+                launcher.launch(uri)
+            } catch (_: Exception) {
+                if (pending === callback) pending = null
+                cameraOutputFile = null
+                cont.resume(null)
+            }
         }
     }
 
@@ -451,12 +470,43 @@ object YabaFileAccessor {
         act.startActivity(Intent.createChooser(intent, null))
     }
 
-    private fun contentResolverMime(context: ComponentActivity, uri: Uri, extFallback: String): String {
+    private fun contentResolverMime(
+        context: ComponentActivity,
+        uri: Uri,
+        extFallback: String,
+    ): String {
         val fromResolver = context.contentResolver.getType(uri)
         if (!fromResolver.isNullOrBlank()) return fromResolver
         val map = MimeTypeMap.getSingleton()
         val mime = map.getMimeTypeFromExtension(extFallback.lowercase().removePrefix("."))
         return mime ?: "*/*"
+    }
+
+    private suspend fun ensureCameraPermission(): Boolean {
+        val act = hostActivity ?: return false
+
+        val granted = ContextCompat.checkSelfPermission(
+            act,
+            Manifest.permission.CAMERA,
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (granted) return true
+        val launcher = requestCameraPermission ?: return false
+        
+        return suspendCancellableCoroutine { cont ->
+            if (pending != null) {
+                cont.resume(false)
+                return@suspendCancellableCoroutine
+            }
+            val callback: (Any?) -> Unit = { result ->
+                cont.resume(result as? Boolean == true)
+            }
+            pending = callback
+            cont.invokeOnCancellation {
+                if (pending === callback) pending = null
+            }
+            launcher.launch(Manifest.permission.CAMERA)
+        }
     }
 }
 
