@@ -4,7 +4,7 @@ import dev.subfly.yaba.core.model.utils.YabaColor
 
 /**
  * Result payload for creating a READABLE annotation after the user confirms the sheet.
- * The owning screen applies the TipTap mark, persists JSON, then calls [dev.subfly.yabacore.managers.AnnotationManager].
+ * The owning screen applies the TipTap mark, persists JSON, then calls [dev.subfly.yaba.core.managers.AnnotationManager].
  */
 data class AnnotationReadableCreateRequest(
     val selectionDraft: ReadableSelectionDraft,

@@ -1,0 +1,155 @@
+package dev.subfly.yaba.ui.detail.bookmark.link.components
+
+import androidx.compose.ui.res.stringResource
+
+import dev.subfly.yaba.R
+
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenuGroup
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.DropdownMenuPopup
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
+import androidx.compose.material3.SegmentedListItem
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import dev.subfly.yaba.core.components.YabaIcon
+import dev.subfly.yaba.layout.SwipeAction
+import dev.subfly.yaba.layout.YabaSwipeActions
+import dev.subfly.yaba.util.formatDateTime
+import dev.subfly.yaba.util.yabaRightClick
+import dev.subfly.yaba.core.model.ui.ReadableVersionUiModel
+import dev.subfly.yaba.core.model.utils.YabaColor
+import kotlin.time.Instant
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalFoundationApi::class)
+@Composable
+internal fun LinkmarkDetailVersionItemContent(
+    modifier: Modifier = Modifier,
+    version: ReadableVersionUiModel,
+    mainColor: YabaColor,
+    index: Int,
+    count: Int,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    onDelete: () -> Unit,
+) {
+    var isDeleteMenuExpanded by remember { mutableStateOf(false) }
+
+    val formattedDate = remember(version.createdAt) {
+        formatDateTime(Instant.fromEpochMilliseconds(version.createdAt))
+    }
+
+    val deleteSwipeAction = remember(onDelete) {
+        listOf(
+            SwipeAction(
+                key = "delete_version",
+                onClick = onDelete,
+            ) {
+                Surface(
+                    modifier = Modifier.size(44.dp),
+                    shape = CircleShape,
+                    color = Color(YabaColor.RED.iconTintArgb()),
+                ) {
+                    YabaIcon(
+                        modifier = Modifier.padding(12.dp),
+                        name = "delete-02",
+                        color = Color.White,
+                    )
+                }
+            },
+        )
+    }
+
+    Box {
+        YabaSwipeActions(
+            modifier = modifier.padding(horizontal = 12.dp),
+            actionWidth = 54.dp,
+            rightActions = deleteSwipeAction,
+        ) {
+            SegmentedListItem(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(12.dp))
+                    .yabaRightClick(onRightClick = { isDeleteMenuExpanded = true }),
+                onClick = onClick,
+                onLongClick = { isDeleteMenuExpanded = true },
+                shapes = ListItemDefaults.segmentedShapes(index = index, count = count),
+                content = {
+                    Column {
+                        Text(formattedDate)
+                        val count = version.annotations.size
+                        Text(
+                            text = when (count) {
+                                0 -> "No Annotations"
+                                1 -> "1 Annotation"
+                                else -> "$count Annotations"
+                            },
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                },
+                leadingContent = {
+                    AnimatedContent(
+                        targetState = isSelected,
+                    ) { selected ->
+                        if (selected) {
+                            YabaIcon(
+                                name = "checkmark-circle-02",
+                                color = mainColor,
+                            )
+                        } else {
+                            YabaIcon(name = "clock-02")
+                        }
+                    }
+                },
+            )
+        }
+
+        DropdownMenuPopup(
+            expanded = isDeleteMenuExpanded,
+            onDismissRequest = { isDeleteMenuExpanded = false },
+        ) {
+            DropdownMenuGroup(shapes = MenuDefaults.groupShape(index = 0, count = 1)) {
+                DropdownMenuItem(
+                    shapes = MenuDefaults.itemShape(0, 1),
+                    checked = false,
+                    onCheckedChange = {
+                        isDeleteMenuExpanded = false
+                        onDelete()
+                    },
+                    leadingIcon = {
+                        YabaIcon(
+                            name = "delete-02",
+                            color = YabaColor.RED,
+                        )
+                    },
+                    text = {
+                        Text(
+                            text = stringResource(R.string.delete),
+                            color = Color(YabaColor.RED.iconTintArgb()),
+                        )
+                    },
+                )
+            }
+        }
+    }
+}

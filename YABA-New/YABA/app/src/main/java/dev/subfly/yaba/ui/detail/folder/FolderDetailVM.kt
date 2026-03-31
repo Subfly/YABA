@@ -1,0 +1,21 @@
+package dev.subfly.yaba.ui.detail.folder
+
+import androidx.lifecycle.ViewModel
+import dev.subfly.yaba.core.state.detail.folder.FolderDetailEvent
+import dev.subfly.yaba.core.state.detail.folder.FolderDetailStateMachine
+import kotlin.uuid.ExperimentalUuidApi
+
+@OptIn(ExperimentalUuidApi::class)
+class FolderDetailVM : ViewModel() {
+    private val stateMachine = FolderDetailStateMachine()
+    var state = stateMachine.stateFlow
+
+    fun onEvent(event: FolderDetailEvent) {
+        stateMachine.onEvent(event)
+    }
+
+    override fun onCleared() {
+        stateMachine.clear()
+        super.onCleared()
+    }
+}

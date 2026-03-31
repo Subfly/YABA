@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Sync iOS .xcstrings translations into Compose Multiplatform string resources.
+"""Sync iOS .xcstrings translations into Android string resources.
 
 The script reads `Darwin/YABA/Localizable.xcstrings` and writes per-locale
-`strings.xml` files under `Compose/YABA/composeApp/src/commonMain/composeResources`.
+`strings.xml` files under `YABA-New/YABA/app/src/main/res`.
 It overwrites existing files (adding new strings, updating changed ones, and
-removing stale ones) so Compose can reuse the same translations as iOS.
+removing stale ones) so Android can reuse the same translations as iOS.
 
 How to run (copy/paste):
     # Default paths, write files
@@ -22,7 +22,7 @@ How to run (copy/paste):
 
 Arguments:
     --xcstrings PATH   Path to Localizable.xcstrings. Default: Darwin/YABA/Localizable.xcstrings
-    --out PATH         Output composeResources dir. Default: Compose/YABA/composeApp/src/commonMain/composeResources
+    --out PATH         Output Android `res` directory. Default: YABA-New/YABA/app/src/main/res
     --source-lang CODE Override source language code (defaults to xcstrings sourceLanguage)
     --dry-run          Show planned changes without writing files
     --verbose          Print per-locale update details
@@ -35,6 +35,7 @@ import hashlib
 import json
 import re
 import sys
+import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Dict, Iterable, Mapping, MutableMapping
 
@@ -42,6 +43,9 @@ from typing import Dict, Iterable, Mapping, MutableMapping
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_XCSTRINGS = ROOT / "Darwin" / "YABA" / "Localizable.xcstrings"
 DEFAULT_OUTPUT_ROOT = (
+    ROOT / "YABA-New" / "YABA" / "app" / "src" / "main" / "res"
+)
+DEFAULT_FALLBACK_RESOURCES = (
     ROOT / "Compose" / "YABA" / "composeApp" / "src" / "commonMain" / "composeResources"
 )
 
@@ -50,6 +54,7 @@ DEFAULT_OUTPUT_ROOT = (
 # with optional positional argument (e.g., %1$@)
 PLACEHOLDER_PATTERN = re.compile(r"(?<!%)%(?:(\d+)\$)?(@|lld|llu|ld|lu|lf|d|i|u|f|s)")
 INVALID_NAME_PATTERN = re.compile(r"[^a-z0-9_]+")
+RESERVED_KEYWORDS = {"import", "new"}
 # Fallback regions for script-only locales that Android qualifiers don't support.
 SCRIPT_REGION_FALLBACKS = {
     "hans": "CN",  # Simplified Chinese
@@ -75,8 +80,8 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=DEFAULT_OUTPUT_ROOT,
         help=(
-            "Directory to place generated composeResources (default: "
-            "Compose/YABA/composeApp/src/commonMain/composeResources)"
+            "Directory to place generated Android resources (default: "
+            "YABA-New/YABA/app/src/main/res)"
         ),
     )
     parser.add_argument(
@@ -190,9 +195,14 @@ def sanitize_resource_name(key: str, used: MutableMapping[str, str]) -> str:
         slug = f"s_{slug}"
 
     name = slug
+    if name in RESERVED_KEYWORDS:
+        name = f"{name}_label"
+
     if name in used and used[name] != key:
         suffix = hashlib.sha1(key.encode("utf-8")).hexdigest()[:8]
-        name = f"{slug}_{suffix}"
+        name = f"{name}_{suffix}"
+        if name in RESERVED_KEYWORDS:
+            name = f"{name}_label"
     used[name] = key
     return name
 
@@ -235,8 +245,52 @@ def escape_android_string(value: str) -> str:
     escaped = escaped.replace("\r\n", "\n").replace("\r", "\n")
     escaped = escaped.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
     escaped = escaped.replace('"', '\\"')
+    escaped = escaped.replace("'", "\\'")
     escaped = escaped.replace("\n", "\\n").replace("\t", "\\t")
     return escaped
+
+
+def parse_existing_strings(path: Path) -> Dict[str, str]:
+    """Parse an Android or Compose string file and keep values as written in XML."""
+    if not path.exists():
+        return {}
+
+    content = path.read_text(encoding="utf-8")
+    pattern = re.compile(r"<string\b[^>]*\sname=\"([^\"]+)\"[^>]*>(.*?)</string>", re.DOTALL)
+    values: Dict[str, str] = {}
+    for match in pattern.finditer(content):
+        values[match.group(1)] = match.group(2)
+    return values
+
+
+def parse_android_xml_values(path: Path) -> Dict[str, str]:
+    """Parse a Compose Android string XML file and return unescaped values."""
+    if not path.exists():
+        return {}
+
+    try:
+        root = ET.fromstring(path.read_text(encoding="utf-8"))
+    except ET.ParseError:
+        return {}
+
+    values: Dict[str, str] = {}
+    for elem in root.findall("string"):
+        name = elem.attrib.get("name")
+        if not name:
+            continue
+        values[name] = elem.text or ""
+    return values
+
+
+def sanitize_output_entries(
+    entries: Mapping[str, str], used: MutableMapping[str, str]
+) -> Dict[str, str]:
+    """Return entries with sanitized Android-safe names."""
+    sanitized: Dict[str, str] = {}
+    for name, value in entries.items():
+        safe_name = sanitize_resource_name(name, used)
+        sanitized[safe_name] = value
+    return sanitized
 
 
 def locale_to_dir(locale: str, source_language: str) -> str:
@@ -285,9 +339,24 @@ def write_strings_file(root: Path, locale_dir: str, values: Mapping[str, str], d
     output_file = output_dir / "strings.xml"
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    used_for_existing: Dict[str, str] = {}
+    existing_values = sanitize_output_entries(parse_existing_strings(output_file), used_for_existing)
+    compose_fallback = DEFAULT_FALLBACK_RESOURCES / locale_dir / "strings.xml"
+    if not compose_fallback.exists():
+        compose_fallback = DEFAULT_FALLBACK_RESOURCES / "values" / "strings.xml"
+
+    if compose_fallback.exists():
+        fallback_values = parse_android_xml_values(compose_fallback)
+        sanitized_fallback = sanitize_output_entries(fallback_values, used_for_existing)
+        for name, value in sanitized_fallback.items():
+            if name not in existing_values:
+                existing_values[name] = escape_android_string(value)
+
+    merged_values = {**existing_values, **values}
+
     lines = ['<?xml version="1.0" encoding="utf-8"?>', "<resources>"]
-    for name in sorted(values):
-        lines.append(f'    <string name="{name}">{values[name]}</string>')
+    for name in sorted(merged_values):
+        lines.append(f'    <string name="{name}">{merged_values[name]}</string>')
     lines.append("</resources>")
     content = "\n".join(lines) + "\n"
 
