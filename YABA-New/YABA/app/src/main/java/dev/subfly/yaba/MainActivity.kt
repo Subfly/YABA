@@ -5,14 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import dev.subfly.yaba.core.database.DatabaseProvider
+import dev.subfly.yaba.core.filesystem.access.FileAccessProvider
+import dev.subfly.yaba.core.filesystem.access.YabaFileAccessor
 import dev.subfly.yaba.ui.theme.YABATheme
 
 class MainActivity : ComponentActivity() {
@@ -25,7 +20,10 @@ class MainActivity : ComponentActivity() {
 
         splash.setKeepOnScreenCondition { keepSplash }
 
+        FileAccessProvider.initialize(this)
         DatabaseProvider.initialize(this)
+        YabaFileAccessor.register(this)
+
         keepSplash = false
 
         setContent {

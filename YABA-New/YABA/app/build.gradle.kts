@@ -65,6 +65,8 @@ dependencies {
     implementation(libs.kotlinx.datetime)
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.documentfile)
 }
 
 room3 {
