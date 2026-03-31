@@ -6,6 +6,8 @@
         android:name="android.hardware.camera"
         android:required="false" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"
@@ -28,6 +30,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver
+            android:name=".core.notifications.ReminderReceiver"
+            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

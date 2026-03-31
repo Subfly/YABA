@@ -8,6 +8,9 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import dev.subfly.yaba.core.database.DatabaseProvider
 import dev.subfly.yaba.core.filesystem.access.FileAccessProvider
 import dev.subfly.yaba.core.filesystem.access.YabaFileAccessor
+import dev.subfly.yaba.core.notifications.NotificationManager
+import dev.subfly.yaba.core.preferences.SettingsStores
+import dev.subfly.yaba.core.queue.CoreOperationQueue
 import dev.subfly.yaba.core.util.SvgImageLoader
 import dev.subfly.yaba.ui.theme.YABATheme
 
@@ -24,7 +27,10 @@ class MainActivity : ComponentActivity() {
         FileAccessProvider.initialize(this)
         DatabaseProvider.initialize(this)
         SvgImageLoader.initialize(this)
+        SettingsStores.initialize(this)
+        NotificationManager.initialize(this)
         YabaFileAccessor.register(this)
+        CoreOperationQueue.start()
 
         keepSplash = false
 
