@@ -1,3 +1,0 @@
-# Core
-
-Kotlin Multiplatform Library
