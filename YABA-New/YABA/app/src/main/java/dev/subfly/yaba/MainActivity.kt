@@ -8,6 +8,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import dev.subfly.yaba.core.database.DatabaseProvider
 import dev.subfly.yaba.core.filesystem.access.FileAccessProvider
 import dev.subfly.yaba.core.filesystem.access.YabaFileAccessor
+import dev.subfly.yaba.core.util.SvgImageLoader
 import dev.subfly.yaba.ui.theme.YABATheme
 
 class MainActivity : ComponentActivity() {
@@ -22,6 +23,7 @@ class MainActivity : ComponentActivity() {
 
         FileAccessProvider.initialize(this)
         DatabaseProvider.initialize(this)
+        SvgImageLoader.initialize(this)
         YabaFileAccessor.register(this)
 
         keepSplash = false

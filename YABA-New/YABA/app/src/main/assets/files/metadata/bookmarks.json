@@ -1,0 +1,135 @@
+{
+  "metadata": {
+    "id": "bookmarks",
+    "name": "Bookmarks",
+    "description": "Bookmarks stroke-rounded icons from HugeIcons",
+    "main_category": "bookmarks",
+    "icon_count": 41,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "all-bookmark"
+    },
+    {
+      "name": "bookmark-01"
+    },
+    {
+      "name": "bookmark-02"
+    },
+    {
+      "name": "bookmark-03"
+    },
+    {
+      "name": "bookmark-add-01"
+    },
+    {
+      "name": "bookmark-add-02"
+    },
+    {
+      "name": "bookmark-block-01"
+    },
+    {
+      "name": "bookmark-block-02"
+    },
+    {
+      "name": "bookmark-check-01"
+    },
+    {
+      "name": "bookmark-check-02"
+    },
+    {
+      "name": "bookmark-minus-01"
+    },
+    {
+      "name": "bookmark-minus-02"
+    },
+    {
+      "name": "bookmark-off-01"
+    },
+    {
+      "name": "bookmark-off-02"
+    },
+    {
+      "name": "bookmark-remove-01"
+    },
+    {
+      "name": "bookmark-remove-02"
+    },
+    {
+      "name": "collections-bookmark"
+    },
+    {
+      "name": "favourite"
+    },
+    {
+      "name": "favourite-circle"
+    },
+    {
+      "name": "favourite-square"
+    },
+    {
+      "name": "heart-add"
+    },
+    {
+      "name": "heart-check"
+    },
+    {
+      "name": "heart-remove"
+    },
+    {
+      "name": "heartbreak"
+    },
+    {
+      "name": "label"
+    },
+    {
+      "name": "label-important"
+    },
+    {
+      "name": "stack-star"
+    },
+    {
+      "name": "star"
+    },
+    {
+      "name": "star-circle"
+    },
+    {
+      "name": "star-half"
+    },
+    {
+      "name": "star-off"
+    },
+    {
+      "name": "star-square"
+    },
+    {
+      "name": "tag-01"
+    },
+    {
+      "name": "tag-02"
+    },
+    {
+      "name": "thumbs-down"
+    },
+    {
+      "name": "thumbs-down-ellipse"
+    },
+    {
+      "name": "thumbs-down-rectangle"
+    },
+    {
+      "name": "thumbs-up"
+    },
+    {
+      "name": "thumbs-up-down"
+    },
+    {
+      "name": "thumbs-up-ellipse"
+    },
+    {
+      "name": "thumbs-up-rectangle"
+    }
+  ]
+}

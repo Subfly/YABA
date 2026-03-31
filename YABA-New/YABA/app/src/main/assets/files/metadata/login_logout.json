@@ -1,0 +1,60 @@
+{
+  "metadata": {
+    "id": "login_logout",
+    "name": "Login Logout",
+    "description": "Login Logout stroke-rounded icons from HugeIcons",
+    "main_category": "login_logout",
+    "icon_count": 16,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "login-01"
+    },
+    {
+      "name": "login-02"
+    },
+    {
+      "name": "login-03"
+    },
+    {
+      "name": "login-circle-01"
+    },
+    {
+      "name": "login-circle-02"
+    },
+    {
+      "name": "login-square-01"
+    },
+    {
+      "name": "login-square-02"
+    },
+    {
+      "name": "logout-01"
+    },
+    {
+      "name": "logout-02"
+    },
+    {
+      "name": "logout-03"
+    },
+    {
+      "name": "logout-04"
+    },
+    {
+      "name": "logout-05"
+    },
+    {
+      "name": "logout-circle-01"
+    },
+    {
+      "name": "logout-circle-02"
+    },
+    {
+      "name": "logout-square-01"
+    },
+    {
+      "name": "logout-square-02"
+    }
+  ]
+}

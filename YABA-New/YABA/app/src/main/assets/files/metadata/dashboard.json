@@ -1,0 +1,84 @@
+{
+  "metadata": {
+    "id": "dashboard",
+    "name": "Dashboard",
+    "description": "Dashboard stroke-rounded icons from HugeIcons",
+    "main_category": "dashboard",
+    "icon_count": 24,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "dashboard-browsing"
+    },
+    {
+      "name": "dashboard-circle"
+    },
+    {
+      "name": "dashboard-circle-add"
+    },
+    {
+      "name": "dashboard-circle-edit"
+    },
+    {
+      "name": "dashboard-circle-remove"
+    },
+    {
+      "name": "dashboard-circle-settings"
+    },
+    {
+      "name": "dashboard-speed-01"
+    },
+    {
+      "name": "dashboard-speed-02"
+    },
+    {
+      "name": "dashboard-square-01"
+    },
+    {
+      "name": "dashboard-square-02"
+    },
+    {
+      "name": "dashboard-square-03"
+    },
+    {
+      "name": "dashboard-square-add"
+    },
+    {
+      "name": "dashboard-square-edit"
+    },
+    {
+      "name": "dashboard-square-remove"
+    },
+    {
+      "name": "dashboard-square-setting"
+    },
+    {
+      "name": "discover-circle"
+    },
+    {
+      "name": "discover-square"
+    },
+    {
+      "name": "sidebar-bottom"
+    },
+    {
+      "name": "sidebar-left"
+    },
+    {
+      "name": "sidebar-right"
+    },
+    {
+      "name": "sidebar-top"
+    },
+    {
+      "name": "wave"
+    },
+    {
+      "name": "wave-square"
+    },
+    {
+      "name": "wave-triangle"
+    }
+  ]
+}

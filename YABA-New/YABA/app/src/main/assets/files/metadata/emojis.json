@@ -1,0 +1,192 @@
+{
+  "metadata": {
+    "id": "emojis",
+    "name": "Emojis",
+    "description": "Emojis stroke-rounded icons from HugeIcons",
+    "main_category": "emojis",
+    "icon_count": 60,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "angle"
+    },
+    {
+      "name": "angry"
+    },
+    {
+      "name": "confused"
+    },
+    {
+      "name": "crazy"
+    },
+    {
+      "name": "crying"
+    },
+    {
+      "name": "dead"
+    },
+    {
+      "name": "displeased"
+    },
+    {
+      "name": "drooling"
+    },
+    {
+      "name": "evil"
+    },
+    {
+      "name": "flushed"
+    },
+    {
+      "name": "grimacing"
+    },
+    {
+      "name": "grinning"
+    },
+    {
+      "name": "happy"
+    },
+    {
+      "name": "happy-01"
+    },
+    {
+      "name": "in-love"
+    },
+    {
+      "name": "kid"
+    },
+    {
+      "name": "kissing"
+    },
+    {
+      "name": "laughing"
+    },
+    {
+      "name": "look-bottom"
+    },
+    {
+      "name": "look-left"
+    },
+    {
+      "name": "look-right"
+    },
+    {
+      "name": "look-top"
+    },
+    {
+      "name": "medical-mask"
+    },
+    {
+      "name": "meh"
+    },
+    {
+      "name": "monocle"
+    },
+    {
+      "name": "mute"
+    },
+    {
+      "name": "nerd"
+    },
+    {
+      "name": "neutral"
+    },
+    {
+      "name": "pensive"
+    },
+    {
+      "name": "relieved-01"
+    },
+    {
+      "name": "relieved-02"
+    },
+    {
+      "name": "rubber-duck"
+    },
+    {
+      "name": "sad-01"
+    },
+    {
+      "name": "sad-02"
+    },
+    {
+      "name": "sad-dizzy"
+    },
+    {
+      "name": "senseless"
+    },
+    {
+      "name": "shoked"
+    },
+    {
+      "name": "sillence"
+    },
+    {
+      "name": "sing-left"
+    },
+    {
+      "name": "sing-right"
+    },
+    {
+      "name": "sleeping"
+    },
+    {
+      "name": "smart"
+    },
+    {
+      "name": "smile"
+    },
+    {
+      "name": "smile-dizzy"
+    },
+    {
+      "name": "star-face"
+    },
+    {
+      "name": "sunglasses"
+    },
+    {
+      "name": "surprise"
+    },
+    {
+      "name": "suspicious"
+    },
+    {
+      "name": "tired-01"
+    },
+    {
+      "name": "tired-02"
+    },
+    {
+      "name": "tongue"
+    },
+    {
+      "name": "tongue-wink-left"
+    },
+    {
+      "name": "tongue-wink-right"
+    },
+    {
+      "name": "unamused"
+    },
+    {
+      "name": "unhappy"
+    },
+    {
+      "name": "vomiting"
+    },
+    {
+      "name": "wink"
+    },
+    {
+      "name": "winking"
+    },
+    {
+      "name": "worry"
+    },
+    {
+      "name": "zzz"
+    }
+  ]
+}

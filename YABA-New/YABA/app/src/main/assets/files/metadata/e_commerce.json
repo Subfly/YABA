@@ -1,0 +1,453 @@
+{
+  "metadata": {
+    "id": "e_commerce",
+    "name": "E Commerce",
+    "description": "E Commerce stroke-rounded icons from HugeIcons",
+    "main_category": "e_commerce",
+    "icon_count": 147,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "affiliate"
+    },
+    {
+      "name": "bar-code-01"
+    },
+    {
+      "name": "bar-code-02"
+    },
+    {
+      "name": "cargo-ship"
+    },
+    {
+      "name": "container-truck-01"
+    },
+    {
+      "name": "container-truck-02"
+    },
+    {
+      "name": "coupon-01"
+    },
+    {
+      "name": "coupon-02"
+    },
+    {
+      "name": "coupon-03"
+    },
+    {
+      "name": "coupon-percent"
+    },
+    {
+      "name": "customer-support"
+    },
+    {
+      "name": "delivered-sent"
+    },
+    {
+      "name": "delivery-box-01"
+    },
+    {
+      "name": "delivery-box-02"
+    },
+    {
+      "name": "delivery-delay-01"
+    },
+    {
+      "name": "delivery-delay-02"
+    },
+    {
+      "name": "delivery-return-01"
+    },
+    {
+      "name": "delivery-return-02"
+    },
+    {
+      "name": "delivery-secure-01"
+    },
+    {
+      "name": "delivery-secure-02"
+    },
+    {
+      "name": "delivery-sent-01"
+    },
+    {
+      "name": "delivery-sent-02"
+    },
+    {
+      "name": "delivery-tracking-01"
+    },
+    {
+      "name": "delivery-tracking-02"
+    },
+    {
+      "name": "delivery-truck-01"
+    },
+    {
+      "name": "delivery-truck-02"
+    },
+    {
+      "name": "delivery-view-01"
+    },
+    {
+      "name": "delivery-view-02"
+    },
+    {
+      "name": "discount"
+    },
+    {
+      "name": "discount-tag-01"
+    },
+    {
+      "name": "discount-tag-02"
+    },
+    {
+      "name": "distribution"
+    },
+    {
+      "name": "gift-card"
+    },
+    {
+      "name": "hot-price"
+    },
+    {
+      "name": "invoice-01"
+    },
+    {
+      "name": "invoice-02"
+    },
+    {
+      "name": "invoice-03"
+    },
+    {
+      "name": "invoice-04"
+    },
+    {
+      "name": "limit-order"
+    },
+    {
+      "name": "loyalty-card"
+    },
+    {
+      "name": "market-order"
+    },
+    {
+      "name": "marketing"
+    },
+    {
+      "name": "package"
+    },
+    {
+      "name": "package-01"
+    },
+    {
+      "name": "package-02"
+    },
+    {
+      "name": "package-03"
+    },
+    {
+      "name": "package-add"
+    },
+    {
+      "name": "package-add-01"
+    },
+    {
+      "name": "package-delivered"
+    },
+    {
+      "name": "package-dimensions-01"
+    },
+    {
+      "name": "package-dimensions-02"
+    },
+    {
+      "name": "package-moving"
+    },
+    {
+      "name": "package-moving-01"
+    },
+    {
+      "name": "package-open"
+    },
+    {
+      "name": "package-out-of-stock"
+    },
+    {
+      "name": "package-process"
+    },
+    {
+      "name": "package-process-01"
+    },
+    {
+      "name": "package-receive"
+    },
+    {
+      "name": "package-receive-01"
+    },
+    {
+      "name": "package-remove"
+    },
+    {
+      "name": "package-remove-01"
+    },
+    {
+      "name": "package-search"
+    },
+    {
+      "name": "package-search-01"
+    },
+    {
+      "name": "package-sent"
+    },
+    {
+      "name": "package-sent-01"
+    },
+    {
+      "name": "packaging-01"
+    },
+    {
+      "name": "product-loading"
+    },
+    {
+      "name": "promotion"
+    },
+    {
+      "name": "receipt-dollar"
+    },
+    {
+      "name": "return-request"
+    },
+    {
+      "name": "safe-delivery-01"
+    },
+    {
+      "name": "safe-delivery-02"
+    },
+    {
+      "name": "sale-tag-01"
+    },
+    {
+      "name": "sale-tag-02"
+    },
+    {
+      "name": "shipment-tracking"
+    },
+    {
+      "name": "shipping-loading"
+    },
+    {
+      "name": "shipping-truck-01"
+    },
+    {
+      "name": "shipping-truck-02"
+    },
+    {
+      "name": "shop-sign"
+    },
+    {
+      "name": "shopping-bag-01"
+    },
+    {
+      "name": "shopping-bag-02"
+    },
+    {
+      "name": "shopping-bag-03"
+    },
+    {
+      "name": "shopping-bag-add"
+    },
+    {
+      "name": "shopping-bag-check"
+    },
+    {
+      "name": "shopping-bag-favorite"
+    },
+    {
+      "name": "shopping-bag-remove"
+    },
+    {
+      "name": "shopping-basket-01"
+    },
+    {
+      "name": "shopping-basket-02"
+    },
+    {
+      "name": "shopping-basket-03"
+    },
+    {
+      "name": "shopping-basket-add-01"
+    },
+    {
+      "name": "shopping-basket-add-02"
+    },
+    {
+      "name": "shopping-basket-add-03"
+    },
+    {
+      "name": "shopping-basket-check-in-01"
+    },
+    {
+      "name": "shopping-basket-check-in-02"
+    },
+    {
+      "name": "shopping-basket-check-in-03"
+    },
+    {
+      "name": "shopping-basket-check-out-01"
+    },
+    {
+      "name": "shopping-basket-check-out-02"
+    },
+    {
+      "name": "shopping-basket-check-out-03"
+    },
+    {
+      "name": "shopping-basket-done-01"
+    },
+    {
+      "name": "shopping-basket-done-02"
+    },
+    {
+      "name": "shopping-basket-done-03"
+    },
+    {
+      "name": "shopping-basket-favorite-01"
+    },
+    {
+      "name": "shopping-basket-favorite-02"
+    },
+    {
+      "name": "shopping-basket-favorite-03"
+    },
+    {
+      "name": "shopping-basket-remove-01"
+    },
+    {
+      "name": "shopping-basket-remove-02"
+    },
+    {
+      "name": "shopping-basket-remove-03"
+    },
+    {
+      "name": "shopping-basket-secure-01"
+    },
+    {
+      "name": "shopping-basket-secure-02"
+    },
+    {
+      "name": "shopping-basket-secure-03"
+    },
+    {
+      "name": "shopping-cart-01"
+    },
+    {
+      "name": "shopping-cart-02"
+    },
+    {
+      "name": "shopping-cart-add-01"
+    },
+    {
+      "name": "shopping-cart-add-02"
+    },
+    {
+      "name": "shopping-cart-check-01"
+    },
+    {
+      "name": "shopping-cart-check-02"
+    },
+    {
+      "name": "shopping-cart-check-in-01"
+    },
+    {
+      "name": "shopping-cart-check-in-02"
+    },
+    {
+      "name": "shopping-cart-check-out-01"
+    },
+    {
+      "name": "shopping-cart-check-out-02"
+    },
+    {
+      "name": "shopping-cart-favorite-01"
+    },
+    {
+      "name": "shopping-cart-favorite-02"
+    },
+    {
+      "name": "shopping-cart-remove-01"
+    },
+    {
+      "name": "shopping-cart-remove-02"
+    },
+    {
+      "name": "stop-loss-order"
+    },
+    {
+      "name": "store-01"
+    },
+    {
+      "name": "store-02"
+    },
+    {
+      "name": "store-03"
+    },
+    {
+      "name": "store-04"
+    },
+    {
+      "name": "store-add-01"
+    },
+    {
+      "name": "store-add-02"
+    },
+    {
+      "name": "store-location-01"
+    },
+    {
+      "name": "store-location-02"
+    },
+    {
+      "name": "store-management-01"
+    },
+    {
+      "name": "store-management-02"
+    },
+    {
+      "name": "store-remove-01"
+    },
+    {
+      "name": "store-remove-02"
+    },
+    {
+      "name": "tags"
+    },
+    {
+      "name": "ticket-01"
+    },
+    {
+      "name": "ticket-02"
+    },
+    {
+      "name": "ticket-03"
+    },
+    {
+      "name": "ticket-star"
+    },
+    {
+      "name": "transaction"
+    },
+    {
+      "name": "trolley-01"
+    },
+    {
+      "name": "trolley-02"
+    },
+    {
+      "name": "voucher"
+    },
+    {
+      "name": "warehouse"
+    }
+  ]
+}

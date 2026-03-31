@@ -1,0 +1,231 @@
+{
+  "metadata": {
+    "id": "furnitures",
+    "name": "Furnitures",
+    "description": "Furnitures stroke-rounded icons from HugeIcons",
+    "main_category": "furnitures",
+    "icon_count": 73,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "baby-bed-01"
+    },
+    {
+      "name": "baby-bed-02"
+    },
+    {
+      "name": "bathtub-01"
+    },
+    {
+      "name": "bathtub-02"
+    },
+    {
+      "name": "bed"
+    },
+    {
+      "name": "bed-bunk"
+    },
+    {
+      "name": "bed-double"
+    },
+    {
+      "name": "bed-single-01"
+    },
+    {
+      "name": "bed-single-02"
+    },
+    {
+      "name": "bookshelf-01"
+    },
+    {
+      "name": "bookshelf-02"
+    },
+    {
+      "name": "bookshelf-03"
+    },
+    {
+      "name": "cabinet-01"
+    },
+    {
+      "name": "cabinet-02"
+    },
+    {
+      "name": "cabinet-03"
+    },
+    {
+      "name": "cabinet-04"
+    },
+    {
+      "name": "cactus"
+    },
+    {
+      "name": "candelier-01"
+    },
+    {
+      "name": "candelier-02"
+    },
+    {
+      "name": "chair-01"
+    },
+    {
+      "name": "chair-02"
+    },
+    {
+      "name": "chair-03"
+    },
+    {
+      "name": "chair-04"
+    },
+    {
+      "name": "chair-05"
+    },
+    {
+      "name": "chair-barber"
+    },
+    {
+      "name": "cleaning-bucket"
+    },
+    {
+      "name": "computer-desk-01"
+    },
+    {
+      "name": "computer-desk-02"
+    },
+    {
+      "name": "computer-desk-03"
+    },
+    {
+      "name": "curtains"
+    },
+    {
+      "name": "desk-01"
+    },
+    {
+      "name": "desk-02"
+    },
+    {
+      "name": "dining-table"
+    },
+    {
+      "name": "door"
+    },
+    {
+      "name": "dressing-table-01"
+    },
+    {
+      "name": "dressing-table-02"
+    },
+    {
+      "name": "dressing-table-03"
+    },
+    {
+      "name": "flower-pot"
+    },
+    {
+      "name": "garage"
+    },
+    {
+      "name": "hanging-clock"
+    },
+    {
+      "name": "hot-tube"
+    },
+    {
+      "name": "lamp 04"
+    },
+    {
+      "name": "lamp-01"
+    },
+    {
+      "name": "lamp-02"
+    },
+    {
+      "name": "lamp-03"
+    },
+    {
+      "name": "lamp-05"
+    },
+    {
+      "name": "mirror"
+    },
+    {
+      "name": "office-chair"
+    },
+    {
+      "name": "rocking-chair"
+    },
+    {
+      "name": "sink-01"
+    },
+    {
+      "name": "sink-02"
+    },
+    {
+      "name": "sofa-01"
+    },
+    {
+      "name": "sofa-02"
+    },
+    {
+      "name": "sofa-03"
+    },
+    {
+      "name": "sofa-single"
+    },
+    {
+      "name": "study-desk"
+    },
+    {
+      "name": "table-01"
+    },
+    {
+      "name": "table-02"
+    },
+    {
+      "name": "table-03"
+    },
+    {
+      "name": "table-lamp-01"
+    },
+    {
+      "name": "table-lamp-02"
+    },
+    {
+      "name": "table-round"
+    },
+    {
+      "name": "television-table"
+    },
+    {
+      "name": "terrace"
+    },
+    {
+      "name": "toilet-01"
+    },
+    {
+      "name": "toilet-02"
+    },
+    {
+      "name": "vacuum-cleaner"
+    },
+    {
+      "name": "vintage-clock"
+    },
+    {
+      "name": "wall-lamp"
+    },
+    {
+      "name": "wardrobe-01"
+    },
+    {
+      "name": "wardrobe-02"
+    },
+    {
+      "name": "wardrobe-03"
+    },
+    {
+      "name": "wardrobe-04"
+    }
+  ]
+}

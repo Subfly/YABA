@@ -1,0 +1,96 @@
+{
+  "metadata": {
+    "id": "menu",
+    "name": "Menu",
+    "description": "Menu stroke-rounded icons from HugeIcons",
+    "main_category": "menu",
+    "icon_count": 28,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "menu-01"
+    },
+    {
+      "name": "menu-02"
+    },
+    {
+      "name": "menu-03"
+    },
+    {
+      "name": "menu-04"
+    },
+    {
+      "name": "menu-05"
+    },
+    {
+      "name": "menu-06"
+    },
+    {
+      "name": "menu-07"
+    },
+    {
+      "name": "menu-08"
+    },
+    {
+      "name": "menu-09"
+    },
+    {
+      "name": "menu-10"
+    },
+    {
+      "name": "menu-11"
+    },
+    {
+      "name": "menu-circle"
+    },
+    {
+      "name": "menu-collapse"
+    },
+    {
+      "name": "menu-square"
+    },
+    {
+      "name": "menu-two-line"
+    },
+    {
+      "name": "more-01"
+    },
+    {
+      "name": "more-02"
+    },
+    {
+      "name": "more-03"
+    },
+    {
+      "name": "more-horizontal"
+    },
+    {
+      "name": "more-horizontal-circle-01"
+    },
+    {
+      "name": "more-horizontal-circle-02"
+    },
+    {
+      "name": "more-horizontal-square-01"
+    },
+    {
+      "name": "more-horizontal-square-02"
+    },
+    {
+      "name": "more-horizontal-square-02-1"
+    },
+    {
+      "name": "more-vertical"
+    },
+    {
+      "name": "more-vertical-circle-01"
+    },
+    {
+      "name": "more-vertical-circle-02"
+    },
+    {
+      "name": "more-vertical-square-02"
+    }
+  ]
+}
