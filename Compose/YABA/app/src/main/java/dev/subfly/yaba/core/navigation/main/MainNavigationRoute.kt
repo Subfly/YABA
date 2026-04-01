@@ -19,6 +19,7 @@ val detailNavigationConfig = SavedStateConfiguration {
             subclass(TagDetailRoute::class, TagDetailRoute.serializer())
             subclass(LinkDetailRoute::class, LinkDetailRoute.serializer())
             subclass(NoteDetailRoute::class, NoteDetailRoute.serializer())
+            subclass(CanvasDetailRoute::class, CanvasDetailRoute.serializer())
             subclass(ImageDetailRoute::class, ImageDetailRoute.serializer())
             subclass(DocDetailRoute::class, DocDetailRoute.serializer())
         }
@@ -55,6 +56,12 @@ data class LinkDetailRoute(
 
 @Serializable
 data class NoteDetailRoute(
+    val routeId: String = Uuid.generateV4().toString(),
+    val bookmarkId: String,
+): NavKey
+
+@Serializable
+data class CanvasDetailRoute(
     val routeId: String = Uuid.generateV4().toString(),
     val bookmarkId: String,
 ): NavKey

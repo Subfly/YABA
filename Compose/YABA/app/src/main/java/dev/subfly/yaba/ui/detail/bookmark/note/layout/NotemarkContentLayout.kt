@@ -46,6 +46,7 @@ import dev.subfly.yaba.core.navigation.creation.NotemarkMentionActionSheetRoute
 import dev.subfly.yaba.core.navigation.creation.NotemarkMentionSheetRoute
 import dev.subfly.yaba.core.navigation.creation.NotemarkTableCreationRoute
 import dev.subfly.yaba.core.navigation.main.DocDetailRoute
+import dev.subfly.yaba.core.navigation.main.CanvasDetailRoute
 import dev.subfly.yaba.core.navigation.main.ImageDetailRoute
 import dev.subfly.yaba.core.navigation.main.LinkDetailRoute
 import dev.subfly.yaba.core.navigation.main.NoteDetailRoute
@@ -173,6 +174,7 @@ internal fun NotemarkContentLayout(
             BookmarkKind.NOTE -> NoteDetailRoute(bookmarkId = bookmarkId)
             BookmarkKind.IMAGE -> ImageDetailRoute(bookmarkId = bookmarkId)
             BookmarkKind.FILE -> DocDetailRoute(bookmarkId = bookmarkId)
+            BookmarkKind.CANVAS -> CanvasDetailRoute(bookmarkId = bookmarkId)
         }
         navigator.add(route)
     }

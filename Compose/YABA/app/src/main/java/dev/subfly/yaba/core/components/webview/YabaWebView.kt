@@ -7,6 +7,7 @@ import dev.subfly.yaba.core.webview.InlineMentionTapEvent
 import dev.subfly.yaba.core.webview.MathTapEvent
 import dev.subfly.yaba.core.webview.WebViewEditorBridge
 import dev.subfly.yaba.core.webview.WebViewReaderBridge
+import dev.subfly.yaba.core.webview.WebViewCanvasBridge
 import dev.subfly.yaba.core.webview.YabaWebFeature
 import dev.subfly.yaba.core.webview.YabaWebHostEvent
 import dev.subfly.yaba.core.webview.YabaWebScrollDirection
@@ -27,6 +28,7 @@ fun YabaWebView(
     onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit = {},
     onReaderBridgeReady: (WebViewReaderBridge?) -> Unit = {},
     onEditorBridgeReady: (WebViewEditorBridge?) -> Unit = {},
+    onCanvasBridgeReady: (WebViewCanvasBridge?) -> Unit = {},
     onAnnotationTap: (String) -> Unit = {},
     onMathTap: (MathTapEvent) -> Unit = {},
     onInlineLinkTap: (InlineLinkTapEvent) -> Unit = {},
@@ -41,6 +43,7 @@ fun YabaWebView(
         onScrollDirectionChanged = onScrollDirectionChanged,
         onReaderBridgeReady = onReaderBridgeReady,
         onEditorBridgeReady = onEditorBridgeReady,
+        onCanvasBridgeReady = onCanvasBridgeReady,
         onAnnotationTap = onAnnotationTap,
         onMathTap = onMathTap,
         onInlineLinkTap = onInlineLinkTap,
@@ -58,6 +61,7 @@ internal fun YabaWebViewHost(
     onScrollDirectionChanged: (YabaWebScrollDirection) -> Unit,
     onReaderBridgeReady: (WebViewReaderBridge?) -> Unit,
     onEditorBridgeReady: (WebViewEditorBridge?) -> Unit,
+    onCanvasBridgeReady: (WebViewCanvasBridge?) -> Unit,
     onAnnotationTap: (String) -> Unit,
     onMathTap: (MathTapEvent) -> Unit,
     onInlineLinkTap: (InlineLinkTapEvent) -> Unit,
@@ -89,6 +93,15 @@ internal fun YabaWebViewHost(
                 onMathTap = onMathTap,
                 onInlineLinkTap = onInlineLinkTap,
                 onInlineMentionTap = onInlineMentionTap,
+            )
+        is YabaWebFeature.Canvas ->
+            YabaCanvasFeatureHost(
+                modifier = modifier,
+                baseUrl = baseUrl,
+                feature = f,
+                onHostEvent = onHostEvent,
+                onUrlClick = onUrlClick,
+                onCanvasBridgeReady = onCanvasBridgeReady,
             )
         is YabaWebFeature.HtmlConverter ->
             YabaHtmlConverterFeatureHost(

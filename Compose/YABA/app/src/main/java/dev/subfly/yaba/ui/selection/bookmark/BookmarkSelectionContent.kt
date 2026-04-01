@@ -47,6 +47,7 @@ import dev.subfly.yaba.core.navigation.creation.DocmarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.ImagemarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.LinkmarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.NotemarkCreationRoute
+import dev.subfly.yaba.core.navigation.creation.CanvmarkCreationRoute
 import dev.subfly.yaba.util.BookmarkPrivatePasswordEventEffect
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
@@ -84,6 +85,7 @@ fun BookmarkSelectionContent(selectedBookmarkId: String?) {
                 BookmarkKind.NOTE -> creationNavigator.add(NotemarkCreationRoute(bookmarkId = model.id))
                 BookmarkKind.IMAGE -> creationNavigator.add(ImagemarkCreationRoute(bookmarkId = model.id))
                 BookmarkKind.FILE -> creationNavigator.add(DocmarkCreationRoute(bookmarkId = model.id))
+                BookmarkKind.CANVAS -> creationNavigator.add(CanvmarkCreationRoute(bookmarkId = model.id))
             }
             appStateManager.onShowCreationContent()
         },

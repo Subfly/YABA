@@ -12,6 +12,8 @@ object WebComponentUris {
 
     fun getEditorUri(): String = "${ASSET_PREFIX}${WEB_COMPONENTS_BASE}/editor.html"
 
+    fun getCanvasUri(): String = "${ASSET_PREFIX}${WEB_COMPONENTS_BASE}/canvas.html"
+
     fun getConverterUri(): String = "${ASSET_PREFIX}${WEB_COMPONENTS_BASE}/converter.html"
 
     fun getPdfViewerUri(): String = "${ASSET_PREFIX}${WEB_COMPONENTS_BASE}/pdf-viewer.html"

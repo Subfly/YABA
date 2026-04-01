@@ -32,5 +32,9 @@ sealed interface YabaWebHostEvent {
 
     data object NoteEditorIdleForAutosave : YabaWebHostEvent
 
+    data object CanvasIdleForAutosave : YabaWebHostEvent
+
+    data class CanvasMetrics(val metrics: CanvasHostMetrics) : YabaWebHostEvent
+
     data class TableOfContentsChanged(val toc: Toc?) : YabaWebHostEvent
 }

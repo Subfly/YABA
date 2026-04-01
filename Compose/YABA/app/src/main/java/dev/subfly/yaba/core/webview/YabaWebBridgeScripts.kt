@@ -24,4 +24,10 @@ object YabaWebBridgeScripts {
 
     const val EPUB_BRIDGE_READY_LOOSE: String =
         "(function(){ try { return !!(window.YabaEpubBridge && window.YabaEpubBridge.isReady); } catch(e){ return false; } })();"
+
+    const val CANVAS_BRIDGE_READY: String =
+        "(function(){ try { return !!(window.YabaCanvasBridge && window.YabaCanvasBridge.isReady && window.YabaCanvasBridge.isReady()); } catch(e){ return false; } })();"
+
+    const val CANVAS_BRIDGE_READY_LOOSE: String =
+        "(function(){ try { return !!(window.YabaCanvasBridge && window.YabaCanvasBridge.isReady); } catch(e){ return false; } })();"
 }

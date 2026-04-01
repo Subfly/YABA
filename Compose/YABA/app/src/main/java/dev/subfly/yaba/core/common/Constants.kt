@@ -76,50 +76,50 @@ object CoreConstants {
             const val ASSETS_DIR = "assets"
 
             fun linkImagePath(
-                    bookmarkId: String,
-                    extension: String = "jpeg",
+                bookmarkId: String,
+                extension: String = "jpeg",
             ): String =
-                    join(
-                            bookmarkFolder(bookmarkId),
-                            "$LINK_IMAGE_BASENAME.$extension",
-                    )
+                join(
+                    bookmarkFolder(bookmarkId),
+                    "$LINK_IMAGE_BASENAME.$extension",
+                )
 
             fun domainIconPath(
-                    bookmarkId: String,
-                    extension: String = "png",
+                bookmarkId: String,
+                extension: String = "png",
             ): String =
-                    join(
-                            bookmarkFolder(bookmarkId),
-                            "$DOMAIN_ICON_BASENAME.$extension",
-                    )
+                join(
+                    bookmarkFolder(bookmarkId),
+                    "$DOMAIN_ICON_BASENAME.$extension",
+                )
 
             fun readableDir(bookmarkId: String): String =
-                    join(bookmarkFolder(bookmarkId), READABLE_DIR)
+                join(bookmarkFolder(bookmarkId), READABLE_DIR)
 
             /**
              * Path for readable document JSON (linkmarks + notemark mirror):
              * readable/<versionId>.json
              */
             fun readableVersionPath(bookmarkId: String, versionId: String): String =
-                    join(readableDir(bookmarkId), "$versionId.json")
+                join(readableDir(bookmarkId), "$versionId.json")
 
             fun assetsDir(bookmarkId: String): String = join(bookmarkFolder(bookmarkId), ASSETS_DIR)
 
             fun assetPath(bookmarkId: String, assetId: String, extension: String): String =
-                    join(assetsDir(bookmarkId), "$assetId.$extension")
+                join(assetsDir(bookmarkId), "$assetId.$extension")
         }
 
         object Imagemark {
             const val IMAGE_BASENAME = "image"
 
             fun imagePath(
-                    bookmarkId: String,
-                    extension: String = "jpeg",
+                bookmarkId: String,
+                extension: String = "jpeg",
             ): String =
-                    join(
-                            bookmarkFolder(bookmarkId),
-                            "$IMAGE_BASENAME.$extension",
-                    )
+                join(
+                    bookmarkFolder(bookmarkId),
+                    "$IMAGE_BASENAME.$extension",
+                )
         }
 
         object Docmark {
@@ -129,14 +129,14 @@ object CoreConstants {
 
             /** On-disk document: `bookmarks/<id>/file/document.<ext>`. */
             fun documentPath(
-                    bookmarkId: String,
-                    extension: String = DEFAULT_DOC_EXTENSION,
+                bookmarkId: String,
+                extension: String = DEFAULT_DOC_EXTENSION,
             ): String =
-                    join(
-                            bookmarkFolder(bookmarkId),
-                            DOC_SUBDIR,
-                            "$DOC_BASENAME.$extension",
-                    )
+                join(
+                    bookmarkFolder(bookmarkId),
+                    DOC_SUBDIR,
+                    "$DOC_BASENAME.$extension",
+                )
         }
 
         object Notemark {
@@ -145,27 +145,40 @@ object CoreConstants {
 
             /** Canonical note body (document JSON): bookmarks/<id>/note/body.json */
             fun documentBodyPath(bookmarkId: String, extension: String = "json"): String =
-                    join(
-                            bookmarkFolder(bookmarkId),
-                            NOTE_SUBDIR,
-                            "$NOTE_BODY_BASENAME.$extension",
-                    )
+                join(
+                    bookmarkFolder(bookmarkId),
+                    NOTE_SUBDIR,
+                    "$NOTE_BODY_BASENAME.$extension",
+                )
+        }
+
+        object Canvmark {
+            private const val CANVAS_SUBDIR = "canvas"
+            private const val SCENE_BASENAME = "scene"
+
+            /** Canonical canvmark scene JSON: bookmarks/<id>/canvas/scene.json */
+            fun scenePath(bookmarkId: String, extension: String = "json"): String =
+                join(
+                    bookmarkFolder(bookmarkId),
+                    CANVAS_SUBDIR,
+                    "$SCENE_BASENAME.$extension",
+                )
         }
 
         fun bookmarkFolderPath(
-                bookmarkId: String,
-                subtypeDirectory: String? = null,
+            bookmarkId: String,
+            subtypeDirectory: String? = null,
         ): String =
-                join(
-                        BOOKMARKS_DIR,
-                        bookmarkId,
-                        subtypeDirectory,
-                )
+            join(
+                BOOKMARKS_DIR,
+                bookmarkId,
+                subtypeDirectory,
+            )
 
         fun join(vararg segments: String?): String =
-                segments.filterNot { it.isNullOrBlank() }.joinToString(separator = "/") {
-                    it!!.trim('/')
-                }
+            segments.filterNot { it.isNullOrBlank() }.joinToString(separator = "/") {
+                it!!.trim('/')
+            }
     }
 
     /**
@@ -218,7 +231,7 @@ object CoreConstants {
         const val OFFICIAL_REDDIT = "https://www.reddit.com/r/YetAnotherBookmarkApp/"
         const val FEEDBACK_EMAIL = "mailto:alitaha@subfly.dev"
         const val STORE_LINK =
-                "https://apps.apple.com/app/yaba-yet-another-bookmark-app/id6747272081"
+            "https://apps.apple.com/app/yaba-yet-another-bookmark-app/id6747272081"
         const val UPDATE_1_2 = "https://github.com/Subfly/YABA/discussions/4"
         const val UPDATE_1_3 = "https://github.com/Subfly/YABA/discussions/6"
         const val UPDATE_1_4 = "https://github.com/Subfly/YABA/discussions/8"

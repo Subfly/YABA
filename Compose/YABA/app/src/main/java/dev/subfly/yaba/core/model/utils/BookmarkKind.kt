@@ -5,7 +5,8 @@ enum class BookmarkKind(val code: Int) {
     LINK(0),
     NOTE(1),
     IMAGE(2),
-    FILE(3);
+    FILE(3),
+    CANVAS(4);
 
     companion object {
         fun fromCode(code: Int): BookmarkKind = entries.firstOrNull { it.code == code } ?: LINK
@@ -18,4 +19,5 @@ fun BookmarkKind.uiIconName(): String =
         BookmarkKind.NOTE -> "note-edit"
         BookmarkKind.IMAGE -> "image-03"
         BookmarkKind.FILE -> "doc-02"
+        BookmarkKind.CANVAS -> "canvas"
     }

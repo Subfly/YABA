@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import dev.subfly.yaba.core.components.YabaIcon
 import dev.subfly.yaba.core.navigation.creation.BookmarkCreationRoute
+import dev.subfly.yaba.core.navigation.creation.CanvmarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.DocmarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.ImagemarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.LinkmarkCreationRoute
@@ -129,6 +130,15 @@ private fun SelectionContent() {
                 creationNavigator.add(DocmarkCreationRoute(bookmarkId = null))
                 creationNavigator.removeIf { it is BookmarkCreationRoute }
             },
+        ),
+        SelectionContentItem(
+            label = "New Canvas",
+            iconName = "canvas",
+            color = YabaColor.ORANGE,
+            onClick = {
+                creationNavigator.add(CanvmarkCreationRoute(bookmarkId = null))
+                creationNavigator.removeIf { it is BookmarkCreationRoute }
+            },
         )
     ).fastForEachIndexed { index, item ->
         SegmentedListItem(
@@ -136,7 +146,7 @@ private fun SelectionContent() {
                 .padding(horizontal = 12.dp)
                 .clip(RoundedCornerShape(12.dp)),
             onClick = item.onClick,
-            shapes = ListItemDefaults.segmentedShapes(index = index, count = 4),
+            shapes = ListItemDefaults.segmentedShapes(index = index, count = 5),
             content = { Text(item.label) },
             leadingContent = {
                 YabaIcon(

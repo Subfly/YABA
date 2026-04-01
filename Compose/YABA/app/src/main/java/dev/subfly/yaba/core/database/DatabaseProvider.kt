@@ -3,6 +3,7 @@ package dev.subfly.yaba.core.database
 import android.content.Context
 import androidx.room3.Room
 import dev.subfly.yaba.core.database.dao.BookmarkDao
+import dev.subfly.yaba.core.database.dao.CanvasBookmarkDao
 import dev.subfly.yaba.core.database.dao.DocBookmarkDao
 import dev.subfly.yaba.core.database.dao.FolderDao
 import dev.subfly.yaba.core.database.dao.AnnotationDao
@@ -71,6 +72,9 @@ object DatabaseProvider {
 
     val noteBookmarkDao: NoteBookmarkDao
         get() = database().noteBookmarkDao()
+
+    val canvasBookmarkDao: CanvasBookmarkDao
+        get() = database().canvasBookmarkDao()
 
     val tagBookmarkDao: TagBookmarkDao
         get() = database().tagBookmarkDao()

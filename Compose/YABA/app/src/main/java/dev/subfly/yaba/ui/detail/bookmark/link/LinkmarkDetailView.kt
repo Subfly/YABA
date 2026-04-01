@@ -22,6 +22,8 @@ import dev.subfly.yaba.core.navigation.creation.DocmarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.ImagemarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.LinkmarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.NotemarkCreationRoute
+import dev.subfly.yaba.core.navigation.creation.CanvmarkCreationRoute
+import dev.subfly.yaba.core.navigation.main.CanvasDetailRoute
 import dev.subfly.yaba.core.navigation.main.DocDetailRoute
 import dev.subfly.yaba.core.navigation.main.ImageDetailRoute
 import dev.subfly.yaba.core.navigation.main.LinkDetailRoute
@@ -67,6 +69,7 @@ fun LinkmarkDetailView(
                     BookmarkKind.NOTE -> NoteDetailRoute(bookmarkId = model.id)
                     BookmarkKind.IMAGE -> ImageDetailRoute(bookmarkId = model.id)
                     BookmarkKind.FILE -> DocDetailRoute(bookmarkId = model.id)
+                    BookmarkKind.CANVAS -> CanvasDetailRoute(bookmarkId = model.id)
                 },
             )
         },
@@ -76,6 +79,7 @@ fun LinkmarkDetailView(
                 BookmarkKind.NOTE -> creationNavigator.add(NotemarkCreationRoute(bookmarkId = model.id))
                 BookmarkKind.IMAGE -> creationNavigator.add(ImagemarkCreationRoute(bookmarkId = model.id))
                 BookmarkKind.FILE -> creationNavigator.add(DocmarkCreationRoute(bookmarkId = model.id))
+                BookmarkKind.CANVAS -> creationNavigator.add(CanvmarkCreationRoute(bookmarkId = model.id))
             }
             appStateManager.onShowCreationContent()
         },

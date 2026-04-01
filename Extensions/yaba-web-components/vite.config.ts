@@ -30,6 +30,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         editor: resolve(__dirname, "editor.html"),
+        canvas: resolve(__dirname, "canvas.html"),
         viewer: resolve(__dirname, "viewer.html"),
         converter: resolve(__dirname, "converter.html"),
         "pdf-viewer": resolve(__dirname, "pdf-viewer.html"),

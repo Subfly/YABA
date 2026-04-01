@@ -4,6 +4,7 @@ import dev.subfly.yaba.core.webview.EditorFormattingState
 import dev.subfly.yaba.core.webview.InlineLinkTapEvent
 import dev.subfly.yaba.core.webview.InlineMentionTapEvent
 import dev.subfly.yaba.core.webview.MathTapEvent
+import dev.subfly.yaba.core.webview.CanvasHostMetrics
 import dev.subfly.yaba.core.webview.Toc
 import dev.subfly.yaba.core.webview.TocItem
 import dev.subfly.yaba.core.webview.WebShellLoadResult
@@ -31,7 +32,9 @@ internal object YabaNativeHostMessageParser {
             "shellLoad" -> parseShellLoad(root)
             "toc" -> parseToc(root)
             "noteAutosaveIdle" -> YabaWebHostEvent.NoteEditorIdleForAutosave
+            "canvasAutosaveIdle" -> YabaWebHostEvent.CanvasIdleForAutosave
             "readerMetrics" -> parseReaderMetrics(root)
+            "canvasMetrics" -> parseCanvasMetrics(root)
             "annotationTap" -> {
                 val id = root.optString("id", "")
                 if (id.isNotBlank()) onAnnotationTap?.invoke(id)
@@ -148,6 +151,16 @@ internal object YabaNativeHostMessageParser {
             editorFormatting = formatting,
         )
     }
+
+    private fun parseCanvasMetrics(root: JSONObject): YabaWebHostEvent.CanvasMetrics =
+        YabaWebHostEvent.CanvasMetrics(
+            CanvasHostMetrics(
+                activeTool = root.optString("activeTool", "selection"),
+                hasSelection = root.optBoolean("hasSelection"),
+                canUndo = root.optBoolean("canUndo"),
+                canRedo = root.optBoolean("canRedo"),
+            ),
+        )
 
     private fun parseEditorFormatting(json: JSONObject): EditorFormattingState =
         EditorFormattingState(

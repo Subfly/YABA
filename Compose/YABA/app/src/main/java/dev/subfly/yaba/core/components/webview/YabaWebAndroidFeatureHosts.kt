@@ -27,6 +27,7 @@ import dev.subfly.yaba.core.webview.MathTapEvent
 import dev.subfly.yaba.core.webview.WebLoadState
 import dev.subfly.yaba.core.webview.WebShellLoadResult
 import dev.subfly.yaba.core.webview.WebViewEditorBridge
+import dev.subfly.yaba.core.webview.WebViewCanvasBridge
 import dev.subfly.yaba.core.webview.WebViewReaderBridge
 import dev.subfly.yaba.core.webview.YabaWebFeature
 import dev.subfly.yaba.core.webview.YabaWebHostEvent
@@ -418,6 +419,131 @@ internal fun YabaEditorFeatureHost(
                 bridgeReadyFromWeb = false
                 activeEditorBridge = null
                 onEditorBridgeReadyState.value(null)
+                webView.loadUrl(loadUrl)
+                webView.tag = loadUrl
+            }
+        },
+    )
+}
+
+@SuppressLint("SetJavaScriptEnabled")
+@Composable
+internal fun YabaCanvasFeatureHost(
+    modifier: Modifier,
+    baseUrl: String,
+    feature: YabaWebFeature.Canvas,
+    onHostEvent: (YabaWebHostEvent) -> Unit,
+    onUrlClick: (String) -> Boolean,
+    onCanvasBridgeReady: (WebViewCanvasBridge?) -> Unit,
+) {
+    val onHostEventState = rememberUpdatedState(onHostEvent)
+    val onCanvasBridgeReadyState = rememberUpdatedState(onCanvasBridgeReady)
+    val context = LocalContext.current
+    var isPageReady by remember { mutableStateOf(false) }
+    var rendererCrashed by remember { mutableStateOf(false) }
+    var activeBridge by remember { mutableStateOf<WebViewCanvasBridge?>(null) }
+
+    val assetLoaderUrl = remember(baseUrl) { toAssetLoaderUrl(baseUrl) }
+    val assetLoader = remember(context) { rememberAssetLoader(context, includeLocalStorage = false) }
+    val loadUrl = remember(baseUrl, assetLoaderUrl) { assetLoaderUrl ?: baseUrl }
+    var bridgeReadyFromWeb by remember(loadUrl) { mutableStateOf(false) }
+
+    val webView = remember(context) {
+        WebView(context).apply {
+            applyHardenedWebSettings(this)
+            setBackgroundColor(Color.TRANSPARENT)
+        }
+    }
+
+    BindNativeHostBridge(
+        webView = webView,
+        loadUrl = loadUrl,
+        expectedBridgeFeature = "canvas",
+        onReset = { bridgeReadyFromWeb = false },
+        onBridgeReady = { bridgeReadyFromWeb = true },
+        onHostEvent = { onHostEventState.value(it) },
+    )
+
+    DisposableEffect(Unit) {
+        onDispose {
+            activeBridge = null
+            onCanvasBridgeReadyState.value(null)
+        }
+    }
+
+    LaunchedEffect(rendererCrashed) {
+        if (rendererCrashed) {
+            activeBridge = null
+            onCanvasBridgeReadyState.value(null)
+        }
+    }
+
+    LaunchedEffect(isPageReady, bridgeReadyFromWeb, rendererCrashed) {
+        if (!isPageReady || rendererCrashed || !bridgeReadyFromWeb) {
+            activeBridge = null
+            onCanvasBridgeReadyState.value(null)
+            return@LaunchedEffect
+        }
+        onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.BridgeReady))
+        val bridge = CanvasWebViewBridge(webView)
+        activeBridge = bridge
+        onCanvasBridgeReadyState.value(bridge)
+    }
+
+    LaunchedEffect(isPageReady, bridgeReadyFromWeb, feature.initialSceneJson, rendererCrashed) {
+        if (!isPageReady || rendererCrashed || !bridgeReadyFromWeb) return@LaunchedEffect
+        CanvasWebViewBridge(webView).setSceneJson(feature.initialSceneJson)
+    }
+
+    AndroidView(
+        modifier = modifier,
+        factory = { ctx ->
+            FrameLayout(ctx).apply {
+                if (webView.parent != null) {
+                    (webView.parent as ViewGroup).removeView(webView)
+                }
+                addView(
+                    webView,
+                    FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                    ),
+                )
+            }
+        },
+        update = {
+            if (!rendererCrashed) {
+                webView.webChromeClient =
+                    denyPermissionsWebChromeClient(
+                        onProgressChanged = { p ->
+                            onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.Loading(p / 100f)))
+                        },
+                    )
+                webView.webViewClient =
+                    yabaWebViewClient(
+                        assetLoader = assetLoader,
+                        onPageStarted = {
+                            onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.Loading(0f)))
+                        },
+                        onPageFinished = {
+                            isPageReady = true
+                            onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.PageFinished))
+                        },
+                        onRenderProcessGone = {
+                            rendererCrashed = true
+                            onHostEventState.value(YabaWebHostEvent.LoadState(WebLoadState.RendererCrashed))
+                            true
+                        },
+                        onUrlClick = onUrlClick,
+                    )
+            }
+            if (rendererCrashed) return@AndroidView
+            val lastLoadedUrl = webView.tag as? String
+            if (lastLoadedUrl != loadUrl) {
+                isPageReady = false
+                bridgeReadyFromWeb = false
+                activeBridge = null
+                onCanvasBridgeReadyState.value(null)
                 webView.loadUrl(loadUrl)
                 webView.tag = loadUrl
             }

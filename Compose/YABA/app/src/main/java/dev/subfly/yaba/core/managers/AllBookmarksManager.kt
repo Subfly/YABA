@@ -48,6 +48,7 @@ object AllBookmarksManager {
     private val imageBookmarkDao get() = DatabaseProvider.imageBookmarkDao
     private val docBookmarkDao get() = DatabaseProvider.docBookmarkDao
     private val noteBookmarkDao get() = DatabaseProvider.noteBookmarkDao
+    private val canvasBookmarkDao get() = DatabaseProvider.canvasBookmarkDao
     private val annotationDao get() = DatabaseProvider.annotationDao
     private val readableVersionDao get() = DatabaseProvider.readableVersionDao
     private val bookmarkFileManager get() = BookmarkFileManager
@@ -443,6 +444,7 @@ object AllBookmarksManager {
         imageBookmarkDao.deleteById(bookmarkId)
         docBookmarkDao.deleteById(bookmarkId)
         noteBookmarkDao.deleteById(bookmarkId)
+        canvasBookmarkDao.deleteById(bookmarkId)
         annotationDao.deleteByBookmarkId(bookmarkId)
         readableVersionDao.deleteByBookmarkId(bookmarkId)
         bookmarkDao.deleteByIds(listOf(bookmarkId))

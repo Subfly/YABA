@@ -17,6 +17,7 @@ import dev.subfly.yaba.ui.creation.bookmark.BookmarkCreationRouteSelectionConten
 import dev.subfly.yaba.ui.creation.bookmark.BookmarkPasswordCreateSheetContent
 import dev.subfly.yaba.ui.creation.bookmark.BookmarkPasswordEditSheetContent
 import dev.subfly.yaba.ui.creation.bookmark.BookmarkPasswordEntrySheetContent
+import dev.subfly.yaba.ui.creation.bookmark.canvmark.CanvmarkCreationContent
 import dev.subfly.yaba.ui.creation.bookmark.docmark.DocmarkCreationContent
 import dev.subfly.yaba.ui.creation.bookmark.imagemark.ImagemarkCreationContent
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.LinkmarkCreationContent
@@ -103,6 +104,9 @@ fun YabaCreationNavigationView(
             }
             entry<NotemarkCreationRoute> { key ->
                 NotemarkCreationContent(bookmarkId = key.bookmarkId)
+            }
+            entry<CanvmarkCreationRoute> { key ->
+                CanvmarkCreationContent(bookmarkId = key.bookmarkId)
             }
             entry<ImagemarkCreationRoute> { key ->
                 ImagemarkCreationContent(bookmarkId = key.bookmarkId)

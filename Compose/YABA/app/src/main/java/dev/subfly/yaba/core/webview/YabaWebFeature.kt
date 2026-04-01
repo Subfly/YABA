@@ -23,6 +23,12 @@ sealed class YabaWebFeature {
         val readerPreferences: ReaderPreferences = ReaderPreferences(),
     ) : YabaWebFeature()
 
+    data class Canvas(
+        val initialSceneJson: String,
+        val platform: YabaWebPlatform = YabaWebPlatform.Compose,
+        val appearance: YabaWebAppearance = YabaWebAppearance.Auto,
+    ) : YabaWebFeature()
+
     data class HtmlConverter(
         val input: WebConverterInput?,
     ) : YabaWebFeature()

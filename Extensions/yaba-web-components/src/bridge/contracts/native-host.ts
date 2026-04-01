@@ -1,7 +1,7 @@
 import type { EditorFormattingState } from "../editor-formatting"
 import type { TocJson } from "../toc-host-events"
 
-export type YabaNativeHostFeature = "editor" | "viewer" | "pdf" | "epub" | "converter"
+export type YabaNativeHostFeature = "editor" | "viewer" | "pdf" | "epub" | "converter" | "canvas"
 
 /** Single envelope for all web -> native host events. */
 export type YabaNativeHostPayload =
@@ -9,6 +9,7 @@ export type YabaNativeHostPayload =
   | { type: "shellLoad"; result: "loaded" | "error" }
   | { type: "toc"; toc: TocJson | null }
   | { type: "noteAutosaveIdle" }
+  | { type: "canvasAutosaveIdle" }
   | {
       type: "readerMetrics"
       canCreateAnnotation: boolean
@@ -16,6 +17,24 @@ export type YabaNativeHostPayload =
       pageCount: number
       /** Rich-text editor toolbar state; omitted in PDF/EPUB/readable viewer. */
       formatting?: EditorFormattingState
+    }
+  | {
+      type: "canvasMetrics"
+      activeTool:
+        | "selection"
+        | "hand"
+        | "draw"
+        | "eraser"
+        | "line"
+        | "arrow"
+        | "text"
+        | "frame"
+        | "rectangle"
+        | "diamond"
+        | "ellipse"
+      hasSelection: boolean
+      canUndo: boolean
+      canRedo: boolean
     }
   | { type: "annotationTap"; id: string }
   | { type: "mathTap"; kind: "inline" | "block"; pos: number; latex: string }
