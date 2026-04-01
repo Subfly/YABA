@@ -1,14 +1,20 @@
 package dev.subfly.yaba.ui.home.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.ui.res.stringResource
-
 import dev.subfly.yaba.R
-
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -25,11 +31,13 @@ import dev.subfly.yaba.util.YabaPlatform
 import dev.subfly.yaba.core.model.utils.SortOrderType
 import dev.subfly.yaba.core.model.utils.SortType
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun HomeTopBar(
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior,
+    sessionUnlocked: Boolean,
+    onLockPrivateSessionClick: () -> Unit,
     onSearchClicked: () -> Unit,
     onSortingChanged: (SortType) -> Unit,
     onSortOrderChanged: (SortOrderType) -> Unit,
@@ -46,11 +54,25 @@ internal fun HomeTopBar(
                 Text(text = stringResource(R.string.yaba))
             },
             actions = {
-                IconButton(onClick = onSearchClicked) {
+                AnimatedVisibility(visible = sessionUnlocked) {
+                    IconButton(
+                        onClick = onLockPrivateSessionClick,
+                        shapes = IconButtonDefaults.shapes(),
+                    ) {
+                        YabaIcon(name = "circle-unlock-02")
+                    }
+                }
+                IconButton(
+                    onClick = onSearchClicked,
+                    shapes = IconButtonDefaults.shapes(),
+                ) {
                     YabaIcon(name = "search-01")
                 }
                 Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
-                    IconButton(onClick = { isMenuExpanded = !isMenuExpanded }) {
+                    IconButton(
+                        onClick = { isMenuExpanded = !isMenuExpanded },
+                        shapes = IconButtonDefaults.shapes(),
+                    ) {
                         YabaIcon(name = "more-horizontal-circle-02")
                     }
                     HomeDropdownMenu(
@@ -72,13 +94,27 @@ internal fun HomeTopBar(
                 Text(text = stringResource(R.string.yaba))
             },
             actions = {
-                IconButton(onClick = onSearchClicked) {
+                AnimatedVisibility(visible = sessionUnlocked) {
+                    IconButton(
+                        onClick = onLockPrivateSessionClick,
+                        shapes = IconButtonDefaults.shapes(),
+                    ) {
+                        YabaIcon(name = "circle-unlock-02")
+                    }
+                }
+                IconButton(
+                    onClick = onSearchClicked,
+                    shapes = IconButtonDefaults.shapes(),
+                ) {
                     YabaIcon(name = "search-01")
                 }
                 Box(
                     modifier = Modifier.wrapContentSize(Alignment.TopStart)
                 ) {
-                    IconButton(onClick = { isMenuExpanded = !isMenuExpanded }) {
+                    IconButton(
+                        onClick = { isMenuExpanded = !isMenuExpanded },
+                        shapes = IconButtonDefaults.shapes(),
+                    ) {
                         YabaIcon(name = "more-horizontal-circle-02")
                     }
                     HomeDropdownMenu(

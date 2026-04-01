@@ -10,7 +10,7 @@ enum class ToastDuration(val millis: Long) {
 enum class ToastIconType(val iconName: String) {
     WARNING("alert-02"),
     SUCCESS("checkmark-badge-02"),
-    HINT("checkmark-circle-01"),
+    HINT("information-circle"),
     ERROR("cancel-circle"),
     NONE("help-circle"),
 }

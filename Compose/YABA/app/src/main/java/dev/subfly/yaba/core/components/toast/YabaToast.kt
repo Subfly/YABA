@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.components.YabaIcon
+import dev.subfly.yaba.core.model.utils.YabaColor
 import dev.subfly.yaba.core.toast.ToastIconType
 import dev.subfly.yaba.core.toast.ToastItem
 import kotlin.math.roundToInt
@@ -46,7 +47,8 @@ fun YabaToast(
     val palette = toastPalette(iconType = toast.iconType)
     val shape = RoundedCornerShape(16.dp)
     var dragOffset by remember(toast.id) { mutableFloatStateOf(0f) }
-    val dismissThresholdPx = with(androidx.compose.ui.platform.LocalDensity.current) { 52.dp.toPx() }
+    val dismissThresholdPx =
+        with(androidx.compose.ui.platform.LocalDensity.current) { 52.dp.toPx() }
 
     val draggableState = rememberDraggableState { delta ->
         val next = dragOffset + delta
@@ -129,31 +131,30 @@ fun YabaToast(
 
 @Composable
 private fun toastPalette(iconType: ToastIconType): ToastPalette {
-    val scheme = MaterialTheme.colorScheme
     return when (iconType) {
         ToastIconType.WARNING -> ToastPalette(
-            accentColor = Color(0xFFE19A00),
+            accentColor = Color(YabaColor.ORANGE.iconTintArgb()),
             iconColor = Color.White,
         )
 
         ToastIconType.SUCCESS -> ToastPalette(
-            accentColor = Color(0xFF2E9A54),
+            accentColor = Color(YabaColor.GREEN.iconTintArgb()),
             iconColor = Color.White,
         )
 
         ToastIconType.HINT -> ToastPalette(
-            accentColor = scheme.primary,
-            iconColor = scheme.onPrimary,
+            accentColor = Color(YabaColor.BLUE.iconTintArgb()),
+            iconColor = Color.White,
         )
 
         ToastIconType.ERROR -> ToastPalette(
-            accentColor = scheme.error,
-            iconColor = scheme.onError,
+            accentColor = Color(YabaColor.RED.iconTintArgb()),
+            iconColor = Color.White,
         )
 
         ToastIconType.NONE -> ToastPalette(
-            accentColor = scheme.primary,
-            iconColor = scheme.onPrimary,
+            accentColor = Color(YabaColor.GRAY.iconTintArgb()),
+            iconColor = Color.White,
         )
     }
 }

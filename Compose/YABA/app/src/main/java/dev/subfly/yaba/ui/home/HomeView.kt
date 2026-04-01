@@ -49,6 +49,7 @@ import dev.subfly.yaba.core.navigation.main.LinkDetailRoute
 import dev.subfly.yaba.core.navigation.main.NoteDetailRoute
 import dev.subfly.yaba.core.navigation.main.SearchRoute
 import dev.subfly.yaba.core.navigation.main.TagDetailRoute
+import dev.subfly.yaba.core.security.PrivateBookmarkSessionGuard
 import dev.subfly.yaba.core.components.layout.YabaContentLayout
 import dev.subfly.yaba.ui.home.components.HomeFab
 import dev.subfly.yaba.ui.home.components.HomeTitleContent
@@ -90,6 +91,8 @@ fun HomeView(modifier: Modifier = Modifier) {
     val creationNavigator = LocalCreationContentNavigator.current
     val appStateManager = LocalAppStateManager.current
     val deletionDialogManager = LocalDeletionDialogManager.current
+
+    val sessionUnlocked by PrivateBookmarkSessionGuard.isUnlocked.collectAsStateWithLifecycle()
 
     BookmarkPrivatePasswordEventEffect(
         resolveBookmark = { id -> state.recentBookmarks.find { it.id == id } },
@@ -146,6 +149,8 @@ fun HomeView(modifier: Modifier = Modifier) {
             topBar = {
                 HomeTopBar(
                     scrollBehavior = scrollBehavior,
+                    sessionUnlocked = sessionUnlocked,
+                    onLockPrivateSessionClick = { PrivateBookmarkSessionGuard.lock() },
                     onSortingChanged = { newSortType ->
                         vm.onEvent(HomeEvent.OnChangeCollectionSorting(newSortType))
                     },
