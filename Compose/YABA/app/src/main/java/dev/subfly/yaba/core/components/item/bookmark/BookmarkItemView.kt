@@ -30,6 +30,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.annotation.StringRes
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -544,9 +545,9 @@ private fun CardBigItemContent(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                TagsRowContent(
+                BookmarkCardTagsRow(
                     modifier = Modifier.weight(1f),
-                    tags = model.tags,
+                    model = model,
                     emptyStateTextRes = R.string.bookmark_no_tags_added_title,
                     emptyStateColor = folderColor,
                 )
@@ -554,12 +555,14 @@ private fun CardBigItemContent(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    YabaImage(
-                        modifier = Modifier
-                            .size(24.dp)
-                            .clip(RoundedCornerShape(4.dp)),
-                        filePath = iconFilePath
-                    )
+                    if (!model.isPrivate) {
+                        YabaImage(
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clip(RoundedCornerShape(4.dp)),
+                            filePath = iconFilePath,
+                        )
+                    }
                     if (menuActions.isNotEmpty()) {
                         CardOptionsButton(
                             menuActions = menuActions,
@@ -658,9 +661,9 @@ private fun CardSmallItemContent(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                TagsRowContent(
+                BookmarkCardTagsRow(
                     modifier = Modifier.weight(1f),
-                    tags = model.tags,
+                    model = model,
                     emptyStateTextRes = R.string.bookmark_no_tags_added_title,
                     emptyStateColor = folderColor,
                 )
@@ -668,12 +671,14 @@ private fun CardSmallItemContent(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
-                    YabaImage(
-                        modifier = Modifier
-                            .size(24.dp)
-                            .clip(RoundedCornerShape(8.dp)),
-                        filePath = iconFilePath
-                    )
+                    if (!model.isPrivate) {
+                        YabaImage(
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clip(RoundedCornerShape(8.dp)),
+                            filePath = iconFilePath,
+                        )
+                    }
                     if (menuActions.isNotEmpty()) {
                         CardOptionsButton(
                             menuActions = menuActions,
@@ -683,6 +688,44 @@ private fun CardSmallItemContent(
                 }
             }
         }
+    }
+}
+
+/**
+ * Tags area for card layouts: private bookmarks show only the lock chip; otherwise [TagsRowContent].
+ */
+@Composable
+private fun BookmarkCardTagsRow(
+    modifier: Modifier = Modifier,
+    model: BookmarkUiModel,
+    @StringRes emptyStateTextRes: Int,
+    emptyStateColor: YabaColor,
+) {
+    if (model.isPrivate) {
+        Row(
+            modifier = modifier,
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start,
+        ) {
+            Surface(
+                modifier = Modifier.size(24.dp),
+                shape = RoundedCornerShape(4.dp),
+                color = Color(YabaColor.RED.iconTintArgb()).copy(alpha = 0.3F),
+            ) {
+                YabaIcon(
+                    modifier = Modifier.padding(4.dp),
+                    name = "circle-lock-02",
+                    color = YabaColor.RED,
+                )
+            }
+        }
+    } else {
+        TagsRowContent(
+            modifier = modifier,
+            tags = model.tags,
+            emptyStateTextRes = emptyStateTextRes,
+            emptyStateColor = emptyStateColor,
+        )
     }
 }
 
