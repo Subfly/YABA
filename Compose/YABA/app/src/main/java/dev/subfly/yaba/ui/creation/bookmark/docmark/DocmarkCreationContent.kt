@@ -51,11 +51,9 @@ import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkCreationLabel
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkCreationTopBar
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkFolderSelectionContent
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkInfoContent
-import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPinToggleRow
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewAppearanceSwitcher
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewCard
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewContent
-import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPrivateToggleRow
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkTagSelectionContent
 import dev.subfly.yaba.ui.creation.bookmark.model.BookmarkPreviewData
 import dev.subfly.yaba.ui.detail.composables.BookmarkExtractedMetadataSection
@@ -289,23 +287,13 @@ fun DocmarkCreationContent(bookmarkId: String?) {
                             vm.onEvent(DocmarkCreationEvent.OnChangeDescription(it))
                         },
                         selectedFolder = state.selectedFolder,
+                        isPrivate = state.isPrivate,
+                        isPinned = state.isPinned,
+                        onPrivateToggle = onPrivateToggle,
+                        onPinToggle = { vm.onEvent(DocmarkCreationEvent.OnTogglePinned) },
                         enabled = state.isLoading.not(),
                         labelPlaceholder = R.string.create_bookmark_title_placeholder,
                         nullModelPresentableColor = YabaColor.BLUE,
-                )
-            }
-            item {
-                BookmarkPrivateToggleRow(
-                        isPrivate = state.isPrivate,
-                        enabled = state.isLoading.not(),
-                        onClick = onPrivateToggle,
-                )
-            }
-            item {
-                BookmarkPinToggleRow(
-                        isPinned = state.isPinned,
-                        enabled = state.isLoading.not(),
-                        onClick = { vm.onEvent(DocmarkCreationEvent.OnTogglePinned) },
                 )
             }
             item {

@@ -1,11 +1,8 @@
 package dev.subfly.yaba.ui.creation.bookmark.components
 
-import androidx.compose.ui.res.stringResource
-
-import dev.subfly.yaba.R
-
 import androidx.annotation.StringRes
-
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,7 +10,9 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -23,7 +22,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import dev.subfly.yaba.R
 import dev.subfly.yaba.core.components.YabaIcon
 import dev.subfly.yaba.core.model.ui.FolderUiModel
 import dev.subfly.yaba.core.model.utils.YabaColor
@@ -36,6 +37,10 @@ fun BookmarkInfoContent(
     onChangeLabel: (String) -> Unit,
     onChangeDescription: (String) -> Unit,
     selectedFolder: FolderUiModel?,
+    isPrivate: Boolean,
+    isPinned: Boolean,
+    onPrivateToggle: () -> Unit,
+    onPinToggle: () -> Unit,
     enabled: Boolean = true,
     @StringRes labelPlaceholder: Int = R.string.create_bookmark_title_placeholder,
     @StringRes descriptionPlaceholder: Int = R.string.create_bookmark_description_placeholder,
@@ -52,7 +57,7 @@ fun BookmarkInfoContent(
         Spacer(modifier = Modifier.height(24.dp))
         BookmarkCreationLabel(
             label = stringResource(R.string.info),
-            iconName = "information-circle"
+            iconName = "information-circle",
         )
     }
 
@@ -77,7 +82,7 @@ fun BookmarkInfoContent(
                     YabaIcon(name = "cancel-01", color = color)
                 }
             }
-        }
+        },
     )
     Spacer(modifier = Modifier.height(8.dp))
     OutlinedTextField(
@@ -94,6 +99,32 @@ fun BookmarkInfoContent(
         onValueChange = onChangeDescription,
         shape = RoundedCornerShape(12.dp),
         placeholder = { Text(text = stringResource(descriptionPlaceholder)) },
-        leadingIcon = { YabaIcon(name = "paragraph", color = color) }
+        leadingIcon = { YabaIcon(name = "paragraph", color = color) },
     )
+    Spacer(modifier = Modifier.height(8.dp))
+    Column(
+        modifier = Modifier
+            .padding(horizontal = 12.dp)
+            .background(
+                color = MaterialTheme.colorScheme.surface,
+                shape = RoundedCornerShape(12.dp)
+            )
+    ) {
+        BookmarkPrivateToggleRow(
+            isPrivate = isPrivate,
+            enabled = enabled,
+            onClick = onPrivateToggle,
+            folderColor = color,
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        HorizontalDivider(color = Color(color.iconTintArgb()))
+        Spacer(modifier = Modifier.height(4.dp))
+        BookmarkPinToggleRow(
+            isPinned = isPinned,
+            enabled = enabled,
+            onClick = onPinToggle,
+            folderColor = color,
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+    }
 }
