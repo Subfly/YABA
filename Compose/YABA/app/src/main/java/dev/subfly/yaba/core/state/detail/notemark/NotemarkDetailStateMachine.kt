@@ -64,6 +64,7 @@ class NotemarkDetailStateMachine :
         isInitialized = true
         didBootstrapEditor = false
         bookmarkIdFlow.value = bookmarkId
+        AllBookmarksManager.recordBookmarkView(bookmarkId)
 
         launch {
             val reminderDate = NotificationManager.getPendingReminderDate(bookmarkId)

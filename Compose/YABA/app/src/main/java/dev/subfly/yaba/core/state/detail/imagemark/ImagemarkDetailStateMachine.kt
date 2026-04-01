@@ -40,6 +40,7 @@ class ImagemarkDetailStateMachine : BaseStateMachine<ImagemarkDetailUIState, Ima
         if (isInitialized) return
         isInitialized = true
         bookmarkIdFlow.value = bookmarkId
+        AllBookmarksManager.recordBookmarkView(bookmarkId)
 
         launch {
             val reminderDate = NotificationManager.getPendingReminderDate(bookmarkId)

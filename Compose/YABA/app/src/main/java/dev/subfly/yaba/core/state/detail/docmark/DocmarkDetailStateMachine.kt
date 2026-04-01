@@ -66,6 +66,7 @@ class DocmarkDetailStateMachine : BaseStateMachine<DocmarkDetailUIState, Docmark
         if (isInitialized) return
         isInitialized = true
         bookmarkIdFlow.value = bookmarkId
+        AllBookmarksManager.recordBookmarkView(bookmarkId)
 
         launch {
             val reminderDate = NotificationManager.getPendingReminderDate(bookmarkId)

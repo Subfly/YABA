@@ -221,6 +221,15 @@ object AllBookmarksManager {
         }
     }
 
+    /**
+     * Increments [BookmarkEntity.viewCount] when the user opens a bookmark detail screen.
+     */
+    fun recordBookmarkView(bookmarkId: String) {
+        CoreOperationQueue.queue("RecordBookmarkView:$bookmarkId") {
+            bookmarkDao.incrementViewCount(bookmarkId)
+        }
+    }
+
     private suspend fun updateBookmarkMetadataInternal(
         bookmarkId: String,
         folderId: String,

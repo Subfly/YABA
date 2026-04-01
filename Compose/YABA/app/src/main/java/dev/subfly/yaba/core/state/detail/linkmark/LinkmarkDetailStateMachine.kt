@@ -102,6 +102,7 @@ class LinkmarkDetailStateMachine :
         isInitialized = true
         initialReaderLoadSettled = false
         bookmarkIdFlow.value = bookmarkId
+        AllBookmarksManager.recordBookmarkView(bookmarkId)
 
         launch {
             val reminderDate = NotificationManager.getPendingReminderDate(bookmarkId)

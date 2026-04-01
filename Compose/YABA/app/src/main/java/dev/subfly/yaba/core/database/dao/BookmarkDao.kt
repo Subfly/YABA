@@ -26,6 +26,9 @@ interface BookmarkDao {
     @Query("SELECT * FROM bookmarks WHERE id = :id LIMIT 1")
     suspend fun getById(id: String): BookmarkEntity?
 
+    @Query("UPDATE bookmarks SET viewCount = viewCount + 1 WHERE id = :id")
+    suspend fun incrementViewCount(id: String)
+
     @Query("SELECT * FROM bookmarks WHERE id = :id LIMIT 1")
     fun observeById(id: String): Flow<BookmarkEntity?>
 
