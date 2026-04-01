@@ -37,11 +37,16 @@ class ImagemarkCreationStateMachine :
             is ImagemarkCreationEvent.OnSelectTags -> onSelectTags(event)
             is ImagemarkCreationEvent.OnSave -> onSave(event)
             ImagemarkCreationEvent.OnTogglePrivate -> onTogglePrivate()
+            ImagemarkCreationEvent.OnTogglePinned -> onTogglePinned()
         }
     }
 
     private fun onTogglePrivate() {
         updateState { it.copy(isPrivate = !it.isPrivate) }
+    }
+
+    private fun onTogglePinned() {
+        updateState { it.copy(isPinned = !it.isPinned) }
     }
 
     private fun onInit(event: ImagemarkCreationEvent.OnInit) {
@@ -71,6 +76,7 @@ class ImagemarkCreationStateMachine :
                             selectedTags = existing.tags,
                             editingImagemark = existing,
                             isPrivate = existing.isPrivate,
+                            isPinned = existing.isPinned,
                             imageBytes = savedBytes,
                             imageExtension = ext,
                         )
@@ -272,7 +278,7 @@ class ImagemarkCreationStateMachine :
                         label = state.label,
                         description = state.description.ifBlank { null },
                         isPrivate = state.isPrivate,
-                        isPinned = state.editingImagemark.isPinned,
+                        isPinned = state.isPinned,
                         tagIds = state.selectedTags.map { it.id },
                         previewImageBytes = null,
                         previewImageExtension = null,
@@ -299,7 +305,7 @@ class ImagemarkCreationStateMachine :
                         label = state.label,
                         description = state.description.ifBlank { null },
                         isPrivate = state.isPrivate,
-                        isPinned = false,
+                        isPinned = state.isPinned,
                         tagIds = state.selectedTags.map { it.id },
                         previewImageBytes = imageBytes,
                         previewImageExtension = imageExtension,

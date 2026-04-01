@@ -32,6 +32,7 @@ data class DocmarkCreationUIState(
     val error: DocmarkCreationError? = null,
     val editingDocmark: DocmarkUiModel? = null,
     val isPrivate: Boolean = false,
+    val isPinned: Boolean = false,
     val uncategorizedFolderCreationRequired: Boolean = false,
 ) {
     val isInEditMode: Boolean
@@ -75,6 +76,7 @@ data class DocmarkCreationUIState(
         if (error != other.error) return false
         if (editingDocmark != other.editingDocmark) return false
         if (isPrivate != other.isPrivate) return false
+        if (isPinned != other.isPinned) return false
         if (uncategorizedFolderCreationRequired != other.uncategorizedFolderCreationRequired) return false
         return true
     }
@@ -101,6 +103,7 @@ data class DocmarkCreationUIState(
         result = 31 * result + (error?.hashCode() ?: 0)
         result = 31 * result + (editingDocmark?.hashCode() ?: 0)
         result = 31 * result + isPrivate.hashCode()
+        result = 31 * result + isPinned.hashCode()
         result = 31 * result + uncategorizedFolderCreationRequired.hashCode()
         return result
     }

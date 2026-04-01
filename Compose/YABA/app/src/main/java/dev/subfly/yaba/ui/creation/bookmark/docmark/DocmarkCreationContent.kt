@@ -32,17 +32,30 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.R
 import dev.subfly.yaba.core.components.YabaIcon
 import dev.subfly.yaba.core.components.webview.YabaWebView
+import dev.subfly.yaba.core.model.ui.FolderUiModel
+import dev.subfly.yaba.core.model.ui.TagUiModel
+import dev.subfly.yaba.core.model.utils.DocmarkType
+import dev.subfly.yaba.core.model.utils.FolderSelectionMode
+import dev.subfly.yaba.core.model.utils.YabaColor
 import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
 import dev.subfly.yaba.core.navigation.creation.TagCreationRoute
 import dev.subfly.yaba.core.navigation.creation.TagSelectionRoute
+import dev.subfly.yaba.core.state.creation.docmark.DocmarkCreationEvent
+import dev.subfly.yaba.core.state.creation.docmark.DocmarkCreationUIState
+import dev.subfly.yaba.core.webview.WebComponentUris
+import dev.subfly.yaba.core.webview.WebEpubConverterInput
+import dev.subfly.yaba.core.webview.WebPdfConverterInput
+import dev.subfly.yaba.core.webview.YabaWebFeature
+import dev.subfly.yaba.core.webview.YabaWebHostEvent
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkCreationLabel
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkCreationTopBar
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkFolderSelectionContent
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkInfoContent
-import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPrivateToggleRow
+import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPinToggleRow
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewAppearanceSwitcher
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewCard
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewContent
+import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPrivateToggleRow
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkTagSelectionContent
 import dev.subfly.yaba.ui.creation.bookmark.model.BookmarkPreviewData
 import dev.subfly.yaba.ui.detail.composables.BookmarkExtractedMetadataSection
@@ -51,18 +64,6 @@ import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.ResultStoreKeys
 import dev.subfly.yaba.util.SharedDocumentData
-import dev.subfly.yaba.core.model.ui.FolderUiModel
-import dev.subfly.yaba.core.model.ui.TagUiModel
-import dev.subfly.yaba.core.model.utils.DocmarkType
-import dev.subfly.yaba.core.model.utils.FolderSelectionMode
-import dev.subfly.yaba.core.model.utils.YabaColor
-import dev.subfly.yaba.core.state.creation.docmark.DocmarkCreationEvent
-import dev.subfly.yaba.core.state.creation.docmark.DocmarkCreationUIState
-import dev.subfly.yaba.core.webview.WebComponentUris
-import dev.subfly.yaba.core.webview.WebEpubConverterInput
-import dev.subfly.yaba.core.webview.WebPdfConverterInput
-import dev.subfly.yaba.core.webview.YabaWebFeature
-import dev.subfly.yaba.core.webview.YabaWebHostEvent
 import dev.subfly.yaba.util.rememberPrivateBookmarkCreationToggle
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
@@ -80,47 +81,49 @@ fun DocmarkCreationContent(bookmarkId: String?) {
         vm.onEvent(DocmarkCreationEvent.OnTogglePrivate)
     }
 
-    val pdfDataUrl by remember(state.documentBytes, state.docmarkType, state.isInEditMode) {
-        derivedStateOf {
-            if (state.isInEditMode) return@derivedStateOf null
-            if (state.docmarkType != DocmarkType.PDF) return@derivedStateOf null
-            state.documentBytes?.let { bytes ->
-                "data:application/pdf;base64,${Base64.encode(bytes)}"
+    val pdfDataUrl by
+            remember(state.documentBytes, state.docmarkType, state.isInEditMode) {
+                derivedStateOf {
+                    if (state.isInEditMode) return@derivedStateOf null
+                    if (state.docmarkType != DocmarkType.PDF) return@derivedStateOf null
+                    state.documentBytes?.let { bytes ->
+                        "data:application/pdf;base64,${Base64.encode(bytes)}"
+                    }
+                }
             }
-        }
-    }
 
-    val epubDataUrl by remember(state.documentBytes, state.docmarkType, state.isInEditMode) {
-        derivedStateOf {
-            if (state.isInEditMode) return@derivedStateOf null
-            if (state.docmarkType != DocmarkType.EPUB) return@derivedStateOf null
-            state.documentBytes?.let { bytes ->
-                "data:application/epub+zip;base64,${Base64.encode(bytes)}"
+    val epubDataUrl by
+            remember(state.documentBytes, state.docmarkType, state.isInEditMode) {
+                derivedStateOf {
+                    if (state.isInEditMode) return@derivedStateOf null
+                    if (state.docmarkType != DocmarkType.EPUB) return@derivedStateOf null
+                    state.documentBytes?.let { bytes ->
+                        "data:application/epub+zip;base64,${Base64.encode(bytes)}"
+                    }
+                }
             }
-        }
-    }
 
-    val pdfConverterInput by remember(pdfDataUrl, state.isInEditMode) {
-        derivedStateOf {
-            if (state.isInEditMode || pdfDataUrl == null) return@derivedStateOf null
-            pdfDataUrl?.let { url ->
-                WebPdfConverterInput(pdfUrl = url)
+    val pdfConverterInput by
+            remember(pdfDataUrl, state.isInEditMode) {
+                derivedStateOf {
+                    if (state.isInEditMode || pdfDataUrl == null) return@derivedStateOf null
+                    pdfDataUrl?.let { url -> WebPdfConverterInput(pdfUrl = url) }
+                }
             }
-        }
-    }
 
-    val epubConverterInput by remember(epubDataUrl, state.isInEditMode) {
-        derivedStateOf {
-            if (state.isInEditMode || epubDataUrl == null) return@derivedStateOf null
-            epubDataUrl?.let { WebEpubConverterInput(epubDataUrl = it) }
-        }
-    }
+    val epubConverterInput by
+            remember(epubDataUrl, state.isInEditMode) {
+                derivedStateOf {
+                    if (state.isInEditMode || epubDataUrl == null) return@derivedStateOf null
+                    epubDataUrl?.let { WebEpubConverterInput(epubDataUrl = it) }
+                }
+            }
 
     LaunchedEffect(bookmarkId) {
         vm.onEvent(
-            DocmarkCreationEvent.OnInit(
-                docmarkIdString = bookmarkId,
-            ),
+                DocmarkCreationEvent.OnInit(
+                        docmarkIdString = bookmarkId,
+                ),
         )
     }
 
@@ -139,199 +142,214 @@ fun DocmarkCreationContent(bookmarkId: String?) {
     }
 
     LaunchedEffect(resultStore.getResult(ResultStoreKeys.SHARED_DOCUMENT_DATA)) {
-        resultStore.getResult<SharedDocumentData>(ResultStoreKeys.SHARED_DOCUMENT_DATA)?.let { doc ->
+        resultStore.getResult<SharedDocumentData>(ResultStoreKeys.SHARED_DOCUMENT_DATA)?.let { doc
+            ->
             vm.onEvent(
-                DocmarkCreationEvent.OnDocumentFromShare(
-                    bytes = doc.bytes,
-                    sourceFileName = doc.sourceFileName,
-                    docmarkType = doc.docmarkType,
-                ),
+                    DocmarkCreationEvent.OnDocumentFromShare(
+                            bytes = doc.bytes,
+                            sourceFileName = doc.sourceFileName,
+                            docmarkType = doc.docmarkType,
+                    ),
             )
             resultStore.removeResult(ResultStoreKeys.SHARED_DOCUMENT_DATA)
         }
     }
 
     YabaWebView(
-        modifier = Modifier.size(0.dp),
-        baseUrl = WebComponentUris.getConverterUri(),
-        feature = YabaWebFeature.PdfExtractor(input = pdfConverterInput),
-        onHostEvent = { ev ->
-            when (ev) {
-                is YabaWebHostEvent.PdfConverterSuccess -> {
-                    val previewBytes = ev.result.firstPagePngDataUrl?.let(::decodeDataUrlToBytes)
-                    vm.onEvent(
-                        DocmarkCreationEvent.OnSetGeneratedPreview(
-                            imageBytes = previewBytes,
-                            extension = "png",
-                        ),
-                    )
-                    vm.onEvent(
-                        DocmarkCreationEvent.OnDocumentMetadataExtracted(
-                            metadataTitle = ev.result.title,
-                            metadataDescription = ev.result.subject,
-                            metadataAuthor = ev.result.author,
-                            metadataDate = ev.result.creationDate,
-                        ),
-                    )
+            modifier = Modifier.size(0.dp),
+            baseUrl = WebComponentUris.getConverterUri(),
+            feature = YabaWebFeature.PdfExtractor(input = pdfConverterInput),
+            onHostEvent = { ev ->
+                when (ev) {
+                    is YabaWebHostEvent.PdfConverterSuccess -> {
+                        val previewBytes =
+                                ev.result.firstPagePngDataUrl?.let(::decodeDataUrlToBytes)
+                        vm.onEvent(
+                                DocmarkCreationEvent.OnSetGeneratedPreview(
+                                        imageBytes = previewBytes,
+                                        extension = "png",
+                                ),
+                        )
+                        vm.onEvent(
+                                DocmarkCreationEvent.OnDocumentMetadataExtracted(
+                                        metadataTitle = ev.result.title,
+                                        metadataDescription = ev.result.subject,
+                                        metadataAuthor = ev.result.author,
+                                        metadataDate = ev.result.creationDate,
+                                ),
+                        )
+                    }
+                    is YabaWebHostEvent.PdfConverterFailure -> {
+                        // Non-fatal: preview/readable may stay empty
+                    }
+                    is YabaWebHostEvent.InitialContentLoad ->
+                            vm.onEvent(DocmarkCreationEvent.OnWebInitialContentLoad(ev.result))
+                    else -> Unit
                 }
-                is YabaWebHostEvent.PdfConverterFailure -> {
-                    // Non-fatal: preview/readable may stay empty
-                }
-                is YabaWebHostEvent.InitialContentLoad ->
-                    vm.onEvent(DocmarkCreationEvent.OnWebInitialContentLoad(ev.result))
-                else -> Unit
-            }
-        },
+            },
     )
 
     YabaWebView(
-        modifier = Modifier.size(0.dp),
-        baseUrl = WebComponentUris.getConverterUri(),
-        feature = YabaWebFeature.EpubExtractor(input = epubConverterInput),
-        onHostEvent = { ev ->
-            when (ev) {
-                is YabaWebHostEvent.EpubConverterSuccess -> {
-                    val previewBytes = ev.result.coverPngDataUrl?.let(::decodeDataUrlToBytes)
-                    vm.onEvent(
-                        DocmarkCreationEvent.OnSetGeneratedPreview(
-                            imageBytes = previewBytes,
-                            extension = "png",
-                        ),
-                    )
-                    vm.onEvent(
-                        DocmarkCreationEvent.OnDocumentMetadataExtracted(
-                            metadataTitle = ev.result.title,
-                            metadataDescription = ev.result.description,
-                            metadataAuthor = ev.result.author,
-                            metadataDate = ev.result.pubdate,
-                        ),
-                    )
+            modifier = Modifier.size(0.dp),
+            baseUrl = WebComponentUris.getConverterUri(),
+            feature = YabaWebFeature.EpubExtractor(input = epubConverterInput),
+            onHostEvent = { ev ->
+                when (ev) {
+                    is YabaWebHostEvent.EpubConverterSuccess -> {
+                        val previewBytes = ev.result.coverPngDataUrl?.let(::decodeDataUrlToBytes)
+                        vm.onEvent(
+                                DocmarkCreationEvent.OnSetGeneratedPreview(
+                                        imageBytes = previewBytes,
+                                        extension = "png",
+                                ),
+                        )
+                        vm.onEvent(
+                                DocmarkCreationEvent.OnDocumentMetadataExtracted(
+                                        metadataTitle = ev.result.title,
+                                        metadataDescription = ev.result.description,
+                                        metadataAuthor = ev.result.author,
+                                        metadataDate = ev.result.pubdate,
+                                ),
+                        )
+                    }
+                    is YabaWebHostEvent.EpubConverterFailure -> {
+                        // Non-fatal
+                    }
+                    is YabaWebHostEvent.InitialContentLoad ->
+                            vm.onEvent(DocmarkCreationEvent.OnWebInitialContentLoad(ev.result))
+                    else -> Unit
                 }
-                is YabaWebHostEvent.EpubConverterFailure -> {
-                    // Non-fatal
-                }
-                is YabaWebHostEvent.InitialContentLoad ->
-                    vm.onEvent(DocmarkCreationEvent.OnWebInitialContentLoad(ev.result))
-                else -> Unit
-            }
-        },
+            },
     )
 
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(0.9f)
-            .background(color = MaterialTheme.colorScheme.surfaceContainerLow),
+            modifier =
+                    Modifier.fillMaxWidth()
+                            .fillMaxHeight(0.9f)
+                            .background(color = MaterialTheme.colorScheme.surfaceContainerLow),
     ) {
         BookmarkCreationTopBar(
-            canPerformDone = state.canSave,
-            isEditing = state.isInEditMode,
-            isSaving = state.isSaving,
-            onDone = {
-                vm.onEvent(
-                    DocmarkCreationEvent.OnSave(
-                        onSavedCallback = {
-                            if (creationNavigator.size == 2) appStateManager.onHideCreationContent()
-                            creationNavigator.removeLastOrNull()
-                        },
-                        onErrorCallback = {},
-                    ),
-                )
-            },
+                canPerformDone = state.canSave,
+                isEditing = state.isInEditMode,
+                isSaving = state.isSaving,
+                onDone = {
+                    vm.onEvent(
+                            DocmarkCreationEvent.OnSave(
+                                    onSavedCallback = {
+                                        if (creationNavigator.size == 2)
+                                                appStateManager.onHideCreationContent()
+                                        creationNavigator.removeLastOrNull()
+                                    },
+                                    onErrorCallback = {},
+                            ),
+                    )
+                },
         )
 
         LazyColumn {
             item {
                 DocmarkPreviewContent(
-                    state = state,
-                    onChangePreviewType = { vm.onEvent(DocmarkCreationEvent.OnCyclePreviewAppearance) },
-                    onPickDocument = { vm.onEvent(DocmarkCreationEvent.OnPickDocument) },
+                        state = state,
+                        onChangePreviewType = {
+                            vm.onEvent(DocmarkCreationEvent.OnCyclePreviewAppearance)
+                        },
+                        onPickDocument = { vm.onEvent(DocmarkCreationEvent.OnPickDocument) },
                 )
             }
             item {
                 Spacer(modifier = Modifier.height(12.dp))
                 BookmarkCreationLabel(
-                    label = stringResource(R.string.info),
-                    iconName = "information-circle",
-                    extraContent = {
-                        if (state.isInEditMode.not()) {
-                            AnimatedVisibility(visible = state.hasApplyableMetadata) {
-                                TextButton(
-                                    shapes = ButtonDefaults.shapes(),
-                                    onClick = {
-                                        vm.onEvent(DocmarkCreationEvent.OnApplyFromMetadata)
+                        label = stringResource(R.string.info),
+                        iconName = "information-circle",
+                        extraContent = {
+                            if (state.isInEditMode.not()) {
+                                AnimatedVisibility(visible = state.hasApplyableMetadata) {
+                                    TextButton(
+                                            shapes = ButtonDefaults.shapes(),
+                                            onClick = {
+                                                vm.onEvent(DocmarkCreationEvent.OnApplyFromMetadata)
+                                            }
+                                    ) {
+                                        val color = state.selectedFolder?.color ?: YabaColor.BLUE
+                                        Text(
+                                                text = "Apply from metadata",
+                                                color = Color(color.iconTintArgb())
+                                        )
                                     }
-                                ) {
-                                    val color = state.selectedFolder?.color ?: YabaColor.BLUE
-                                    Text(
-                                        text = "Apply from metadata",
-                                        color = Color(color.iconTintArgb())
-                                    )
                                 }
                             }
                         }
-                    }
                 )
                 BookmarkInfoContent(
-                    label = state.label,
-                    description = state.description,
-                    showInfoLabel = false,
-                    onChangeLabel = { vm.onEvent(DocmarkCreationEvent.OnChangeLabel(it)) },
-                    onChangeDescription = { vm.onEvent(DocmarkCreationEvent.OnChangeDescription(it)) },
-                    selectedFolder = state.selectedFolder,
-                    enabled = state.isLoading.not(),
-                    labelPlaceholder = R.string.create_bookmark_title_placeholder,
-                    nullModelPresentableColor = YabaColor.BLUE,
+                        label = state.label,
+                        description = state.description,
+                        showInfoLabel = false,
+                        onChangeLabel = { vm.onEvent(DocmarkCreationEvent.OnChangeLabel(it)) },
+                        onChangeDescription = {
+                            vm.onEvent(DocmarkCreationEvent.OnChangeDescription(it))
+                        },
+                        selectedFolder = state.selectedFolder,
+                        enabled = state.isLoading.not(),
+                        labelPlaceholder = R.string.create_bookmark_title_placeholder,
+                        nullModelPresentableColor = YabaColor.BLUE,
                 )
             }
             item {
                 BookmarkPrivateToggleRow(
-                    isPrivate = state.isPrivate,
-                    enabled = state.isLoading.not(),
-                    onClick = onPrivateToggle,
+                        isPrivate = state.isPrivate,
+                        enabled = state.isLoading.not(),
+                        onClick = onPrivateToggle,
+                )
+            }
+            item {
+                BookmarkPinToggleRow(
+                        isPinned = state.isPinned,
+                        enabled = state.isLoading.not(),
+                        onClick = { vm.onEvent(DocmarkCreationEvent.OnTogglePinned) },
                 )
             }
             item {
                 BookmarkExtractedMetadataSection(
-                    mainColor = state.selectedFolder?.color ?: YabaColor.BLUE,
-                    metadataTitle = state.metadataTitle,
-                    metadataDescription = state.metadataDescription,
-                    metadataAuthor = state.metadataAuthor,
-                    metadataDate = state.metadataDate,
-                    audioUrl = null,
-                    videoUrl = null,
+                        mainColor = state.selectedFolder?.color ?: YabaColor.BLUE,
+                        metadataTitle = state.metadataTitle,
+                        metadataDescription = state.metadataDescription,
+                        metadataAuthor = state.metadataAuthor,
+                        metadataDate = state.metadataDate,
+                        audioUrl = null,
+                        videoUrl = null,
                 )
             }
             item {
                 BookmarkFolderSelectionContent(
-                    selectedFolder = state.selectedFolder,
-                    onSelectFolder = {
-                        creationNavigator.add(
-                            FolderSelectionRoute(
-                                mode = FolderSelectionMode.FOLDER_SELECTION,
-                                contextFolderId = null,
-                                contextBookmarkIds = null,
-                            ),
-                        )
-                    },
-                    nullModelPresentableColor = YabaColor.BLUE,
+                        selectedFolder = state.selectedFolder,
+                        onSelectFolder = {
+                            creationNavigator.add(
+                                    FolderSelectionRoute(
+                                            mode = FolderSelectionMode.FOLDER_SELECTION,
+                                            contextFolderId = null,
+                                            contextBookmarkIds = null,
+                                    ),
+                            )
+                        },
+                        nullModelPresentableColor = YabaColor.BLUE,
                 )
             }
             item {
                 BookmarkTagSelectionContent(
-                    selectedFolder = state.selectedFolder,
-                    selectedTags = state.selectedTags,
-                    onSelectTags = {
-                        creationNavigator.add(
-                            TagSelectionRoute(
-                                selectedTagIds = state.selectedTags.map { tag -> tag.id },
-                            ),
-                        )
-                    },
-                    onNavigateToEdit = { tag ->
-                        creationNavigator.add(TagCreationRoute(tagId = tag.id))
-                    },
-                    nullModelPresentableColor = YabaColor.BLUE,
+                        selectedFolder = state.selectedFolder,
+                        selectedTags = state.selectedTags,
+                        onSelectTags = {
+                            creationNavigator.add(
+                                    TagSelectionRoute(
+                                            selectedTagIds =
+                                                    state.selectedTags.map { tag -> tag.id },
+                                    ),
+                            )
+                        },
+                        onNavigateToEdit = { tag ->
+                            creationNavigator.add(TagCreationRoute(tagId = tag.id))
+                        },
+                        nullModelPresentableColor = YabaColor.BLUE,
                 )
             }
             item { Spacer(modifier = Modifier.height(36.dp)) }
@@ -342,61 +360,66 @@ fun DocmarkCreationContent(bookmarkId: String?) {
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun DocmarkPreviewContent(
-    state: DocmarkCreationUIState,
-    onChangePreviewType: () -> Unit,
-    onPickDocument: () -> Unit,
+        state: DocmarkCreationUIState,
+        onChangePreviewType: () -> Unit,
+        onPickDocument: () -> Unit,
 ) {
     val color = state.selectedFolder?.color ?: YabaColor.BLUE
 
     BookmarkPreviewContent(
-        label = stringResource(R.string.preview),
-        iconName = "image-03",
-        extraContent = {
-            BookmarkPreviewAppearanceSwitcher(
-                bookmarkAppearance = state.bookmarkAppearance,
-                cardImageSizing = state.cardImageSizing,
-                color = color,
-                onClick = onChangePreviewType,
-            )
-        },
-        content = {
-            BookmarkPreviewCard(
-                data = BookmarkPreviewData(
-                    imageData = state.previewImageBytes,
-                    label = state.label,
-                    description = state.description,
-                    selectedFolder = state.selectedFolder,
-                    selectedTags = state.selectedTags,
-                    isLoading = state.isLoading,
-                    emptyImageIconName = "doc-02",
-                ),
-                bookmarkAppearance = state.bookmarkAppearance,
-                cardImageSizing = state.cardImageSizing,
-                onClick = {},
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Button(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
-                shapes = ButtonDefaults.shapes(),
-                onClick = onPickDocument,
-                enabled = state.isLoading.not() && state.isInEditMode.not(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(color.iconTintArgb())),
-            ) {
-                YabaIcon(
-                    modifier = Modifier.padding(end = 8.dp),
-                    name = "add-circle",
-                    color = Color.White,
+            label = stringResource(R.string.preview),
+            iconName = "image-03",
+            extraContent = {
+                BookmarkPreviewAppearanceSwitcher(
+                        bookmarkAppearance = state.bookmarkAppearance,
+                        cardImageSizing = state.cardImageSizing,
+                        color = color,
+                        onClick = onChangePreviewType,
                 )
-                Text(
-                    text = if (state.documentBytes == null) {
-                        "Pick PDF or EPUB"
-                    } else {
-                        "Pick another document"
-                    },
-                    color = Color.White,
+            },
+            content = {
+                BookmarkPreviewCard(
+                        data =
+                                BookmarkPreviewData(
+                                        imageData = state.previewImageBytes,
+                                        label = state.label,
+                                        description = state.description,
+                                        selectedFolder = state.selectedFolder,
+                                        selectedTags = state.selectedTags,
+                                        isLoading = state.isLoading,
+                                        emptyImageIconName = "doc-02",
+                                ),
+                        bookmarkAppearance = state.bookmarkAppearance,
+                        cardImageSizing = state.cardImageSizing,
+                        onClick = {},
                 )
-            }
-        },
+                Spacer(modifier = Modifier.height(12.dp))
+                Button(
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
+                        shapes = ButtonDefaults.shapes(),
+                        onClick = onPickDocument,
+                        enabled = state.isLoading.not() && state.isInEditMode.not(),
+                        colors =
+                                ButtonDefaults.buttonColors(
+                                        containerColor = Color(color.iconTintArgb())
+                                ),
+                ) {
+                    YabaIcon(
+                            modifier = Modifier.padding(end = 8.dp),
+                            name = "add-circle",
+                            color = Color.White,
+                    )
+                    Text(
+                            text =
+                                    if (state.documentBytes == null) {
+                                        "Pick PDF or EPUB"
+                                    } else {
+                                        "Pick another document"
+                                    },
+                            color = Color.White,
+                    )
+                }
+            },
     )
 }
 

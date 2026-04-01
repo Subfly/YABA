@@ -31,6 +31,7 @@ data class ImagemarkCreationUIState(
 
     val editingImagemark: ImagemarkUiModel? = null,
     val isPrivate: Boolean = false,
+    val isPinned: Boolean = false,
     val uncategorizedFolderCreationRequired: Boolean = false,
 ) {
     val isInEditMode: Boolean
@@ -66,6 +67,7 @@ data class ImagemarkCreationUIState(
         if (error != other.error) return false
         if (editingImagemark != other.editingImagemark) return false
         if (isPrivate != other.isPrivate) return false
+        if (isPinned != other.isPinned) return false
         if (uncategorizedFolderCreationRequired != other.uncategorizedFolderCreationRequired) return false
         return true
     }
@@ -85,6 +87,7 @@ data class ImagemarkCreationUIState(
         result = 31 * result + (error?.hashCode() ?: 0)
         result = 31 * result + (editingImagemark?.hashCode() ?: 0)
         result = 31 * result + isPrivate.hashCode()
+        result = 31 * result + isPinned.hashCode()
         result = 31 * result + uncategorizedFolderCreationRequired.hashCode()
         return result
     }

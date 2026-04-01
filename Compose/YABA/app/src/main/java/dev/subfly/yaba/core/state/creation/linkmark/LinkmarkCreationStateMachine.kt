@@ -55,6 +55,7 @@ class LinkmarkCreationStateMachine :
             is LinkmarkCreationEvent.OnSelectTags -> onSelectTags(event)
             is LinkmarkCreationEvent.OnSave -> onSave(event)
             LinkmarkCreationEvent.OnTogglePrivate -> onTogglePrivate()
+            LinkmarkCreationEvent.OnTogglePinned -> onTogglePinned()
             LinkmarkCreationEvent.OnClearLabel -> onClearLabel()
             LinkmarkCreationEvent.OnClearDescription -> onClearDescription()
             LinkmarkCreationEvent.OnApplyFromMetadata -> onApplyFromMetadata()
@@ -104,6 +105,7 @@ class LinkmarkCreationStateMachine :
                             editingLinkmark = existing,
                             lastFetchedUrl = existing.url,
                             isPrivate = existing.isPrivate,
+                            isPinned = existing.isPinned,
                         )
                     }
 
@@ -358,6 +360,10 @@ class LinkmarkCreationStateMachine :
         updateState { it.copy(isPrivate = !it.isPrivate) }
     }
 
+    private fun onTogglePinned() {
+        updateState { it.copy(isPinned = !it.isPinned) }
+    }
+
     private fun onRefetch() {
         if (currentState().isInEditMode) return
         val currentUrl = currentState().url
@@ -441,7 +447,7 @@ class LinkmarkCreationStateMachine :
                         label = title,
                         description = state.description.ifBlank { null },
                         isPrivate = state.isPrivate,
-                        isPinned = state.editingLinkmark.isPinned,
+                        isPinned = state.isPinned,
                         previewImageBytes = null,
                         previewImageExtension = null,
                         previewIconBytes = null,
@@ -482,7 +488,7 @@ class LinkmarkCreationStateMachine :
                         label = title,
                         description = state.description.ifBlank { null },
                         isPrivate = state.isPrivate,
-                        isPinned = false,
+                        isPinned = state.isPinned,
                         tagIds = state.selectedTags.map { it.id },
                         previewImageBytes = state.imageData,
                         previewImageExtension = "jpeg",

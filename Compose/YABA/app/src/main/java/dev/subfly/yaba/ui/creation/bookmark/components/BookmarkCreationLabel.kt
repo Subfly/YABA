@@ -15,27 +15,24 @@ import dev.subfly.yaba.core.components.YabaIcon
 
 @Composable
 fun BookmarkCreationLabel(
-    modifier: Modifier = Modifier,
-    iconName: String,
-    label: String,
-    extraContent: (@Composable () -> Unit)? = null,
+        modifier: Modifier = Modifier,
+        iconName: String,
+        label: String,
+        extraContent: (@Composable () -> Unit)? = null,
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 12.dp)
-            .padding(start = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = modifier.fillMaxWidth().padding(horizontal = 12.dp).padding(start = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             YabaIcon(name = iconName)
             Text(
-                text = label,
-                style = MaterialTheme.typography.titleMedium,
+                    text = label,
+                    style = MaterialTheme.typography.titleMedium,
             )
         }
 

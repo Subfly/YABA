@@ -29,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -59,6 +60,7 @@ import dev.subfly.yaba.util.rememberPrivateBookmarkProtectedAction
 import dev.subfly.yaba.util.rememberPrivateBookmarkToggleAction
 import dev.subfly.yaba.util.yabaRightClick
 import dev.subfly.yaba.core.managers.AllBookmarksManager
+import dev.subfly.yaba.core.security.PrivateBookmarkSessionGuard
 import dev.subfly.yaba.core.model.ui.BookmarkUiModel
 import dev.subfly.yaba.core.model.utils.BookmarkAppearance
 import dev.subfly.yaba.core.model.utils.BookmarkKind
@@ -67,6 +69,11 @@ import dev.subfly.yaba.core.model.utils.FolderSelectionMode
 import dev.subfly.yaba.core.model.utils.YabaColor
 import dev.subfly.yaba.core.model.utils.uiIconName
 import kotlin.uuid.ExperimentalUuidApi
+
+private val PrivateLockedBlurShape = RoundedCornerShape(2.dp)
+
+private fun privateLockedBlurModifier(show: Boolean): Modifier =
+        if (show) Modifier.clip(PrivateLockedBlurShape).blur(24.dp) else Modifier
 
 /**
  * Entry point for bookmark item rendering.
@@ -103,6 +110,9 @@ fun BookmarkItemView(
     val creationNavigator = LocalCreationContentNavigator.current
     val deletionDialogManager = LocalDeletionDialogManager.current
     val appStateManager = LocalAppStateManager.current
+
+    val sessionUnlocked by PrivateBookmarkSessionGuard.isUnlocked.collectAsStateWithLifecycle()
+    val showPrivateLocked = model.isPrivate && !sessionUnlocked
 
     var isOptionsExpanded by remember { mutableStateOf(false) }
 
@@ -318,7 +328,7 @@ fun BookmarkItemView(
                     index = index,
                     count = count,
                     containerColor = containerColor,
-                    isPrivatePresentation = model.isPrivate,
+                    isPrivatePresentation = showPrivateLocked,
                 )
             }
 
@@ -335,7 +345,7 @@ fun BookmarkItemView(
                             menuActions = menuActions,
                             onClick = onClick,
                             onLongClick = { isOptionsExpanded = true },
-                            isPrivatePresentation = model.isPrivate,
+                            isPrivatePresentation = showPrivateLocked,
                         )
                     }
 
@@ -350,7 +360,7 @@ fun BookmarkItemView(
                             menuActions = menuActions,
                             onClick = onClick,
                             onLongClick = { isOptionsExpanded = true },
-                            isPrivatePresentation = model.isPrivate,
+                            isPrivatePresentation = showPrivateLocked,
                         )
                     }
                 }
@@ -365,7 +375,7 @@ fun BookmarkItemView(
                     isInSelectionMode = isInSelectionMode,
                     onClick = onClick,
                     onLongClick = { isOptionsExpanded = true },
-                    isPrivatePresentation = model.isPrivate,
+                    isPrivatePresentation = showPrivateLocked,
                 )
             }
         }
@@ -391,7 +401,7 @@ private fun ListItemContent(
     containerColor: Color,
     isPrivatePresentation: Boolean,
 ) {
-    val privateBlur = if (isPrivatePresentation) Modifier.blur(24.dp) else Modifier
+    val privateBlur = privateLockedBlurModifier(isPrivatePresentation)
     SegmentedListItem(
         modifier = Modifier
             .clip(RoundedCornerShape(12.dp))
@@ -470,7 +480,7 @@ private fun CardBigItemContent(
     onLongClick: () -> Unit,
     isPrivatePresentation: Boolean,
 ) {
-    val privateBlur = if (isPrivatePresentation) Modifier.blur(24.dp) else Modifier
+    val privateBlur = privateLockedBlurModifier(isPrivatePresentation)
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -580,7 +590,7 @@ private fun CardSmallItemContent(
     onLongClick: () -> Unit,
     isPrivatePresentation: Boolean,
 ) {
-    val privateBlur = if (isPrivatePresentation) Modifier.blur(24.dp) else Modifier
+    val privateBlur = privateLockedBlurModifier(isPrivatePresentation)
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -693,7 +703,7 @@ private fun GridItemContent(
     onLongClick: () -> Unit,
     isPrivatePresentation: Boolean,
 ) {
-    val privateBlur = if (isPrivatePresentation) Modifier.blur(24.dp) else Modifier
+    val privateBlur = privateLockedBlurModifier(isPrivatePresentation)
     Surface(
         modifier = Modifier
             .fillMaxWidth()

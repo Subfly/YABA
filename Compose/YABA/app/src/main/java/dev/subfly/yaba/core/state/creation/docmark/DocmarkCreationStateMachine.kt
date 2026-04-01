@@ -42,6 +42,7 @@ class DocmarkCreationStateMachine :
             is DocmarkCreationEvent.OnSelectTags -> onSelectTags(event)
             is DocmarkCreationEvent.OnSave -> onSave(event)
             DocmarkCreationEvent.OnTogglePrivate -> onTogglePrivate()
+            DocmarkCreationEvent.OnTogglePinned -> onTogglePinned()
             is DocmarkCreationEvent.OnWebInitialContentLoad -> onWebInitialContentLoad(event)
         }
     }
@@ -75,6 +76,8 @@ class DocmarkCreationStateMachine :
                             selectedTags = existing.tags,
                             editingDocmark = existing,
                             docmarkType = existing.docmarkType,
+                            isPrivate = existing.isPrivate,
+                            isPinned = existing.isPinned,
                         )
                     }
                 }
@@ -316,7 +319,7 @@ class DocmarkCreationStateMachine :
                         label = label,
                         description = state.description.ifBlank { null },
                         isPrivate = state.isPrivate,
-                        isPinned = state.editingDocmark.isPinned,
+                        isPinned = state.isPinned,
                         tagIds = state.selectedTags.map { it.id },
                     )
 
@@ -336,7 +339,7 @@ class DocmarkCreationStateMachine :
                         label = label,
                         description = state.description.ifBlank { null },
                         isPrivate = state.isPrivate,
-                        isPinned = false,
+                        isPinned = state.isPinned,
                         tagIds = state.selectedTags.map { it.id },
                         previewImageBytes = state.previewImageBytes,
                         previewImageExtension = state.previewImageExtension,
@@ -377,6 +380,10 @@ class DocmarkCreationStateMachine :
 
     private fun onTogglePrivate() {
         updateState { it.copy(isPrivate = !it.isPrivate) }
+    }
+
+    private fun onTogglePinned() {
+        updateState { it.copy(isPinned = !it.isPinned) }
     }
 
     override fun clear() {

@@ -75,5 +75,7 @@ sealed class DocmarkCreationEvent {
 
     data object OnTogglePrivate : DocmarkCreationEvent()
 
+    data object OnTogglePinned : DocmarkCreationEvent()
+
     data class OnWebInitialContentLoad(val result: WebShellLoadResult) : DocmarkCreationEvent()
 }

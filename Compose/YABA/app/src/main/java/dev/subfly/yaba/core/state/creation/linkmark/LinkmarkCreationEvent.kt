@@ -114,4 +114,6 @@ sealed class LinkmarkCreationEvent {
 
     /** Flip the private flag (after password / session guard in the UI). */
     data object OnTogglePrivate : LinkmarkCreationEvent()
+
+    data object OnTogglePinned : LinkmarkCreationEvent()
 }

@@ -26,4 +26,6 @@ sealed class NotemarkCreationEvent {
     ) : NotemarkCreationEvent()
 
     data object OnTogglePrivate : NotemarkCreationEvent()
+
+    data object OnTogglePinned : NotemarkCreationEvent()
 }

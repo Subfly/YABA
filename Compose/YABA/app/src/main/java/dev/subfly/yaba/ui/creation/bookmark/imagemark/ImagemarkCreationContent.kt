@@ -1,9 +1,5 @@
 package dev.subfly.yaba.ui.creation.bookmark.imagemark
 
-import androidx.compose.ui.res.stringResource
-
-import dev.subfly.yaba.R
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -22,33 +18,36 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import dev.subfly.yaba.R
 import dev.subfly.yaba.core.components.YabaIcon
+import dev.subfly.yaba.core.model.ui.FolderUiModel
+import dev.subfly.yaba.core.model.ui.TagUiModel
+import dev.subfly.yaba.core.model.utils.YabaColor
 import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
 import dev.subfly.yaba.core.navigation.creation.TagCreationRoute
 import dev.subfly.yaba.core.navigation.creation.TagSelectionRoute
+import dev.subfly.yaba.core.state.creation.imagemark.ImagemarkCreationEvent
+import dev.subfly.yaba.core.state.creation.imagemark.ImagemarkCreationUIState
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkCreationTopBar
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkFolderSelectionContent
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkInfoContent
-import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPrivateToggleRow
+import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPinToggleRow
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewAppearanceSwitcher
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewCard
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewContent
+import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPrivateToggleRow
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkTagSelectionContent
 import dev.subfly.yaba.ui.creation.bookmark.model.BookmarkPreviewData
-import dev.subfly.yaba.util.rememberPrivateBookmarkCreationToggle
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.ResultStoreKeys
 import dev.subfly.yaba.util.SharedImageData
-import dev.subfly.yaba.core.model.ui.FolderUiModel
-import dev.subfly.yaba.core.model.ui.TagUiModel
-import dev.subfly.yaba.core.model.utils.YabaColor
-import dev.subfly.yaba.core.state.creation.imagemark.ImagemarkCreationEvent
-import dev.subfly.yaba.core.state.creation.imagemark.ImagemarkCreationUIState
+import dev.subfly.yaba.util.rememberPrivateBookmarkCreationToggle
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
@@ -67,9 +66,9 @@ fun ImagemarkCreationContent(bookmarkId: String?) {
 
     LaunchedEffect(bookmarkId) {
         vm.onEvent(
-            ImagemarkCreationEvent.OnInit(
-                imagemarkIdString = bookmarkId,
-            )
+                ImagemarkCreationEvent.OnInit(
+                        imagemarkIdString = bookmarkId,
+                )
         )
     }
 
@@ -88,100 +87,116 @@ fun ImagemarkCreationContent(bookmarkId: String?) {
     }
 
     LaunchedEffect(resultStore.getResult(ResultStoreKeys.SHARED_IMAGE_DATA)) {
-        resultStore.getResult<SharedImageData>(
-            ResultStoreKeys.SHARED_IMAGE_DATA
-        )?.let { imageData ->
+        resultStore.getResult<SharedImageData>(ResultStoreKeys.SHARED_IMAGE_DATA)?.let { imageData
+            ->
             vm.onEvent(
-                ImagemarkCreationEvent.OnImageFromShare(
-                    bytes = imageData.bytes,
-                    extension = imageData.extension,
-                )
+                    ImagemarkCreationEvent.OnImageFromShare(
+                            bytes = imageData.bytes,
+                            extension = imageData.extension,
+                    )
             )
             resultStore.removeResult(ResultStoreKeys.SHARED_IMAGE_DATA)
         }
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(0.9f)
-            .background(color = MaterialTheme.colorScheme.surfaceContainerLow)
+            modifier =
+                    Modifier.fillMaxWidth()
+                            .fillMaxHeight(0.9f)
+                            .background(color = MaterialTheme.colorScheme.surfaceContainerLow)
     ) {
         BookmarkCreationTopBar(
-            canPerformDone = state.canSave,
-            isEditing = state.editingImagemark != null,
-            isSaving = state.isSaving,
-            onDone = {
-                vm.onEvent(
-                    ImagemarkCreationEvent.OnSave(
-                        onSavedCallback = {
-                            if (creationNavigator.size == 2) {
-                                appStateManager.onHideCreationContent()
-                            }
-                            creationNavigator.removeLastOrNull()
-                        },
-                        onErrorCallback = {}
+                canPerformDone = state.canSave,
+                isEditing = state.editingImagemark != null,
+                isSaving = state.isSaving,
+                onDone = {
+                    vm.onEvent(
+                            ImagemarkCreationEvent.OnSave(
+                                    onSavedCallback = {
+                                        if (creationNavigator.size == 2) {
+                                            appStateManager.onHideCreationContent()
+                                        }
+                                        creationNavigator.removeLastOrNull()
+                                    },
+                                    onErrorCallback = {}
+                            )
                     )
-                )
-            },
+                },
         )
         LazyColumn {
             item {
                 ImagemarkPreviewContent(
-                    state = state,
-                    onChangePreviewType = { vm.onEvent(ImagemarkCreationEvent.OnCyclePreviewAppearance) },
-                    onPickFromGallery = { vm.onEvent(ImagemarkCreationEvent.OnPickFromGallery) },
-                    onCaptureFromCamera = { vm.onEvent(ImagemarkCreationEvent.OnCaptureFromCamera) },
+                        state = state,
+                        onChangePreviewType = {
+                            vm.onEvent(ImagemarkCreationEvent.OnCyclePreviewAppearance)
+                        },
+                        onPickFromGallery = {
+                            vm.onEvent(ImagemarkCreationEvent.OnPickFromGallery)
+                        },
+                        onCaptureFromCamera = {
+                            vm.onEvent(ImagemarkCreationEvent.OnCaptureFromCamera)
+                        },
                 )
             }
             item {
                 BookmarkInfoContent(
-                    label = state.label,
-                    description = state.description,
-                    onChangeLabel = { vm.onEvent(ImagemarkCreationEvent.OnChangeLabel(it)) },
-                    onChangeDescription = { vm.onEvent(ImagemarkCreationEvent.OnChangeDescription(it)) },
-                    selectedFolder = state.selectedFolder,
-                    enabled = state.isLoading.not(),
-                    labelPlaceholder = R.string.create_bookmark_title_placeholder,
+                        label = state.label,
+                        description = state.description,
+                        onChangeLabel = { vm.onEvent(ImagemarkCreationEvent.OnChangeLabel(it)) },
+                        onChangeDescription = {
+                            vm.onEvent(ImagemarkCreationEvent.OnChangeDescription(it))
+                        },
+                        selectedFolder = state.selectedFolder,
+                        enabled = state.isLoading.not(),
+                        labelPlaceholder = R.string.create_bookmark_title_placeholder,
                 )
             }
             item {
                 BookmarkPrivateToggleRow(
-                    isPrivate = state.isPrivate,
-                    enabled = state.isLoading.not(),
-                    onClick = onPrivateToggle,
+                        isPrivate = state.isPrivate,
+                        enabled = state.isLoading.not(),
+                        onClick = onPrivateToggle,
+                )
+            }
+            item {
+                BookmarkPinToggleRow(
+                        isPinned = state.isPinned,
+                        enabled = state.isLoading.not(),
+                        onClick = { vm.onEvent(ImagemarkCreationEvent.OnTogglePinned) },
                 )
             }
             item {
                 BookmarkFolderSelectionContent(
-                    selectedFolder = state.selectedFolder,
-                    onSelectFolder = {
-                        creationNavigator.add(
-                            FolderSelectionRoute(
-                                mode = dev.subfly.yaba.core.model.utils.FolderSelectionMode.FOLDER_SELECTION,
-                                contextFolderId = null,
-                                contextBookmarkIds = null,
+                        selectedFolder = state.selectedFolder,
+                        onSelectFolder = {
+                            creationNavigator.add(
+                                    FolderSelectionRoute(
+                                            mode =
+                                                    dev.subfly.yaba.core.model.utils
+                                                            .FolderSelectionMode.FOLDER_SELECTION,
+                                            contextFolderId = null,
+                                            contextBookmarkIds = null,
+                                    )
                             )
-                        )
-                    },
-                    nullModelPresentableColor = YabaColor.BLUE,
+                        },
+                        nullModelPresentableColor = YabaColor.BLUE,
                 )
             }
             item {
                 BookmarkTagSelectionContent(
-                    selectedFolder = state.selectedFolder,
-                    selectedTags = state.selectedTags,
-                    onSelectTags = {
-                        creationNavigator.add(
-                            TagSelectionRoute(
-                                selectedTagIds = state.selectedTags.map { it.id }
+                        selectedFolder = state.selectedFolder,
+                        selectedTags = state.selectedTags,
+                        onSelectTags = {
+                            creationNavigator.add(
+                                    TagSelectionRoute(
+                                            selectedTagIds = state.selectedTags.map { it.id }
+                                    )
                             )
-                        )
-                    },
-                    onNavigateToEdit = { tag ->
-                        creationNavigator.add(TagCreationRoute(tagId = tag.id))
-                    },
-                    nullModelPresentableColor = YabaColor.BLUE,
+                        },
+                        onNavigateToEdit = { tag ->
+                            creationNavigator.add(TagCreationRoute(tagId = tag.id))
+                        },
+                        nullModelPresentableColor = YabaColor.BLUE,
                 )
             }
             item { Spacer(modifier = Modifier.height(36.dp)) }
@@ -192,79 +207,82 @@ fun ImagemarkCreationContent(bookmarkId: String?) {
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun ImagemarkPreviewContent(
-    state: ImagemarkCreationUIState,
-    onChangePreviewType: () -> Unit,
-    onPickFromGallery: () -> Unit,
-    onCaptureFromCamera: () -> Unit,
+        state: ImagemarkCreationUIState,
+        onChangePreviewType: () -> Unit,
+        onPickFromGallery: () -> Unit,
+        onCaptureFromCamera: () -> Unit,
 ) {
     val color = state.selectedFolder?.color ?: YabaColor.BLUE
 
     BookmarkPreviewContent(
-        label = stringResource(R.string.preview),
-        iconName = "image-03",
-        extraContent = {
-            BookmarkPreviewAppearanceSwitcher(
-                bookmarkAppearance = state.bookmarkAppearance,
-                cardImageSizing = state.cardImageSizing,
-                color = color,
-                onClick = onChangePreviewType,
-            )
-        },
-        content = {
-            BookmarkPreviewCard(
-                data = BookmarkPreviewData(
-                    imageData = state.imageBytes,
-                    label = state.label,
-                    description = state.description,
-                    selectedFolder = state.selectedFolder,
-                    selectedTags = state.selectedTags,
-                    isLoading = state.isLoading,
-                    emptyImageIconName = "image-03",
-                ),
-                bookmarkAppearance = state.bookmarkAppearance,
-                cardImageSizing = state.cardImageSizing,
-                onClick = {},
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Button(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
-                onClick = onPickFromGallery,
-                shapes = ButtonDefaults.shapes(),
-                enabled = state.isLoading.not() && state.isInEditMode.not(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(color.iconTintArgb()),
-                ),
-            ) {
-                YabaIcon(
-                    modifier = Modifier.padding(end = 8.dp),
-                    name = "add-circle",
-                    color = Color.White,
+            label = stringResource(R.string.preview),
+            iconName = "image-03",
+            extraContent = {
+                BookmarkPreviewAppearanceSwitcher(
+                        bookmarkAppearance = state.bookmarkAppearance,
+                        cardImageSizing = state.cardImageSizing,
+                        color = color,
+                        onClick = onChangePreviewType,
                 )
-                Text(
-                    text = "Pick From Gallery",
-                    color = Color.White,
+            },
+            content = {
+                BookmarkPreviewCard(
+                        data =
+                                BookmarkPreviewData(
+                                        imageData = state.imageBytes,
+                                        label = state.label,
+                                        description = state.description,
+                                        selectedFolder = state.selectedFolder,
+                                        selectedTags = state.selectedTags,
+                                        isLoading = state.isLoading,
+                                        emptyImageIconName = "image-03",
+                                ),
+                        bookmarkAppearance = state.bookmarkAppearance,
+                        cardImageSizing = state.cardImageSizing,
+                        onClick = {},
                 )
-            }
-            Spacer(modifier = Modifier.height(4.dp))
-            Button(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
-                onClick = onCaptureFromCamera,
-                shapes = ButtonDefaults.shapes(),
-                enabled = state.isLoading.not() && state.isInEditMode.not(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(color.iconTintArgb()),
-                ),
-            ) {
-                YabaIcon(
-                    modifier = Modifier.padding(end = 8.dp),
-                    name = "camera-01",
-                    color = Color.White,
-                )
-                Text(
-                    text = "Take Photo",
-                    color = Color.White,
-                )
-            }
-        },
+                Spacer(modifier = Modifier.height(12.dp))
+                Button(
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
+                        onClick = onPickFromGallery,
+                        shapes = ButtonDefaults.shapes(),
+                        enabled = state.isLoading.not() && state.isInEditMode.not(),
+                        colors =
+                                ButtonDefaults.buttonColors(
+                                        containerColor = Color(color.iconTintArgb()),
+                                ),
+                ) {
+                    YabaIcon(
+                            modifier = Modifier.padding(end = 8.dp),
+                            name = "add-circle",
+                            color = Color.White,
+                    )
+                    Text(
+                            text = "Pick From Gallery",
+                            color = Color.White,
+                    )
+                }
+                Spacer(modifier = Modifier.height(4.dp))
+                Button(
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
+                        onClick = onCaptureFromCamera,
+                        shapes = ButtonDefaults.shapes(),
+                        enabled = state.isLoading.not() && state.isInEditMode.not(),
+                        colors =
+                                ButtonDefaults.buttonColors(
+                                        containerColor = Color(color.iconTintArgb()),
+                                ),
+                ) {
+                    YabaIcon(
+                            modifier = Modifier.padding(end = 8.dp),
+                            name = "camera-01",
+                            color = Color.White,
+                    )
+                    Text(
+                            text = "Take Photo",
+                            color = Color.White,
+                    )
+                }
+            },
     )
 }

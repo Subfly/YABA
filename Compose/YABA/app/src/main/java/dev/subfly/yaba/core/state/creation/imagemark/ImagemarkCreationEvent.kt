@@ -90,4 +90,6 @@ sealed class ImagemarkCreationEvent {
     ) : ImagemarkCreationEvent()
 
     data object OnTogglePrivate : ImagemarkCreationEvent()
+
+    data object OnTogglePinned : ImagemarkCreationEvent()
 }
