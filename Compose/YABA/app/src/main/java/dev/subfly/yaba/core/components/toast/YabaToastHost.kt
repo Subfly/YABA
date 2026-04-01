@@ -7,6 +7,8 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -34,6 +37,15 @@ fun YabaToastHost(modifier: Modifier = Modifier) {
             modifier = modifier.fillMaxSize(),
             contentAlignment = if (isMobile) Alignment.BottomCenter else Alignment.BottomEnd,
         ) {
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() },
+                        onClick = { ToastManager.dismissAll() },
+                    ),
+            )
             Column(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -46,15 +58,15 @@ fun YabaToastHost(modifier: Modifier = Modifier) {
                             slideInVertically(initialOffsetY = { it }) + fadeIn()
                         } else {
                             slideInVertically(initialOffsetY = { it / 2 }) +
-                                slideInHorizontally(initialOffsetX = { it / 2 }) +
-                                fadeIn()
+                                    slideInHorizontally(initialOffsetX = { it / 2 }) +
+                                    fadeIn()
                         },
                         exit = if (isMobile) {
                             slideOutVertically(targetOffsetY = { it }) + fadeOut()
                         } else {
                             slideOutVertically(targetOffsetY = { it / 2 }) +
-                                slideOutHorizontally(targetOffsetX = { it }) +
-                                fadeOut()
+                                    slideOutHorizontally(targetOffsetX = { it }) +
+                                    fadeOut()
                         },
                     ) {
                         YabaToast(
