@@ -3,6 +3,7 @@ package dev.subfly.yaba.core.navigation.creation
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -37,6 +38,6 @@ fun YabaCreationDialog() {
         BasicAlertDialog(
             modifier = Modifier.clip(RoundedCornerShape(16.dp)),
             onDismissRequest = appStateManager::onShowCreationContent
-        ){ YabaCreationNavigationView() }
+        ){ Surface { YabaCreationNavigationView() } }
     }
 }
