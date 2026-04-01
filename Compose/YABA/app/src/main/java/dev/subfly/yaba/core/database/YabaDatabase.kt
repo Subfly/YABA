@@ -11,7 +11,6 @@ import dev.subfly.yaba.core.database.dao.AnnotationDao
 import dev.subfly.yaba.core.database.dao.ImageBookmarkDao
 import dev.subfly.yaba.core.database.dao.LinkBookmarkDao
 import dev.subfly.yaba.core.database.dao.NoteBookmarkDao
-import dev.subfly.yaba.core.database.dao.ReadableAssetDao
 import dev.subfly.yaba.core.database.dao.ReadableVersionDao
 import dev.subfly.yaba.core.database.dao.TagBookmarkDao
 import dev.subfly.yaba.core.database.dao.TagDao
@@ -22,7 +21,6 @@ import dev.subfly.yaba.core.database.entities.AnnotationEntity
 import dev.subfly.yaba.core.database.entities.ImageBookmarkEntity
 import dev.subfly.yaba.core.database.entities.LinkBookmarkEntity
 import dev.subfly.yaba.core.database.entities.NoteBookmarkEntity
-import dev.subfly.yaba.core.database.entities.ReadableAssetEntity
 import dev.subfly.yaba.core.database.entities.ReadableVersionEntity
 import dev.subfly.yaba.core.database.entities.TagBookmarkCrossRef
 import dev.subfly.yaba.core.database.entities.TagEntity
@@ -41,7 +39,6 @@ const val YABA_DATABASE_FILE_NAME = "yaba.db"
         DocBookmarkEntity::class,
         NoteBookmarkEntity::class,
         ReadableVersionEntity::class,
-        ReadableAssetEntity::class,
         AnnotationEntity::class,
     ],
     version = YABA_DATABASE_VERSION,
@@ -58,6 +55,5 @@ abstract class YabaDatabase : RoomDatabase() {
     abstract fun noteBookmarkDao(): NoteBookmarkDao
     abstract fun tagBookmarkDao(): TagBookmarkDao
     abstract fun readableVersionDao(): ReadableVersionDao
-    abstract fun readableAssetDao(): ReadableAssetDao
     abstract fun annotationDao(): AnnotationDao
 }

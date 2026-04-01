@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "b547efdc4f45cc7510276b381f2d0343",
+    "identityHash": "99403e3d2556aef78621a85684dc7fb4",
     "entities": [
       {
         "tableName": "bookmarks",
@@ -719,60 +719,6 @@
         ]
       },
       {
-        "tableName": "readable_assets",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `bookmarkId` TEXT NOT NULL, `relativePath` TEXT NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`bookmarkId`) REFERENCES `bookmarks`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "bookmarkId",
-            "columnName": "bookmarkId",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "relativePath",
-            "columnName": "relativePath",
-            "affinity": "TEXT",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "id"
-          ]
-        },
-        "indices": [
-          {
-            "name": "index_readable_assets_bookmarkId",
-            "unique": false,
-            "columnNames": [
-              "bookmarkId"
-            ],
-            "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_readable_assets_bookmarkId` ON `${TABLE_NAME}` (`bookmarkId`)"
-          }
-        ],
-        "foreignKeys": [
-          {
-            "table": "bookmarks",
-            "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "bookmarkId"
-            ],
-            "referencedColumns": [
-              "id"
-            ]
-          }
-        ]
-      },
-      {
         "tableName": "annotations",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `bookmarkId` TEXT NOT NULL, `readableVersionId` TEXT NOT NULL, `type` TEXT NOT NULL, `colorRole` INTEGER NOT NULL, `note` TEXT, `quoteText` TEXT, `extrasJson` TEXT, `createdAt` INTEGER NOT NULL, `editedAt` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`bookmarkId`) REFERENCES `bookmarks`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`readableVersionId`) REFERENCES `readable_versions`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
@@ -907,7 +853,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b547efdc4f45cc7510276b381f2d0343')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '99403e3d2556aef78621a85684dc7fb4')"
     ]
   }
 }

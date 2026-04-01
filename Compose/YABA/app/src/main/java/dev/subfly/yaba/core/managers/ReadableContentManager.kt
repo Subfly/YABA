@@ -4,12 +4,9 @@ import dev.subfly.yaba.core.common.CoreConstants
 import dev.subfly.yaba.core.common.IdGenerator
 import dev.subfly.yaba.core.database.DatabaseProvider
 import dev.subfly.yaba.core.database.entities.AnnotationEntity
-import dev.subfly.yaba.core.database.entities.ReadableAssetEntity
 import dev.subfly.yaba.core.database.entities.ReadableVersionEntity
-import dev.subfly.yaba.core.filesystem.BookmarkFileManager
 import dev.subfly.yaba.core.filesystem.access.FileAccessProvider
 import dev.subfly.yaba.core.model.ui.AnnotationUiModel
-import dev.subfly.yaba.core.model.ui.ReadableAssetUiModel
 import dev.subfly.yaba.core.model.ui.ReadableVersionUiModel
 import dev.subfly.yaba.core.queue.CoreOperationQueue
 import dev.subfly.yaba.core.unfurl.ReadableAsset
@@ -35,7 +32,6 @@ import kotlin.time.Clock
  */
 object ReadableContentManager {
     private val readableVersionDao get() = DatabaseProvider.readableVersionDao
-    private val readableAssetDao get() = DatabaseProvider.readableAssetDao
     private val annotationDao get() = DatabaseProvider.annotationDao
     private val accessProvider = FileAccessProvider
 
@@ -97,9 +93,9 @@ object ReadableContentManager {
         val versionId = IdGenerator.newId()
         val createdAt = Clock.System.now().toEpochMilliseconds()
 
-        val savedAssets = saveAssets(bookmarkId, readable.assets)
+        saveAssets(bookmarkId, readable.assets)
         saveJsonVersion(bookmarkId, versionId, readable.documentJson)
-        updateRoomIndex(bookmarkId, versionId, createdAt, savedAssets)
+        updateRoomIndex(bookmarkId, versionId, createdAt)
         return versionId
     }
 
@@ -119,8 +115,7 @@ object ReadableContentManager {
     private suspend fun saveAssets(
         bookmarkId: String,
         assets: List<ReadableAsset>,
-    ): List<SavedAssetInfo> {
-        val result = ArrayList<SavedAssetInfo>(assets.size)
+    ) {
         for (asset in assets) {
             val relativePath = CoreConstants.FileSystem.Linkmark.assetPath(
                 bookmarkId,
@@ -133,22 +128,13 @@ object ReadableContentManager {
                     file.write(asset.bytes)
                 }
             }
-            result.add(
-                SavedAssetInfo(
-                    assetId = asset.assetId,
-                    extension = asset.extension,
-                    relativePath = relativePath,
-                ),
-            )
         }
-        return result
     }
 
     private suspend fun updateRoomIndex(
         bookmarkId: String,
         versionId: String,
         createdAt: Long,
-        savedAssets: List<SavedAssetInfo>,
     ) {
         val relativePath = CoreConstants.FileSystem.Linkmark.readableVersionPath(bookmarkId, versionId)
         val versionEntity = ReadableVersionEntity(
@@ -158,15 +144,6 @@ object ReadableContentManager {
             relativePath = relativePath,
         )
         readableVersionDao.upsert(versionEntity)
-
-        for (asset in savedAssets) {
-            val assetEntity = ReadableAssetEntity(
-                id = asset.assetId,
-                bookmarkId = bookmarkId,
-                relativePath = asset.relativePath,
-            )
-            readableAssetDao.upsert(assetEntity)
-        }
     }
 
     suspend fun readVersionByPath(relativePath: String): String? =
@@ -203,18 +180,7 @@ object ReadableContentManager {
         versionEntity: ReadableVersionEntity,
     ): ReadableVersionUiModel {
         val bodyContent = readVersionByPath(versionEntity.relativePath)
-        val assets = readableAssetDao.getByBookmarkId(bookmarkId)
         val annotations = annotationDao.getByBookmarkId(bookmarkId, readableVersionId = versionEntity.id)
-
-        val assetsUi = mutableListOf<ReadableAssetUiModel>()
-        assets.forEach { entity ->
-            assetsUi.add(
-                ReadableAssetUiModel(
-                    assetId = entity.id,
-                    absolutePath = BookmarkFileManager.getAbsolutePath(entity.relativePath),
-                ),
-            )
-        }
 
         val annotationsUi = annotations.map { it.toAnnotationUiModel() }
 
@@ -222,7 +188,6 @@ object ReadableContentManager {
             versionId = versionEntity.id,
             createdAt = versionEntity.createdAt,
             body = bodyContent,
-            assets = assetsUi,
             annotations = annotationsUi,
         )
     }
@@ -238,10 +203,4 @@ object ReadableContentManager {
             createdAt = createdAt,
             editedAt = editedAt,
         )
-
-    private data class SavedAssetInfo(
-        val assetId: String,
-        val extension: String,
-        val relativePath: String,
-    )
 }

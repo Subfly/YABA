@@ -9,7 +9,6 @@ import dev.subfly.yaba.core.database.dao.AnnotationDao
 import dev.subfly.yaba.core.database.dao.ImageBookmarkDao
 import dev.subfly.yaba.core.database.dao.LinkBookmarkDao
 import dev.subfly.yaba.core.database.dao.NoteBookmarkDao
-import dev.subfly.yaba.core.database.dao.ReadableAssetDao
 import dev.subfly.yaba.core.database.dao.ReadableVersionDao
 import dev.subfly.yaba.core.database.dao.TagBookmarkDao
 import dev.subfly.yaba.core.database.dao.TagDao
@@ -78,9 +77,6 @@ object DatabaseProvider {
 
     val readableVersionDao: ReadableVersionDao
         get() = database().readableVersionDao()
-
-    val readableAssetDao: ReadableAssetDao
-        get() = database().readableAssetDao()
 
     val annotationDao: AnnotationDao
         get() = database().annotationDao()
