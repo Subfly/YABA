@@ -1,8 +1,7 @@
 {
   "metadata": {
     "id": "check",
-    "name": "Check",
-    "description": "Check stroke-rounded icons from HugeIcons",
+    "name": "Checks and Status",
     "main_category": "check",
     "icon_count": 39,
     "version": "3.0"

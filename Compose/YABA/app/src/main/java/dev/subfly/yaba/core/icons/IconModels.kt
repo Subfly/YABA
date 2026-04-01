@@ -7,10 +7,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class IconHeaderMetadata(
     @SerialName("total_categories") val totalCategories: Int? = null,
-    @SerialName("total_subcategories") val totalSubcategories: Int? = null,
     @SerialName("total_icons") val totalIcons: Int? = null,
     val version: String? = null,
-    val description: String? = null,
 )
 
 @Serializable
@@ -24,39 +22,24 @@ data class IconHeaderFile(
 data class IconCategory(
     val id: String,
     val name: String,
-    val description: String,
     @SerialName("icon_count") val iconCount: Int,
     val filename: String,
     @SerialName("header_icon") val headerIcon: String,
     val color: Int,
-    val subcategories: List<IconSubcategory>,
 )
 
 @Serializable
-@Stable
-data class IconSubcategory(
+internal data class IconCategoryMetadata(
     val id: String,
     val name: String,
-    val description: String,
-    @SerialName("header_icon") val headerIcon: String,
-    val color: Int,
-    @SerialName("icon_count") val iconCount: Int,
-    val filename: String,
-)
-
-@Serializable
-internal data class IconSubcategoryMetadata(
-    val id: String,
-    val name: String,
-    val description: String,
     @SerialName("main_category") val mainCategory: String,
     @SerialName("icon_count") val iconCount: Int,
     val version: String? = null,
 )
 
 @Serializable
-internal data class IconSubcategoryFile(
-    val metadata: IconSubcategoryMetadata,
+internal data class IconCategoryFile(
+    val metadata: IconCategoryMetadata,
     val icons: List<IconItem>,
 )
 

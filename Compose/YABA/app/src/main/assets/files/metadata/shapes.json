@@ -1,8 +1,7 @@
 {
   "metadata": {
     "id": "shapes",
-    "name": "Shapes",
-    "description": "Shapes stroke-rounded icons from HugeIcons",
+    "name": "Basic Shapes",
     "main_category": "shapes",
     "icon_count": 15,
     "version": "3.0"

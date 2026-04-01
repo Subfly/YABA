@@ -1,8 +1,7 @@
 {
   "metadata": {
     "id": "maps",
-    "name": "Maps",
-    "description": "Maps stroke-rounded icons from HugeIcons",
+    "name": "Maps and Location",
     "main_category": "maps",
     "icon_count": 99,
     "version": "3.0"

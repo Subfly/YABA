@@ -1,8 +1,7 @@
 {
   "metadata": {
     "id": "download_upload",
-    "name": "Download Upload",
-    "description": "Download Upload stroke-rounded icons from HugeIcons",
+    "name": "Upload and Download",
     "main_category": "download_upload",
     "icon_count": 20,
     "version": "3.0"

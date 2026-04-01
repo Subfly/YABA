@@ -12,8 +12,8 @@ class IconSelectionStateMachine :
 
     private var loadIconsJob: Job? = null
 
-    /** Session cache so revisiting the same subcategory does not re-read assets. */
-    private val iconsBySubcategoryId = mutableMapOf<String, List<IconItem>>()
+    /** Session cache so revisiting the same category does not re-read assets. */
+    private val iconsByCategoryId = mutableMapOf<String, List<IconItem>>()
 
     override fun onEvent(event: IconSelectionEvent) {
         when (event) {
@@ -23,7 +23,7 @@ class IconSelectionStateMachine :
     }
 
     private fun onInit(event: IconSelectionEvent.OnInit) {
-        val sub = event.subcategory
+        val category = event.category
         loadIconsJob?.cancel()
 
         updateState {
@@ -34,7 +34,7 @@ class IconSelectionStateMachine :
             )
         }
 
-        val cached = iconsBySubcategoryId[sub.id]
+        val cached = iconsByCategoryId[category.id]
         if (cached != null) {
             updateState {
                 it.copy(
@@ -49,8 +49,8 @@ class IconSelectionStateMachine :
             launch {
                 val currentJob = coroutineContext[Job]!!
                 try {
-                    val icons = IconManager.loadIconsForSubcategory(sub)
-                    iconsBySubcategoryId[sub.id] = icons
+                    val icons = IconManager.loadIconsForCategory(category)
+                    iconsByCategoryId[category.id] = icons
                     updateState { it.copy(icons = icons, isLoadingIcons = false) }
                 } finally {
                     if (loadIconsJob === currentJob) {
@@ -71,7 +71,7 @@ class IconSelectionStateMachine :
     override fun clear() {
         loadIconsJob?.cancel()
         loadIconsJob = null
-        iconsBySubcategoryId.clear()
+        iconsByCategoryId.clear()
         super.clear()
     }
 }

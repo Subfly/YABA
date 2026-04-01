@@ -86,7 +86,7 @@ fun YabaCreationNavigationView(
             entry<IconSelectionRoute> { key ->
                 IconSelectionContent(
                     currentSelectedIcon = key.selectedIcon,
-                    selectedSubcategory = key.selectedSubcategory,
+                    selectedCategory = key.selectedCategory,
                 )
             }
             entry<BookmarkCreationRoute> {

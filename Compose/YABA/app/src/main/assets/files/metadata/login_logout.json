@@ -1,8 +1,7 @@
 {
   "metadata": {
     "id": "login_logout",
-    "name": "Login Logout",
-    "description": "Login Logout stroke-rounded icons from HugeIcons",
+    "name": "Login and Logout",
     "main_category": "login_logout",
     "icon_count": 16,
     "version": "3.0"

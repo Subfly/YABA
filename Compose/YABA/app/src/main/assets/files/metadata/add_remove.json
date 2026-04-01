@@ -1,8 +1,7 @@
 {
   "metadata": {
     "id": "add_remove",
-    "name": "Add Remove",
-    "description": "Add Remove stroke-rounded icons from HugeIcons",
+    "name": "Plus and Minus",
     "main_category": "add_remove",
     "icon_count": 27,
     "version": "3.0"

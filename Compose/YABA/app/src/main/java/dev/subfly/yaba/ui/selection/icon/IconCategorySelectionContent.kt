@@ -33,19 +33,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.core.components.YabaIcon
 import dev.subfly.yaba.core.navigation.creation.IconSelectionRoute
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.core.icons.IconCategory
-import dev.subfly.yaba.core.icons.IconSubcategory
 import dev.subfly.yaba.core.model.utils.YabaColor
 import dev.subfly.yaba.core.state.selection.icon.IconCategorySelectionEvent
 
-// TODO(localization): Category/subcategory titles and descriptions come from bundled JSON (English).
-// Wire these fields to string resources when icon taxonomy is localized.
+// TODO(localization): Category names come from bundled JSON (English).
 
 @Composable
 fun IconCategorySelectionContent(currentSelectedIcon: String) {
@@ -71,11 +68,11 @@ fun IconCategorySelectionContent(currentSelectedIcon: String) {
         Spacer(modifier = Modifier.height(12.dp))
         SelectionContent(
             categories = state.categories,
-            onSelectedSubcategory = { selectedSubcategory ->
+            onSelectedCategory = { selectedCategory ->
                 creationNavigator.add(
                     IconSelectionRoute(
                         selectedIcon = currentSelectedIcon,
-                        selectedSubcategory = selectedSubcategory
+                        selectedCategory = selectedCategory,
                     )
                 )
             }
@@ -107,67 +104,42 @@ private fun TopBar(
 @Composable
 private fun SelectionContent(
     categories: List<IconCategory>,
-    onSelectedSubcategory: (IconSubcategory) -> Unit,
+    onSelectedCategory: (IconCategory) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier.padding(horizontal = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(32.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         items(
             items = categories,
             key = { it.id },
         ) { category ->
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Row(
-                    modifier = Modifier.padding(bottom = 4.dp).padding(horizontal = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    val color = YabaColor.fromCode(category.color)
-                    YabaIcon(
-                        name = category.headerIcon,
-                        color = color,
-                    )
+            SegmentedListItem(
+                modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)),
+                onClick = { onSelectedCategory(category) },
+                shapes = ListItemDefaults.segmentedShapes(index = 0, count = 1),
+                content = {
                     Text(
                         text = category.name,
-                        style = MaterialTheme.typography.bodyLargeEmphasized,
-                        color = Color(color.iconTintArgb()),
+                        style = MaterialTheme.typography.bodyLarge,
                     )
-                }
-                category.subcategories.fastForEachIndexed { index, subcategory ->
-                    SegmentedListItem(
-                        modifier = Modifier.clip(RoundedCornerShape(8.dp)),
-                        onClick = { onSelectedSubcategory(subcategory) },
-                        shapes = ListItemDefaults.segmentedShapes(index = index, count = category.subcategories.size),
-                        content = {
-                            Text(subcategory.name)
-                        },
-                        leadingContent = {
-                            YabaIcon(
-                                name = subcategory.headerIcon,
-                                color = YabaColor.fromCode(subcategory.color)
-                            )
-                        },
-                        trailingContent = {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                Text(text = "${subcategory.iconCount}")
-                                YabaIcon(name = "arrow-right-01")
-                            }
-                        },
+                },
+                leadingContent = {
+                    YabaIcon(
+                        name = category.headerIcon,
+                        color = YabaColor.fromCode(category.color),
                     )
-                }
-                Text(
-                    modifier = Modifier.padding(top = 4.dp).padding(horizontal = 12.dp),
-                    text = category.description,
-                    style = MaterialTheme.typography.bodySmallEmphasized,
-                )
-            }
+                },
+                trailingContent = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        Text(text = "${category.iconCount}")
+                        YabaIcon(name = "arrow-right-01")
+                    }
+                },
+            )
         }
         item { Spacer(modifier = Modifier.height(8.dp)) }
     }

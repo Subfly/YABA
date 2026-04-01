@@ -1,8 +1,7 @@
 {
   "metadata": {
     "id": "layout",
-    "name": "Layout",
-    "description": "Layout stroke-rounded icons from HugeIcons",
+    "name": "Layout and Grid",
     "main_category": "layout",
     "icon_count": 43,
     "version": "3.0"

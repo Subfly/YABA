@@ -41,16 +41,16 @@ import dev.subfly.yaba.core.components.YabaIcon
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.ResultStoreKeys
+import dev.subfly.yaba.core.icons.IconCategory
 import dev.subfly.yaba.core.icons.IconItem
-import dev.subfly.yaba.core.icons.IconSubcategory
 import dev.subfly.yaba.core.state.selection.icon.IconSelectionEvent
 
-// TODO(localization): Subcategory title is from bundled JSON; add string resources when localizing taxonomy.
+// TODO(localization): Category title is from bundled JSON; add string resources when localizing taxonomy.
 
 @Composable
 fun IconSelectionContent(
     currentSelectedIcon: String,
-    selectedSubcategory: IconSubcategory,
+    selectedCategory: IconCategory,
 ) {
     val creationNavigator = LocalCreationContentNavigator.current
     val resultStore = LocalResultStore.current
@@ -58,10 +58,10 @@ fun IconSelectionContent(
     val vm = viewModel { IconSelectionVM() }
     val state by vm.state.collectAsStateWithLifecycle()
 
-    LaunchedEffect(selectedSubcategory.id, currentSelectedIcon) {
+    LaunchedEffect(selectedCategory.id, currentSelectedIcon) {
         vm.onEvent(
             IconSelectionEvent.OnInit(
-                subcategory = selectedSubcategory,
+                category = selectedCategory,
                 initialSelectedIcon = currentSelectedIcon,
             )
         )
@@ -75,7 +75,7 @@ fun IconSelectionContent(
     ) {
         IconSelectionTopBar(
             modifier = Modifier.padding(horizontal = 8.dp),
-            title = selectedSubcategory.name,
+            title = selectedCategory.name,
             isLoading = state.isLoadingIcons,
             onDone = {
                 resultStore.setResult(

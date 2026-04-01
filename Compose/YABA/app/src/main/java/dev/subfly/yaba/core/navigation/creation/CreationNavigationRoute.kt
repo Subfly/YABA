@@ -4,7 +4,7 @@ package dev.subfly.yaba.core.navigation.creation
 
 import androidx.navigation3.runtime.NavKey
 import androidx.savedstate.serialization.SavedStateConfiguration
-import dev.subfly.yaba.core.icons.IconSubcategory
+import dev.subfly.yaba.core.icons.IconCategory
 import dev.subfly.yaba.core.model.annotation.ReadableSelectionDraft
 import dev.subfly.yaba.core.model.utils.FolderSelectionMode
 import dev.subfly.yaba.core.model.utils.YabaColor
@@ -108,7 +108,7 @@ data class IconCategorySelectionRoute(
 data class IconSelectionRoute(
     val routeId: String = Uuid.generateV4().toString(),
     val selectedIcon: String,
-    val selectedSubcategory: IconSubcategory,
+    val selectedCategory: IconCategory,
 ): NavKey
 
 @Serializable

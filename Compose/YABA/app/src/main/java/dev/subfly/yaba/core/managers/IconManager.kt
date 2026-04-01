@@ -1,17 +1,16 @@
 package dev.subfly.yaba.core.managers
 
 import dev.subfly.yaba.core.icons.IconCategory
+import dev.subfly.yaba.core.icons.IconCategoryFile
 import dev.subfly.yaba.core.icons.IconHeaderFile
 import dev.subfly.yaba.core.icons.IconItem
-import dev.subfly.yaba.core.icons.IconSubcategory
-import dev.subfly.yaba.core.icons.IconSubcategoryFile
 import dev.subfly.yaba.core.util.BundleReader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 
 /**
- * Read-only access to bundled icon taxonomy and per-subcategory icon lists.
+ * Read-only access to bundled icon taxonomy and per-category icon lists.
  *
  * Requires [dev.subfly.yaba.core.filesystem.access.FileAccessProvider.initialize] before first use
  * (bundled JSON is read from `assets/files/metadata/`).
@@ -25,7 +24,7 @@ object IconManager {
     private val json = Json { ignoreUnknownKeys = true }
 
     /**
-     * Loads the full category tree (each category includes its subcategories and metadata).
+     * Loads all icon categories.
      */
     suspend fun loadAllCategories(): List<IconCategory> =
         withContext(Dispatchers.IO) {
@@ -35,13 +34,13 @@ object IconManager {
         }
 
     /**
-     * Loads icon names for the given [subcategory] from its bundled JSON file.
+     * Loads icon names for the given [category] from its bundled JSON file.
      */
-    suspend fun loadIconsForSubcategory(subcategory: IconSubcategory): List<IconItem> =
+    suspend fun loadIconsForCategory(category: IconCategory): List<IconItem> =
         withContext(Dispatchers.IO) {
-            val path = "$METADATA_DIR/${subcategory.filename}"
+            val path = "$METADATA_DIR/${category.filename}"
             val raw = BundleReader.readAssetText(path)
-            val parsed = json.decodeFromString<IconSubcategoryFile>(raw)
+            val parsed = json.decodeFromString<IconCategoryFile>(raw)
             parsed.icons
         }
 }

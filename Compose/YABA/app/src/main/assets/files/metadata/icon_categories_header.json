@@ -1,1171 +1,473 @@
 {
   "metadata": {
     "total_categories": 58,
-    "total_subcategories": 58,
     "total_icons": 4478,
-    "version": "3.0",
-    "description": "HugeIcons stroke-rounded categories (generated; TODO: localize)"
+    "version": "3.0"
   },
   "categories": [
     {
       "id": "add_remove",
-      "name": "Add Remove",
-      "description": "Browse Add Remove icons",
+      "name": "Plus and Minus",
       "icon_count": 27,
       "filename": "add_remove.json",
       "header_icon": "add circle-half-dot",
-      "color": 1,
-      "subcategories": [
-        {
-          "id": "add_remove",
-          "name": "Add Remove",
-          "description": "Add Remove icons",
-          "header_icon": "add circle-half-dot",
-          "color": 1,
-          "icon_count": 27,
-          "filename": "add_remove.json"
-        }
-      ]
+      "color": 1
     },
     {
       "id": "ai",
-      "name": "Ai",
-      "description": "Browse Ai icons",
+      "name": "AI and ML",
       "icon_count": 93,
       "filename": "ai.json",
       "header_icon": "ai-audio",
-      "color": 2,
-      "subcategories": [
-        {
-          "id": "ai",
-          "name": "Ai",
-          "description": "Ai icons",
-          "header_icon": "ai-audio",
-          "color": 2,
-          "icon_count": 93,
-          "filename": "ai.json"
-        }
-      ]
+      "color": 2
     },
     {
       "id": "alert_notification",
-      "name": "Alert Notification",
-      "description": "Browse Alert Notification icons",
+      "name": "Alerts and Banners",
       "icon_count": 27,
       "filename": "alert_notification.json",
       "header_icon": "alert-01",
-      "color": 3,
-      "subcategories": [
-        {
-          "id": "alert_notification",
-          "name": "Alert Notification",
-          "description": "Alert Notification icons",
-          "header_icon": "alert-01",
-          "color": 3,
-          "icon_count": 27,
-          "filename": "alert_notification.json"
-        }
-      ]
+      "color": 3
     },
     {
       "id": "animation",
-      "name": "Animation",
-      "description": "Browse Animation icons",
+      "name": "Motion and Effects",
       "icon_count": 35,
       "filename": "animation.json",
       "header_icon": "bounce-left",
-      "color": 4,
-      "subcategories": [
-        {
-          "id": "animation",
-          "name": "Animation",
-          "description": "Animation icons",
-          "header_icon": "bounce-left",
-          "color": 4,
-          "icon_count": 35,
-          "filename": "animation.json"
-        }
-      ]
+      "color": 4
     },
     {
       "id": "arrows",
-      "name": "Arrows",
-      "description": "Browse Arrows icons",
+      "name": "Arrows and Chevrons",
       "icon_count": 153,
       "filename": "arrows.json",
       "header_icon": "arrow-all-direction-round",
-      "color": 5,
-      "subcategories": [
-        {
-          "id": "arrows",
-          "name": "Arrows",
-          "description": "Arrows icons",
-          "header_icon": "arrow-all-direction-round",
-          "color": 5,
-          "icon_count": 153,
-          "filename": "arrows.json"
-        }
-      ]
+      "color": 5
     },
     {
       "id": "awards",
-      "name": "Awards",
-      "description": "Browse Awards icons",
+      "name": "Awards and Medals",
       "icon_count": 38,
       "filename": "awards.json",
       "header_icon": "award-01",
-      "color": 6,
-      "subcategories": [
-        {
-          "id": "awards",
-          "name": "Awards",
-          "description": "Awards icons",
-          "header_icon": "award-01",
-          "color": 6,
-          "icon_count": 38,
-          "filename": "awards.json"
-        }
-      ]
+      "color": 6
     },
     {
       "id": "bookmarks",
-      "name": "Bookmarks",
-      "description": "Browse Bookmarks icons",
+      "name": "Bookmarks and Pins",
       "icon_count": 41,
       "filename": "bookmarks.json",
       "header_icon": "all-bookmark",
-      "color": 7,
-      "subcategories": [
-        {
-          "id": "bookmarks",
-          "name": "Bookmarks",
-          "description": "Bookmarks icons",
-          "header_icon": "all-bookmark",
-          "color": 7,
-          "icon_count": 41,
-          "filename": "bookmarks.json"
-        }
-      ]
+      "color": 7
     },
     {
       "id": "buildings",
-      "name": "Buildings",
-      "description": "Browse Buildings icons",
+      "name": "Buildings and Places",
       "icon_count": 70,
       "filename": "buildings.json",
       "header_icon": "barns",
-      "color": 8,
-      "subcategories": [
-        {
-          "id": "buildings",
-          "name": "Buildings",
-          "description": "Buildings icons",
-          "header_icon": "barns",
-          "color": 8,
-          "icon_count": 70,
-          "filename": "buildings.json"
-        }
-      ]
+      "color": 8
     },
     {
       "id": "business",
-      "name": "Business",
-      "description": "Browse Business icons",
+      "name": "Charts and Business",
       "icon_count": 307,
       "filename": "business.json",
       "header_icon": "activity-01",
-      "color": 9,
-      "subcategories": [
-        {
-          "id": "business",
-          "name": "Business",
-          "description": "Business icons",
-          "header_icon": "activity-01",
-          "color": 9,
-          "icon_count": 307,
-          "filename": "business.json"
-        }
-      ]
+      "color": 9
     },
     {
       "id": "check",
-      "name": "Check",
-      "description": "Browse Check icons",
+      "name": "Checks and Status",
       "icon_count": 39,
       "filename": "check.json",
       "header_icon": "check-unread-01",
-      "color": 10,
-      "subcategories": [
-        {
-          "id": "check",
-          "name": "Check",
-          "description": "Check icons",
-          "header_icon": "check-unread-01",
-          "color": 10,
-          "icon_count": 39,
-          "filename": "check.json"
-        }
-      ]
+      "color": 10
     },
     {
       "id": "clothing",
-      "name": "Clothing",
-      "description": "Browse Clothing icons",
+      "name": "Clothing and Style",
       "icon_count": 64,
       "filename": "clothing.json",
       "header_icon": "baby-01",
-      "color": 11,
-      "subcategories": [
-        {
-          "id": "clothing",
-          "name": "Clothing",
-          "description": "Clothing icons",
-          "header_icon": "baby-01",
-          "color": 11,
-          "icon_count": 64,
-          "filename": "clothing.json"
-        }
-      ]
+      "color": 11
     },
     {
       "id": "communication",
-      "name": "Communication",
-      "description": "Browse Communication icons",
+      "name": "Chat and Messages",
       "icon_count": 231,
       "filename": "communication.json",
       "header_icon": "bubble-chat",
-      "color": 12,
-      "subcategories": [
-        {
-          "id": "communication",
-          "name": "Communication",
-          "description": "Communication icons",
-          "header_icon": "bubble-chat",
-          "color": 12,
-          "icon_count": 231,
-          "filename": "communication.json"
-        }
-      ]
+      "color": 12
     },
     {
       "id": "crypto",
-      "name": "Crypto",
-      "description": "Browse Crypto icons",
+      "name": "Crypto and Blockchain",
       "icon_count": 75,
       "filename": "crypto.json",
       "header_icon": "anonymous",
-      "color": 13,
-      "subcategories": [
-        {
-          "id": "crypto",
-          "name": "Crypto",
-          "description": "Crypto icons",
-          "header_icon": "anonymous",
-          "color": 13,
-          "icon_count": 75,
-          "filename": "crypto.json"
-        }
-      ]
+      "color": 13
     },
     {
       "id": "dashboard",
-      "name": "Dashboard",
-      "description": "Browse Dashboard icons",
+      "name": "Dashboard Widgets",
       "icon_count": 24,
       "filename": "dashboard.json",
       "header_icon": "dashboard-browsing",
-      "color": 1,
-      "subcategories": [
-        {
-          "id": "dashboard",
-          "name": "Dashboard",
-          "description": "Dashboard icons",
-          "header_icon": "dashboard-browsing",
-          "color": 1,
-          "icon_count": 24,
-          "filename": "dashboard.json"
-        }
-      ]
+      "color": 1
     },
     {
       "id": "date_time",
-      "name": "Date Time",
-      "description": "Browse Date Time icons",
+      "name": "Time and Calendar",
       "icon_count": 61,
       "filename": "date_time.json",
       "header_icon": "alarm-clock",
-      "color": 2,
-      "subcategories": [
-        {
-          "id": "date_time",
-          "name": "Date Time",
-          "description": "Date Time icons",
-          "header_icon": "alarm-clock",
-          "color": 2,
-          "icon_count": 61,
-          "filename": "date_time.json"
-        }
-      ]
+      "color": 2
     },
     {
       "id": "devices",
-      "name": "Devices",
-      "description": "Browse Devices icons",
+      "name": "Devices and Screens",
       "icon_count": 147,
       "filename": "devices.json",
       "header_icon": "3d-view",
-      "color": 3,
-      "subcategories": [
-        {
-          "id": "devices",
-          "name": "Devices",
-          "description": "Devices icons",
-          "header_icon": "3d-view",
-          "color": 3,
-          "icon_count": 147,
-          "filename": "devices.json"
-        }
-      ]
+      "color": 3
     },
     {
       "id": "download_upload",
-      "name": "Download Upload",
-      "description": "Browse Download Upload icons",
+      "name": "Upload and Download",
       "icon_count": 20,
       "filename": "download_upload.json",
       "header_icon": "cloud-download",
-      "color": 4,
-      "subcategories": [
-        {
-          "id": "download_upload",
-          "name": "Download Upload",
-          "description": "Download Upload icons",
-          "header_icon": "cloud-download",
-          "color": 4,
-          "icon_count": 20,
-          "filename": "download_upload.json"
-        }
-      ]
+      "color": 4
     },
     {
       "id": "e_commerce",
-      "name": "E Commerce",
-      "description": "Browse E Commerce icons",
+      "name": "Shopping and Sales",
       "icon_count": 147,
       "filename": "e_commerce.json",
       "header_icon": "affiliate",
-      "color": 5,
-      "subcategories": [
-        {
-          "id": "e_commerce",
-          "name": "E Commerce",
-          "description": "E Commerce icons",
-          "header_icon": "affiliate",
-          "color": 5,
-          "icon_count": 147,
-          "filename": "e_commerce.json"
-        }
-      ]
+      "color": 5
     },
     {
       "id": "editing",
-      "name": "Editing",
-      "description": "Browse Editing icons",
+      "name": "Edit and Transform",
       "icon_count": 305,
       "filename": "editing.json",
       "header_icon": "3d-move",
-      "color": 6,
-      "subcategories": [
-        {
-          "id": "editing",
-          "name": "Editing",
-          "description": "Editing icons",
-          "header_icon": "3d-move",
-          "color": 6,
-          "icon_count": 305,
-          "filename": "editing.json"
-        }
-      ]
+      "color": 6
     },
     {
       "id": "education",
-      "name": "Education",
-      "description": "Browse Education icons",
+      "name": "School and Learning",
       "icon_count": 97,
       "filename": "education.json",
       "header_icon": "assignments",
-      "color": 7,
-      "subcategories": [
-        {
-          "id": "education",
-          "name": "Education",
-          "description": "Education icons",
-          "header_icon": "assignments",
-          "color": 7,
-          "icon_count": 97,
-          "filename": "education.json"
-        }
-      ]
+      "color": 7
     },
     {
       "id": "emojis",
-      "name": "Emojis",
-      "description": "Browse Emojis icons",
+      "name": "Faces and Emojis",
       "icon_count": 60,
       "filename": "emojis.json",
       "header_icon": "angle",
-      "color": 8,
-      "subcategories": [
-        {
-          "id": "emojis",
-          "name": "Emojis",
-          "description": "Emojis icons",
-          "header_icon": "angle",
-          "color": 8,
-          "icon_count": 60,
-          "filename": "emojis.json"
-        }
-      ]
+      "color": 8
     },
     {
       "id": "energy",
-      "name": "Energy",
-      "description": "Browse Energy icons",
+      "name": "Energy and Power",
       "icon_count": 86,
       "filename": "energy.json",
       "header_icon": "atomic-power",
-      "color": 9,
-      "subcategories": [
-        {
-          "id": "energy",
-          "name": "Energy",
-          "description": "Energy icons",
-          "header_icon": "atomic-power",
-          "color": 9,
-          "icon_count": 86,
-          "filename": "energy.json"
-        }
-      ]
+      "color": 9
     },
     {
       "id": "files",
-      "name": "Files",
-      "description": "Browse Files icons",
+      "name": "Files and Formats",
       "icon_count": 149,
       "filename": "files.json",
       "header_icon": "7z-01",
-      "color": 10,
-      "subcategories": [
-        {
-          "id": "files",
-          "name": "Files",
-          "description": "Files icons",
-          "header_icon": "7z-01",
-          "color": 10,
-          "icon_count": 149,
-          "filename": "files.json"
-        }
-      ]
+      "color": 10
     },
     {
       "id": "filter_sorting",
-      "name": "Filter Sorting",
-      "description": "Browse Filter Sorting icons",
+      "name": "Filter and Sort",
       "icon_count": 27,
       "filename": "filter_sorting.json",
       "header_icon": "filter",
-      "color": 11,
-      "subcategories": [
-        {
-          "id": "filter_sorting",
-          "name": "Filter Sorting",
-          "description": "Filter Sorting icons",
-          "header_icon": "filter",
-          "color": 11,
-          "icon_count": 27,
-          "filename": "filter_sorting.json"
-        }
-      ]
+      "color": 11
     },
     {
       "id": "foods",
-      "name": "Foods",
-      "description": "Browse Foods icons",
+      "name": "Food and Drink",
       "icon_count": 98,
       "filename": "foods.json",
       "header_icon": "apple",
-      "color": 12,
-      "subcategories": [
-        {
-          "id": "foods",
-          "name": "Foods",
-          "description": "Foods icons",
-          "header_icon": "apple",
-          "color": 12,
-          "icon_count": 98,
-          "filename": "foods.json"
-        }
-      ]
+      "color": 12
     },
     {
       "id": "furnitures",
-      "name": "Furnitures",
-      "description": "Browse Furnitures icons",
+      "name": "Furniture and Decor",
       "icon_count": 73,
       "filename": "furnitures.json",
       "header_icon": "baby-bed-01",
-      "color": 13,
-      "subcategories": [
-        {
-          "id": "furnitures",
-          "name": "Furnitures",
-          "description": "Furnitures icons",
-          "header_icon": "baby-bed-01",
-          "color": 13,
-          "icon_count": 73,
-          "filename": "furnitures.json"
-        }
-      ]
+      "color": 13
     },
     {
       "id": "gaming",
-      "name": "Gaming",
-      "description": "Browse Gaming icons",
+      "name": "Games and Controllers",
       "icon_count": 129,
       "filename": "gaming.json",
       "header_icon": "adventure",
-      "color": 1,
-      "subcategories": [
-        {
-          "id": "gaming",
-          "name": "Gaming",
-          "description": "Gaming icons",
-          "header_icon": "adventure",
-          "color": 1,
-          "icon_count": 129,
-          "filename": "gaming.json"
-        }
-      ]
+      "color": 1
     },
     {
       "id": "git",
-      "name": "Git",
-      "description": "Browse Git icons",
+      "name": "Git and Branches",
       "icon_count": 10,
       "filename": "git.json",
       "header_icon": "git-branch",
-      "color": 2,
-      "subcategories": [
-        {
-          "id": "git",
-          "name": "Git",
-          "description": "Git icons",
-          "header_icon": "git-branch",
-          "color": 2,
-          "icon_count": 10,
-          "filename": "git.json"
-        }
-      ]
+      "color": 2
     },
     {
       "id": "gym",
-      "name": "Gym",
-      "description": "Browse Gym icons",
+      "name": "Fitness and Gym",
       "icon_count": 49,
       "filename": "gym.json",
       "header_icon": "back-muscle-body",
-      "color": 3,
-      "subcategories": [
-        {
-          "id": "gym",
-          "name": "Gym",
-          "description": "Gym icons",
-          "header_icon": "back-muscle-body",
-          "color": 3,
-          "icon_count": 49,
-          "filename": "gym.json"
-        }
-      ]
+      "color": 3
     },
     {
       "id": "hands",
-      "name": "Hands",
-      "description": "Browse Hands icons",
+      "name": "Hands and Gestures",
       "icon_count": 166,
       "filename": "hands.json",
       "header_icon": "clapping-01",
-      "color": 4,
-      "subcategories": [
-        {
-          "id": "hands",
-          "name": "Hands",
-          "description": "Hands icons",
-          "header_icon": "clapping-01",
-          "color": 4,
-          "icon_count": 166,
-          "filename": "hands.json"
-        }
-      ]
+      "color": 4
     },
     {
       "id": "hierarchy",
-      "name": "Hierarchy",
-      "description": "Browse Hierarchy icons",
+      "name": "Hierarchy and Flow",
       "icon_count": 60,
       "filename": "hierarchy.json",
       "header_icon": "flow",
-      "color": 5,
-      "subcategories": [
-        {
-          "id": "hierarchy",
-          "name": "Hierarchy",
-          "description": "Hierarchy icons",
-          "header_icon": "flow",
-          "color": 5,
-          "icon_count": 60,
-          "filename": "hierarchy.json"
-        }
-      ]
+      "color": 5
     },
     {
       "id": "home",
-      "name": "Home",
-      "description": "Browse Home icons",
+      "name": "Home and Living",
       "icon_count": 15,
       "filename": "home.json",
       "header_icon": "door-01",
-      "color": 6,
-      "subcategories": [
-        {
-          "id": "home",
-          "name": "Home",
-          "description": "Home icons",
-          "header_icon": "door-01",
-          "color": 6,
-          "icon_count": 15,
-          "filename": "home.json"
-        }
-      ]
+      "color": 6
     },
     {
       "id": "image_camera",
-      "name": "Image Camera",
-      "description": "Browse Image Camera icons",
+      "name": "Photo and Video",
       "icon_count": 74,
       "filename": "image_camera.json",
       "header_icon": "4k",
-      "color": 7,
-      "subcategories": [
-        {
-          "id": "image_camera",
-          "name": "Image Camera",
-          "description": "Image Camera icons",
-          "header_icon": "4k",
-          "color": 7,
-          "icon_count": 74,
-          "filename": "image_camera.json"
-        }
-      ]
+      "color": 7
     },
     {
       "id": "kitchen",
-      "name": "Kitchen",
-      "description": "Browse Kitchen icons",
+      "name": "Kitchen and Cooking",
       "icon_count": 42,
       "filename": "kitchen.json",
       "header_icon": "apron",
-      "color": 8,
-      "subcategories": [
-        {
-          "id": "kitchen",
-          "name": "Kitchen",
-          "description": "Kitchen icons",
-          "header_icon": "apron",
-          "color": 8,
-          "icon_count": 42,
-          "filename": "kitchen.json"
-        }
-      ]
+      "color": 8
     },
     {
       "id": "layout",
-      "name": "Layout",
-      "description": "Browse Layout icons",
+      "name": "Layout and Grid",
       "icon_count": 43,
       "filename": "layout.json",
       "header_icon": "border-all-01",
-      "color": 9,
-      "subcategories": [
-        {
-          "id": "layout",
-          "name": "Layout",
-          "description": "Layout icons",
-          "header_icon": "border-all-01",
-          "color": 9,
-          "icon_count": 43,
-          "filename": "layout.json"
-        }
-      ]
+      "color": 9
     },
     {
       "id": "legal",
-      "name": "Legal",
-      "description": "Browse Legal icons",
+      "name": "Legal and Contracts",
       "icon_count": 36,
       "filename": "legal.json",
       "header_icon": "agreement-01",
-      "color": 10,
-      "subcategories": [
-        {
-          "id": "legal",
-          "name": "Legal",
-          "description": "Legal icons",
-          "header_icon": "agreement-01",
-          "color": 10,
-          "icon_count": 36,
-          "filename": "legal.json"
-        }
-      ]
+      "color": 10
     },
     {
       "id": "link_unlink",
-      "name": "Link Unlink",
-      "description": "Browse Link Unlink icons",
+      "name": "Links and Chains",
       "icon_count": 27,
       "filename": "link_unlink.json",
       "header_icon": "link-01",
-      "color": 11,
-      "subcategories": [
-        {
-          "id": "link_unlink",
-          "name": "Link Unlink",
-          "description": "Link Unlink icons",
-          "header_icon": "link-01",
-          "color": 11,
-          "icon_count": 27,
-          "filename": "link_unlink.json"
-        }
-      ]
+      "color": 11
     },
     {
       "id": "login_logout",
-      "name": "Login Logout",
-      "description": "Browse Login Logout icons",
+      "name": "Login and Logout",
       "icon_count": 16,
       "filename": "login_logout.json",
       "header_icon": "login-01",
-      "color": 12,
-      "subcategories": [
-        {
-          "id": "login_logout",
-          "name": "Login Logout",
-          "description": "Login Logout icons",
-          "header_icon": "login-01",
-          "color": 12,
-          "icon_count": 16,
-          "filename": "login_logout.json"
-        }
-      ]
+      "color": 12
     },
     {
       "id": "logistics",
-      "name": "Logistics",
-      "description": "Browse Logistics icons",
+      "name": "Shipping and Logistics",
       "icon_count": 84,
       "filename": "logistics.json",
       "header_icon": "accident",
-      "color": 13,
-      "subcategories": [
-        {
-          "id": "logistics",
-          "name": "Logistics",
-          "description": "Logistics icons",
-          "header_icon": "accident",
-          "color": 13,
-          "icon_count": 84,
-          "filename": "logistics.json"
-        }
-      ]
+      "color": 13
     },
     {
       "id": "logos",
-      "name": "Logos",
-      "description": "Browse Logos icons",
+      "name": "Brands and Logos",
       "icon_count": 187,
       "filename": "logos.json",
       "header_icon": "adobe-after-effect",
-      "color": 1,
-      "subcategories": [
-        {
-          "id": "logos",
-          "name": "Logos",
-          "description": "Logos icons",
-          "header_icon": "adobe-after-effect",
-          "color": 1,
-          "icon_count": 187,
-          "filename": "logos.json"
-        }
-      ]
+      "color": 1
     },
     {
       "id": "maps",
-      "name": "Maps",
-      "description": "Browse Maps icons",
+      "name": "Maps and Location",
       "icon_count": 99,
       "filename": "maps.json",
       "header_icon": "compass",
-      "color": 2,
-      "subcategories": [
-        {
-          "id": "maps",
-          "name": "Maps",
-          "description": "Maps icons",
-          "header_icon": "compass",
-          "color": 2,
-          "icon_count": 99,
-          "filename": "maps.json"
-        }
-      ]
+      "color": 2
     },
     {
       "id": "mathematics",
-      "name": "Mathematics",
-      "description": "Browse Mathematics icons",
+      "name": "Math and Operators",
       "icon_count": 148,
       "filename": "mathematics.json",
       "header_icon": "1st-brecket",
-      "color": 3,
-      "subcategories": [
-        {
-          "id": "mathematics",
-          "name": "Mathematics",
-          "description": "Mathematics icons",
-          "header_icon": "1st-brecket",
-          "color": 3,
-          "icon_count": 148,
-          "filename": "mathematics.json"
-        }
-      ]
+      "color": 3
     },
     {
       "id": "media",
-      "name": "Media",
-      "description": "Browse Media icons",
+      "name": "Playback and Media",
       "icon_count": 62,
       "filename": "media.json",
       "header_icon": "backward-01",
-      "color": 4,
-      "subcategories": [
-        {
-          "id": "media",
-          "name": "Media",
-          "description": "Media icons",
-          "header_icon": "backward-01",
-          "color": 4,
-          "icon_count": 62,
-          "filename": "media.json"
-        }
-      ]
+      "color": 4
     },
     {
       "id": "medical",
-      "name": "Medical",
-      "description": "Browse Medical icons",
+      "name": "Medical and Health",
       "icon_count": 78,
       "filename": "medical.json",
       "header_icon": "lungs",
-      "color": 5,
-      "subcategories": [
-        {
-          "id": "medical",
-          "name": "Medical",
-          "description": "Medical icons",
-          "header_icon": "lungs",
-          "color": 5,
-          "icon_count": 78,
-          "filename": "medical.json"
-        }
-      ]
+      "color": 5
     },
     {
       "id": "menu",
-      "name": "Menu",
-      "description": "Browse Menu icons",
+      "name": "Menus and Sheets",
       "icon_count": 28,
       "filename": "menu.json",
       "header_icon": "menu-01",
-      "color": 6,
-      "subcategories": [
-        {
-          "id": "menu",
-          "name": "Menu",
-          "description": "Menu icons",
-          "header_icon": "menu-01",
-          "color": 6,
-          "icon_count": 28,
-          "filename": "menu.json"
-        }
-      ]
+      "color": 6
     },
     {
       "id": "mouse",
-      "name": "Mouse",
-      "description": "Browse Mouse icons",
+      "name": "Pointers and Cursors",
       "icon_count": 78,
       "filename": "mouse.json",
       "header_icon": "cursor-01",
-      "color": 7,
-      "subcategories": [
-        {
-          "id": "mouse",
-          "name": "Mouse",
-          "description": "Mouse icons",
-          "header_icon": "cursor-01",
-          "color": 7,
-          "icon_count": 78,
-          "filename": "mouse.json"
-        }
-      ]
+      "color": 7
     },
     {
       "id": "notes_tasks",
-      "name": "Notes Tasks",
-      "description": "Browse Notes Tasks icons",
+      "name": "Notes and Tasks",
       "icon_count": 24,
       "filename": "notes_tasks.json",
       "header_icon": "note-01",
-      "color": 8,
-      "subcategories": [
-        {
-          "id": "notes_tasks",
-          "name": "Notes Tasks",
-          "description": "Notes Tasks icons",
-          "header_icon": "note-01",
-          "color": 8,
-          "icon_count": 24,
-          "filename": "notes_tasks.json"
-        }
-      ]
+      "color": 8
     },
     {
       "id": "presentation",
-      "name": "Presentation",
-      "description": "Browse Presentation icons",
+      "name": "Slides and Present",
       "icon_count": 15,
       "filename": "presentation.json",
       "header_icon": "co-present",
-      "color": 9,
-      "subcategories": [
-        {
-          "id": "presentation",
-          "name": "Presentation",
-          "description": "Presentation icons",
-          "header_icon": "co-present",
-          "color": 9,
-          "icon_count": 15,
-          "filename": "presentation.json"
-        }
-      ]
+      "color": 9
     },
     {
       "id": "programming",
-      "name": "Programming",
-      "description": "Browse Programming icons",
+      "name": "Code and APIs",
       "icon_count": 67,
       "filename": "programming.json",
       "header_icon": "api",
-      "color": 10,
-      "subcategories": [
-        {
-          "id": "programming",
-          "name": "Programming",
-          "description": "Programming icons",
-          "header_icon": "api",
-          "color": 10,
-          "icon_count": 67,
-          "filename": "programming.json"
-        }
-      ]
+      "color": 10
     },
     {
       "id": "science_technology",
-      "name": "Science Technology",
-      "description": "Browse Science Technology icons",
+      "name": "Science and Lab",
       "icon_count": 22,
       "filename": "science_technology.json",
       "header_icon": "acceleration",
-      "color": 11,
-      "subcategories": [
-        {
-          "id": "science_technology",
-          "name": "Science Technology",
-          "description": "Science Technology icons",
-          "header_icon": "acceleration",
-          "color": 11,
-          "icon_count": 22,
-          "filename": "science_technology.json"
-        }
-      ]
+      "color": 11
     },
     {
       "id": "search",
-      "name": "Search",
-      "description": "Browse Search icons",
+      "name": "Search and Find",
       "icon_count": 15,
       "filename": "search.json",
       "header_icon": "search-01",
-      "color": 12,
-      "subcategories": [
-        {
-          "id": "search",
-          "name": "Search",
-          "description": "Search icons",
-          "header_icon": "search-01",
-          "color": 12,
-          "icon_count": 15,
-          "filename": "search.json"
-        }
-      ]
+      "color": 12
     },
     {
       "id": "security",
-      "name": "Security",
-      "description": "Browse Security icons",
+      "name": "Security and Locks",
       "icon_count": 93,
       "filename": "security.json",
       "header_icon": "access",
-      "color": 13,
-      "subcategories": [
-        {
-          "id": "security",
-          "name": "Security",
-          "description": "Security icons",
-          "header_icon": "access",
-          "color": 13,
-          "icon_count": 93,
-          "filename": "security.json"
-        }
-      ]
+      "color": 13
     },
     {
       "id": "settings",
-      "name": "Settings",
-      "description": "Browse Settings icons",
+      "name": "Settings and Gear",
       "icon_count": 43,
       "filename": "settings.json",
       "header_icon": "account-setting-01",
-      "color": 1,
-      "subcategories": [
-        {
-          "id": "settings",
-          "name": "Settings",
-          "description": "Settings icons",
-          "header_icon": "account-setting-01",
-          "color": 1,
-          "icon_count": 43,
-          "filename": "settings.json"
-        }
-      ]
+      "color": 1
     },
     {
       "id": "shapes",
-      "name": "Shapes",
-      "description": "Browse Shapes icons",
+      "name": "Basic Shapes",
       "icon_count": 15,
       "filename": "shapes.json",
       "header_icon": "circle",
-      "color": 2,
-      "subcategories": [
-        {
-          "id": "shapes",
-          "name": "Shapes",
-          "description": "Shapes icons",
-          "header_icon": "circle",
-          "color": 2,
-          "icon_count": 15,
-          "filename": "shapes.json"
-        }
-      ]
+      "color": 2
     },
     {
       "id": "space",
-      "name": "Space",
-      "description": "Browse Space icons",
+      "name": "Space and Planets",
       "icon_count": 27,
       "filename": "space.json",
       "header_icon": "alien-01",
-      "color": 3,
-      "subcategories": [
-        {
-          "id": "space",
-          "name": "Space",
-          "description": "Space icons",
-          "header_icon": "alien-01",
-          "color": 3,
-          "icon_count": 27,
-          "filename": "space.json"
-        }
-      ]
+      "color": 3
     },
     {
       "id": "users",
-      "name": "Users",
-      "description": "Browse Users icons",
+      "name": "Users and Profiles",
       "icon_count": 67,
       "filename": "users.json",
       "header_icon": "account-recovery",
-      "color": 4,
-      "subcategories": [
-        {
-          "id": "users",
-          "name": "Users",
-          "description": "Users icons",
-          "header_icon": "account-recovery",
-          "color": 4,
-          "icon_count": 67,
-          "filename": "users.json"
-        }
-      ]
+      "color": 4
     },
     {
       "id": "weather",
-      "name": "Weather",
-      "description": "Browse Weather icons",
+      "name": "Weather and Sky",
       "icon_count": 96,
       "filename": "weather.json",
       "header_icon": "avalanche",
-      "color": 5,
-      "subcategories": [
-        {
-          "id": "weather",
-          "name": "Weather",
-          "description": "Weather icons",
-          "header_icon": "avalanche",
-          "color": 5,
-          "icon_count": 96,
-          "filename": "weather.json"
-        }
-      ]
+      "color": 5
     },
     {
       "id": "wifi",
-      "name": "Wifi",
-      "description": "Browse Wifi icons",
+      "name": "Wi-Fi and Network",
       "icon_count": 69,
       "filename": "wifi.json",
       "header_icon": "cellular-network",
-      "color": 6,
-      "subcategories": [
-        {
-          "id": "wifi",
-          "name": "Wifi",
-          "description": "Wifi icons",
-          "header_icon": "cellular-network",
-          "color": 6,
-          "icon_count": 69,
-          "filename": "wifi.json"
-        }
-      ]
+      "color": 6
     }
   ]
 }

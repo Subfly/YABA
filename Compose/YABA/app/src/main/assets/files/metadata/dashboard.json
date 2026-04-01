@@ -1,8 +1,7 @@
 {
   "metadata": {
     "id": "dashboard",
-    "name": "Dashboard",
-    "description": "Dashboard stroke-rounded icons from HugeIcons",
+    "name": "Dashboard Widgets",
     "main_category": "dashboard",
     "icon_count": 24,
     "version": "3.0"

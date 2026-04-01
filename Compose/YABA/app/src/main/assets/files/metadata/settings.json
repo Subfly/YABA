@@ -1,8 +1,7 @@
 {
   "metadata": {
     "id": "settings",
-    "name": "Settings",
-    "description": "Settings stroke-rounded icons from HugeIcons",
+    "name": "Settings and Gear",
     "main_category": "settings",
     "icon_count": 43,
     "version": "3.0"
