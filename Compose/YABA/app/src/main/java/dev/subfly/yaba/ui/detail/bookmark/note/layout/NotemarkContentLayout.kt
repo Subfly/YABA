@@ -121,6 +121,27 @@ internal fun NotemarkContentLayout(
     var pendingLinkTap by remember { mutableStateOf<InlineLinkTapEvent?>(null) }
     var pendingMentionTap by remember { mutableStateOf<InlineMentionTapEvent?>(null) }
 
+    val folderAccent by remember(state.bookmark) {
+        derivedStateOf { bookmarkFolderAccentColor(state.bookmark) }
+    }
+    val menuIconButtonColors = bookmarkDetailIconButtonColors(folderAccent)
+
+    val webAppearance = if (isSystemInDarkTheme()) YabaWebAppearance.Dark else YabaWebAppearance.Light
+
+    val ready by remember(state.isLoading, state.initialDocumentJson, state.webContentLoadFailed) {
+        derivedStateOf {
+            !state.isLoading &&
+                    state.initialDocumentJson != null &&
+                    state.webContentLoadFailed.not()
+        }
+    }
+    val canRenderEditor by remember(state.initialDocumentJson, state.webContentLoadFailed) {
+        derivedStateOf {
+            state.initialDocumentJson != null &&
+                    state.webContentLoadFailed.not()
+        }
+    }
+
     suspend fun awaitEditorBridge(
         timeoutMs: Long = 4_000L,
         pollMs: Long = 75L,
@@ -389,27 +410,6 @@ internal fun NotemarkContentLayout(
         bridge.dispatch(YabaEditorCommands.insertImagePayload(src))
         onEvent(NotemarkDetailEvent.OnConsumedInlineImageInsert)
         bridge.focus()
-    }
-
-    val folderAccent by remember(state.bookmark) {
-        derivedStateOf { bookmarkFolderAccentColor(state.bookmark) }
-    }
-    val menuIconButtonColors = bookmarkDetailIconButtonColors(folderAccent)
-
-    val webAppearance = if (isSystemInDarkTheme()) YabaWebAppearance.Dark else YabaWebAppearance.Light
-
-    val ready by remember(state.isLoading, state.initialDocumentJson, state.webContentLoadFailed) {
-        derivedStateOf {
-            !state.isLoading &&
-                state.initialDocumentJson != null &&
-                state.webContentLoadFailed.not()
-        }
-    }
-    val canRenderEditor by remember(state.initialDocumentJson, state.webContentLoadFailed) {
-        derivedStateOf {
-            state.initialDocumentJson != null &&
-                state.webContentLoadFailed.not()
-        }
     }
 
     Box(
