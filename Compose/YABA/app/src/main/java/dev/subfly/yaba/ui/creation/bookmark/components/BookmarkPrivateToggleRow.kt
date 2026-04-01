@@ -38,11 +38,11 @@ fun BookmarkPrivateToggleRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             YabaIcon(
-                name = if (isPrivate) "circle-unlock-02" else "circle-lock-02",
+                name = if (isPrivate) "circle-lock-02" else "circle-unlock-02",
                 color = folderColor,
             )
             Text(
-                text = if (isPrivate) "Not Private" else "Private",
+                text = if (isPrivate) "Private" else "Not Private",
                 style = MaterialTheme.typography.titleMedium,
             )
         }

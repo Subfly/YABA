@@ -187,14 +187,14 @@ internal fun NotemarkContentDropdownMenu(
     val pdfLabel = "PDF"
     val deleteText = stringResource(R.string.delete)
     // TODO: LOCALIZATION (match BookmarkItemView)
-    val privateActionText = if (bookmark?.isPrivate == true) "Not Private" else "Private"
+    val privateActionText = if (bookmark?.isPrivate == true) "Private" else "Not Private"
 
     val isAndroid = Platform == YabaPlatform.ANDROID
     val hasActiveReminder = state.reminderDateEpochMillis != null
 
     val isPinned = state.bookmark?.isPinned == true
     // TODO: LOCALIZATION
-    val pinActionText = if (isPinned) "Unpin" else "Pin"
+    val pinActionText = if (isPinned) "Pin" else "Unpin"
 
     var isSaveCopyExpanded by remember { mutableStateOf(false) }
     LaunchedEffect(expanded) {
@@ -217,7 +217,7 @@ internal fun NotemarkContentDropdownMenu(
             ),
             DetailMenuAction(
                 key = "pin",
-                icon = if (isPinned) "pin-off" else "pin",
+                icon = if (isPinned) "pin" else "pin-off",
                 text = pinActionText,
                 color = YabaColor.YELLOW,
             ),
@@ -344,7 +344,7 @@ internal fun NotemarkContentDropdownMenu(
                     },
                     leadingIcon = {
                         YabaIcon(
-                            name = if (bookmark.isPrivate) "circle-unlock-02" else "circle-lock-02",
+                            name = if (bookmark.isPrivate) "circle-lock-02" else "circle-unlock-02",
                             color = Color(YabaColor.RED.iconTintArgb()),
                         )
                     },

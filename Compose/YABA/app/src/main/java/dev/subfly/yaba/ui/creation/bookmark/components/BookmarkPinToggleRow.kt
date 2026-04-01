@@ -33,11 +33,11 @@ fun BookmarkPinToggleRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             YabaIcon(
-                name = if (isPinned) "pin-off" else "pin",
+                name = if (isPinned) "pin" else "pin-off",
                 color = folderColor,
             )
             Text(
-                text = if (isPinned) "Unpin" else "Pin",
+                text = if (isPinned) "Pin" else "Unpin",
                 style = MaterialTheme.typography.titleMedium,
             )
         }

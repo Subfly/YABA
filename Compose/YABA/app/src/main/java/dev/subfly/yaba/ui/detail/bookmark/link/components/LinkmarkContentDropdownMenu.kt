@@ -214,7 +214,7 @@ internal fun LinkmarkContentDropdownMenu(
     val shareText = stringResource(R.string.share)
     val deleteText = stringResource(R.string.delete)
     // TODO: LOCALIZATION (match BookmarkItemView)
-    val privateActionText = if (bookmark?.isPrivate == true) "Not Private" else "Private"
+    val privateActionText = if (bookmark?.isPrivate == true) "Private" else "Not Private"
     // TODO: LOCALIZATION
     val saveCopyText = "Export"
     val mdLabel = "MD"
@@ -225,7 +225,7 @@ internal fun LinkmarkContentDropdownMenu(
 
     val isPinned = state.bookmark?.isPinned == true
     // TODO: LOCALIZATION
-    val pinActionText = if (isPinned) "Unpin" else "Pin"
+    val pinActionText = if (isPinned) "Pin" else "Unpin"
 
     val primaryActions = remember(openText, editText, moveText, pinActionText, isPinned) {
         listOf(
@@ -234,7 +234,7 @@ internal fun LinkmarkContentDropdownMenu(
             DetailMenuAction(key = "move", icon = "arrow-move-up-right", text = moveText, color = YabaColor.TEAL),
             DetailMenuAction(
                 key = "pin",
-                icon = if (isPinned) "pin-off" else "pin",
+                icon = if (isPinned) "pin" else "pin-off",
                 text = pinActionText,
                 color = YabaColor.YELLOW,
             ),
@@ -367,7 +367,7 @@ internal fun LinkmarkContentDropdownMenu(
                     },
                     leadingIcon = {
                         YabaIcon(
-                            name = if (bookmark.isPrivate) "circle-unlock-02" else "circle-lock-02",
+                            name = if (bookmark.isPrivate) "circle-lock-02" else "circle-unlock-02",
                             color = Color(YabaColor.RED.iconTintArgb()),
                         )
                     },

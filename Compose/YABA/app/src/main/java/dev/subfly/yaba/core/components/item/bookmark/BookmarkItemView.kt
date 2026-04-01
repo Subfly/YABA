@@ -127,9 +127,9 @@ fun BookmarkItemView(
     val shareText = stringResource(R.string.share)
     val deleteText = stringResource(R.string.delete)
     // TODO: LOCALIZATION
-    val pinActionText = if (model.isPinned) "Unpin" else "Pin"
+    val pinActionText = if (model.isPinned) "Pin" else "Unpin"
     // TODO: LOCALIZATION
-    val privateActionText = if (model.isPrivate) "Not Private" else "Private"
+    val privateActionText = if (model.isPrivate) "Private" else "Not Private"
 
     val onPrivateToggle = rememberPrivateBookmarkToggleAction(model)
     val runEdit = rememberPrivateBookmarkProtectedAction(
@@ -210,7 +210,7 @@ fun BookmarkItemView(
                     ),
                     BookmarkMenuAction(
                         key = "pin_${model.id}",
-                        icon = if (model.isPinned) "pin-off" else "pin",
+                        icon = if (model.isPinned) "pin" else "pin-off",
                         text = pinActionText,
                         color = YabaColor.YELLOW,
                         onClick = { AllBookmarksManager.toggleBookmarkPinned(model.id) },
@@ -224,7 +224,7 @@ fun BookmarkItemView(
                     ),
                     BookmarkMenuAction(
                         key = "private_${model.id}",
-                        icon = if (model.isPrivate) "circle-unlock-02" else "circle-lock-02",
+                        icon = if (model.isPrivate) "circle-lock-02" else "circle-unlock-02",
                         text = privateActionText,
                         color = YabaColor.RED,
                         onClick = onPrivateToggle,
@@ -267,7 +267,7 @@ fun BookmarkItemView(
             ),
             BookmarkSwipeAction(
                 key = "PRIVATE_${model.id}",
-                icon = if (model.isPrivate) "circle-unlock-02" else "circle-lock-02",
+                icon = if (model.isPrivate) "circle-lock-02" else "circle-unlock-02",
                 color = YabaColor.RED,
                 onClick = onPrivateToggle,
             ),
@@ -278,7 +278,7 @@ fun BookmarkItemView(
         listOf(
             BookmarkSwipeAction(
                 key = "PIN_${model.id}",
-                icon = if (model.isPinned) "pin-off" else "pin",
+                icon = if (model.isPinned) "pin" else "pin-off",
                 color = YabaColor.YELLOW,
                 onClick = { AllBookmarksManager.toggleBookmarkPinned(model.id) },
             ),
