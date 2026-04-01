@@ -30,22 +30,20 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.core.components.YabaIcon
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.ResultStoreKeys
-import dev.subfly.yaba.core.icons.IconCatalog
+import dev.subfly.yaba.core.icons.IconItem
 import dev.subfly.yaba.core.icons.IconSubcategory
+import dev.subfly.yaba.core.state.selection.icon.IconSelectionEvent
 
 // TODO(localization): Subcategory title is from bundled JSON; add string resources when localizing taxonomy.
 
@@ -57,14 +55,16 @@ fun IconSelectionContent(
     val creationNavigator = LocalCreationContentNavigator.current
     val resultStore = LocalResultStore.current
 
-    var selectedIcon by rememberSaveable(currentSelectedIcon) {
-        mutableStateOf(currentSelectedIcon)
-    }
+    val vm = viewModel { IconSelectionVM() }
+    val state by vm.state.collectAsStateWithLifecycle()
 
-    val isLoadingIcons by IconCatalog.isLoadingIconsFlow.collectAsState()
-
-    DisposableEffect(Unit) {
-        onDispose { IconCatalog.resetIcons() }
+    LaunchedEffect(selectedSubcategory.id, currentSelectedIcon) {
+        vm.onEvent(
+            IconSelectionEvent.OnInit(
+                subcategory = selectedSubcategory,
+                initialSelectedIcon = currentSelectedIcon,
+            )
+        )
     }
 
     Column(
@@ -76,27 +76,26 @@ fun IconSelectionContent(
         IconSelectionTopBar(
             modifier = Modifier.padding(horizontal = 8.dp),
             title = selectedSubcategory.name,
-            isLoading = isLoadingIcons,
+            isLoading = state.isLoadingIcons,
             onDone = {
                 resultStore.setResult(
                     key = ResultStoreKeys.SELECTED_ICON,
-                    value = selectedIcon,
+                    value = vm.getSelectedIcon(),
                 )
-                // Remove both the icon selection and icon subcategory selection
                 creationNavigator.removeLastOrNull()
                 creationNavigator.removeLastOrNull()
-                IconCatalog.resetIcons()
             },
             onDismiss = {
-                IconCatalog.resetIcons()
                 creationNavigator.removeLastOrNull()
             },
         )
         Spacer(modifier = Modifier.height(12.dp))
         SelectionContent(
-            selectedSubcategory = selectedSubcategory,
-            selectedIcon = selectedIcon,
-            onSelectIcon = { newIcon -> selectedIcon = newIcon }
+            icons = state.icons,
+            selectedIcon = state.selectedIcon,
+            onSelectIcon = { iconName ->
+                vm.onEvent(IconSelectionEvent.OnSelectIcon(iconName = iconName))
+            }
         )
         Spacer(modifier = Modifier.height(36.dp))
     }
@@ -152,16 +151,10 @@ private fun IconSelectionTopBar(
 
 @Composable
 private fun SelectionContent(
-    selectedSubcategory: IconSubcategory,
+    icons: List<IconItem>,
     selectedIcon: String,
     onSelectIcon: (String) -> Unit,
 ) {
-    val icons by IconCatalog.iconsFlow.collectAsState()
-
-    LaunchedEffect(selectedSubcategory.id) {
-        IconCatalog.loadIcons(selectedSubcategory.id)
-    }
-
     LazyVerticalGrid(
         columns = GridCells.Fixed(5),
         verticalArrangement = Arrangement.spacedBy(8.dp)

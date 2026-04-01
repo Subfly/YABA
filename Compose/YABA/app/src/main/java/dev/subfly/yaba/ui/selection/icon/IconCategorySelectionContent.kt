@@ -26,7 +26,7 @@ import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,12 +34,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.core.components.YabaIcon
 import dev.subfly.yaba.core.navigation.creation.IconSelectionRoute
 import dev.subfly.yaba.util.LocalCreationContentNavigator
-import dev.subfly.yaba.core.icons.IconCatalog
+import dev.subfly.yaba.core.icons.IconCategory
 import dev.subfly.yaba.core.icons.IconSubcategory
 import dev.subfly.yaba.core.model.utils.YabaColor
+import dev.subfly.yaba.core.state.selection.icon.IconCategorySelectionEvent
 
 // TODO(localization): Category/subcategory titles and descriptions come from bundled JSON (English).
 // Wire these fields to string resources when icon taxonomy is localized.
@@ -47,6 +50,13 @@ import dev.subfly.yaba.core.model.utils.YabaColor
 @Composable
 fun IconCategorySelectionContent(currentSelectedIcon: String) {
     val creationNavigator = LocalCreationContentNavigator.current
+
+    val vm = viewModel { IconCategorySelectionVM() }
+    val state by vm.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        vm.onEvent(IconCategorySelectionEvent.OnInit)
+    }
 
     Column(
         modifier =
@@ -60,6 +70,7 @@ fun IconCategorySelectionContent(currentSelectedIcon: String) {
         )
         Spacer(modifier = Modifier.height(12.dp))
         SelectionContent(
+            categories = state.categories,
             onSelectedSubcategory = { selectedSubcategory ->
                 creationNavigator.add(
                     IconSelectionRoute(
@@ -95,10 +106,9 @@ private fun TopBar(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun SelectionContent(
+    categories: List<IconCategory>,
     onSelectedSubcategory: (IconSubcategory) -> Unit,
 ) {
-    val categories by IconCatalog.categoriesFlow.collectAsState()
-
     LazyColumn(
         modifier = Modifier.padding(horizontal = 12.dp),
         verticalArrangement = Arrangement.spacedBy(32.dp),

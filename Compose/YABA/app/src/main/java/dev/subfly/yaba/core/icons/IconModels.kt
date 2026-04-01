@@ -1,5 +1,6 @@
 package dev.subfly.yaba.core.icons
 
+import androidx.compose.runtime.Stable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -19,6 +20,7 @@ data class IconHeaderFile(
 )
 
 @Serializable
+@Stable
 data class IconCategory(
     val id: String,
     val name: String,
@@ -31,6 +33,7 @@ data class IconCategory(
 )
 
 @Serializable
+@Stable
 data class IconSubcategory(
     val id: String,
     val name: String,
@@ -58,6 +61,7 @@ internal data class IconSubcategoryFile(
 )
 
 @Serializable
+@Stable
 data class IconItem(
     val name: String,
 )
