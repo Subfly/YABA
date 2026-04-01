@@ -49,6 +49,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextOverflow
@@ -87,7 +88,6 @@ import dev.subfly.yaba.util.ResultStoreKeys
 import dev.subfly.yaba.util.rememberPrivateBookmarkOpenClick
 import dev.subfly.yaba.util.rememberShareHandler
 import dev.subfly.yaba.util.uiTitle
-import dev.subfly.yaba.util.yabaPointerEventSpy
 import dev.subfly.yaba.core.common.CoreConstants
 import dev.subfly.yaba.core.filesystem.access.YabaFileAccessor
 import dev.subfly.yaba.core.managers.LinkmarkManager
@@ -178,14 +178,12 @@ fun TagDetailView(
     val color = remember(state.tag) { collectionDetailAccentColor(state.tag?.color) }
 
     Scaffold(
-        modifier = modifier.yabaPointerEventSpy(
-            onInteraction = {
-                if (searchHasFocus) {
-                    keyboardController?.hide()
-                    focusManager.clearFocus(force = true)
-                }
+        modifier = modifier.motionEventSpy {
+            if (searchHasFocus) {
+                keyboardController?.hide()
+                focusManager.clearFocus(force = true)
             }
-        ),
+        },
     ) { paddings ->
         when {
             state.isLoading && state.bookmarks.isEmpty() -> {

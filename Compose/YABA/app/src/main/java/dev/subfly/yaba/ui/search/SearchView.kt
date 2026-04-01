@@ -42,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
@@ -74,7 +75,6 @@ import dev.subfly.yaba.util.LocalUserPreferences
 import dev.subfly.yaba.util.rememberPrivateBookmarkOpenClick
 import dev.subfly.yaba.util.rememberShareHandler
 import dev.subfly.yaba.util.uiTitle
-import dev.subfly.yaba.util.yabaPointerEventSpy
 import dev.subfly.yaba.core.filesystem.access.YabaFileAccessor
 import dev.subfly.yaba.core.managers.LinkmarkManager
 import dev.subfly.yaba.core.model.utils.BookmarkAppearance
@@ -153,14 +153,12 @@ fun SearchView(modifier: Modifier = Modifier) {
     LaunchedEffect(Unit) { vm.onEvent(event = SearchEvent.OnInit) }
 
     Scaffold(
-        modifier = modifier.yabaPointerEventSpy(
-            onInteraction = {
-                if (searchHasFocus) {
-                    keyboardController?.hide()
-                    focusManager.clearFocus(force = true)
-                }
+        modifier = modifier.motionEventSpy {
+            if (searchHasFocus) {
+                keyboardController?.hide()
+                focusManager.clearFocus(force = true)
             }
-        ),
+        },
     ) { paddings ->
         when {
             state.isLoading && state.bookmarks.isEmpty() -> {

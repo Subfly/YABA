@@ -13,19 +13,3 @@ fun Modifier.yabaRightClick(
     // No-op on Android — right click is not supported
     return this
 }
-
-@Composable
-fun Modifier.yabaPointerEventSpy(
-    onInteraction: () -> Unit,
-): Modifier = pointerInput(Unit) {
-    awaitPointerEventScope {
-        while (true) {
-            val event = awaitPointerEvent(
-                pass = PointerEventPass.Initial,
-            )
-            if (event.type in setOf(PointerEventType.Move, PointerEventType.Scroll)) {
-                onInteraction()
-            }
-        }
-    }
-}
