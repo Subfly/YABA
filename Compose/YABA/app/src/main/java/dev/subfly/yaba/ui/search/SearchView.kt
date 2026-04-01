@@ -1,5 +1,6 @@
 package dev.subfly.yaba.ui.search
 
+import android.annotation.SuppressLint
 import androidx.compose.ui.res.stringResource
 
 import dev.subfly.yaba.R
@@ -11,7 +12,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
@@ -88,6 +88,7 @@ import dev.subfly.yaba.core.state.search.SearchUIState
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SearchView(modifier: Modifier = Modifier) {
     val userPreferences = LocalUserPreferences.current
@@ -133,9 +134,11 @@ fun SearchView(modifier: Modifier = Modifier) {
                 BookmarkKind.LINK -> shareScope.launch {
                     LinkmarkManager.getBookmarkUrl(bookmark.id)?.let(shareUrl)
                 }
+
                 BookmarkKind.IMAGE -> shareScope.launch {
                     YabaFileAccessor.shareImageBookmark(bookmark.id)
                 }
+
                 else -> {}
             }
         },
@@ -159,10 +162,32 @@ fun SearchView(modifier: Modifier = Modifier) {
                 focusManager.clearFocus(force = true)
             }
         },
-    ) { paddings ->
-        when {
-            state.isLoading && state.bookmarks.isEmpty() -> {
-                Column(Modifier.fillMaxSize().padding(paddings)) {
+    ) { _ ->
+        val isLoadingEmpty = state.isLoading && state.bookmarks.isEmpty()
+        val isEmptyDefault = state.query.isEmpty() && state.bookmarks.isEmpty()
+        val isEmptySearch = state.query.isNotEmpty() && state.bookmarks.isEmpty()
+        val isShowingBookmarks = state.bookmarks.isNotEmpty()
+
+        val itemModifier = Modifier.padding(
+            horizontal = if (state.bookmarkAppearance == BookmarkAppearance.CARD) {
+                12.dp
+            } else {
+                0.dp
+            }
+        )
+
+        Box(modifier = Modifier.fillMaxSize()) {
+            YabaBookmarkLayout(
+                modifier = Modifier.fillMaxSize(),
+                bookmarks = if (isShowingBookmarks) state.bookmarks else emptyList(),
+                layoutConfig = ContentLayoutConfig(
+                    bookmarkAppearance = userPreferences.preferredBookmarkAppearance,
+                    cardImageSizing = userPreferences.preferredCardImageSizing,
+                    headlineSpacerSizing = 8.dp,
+                    gridForceApplyPadding = true,
+                ),
+                onDrop = {},
+                stickyHeaderContent = {
                     SearchToolbar(
                         state = state,
                         searchBarState = searchBarState,
@@ -176,30 +201,57 @@ fun SearchView(modifier: Modifier = Modifier) {
                         onClear = { vm.onEvent(SearchEvent.OnChangeQuery("")) },
                         onEvent = vm::onEvent,
                     )
+                },
+                itemContent = { model, _, appearance, cardImageSizing, index, count ->
+                    val openBookmark = rememberPrivateBookmarkOpenClick(model) {
+                        navigator.add(
+                            when (model.kind) {
+                                BookmarkKind.LINK -> LinkDetailRoute(bookmarkId = model.id)
+                                BookmarkKind.NOTE -> NoteDetailRoute(bookmarkId = model.id)
+                                BookmarkKind.IMAGE -> ImageDetailRoute(bookmarkId = model.id)
+                                BookmarkKind.FILE -> DocDetailRoute(bookmarkId = model.id)
+                            },
+                        )
+                    }
+                    BookmarkItemView(
+                        modifier = itemModifier,
+                        model = model,
+                        appearance = appearance,
+                        cardImageSizing = cardImageSizing,
+                        onClick = openBookmark,
+                        onDeleteBookmark = { bookmark ->
+                            vm.onEvent(SearchEvent.OnDeleteBookmark(bookmark = bookmark))
+                        },
+                        onShareBookmark = { bookmark ->
+                            when (bookmark.kind) {
+                                BookmarkKind.LINK -> shareScope.launch {
+                                    LinkmarkManager.getBookmarkUrl(bookmark.id)?.let(shareUrl)
+                                }
+
+                                BookmarkKind.IMAGE -> shareScope.launch {
+                                    YabaFileAccessor.shareImageBookmark(bookmark.id)
+                                }
+
+                                else -> {}
+                            }
+                        },
+                        index = index,
+                        count = count,
+                    )
+                }
+            )
+
+            when {
+                isLoadingEmpty -> {
                     Box(
-                        modifier = Modifier.weight(1f).fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center,
                     ) { CircularWavyProgressIndicator() }
                 }
-            }
 
-            state.query.isEmpty() && state.bookmarks.isEmpty() -> {
-                Column(Modifier.fillMaxSize().padding(paddings)) {
-                    SearchToolbar(
-                        state = state,
-                        searchBarState = searchBarState,
-                        onFocusChanged = { searchHasFocus = it },
-                        onQueryChanged = { newQuery ->
-                            vm.onEvent(SearchEvent.OnChangeQuery(newQuery))
-                        },
-                        onSearch = { finalQuery ->
-                            vm.onEvent(SearchEvent.OnChangeQuery(finalQuery))
-                        },
-                        onClear = { vm.onEvent(SearchEvent.OnChangeQuery("")) },
-                        onEvent = vm::onEvent,
-                    )
+                isEmptyDefault -> {
                     Box(
-                        modifier = Modifier.weight(1f).fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center,
                     ) {
                         NoContentView(
@@ -211,25 +263,10 @@ fun SearchView(modifier: Modifier = Modifier) {
                         )
                     }
                 }
-            }
 
-            state.query.isNotEmpty() && state.bookmarks.isEmpty() -> {
-                Column(Modifier.fillMaxSize().padding(paddings)) {
-                    SearchToolbar(
-                        state = state,
-                        searchBarState = searchBarState,
-                        onFocusChanged = { searchHasFocus = it },
-                        onQueryChanged = { newQuery ->
-                            vm.onEvent(SearchEvent.OnChangeQuery(newQuery))
-                        },
-                        onSearch = { finalQuery ->
-                            vm.onEvent(SearchEvent.OnChangeQuery(finalQuery))
-                        },
-                        onClear = { vm.onEvent(SearchEvent.OnChangeQuery("")) },
-                        onEvent = vm::onEvent,
-                    )
+                isEmptySearch -> {
                     Box(
-                        modifier = Modifier.weight(1f).fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center,
                     ) {
                         NoContentView(
@@ -246,80 +283,6 @@ fun SearchView(modifier: Modifier = Modifier) {
                         )
                     }
                 }
-            }
-
-            else -> {
-                val itemModifier = Modifier.padding(
-                    horizontal = if (state.bookmarkAppearance == BookmarkAppearance.CARD) {
-                        12.dp
-                    } else {
-                        0.dp
-                    }
-                )
-
-                YabaBookmarkLayout(
-                    modifier = Modifier.fillMaxSize(),
-                    bookmarks = state.bookmarks,
-                    layoutConfig = ContentLayoutConfig(
-                        bookmarkAppearance = userPreferences.preferredBookmarkAppearance,
-                        cardImageSizing = userPreferences.preferredCardImageSizing,
-                        headlineSpacerSizing = 8.dp,
-                        gridForceApplyPadding = true,
-                    ),
-                    onDrop = {},
-                    stickyHeaderContent = {
-                        SearchToolbar(
-                            state = state,
-                            searchBarState = searchBarState,
-                            onFocusChanged = { searchHasFocus = it },
-                            onQueryChanged = { newQuery ->
-                                vm.onEvent(SearchEvent.OnChangeQuery(newQuery))
-                            },
-                            onSearch = { finalQuery ->
-                                vm.onEvent(SearchEvent.OnChangeQuery(finalQuery))
-                            },
-                            onClear = { vm.onEvent(SearchEvent.OnChangeQuery("")) },
-                            onEvent = vm::onEvent,
-                        )
-                    },
-                    itemContent = { model, _, appearance, cardImageSizing, index, count ->
-                        val openBookmark = rememberPrivateBookmarkOpenClick(model) {
-                            navigator.add(
-                                when (model.kind) {
-                                    BookmarkKind.LINK -> LinkDetailRoute(bookmarkId = model.id)
-                                    BookmarkKind.NOTE -> NoteDetailRoute(bookmarkId = model.id)
-                                    BookmarkKind.IMAGE -> ImageDetailRoute(bookmarkId = model.id)
-                                    BookmarkKind.FILE -> DocDetailRoute(bookmarkId = model.id)
-                                },
-                            )
-                        }
-                        BookmarkItemView(
-                            modifier = itemModifier,
-                            model = model,
-                            appearance = appearance,
-                            cardImageSizing = cardImageSizing,
-                            onClick = openBookmark,
-                            onDeleteBookmark = { bookmark ->
-                                vm.onEvent(SearchEvent.OnDeleteBookmark(bookmark = bookmark))
-                            },
-                            onShareBookmark = { bookmark ->
-                                when (bookmark.kind) {
-                                    BookmarkKind.LINK -> shareScope.launch {
-                                        LinkmarkManager.getBookmarkUrl(bookmark.id)?.let(shareUrl)
-                                    }
-
-                                    BookmarkKind.IMAGE -> shareScope.launch {
-                                        YabaFileAccessor.shareImageBookmark(bookmark.id)
-                                    }
-
-                                    else -> {}
-                                }
-                            },
-                            index = index,
-                            count = count,
-                        )
-                    }
-                )
             }
         }
     }

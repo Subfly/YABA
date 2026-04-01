@@ -1,5 +1,6 @@
 package dev.subfly.yaba.ui.detail.tag
 
+import android.annotation.SuppressLint
 import androidx.compose.ui.res.stringResource
 
 import dev.subfly.yaba.R
@@ -35,6 +36,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
+import androidx.compose.material3.SearchBarState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
@@ -108,6 +110,7 @@ import kotlin.uuid.ExperimentalUuidApi
     ExperimentalMaterial3ExpressiveApi::class,
     ExperimentalUuidApi::class
 )
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun TagDetailView(
     modifier: Modifier = Modifier,
@@ -119,6 +122,7 @@ fun TagDetailView(
     val focusManager = LocalFocusManager.current
     val shareUrl = rememberShareHandler()
     val shareScope = rememberCoroutineScope()
+    val searchBarState = rememberSearchBarState()
 
     var searchHasFocus by remember { mutableStateOf(false) }
 
@@ -184,13 +188,53 @@ fun TagDetailView(
                 focusManager.clearFocus(force = true)
             }
         },
-    ) { paddings ->
-        when {
-            state.isLoading && state.bookmarks.isEmpty() -> {
-                Column(Modifier.fillMaxSize().padding(paddings)) {
+    ) { _ ->
+        val isLoadingEmpty = state.isLoading && state.bookmarks.isEmpty()
+        val isEmptyDefault = state.query.isEmpty() && state.bookmarks.isEmpty()
+        val isEmptySearch = state.query.isNotEmpty() && state.bookmarks.isEmpty()
+        val isShowingBookmarks = state.bookmarks.isNotEmpty()
+
+        val itemModifier = Modifier.padding(
+            horizontal = if (userPreferences.preferredBookmarkAppearance == BookmarkAppearance.CARD) {
+                12.dp
+            } else 0.dp
+        )
+
+        val isPinnedTagContext = tagId == CoreConstants.Tag.Pinned.ID
+        val splitPinned = remember(state.bookmarks, isPinnedTagContext) {
+            !isPinnedTagContext && state.bookmarks.any { it.isPinned }
+        }
+        val pinnedList = remember(state.bookmarks, splitPinned) {
+            if (splitPinned) state.bookmarks.filter { it.isPinned } else emptyList()
+        }
+        val unpinnedList = remember(state.bookmarks, splitPinned, isPinnedTagContext) {
+            when {
+                isPinnedTagContext -> state.bookmarks
+                splitPinned -> state.bookmarks.filter { !it.isPinned }
+                else -> state.bookmarks
+            }
+        }
+
+        Box(modifier = Modifier.fillMaxSize()) {
+            YabaBookmarkLayout(
+                modifier = Modifier.fillMaxSize(),
+                bookmarks = if (isShowingBookmarks) unpinnedList else emptyList(),
+                pinnedSectionHeader = if (isShowingBookmarks && splitPinned) {
+                    { TagPinnedBookmarksSectionHeader() }
+                } else null,
+                pinnedBookmarks = if (isShowingBookmarks) pinnedList else emptyList(),
+                layoutConfig = ContentLayoutConfig(
+                    bookmarkAppearance = userPreferences.preferredBookmarkAppearance,
+                    cardImageSizing = userPreferences.preferredCardImageSizing,
+                    headlineSpacerSizing = 8.dp,
+                    gridForceApplyPadding = true,
+                ),
+                onDrop = {},
+                stickyHeaderContent = {
                     TagSearchToolbar(
                         state = state,
                         color = color,
+                        searchBarState = searchBarState,
                         onFocusChanged = { searchHasFocus = it },
                         onQueryChanged = { newQuery ->
                             vm.onEvent(TagDetailEvent.OnChangeQuery(query = newQuery))
@@ -201,30 +245,68 @@ fun TagDetailView(
                         onClear = { vm.onEvent(TagDetailEvent.OnChangeQuery("")) },
                         onEvent = vm::onEvent,
                     )
+                },
+                itemContent = { model, _, appearance, cardImageSizing, index, count ->
+                    val openBookmark = rememberPrivateBookmarkOpenClick(model) {
+                        navigator.add(
+                            when (model.kind) {
+                                BookmarkKind.LINK -> LinkDetailRoute(bookmarkId = model.id)
+                                BookmarkKind.NOTE -> NoteDetailRoute(bookmarkId = model.id)
+                                BookmarkKind.IMAGE -> ImageDetailRoute(bookmarkId = model.id)
+                                BookmarkKind.FILE -> DocDetailRoute(bookmarkId = model.id)
+                            },
+                        )
+                    }
+                    BookmarkItemView(
+                        modifier = itemModifier,
+                        model = model,
+                        appearance = appearance,
+                        cardImageSizing = cardImageSizing,
+                        isAddedToSelection = model.id in state.selectedBookmarkIds,
+                        onClick = {
+                            if (state.isSelectionMode) {
+                                vm.onEvent(
+                                    TagDetailEvent.OnToggleBookmarkSelection(
+                                        bookmarkId = model.id
+                                    )
+                                )
+                            } else {
+                                openBookmark()
+                            }
+                        },
+                        onDeleteBookmark = { bookmark ->
+                            vm.onEvent(TagDetailEvent.OnDeleteBookmark(bookmark = bookmark))
+                        },
+                        onShareBookmark = { bookmark ->
+                            when (bookmark.kind) {
+                                BookmarkKind.LINK -> shareScope.launch {
+                                    LinkmarkManager.getBookmarkUrl(bookmark.id)?.let(shareUrl)
+                                }
+
+                                BookmarkKind.IMAGE -> shareScope.launch {
+                                    YabaFileAccessor.shareImageBookmark(bookmark.id)
+                                }
+
+                                else -> {}
+                            }
+                        },
+                        index = index,
+                        count = count,
+                    )
+                },
+            )
+
+            when {
+                isLoadingEmpty -> {
                     Box(
-                        modifier = Modifier.weight(1f).fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center,
                     ) { CircularWavyProgressIndicator() }
                 }
-            }
 
-            state.query.isEmpty() && state.bookmarks.isEmpty() -> {
-                Column(Modifier.fillMaxSize().padding(paddings)) {
-                    TagSearchToolbar(
-                        state = state,
-                        color = color,
-                        onFocusChanged = { searchHasFocus = it },
-                        onQueryChanged = { newQuery ->
-                            vm.onEvent(TagDetailEvent.OnChangeQuery(query = newQuery))
-                        },
-                        onSearch = { finalQuery ->
-                            vm.onEvent(TagDetailEvent.OnChangeQuery(query = finalQuery))
-                        },
-                        onClear = { vm.onEvent(TagDetailEvent.OnChangeQuery("")) },
-                        onEvent = vm::onEvent,
-                    )
+                isEmptyDefault -> {
                     Box(
-                        modifier = Modifier.weight(1f).fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center,
                     ) {
                         NoContentView(
@@ -234,25 +316,10 @@ fun TagDetailView(
                         )
                     }
                 }
-            }
 
-            state.query.isNotEmpty() && state.bookmarks.isEmpty() -> {
-                Column(Modifier.fillMaxSize().padding(paddings)) {
-                    TagSearchToolbar(
-                        state = state,
-                        color = color,
-                        onFocusChanged = { searchHasFocus = it },
-                        onQueryChanged = { newQuery ->
-                            vm.onEvent(TagDetailEvent.OnChangeQuery(query = newQuery))
-                        },
-                        onSearch = { finalQuery ->
-                            vm.onEvent(TagDetailEvent.OnChangeQuery(query = finalQuery))
-                        },
-                        onClear = { vm.onEvent(TagDetailEvent.OnChangeQuery("")) },
-                        onEvent = vm::onEvent,
-                    )
+                isEmptySearch -> {
                     Box(
-                        modifier = Modifier.weight(1f).fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center,
                     ) {
                         NoContentView(
@@ -270,108 +337,6 @@ fun TagDetailView(
                     }
                 }
             }
-
-            else -> {
-                val itemModifier = Modifier.padding(
-                    horizontal = if (userPreferences.preferredBookmarkAppearance == BookmarkAppearance.CARD) {
-                        12.dp
-                    } else 0.dp
-                )
-
-                val isPinnedTagContext = tagId == CoreConstants.Tag.Pinned.ID
-                val splitPinned = remember(state.bookmarks, isPinnedTagContext) {
-                    !isPinnedTagContext && state.bookmarks.any { it.isPinned }
-                }
-                val pinnedList = remember(state.bookmarks, splitPinned) {
-                    if (splitPinned) state.bookmarks.filter { it.isPinned } else emptyList()
-                }
-                val unpinnedList = remember(state.bookmarks, splitPinned, isPinnedTagContext) {
-                    when {
-                        isPinnedTagContext -> state.bookmarks
-                        splitPinned -> state.bookmarks.filter { !it.isPinned }
-                        else -> state.bookmarks
-                    }
-                }
-
-                YabaBookmarkLayout(
-                    modifier = Modifier.fillMaxSize(),
-                    bookmarks = unpinnedList,
-                    pinnedSectionHeader = if (splitPinned) {
-                        { TagPinnedBookmarksSectionHeader() }
-                    } else null,
-                    pinnedBookmarks = pinnedList,
-                    layoutConfig = ContentLayoutConfig(
-                        bookmarkAppearance = userPreferences.preferredBookmarkAppearance,
-                        cardImageSizing = userPreferences.preferredCardImageSizing,
-                        headlineSpacerSizing = 8.dp,
-                        gridForceApplyPadding = true,
-                    ),
-                    onDrop = {},
-                    stickyHeaderContent = {
-                        TagSearchToolbar(
-                            state = state,
-                            color = color,
-                            onFocusChanged = { searchHasFocus = it },
-                            onQueryChanged = { newQuery ->
-                                vm.onEvent(TagDetailEvent.OnChangeQuery(query = newQuery))
-                            },
-                            onSearch = { finalQuery ->
-                                vm.onEvent(TagDetailEvent.OnChangeQuery(query = finalQuery))
-                            },
-                            onClear = { vm.onEvent(TagDetailEvent.OnChangeQuery("")) },
-                            onEvent = vm::onEvent,
-                        )
-                    },
-                    itemContent = { model, _, appearance, cardImageSizing, index, count ->
-                        val openBookmark = rememberPrivateBookmarkOpenClick(model) {
-                            navigator.add(
-                                when (model.kind) {
-                                    BookmarkKind.LINK -> LinkDetailRoute(bookmarkId = model.id)
-                                    BookmarkKind.NOTE -> NoteDetailRoute(bookmarkId = model.id)
-                                    BookmarkKind.IMAGE -> ImageDetailRoute(bookmarkId = model.id)
-                                    BookmarkKind.FILE -> DocDetailRoute(bookmarkId = model.id)
-                                },
-                            )
-                        }
-                        BookmarkItemView(
-                            modifier = itemModifier,
-                            model = model,
-                            appearance = appearance,
-                            cardImageSizing = cardImageSizing,
-                            isAddedToSelection = model.id in state.selectedBookmarkIds,
-                            onClick = {
-                                if (state.isSelectionMode) {
-                                    vm.onEvent(
-                                        TagDetailEvent.OnToggleBookmarkSelection(
-                                            bookmarkId = model.id
-                                        )
-                                    )
-                                } else {
-                                    openBookmark()
-                                }
-                            },
-                            onDeleteBookmark = { bookmark ->
-                                vm.onEvent(TagDetailEvent.OnDeleteBookmark(bookmark = bookmark))
-                            },
-                            onShareBookmark = { bookmark ->
-                                when (bookmark.kind) {
-                                    BookmarkKind.LINK -> shareScope.launch {
-                                        LinkmarkManager.getBookmarkUrl(bookmark.id)?.let(shareUrl)
-                                    }
-
-                                    BookmarkKind.IMAGE -> shareScope.launch {
-                                        YabaFileAccessor.shareImageBookmark(bookmark.id)
-                                    }
-
-                                    else -> {}
-                                }
-                            },
-                            index = index,
-                            count = count,
-                        )
-                    },
-                )
-            }
         }
     }
 }
@@ -381,6 +346,7 @@ fun TagDetailView(
 private fun TagSearchToolbar(
     state: TagDetailUIState,
     color: YabaColor,
+    searchBarState: SearchBarState,
     onFocusChanged: (Boolean) -> Unit,
     onQueryChanged: (String) -> Unit,
     onSearch: (String) -> Unit,
@@ -395,7 +361,6 @@ private fun TagSearchToolbar(
     val searchFieldTint by remember {
         derivedStateOf { collectionDetailSearchFieldTint(color) }
     }
-    val searchBarState = rememberSearchBarState()
     val topBarIconButtonColors = collectionDetailIconButtonColors(color)
 
     CollectionDetailSearchTopBar(
