@@ -41,7 +41,7 @@ fun YabaCreationSheet(modifier: Modifier = Modifier) {
         // (ShareActivity opens the sheet immediately on first composition; this avoids a race where
         // initial cleanup can remove the just-pushed route before the sheet becomes visible.)
         if (wasSheetVisible) {
-            creationNavigator.removeAll { it !is EmptyCretionRoute }
+            creationNavigator.removeAll { it !is EmptyCreationRoute }
             resultStore.cleanUp()
         }
     }

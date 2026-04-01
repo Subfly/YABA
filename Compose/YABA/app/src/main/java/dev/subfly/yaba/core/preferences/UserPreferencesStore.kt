@@ -2,205 +2,151 @@ package dev.subfly.yaba.core.preferences
 
 import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.PreferenceDataStoreFactory
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
-import dev.subfly.yaba.core.common.CoreConstants
+import androidx.datastore.core.DataStoreFactory
 import dev.subfly.yaba.core.model.utils.BookmarkAppearance
 import dev.subfly.yaba.core.model.utils.CardImageSizing
 import dev.subfly.yaba.core.model.utils.FabPosition
 import dev.subfly.yaba.core.model.utils.SortOrderType
 import dev.subfly.yaba.core.model.utils.SortType
 import dev.subfly.yaba.core.model.utils.ThemePreference
+import java.io.File
+import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
-import okio.Path.Companion.toPath
-import java.io.File
-import kotlin.coroutines.CoroutineContext
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 private const val SETTINGS_SUBDIR = "settings"
-private const val SETTINGS_FILE = "user_settings.preferences_pb"
-private const val MIGRATION_FLAG = "user_settings_migration_completed"
+private const val ENCRYPTED_SETTINGS_FILE = "user_settings.encrypted"
 
-internal object UserPreferenceKeys {
-    val hasPassedOnboarding = booleanPreferencesKey(CoreConstants.Settings.HAS_PASSED_ONBOARDING)
-    val hasNamedDevice = booleanPreferencesKey(CoreConstants.Settings.HAS_NAMED_DEVICE)
-    val preferredTheme = stringPreferencesKey(CoreConstants.Settings.PREFERRED_THEME)
-    val preferredBookmarkAppearance =
-        stringPreferencesKey(CoreConstants.Settings.PREFERRED_BOOKMARK_APPEARANCE)
-    val preferredCardImageSizing =
-        stringPreferencesKey(CoreConstants.Settings.PREFERRED_CARD_IMAGE_SIZING)
-    val preferredCollectionSorting =
-        stringPreferencesKey(CoreConstants.Settings.PREFERRED_COLLECTION_SORTING)
-    val preferredCollectionSortOrder =
-        stringPreferencesKey(CoreConstants.Settings.PREFERRED_COLLECTION_SORT_ORDER)
-    val preferredBookmarkSorting =
-        stringPreferencesKey(CoreConstants.Settings.PREFERRED_BOOKMARK_SORTING)
-    val preferredBookmarkSortOrder =
-        stringPreferencesKey(CoreConstants.Settings.PREFERRED_BOOKMARK_SORT_ORDER)
-    val preferredFabPosition = stringPreferencesKey(CoreConstants.Settings.PREFERRED_FAB_POSITION)
-    val disableBackgroundAnimation =
-        booleanPreferencesKey(CoreConstants.Settings.DISABLE_BACKGROUND_ANIMATION)
-    val deviceId = stringPreferencesKey(CoreConstants.Settings.DEVICE_ID)
-    val deviceName = stringPreferencesKey(CoreConstants.Settings.DEVICE_NAME)
-    val showRecents = booleanPreferencesKey(CoreConstants.Settings.SHOW_RECENTS)
-    val showMenuBarItem = booleanPreferencesKey(CoreConstants.Settings.SHOW_MENU_BAR_ITEM)
-    val useSimplifiedShare = booleanPreferencesKey(CoreConstants.Settings.USE_SIMPLIFIED_SHARE)
-    val preventDeletionSync = booleanPreferencesKey(CoreConstants.Settings.PREVENT_DELETION_SYNC)
-
-    val announcementsYaba12 = booleanPreferencesKey(CoreConstants.Announcements.YABA_1_2_UPDATE)
-    val announcementsYaba13 = booleanPreferencesKey(CoreConstants.Announcements.YABA_1_3_UPDATE)
-    val announcementsYaba14 = booleanPreferencesKey(CoreConstants.Announcements.YABA_1_4_UPDATE)
-    val announcementsYaba15 = booleanPreferencesKey(CoreConstants.Announcements.YABA_1_5_UPDATE)
-    val announcementsCloudKitDrop = booleanPreferencesKey(CoreConstants.Announcements.CLOUDKIT_DROP)
-    val announcementsCloudKitDropUrgent =
-        booleanPreferencesKey(CoreConstants.Announcements.CLOUDKIT_DROP_URGENT)
-    val announcementsCloudKitDatabaseWipe =
-        booleanPreferencesKey(CoreConstants.Announcements.CLOUDKIT_DATABASE_WIPE)
-    val announcementsLegalsUpdate = booleanPreferencesKey(CoreConstants.Announcements.LEGALS_UPDATE)
-    val announcementsLegalsUpdate2 =
-        booleanPreferencesKey(CoreConstants.Announcements.LEGALS_UPDATE_2)
-
-    val migrationCompleted = booleanPreferencesKey(MIGRATION_FLAG)
-}
-
-class UserPreferencesStore internal constructor(
-    private val dataStore: DataStore<Preferences>,
+class UserPreferencesStore
+internal constructor(
+    private val dataStore: DataStore<UserPreferences>,
 ) {
-    internal val dataStoreHandle: DataStore<Preferences> = dataStore
+    internal val dataStoreHandle: DataStore<UserPreferences> = dataStore
 
-    val preferencesFlow: Flow<UserPreferences> = dataStore.data.map { it.toUserPreferences() }
+    val preferencesFlow: Flow<UserPreferences> = dataStore.data
 
-    suspend fun get(): UserPreferences = dataStore.data.first().toUserPreferences()
+    suspend fun get(): UserPreferences = dataStore.data.first()
 
     suspend fun setHasPassedOnboarding(value: Boolean) =
-        setBoolean(UserPreferenceKeys.hasPassedOnboarding, value)
+        update { it.copy(hasPassedOnboarding = value) }
 
-    suspend fun setHasNamedDevice(value: Boolean) =
-        setBoolean(UserPreferenceKeys.hasNamedDevice, value)
+    suspend fun setHasNamedDevice(value: Boolean) = update { it.copy(hasNamedDevice = value) }
 
     suspend fun setPreferredTheme(ordinal: Int) =
         setPreferredTheme(enumFromOrdinal(ordinal, ThemePreference.SYSTEM))
 
     suspend fun setPreferredTheme(value: ThemePreference) =
-        setEnum(UserPreferenceKeys.preferredTheme, value)
+        update { it.copy(preferredTheme = value) }
 
     suspend fun setPreferredBookmarkAppearance(ordinal: Int) =
         setPreferredBookmarkAppearance(enumFromOrdinal(ordinal, BookmarkAppearance.LIST))
 
     suspend fun setPreferredBookmarkAppearance(value: BookmarkAppearance) =
-        setEnum(UserPreferenceKeys.preferredBookmarkAppearance, value)
+        update { it.copy(preferredBookmarkAppearance = value) }
 
     suspend fun setPreferredCardImageSizing(ordinal: Int) =
         setPreferredCardImageSizing(enumFromOrdinal(ordinal, CardImageSizing.SMALL))
 
     suspend fun setPreferredCardImageSizing(value: CardImageSizing) =
-        setEnum(UserPreferenceKeys.preferredCardImageSizing, value)
+        update { it.copy(preferredCardImageSizing = value) }
 
     suspend fun setPreferredCollectionSorting(ordinal: Int) =
         setPreferredCollectionSorting(enumFromOrdinal(ordinal, SortType.CREATED_AT))
 
     suspend fun setPreferredCollectionSorting(value: SortType) =
-        setEnum(UserPreferenceKeys.preferredCollectionSorting, value)
+        update { it.copy(preferredCollectionSorting = value) }
 
     suspend fun setPreferredBookmarkSorting(ordinal: Int) =
         setPreferredBookmarkSorting(enumFromOrdinal(ordinal, SortType.CREATED_AT))
 
     suspend fun setPreferredBookmarkSorting(value: SortType) =
-        setEnum(UserPreferenceKeys.preferredBookmarkSorting, value)
+        update { it.copy(preferredBookmarkSorting = value) }
 
     suspend fun setPreferredCollectionSortOrder(ordinal: Int) =
         setPreferredCollectionSortOrder(enumFromOrdinal(ordinal, SortOrderType.ASCENDING))
 
     suspend fun setPreferredCollectionSortOrder(value: SortOrderType) =
-        setEnum(UserPreferenceKeys.preferredCollectionSortOrder, value)
+        update { it.copy(preferredCollectionSortOrder = value) }
 
     suspend fun setPreferredBookmarkSortOrder(ordinal: Int) =
         setPreferredBookmarkSortOrder(enumFromOrdinal(ordinal, SortOrderType.DESCENDING))
 
     suspend fun setPreferredBookmarkSortOrder(value: SortOrderType) =
-        setEnum(UserPreferenceKeys.preferredBookmarkSortOrder, value)
+        update { it.copy(preferredBookmarkSortOrder = value) }
 
     suspend fun setPreferredFabPosition(ordinal: Int) =
         setPreferredFabPosition(enumFromOrdinal(ordinal, FabPosition.CENTER))
 
     suspend fun setPreferredFabPosition(value: FabPosition) =
-        setEnum(UserPreferenceKeys.preferredFabPosition, value)
+        update { it.copy(preferredFabPosition = value) }
 
     suspend fun setDisableBackgroundAnimation(value: Boolean) =
-        setBoolean(UserPreferenceKeys.disableBackgroundAnimation, value)
+        update { it.copy(disableBackgroundAnimation = value) }
 
-    suspend fun setDeviceId(value: String) = setString(UserPreferenceKeys.deviceId, value)
-    suspend fun setDeviceName(value: String) = setString(UserPreferenceKeys.deviceName, value)
-    suspend fun setShowRecents(value: Boolean) = setBoolean(UserPreferenceKeys.showRecents, value)
-    suspend fun setShowMenuBarItem(value: Boolean) =
-        setBoolean(UserPreferenceKeys.showMenuBarItem, value)
+    suspend fun setDeviceId(value: String) = update { it.copy(deviceId = value) }
+
+    suspend fun setDeviceName(value: String) = update { it.copy(deviceName = value) }
+
+    suspend fun setShowRecents(value: Boolean) = update { it.copy(showRecents = value) }
+
+    suspend fun setShowMenuBarItem(value: Boolean) = update { it.copy(showMenuBarItem = value) }
 
     suspend fun setUseSimplifiedShare(value: Boolean) =
-        setBoolean(UserPreferenceKeys.useSimplifiedShare, value)
+        update { it.copy(useSimplifiedShare = value) }
 
     suspend fun setPreventDeletionSync(value: Boolean) =
-        setBoolean(UserPreferenceKeys.preventDeletionSync, value)
+        update { it.copy(preventDeletionSync = value) }
 
     suspend fun setAnnouncementsYaba12(value: Boolean) =
-        setBoolean(UserPreferenceKeys.announcementsYaba12, value)
+        update { it.copy(announcementsYaba1_2Update = value) }
 
     suspend fun setAnnouncementsYaba13(value: Boolean) =
-        setBoolean(UserPreferenceKeys.announcementsYaba13, value)
+        update { it.copy(announcementsYaba1_3Update = value) }
 
     suspend fun setAnnouncementsYaba14(value: Boolean) =
-        setBoolean(UserPreferenceKeys.announcementsYaba14, value)
+        update { it.copy(announcementsYaba1_4Update = value) }
 
     suspend fun setAnnouncementsYaba15(value: Boolean) =
-        setBoolean(UserPreferenceKeys.announcementsYaba15, value)
+        update { it.copy(announcementsYaba1_5Update = value) }
 
     suspend fun setAnnouncementsCloudKitDrop(value: Boolean) =
-        setBoolean(UserPreferenceKeys.announcementsCloudKitDrop, value)
+        update { it.copy(announcementsCloudKitDrop = value) }
 
     suspend fun setAnnouncementsCloudKitDropUrgent(value: Boolean) =
-        setBoolean(UserPreferenceKeys.announcementsCloudKitDropUrgent, value)
+        update { it.copy(announcementsCloudKitDropUrgent = value) }
 
     suspend fun setAnnouncementsCloudKitDatabaseWipe(value: Boolean) =
-        setBoolean(UserPreferenceKeys.announcementsCloudKitDatabaseWipe, value)
+        update { it.copy(announcementsCloudKitDatabaseWipe = value) }
 
     suspend fun setAnnouncementsLegalsUpdate(value: Boolean) =
-        setBoolean(UserPreferenceKeys.announcementsLegalsUpdate, value)
+        update { it.copy(announcementsLegalsUpdate = value) }
 
     suspend fun setAnnouncementsLegalsUpdate2(value: Boolean) =
-        setBoolean(UserPreferenceKeys.announcementsLegalsUpdate2, value)
+        update { it.copy(announcementsLegalsUpdate2 = value) }
 
-    suspend fun markMigrationComplete() =
-        setBoolean(UserPreferenceKeys.migrationCompleted, true)
+    /** Stores the 6-digit PIN as plaintext inside the Keystore-encrypted JSON blob. */
+    suspend fun setPrivateBookmarkPasswordHash(value: String) =
+        update { it.copy(privateBookmarkPasswordHash = value) }
 
+    @OptIn(ExperimentalUuidApi::class)
     suspend fun ensureDefaults() {
-        dataStore.edit { prefs ->
-            if (!prefs.contains(UserPreferenceKeys.deviceId)) {
-                prefs[UserPreferenceKeys.deviceId] = java.util.UUID.randomUUID().toString()
-            }
+        dataStore.updateData { prefs ->
+            if (prefs.deviceId.isBlank()) prefs.copy(
+                deviceId = Uuid.generateV4().toString()
+            )
+            else prefs
         }
     }
 
-    private suspend fun setBoolean(
-        key: Preferences.Key<Boolean>,
-        value: Boolean,
-    ) = dataStore.edit { prefs -> prefs[key] = value }
-
-    private suspend fun setString(
-        key: Preferences.Key<String>,
-        value: String,
-    ) = dataStore.edit { prefs -> prefs[key] = value }
-
-    private suspend fun <T : Enum<T>> setEnum(
-        key: Preferences.Key<String>,
-        value: T,
-    ) = dataStore.edit { prefs -> prefs[key] = value.name }
+    private suspend fun update(transform: (UserPreferences) -> UserPreferences) {
+        dataStore.updateData(transform)
+    }
 }
 
 object UserPreferencesStoreFactory {
@@ -208,18 +154,17 @@ object UserPreferencesStoreFactory {
         context: Context,
         coroutineContext: CoroutineContext = Dispatchers.Default,
     ): UserPreferencesStore {
-        val dataStore = PreferenceDataStoreFactory.createWithPath(
-            scope = CoroutineScope(SupervisorJob() + coroutineContext),
-            produceFile = {
-                resolveUserSettingsDataStoreFile(context)
-                    .absolutePath
-                    .toPath()
-            },
-        )
-
-        return UserPreferencesStore(dataStore).also { store ->
-            runBlocking { store.ensureDefaults() }
+        val dataStore =
+            DataStoreFactory.create(
+                serializer = UserPreferencesSerializer,
+                scope = CoroutineScope(SupervisorJob() + coroutineContext),
+                produceFile = { resolveEncryptedUserSettingsFile(context) },
+            )
+        val store = UserPreferencesStore(dataStore)
+        runBlocking {
+            store.ensureDefaults()
         }
+        return store
     }
 }
 
@@ -227,9 +172,7 @@ object SettingsStores {
     @Volatile
     private var appContext: Context? = null
 
-    /**
-     * Call once from [android.app.Activity.onCreate] before accessing [userPreferences].
-     */
+    /** Call once from [android.app.Activity.onCreate] before accessing [userPreferences]. */
     fun initialize(context: Context) {
         if (appContext != null) return
         appContext = context.applicationContext
@@ -242,88 +185,7 @@ object SettingsStores {
     }
 }
 
-private fun resolveUserSettingsDataStoreFile(
-    context: Context,
-): File {
+private fun resolveEncryptedUserSettingsFile(context: Context): File {
     val dir = File(context.filesDir, SETTINGS_SUBDIR).apply { mkdirs() }
-    return File(dir, SETTINGS_FILE)
+    return File(dir, ENCRYPTED_SETTINGS_FILE)
 }
-
-private fun Preferences.toUserPreferences(): UserPreferences =
-    UserPreferences(
-        hasPassedOnboarding = getBoolean(UserPreferenceKeys.hasPassedOnboarding, false),
-        hasNamedDevice = getBoolean(UserPreferenceKeys.hasNamedDevice, false),
-        preferredTheme = enumValue(
-            UserPreferenceKeys.preferredTheme,
-            ThemePreference.SYSTEM,
-        ),
-        preferredBookmarkAppearance = enumValue(
-            UserPreferenceKeys.preferredBookmarkAppearance,
-            BookmarkAppearance.LIST,
-        ),
-        preferredCardImageSizing = enumValue(
-            UserPreferenceKeys.preferredCardImageSizing,
-            CardImageSizing.SMALL,
-        ),
-        preferredCollectionSorting = enumValue(
-            UserPreferenceKeys.preferredCollectionSorting,
-            SortType.CREATED_AT,
-        ),
-        preferredCollectionSortOrder = enumValue(
-            UserPreferenceKeys.preferredCollectionSortOrder,
-            SortOrderType.ASCENDING,
-        ),
-        preferredBookmarkSorting = enumValue(
-            UserPreferenceKeys.preferredBookmarkSorting,
-            SortType.CREATED_AT,
-        ),
-        preferredBookmarkSortOrder = enumValue(
-            UserPreferenceKeys.preferredBookmarkSortOrder,
-            SortOrderType.DESCENDING,
-        ),
-        preferredFabPosition = enumValue(
-            UserPreferenceKeys.preferredFabPosition,
-            FabPosition.CENTER,
-        ),
-        disableBackgroundAnimation = getBoolean(
-            UserPreferenceKeys.disableBackgroundAnimation,
-            false
-        ),
-        deviceId = this[UserPreferenceKeys.deviceId].orEmpty(),
-        deviceName = this[UserPreferenceKeys.deviceName].orEmpty(),
-        showRecents = getBoolean(UserPreferenceKeys.showRecents, true),
-        showMenuBarItem = getBoolean(UserPreferenceKeys.showMenuBarItem, true),
-        useSimplifiedShare = getBoolean(UserPreferenceKeys.useSimplifiedShare, false),
-        preventDeletionSync = getBoolean(UserPreferenceKeys.preventDeletionSync, false),
-        announcementsYaba1_2Update = getBoolean(UserPreferenceKeys.announcementsYaba12, true),
-        announcementsYaba1_3Update = getBoolean(UserPreferenceKeys.announcementsYaba13, true),
-        announcementsYaba1_4Update = getBoolean(UserPreferenceKeys.announcementsYaba14, true),
-        announcementsYaba1_5Update = getBoolean(UserPreferenceKeys.announcementsYaba15, true),
-        announcementsCloudKitDrop = getBoolean(UserPreferenceKeys.announcementsCloudKitDrop, true),
-        announcementsCloudKitDropUrgent = getBoolean(
-            UserPreferenceKeys.announcementsCloudKitDropUrgent,
-            true,
-        ),
-        announcementsCloudKitDatabaseWipe = getBoolean(
-            UserPreferenceKeys.announcementsCloudKitDatabaseWipe,
-            true,
-        ),
-        announcementsLegalsUpdate = getBoolean(UserPreferenceKeys.announcementsLegalsUpdate, true),
-        announcementsLegalsUpdate2 = getBoolean(
-            UserPreferenceKeys.announcementsLegalsUpdate2,
-            true
-        ),
-        migrationCompleted = getBoolean(UserPreferenceKeys.migrationCompleted, false),
-    )
-
-private fun Preferences.getBoolean(
-    key: Preferences.Key<Boolean>,
-    default: Boolean,
-): Boolean = this[key] ?: default
-
-private inline fun <reified T : Enum<T>> Preferences.enumValue(
-    key: Preferences.Key<String>,
-    default: T,
-): T = this[key]?.let { value ->
-    runCatching { enumValueOf<T>(value) }.getOrNull()
-} ?: default

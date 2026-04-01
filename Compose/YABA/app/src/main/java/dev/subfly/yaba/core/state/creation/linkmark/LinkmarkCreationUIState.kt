@@ -57,6 +57,9 @@ data class LinkmarkCreationUIState(
     // Edit mode
     val editingLinkmark: LinkmarkUiModel? = null,
 
+    /** When saving, persisted via [dev.subfly.yaba.core.managers.AllBookmarksManager]. */
+    val isPrivate: Boolean = false,
+
     // Flag to indicate if uncategorized folder needs to be created
     val uncategorizedFolderCreationRequired: Boolean = false,
 ) {
@@ -115,6 +118,7 @@ data class LinkmarkCreationUIState(
         if (bookmarkAppearance != other.bookmarkAppearance) return false
         if (cardImageSizing != other.cardImageSizing) return false
         if (editingLinkmark != other.editingLinkmark) return false
+        if (isPrivate != other.isPrivate) return false
         if (uncategorizedFolderCreationRequired != other.uncategorizedFolderCreationRequired)
             return false
 
@@ -147,6 +151,7 @@ data class LinkmarkCreationUIState(
         result = 31 * result + bookmarkAppearance.hashCode()
         result = 31 * result + cardImageSizing.hashCode()
         result = 31 * result + (editingLinkmark?.hashCode() ?: 0)
+        result = 31 * result + isPrivate.hashCode()
         result = 31 * result + uncategorizedFolderCreationRequired.hashCode()
         return result
     }

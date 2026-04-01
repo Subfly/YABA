@@ -28,7 +28,7 @@ fun YabaCreationDialog() {
         if (appState.showCreationContent.not()) {
             // Just in case, some delay
             delay(100)
-            creationNavigator.removeAll { it !is EmptyCretionRoute }
+            creationNavigator.removeAll { it !is EmptyCreationRoute }
             resultStore.cleanUp()
         }
     }

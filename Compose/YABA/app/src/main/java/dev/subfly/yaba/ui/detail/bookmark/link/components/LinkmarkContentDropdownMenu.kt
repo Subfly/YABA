@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import dev.subfly.yaba.core.components.YabaIcon
+import dev.subfly.yaba.core.managers.AllBookmarksManager
 import dev.subfly.yaba.core.navigation.alert.DeletionState
 import dev.subfly.yaba.core.navigation.alert.DeletionType
 import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
@@ -35,7 +36,10 @@ import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalDeletionDialogManager
 import dev.subfly.yaba.util.Platform
+import dev.subfly.yaba.util.PrivateBookmarkPasswordReason
 import dev.subfly.yaba.util.YabaPlatform
+import dev.subfly.yaba.util.rememberPrivateBookmarkProtectedAction
+import dev.subfly.yaba.util.rememberPrivateBookmarkToggleAction
 import dev.subfly.yaba.util.rememberShareHandler
 import dev.subfly.yaba.util.rememberUrlLauncher
 import dev.subfly.yaba.core.model.utils.FolderSelectionMode
@@ -68,6 +72,137 @@ internal fun LinkmarkContentDropdownMenu(
     val shareUrl = rememberShareHandler()
     val openUrl = rememberUrlLauncher()
 
+    val bookmark = state.bookmark
+    val noop = remember { { } }
+    val runOpenUrl = if (bookmark != null) {
+        rememberPrivateBookmarkProtectedAction(
+            model = bookmark,
+            reason = PrivateBookmarkPasswordReason.OPEN_BOOKMARK,
+        ) {
+            val url = state.linkDetails?.url ?: return@rememberPrivateBookmarkProtectedAction
+            openUrl(url)
+        }
+    } else {
+        noop
+    }
+    val runEdit = if (bookmark != null) {
+        rememberPrivateBookmarkProtectedAction(
+            model = bookmark,
+            reason = PrivateBookmarkPasswordReason.EDIT_BOOKMARK,
+        ) {
+            val bookmarkId = state.bookmark?.id ?: return@rememberPrivateBookmarkProtectedAction
+            creationNavigator.add(LinkmarkCreationRoute(bookmarkId = bookmarkId))
+            appStateManager.onShowCreationContent()
+        }
+    } else {
+        noop
+    }
+    val runMove = if (bookmark != null) {
+        rememberPrivateBookmarkProtectedAction(
+            model = bookmark,
+            reason = PrivateBookmarkPasswordReason.EDIT_BOOKMARK,
+        ) {
+            val b = state.bookmark ?: return@rememberPrivateBookmarkProtectedAction
+            creationNavigator.add(
+                FolderSelectionRoute(
+                    mode = FolderSelectionMode.BOOKMARKS_MOVE,
+                    contextFolderId = b.folderId,
+                    contextBookmarkIds = listOf(b.id),
+                ),
+            )
+            appStateManager.onShowCreationContent()
+        }
+    } else {
+        noop
+    }
+    val runPin = if (bookmark != null) {
+        rememberPrivateBookmarkProtectedAction(
+            model = bookmark,
+            reason = PrivateBookmarkPasswordReason.EDIT_BOOKMARK,
+        ) {
+            val id = state.bookmark?.id ?: return@rememberPrivateBookmarkProtectedAction
+            AllBookmarksManager.toggleBookmarkPinned(id)
+        }
+    } else {
+        noop
+    }
+    val runShare = if (bookmark != null) {
+        rememberPrivateBookmarkProtectedAction(
+            model = bookmark,
+            reason = PrivateBookmarkPasswordReason.SHARE_BOOKMARK,
+        ) {
+            val url = state.linkDetails?.url ?: return@rememberPrivateBookmarkProtectedAction
+            shareUrl(url)
+        }
+    } else {
+        noop
+    }
+    val runExportMarkdown = if (bookmark != null) {
+        rememberPrivateBookmarkProtectedAction(
+            model = bookmark,
+            reason = PrivateBookmarkPasswordReason.EDIT_BOOKMARK,
+        ) {
+            onExportMarkdown()
+        }
+    } else {
+        remember(onExportMarkdown) { { onExportMarkdown() } }
+    }
+    val runExportPdf = if (bookmark != null) {
+        rememberPrivateBookmarkProtectedAction(
+            model = bookmark,
+            reason = PrivateBookmarkPasswordReason.EDIT_BOOKMARK,
+        ) {
+            onExportPdf()
+        }
+    } else {
+        remember(onExportPdf) { { onExportPdf() } }
+    }
+    val runRemindMe = if (bookmark != null) {
+        rememberPrivateBookmarkProtectedAction(
+            model = bookmark,
+            reason = PrivateBookmarkPasswordReason.EDIT_BOOKMARK,
+        ) {
+            onShowRemindMePicker()
+        }
+    } else {
+        noop
+    }
+    val runCancelReminder = if (bookmark != null) {
+        rememberPrivateBookmarkProtectedAction(
+            model = bookmark,
+            reason = PrivateBookmarkPasswordReason.EDIT_BOOKMARK,
+        ) {
+            onEvent(LinkmarkDetailEvent.OnCancelReminder)
+        }
+    } else {
+        noop
+    }
+    val runDelete = if (bookmark != null) {
+        rememberPrivateBookmarkProtectedAction(
+            model = bookmark,
+            reason = PrivateBookmarkPasswordReason.DELETE_BOOKMARK,
+        ) {
+            val b = state.bookmark ?: return@rememberPrivateBookmarkProtectedAction
+            deletionDialogManager.send(
+                DeletionState(
+                    deletionType = DeletionType.BOOKMARK,
+                    bookmarkToBeDeleted = b,
+                    onConfirm = {
+                        onEvent(LinkmarkDetailEvent.OnDeleteBookmark)
+                        navigator.removeLastOrNull()
+                    },
+                ),
+            )
+        }
+    } else {
+        noop
+    }
+    val onPrivateToggle = if (bookmark != null) {
+        rememberPrivateBookmarkToggleAction(bookmark)
+    } else {
+        noop
+    }
+
     val openText = stringResource(R.string.open)
     val editText = stringResource(R.string.edit)
     val moveText = stringResource(R.string.move)
@@ -78,6 +213,8 @@ internal fun LinkmarkContentDropdownMenu(
     val versionLabel = "Version" // TODO: LOCALIZATION
     val shareText = stringResource(R.string.share)
     val deleteText = stringResource(R.string.delete)
+    // TODO: LOCALIZATION (match BookmarkItemView)
+    val privateActionText = if (bookmark?.isPrivate == true) "Not Private" else "Private"
     // TODO: LOCALIZATION
     val saveCopyText = "Export"
     val mdLabel = "MD"
@@ -86,11 +223,21 @@ internal fun LinkmarkContentDropdownMenu(
     val isAndroid = Platform == YabaPlatform.ANDROID
     val hasActiveReminder = state.reminderDateEpochMillis != null
 
-    val primaryActions = remember(openText, editText, moveText) {
+    val isPinned = state.bookmark?.isPinned == true
+    // TODO: LOCALIZATION
+    val pinActionText = if (isPinned) "Unpin" else "Pin"
+
+    val primaryActions = remember(openText, editText, moveText, pinActionText, isPinned) {
         listOf(
             DetailMenuAction(key = "open", icon = "link-04", text = openText, color = YabaColor.GREEN),
             DetailMenuAction(key = "edit", icon = "edit-02", text = editText, color = YabaColor.ORANGE),
             DetailMenuAction(key = "move", icon = "arrow-move-up-right", text = moveText, color = YabaColor.TEAL),
+            DetailMenuAction(
+                key = "pin",
+                icon = if (isPinned) "pin-off" else "pin",
+                text = pinActionText,
+                color = YabaColor.YELLOW,
+            ),
         )
     }
 
@@ -132,26 +279,10 @@ internal fun LinkmarkContentDropdownMenu(
                     onCheckedChange = { _ ->
                         onDismissRequest()
                         when (action.key) {
-                            "open" -> {
-                                val url = state.linkDetails?.url ?: return@DropdownMenuItem
-                                openUrl(url)
-                            }
-                            "edit" -> {
-                                val bookmarkId = state.bookmark?.id ?: return@DropdownMenuItem
-                                creationNavigator.add(LinkmarkCreationRoute(bookmarkId = bookmarkId))
-                                appStateManager.onShowCreationContent()
-                            }
-                            "move" -> {
-                                val bookmark = state.bookmark ?: return@DropdownMenuItem
-                                creationNavigator.add(
-                                    FolderSelectionRoute(
-                                        mode = FolderSelectionMode.BOOKMARKS_MOVE,
-                                        contextFolderId = bookmark.folderId,
-                                        contextBookmarkIds = listOf(bookmark.id),
-                                    )
-                                )
-                                appStateManager.onShowCreationContent()
-                            }
+                            "open" -> runOpenUrl()
+                            "edit" -> runEdit()
+                            "move" -> runMove()
+                            "pin" -> runPin()
                         }
                     },
                     leadingIcon = {
@@ -174,8 +305,8 @@ internal fun LinkmarkContentDropdownMenu(
                 onToggleExpand = { isSaveCopyExpanded = !isSaveCopyExpanded },
                 onDismissSubmenu = { isSaveCopyExpanded = false },
                 onDismissRootMenu = onDismissRequest,
-                onExportMarkdown = onExportMarkdown,
-                onExportPdf = onExportPdf,
+                onExportMarkdown = { runExportMarkdown() },
+                onExportPdf = { runExportPdf() },
             )
 
             LinkmarkUpdateSubmenuSection(
@@ -205,12 +336,9 @@ internal fun LinkmarkContentDropdownMenu(
                     onCheckedChange = { _ ->
                         onDismissRequest()
                         when (action.key) {
-                            "remind_me" -> onShowRemindMePicker()
-                            "cancel_reminder" -> onEvent(LinkmarkDetailEvent.OnCancelReminder)
-                            "share" -> {
-                                val url = state.linkDetails?.url ?: return@DropdownMenuItem
-                                shareUrl(url)
-                            }
+                            "remind_me" -> runRemindMe()
+                            "cancel_reminder" -> runCancelReminder()
+                            "share" -> runShare()
                         }
                     },
                     leadingIcon = {
@@ -229,22 +357,34 @@ internal fun LinkmarkContentDropdownMenu(
         DropdownMenuGroup(
             shapes = MenuDefaults.groupShape(index = 2, count = 3)
         ) {
+            if (bookmark != null) {
+                DropdownMenuItem(
+                    shapes = MenuDefaults.itemShape(0, 2),
+                    checked = false,
+                    onCheckedChange = { _ ->
+                        onDismissRequest()
+                        onPrivateToggle()
+                    },
+                    leadingIcon = {
+                        YabaIcon(
+                            name = if (bookmark.isPrivate) "circle-unlock-02" else "circle-lock-02",
+                            color = Color(YabaColor.RED.iconTintArgb()),
+                        )
+                    },
+                    text = {
+                        Text(
+                            text = privateActionText,
+                            color = Color(YabaColor.RED.iconTintArgb()),
+                        )
+                    }
+                )
+            }
             DropdownMenuItem(
-                shapes = MenuDefaults.itemShape(0, 1),
+                shapes = MenuDefaults.itemShape(if (bookmark != null) 1 else 0, if (bookmark != null) 2 else 1),
                 checked = false,
                 onCheckedChange = { _ ->
                     onDismissRequest()
-                    val bookmark = state.bookmark ?: return@DropdownMenuItem
-                    deletionDialogManager.send(
-                        DeletionState(
-                            deletionType = DeletionType.BOOKMARK,
-                            bookmarkToBeDeleted = bookmark,
-                            onConfirm = {
-                                onEvent(LinkmarkDetailEvent.OnDeleteBookmark)
-                                navigator.removeLastOrNull()
-                            },
-                        )
-                    )
+                    runDelete()
                 },
                 leadingIcon = {
                     YabaIcon(

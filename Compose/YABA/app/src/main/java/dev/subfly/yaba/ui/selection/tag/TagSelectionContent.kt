@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import dev.subfly.yaba.core.common.CoreConstants
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.YabaIcon
 import dev.subfly.yaba.core.components.item.tag.PresentableTagItemView
@@ -240,7 +241,11 @@ private fun SelectionContent(
                         model = model,
                         cornerSize = 12.dp,
                         nullModelPresentableColor = YabaColor.BLUE,
-                        onPressed = { onTagDeselected(model) },
+                        onPressed = {
+                            if (!CoreConstants.Tag.isSystemTag(model.id)) {
+                                onTagDeselected(model)
+                            }
+                        },
                         onNavigateToEdit = {
                             creationNavigator.add(TagCreationRoute(tagId = model.id))
                         },

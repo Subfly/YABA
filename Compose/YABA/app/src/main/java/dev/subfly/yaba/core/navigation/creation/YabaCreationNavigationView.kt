@@ -14,6 +14,9 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import dev.subfly.yaba.ui.creation.annotation.AnnotationCreationContent
 import dev.subfly.yaba.ui.creation.bookmark.BookmarkCreationRouteSelectionContent
+import dev.subfly.yaba.ui.creation.bookmark.BookmarkPasswordCreateSheetContent
+import dev.subfly.yaba.ui.creation.bookmark.BookmarkPasswordEditSheetContent
+import dev.subfly.yaba.ui.creation.bookmark.BookmarkPasswordEntrySheetContent
 import dev.subfly.yaba.ui.creation.bookmark.docmark.DocmarkCreationContent
 import dev.subfly.yaba.ui.creation.bookmark.imagemark.ImagemarkCreationContent
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.LinkmarkCreationContent
@@ -139,13 +142,22 @@ fun YabaCreationNavigationView(
             entry<NotemarkMentionSheetRoute> { key ->
                 NotemarkMentionCreationContent(route = key)
             }
-            entry<NotemarkMentionActionSheetRoute> { key ->
+            entry<NotemarkMentionActionSheetRoute> { _ ->
                 NotemarkMentionActionSheetContent()
             }
             entry<BookmarkSelectionRoute> { key ->
                 BookmarkSelectionContent(selectedBookmarkId = key.selectedBookmarkId)
             }
-            entry<EmptyCretionRoute> {
+            entry<BookmarkPasswordCreateRoute> { _ ->
+                BookmarkPasswordCreateSheetContent()
+            }
+            entry<BookmarkPasswordEditRoute> { _ ->
+                BookmarkPasswordEditSheetContent()
+            }
+            entry<BookmarkPasswordEntryRoute> { key ->
+                BookmarkPasswordEntrySheetContent(route = key)
+            }
+            entry<EmptyCreationRoute> {
                 // Only old Compose users will remember why we had to put 1.dp boxes in sheets...
                 Box(modifier = Modifier.size((0.1).dp))
             }

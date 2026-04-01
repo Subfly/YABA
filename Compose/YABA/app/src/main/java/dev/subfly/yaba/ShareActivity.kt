@@ -29,7 +29,7 @@ import dev.subfly.yaba.core.filesystem.access.YabaFileAccessor
 import dev.subfly.yaba.core.navigation.alert.DeletionVM
 import dev.subfly.yaba.core.navigation.creation.BookmarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.DocmarkCreationRoute
-import dev.subfly.yaba.core.navigation.creation.EmptyCretionRoute
+import dev.subfly.yaba.core.navigation.creation.EmptyCreationRoute
 import dev.subfly.yaba.core.navigation.creation.ImagemarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.LinkmarkCreationRoute
 import dev.subfly.yaba.core.navigation.creation.YabaCreationSheet
@@ -362,7 +362,7 @@ private fun ShareActivityContent(
 
     val navigationResultStore = rememberResultStore()
     val creationNavigator =
-        rememberNavBackStack(configuration = creationNavigationConfig, EmptyCretionRoute)
+        rememberNavBackStack(configuration = creationNavigationConfig, EmptyCreationRoute)
 
     CompositionLocalProvider(
         LocalUserPreferences provides userPreferences,

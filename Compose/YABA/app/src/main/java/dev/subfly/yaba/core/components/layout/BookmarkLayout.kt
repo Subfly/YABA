@@ -31,6 +31,8 @@ import kotlin.uuid.ExperimentalUuidApi
 /** Reserve vertical space so the first grid row is not covered by the overlaid collection top bar. */
 private val GridStickyTopBarPlaceholderHeight = 112.dp
 
+private val PinnedSectionSpacerHeight = 32.dp
+
 /**
  * Layout for displaying bookmarks with drag & drop support.
  * 
@@ -52,6 +54,8 @@ fun YabaBookmarkLayout(
     dragDropState: YabaDragDropState = rememberYabaDragDropState(onDrop),
     contentPadding: PaddingValues = PaddingValues(0.dp),
     stickyHeaderContent: (@Composable () -> Unit)? = null,
+    pinnedSectionHeader: (@Composable () -> Unit)? = null,
+    pinnedBookmarks: List<BookmarkUiModel> = emptyList(),
     itemContent:
     @Composable
         (
@@ -63,6 +67,8 @@ fun YabaBookmarkLayout(
         count: Int,
     ) -> Unit,
 ) {
+    val usePinnedSection = pinnedSectionHeader != null && pinnedBookmarks.isNotEmpty()
+
     when (layoutConfig.bookmarkAppearance) {
         BookmarkAppearance.LIST, BookmarkAppearance.CARD ->
             LazyColumn(
@@ -74,6 +80,32 @@ fun YabaBookmarkLayout(
                     stickyHeader { header() }
                 }
                 item { Spacer(modifier = Modifier.height(layoutConfig.headlineSpacerSizing)) }
+                if (usePinnedSection) {
+                    item {
+                        pinnedSectionHeader()
+                    }
+                    itemsIndexed(
+                        items = pinnedBookmarks,
+                        key = { _, it -> "pinned:${it.id}:${it.label}" },
+                    ) { index, bookmark ->
+                        BookmarkItem(
+                            bookmark = bookmark,
+                            appearance = layoutConfig.bookmarkAppearance,
+                            cardImageSizing = layoutConfig.cardImageSizing,
+                            state = dragDropState,
+                            orientation = Orientation.Vertical,
+                            modifier = Modifier.animateItem(),
+                            itemContent = itemContent,
+                            index = index,
+                            count = pinnedBookmarks.size,
+                        )
+                    }
+                    if (bookmarks.isNotEmpty()) {
+                        item {
+                            Spacer(modifier = Modifier.height(PinnedSectionSpacerHeight))
+                        }
+                    }
+                }
                 itemsIndexed(
                     items = bookmarks,
                     key = { _, it -> "${it.id} ${it.label}" },
@@ -111,6 +143,32 @@ fun YabaBookmarkLayout(
                         item(
                             span = StaggeredGridItemSpan.FullLine,
                         ) { Spacer(modifier = Modifier.height(layoutConfig.headlineSpacerSizing)) }
+                        if (usePinnedSection) {
+                            item(span = StaggeredGridItemSpan.FullLine) {
+                                pinnedSectionHeader()
+                            }
+                            itemsIndexed(
+                                items = pinnedBookmarks,
+                                key = { _, item -> "pinned:${item.id}:${item.label}" },
+                            ) { index, bookmark ->
+                                BookmarkItem(
+                                    bookmark = bookmark,
+                                    appearance = layoutConfig.bookmarkAppearance,
+                                    cardImageSizing = layoutConfig.cardImageSizing,
+                                    state = dragDropState,
+                                    orientation = Orientation.Vertical,
+                                    modifier = Modifier.animateItem(),
+                                    itemContent = itemContent,
+                                    index = index,
+                                    count = pinnedBookmarks.size,
+                                )
+                            }
+                            if (bookmarks.isNotEmpty()) {
+                                item(span = StaggeredGridItemSpan.FullLine) {
+                                    Spacer(modifier = Modifier.height(PinnedSectionSpacerHeight))
+                                }
+                            }
+                        }
                         itemsIndexed(
                             items = bookmarks,
                             key = { _, item -> "${item.id} ${item.label}" },
@@ -149,6 +207,32 @@ fun YabaBookmarkLayout(
                 item(
                     span = StaggeredGridItemSpan.FullLine,
                 ) { Spacer(modifier = Modifier.height(layoutConfig.headlineSpacerSizing)) }
+                if (usePinnedSection) {
+                    item(span = StaggeredGridItemSpan.FullLine) {
+                        pinnedSectionHeader()
+                    }
+                    itemsIndexed(
+                        items = pinnedBookmarks,
+                        key = { _, item -> "pinned:${item.id}:${item.label}" },
+                    ) { index, bookmark ->
+                        BookmarkItem(
+                            bookmark = bookmark,
+                            appearance = layoutConfig.bookmarkAppearance,
+                            cardImageSizing = layoutConfig.cardImageSizing,
+                            state = dragDropState,
+                            orientation = Orientation.Vertical,
+                            modifier = Modifier.animateItem(),
+                            itemContent = itemContent,
+                            index = index,
+                            count = pinnedBookmarks.size,
+                        )
+                    }
+                    if (bookmarks.isNotEmpty()) {
+                        item(span = StaggeredGridItemSpan.FullLine) {
+                            Spacer(modifier = Modifier.height(PinnedSectionSpacerHeight))
+                        }
+                    }
+                }
                 itemsIndexed(
                     items = bookmarks,
                     key = { _, item -> "${item.id} ${item.label}" },

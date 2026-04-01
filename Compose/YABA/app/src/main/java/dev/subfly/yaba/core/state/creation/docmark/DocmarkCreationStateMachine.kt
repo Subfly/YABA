@@ -41,6 +41,7 @@ class DocmarkCreationStateMachine :
             is DocmarkCreationEvent.OnSelectFolder -> onSelectFolder(event)
             is DocmarkCreationEvent.OnSelectTags -> onSelectTags(event)
             is DocmarkCreationEvent.OnSave -> onSave(event)
+            DocmarkCreationEvent.OnTogglePrivate -> onTogglePrivate()
             is DocmarkCreationEvent.OnWebInitialContentLoad -> onWebInitialContentLoad(event)
         }
     }
@@ -314,6 +315,8 @@ class DocmarkCreationStateMachine :
                         kind = BookmarkKind.FILE,
                         label = label,
                         description = state.description.ifBlank { null },
+                        isPrivate = state.isPrivate,
+                        isPinned = state.editingDocmark.isPinned,
                         tagIds = state.selectedTags.map { it.id },
                     )
 
@@ -332,6 +335,8 @@ class DocmarkCreationStateMachine :
                         kind = BookmarkKind.FILE,
                         label = label,
                         description = state.description.ifBlank { null },
+                        isPrivate = state.isPrivate,
+                        isPinned = false,
                         tagIds = state.selectedTags.map { it.id },
                         previewImageBytes = state.previewImageBytes,
                         previewImageExtension = state.previewImageExtension,
@@ -368,6 +373,10 @@ class DocmarkCreationStateMachine :
                 event.onErrorCallback()
             }
         }
+    }
+
+    private fun onTogglePrivate() {
+        updateState { it.copy(isPrivate = !it.isPrivate) }
     }
 
     override fun clear() {

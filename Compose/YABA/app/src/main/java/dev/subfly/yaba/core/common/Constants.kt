@@ -15,14 +15,12 @@ object CoreConstants {
         }
 
         /**
-         * Set of reserved folder IDs that are system folders.
-         * System folders cannot be truly deleted - they self-heal.
+         * Set of reserved folder IDs that are system folders. System folders cannot be truly
+         * deleted - they self-heal.
          */
         val SYSTEM_FOLDER_IDS: Set<String> = setOf(Uncategorized.ID)
 
-        /**
-         * Checks if a folder ID is a system folder.
-         */
+        /** Checks if a folder ID is a system folder. */
         fun isSystemFolder(folderId: String): Boolean = folderId in SYSTEM_FOLDER_IDS
     }
 
@@ -44,18 +42,16 @@ object CoreConstants {
             // Human-readable name, and a safe default icon name;
             // UI may localize the name as needed.
             const val NAME: String = "Private Tag Label"
-            const val ICON: String = "view-off-slash"
+            const val ICON: String = "circle-lock-02"
         }
 
         /**
-         * Set of reserved tag IDs that are system tags.
-         * System tags cannot be truly deleted - they self-heal.
+         * Set of reserved tag IDs that are system tags. System tags cannot be truly deleted - they
+         * self-heal.
          */
         val SYSTEM_TAG_IDS: Set<String> = setOf(Pinned.ID, Private.ID)
 
-        /**
-         * Checks if a tag ID is a system tag.
-         */
+        /** Checks if a tag ID is a system tag. */
         fun isSystemTag(tagId: String): Boolean = tagId in SYSTEM_TAG_IDS
     }
 
@@ -80,45 +76,50 @@ object CoreConstants {
             const val ASSETS_DIR = "assets"
 
             fun linkImagePath(
-                bookmarkId: String,
-                extension: String = "jpeg",
-            ): String = join(
-                bookmarkFolder(bookmarkId),
-                "$LINK_IMAGE_BASENAME.$extension",
-            )
+                    bookmarkId: String,
+                    extension: String = "jpeg",
+            ): String =
+                    join(
+                            bookmarkFolder(bookmarkId),
+                            "$LINK_IMAGE_BASENAME.$extension",
+                    )
 
             fun domainIconPath(
-                bookmarkId: String,
-                extension: String = "png",
-            ): String = join(
-                bookmarkFolder(bookmarkId),
-                "$DOMAIN_ICON_BASENAME.$extension",
-            )
+                    bookmarkId: String,
+                    extension: String = "png",
+            ): String =
+                    join(
+                            bookmarkFolder(bookmarkId),
+                            "$DOMAIN_ICON_BASENAME.$extension",
+                    )
 
             fun readableDir(bookmarkId: String): String =
-                join(bookmarkFolder(bookmarkId), READABLE_DIR)
+                    join(bookmarkFolder(bookmarkId), READABLE_DIR)
 
-            /** Path for readable document JSON (linkmarks + notemark mirror): readable/<versionId>.json */
+            /**
+             * Path for readable document JSON (linkmarks + notemark mirror):
+             * readable/<versionId>.json
+             */
             fun readableVersionPath(bookmarkId: String, versionId: String): String =
-                join(readableDir(bookmarkId), "$versionId.json")
+                    join(readableDir(bookmarkId), "$versionId.json")
 
-            fun assetsDir(bookmarkId: String): String =
-                join(bookmarkFolder(bookmarkId), ASSETS_DIR)
+            fun assetsDir(bookmarkId: String): String = join(bookmarkFolder(bookmarkId), ASSETS_DIR)
 
             fun assetPath(bookmarkId: String, assetId: String, extension: String): String =
-                join(assetsDir(bookmarkId), "$assetId.$extension")
+                    join(assetsDir(bookmarkId), "$assetId.$extension")
         }
 
         object Imagemark {
             const val IMAGE_BASENAME = "image"
 
             fun imagePath(
-                bookmarkId: String,
-                extension: String = "jpeg",
-            ): String = join(
-                bookmarkFolder(bookmarkId),
-                "$IMAGE_BASENAME.$extension",
-            )
+                    bookmarkId: String,
+                    extension: String = "jpeg",
+            ): String =
+                    join(
+                            bookmarkFolder(bookmarkId),
+                            "$IMAGE_BASENAME.$extension",
+                    )
         }
 
         object Docmark {
@@ -128,13 +129,14 @@ object CoreConstants {
 
             /** On-disk document: `bookmarks/<id>/file/document.<ext>`. */
             fun documentPath(
-                bookmarkId: String,
-                extension: String = DEFAULT_DOC_EXTENSION,
-            ): String = join(
-                bookmarkFolder(bookmarkId),
-                DOC_SUBDIR,
-                "$DOC_BASENAME.$extension",
-            )
+                    bookmarkId: String,
+                    extension: String = DEFAULT_DOC_EXTENSION,
+            ): String =
+                    join(
+                            bookmarkFolder(bookmarkId),
+                            DOC_SUBDIR,
+                            "$DOC_BASENAME.$extension",
+                    )
         }
 
         object Notemark {
@@ -143,26 +145,25 @@ object CoreConstants {
 
             /** Canonical note body (document JSON): bookmarks/<id>/note/body.json */
             fun documentBodyPath(bookmarkId: String, extension: String = "json"): String =
-                join(
-                    bookmarkFolder(bookmarkId),
-                    NOTE_SUBDIR,
-                    "$NOTE_BODY_BASENAME.$extension",
-                )
+                    join(
+                            bookmarkFolder(bookmarkId),
+                            NOTE_SUBDIR,
+                            "$NOTE_BODY_BASENAME.$extension",
+                    )
         }
 
         fun bookmarkFolderPath(
-            bookmarkId: String,
-            subtypeDirectory: String? = null,
-        ): String = join(
-            BOOKMARKS_DIR,
-            bookmarkId,
-            subtypeDirectory,
-        )
+                bookmarkId: String,
+                subtypeDirectory: String? = null,
+        ): String =
+                join(
+                        BOOKMARKS_DIR,
+                        bookmarkId,
+                        subtypeDirectory,
+                )
 
         fun join(vararg segments: String?): String =
-            segments
-                .filterNot { it.isNullOrBlank() }
-                .joinToString(separator = "/") {
+                segments.filterNot { it.isNullOrBlank() }.joinToString(separator = "/") {
                     it!!.trim('/')
                 }
     }
@@ -189,6 +190,7 @@ object CoreConstants {
         const val SHOW_MENU_BAR_ITEM = "showMenuBarItem" // mac / catalyst only
         const val USE_SIMPLIFIED_SHARE = "useSimplifiedShare" // share extension uses app-group
         const val PREVENT_DELETION_SYNC = "preventDeletionSync"
+        const val PRIVATE_BOOKMARK_PASSWORD_HASH = "privateBookmarkPasswordHash"
     }
 
     /**
@@ -216,7 +218,7 @@ object CoreConstants {
         const val OFFICIAL_REDDIT = "https://www.reddit.com/r/YetAnotherBookmarkApp/"
         const val FEEDBACK_EMAIL = "mailto:alitaha@subfly.dev"
         const val STORE_LINK =
-            "https://apps.apple.com/app/yaba-yet-another-bookmark-app/id6747272081"
+                "https://apps.apple.com/app/yaba-yet-another-bookmark-app/id6747272081"
         const val UPDATE_1_2 = "https://github.com/Subfly/YABA/discussions/4"
         const val UPDATE_1_3 = "https://github.com/Subfly/YABA/discussions/6"
         const val UPDATE_1_4 = "https://github.com/Subfly/YABA/discussions/8"

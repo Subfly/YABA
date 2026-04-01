@@ -26,11 +26,13 @@ import dev.subfly.yaba.core.navigation.main.NoteDetailRoute
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkCreationTopBar
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkFolderSelectionContent
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkInfoContent
+import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPrivateToggleRow
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewAppearanceSwitcher
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewCard
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewContent
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkTagSelectionContent
 import dev.subfly.yaba.ui.creation.bookmark.model.BookmarkPreviewData
+import dev.subfly.yaba.util.rememberPrivateBookmarkCreationToggle
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalCreationContentNavigator
@@ -51,6 +53,10 @@ fun NotemarkCreationContent(bookmarkId: String?) {
 
     val vm = viewModel { NotemarkCreationVM() }
     val state by vm.state.collectAsStateWithLifecycle()
+
+    val onPrivateToggle = rememberPrivateBookmarkCreationToggle {
+        vm.onEvent(NotemarkCreationEvent.OnTogglePrivate)
+    }
 
     LaunchedEffect(bookmarkId) {
         vm.onEvent(
@@ -142,6 +148,13 @@ fun NotemarkCreationContent(bookmarkId: String?) {
                     enabled = true,
                     labelPlaceholder = R.string.create_bookmark_title_placeholder,
                     nullModelPresentableColor = YabaColor.YELLOW,
+                )
+            }
+            item {
+                BookmarkPrivateToggleRow(
+                    isPrivate = state.isPrivate,
+                    enabled = true,
+                    onClick = onPrivateToggle,
                 )
             }
             item {

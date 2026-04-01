@@ -59,6 +59,7 @@ object AllBookmarksManager {
         sortType: SortType = SortType.EDITED_AT,
         sortOrder: SortOrderType = SortOrderType.DESCENDING,
         kinds: List<BookmarkKind>? = null,
+        excludePrivate: Boolean = false,
     ): Flow<List<BookmarkUiModel>> {
         val kindSet = kinds?.takeIf { it.isNotEmpty() }
         return bookmarkDao
@@ -72,6 +73,7 @@ object AllBookmarksManager {
                 applyFolderFilter = false,
                 tagIds = emptyList(),
                 applyTagFilter = false,
+                applyExcludePrivateFilter = excludePrivate,
             )
             .map { rows -> rows.map { it.toBookmarkPreviewUiModel() } }
     }
@@ -90,6 +92,7 @@ object AllBookmarksManager {
         filters: BookmarkSearchFilters = BookmarkSearchFilters(),
         sortType: SortType = SortType.EDITED_AT,
         sortOrder: SortOrderType = SortOrderType.DESCENDING,
+        excludePrivate: Boolean = false,
     ): Flow<List<BookmarkUiModel>> {
         val params = filters.toQueryParams()
         return bookmarkDao
@@ -103,6 +106,7 @@ object AllBookmarksManager {
                 applyTagFilter = params.applyTagFilter,
                 sortType = sortType.name,
                 sortOrder = sortOrder.name,
+                applyExcludePrivateFilter = excludePrivate,
             )
             .map { rows -> rows.map { it.toBookmarkPreviewUiModel() } }
     }
@@ -183,6 +187,8 @@ object AllBookmarksManager {
                 )
             )
         }
+        syncPinnedSystemTagForBookmark(id, isPinned)
+        syncPrivateSystemTagForBookmark(id, isPrivate)
     }
 
     /**
@@ -282,6 +288,94 @@ object AllBookmarksManager {
                         bookmarkId = bookmarkId,
                     )
                 )
+            }
+        }
+        syncPinnedSystemTagForBookmark(bookmarkId, isPinned)
+        syncPrivateSystemTagForBookmark(bookmarkId, isPrivate)
+    }
+
+    /**
+     * Toggles [BookmarkEntity.isPinned] and keeps the Pinned system tag in sync with that flag.
+     */
+    fun toggleBookmarkPinned(bookmarkId: String) {
+        CoreOperationQueue.queue("TogglePin:$bookmarkId") {
+            val existing = bookmarkDao.getById(bookmarkId) ?: return@queue
+            val newPinned = !existing.isPinned
+            val now = clock.now().toEpochMilliseconds()
+            bookmarkDao.upsert(
+                existing.copy(
+                    isPinned = newPinned,
+                    editedAt = now,
+                ),
+            )
+            syncPinnedSystemTagForBookmark(bookmarkId, newPinned)
+        }
+    }
+
+    /**
+     * Toggles [BookmarkEntity.isPrivate] and keeps the Private system tag in sync with that flag.
+     */
+    fun toggleBookmarkPrivate(bookmarkId: String) {
+        CoreOperationQueue.queue("TogglePrivate:$bookmarkId") {
+            val existing = bookmarkDao.getById(bookmarkId) ?: return@queue
+            val newPrivate = !existing.isPrivate
+            val now = clock.now().toEpochMilliseconds()
+            bookmarkDao.upsert(
+                existing.copy(
+                    isPrivate = newPrivate,
+                    editedAt = now,
+                ),
+            )
+            syncPrivateSystemTagForBookmark(bookmarkId, newPrivate)
+        }
+    }
+
+    private suspend fun syncPrivateSystemTagForBookmark(bookmarkId: String, isPrivate: Boolean) {
+        val privateTagId = CoreConstants.Tag.Private.ID
+        val existing = bookmarkDao.getById(bookmarkId) ?: return
+        val now = clock.now().toEpochMilliseconds()
+        if (isPrivate) {
+            TagManager.ensurePrivateTag()
+            val hasTag = tagBookmarkDao.getTagIdsForBookmark(bookmarkId).contains(privateTagId)
+            if (!hasTag) {
+                tagBookmarkDao.insert(
+                    TagBookmarkCrossRef(
+                        tagId = privateTagId,
+                        bookmarkId = bookmarkId,
+                    ),
+                )
+                bookmarkDao.upsert(existing.copy(editedAt = now))
+            }
+        } else {
+            val hadTag = tagBookmarkDao.getTagIdsForBookmark(bookmarkId).contains(privateTagId)
+            if (hadTag) {
+                tagBookmarkDao.delete(bookmarkId, privateTagId)
+                bookmarkDao.upsert(existing.copy(editedAt = now))
+            }
+        }
+    }
+
+    private suspend fun syncPinnedSystemTagForBookmark(bookmarkId: String, isPinned: Boolean) {
+        val pinnedTagId = CoreConstants.Tag.Pinned.ID
+        val existing = bookmarkDao.getById(bookmarkId) ?: return
+        val now = clock.now().toEpochMilliseconds()
+        if (isPinned) {
+            TagManager.ensurePinnedTag()
+            val hasTag = tagBookmarkDao.getTagIdsForBookmark(bookmarkId).contains(pinnedTagId)
+            if (!hasTag) {
+                tagBookmarkDao.insert(
+                    TagBookmarkCrossRef(
+                        tagId = pinnedTagId,
+                        bookmarkId = bookmarkId,
+                    ),
+                )
+                bookmarkDao.upsert(existing.copy(editedAt = now))
+            }
+        } else {
+            val hadTag = tagBookmarkDao.getTagIdsForBookmark(bookmarkId).contains(pinnedTagId)
+            if (hadTag) {
+                tagBookmarkDao.delete(bookmarkId, pinnedTagId)
+                bookmarkDao.upsert(existing.copy(editedAt = now))
             }
         }
     }

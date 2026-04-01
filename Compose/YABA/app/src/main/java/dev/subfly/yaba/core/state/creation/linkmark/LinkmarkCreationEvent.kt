@@ -111,4 +111,7 @@ sealed class LinkmarkCreationEvent {
         val onSavedCallback: () -> Unit,
         val onErrorCallback: () -> Unit,
     ) : LinkmarkCreationEvent()
+
+    /** Flip the private flag (after password / session guard in the UI). */
+    data object OnTogglePrivate : LinkmarkCreationEvent()
 }

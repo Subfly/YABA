@@ -24,4 +24,6 @@ sealed class NotemarkCreationEvent {
         val onSavedCallback: (bookmarkId: String) -> Unit,
         val onErrorCallback: () -> Unit,
     ) : NotemarkCreationEvent()
+
+    data object OnTogglePrivate : NotemarkCreationEvent()
 }

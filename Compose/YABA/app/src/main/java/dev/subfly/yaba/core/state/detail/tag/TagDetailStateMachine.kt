@@ -6,6 +6,8 @@ import dev.subfly.yaba.core.model.utils.BookmarkSearchFilters
 import dev.subfly.yaba.core.model.utils.SortOrderType
 import dev.subfly.yaba.core.model.utils.SortType
 import dev.subfly.yaba.core.preferences.SettingsStores
+import dev.subfly.yaba.core.preferences.UserPreferences
+import dev.subfly.yaba.core.security.PrivateBookmarkSessionGuard
 import dev.subfly.yaba.core.state.base.BaseStateMachine
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -14,6 +16,13 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
+
+private data class TagDetailQueryParams(
+    val tagId: String,
+    val query: String,
+    val prefs: UserPreferences,
+    val unlocked: Boolean,
+)
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class TagDetailStateMachine :
@@ -48,23 +57,29 @@ class TagDetailStateMachine :
             combine(
                 tagIdFlow,
                 queryFlow,
-                preferencesStore.preferencesFlow
-            ) { tagId, query, prefs ->
+                preferencesStore.preferencesFlow,
+                PrivateBookmarkSessionGuard.isUnlocked,
+            ) { tagId, query, prefs, unlocked ->
                 if (tagId == null) null
-                else Triple(tagId, query, prefs)
+                else TagDetailQueryParams(tagId, query, prefs, unlocked)
             }.flatMapLatest { params ->
                 if (params == null) {
                     MutableStateFlow(TagDetailUIState())
                 } else {
-                    val (tagId, query, prefs) = params
+                    val tagId = params.tagId
+                    val query = params.query
+                    val prefs = params.prefs
+                    val unlocked = params.unlocked
                     updateState { it.copy(isLoading = true, query = query) }
 
+                    val excludePrivate = !unlocked && query.isNotEmpty()
                     val tagFlow = TagManager.observeTag(tagId)
                     val bookmarksFlow = AllBookmarksManager.searchBookmarksFlow(
                         query = query,
                         filters = BookmarkSearchFilters(tagIds = setOf(tagId)),
                         sortType = prefs.preferredBookmarkSorting,
-                        sortOrder = prefs.preferredBookmarkSortOrder
+                        sortOrder = prefs.preferredBookmarkSortOrder,
+                        excludePrivate = excludePrivate,
                     )
 
                     combine(

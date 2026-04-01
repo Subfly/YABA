@@ -54,7 +54,7 @@ fun TagItemView(
     val appStateManager = LocalAppStateManager.current
     val resultStore = LocalResultStore.current
 
-    // Check if this is a system tag
+    // System tags cannot be edited, deleted, or opened via overflow/swipe — tap only.
     val isSystemTag = CoreConstants.Tag.isSystemTag(model.id)
 
     // Localized strings for menu items
@@ -62,24 +62,25 @@ fun TagItemView(
     val editText = stringResource(R.string.edit)
     val deleteText = stringResource(R.string.delete)
 
-    // System tags cannot be edited
     val menuActions =
-        remember(model, isSystemTag, newBookmarkText, editText, deleteText) {
-            buildList {
-                add(
-                    CollectionMenuAction(
-                        key = "new_bookmark",
-                        icon = "bookmark-add-02",
-                        text = newBookmarkText,
-                        color = YabaColor.CYAN,
-                        onClick = {
-                            resultStore.setResult(ResultStoreKeys.SELECTED_TAGS, listOf(model))
-                            creationNavigator.add(BookmarkCreationRoute())
-                            appStateManager.onShowCreationContent()
-                        }
+        remember(model, isSystemTag, allowsDeletion, newBookmarkText, editText, deleteText) {
+            if (isSystemTag) {
+                emptyList()
+            } else {
+                buildList {
+                    add(
+                        CollectionMenuAction(
+                            key = "new_bookmark",
+                            icon = "bookmark-add-02",
+                            text = newBookmarkText,
+                            color = YabaColor.CYAN,
+                            onClick = {
+                                resultStore.setResult(ResultStoreKeys.SELECTED_TAGS, listOf(model))
+                                creationNavigator.add(BookmarkCreationRoute())
+                                appStateManager.onShowCreationContent()
+                            }
+                        )
                     )
-                )
-                if (!isSystemTag) {
                     add(
                         CollectionMenuAction(
                             key = "edit",
@@ -94,51 +95,56 @@ fun TagItemView(
                             }
                         )
                     )
-                }
-                if (allowsDeletion) {
-                    add(
-                        CollectionMenuAction(
-                            key = "delete",
-                            icon = "delete-02",
-                            text = deleteText,
-                            color = YabaColor.RED,
-                            isDangerous = true,
-                            onClick = {
-                                deletionDialogManager.send(
-                                    DeletionState(
-                                        deletionType = DeletionType.TAG,
-                                        tagToBeDeleted = model,
-                                        onConfirm = { onDeleteTag(model) },
+                    if (allowsDeletion) {
+                        add(
+                            CollectionMenuAction(
+                                key = "delete",
+                                icon = "delete-02",
+                                text = deleteText,
+                                color = YabaColor.RED,
+                                isDangerous = true,
+                                onClick = {
+                                    deletionDialogManager.send(
+                                        DeletionState(
+                                            deletionType = DeletionType.TAG,
+                                            tagToBeDeleted = model,
+                                            onConfirm = { onDeleteTag(model) },
+                                        )
                                     )
-                                )
-                            }
+                                }
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
 
     val leftSwipeActions =
-        remember(model) {
-            listOf(
-                CollectionSwipeAction(
-                    key = "NEW",
-                    icon = "bookmark-add-02",
-                    color = YabaColor.BLUE,
-                    onClick = {
-                        resultStore.setResult(ResultStoreKeys.SELECTED_TAGS, listOf(model))
-                        creationNavigator.add(BookmarkCreationRoute())
-                        appStateManager.onShowCreationContent()
-                    }
-                ),
-            )
+        remember(model, isSystemTag) {
+            if (isSystemTag) {
+                emptyList()
+            } else {
+                listOf(
+                    CollectionSwipeAction(
+                        key = "NEW",
+                        icon = "bookmark-add-02",
+                        color = YabaColor.BLUE,
+                        onClick = {
+                            resultStore.setResult(ResultStoreKeys.SELECTED_TAGS, listOf(model))
+                            creationNavigator.add(BookmarkCreationRoute())
+                            appStateManager.onShowCreationContent()
+                        }
+                    ),
+                )
+            }
         }
 
-    // System tags cannot be edited via swipe actions
     val rightSwipeActions =
-        remember(model, isSystemTag) {
-            buildList {
-                if (!isSystemTag) {
+        remember(model, isSystemTag, allowsDeletion) {
+            if (isSystemTag) {
+                emptyList()
+            } else {
+                buildList {
                     add(
                         CollectionSwipeAction(
                             key = "EDIT",
@@ -152,24 +158,24 @@ fun TagItemView(
                             }
                         )
                     )
-                }
-                if (allowsDeletion) {
-                    add(
-                        CollectionSwipeAction(
-                            key = "DELETE",
-                            icon = "delete-02",
-                            color = YabaColor.RED,
-                            onClick = {
-                                deletionDialogManager.send(
-                                    DeletionState(
-                                        deletionType = DeletionType.TAG,
-                                        tagToBeDeleted = model,
-                                        onConfirm = { onDeleteTag(model) },
+                    if (allowsDeletion) {
+                        add(
+                            CollectionSwipeAction(
+                                key = "DELETE",
+                                icon = "delete-02",
+                                color = YabaColor.RED,
+                                onClick = {
+                                    deletionDialogManager.send(
+                                        DeletionState(
+                                            deletionType = DeletionType.TAG,
+                                            tagToBeDeleted = model,
+                                            onConfirm = { onDeleteTag(model) },
+                                        )
                                     )
-                                )
-                            }
+                                }
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
@@ -191,5 +197,6 @@ fun TagItemView(
         index = index,
         count = count,
         containerColor = containerColor,
+        enableContextMenuInteractions = !isSystemTag,
     )
 }

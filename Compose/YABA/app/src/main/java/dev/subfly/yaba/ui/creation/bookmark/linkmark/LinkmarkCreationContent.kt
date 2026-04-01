@@ -36,6 +36,7 @@ import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkCreationLabel
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkCreationTopBar
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkFolderSelectionContent
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkInfoContent
+import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPrivateToggleRow
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewAppearanceSwitcher
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewCard
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewContent
@@ -43,6 +44,7 @@ import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkTagSelectionConte
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.components.LinkmarkLinkContent
 import dev.subfly.yaba.ui.creation.bookmark.model.BookmarkPreviewData
 import dev.subfly.yaba.ui.detail.composables.BookmarkExtractedMetadataSection
+import dev.subfly.yaba.util.rememberPrivateBookmarkCreationToggle
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
@@ -67,6 +69,10 @@ fun LinkmarkCreationContent(bookmarkId: String?, initialUrl: String? = null) {
 
     val vm = viewModel { LinkmarkCreationVM() }
     val state by vm.state.collectAsStateWithLifecycle()
+
+    val onPrivateToggle = rememberPrivateBookmarkCreationToggle {
+        vm.onEvent(LinkmarkCreationEvent.OnTogglePrivate)
+    }
 
     val linkmarkToastMessages = LinkmarkCreationToastMessages(
         unfurlSuccess = stringResource(R.string.generic_unfurl_success_text),
@@ -244,6 +250,13 @@ fun LinkmarkCreationContent(bookmarkId: String?, initialUrl: String? = null) {
                         vm.onEvent(LinkmarkCreationEvent.OnClearLabel)
                     },
                     nullModelPresentableColor = YabaColor.BLUE,
+                )
+            }
+            item {
+                BookmarkPrivateToggleRow(
+                    isPrivate = state.isPrivate,
+                    enabled = state.isLoading.not(),
+                    onClick = onPrivateToggle,
                 )
             }
             item {

@@ -28,6 +28,7 @@ class NotemarkCreationStateMachine :
             is NotemarkCreationEvent.OnSelectFolder -> onSelectFolder(event)
             is NotemarkCreationEvent.OnSelectTags -> onSelectTags(event)
             is NotemarkCreationEvent.OnSave -> onSave(event)
+            NotemarkCreationEvent.OnTogglePrivate -> onTogglePrivate()
         }
     }
 
@@ -148,6 +149,8 @@ class NotemarkCreationStateMachine :
                         kind = BookmarkKind.NOTE,
                         label = label,
                         description = state.description.ifBlank { null },
+                        isPrivate = state.isPrivate,
+                        isPinned = state.editingNotemark.isPinned,
                         tagIds = state.selectedTags.map { it.id },
                     )
 
@@ -168,6 +171,8 @@ class NotemarkCreationStateMachine :
                         kind = BookmarkKind.NOTE,
                         label = label,
                         description = state.description.ifBlank { null },
+                        isPrivate = state.isPrivate,
+                        isPinned = false,
                         tagIds = state.selectedTags.map { it.id },
                         previewImageBytes = null,
                         previewImageExtension = "jpeg",
@@ -188,6 +193,10 @@ class NotemarkCreationStateMachine :
                 event.onErrorCallback()
             }
         }
+    }
+
+    private fun onTogglePrivate() {
+        updateState { it.copy(isPrivate = !it.isPrivate) }
     }
 
     override fun clear() {

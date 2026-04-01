@@ -134,9 +134,10 @@ object TagManager {
             return it.toUiModel()
         }
 
-        CoreOperationQueue.queueAndAwait("EnsurePinnedTag") {
-            ensurePinnedTagInternal()
-        }
+        // Insert synchronously — do not use CoreOperationQueue.queueAndAwait here.
+        // Callers such as [AllBookmarksManager.syncPinnedSystemTagForBookmark] already run on the
+        // operation queue; nesting would deadlock the single worker and the tag would never exist.
+        ensurePinnedTagInternal()
 
         return tagDao.getTagWithBookmarkCount(PINNED_TAG_ID)?.toUiModel()
             ?: createPinnedTagModel()
@@ -176,9 +177,9 @@ object TagManager {
             return it.toUiModel()
         }
 
-        CoreOperationQueue.queueAndAwait("EnsurePrivateTag") {
-            ensurePrivateTagInternal()
-        }
+        // Same rationale as [ensurePinnedTag]: avoid nested queue work when callers may already
+        // hold the CoreOperationQueue worker.
+        ensurePrivateTagInternal()
 
         return tagDao.getTagWithBookmarkCount(PRIVATE_TAG_ID)?.toUiModel()
             ?: createPrivateTagModel()

@@ -7,6 +7,8 @@ import dev.subfly.yaba.core.model.utils.BookmarkSearchFilters
 import dev.subfly.yaba.core.model.utils.SortOrderType
 import dev.subfly.yaba.core.model.utils.SortType
 import dev.subfly.yaba.core.preferences.SettingsStores
+import dev.subfly.yaba.core.preferences.UserPreferences
+import dev.subfly.yaba.core.security.PrivateBookmarkSessionGuard
 import dev.subfly.yaba.core.state.base.BaseStateMachine
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -15,6 +17,13 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
+
+private data class FolderDetailQueryParams(
+    val folderId: String,
+    val query: String,
+    val prefs: UserPreferences,
+    val unlocked: Boolean,
+)
 
 class FolderDetailStateMachine :
     BaseStateMachine<FolderDetailUIState, FolderDetailEvent>(initialState = FolderDetailUIState()) {
@@ -49,23 +58,29 @@ class FolderDetailStateMachine :
             combine(
                 folderIdFlow,
                 queryFlow,
-                preferencesStore.preferencesFlow
-            ) { folderId, query, prefs ->
+                preferencesStore.preferencesFlow,
+                PrivateBookmarkSessionGuard.isUnlocked,
+            ) { folderId, query, prefs, unlocked ->
                 if (folderId == null) null
-                else Triple(folderId, query, prefs)
+                else FolderDetailQueryParams(folderId, query, prefs, unlocked)
             }.flatMapLatest { params ->
                 if (params == null) {
                     MutableStateFlow(FolderDetailUIState())
                 } else {
-                    val (folderId, query, prefs) = params
+                    val folderId = params.folderId
+                    val query = params.query
+                    val prefs = params.prefs
+                    val unlocked = params.unlocked
                     updateState { it.copy(isLoading = true, query = query) }
 
+                    val excludePrivate = !unlocked && query.isNotEmpty()
                     val folderFlow = FolderManager.observeFolder(folderId)
                     val bookmarksFlow = AllBookmarksManager.searchBookmarksFlow(
                         query = query,
                         filters = BookmarkSearchFilters(folderIds = setOf(folderId)),
                         sortType = prefs.preferredBookmarkSorting,
-                        sortOrder = prefs.preferredBookmarkSortOrder
+                        sortOrder = prefs.preferredBookmarkSortOrder,
+                        excludePrivate = excludePrivate,
                     )
 
                     combine(

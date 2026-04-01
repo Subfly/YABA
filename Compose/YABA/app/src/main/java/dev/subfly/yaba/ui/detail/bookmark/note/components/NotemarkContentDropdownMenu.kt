@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import dev.subfly.yaba.core.components.YabaIcon
+import dev.subfly.yaba.core.managers.AllBookmarksManager
 import dev.subfly.yaba.core.navigation.alert.DeletionState
 import dev.subfly.yaba.core.navigation.alert.DeletionType
 import dev.subfly.yaba.core.navigation.creation.FolderSelectionRoute
@@ -35,7 +36,10 @@ import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalDeletionDialogManager
 import dev.subfly.yaba.util.Platform
+import dev.subfly.yaba.util.PrivateBookmarkPasswordReason
 import dev.subfly.yaba.util.YabaPlatform
+import dev.subfly.yaba.util.rememberPrivateBookmarkProtectedAction
+import dev.subfly.yaba.util.rememberPrivateBookmarkToggleAction
 import dev.subfly.yaba.core.model.utils.FolderSelectionMode
 import dev.subfly.yaba.core.model.utils.YabaColor
 import dev.subfly.yaba.core.state.detail.notemark.NotemarkDetailEvent
@@ -64,6 +68,115 @@ internal fun NotemarkContentDropdownMenu(
     val appStateManager = LocalAppStateManager.current
     val deletionDialogManager = LocalDeletionDialogManager.current
 
+    val bookmark = state.bookmark
+    val noop = remember { { } }
+    val runEdit = if (bookmark != null) {
+        rememberPrivateBookmarkProtectedAction(
+            model = bookmark,
+            reason = PrivateBookmarkPasswordReason.EDIT_BOOKMARK,
+        ) {
+            val b = state.bookmark ?: return@rememberPrivateBookmarkProtectedAction
+            creationNavigator.add(NotemarkCreationRoute(bookmarkId = b.id))
+            appStateManager.onShowCreationContent()
+        }
+    } else {
+        noop
+    }
+    val runMove = if (bookmark != null) {
+        rememberPrivateBookmarkProtectedAction(
+            model = bookmark,
+            reason = PrivateBookmarkPasswordReason.EDIT_BOOKMARK,
+        ) {
+            val b = state.bookmark ?: return@rememberPrivateBookmarkProtectedAction
+            creationNavigator.add(
+                FolderSelectionRoute(
+                    mode = FolderSelectionMode.BOOKMARKS_MOVE,
+                    contextFolderId = b.folderId,
+                    contextBookmarkIds = listOf(b.id),
+                ),
+            )
+            appStateManager.onShowCreationContent()
+        }
+    } else {
+        noop
+    }
+    val runPin = if (bookmark != null) {
+        rememberPrivateBookmarkProtectedAction(
+            model = bookmark,
+            reason = PrivateBookmarkPasswordReason.EDIT_BOOKMARK,
+        ) {
+            val id = state.bookmark?.id ?: return@rememberPrivateBookmarkProtectedAction
+            AllBookmarksManager.toggleBookmarkPinned(id)
+        }
+    } else {
+        noop
+    }
+    val runExportMarkdown = if (bookmark != null) {
+        rememberPrivateBookmarkProtectedAction(
+            model = bookmark,
+            reason = PrivateBookmarkPasswordReason.EDIT_BOOKMARK,
+        ) {
+            onExportMarkdown()
+        }
+    } else {
+        remember(onExportMarkdown) { { onExportMarkdown() } }
+    }
+    val runExportPdf = if (bookmark != null) {
+        rememberPrivateBookmarkProtectedAction(
+            model = bookmark,
+            reason = PrivateBookmarkPasswordReason.EDIT_BOOKMARK,
+        ) {
+            onExportPdf()
+        }
+    } else {
+        remember(onExportPdf) { { onExportPdf() } }
+    }
+    val runRemindMe = if (bookmark != null) {
+        rememberPrivateBookmarkProtectedAction(
+            model = bookmark,
+            reason = PrivateBookmarkPasswordReason.EDIT_BOOKMARK,
+        ) {
+            onShowRemindMePicker()
+        }
+    } else {
+        noop
+    }
+    val runCancelReminder = if (bookmark != null) {
+        rememberPrivateBookmarkProtectedAction(
+            model = bookmark,
+            reason = PrivateBookmarkPasswordReason.EDIT_BOOKMARK,
+        ) {
+            onEvent(NotemarkDetailEvent.OnCancelReminder)
+        }
+    } else {
+        noop
+    }
+    val runDelete = if (bookmark != null) {
+        rememberPrivateBookmarkProtectedAction(
+            model = bookmark,
+            reason = PrivateBookmarkPasswordReason.DELETE_BOOKMARK,
+        ) {
+            val b = state.bookmark ?: return@rememberPrivateBookmarkProtectedAction
+            deletionDialogManager.send(
+                DeletionState(
+                    deletionType = DeletionType.BOOKMARK,
+                    bookmarkToBeDeleted = b,
+                    onConfirm = {
+                        onEvent(NotemarkDetailEvent.OnDeleteBookmark)
+                        navigator.removeLastOrNull()
+                    },
+                ),
+            )
+        }
+    } else {
+        noop
+    }
+    val onPrivateToggle = if (bookmark != null) {
+        rememberPrivateBookmarkToggleAction(bookmark)
+    } else {
+        noop
+    }
+
     val editText = stringResource(R.string.edit)
     val moveText = stringResource(R.string.move)
     val remindMeText = stringResource(R.string.remind_me)
@@ -73,16 +186,22 @@ internal fun NotemarkContentDropdownMenu(
     val mdLabel = "MD"
     val pdfLabel = "PDF"
     val deleteText = stringResource(R.string.delete)
+    // TODO: LOCALIZATION (match BookmarkItemView)
+    val privateActionText = if (bookmark?.isPrivate == true) "Not Private" else "Private"
 
     val isAndroid = Platform == YabaPlatform.ANDROID
     val hasActiveReminder = state.reminderDateEpochMillis != null
+
+    val isPinned = state.bookmark?.isPinned == true
+    // TODO: LOCALIZATION
+    val pinActionText = if (isPinned) "Unpin" else "Pin"
 
     var isSaveCopyExpanded by remember { mutableStateOf(false) }
     LaunchedEffect(expanded) {
         if (!expanded) isSaveCopyExpanded = false
     }
 
-    val primaryActions = remember(editText, moveText) {
+    val primaryActions = remember(editText, moveText, pinActionText, isPinned) {
         listOf(
             DetailMenuAction(
                 key = "edit",
@@ -96,8 +215,16 @@ internal fun NotemarkContentDropdownMenu(
                 text = moveText,
                 color = YabaColor.TEAL,
             ),
+            DetailMenuAction(
+                key = "pin",
+                icon = if (isPinned) "pin-off" else "pin",
+                text = pinActionText,
+                color = YabaColor.YELLOW,
+            ),
         )
     }
+
+    val primaryGroupSiblingCount = primaryActions.size + 1
 
     val secondaryActions = remember(
         remindMeText,
@@ -139,27 +266,14 @@ internal fun NotemarkContentDropdownMenu(
         ) {
             primaryActions.fastForEachIndexed { index, action ->
                 DropdownMenuItem(
-                    shapes = MenuDefaults.itemShape(index, 3),
+                    shapes = MenuDefaults.itemShape(index, primaryGroupSiblingCount),
                     checked = false,
                     onCheckedChange = {
                         onDismissRequest()
                         when (action.key) {
-                            "edit" -> {
-                                val bookmark = state.bookmark ?: return@DropdownMenuItem
-                                creationNavigator.add(NotemarkCreationRoute(bookmarkId = bookmark.id))
-                                appStateManager.onShowCreationContent()
-                            }
-                            "move" -> {
-                                val bookmark = state.bookmark ?: return@DropdownMenuItem
-                                creationNavigator.add(
-                                    FolderSelectionRoute(
-                                        mode = FolderSelectionMode.BOOKMARKS_MOVE,
-                                        contextFolderId = bookmark.folderId,
-                                        contextBookmarkIds = listOf(bookmark.id),
-                                    ),
-                                )
-                                appStateManager.onShowCreationContent()
-                            }
+                            "edit" -> runEdit()
+                            "move" -> runMove()
+                            "pin" -> runPin()
                         }
                     },
                     leadingIcon = {
@@ -172,8 +286,8 @@ internal fun NotemarkContentDropdownMenu(
                 )
             }
             NotemarkSaveCopySubmenuSection(
-                itemIndex = 2,
-                siblingCount = 3,
+                itemIndex = primaryActions.size,
+                siblingCount = primaryGroupSiblingCount,
                 saveCopyText = saveCopyText,
                 mdLabel = mdLabel,
                 pdfLabel = pdfLabel,
@@ -181,8 +295,8 @@ internal fun NotemarkContentDropdownMenu(
                 onToggleExpand = { isSaveCopyExpanded = !isSaveCopyExpanded },
                 onDismissSubmenu = { isSaveCopyExpanded = false },
                 onDismissRootMenu = onDismissRequest,
-                onExportMarkdown = onExportMarkdown,
-                onExportPdf = onExportPdf,
+                onExportMarkdown = { runExportMarkdown() },
+                onExportPdf = { runExportPdf() },
             )
         }
 
@@ -199,8 +313,8 @@ internal fun NotemarkContentDropdownMenu(
                         onCheckedChange = {
                             onDismissRequest()
                             when (action.key) {
-                                "remind_me" -> onShowRemindMePicker()
-                                "cancel_reminder" -> onEvent(NotemarkDetailEvent.OnCancelReminder)
+                                "remind_me" -> runRemindMe()
+                                "cancel_reminder" -> runCancelReminder()
                             }
                         },
                         leadingIcon = {
@@ -220,22 +334,34 @@ internal fun NotemarkContentDropdownMenu(
         DropdownMenuGroup(
             shapes = MenuDefaults.groupShape(index = 2, count = 3),
         ) {
+            if (bookmark != null) {
+                DropdownMenuItem(
+                    shapes = MenuDefaults.itemShape(0, 2),
+                    checked = false,
+                    onCheckedChange = {
+                        onDismissRequest()
+                        onPrivateToggle()
+                    },
+                    leadingIcon = {
+                        YabaIcon(
+                            name = if (bookmark.isPrivate) "circle-unlock-02" else "circle-lock-02",
+                            color = Color(YabaColor.RED.iconTintArgb()),
+                        )
+                    },
+                    text = {
+                        Text(
+                            text = privateActionText,
+                            color = Color(YabaColor.RED.iconTintArgb()),
+                        )
+                    },
+                )
+            }
             DropdownMenuItem(
-                shapes = MenuDefaults.itemShape(0, 1),
+                shapes = MenuDefaults.itemShape(if (bookmark != null) 1 else 0, if (bookmark != null) 2 else 1),
                 checked = false,
                 onCheckedChange = {
                     onDismissRequest()
-                    val bookmark = state.bookmark ?: return@DropdownMenuItem
-                    deletionDialogManager.send(
-                        DeletionState(
-                            deletionType = DeletionType.BOOKMARK,
-                            bookmarkToBeDeleted = bookmark,
-                            onConfirm = {
-                                onEvent(NotemarkDetailEvent.OnDeleteBookmark)
-                                navigator.removeLastOrNull()
-                            },
-                        ),
-                    )
+                    runDelete()
                 },
                 leadingIcon = {
                     YabaIcon(

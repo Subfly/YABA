@@ -32,11 +32,13 @@ import dev.subfly.yaba.core.navigation.creation.TagSelectionRoute
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkCreationTopBar
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkFolderSelectionContent
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkInfoContent
+import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPrivateToggleRow
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewAppearanceSwitcher
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewCard
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewContent
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkTagSelectionContent
 import dev.subfly.yaba.ui.creation.bookmark.model.BookmarkPreviewData
+import dev.subfly.yaba.util.rememberPrivateBookmarkCreationToggle
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
@@ -58,6 +60,10 @@ fun ImagemarkCreationContent(bookmarkId: String?) {
 
     val vm = viewModel { ImagemarkCreationVM() }
     val state by vm.state.collectAsStateWithLifecycle()
+
+    val onPrivateToggle = rememberPrivateBookmarkCreationToggle {
+        vm.onEvent(ImagemarkCreationEvent.OnTogglePrivate)
+    }
 
     LaunchedEffect(bookmarkId) {
         vm.onEvent(
@@ -137,6 +143,13 @@ fun ImagemarkCreationContent(bookmarkId: String?) {
                     selectedFolder = state.selectedFolder,
                     enabled = state.isLoading.not(),
                     labelPlaceholder = R.string.create_bookmark_title_placeholder,
+                )
+            }
+            item {
+                BookmarkPrivateToggleRow(
+                    isPrivate = state.isPrivate,
+                    enabled = state.isLoading.not(),
+                    onClick = onPrivateToggle,
                 )
             }
             item {

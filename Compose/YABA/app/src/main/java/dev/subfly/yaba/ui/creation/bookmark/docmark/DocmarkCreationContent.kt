@@ -39,6 +39,7 @@ import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkCreationLabel
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkCreationTopBar
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkFolderSelectionContent
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkInfoContent
+import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPrivateToggleRow
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewAppearanceSwitcher
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewCard
 import dev.subfly.yaba.ui.creation.bookmark.components.BookmarkPreviewContent
@@ -62,6 +63,7 @@ import dev.subfly.yaba.core.webview.WebEpubConverterInput
 import dev.subfly.yaba.core.webview.WebPdfConverterInput
 import dev.subfly.yaba.core.webview.YabaWebFeature
 import dev.subfly.yaba.core.webview.YabaWebHostEvent
+import dev.subfly.yaba.util.rememberPrivateBookmarkCreationToggle
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
@@ -73,6 +75,10 @@ fun DocmarkCreationContent(bookmarkId: String?) {
     val resultStore = LocalResultStore.current
     val vm = viewModel { DocmarkCreationVM() }
     val state by vm.state.collectAsStateWithLifecycle()
+
+    val onPrivateToggle = rememberPrivateBookmarkCreationToggle {
+        vm.onEvent(DocmarkCreationEvent.OnTogglePrivate)
+    }
 
     val pdfDataUrl by remember(state.documentBytes, state.docmarkType, state.isInEditMode) {
         derivedStateOf {
@@ -276,6 +282,13 @@ fun DocmarkCreationContent(bookmarkId: String?) {
                     enabled = state.isLoading.not(),
                     labelPlaceholder = R.string.create_bookmark_title_placeholder,
                     nullModelPresentableColor = YabaColor.BLUE,
+                )
+            }
+            item {
+                BookmarkPrivateToggleRow(
+                    isPrivate = state.isPrivate,
+                    enabled = state.isLoading.not(),
+                    onClick = onPrivateToggle,
                 )
             }
             item {

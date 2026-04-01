@@ -6,13 +6,14 @@ import dev.subfly.yaba.core.model.utils.FabPosition
 import dev.subfly.yaba.core.model.utils.SortOrderType
 import dev.subfly.yaba.core.model.utils.SortType
 import dev.subfly.yaba.core.model.utils.ThemePreference
+import kotlinx.serialization.Serializable
 
 /**
  * Canonical representation of user-facing preferences that used to live in Darwin AppStorage.
  *
- * We store enum values as strings (their [name]) to remain forward-compatible while still accepting
- * legacy integer raw values during migration.
+ * We store enum values as strings (their [name]) for forward-compatible serialization.
  */
+@Serializable
 data class UserPreferences(
     val hasPassedOnboarding: Boolean = false,
     val hasNamedDevice: Boolean = false,
@@ -40,7 +41,7 @@ data class UserPreferences(
     val announcementsCloudKitDatabaseWipe: Boolean = true,
     val announcementsLegalsUpdate: Boolean = true,
     val announcementsLegalsUpdate2: Boolean = true,
-    val migrationCompleted: Boolean = false,
+    val privateBookmarkPasswordHash: String = "",
 )
 
 internal inline fun <reified T : Enum<T>> enumFromOrdinal(

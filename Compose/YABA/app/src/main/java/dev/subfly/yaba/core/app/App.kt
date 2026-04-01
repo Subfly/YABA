@@ -20,7 +20,7 @@ import dev.subfly.yaba.core.deeplink.DeepLinkManager
 import dev.subfly.yaba.core.deeplink.DeepLinkTarget
 import dev.subfly.yaba.core.navigation.alert.DeletionVM
 import dev.subfly.yaba.core.navigation.alert.YabaDeletionDialog
-import dev.subfly.yaba.core.navigation.creation.EmptyCretionRoute
+import dev.subfly.yaba.core.navigation.creation.EmptyCreationRoute
 import dev.subfly.yaba.core.navigation.creation.YabaCreationDialog
 import dev.subfly.yaba.core.navigation.creation.YabaCreationSheet
 import dev.subfly.yaba.core.navigation.creation.creationNavigationConfig
@@ -61,7 +61,7 @@ fun App() {
     val navigationResultStore = rememberResultStore()
     val creationNavigator = rememberNavBackStack(
         configuration = creationNavigationConfig,
-        EmptyCretionRoute
+        EmptyCreationRoute
     )
     val contentNavigator = rememberNavBackStack(
         configuration = detailNavigationConfig,

@@ -79,25 +79,26 @@ fun FolderItemView(
     val moveText = stringResource(R.string.move)
     val deleteText = stringResource(R.string.delete)
 
-    // Create actions specific to THIS folder model
-    // System folders cannot be edited or moved
+    // System folders: tap-only (open folder). No overflow menu or swipe actions.
     val menuActions =
-        remember(model.id, isSystemFolder, newBookmarkText, editText, moveText, deleteText) {
-            buildList {
-                add(
-                    CollectionMenuAction(
-                        key = "new_bookmark_${model.id}",
-                        icon = "bookmark-add-02",
-                        text = newBookmarkText,
-                        color = YabaColor.CYAN,
-                        onClick = {
-                            resultStore.setResult(ResultStoreKeys.SELECTED_FOLDER, model)
-                            creationNavigator.add(BookmarkCreationRoute())
-                            appStateManager.onShowCreationContent()
-                        }
+        remember(model.id, isSystemFolder, allowsDeletion, newBookmarkText, editText, moveText, deleteText) {
+            if (isSystemFolder) {
+                emptyList()
+            } else {
+                buildList {
+                    add(
+                        CollectionMenuAction(
+                            key = "new_bookmark_${model.id}",
+                            icon = "bookmark-add-02",
+                            text = newBookmarkText,
+                            color = YabaColor.CYAN,
+                            onClick = {
+                                resultStore.setResult(ResultStoreKeys.SELECTED_FOLDER, model)
+                                creationNavigator.add(BookmarkCreationRoute())
+                                appStateManager.onShowCreationContent()
+                            }
+                        )
                     )
-                )
-                if (isSystemFolder.not()) {
                     add(
                         CollectionMenuAction(
                             key = "edit_${model.id}",
@@ -128,15 +129,86 @@ fun FolderItemView(
                             }
                         )
                     )
+                    if (allowsDeletion) {
+                        add(
+                            CollectionMenuAction(
+                                key = "delete_${model.id}",
+                                icon = "delete-02",
+                                text = deleteText,
+                                color = YabaColor.RED,
+                                isDangerous = true,
+                                onClick = {
+                                    deletionDialogManager.send(
+                                        DeletionState(
+                                            deletionType = DeletionType.FOLDER,
+                                            folderToBeDeleted = model,
+                                            onConfirm = { onDeleteFolder(model) },
+                                        )
+                                    )
+                                }
+                            )
+                        )
+                    }
                 }
+            }
+        }
+
+    val leftSwipeActions = remember(model.id, isSystemFolder) {
+        if (isSystemFolder) {
+            emptyList()
+        } else {
+            listOf(
+                CollectionSwipeAction(
+                    key = "MOVE_${model.id}",
+                    icon = "arrow-move-up-right",
+                    color = YabaColor.TEAL,
+                    onClick = {
+                        creationNavigator.add(
+                            FolderSelectionRoute(
+                                mode = FolderSelectionMode.FOLDER_MOVE,
+                                contextFolderId = model.id,
+                                contextBookmarkIds = null,
+                            )
+                        )
+                        appStateManager.onShowCreationContent()
+                    }
+                ),
+                CollectionSwipeAction(
+                    key = "NEW_${model.id}",
+                    icon = "bookmark-add-02",
+                    color = YabaColor.BLUE,
+                    onClick = {
+                        resultStore.setResult(ResultStoreKeys.SELECTED_FOLDER, model)
+                        creationNavigator.add(BookmarkCreationRoute())
+                        appStateManager.onShowCreationContent()
+                    }
+                ),
+            )
+        }
+    }
+
+    val rightSwipeActions = remember(model.id, isSystemFolder, allowsDeletion) {
+        if (isSystemFolder) {
+            emptyList()
+        } else {
+            buildList {
+                add(
+                    CollectionSwipeAction(
+                        key = "EDIT_${model.id}",
+                        icon = "edit-02",
+                        color = YabaColor.ORANGE,
+                        onClick = {
+                            creationNavigator.add(FolderCreationRoute(folderId = model.id))
+                            appStateManager.onShowCreationContent()
+                        }
+                    )
+                )
                 if (allowsDeletion) {
                     add(
-                        CollectionMenuAction(
-                            key = "delete_${model.id}",
+                        CollectionSwipeAction(
+                            key = "DELETE_${model.id}",
                             icon = "delete-02",
-                            text = deleteText,
                             color = YabaColor.RED,
-                            isDangerous = true,
                             onClick = {
                                 deletionDialogManager.send(
                                     DeletionState(
@@ -149,78 +221,6 @@ fun FolderItemView(
                         )
                     )
                 }
-            }
-        }
-
-    // System folders cannot be moved or edited via swipe actions
-    val leftSwipeActions = remember(model.id, isSystemFolder) {
-        buildList {
-            if (!isSystemFolder) {
-                add(
-                    CollectionSwipeAction(
-                        key = "MOVE_${model.id}",
-                        icon = "arrow-move-up-right",
-                        color = YabaColor.TEAL,
-                        onClick = {
-                            creationNavigator.add(
-                                FolderSelectionRoute(
-                                    mode = FolderSelectionMode.FOLDER_MOVE,
-                                    contextFolderId = model.id,
-                                    contextBookmarkIds = null,
-                                )
-                            )
-                            appStateManager.onShowCreationContent()
-                        }
-                    )
-                )
-            }
-            add(
-                CollectionSwipeAction(
-                    key = "NEW_${model.id}",
-                    icon = "bookmark-add-02",
-                    color = YabaColor.BLUE,
-                    onClick = {
-                        resultStore.setResult(ResultStoreKeys.SELECTED_FOLDER, model)
-                        creationNavigator.add(BookmarkCreationRoute())
-                        appStateManager.onShowCreationContent()
-                    }
-                )
-            )
-        }
-    }
-
-    val rightSwipeActions = remember(model.id, isSystemFolder) {
-        buildList {
-            if (!isSystemFolder) {
-                add(
-                    CollectionSwipeAction(
-                        key = "EDIT_${model.id}",
-                        icon = "edit-02",
-                        color = YabaColor.ORANGE,
-                        onClick = {
-                            creationNavigator.add(FolderCreationRoute(folderId = model.id))
-                            appStateManager.onShowCreationContent()
-                        }
-                    )
-                )
-            }
-            if (allowsDeletion) {
-                add(
-                    CollectionSwipeAction(
-                        key = "DELETE_${model.id}",
-                        icon = "delete-02",
-                        color = YabaColor.RED,
-                        onClick = {
-                            deletionDialogManager.send(
-                                DeletionState(
-                                    deletionType = DeletionType.FOLDER,
-                                    folderToBeDeleted = model,
-                                    onConfirm = { onDeleteFolder(model) },
-                                )
-                            )
-                        }
-                    )
-                )
             }
         }
     }
@@ -243,6 +243,7 @@ fun FolderItemView(
         index = index,
         count = count,
         containerColor = containerColor,
+        enableContextMenuInteractions = !isSystemFolder,
         trailingContent = {
             if (showBookmarkCounts || hasChildren) {
                 Row(

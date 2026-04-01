@@ -165,10 +165,10 @@ class FolderSelectionStateMachine :
     private fun applyModeExclusions(allFolders: List<FolderUiModel>): List<FolderUiModel> {
         var result = allFolders
 
-        // System folders must always be root-level and cannot be used as move targets for folders.
-        // They remain selectable for bookmark moves / folder selection (e.g., Uncategorized).
+        // System folders cannot be used as move targets (folders or bookmarks).
         val excludeSystemFoldersAsTargets = mode == FolderSelectionMode.PARENT_SELECTION ||
-            mode == FolderSelectionMode.FOLDER_MOVE
+            mode == FolderSelectionMode.FOLDER_MOVE ||
+            mode == FolderSelectionMode.BOOKMARKS_MOVE
         if (excludeSystemFoldersAsTargets) {
             result = result.filterNot { folder -> CoreConstants.Folder.isSystemFolder(folder.id) }
         }

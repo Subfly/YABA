@@ -8,6 +8,7 @@ import dev.subfly.yaba.core.model.ui.HomeFolderRowUiModel
 import dev.subfly.yaba.core.model.utils.SortOrderType
 import dev.subfly.yaba.core.model.utils.SortType
 import dev.subfly.yaba.core.preferences.SettingsStores
+import dev.subfly.yaba.core.security.PrivateBookmarkSessionGuard
 import dev.subfly.yaba.core.state.base.BaseStateMachine
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -69,20 +70,24 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
         dataSubscriptionJob = launch {
             // First, observe preferences to get sorting parameters
             // When sorting changes, flatMapLatest will cancel old subscriptions and create new ones
-            preferencesStore
-                .preferencesFlow
-                .map { prefs ->
-                    SortingParams(
-                        prefs.preferredCollectionSorting,
-                        prefs.preferredCollectionSortOrder
-                    )
-                }
-                .distinctUntilChanged()
-                .flatMapLatest { sortingParams ->
+            combine(
+                preferencesStore
+                    .preferencesFlow
+                    .map { prefs ->
+                        SortingParams(
+                            prefs.preferredCollectionSorting,
+                            prefs.preferredCollectionSortOrder
+                        )
+                    }
+                    .distinctUntilChanged(),
+                PrivateBookmarkSessionGuard.isUnlocked,
+            ) { sortingParams, unlocked -> sortingParams to unlocked }
+                .flatMapLatest { (sortingParams, unlocked) ->
                     val recentBookmarksFlow = AllBookmarksManager
                         .observeAllBookmarks(
                             sortType = SortType.EDITED_AT,
                             sortOrder = SortOrderType.DESCENDING,
+                            excludePrivate = !unlocked,
                         )
                         .map { it.take(RECENT_BOOKMARKS_LIMIT) }
 

@@ -12,10 +12,13 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
@@ -28,6 +31,7 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
@@ -58,6 +62,10 @@ import dev.subfly.yaba.core.components.item.bookmark.BookmarkItemView
 import dev.subfly.yaba.core.navigation.alert.DeletionState
 import dev.subfly.yaba.core.navigation.alert.DeletionType
 import dev.subfly.yaba.core.navigation.creation.BookmarkCreationRoute
+import dev.subfly.yaba.core.navigation.creation.DocmarkCreationRoute
+import dev.subfly.yaba.core.navigation.creation.ImagemarkCreationRoute
+import dev.subfly.yaba.core.navigation.creation.LinkmarkCreationRoute
+import dev.subfly.yaba.core.navigation.creation.NotemarkCreationRoute
 import dev.subfly.yaba.core.navigation.main.DocDetailRoute
 import dev.subfly.yaba.core.navigation.main.ImageDetailRoute
 import dev.subfly.yaba.core.navigation.main.LinkDetailRoute
@@ -68,6 +76,7 @@ import dev.subfly.yaba.ui.detail.composables.CollectionDetailSearchTopBar
 import dev.subfly.yaba.ui.detail.composables.collectionDetailAccentColor
 import dev.subfly.yaba.ui.detail.composables.collectionDetailIconButtonColors
 import dev.subfly.yaba.ui.detail.composables.collectionDetailSearchFieldTint
+import dev.subfly.yaba.util.BookmarkPrivatePasswordEventEffect
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalCreationContentNavigator
@@ -75,9 +84,11 @@ import dev.subfly.yaba.util.LocalDeletionDialogManager
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.LocalUserPreferences
 import dev.subfly.yaba.util.ResultStoreKeys
+import dev.subfly.yaba.util.rememberPrivateBookmarkOpenClick
 import dev.subfly.yaba.util.rememberShareHandler
 import dev.subfly.yaba.util.uiTitle
 import dev.subfly.yaba.util.yabaPointerEventSpy
+import dev.subfly.yaba.core.common.CoreConstants
 import dev.subfly.yaba.core.filesystem.access.YabaFileAccessor
 import dev.subfly.yaba.core.managers.LinkmarkManager
 import dev.subfly.yaba.core.model.utils.BookmarkAppearance
@@ -113,6 +124,52 @@ fun TagDetailView(
 
     val vm = viewModel { TagDetailVM() }
     val state by vm.state.collectAsStateWithLifecycle()
+    val creationNavigator = LocalCreationContentNavigator.current
+    val appStateManager = LocalAppStateManager.current
+    val deletionDialogManager = LocalDeletionDialogManager.current
+
+    BookmarkPrivatePasswordEventEffect(
+        resolveBookmark = { id -> state.bookmarks.find { it.id == id } },
+        onOpenBookmark = { model ->
+            navigator.add(
+                when (model.kind) {
+                    BookmarkKind.LINK -> LinkDetailRoute(bookmarkId = model.id)
+                    BookmarkKind.NOTE -> NoteDetailRoute(bookmarkId = model.id)
+                    BookmarkKind.IMAGE -> ImageDetailRoute(bookmarkId = model.id)
+                    BookmarkKind.FILE -> DocDetailRoute(bookmarkId = model.id)
+                },
+            )
+        },
+        onEditBookmark = { model ->
+            when (model.kind) {
+                BookmarkKind.LINK -> creationNavigator.add(LinkmarkCreationRoute(bookmarkId = model.id))
+                BookmarkKind.NOTE -> creationNavigator.add(NotemarkCreationRoute(bookmarkId = model.id))
+                BookmarkKind.IMAGE -> creationNavigator.add(ImagemarkCreationRoute(bookmarkId = model.id))
+                BookmarkKind.FILE -> creationNavigator.add(DocmarkCreationRoute(bookmarkId = model.id))
+            }
+            appStateManager.onShowCreationContent()
+        },
+        onShareBookmark = { bookmark ->
+            when (bookmark.kind) {
+                BookmarkKind.LINK -> shareScope.launch {
+                    LinkmarkManager.getBookmarkUrl(bookmark.id)?.let(shareUrl)
+                }
+                BookmarkKind.IMAGE -> shareScope.launch {
+                    YabaFileAccessor.shareImageBookmark(bookmark.id)
+                }
+                else -> {}
+            }
+        },
+        onDeleteBookmark = { bookmark ->
+            deletionDialogManager.send(
+                DeletionState(
+                    deletionType = DeletionType.BOOKMARK,
+                    bookmarkToBeDeleted = bookmark,
+                    onConfirm = { vm.onEvent(TagDetailEvent.OnDeleteBookmark(bookmark = bookmark)) },
+                ),
+            )
+        },
+    )
 
     LaunchedEffect(tagId) {
         vm.onEvent(TagDetailEvent.OnInit(tagId = tagId))
@@ -223,9 +280,28 @@ fun TagDetailView(
                     } else 0.dp
                 )
 
+                val isPinnedTagContext = tagId == CoreConstants.Tag.Pinned.ID
+                val splitPinned = remember(state.bookmarks, isPinnedTagContext) {
+                    !isPinnedTagContext && state.bookmarks.any { it.isPinned }
+                }
+                val pinnedList = remember(state.bookmarks, splitPinned) {
+                    if (splitPinned) state.bookmarks.filter { it.isPinned } else emptyList()
+                }
+                val unpinnedList = remember(state.bookmarks, splitPinned, isPinnedTagContext) {
+                    when {
+                        isPinnedTagContext -> state.bookmarks
+                        splitPinned -> state.bookmarks.filter { !it.isPinned }
+                        else -> state.bookmarks
+                    }
+                }
+
                 YabaBookmarkLayout(
                     modifier = Modifier.fillMaxSize(),
-                    bookmarks = state.bookmarks,
+                    bookmarks = unpinnedList,
+                    pinnedSectionHeader = if (splitPinned) {
+                        { TagPinnedBookmarksSectionHeader() }
+                    } else null,
+                    pinnedBookmarks = pinnedList,
                     layoutConfig = ContentLayoutConfig(
                         bookmarkAppearance = userPreferences.preferredBookmarkAppearance,
                         cardImageSizing = userPreferences.preferredCardImageSizing,
@@ -249,6 +325,16 @@ fun TagDetailView(
                         )
                     },
                     itemContent = { model, _, appearance, cardImageSizing, index, count ->
+                        val openBookmark = rememberPrivateBookmarkOpenClick(model) {
+                            navigator.add(
+                                when (model.kind) {
+                                    BookmarkKind.LINK -> LinkDetailRoute(bookmarkId = model.id)
+                                    BookmarkKind.NOTE -> NoteDetailRoute(bookmarkId = model.id)
+                                    BookmarkKind.IMAGE -> ImageDetailRoute(bookmarkId = model.id)
+                                    BookmarkKind.FILE -> DocDetailRoute(bookmarkId = model.id)
+                                },
+                            )
+                        }
                         BookmarkItemView(
                             modifier = itemModifier,
                             model = model,
@@ -263,14 +349,7 @@ fun TagDetailView(
                                         )
                                     )
                                 } else {
-                                    navigator.add(
-                                        when (model.kind) {
-                                            BookmarkKind.LINK -> LinkDetailRoute(bookmarkId = model.id)
-                                            BookmarkKind.NOTE -> NoteDetailRoute(bookmarkId = model.id)
-                                            BookmarkKind.IMAGE -> ImageDetailRoute(bookmarkId = model.id)
-                                            BookmarkKind.FILE -> DocDetailRoute(bookmarkId = model.id)
-                                        }
-                                    )
+                                    openBookmark()
                                 }
                             },
                             onDeleteBookmark = { bookmark ->
@@ -438,6 +517,9 @@ private fun TagDetailDropdownMenu(
     val cancelSelectionText = stringResource(R.string.bookmark_selection_cancel)
     val deleteSelectionText = stringResource(R.string.bookmark_selection_delete)
 
+    val isSystemTag =
+        state.tag?.let { CoreConstants.Tag.isSystemTag(it.id) } == true
+
     DropdownMenuPopup(
         expanded = isExpanded,
         onDismissRequest = onDismissRequest,
@@ -486,18 +568,23 @@ private fun TagDetailDropdownMenu(
                     }
                 } else {
                     Column {
+                        if (!isSystemTag) {
+                            DropdownMenuItem(
+                                shapes = MenuDefaults.itemShape(0, 2),
+                                checked = false,
+                                onCheckedChange = { _ ->
+                                    onDismissRequest()
+                                    onNewBookmark()
+                                },
+                                leadingIcon = { YabaIcon(name = "bookmark-add-02") },
+                                text = { Text(text = newBookmarkText) },
+                            )
+                        }
                         DropdownMenuItem(
-                            shapes = MenuDefaults.itemShape(0, 2),
-                            checked = false,
-                            onCheckedChange = { _ ->
-                                onDismissRequest()
-                                onNewBookmark()
-                            },
-                            leadingIcon = { YabaIcon(name = "bookmark-add-02") },
-                            text = { Text(text = newBookmarkText) },
-                        )
-                        DropdownMenuItem(
-                            shapes = MenuDefaults.itemShape(1, 2),
+                            shapes = MenuDefaults.itemShape(
+                                if (isSystemTag) 0 else 1,
+                                if (isSystemTag) 1 else 2,
+                            ),
                             checked = false,
                             onCheckedChange = { _ ->
                                 onDismissRequest()
@@ -741,6 +828,23 @@ private fun SortingSection(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun TagPinnedBookmarksSectionHeader() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        YabaIcon(name = "pin", color = YabaColor.YELLOW)
+        Text(
+            text = "Pinned Bookmarks", // TODO: LOCALIZATION
+            style = MaterialTheme.typography.titleSmall,
+        )
     }
 }
 

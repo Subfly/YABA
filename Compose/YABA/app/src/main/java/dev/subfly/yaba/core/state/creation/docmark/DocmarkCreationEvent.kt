@@ -73,5 +73,7 @@ sealed class DocmarkCreationEvent {
         val onErrorCallback: () -> Unit,
     ) : DocmarkCreationEvent()
 
+    data object OnTogglePrivate : DocmarkCreationEvent()
+
     data class OnWebInitialContentLoad(val result: WebShellLoadResult) : DocmarkCreationEvent()
 }

@@ -1,5 +1,6 @@
 package dev.subfly.yaba.core.state.selection.tag
 
+import dev.subfly.yaba.core.common.CoreConstants
 import dev.subfly.yaba.core.managers.TagManager
 import dev.subfly.yaba.core.model.ui.TagUiModel
 import dev.subfly.yaba.core.model.utils.SortOrderType
@@ -78,6 +79,7 @@ class TagSelectionStateMachine :
     }
 
     private fun onSelectTag(event: TagSelectionEvent.OnSelectTag) {
+        if (CoreConstants.Tag.isSystemTag(event.tag.id)) return
         // Add to selected if not already there
         if (currentSelectedTags.none { it.id == event.tag.id }) {
             currentSelectedTags = currentSelectedTags + event.tag
@@ -86,7 +88,7 @@ class TagSelectionStateMachine :
     }
 
     private fun onDeselectTag(event: TagSelectionEvent.OnDeselectTag) {
-        // Remove from selected
+        if (CoreConstants.Tag.isSystemTag(event.tag.id)) return
         currentSelectedTags = currentSelectedTags.filter { it.id != event.tag.id }
         updateFilteredState()
     }
@@ -99,7 +101,9 @@ class TagSelectionStateMachine :
         val selectedIds = currentSelectedTags.map { it.id }.toSet()
 
         // Available = all tags minus selected
-        var available = allTags.filter { it.id !in selectedIds }
+        var available = allTags.filter { tag ->
+            tag.id !in selectedIds && !CoreConstants.Tag.isSystemTag(tag.id)
+        }
 
         // Apply search filter to available tags
         val query = currentState().searchQuery

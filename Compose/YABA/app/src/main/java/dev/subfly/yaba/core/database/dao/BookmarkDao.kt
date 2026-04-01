@@ -54,6 +54,9 @@ interface BookmarkDao {
                 SELECT bookmarkId FROM tag_bookmarks WHERE tagId IN (:tagIds)
             )
         )
+        AND (
+            :applyExcludePrivateFilter = 0 OR isPrivate = 0
+        )
         ORDER BY
             CASE WHEN :sortType = 'CREATED_AT' AND :sortOrder = 'ASCENDING' THEN createdAt END ASC,
             CASE WHEN :sortType = 'CREATED_AT' AND :sortOrder = 'DESCENDING' THEN createdAt END DESC,
@@ -75,5 +78,6 @@ interface BookmarkDao {
         applyTagFilter: Boolean,
         sortType: String,
         sortOrder: String,
+        applyExcludePrivateFilter: Boolean,
     ): Flow<List<BookmarkWithRelations>>
 }

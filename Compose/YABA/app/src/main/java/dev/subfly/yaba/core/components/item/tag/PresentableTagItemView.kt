@@ -28,6 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import dev.subfly.yaba.core.common.CoreConstants
 import dev.subfly.yaba.core.components.YabaIcon
 import dev.subfly.yaba.core.components.layout.SwipeAction
 import dev.subfly.yaba.core.components.layout.YabaSwipeActions
@@ -49,9 +50,13 @@ fun PresentableTagItemView(
 ) {
     var isOptionsExpanded by remember { mutableStateOf(false) }
 
+    // Creation / selection sheets: system tags are only clickable — no edit swipe or overflow.
+    val allowEditInteractions =
+        model != null && !CoreConstants.Tag.isSystemTag(model.id)
+
     YabaSwipeActions(
         modifier = modifier,
-        rightActions = if (model != null) {
+        rightActions = if (allowEditInteractions) {
             listOf(
                 SwipeAction(
                     key = "EDIT",
@@ -77,19 +82,22 @@ fun PresentableTagItemView(
             SegmentedListItem(
                 modifier = Modifier
                     .clip(RoundedCornerShape(cornerSize))
-                    .yabaRightClick(
-                        onRightClick = {
-                            if (model != null) {
-                                isOptionsExpanded = true
-                            }
-                        }
+                    .then(
+                        if (allowEditInteractions) {
+                            Modifier.yabaRightClick(
+                                onRightClick = { isOptionsExpanded = true },
+                            )
+                        } else {
+                            Modifier
+                        },
                     ),
                 onClick = onPressed,
-                onLongClick = {
-                    if (model != null) {
-                        isOptionsExpanded = true
-                    }
-                },
+                onLongClick =
+                    if (allowEditInteractions) {
+                        { isOptionsExpanded = true }
+                    } else {
+                        null
+                    },
                 shapes = ListItemDefaults.segmentedShapes(index = index, count = count),
                 content = { Text(text = model?.label ?: "") },
                 leadingContent = {
@@ -101,7 +109,7 @@ fun PresentableTagItemView(
             )
             DropdownMenuPopup(
                 modifier = modifier,
-                expanded = isOptionsExpanded,
+                expanded = isOptionsExpanded && allowEditInteractions,
                 onDismissRequest = { isOptionsExpanded = false },
             ) {
                 DropdownMenuGroup(
@@ -115,7 +123,9 @@ fun PresentableTagItemView(
                         checked = false,
                         onCheckedChange = { _ ->
                             isOptionsExpanded = false
-                            onNavigateToEdit()
+                            if (allowEditInteractions) {
+                                onNavigateToEdit()
+                            }
                         },
                         leadingIcon = { YabaIcon(name = "edit-02") },
                         text = { Text(text = stringResource(R.string.edit)) }

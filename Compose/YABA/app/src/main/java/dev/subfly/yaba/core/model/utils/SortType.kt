@@ -1,5 +1,8 @@
 package dev.subfly.yaba.core.model.utils
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 enum class SortType {
     CREATED_AT,
     EDITED_AT,

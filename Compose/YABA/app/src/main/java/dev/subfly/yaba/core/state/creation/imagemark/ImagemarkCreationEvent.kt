@@ -88,4 +88,6 @@ sealed class ImagemarkCreationEvent {
         val onSavedCallback: () -> Unit,
         val onErrorCallback: () -> Unit,
     ) : ImagemarkCreationEvent()
+
+    data object OnTogglePrivate : ImagemarkCreationEvent()
 }

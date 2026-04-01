@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.components.YabaIcon
+import dev.subfly.yaba.core.common.CoreConstants
 import dev.subfly.yaba.core.navigation.creation.FolderCreationRoute
 import dev.subfly.yaba.core.components.layout.SwipeAction
 import dev.subfly.yaba.core.components.layout.YabaSwipeActions
@@ -56,9 +57,13 @@ fun PresentableFolderItemView(
 
     var isOptionsExpanded by remember { mutableStateOf(false) }
 
+    // Creation / selection sheets: system folders (e.g. Uncategorized) are only clickable — no edit swipe or overflow.
+    val allowEditInteractions =
+        model != null && !CoreConstants.Folder.isSystemFolder(model.id)
+
     YabaSwipeActions(
         modifier = modifier,
-        rightActions = if (model != null) {
+        rightActions = if (allowEditInteractions) {
             listOf(
                 SwipeAction(
                     key = "EDIT",
@@ -88,19 +93,22 @@ fun PresentableFolderItemView(
             SegmentedListItem(
                 modifier = Modifier
                     .clip(RoundedCornerShape(cornerSize))
-                    .yabaRightClick(
-                        onRightClick = {
-                            if (model != null) {
-                                isOptionsExpanded = true
-                            }
-                        }
+                    .then(
+                        if (allowEditInteractions) {
+                            Modifier.yabaRightClick(
+                                onRightClick = { isOptionsExpanded = true },
+                            )
+                        } else {
+                            Modifier
+                        },
                     ),
                 onClick = onPressed,
-                onLongClick = {
-                    if (model != null) {
-                        isOptionsExpanded = true
-                    }
-                },
+                onLongClick =
+                    if (allowEditInteractions) {
+                        { isOptionsExpanded = true }
+                    } else {
+                        null
+                    },
                 shapes = ListItemDefaults.segmentedShapes(index = index, count = count),
                 content = {
                     Text(
@@ -123,7 +131,7 @@ fun PresentableFolderItemView(
             )
             DropdownMenuPopup(
                 modifier = modifier,
-                expanded = isOptionsExpanded,
+                expanded = isOptionsExpanded && allowEditInteractions,
                 onDismissRequest = { isOptionsExpanded = false },
             ) {
                 DropdownMenuGroup(
@@ -137,10 +145,12 @@ fun PresentableFolderItemView(
                         checked = false,
                         onCheckedChange = { _ ->
                             isOptionsExpanded = false
-                            model?.let { nonNullModel ->
-                                creationNavigator.add(
-                                    FolderCreationRoute(folderId = nonNullModel.id)
-                                )
+                            if (allowEditInteractions) {
+                                model?.let { nonNullModel ->
+                                    creationNavigator.add(
+                                        FolderCreationRoute(folderId = nonNullModel.id)
+                                    )
+                                }
                             }
                         },
                         leadingIcon = { YabaIcon(name = "edit-02") },

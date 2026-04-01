@@ -88,6 +88,8 @@ data class CollectionSwipeAction(
  * @param onClick Callback when the item is clicked
  * @param trailingContent Optional composable for trailing content
  * @param containerColor The background color for the list item container
+ * @param enableContextMenuInteractions When false, long-press and secondary-click do not open the
+ *   overflow menu (use for rows that intentionally expose no menu actions).
  */
 @Composable
 fun BaseCollectionItemView(
@@ -104,6 +106,7 @@ fun BaseCollectionItemView(
     index: Int = 0,
     count: Int = 1,
     containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
+    enableContextMenuInteractions: Boolean = true,
 ) {
     ListCollectionItemView(
         modifier = modifier,
@@ -119,6 +122,7 @@ fun BaseCollectionItemView(
         index = index,
         count = count,
         containerColor = containerColor,
+        enableContextMenuInteractions = enableContextMenuInteractions,
     )
 }
 
@@ -138,6 +142,7 @@ private fun ListCollectionItemView(
     index: Int,
     count: Int,
     containerColor: Color,
+    enableContextMenuInteractions: Boolean,
 ) {
     var isOptionsExpanded by remember { mutableStateOf(false) }
     val itemColor by remember(color) {
@@ -222,9 +227,19 @@ private fun ListCollectionItemView(
                     SegmentedListItem(
                         modifier = Modifier
                             .clip(RoundedCornerShape(12.dp))
-                            .yabaRightClick(onRightClick = { isOptionsExpanded = true }),
+                            .then(
+                                if (enableContextMenuInteractions) {
+                                    Modifier.yabaRightClick(onRightClick = { isOptionsExpanded = true })
+                                } else {
+                                    Modifier
+                                },
+                            ),
                         onClick = onClick,
-                        onLongClick = { isOptionsExpanded = true },
+                        onLongClick = {
+                            if (enableContextMenuInteractions) {
+                                isOptionsExpanded = true
+                            }
+                        },
                         colors = ListItemDefaults.colors(containerColor = containerColor),
                         shapes = ListItemDefaults.segmentedShapes(index = index, count = count),
                         content = { Text(label) },
