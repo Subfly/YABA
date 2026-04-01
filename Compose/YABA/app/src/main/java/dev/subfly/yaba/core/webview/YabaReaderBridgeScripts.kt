@@ -330,14 +330,17 @@ object YabaEditorBridgeScripts {
         """.trimIndent()
 
     /**
-     * Base64 PDF bytes (no `data:` prefix). Must be synchronous — same as [exportMarkdownScript].
+     * Starts client-side PDF export ([html2pdf.js]) from the editor DOM. The result is delivered
+     * asynchronously via an [editorPdfExport] native host message; [jobId] must match the Kotlin-side job.
      */
-    fun exportPdfBase64Script(): String =
-        """
+    fun startPdfExportJobScript(jobId: String): String {
+        val escaped = escapeForJsSingleQuotedString(jobId)
+        return """
         (function() {
             try {
-                if (window.YabaEditorBridge && typeof window.YabaEditorBridge.exportPdfBase64 === "function") {
-                    return window.YabaEditorBridge.exportPdfBase64();
+                if (window.YabaEditorBridge && typeof window.YabaEditorBridge.startPdfExportJob === "function") {
+                    window.YabaEditorBridge.startPdfExportJob('$escaped');
+                    return '$escaped';
                 }
                 return "";
             } catch(e) {
@@ -345,6 +348,7 @@ object YabaEditorBridgeScripts {
             }
         })();
         """.trimIndent()
+    }
 }
 
 /**

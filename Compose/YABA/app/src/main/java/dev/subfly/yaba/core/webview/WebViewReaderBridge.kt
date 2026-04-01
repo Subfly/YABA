@@ -46,7 +46,7 @@ interface WebViewReaderBridge {
     suspend fun exportReadableMarkdown(): String = ""
 
     /**
-     * Base64 PDF bytes from `window.YabaEditorBridge.exportPdfBase64()` for the rich-text reader.
+     * Base64 PDF bytes from `window.YabaEditorBridge.startPdfExportJob` / html2pdf.js for the rich-text reader.
      * PDF/EPUB readers return an empty string.
      */
     suspend fun exportReadablePdfBase64(): String = ""

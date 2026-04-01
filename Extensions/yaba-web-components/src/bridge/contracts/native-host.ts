@@ -41,3 +41,11 @@ export type YabaNativeHostPayload =
       outputJson?: string
       error?: string
     }
+  /** Async result of [window.YabaEditorBridge.startPdfExportJob] (html2pdf.js). */
+  | {
+      type: "editorPdfExport"
+      jobId: string
+      status: "done" | "error"
+      pdfBase64?: string
+      error?: string
+    }

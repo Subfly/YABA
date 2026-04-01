@@ -9,8 +9,9 @@
 import type { Editor, JSONContent } from "@tiptap/core"
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model"
 import DOMPurify from "dompurify"
-import { jsPDF } from "jspdf"
+import html2pdf from "html2pdf.js"
 import showdown from "showdown"
+import { postToYabaNativeHost } from "./yaba-native-host"
 
 /** Matches [editor-bridge] paste HTML converter options so export behaves like the rest of the note pipeline. */
 const exportMarkdownConverter = new showdown.Converter({
@@ -168,38 +169,88 @@ export function exportMarkdownFromEditor(editor: Editor): string {
 }
 
 /**
- * Plain-text PDF via jsPDF (synchronous). Images are replaced with placeholders; no base64 in WebView.
+ * Injected only into html2canvas' cloned document — does not affect the live page.
+ * Forces readable black body copy; theme grays (--yaba-reader-on-bg, etc.) stay on screen only.
  */
-export function exportPdfBase64FromEditor(editor: Editor): string {
-  const wrap = document.createElement("div")
-  wrap.innerHTML = preprocessHtmlForShowdownExport(editor.getHTML())
-  wrap.querySelectorAll("img").forEach((img) => {
-    const alt = img.getAttribute("alt")?.trim()
-    const marker = document.createTextNode(alt && alt.length > 0 ? `[Image: ${alt}]` : "[Image]")
-    img.replaceWith(marker)
-  })
-  const text = (wrap.innerText || getPlainTextFallbackFromEditor(editor)).trim()
-  if (!text) return ""
+const PDF_EXPORT_CLONE_STYLE = `
+.yaba-editor-container,
+.yaba-editor-container .ProseMirror,
+[data-yaba-editor-root],
+[data-yaba-editor-root] .ProseMirror,
+.ProseMirror {
+  color: #000000 !important;
+}
+.yaba-editor-container p,
+.yaba-editor-container li,
+.yaba-editor-container td,
+.yaba-editor-container th,
+.yaba-editor-container blockquote,
+.yaba-editor-container figcaption,
+.yaba-editor-container a,
+[data-yaba-editor-root] p,
+[data-yaba-editor-root] li,
+[data-yaba-editor-root] td,
+[data-yaba-editor-root] th,
+[data-yaba-editor-root] blockquote,
+[data-yaba-editor-root] a {
+  color: #000000 !important;
+}
+`
 
-  const pdf = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" })
-  const pageWidth = pdf.internal.pageSize.getWidth()
-  const pageHeight = pdf.internal.pageSize.getHeight()
-  const margin = 40
-  const maxWidth = pageWidth - margin * 2
-  const lineHeight = 14
-  const lines = pdf.splitTextToSize(text, maxWidth)
-  let y = margin
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i]!
-    if (y + lineHeight > pageHeight - margin) {
-      pdf.addPage()
-      y = margin
-    }
-    pdf.text(line, margin, y)
-    y += lineHeight
+/**
+ * Renders the editor DOM with [html2pdf.js] and posts base64 to the native host.
+ * Uses `.yaba-editor-container` when present so theme CSS (`--yaba-font-family`, reader vars) applies to capture.
+ */
+export function startEditorPdfExportJob(editor: Editor, jobId: string): void {
+  void runEditorPdfExportJob(editor, jobId)
+}
+
+async function runEditorPdfExportJob(editor: Editor, jobId: string): Promise<void> {
+  const finish = (status: "done" | "error", pdfBase64?: string, error?: string) => {
+    postToYabaNativeHost({
+      type: "editorPdfExport",
+      jobId,
+      status,
+      pdfBase64,
+      error,
+    })
   }
 
-  const out = pdf.output("datauristring") as string
-  const comma = out.indexOf(",")
-  return comma >= 0 ? out.slice(comma + 1) : out
+  try {
+    const root = editor.view.dom as HTMLElement
+    const element =
+      (root.closest(".yaba-editor-container") as HTMLElement | null) ??
+      (root.closest("[data-yaba-editor-root]") as HTMLElement | null) ??
+      root
+
+    if (!(element.textContent ?? "").trim()) {
+      finish("error", undefined, "empty")
+      return
+    }
+
+    const opt = {
+      margin: [12, 16, 12, 16] as [number, number, number, number],
+      jsPDF: { unit: "mm" as const, format: "a4" as const, orientation: "portrait" as const },
+      html2canvas: {
+        onclone: (clonedDoc: Document) => {
+          const style = clonedDoc.createElement("style")
+          style.setAttribute("data-yaba-pdf-export-only", "")
+          style.textContent = PDF_EXPORT_CLONE_STYLE
+          clonedDoc.head.appendChild(style)
+        },
+      },
+    }
+
+    const dataUri = (await html2pdf().set(opt).from(element).outputPdf("datauristring")) as string
+    const comma = dataUri.indexOf(",")
+    const b64 = comma >= 0 ? dataUri.slice(comma + 1) : dataUri
+    if (!b64?.trim()) {
+      finish("error", undefined, "empty_pdf")
+      return
+    }
+    finish("done", b64)
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e)
+    finish("error", undefined, msg.slice(0, 500))
+  }
 }

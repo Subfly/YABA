@@ -24,8 +24,41 @@ import dev.subfly.yaba.core.webview.toJsPlatformLiteral
 import dev.subfly.yaba.core.webview.toJsReaderFontSizeLiteral
 import dev.subfly.yaba.core.webview.toJsReaderLineHeightLiteral
 import dev.subfly.yaba.core.webview.toJsReaderThemeLiteral
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.withTimeout
 import org.json.JSONArray
 import org.json.JSONObject
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
+
+private const val EDITOR_PDF_EXPORT_TIMEOUT_MS = 120_000L
+
+/**
+ * PDF export uses [html2pdf.js] (async). Kotlin waits on a host message, same pattern as [runHtmlConversion].
+ */
+@OptIn(ExperimentalUuidApi::class)
+private suspend fun awaitEditorPdfExportBase64(webView: WebView): String {
+    if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return ""
+    val jobId = Uuid.generateV4().toString()
+    val deferred = CompletableDeferred<String>()
+    YabaEditorPdfExportJobBridge.register(jobId, deferred)
+    return try {
+        val raw = evaluateJs(webView, YabaEditorBridgeScripts.startPdfExportJobScript(jobId))
+        val returned = decodeJsStringResult(raw)
+        if (returned.isBlank() || returned != jobId) {
+            ""
+        } else {
+            withTimeout(EDITOR_PDF_EXPORT_TIMEOUT_MS) { deferred.await() }
+        }
+    } catch (_: Exception) {
+        ""
+    } finally {
+        YabaEditorPdfExportJobBridge.remove(jobId)
+        if (!deferred.isCompleted) {
+            deferred.complete("")
+        }
+    }
+}
 
 @Suppress("FunctionName")
 internal fun RichTextWebViewReaderBridge(
@@ -106,11 +139,7 @@ internal fun RichTextWebViewReaderBridge(
         return decodeJsStringResult(raw)
     }
 
-    override suspend fun exportReadablePdfBase64(): String {
-        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return ""
-        val raw = evaluateJs(webView, YabaEditorBridgeScripts.exportPdfBase64Script())
-        return decodeJsStringResult(raw)
-    }
+    override suspend fun exportReadablePdfBase64(): String = awaitEditorPdfExportBase64(webView)
 }
 
 @Suppress("FunctionName")
@@ -181,11 +210,7 @@ internal fun RichTextWebViewEditorBridge(
             return decodeJsStringResult(raw)
         }
 
-        override suspend fun exportNotePdfBase64(): String {
-            if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return ""
-            val raw = evaluateJs(webView, YabaEditorBridgeScripts.exportPdfBase64Script())
-            return decodeJsStringResult(raw)
-        }
+        override suspend fun exportNotePdfBase64(): String = awaitEditorPdfExportBase64(webView)
     }
 }
 

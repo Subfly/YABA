@@ -24,6 +24,7 @@ internal fun createNativeHostMessageHandler(
                 }
             }
             "converterJob" -> YabaConverterJobBridge.onConverterJobMessage(root)
+            "editorPdfExport" -> YabaEditorPdfExportJobBridge.onEditorPdfExportMessage(root)
             else ->
                 YabaNativeHostMessageParser.parse(
                     json = json,

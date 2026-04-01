@@ -28,6 +28,6 @@ interface WebViewEditorBridge : WebViewReaderBridge {
     /** Markdown from `window.YabaEditorBridge.exportMarkdown()` (image links as `./assets/<file>`). */
     suspend fun exportNoteMarkdown(): String
 
-    /** Base64-encoded PDF bytes (no `data:` prefix) from `window.YabaEditorBridge.exportPdfBase64()`. */
+    /** Base64-encoded PDF bytes (no `data:` prefix) from async `html2pdf.js` export (`startPdfExportJob` + host message). */
     suspend fun exportNotePdfBase64(): String
 }

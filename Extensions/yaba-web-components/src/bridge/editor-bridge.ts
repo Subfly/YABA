@@ -32,7 +32,7 @@ import {
   setNoteEditorAutosaveIdleEnabled,
 } from "./shell-host-events"
 import { publishToc, resetPublishedToc, type TocJson } from "./toc-host-events"
-import { exportMarkdownFromEditor, exportPdfBase64FromEditor } from "./editor-export"
+import { exportMarkdownFromEditor, startEditorPdfExportJob } from "./editor-export"
 import { postToYabaNativeHost } from "./yaba-native-host"
 
 export type ReaderTheme = "system" | "dark" | "light" | "sepia"
@@ -111,8 +111,8 @@ export interface YabaEditorBridge {
   navigateToTocItem: (id: string, extrasJson?: string | null) => void
   /** Markdown text for Save Copy → `.md` (images embedded as `data:` URLs in the markdown). */
   exportMarkdown: () => string
-  /** Base64 PDF bytes (no data: prefix) for Save Copy → PDF. */
-  exportPdfBase64: () => string
+  /** Starts html2pdf.js export; native host receives [editorPdfExport] with the same job id. */
+  startPdfExportJob: (jobId: string) => void
 }
 
 function removeAnnotationMarksWithId(editor: Editor | null, annotationId: string): number {
@@ -1009,13 +1009,13 @@ export function initEditorBridge(editor: Editor): void {
         return ""
       }
     },
-    exportPdfBase64: () => {
+    startPdfExportJob: (jobId: string) => {
       const ed = editorInstance
-      if (!ed) return ""
+      if (!ed || !jobId.trim()) return
       try {
-        return exportPdfBase64FromEditor(ed)
+        startEditorPdfExportJob(ed, jobId)
       } catch {
-        return ""
+        /* startEditorPdfExportJob posts errors to the host */
       }
     },
   }
