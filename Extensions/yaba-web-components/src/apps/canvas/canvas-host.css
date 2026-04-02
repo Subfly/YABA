@@ -1,0 +1,44 @@
+/*
+ * YABA drives tools from Jetpack Compose. Excalidraw must render only the canvas.
+ * Mobile WebViews use App-top-bar / App-toolbar--mobile; desktop uses layer-ui.
+ * Hide every chrome node we can identify without hiding .excalidraw__canvas-wrapper.
+ */
+
+[data-yaba-canvas] .excalidraw .layer-ui__wrapper,
+[data-yaba-canvas] .excalidraw .layer-ui__wrapper__top-right,
+[data-yaba-canvas] .excalidraw .layer-ui__wrapper__footer,
+[data-yaba-canvas] .excalidraw .layer-ui__wrapper__footer-left,
+[data-yaba-canvas] .excalidraw .layer-ui__wrapper__footer-right,
+[data-yaba-canvas] .excalidraw .App-top-bar,
+[data-yaba-canvas] .excalidraw .App-toolbar-container,
+[data-yaba-canvas] .excalidraw .App-toolbar,
+[data-yaba-canvas] .excalidraw .App-toolbar--mobile,
+[data-yaba-canvas] .excalidraw .App-bottom-bar,
+[data-yaba-canvas] .excalidraw .App-menu_top,
+[data-yaba-canvas] .excalidraw .App-menu_bottom,
+[data-yaba-canvas] .excalidraw .App-mobile-menu,
+[data-yaba-canvas] .excalidraw .HintViewer,
+[data-yaba-canvas] .excalidraw .mobile-misc-tools-container,
+[data-yaba-canvas] .excalidraw .default-sidebar-trigger {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  max-height: 0 !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+}
+
+[data-yaba-canvas] .excalidraw {
+  width: 100%;
+  height: 100%;
+}
+
+[data-yaba-canvas] .excalidraw .excalidraw__canvas,
+[data-yaba-canvas] .excalidraw .excalidraw__canvas-wrapper {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+}

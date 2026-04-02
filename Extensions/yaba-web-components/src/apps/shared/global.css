@@ -73,6 +73,19 @@ body[data-yaba-page="epub-viewer"] {
   color: var(--yaba-reader-on-bg, var(--yaba-on-bg));
 }
 
+/* Canvas: Compose provides the app surface; shell stays transparent and fills the WebView. */
+body[data-yaba-page="canvas"] {
+  background: transparent;
+  color: var(--yaba-on-bg);
+}
+
+body[data-yaba-page="canvas"] #root,
+body[data-yaba-page="canvas"] [data-yaba-canvas] {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+}
+
 #root {
   width: 100%;
   height: 100%;

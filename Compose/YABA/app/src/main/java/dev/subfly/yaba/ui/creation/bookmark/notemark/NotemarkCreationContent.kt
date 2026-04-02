@@ -112,7 +112,7 @@ fun NotemarkCreationContent(bookmarkId: String?) {
                             BookmarkPreviewAppearanceSwitcher(
                                     bookmarkAppearance = state.bookmarkAppearance,
                                     cardImageSizing = state.cardImageSizing,
-                                    color = state.selectedFolder?.color ?: YabaColor.YELLOW,
+                                    color = state.selectedFolder?.color ?: YabaColor.BLUE,
                                     onClick = {
                                         vm.onEvent(NotemarkCreationEvent.OnCyclePreviewAppearance)
                                     },
@@ -153,7 +153,7 @@ fun NotemarkCreationContent(bookmarkId: String?) {
                         onPinToggle = { vm.onEvent(NotemarkCreationEvent.OnTogglePinned) },
                         enabled = true,
                         labelPlaceholder = R.string.create_bookmark_title_placeholder,
-                        nullModelPresentableColor = YabaColor.YELLOW,
+                        nullModelPresentableColor = YabaColor.BLUE,
                 )
             }
             item {
@@ -168,7 +168,7 @@ fun NotemarkCreationContent(bookmarkId: String?) {
                                     ),
                             )
                         },
-                        nullModelPresentableColor = YabaColor.YELLOW,
+                        nullModelPresentableColor = YabaColor.BLUE,
                 )
             }
             item {
@@ -186,7 +186,7 @@ fun NotemarkCreationContent(bookmarkId: String?) {
                         onNavigateToEdit = { tag ->
                             creationNavigator.add(TagCreationRoute(tagId = tag.id))
                         },
-                        nullModelPresentableColor = YabaColor.YELLOW,
+                        nullModelPresentableColor = YabaColor.BLUE,
                 )
             }
             item { Spacer(modifier = Modifier.height(36.dp)) }
