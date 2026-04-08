@@ -1,3 +1,4 @@
+import { FONT_FAMILY } from "@excalidraw/excalidraw"
 import type {
   ExcalidrawImperativeAPI,
   ExcalidrawInitialDataState,
@@ -102,6 +103,7 @@ const DEFAULT_SCENE: ExcalidrawInitialDataState = {
   elements: [],
   appState: {
     viewBackgroundColor: "#ffffff",
+    currentItemFontFamily: FONT_FAMILY.Excalifont,
   },
   files: {},
 }

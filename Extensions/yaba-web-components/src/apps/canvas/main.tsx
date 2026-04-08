@@ -1,3 +1,5 @@
+import "./excalidrawAssetPath"
+
 import React from "react"
 import ReactDOM from "react-dom/client"
 import { CanvasApp } from "./CanvasApp"

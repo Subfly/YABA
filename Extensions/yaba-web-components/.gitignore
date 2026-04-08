@@ -5,6 +5,9 @@ node_modules/
 dist/
 .vite/
 
+# Copied from @excalidraw/excalidraw/dist/prod/fonts (see vite.config.ts)
+public/excalidraw-assets/fonts/
+
 # TypeScript incremental cache (changes every `tsc -b` / IDE build)
 *.tsbuildinfo
 

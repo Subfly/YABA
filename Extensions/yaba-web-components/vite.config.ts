@@ -1,6 +1,30 @@
+import { cpSync, existsSync, mkdirSync } from "node:fs"
+import { fileURLToPath } from "node:url"
 import { defineConfig, type Plugin } from "vite"
 import react from "@vitejs/plugin-react"
 import { resolve } from "path"
+
+const __dirname = fileURLToPath(new URL(".", import.meta.url))
+
+/**
+ * Ship Excalidraw's `dist/prod/fonts` next to the canvas bundle so `EXCALIDRAW_ASSET_PATH`
+ * can resolve `./fonts/...` on `'self'` (WebView CSP blocks the esm.sh fallback).
+ */
+function copyExcalidrawProdFonts(): Plugin {
+  const src = resolve(__dirname, "node_modules/@excalidraw/excalidraw/dist/prod/fonts")
+  const dest = resolve(__dirname, "public/excalidraw-assets/fonts")
+  return {
+    name: "copy-excalidraw-prod-fonts",
+    buildStart() {
+      if (!existsSync(src)) {
+        this.warn(`[copy-excalidraw-prod-fonts] missing ${src} (run npm install)`)
+        return
+      }
+      mkdirSync(resolve(__dirname, "public/excalidraw-assets"), { recursive: true })
+      cpSync(src, dest, { recursive: true })
+    },
+  }
+}
 
 /**
  * `react-pdf-highlighter` always constructs `PDFViewer` (all pages in DOM).
@@ -23,7 +47,7 @@ function reactPdfHighlighterSinglePage(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [react(), reactPdfHighlighterSinglePage()],
+  plugins: [react(), reactPdfHighlighterSinglePage(), copyExcalidrawProdFonts()],
   base: "./",
   build: {
     outDir: "dist",

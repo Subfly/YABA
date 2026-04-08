@@ -1,4 +1,4 @@
-import { Excalidraw } from "@excalidraw/excalidraw"
+import { Excalidraw, FONT_FAMILY } from "@excalidraw/excalidraw"
 import "@excalidraw/excalidraw/index.css"
 import "./canvas-host.css"
 import { initCanvasBridge, onCanvasChanged } from "@/bridge/canvas-bridge"
@@ -13,6 +13,12 @@ function CanvasApp() {
         zenModeEnabled
         handleKeyboardGlobally
         renderTopRightUI={() => null}
+        initialData={{
+          elements: [],
+          appState: {
+            currentItemFontFamily: FONT_FAMILY.Excalifont,
+          },
+        }}
         excalidrawAPI={(api) => {
           if (!api) return
           initCanvasBridge(api)
