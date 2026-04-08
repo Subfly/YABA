@@ -14,42 +14,44 @@ import dev.subfly.yaba.core.security.PrivateBookmarkSessionGuard
 
 /**
  * Starts the private / not-private flow: create password if missing, password entry if locked, or
- * toggles immediately when the session is already unlocked.
+ * toggles immediately when the session is already unlocked. If [model] is null, the returned
+ * callback is a no-op.
  */
 @Composable
 fun rememberPrivateBookmarkToggleAction(
-        model: BookmarkUiModel,
+    model: BookmarkUiModel?,
 ): () -> Unit {
     val prefs by
-            SettingsStores.userPreferences.preferencesFlow.collectAsStateWithLifecycle(
-                    initialValue = UserPreferences(),
-            )
+        SettingsStores.userPreferences.preferencesFlow.collectAsStateWithLifecycle(
+            initialValue = UserPreferences(),
+        )
     val unlocked by PrivateBookmarkSessionGuard.isUnlocked.collectAsStateWithLifecycle()
     val creationNavigator = LocalCreationContentNavigator.current
     val appStateManager = LocalAppStateManager.current
-    return remember(model.id, model.isPrivate, prefs.privateBookmarkPasswordHash, unlocked) {
-        {
-            if (!model.isPrivate && prefs.privateBookmarkPasswordHash.isBlank()) {
+    return remember(model?.id, model?.isPrivate, prefs.privateBookmarkPasswordHash, unlocked) {
+        action@{
+            val m = model ?: return@action
+            if (!m.isPrivate && prefs.privateBookmarkPasswordHash.isBlank()) {
                 creationNavigator.add(BookmarkPasswordCreateRoute())
                 appStateManager.onShowCreationContent()
-                return@remember
+                return@action
             }
             if (!unlocked) {
                 creationNavigator.add(
-                        BookmarkPasswordEntryRoute(
-                                bookmarkId = model.id,
-                                reason =
-                                        if (model.isPrivate) {
-                                            PrivateBookmarkPasswordReason.TOGGLE_PRIVATE_OFF
-                                        } else {
-                                            PrivateBookmarkPasswordReason.TOGGLE_PRIVATE_ON
-                                        },
-                        ),
+                    BookmarkPasswordEntryRoute(
+                        bookmarkId = m.id,
+                        reason =
+                            if (m.isPrivate) {
+                                PrivateBookmarkPasswordReason.TOGGLE_PRIVATE_OFF
+                            } else {
+                                PrivateBookmarkPasswordReason.TOGGLE_PRIVATE_ON
+                            },
+                    ),
                 )
                 appStateManager.onShowCreationContent()
-                return@remember
+                return@action
             }
-            AllBookmarksManager.toggleBookmarkPrivate(model.id)
+            AllBookmarksManager.toggleBookmarkPrivate(m.id)
         }
     }
 }

@@ -54,73 +54,52 @@ internal fun CanvmarkContentDropdownMenu(
     val deletionDialogManager = LocalDeletionDialogManager.current
 
     val bookmark = state.bookmark
-    val noop = remember { { } }
-    val runEdit = if (bookmark != null) {
-        val bm = bookmark
-        rememberPrivateBookmarkProtectedAction(
-            model = bm,
-            reason = PrivateBookmarkPasswordReason.EDIT_BOOKMARK,
-        ) {
-            creationNavigator.add(CanvmarkCreationRoute(bookmarkId = bm.id))
-            appStateManager.onShowCreationContent()
-        }
-    } else {
-        noop
+    val runEdit = rememberPrivateBookmarkProtectedAction(
+        model = bookmark,
+        reason = PrivateBookmarkPasswordReason.EDIT_BOOKMARK,
+    ) {
+        val b = state.bookmark ?: return@rememberPrivateBookmarkProtectedAction
+        creationNavigator.add(CanvmarkCreationRoute(bookmarkId = b.id))
+        appStateManager.onShowCreationContent()
     }
-    val runMove = if (bookmark != null) {
-        val bm = bookmark
-        rememberPrivateBookmarkProtectedAction(
-            model = bm,
-            reason = PrivateBookmarkPasswordReason.EDIT_BOOKMARK,
-        ) {
-            creationNavigator.add(
-                FolderSelectionRoute(
-                    mode = FolderSelectionMode.BOOKMARKS_MOVE,
-                    contextFolderId = bm.folderId,
-                    contextBookmarkIds = listOf(bm.id),
-                ),
-            )
-            appStateManager.onShowCreationContent()
-        }
-    } else {
-        noop
+    val runMove = rememberPrivateBookmarkProtectedAction(
+        model = bookmark,
+        reason = PrivateBookmarkPasswordReason.EDIT_BOOKMARK,
+    ) {
+        val b = state.bookmark ?: return@rememberPrivateBookmarkProtectedAction
+        creationNavigator.add(
+            FolderSelectionRoute(
+                mode = FolderSelectionMode.BOOKMARKS_MOVE,
+                contextFolderId = b.folderId,
+                contextBookmarkIds = listOf(b.id),
+            ),
+        )
+        appStateManager.onShowCreationContent()
     }
-    val runPin = if (bookmark != null) {
-        val bm = bookmark
-        rememberPrivateBookmarkProtectedAction(
-            model = bm,
-            reason = PrivateBookmarkPasswordReason.EDIT_BOOKMARK,
-        ) {
-            AllBookmarksManager.toggleBookmarkPinned(bm.id)
-        }
-    } else {
-        noop
+    val runPin = rememberPrivateBookmarkProtectedAction(
+        model = bookmark,
+        reason = PrivateBookmarkPasswordReason.EDIT_BOOKMARK,
+    ) {
+        val b = state.bookmark ?: return@rememberPrivateBookmarkProtectedAction
+        AllBookmarksManager.toggleBookmarkPinned(b.id)
     }
-    val runDelete = if (bookmark != null) {
-        val bm = bookmark
-        rememberPrivateBookmarkProtectedAction(
-            model = bm,
-            reason = PrivateBookmarkPasswordReason.DELETE_BOOKMARK,
-        ) {
-            deletionDialogManager.send(
-                DeletionState(
-                    deletionType = DeletionType.BOOKMARK,
-                    bookmarkToBeDeleted = bm,
-                    onConfirm = {
-                        onEvent(CanvmarkDetailEvent.OnDeleteBookmark)
-                        navigator.removeLastOrNull()
-                    },
-                ),
-            )
-        }
-    } else {
-        noop
+    val runDelete = rememberPrivateBookmarkProtectedAction(
+        model = bookmark,
+        reason = PrivateBookmarkPasswordReason.DELETE_BOOKMARK,
+    ) {
+        val b = state.bookmark ?: return@rememberPrivateBookmarkProtectedAction
+        deletionDialogManager.send(
+            DeletionState(
+                deletionType = DeletionType.BOOKMARK,
+                bookmarkToBeDeleted = b,
+                onConfirm = {
+                    onEvent(CanvmarkDetailEvent.OnDeleteBookmark)
+                    navigator.removeLastOrNull()
+                },
+            ),
+        )
     }
-    val onPrivateToggle = if (bookmark != null) {
-        rememberPrivateBookmarkToggleAction(bookmark)
-    } else {
-        noop
-    }
+    val onPrivateToggle = rememberPrivateBookmarkToggleAction(bookmark)
 
     val editText = stringResource(R.string.edit)
     val moveText = stringResource(R.string.move)

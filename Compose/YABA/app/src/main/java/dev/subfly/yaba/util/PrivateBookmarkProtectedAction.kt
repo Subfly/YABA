@@ -10,25 +10,26 @@ import dev.subfly.yaba.core.security.PrivateBookmarkSessionGuard
 
 /**
  * When the session is locked and the bookmark is private, opens the password entry sheet; otherwise
- * runs [onAllowed].
+ * runs [onAllowed]. If [model] is null, the returned callback is a no-op.
  */
 @Composable
 fun rememberPrivateBookmarkProtectedAction(
-    model: BookmarkUiModel,
+    model: BookmarkUiModel?,
     reason: PrivateBookmarkPasswordReason,
     onAllowed: () -> Unit,
 ): () -> Unit {
     val unlocked by PrivateBookmarkSessionGuard.isUnlocked.collectAsStateWithLifecycle()
     val creationNavigator = LocalCreationContentNavigator.current
     val appStateManager = LocalAppStateManager.current
-    return remember(model.id, model.isPrivate, unlocked, reason) {
-        {
-            if (!model.isPrivate || unlocked) {
+    return remember(model?.id, model?.isPrivate, unlocked, reason) {
+        action@{
+            val m = model ?: return@action
+            if (!m.isPrivate || unlocked) {
                 onAllowed()
             } else {
                 creationNavigator.add(
                     BookmarkPasswordEntryRoute(
-                        bookmarkId = model.id,
+                        bookmarkId = m.id,
                         reason = reason,
                     ),
                 )
