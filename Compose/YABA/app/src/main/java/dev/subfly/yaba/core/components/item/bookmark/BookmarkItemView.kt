@@ -41,6 +41,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.R
+import dev.subfly.yaba.core.common.CoreConstants
 import dev.subfly.yaba.core.components.TagsRowContent
 import dev.subfly.yaba.core.components.YabaIcon
 import dev.subfly.yaba.core.components.YabaImage
@@ -694,7 +695,8 @@ private fun CardSmallItemContent(
 }
 
 /**
- * Tags area for card layouts: private bookmarks show only the lock chip; otherwise [TagsRowContent].
+ * Tags area for card layouts: private bookmarks show lock (and pin when pinned) chips only;
+ * otherwise [TagsRowContent].
  */
 @Composable
 private fun BookmarkCardTagsRow(
@@ -704,14 +706,40 @@ private fun BookmarkCardTagsRow(
     emptyStateColor: YabaColor,
 ) {
     if (model.isPrivate) {
+        val pinnedFromTags = model.tags.firstOrNull { it.id == CoreConstants.Tag.Pinned.ID }
+        val pinColor = pinnedFromTags?.color ?: YabaColor.YELLOW
+        val pinIcon = pinnedFromTags?.icon ?: CoreConstants.Tag.Pinned.ICON
         Row(
             modifier = modifier,
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start,
         ) {
+            if (model.isPinned) {
+                Surface(
+                    modifier = Modifier.size(24.dp),
+                    shape = RoundedCornerShape(
+                        topStart = 4.dp,
+                        bottomStart = 4.dp,
+                    ),
+                    color = Color(pinColor.iconTintArgb()).copy(alpha = 0.3F),
+                ) {
+                    YabaIcon(
+                        modifier = Modifier.padding(4.dp),
+                        name = pinIcon,
+                        color = pinColor,
+                    )
+                }
+            }
             Surface(
                 modifier = Modifier.size(24.dp),
-                shape = RoundedCornerShape(4.dp),
+                shape = if (model.isPinned) {
+                    RoundedCornerShape(
+                        topEnd = 4.dp,
+                        bottomEnd = 4.dp,
+                    )
+                } else {
+                    RoundedCornerShape(4.dp)
+                },
                 color = Color(YabaColor.RED.iconTintArgb()).copy(alpha = 0.3F),
             ) {
                 YabaIcon(

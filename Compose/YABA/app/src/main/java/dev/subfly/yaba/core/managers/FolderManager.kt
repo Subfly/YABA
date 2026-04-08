@@ -64,12 +64,28 @@ object FolderManager {
         )
     }
 
+    /**
+     * @param includeEmptySystemFolders When false (default), system folders with zero bookmarks are
+     * omitted from the list (they cannot be deleted, so empty ones are hidden from collection UI).
+     * Folder pickers for creation / parent selection should pass true so e.g. Uncategorized stays
+     * selectable while empty.
+     */
     fun observeAllFoldersSorted(
         sortType: SortType = SortType.LABEL,
         sortOrder: SortOrderType = SortOrderType.ASCENDING,
+        includeEmptySystemFolders: Boolean = false,
     ): Flow<List<FolderUiModel>> =
         folderDao.observeFolders(sortType.name, sortOrder.name)
-            .map { rows -> rows.map { it.toUiModel() } }
+            .map { rows ->
+                rows.map { it.toUiModel() }
+                    .let { folders ->
+                        if (includeEmptySystemFolders) folders
+                        else folders.filterNot { folder ->
+                            CoreConstants.Folder.isSystemFolder(folder.id) &&
+                                folder.bookmarkCount == 0
+                        }
+                    }
+            }
 
     suspend fun getMovableFolders(
         currentFolderId: String?,

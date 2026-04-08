@@ -1,10 +1,12 @@
 package dev.subfly.yaba.core.state.home
 
+import dev.subfly.yaba.core.common.CoreConstants
 import dev.subfly.yaba.core.managers.AllBookmarksManager
 import dev.subfly.yaba.core.managers.FolderManager
 import dev.subfly.yaba.core.managers.TagManager
 import dev.subfly.yaba.core.model.ui.FolderUiModel
 import dev.subfly.yaba.core.model.ui.HomeFolderRowUiModel
+import dev.subfly.yaba.core.model.ui.TagUiModel
 import dev.subfly.yaba.core.model.utils.SortOrderType
 import dev.subfly.yaba.core.model.utils.SortType
 import dev.subfly.yaba.core.preferences.SettingsStores
@@ -129,7 +131,7 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
                         state.copy(
                             folderRows = rows,
                             expandedFolderIds = prunedExpanded,
-                            tags = snapshot.tags,
+                            tags = sortTagsForHome(snapshot.tags),
                             recentBookmarks = snapshot.recentBookmarks,
                             bookmarkAppearance = snapshot.bookmarkAppearance,
                             cardImageSizing = snapshot.cardImageSizing,
@@ -225,6 +227,31 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
     }
 }
 
+/**
+ * Home UX: when several root folders exist, keep the Uncategorized system folder last.
+ * Nested folders keep DAO sort order.
+ */
+private fun sortRootFoldersForHome(rootFolders: List<FolderUiModel>): List<FolderUiModel> {
+    val uncategorizedId = CoreConstants.Folder.Uncategorized.ID
+    if (rootFolders.size <= 1) return rootFolders
+    val uncategorized = rootFolders.filter { it.id == uncategorizedId }
+    if (uncategorized.isEmpty()) return rootFolders
+    val rest = rootFolders.filter { it.id != uncategorizedId }
+    return rest + uncategorized
+}
+
+/**
+ * Home UX: system tags — Pinned first, Private last; other tags keep their sort order in between.
+ */
+private fun sortTagsForHome(tags: List<TagUiModel>): List<TagUiModel> {
+    val pinnedId = CoreConstants.Tag.Pinned.ID
+    val privateId = CoreConstants.Tag.Private.ID
+    val pinned = tags.filter { it.id == pinnedId }
+    val privateTags = tags.filter { it.id == privateId }
+    val middle = tags.filter { it.id != pinnedId && it.id != privateId }
+    return pinned + middle + privateTags
+}
+
 private fun buildVisibleFolderRows(
     allFolders: List<FolderUiModel>,
     expandedFolderIds: Set<String>,
@@ -235,6 +262,9 @@ private fun buildVisibleFolderRows(
     allFolders.forEach { folder ->
         childrenByParentId.getOrPut(folder.parentId) { mutableListOf() }.add(folder)
     }
+    childrenByParentId[null] = sortRootFoldersForHome(
+        childrenByParentId[null].orEmpty(),
+    ).toMutableList()
 
     val result = mutableListOf<HomeFolderRowUiModel>()
     val colorStack = mutableListOf<dev.subfly.yaba.core.model.utils.YabaColor>()

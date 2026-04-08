@@ -110,7 +110,9 @@ class FolderSelectionStateMachine :
         folderSubscriptionJob = launch {
             FolderManager.observeAllFoldersSorted(
                 sortType = SortType.LABEL,
-                sortOrder = SortOrderType.ASCENDING
+                sortOrder = SortOrderType.ASCENDING,
+                includeEmptySystemFolders = mode == FolderSelectionMode.FOLDER_SELECTION ||
+                    mode == FolderSelectionMode.PARENT_SELECTION,
             ).collectLatest { allFolders ->
                 // Apply mode-based exclusions (these don't change during the session)
                 allAvailableFolders = applyModeExclusions(allFolders)

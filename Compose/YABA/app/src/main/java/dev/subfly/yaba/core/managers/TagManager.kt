@@ -26,13 +26,27 @@ object TagManager {
     private const val PINNED_TAG_ID = CoreConstants.Tag.Pinned.ID
     private const val PRIVATE_TAG_ID = CoreConstants.Tag.Private.ID
 
+    /**
+     * @param includeEmptySystemTags When false (default), system tags (Pinned, Private) with zero
+     * bookmarks are omitted from the list. Pass true only if a caller needs the full list
+     * regardless of count (rare).
+     */
     fun observeTags(
         sortType: SortType = SortType.LABEL,
         sortOrder: SortOrderType = SortOrderType.ASCENDING,
+        includeEmptySystemTags: Boolean = false,
     ): Flow<List<TagUiModel>> =
         tagDao
             .observeTagsWithBookmarkCounts(sortType.name, sortOrder.name)
-            .map { rows -> rows.map { it.toUiModel() } }
+            .map { rows ->
+                rows.map { it.toUiModel() }
+                    .let { tags ->
+                        if (includeEmptySystemTags) tags
+                        else tags.filterNot { tag ->
+                            CoreConstants.Tag.isSystemTag(tag.id) && tag.bookmarkCount == 0
+                        }
+                    }
+            }
 
     suspend fun getTag(tagId: String): TagUiModel? =
         tagDao.getTagWithBookmarkCount(tagId)?.toUiModel()
