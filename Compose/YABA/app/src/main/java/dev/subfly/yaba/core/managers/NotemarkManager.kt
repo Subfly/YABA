@@ -6,6 +6,8 @@ import dev.subfly.yaba.core.database.DatabaseProvider
 import dev.subfly.yaba.core.database.entities.NoteBookmarkEntity
 import dev.subfly.yaba.core.database.mappers.toUiModel
 import dev.subfly.yaba.core.filesystem.BookmarkFileManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import dev.subfly.yaba.core.filesystem.EMPTY_EDITOR_DOCUMENT_JSON
 import dev.subfly.yaba.core.filesystem.NotemarkFileManager
 import dev.subfly.yaba.core.model.ui.NotemarkUiModel
@@ -135,6 +137,30 @@ object NotemarkManager {
         )
         if (touchEditedAt) {
             AllBookmarksManager.touchBookmarkEditedAt(bookmarkId)
+        }
+    }
+
+    /**
+     * Deletes files under `bookmarks/<id>/assets/` whose canonical document `src`
+     * (`../assets/<file>`) is not in [usedCanonicalDocumentSrcs].
+     */
+    suspend fun pruneUnusedInlineAssets(
+        bookmarkId: String,
+        usedCanonicalDocumentSrcs: Set<String>,
+    ) {
+        val assetsDirRel = CoreConstants.FileSystem.Linkmark.assetsDir(bookmarkId)
+        val dir = BookmarkFileManager.resolve(assetsDirRel, ensureParentExists = false)
+        if (!dir.exists() || !dir.isDirectory()) return
+        withContext(Dispatchers.IO) {
+            for (child in dir.list()) {
+                if (child.isDirectory()) continue
+                val name = child.name
+                val canonical = "../assets/$name"
+                if (canonical !in usedCanonicalDocumentSrcs) {
+                    val rel = CoreConstants.FileSystem.join(assetsDirRel, name)
+                    BookmarkFileManager.deleteRelativePath(rel)
+                }
+            }
         }
     }
 

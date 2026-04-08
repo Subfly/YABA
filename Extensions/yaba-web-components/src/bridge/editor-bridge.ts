@@ -72,6 +72,59 @@ function normalizeDocumentJsonAssetPathsForPersistence(json: string): string {
   return json.replaceAll(absolutePrefix, "../assets/")
 }
 
+/**
+ * Single image `src` → canonical `../assets/<file>` for native asset pruning, or null if not a note inline asset.
+ */
+function normalizeImageSrcForPersistence(src: string): string | null {
+  const s = src.trim()
+  if (!s) return null
+  if (s.startsWith("../assets/")) {
+    return s
+  }
+  if (lastAssetsBaseUrl) {
+    const base = lastAssetsBaseUrl.replace(/\/?$/, "/")
+    const absolutePrefix = `${base}assets/`
+    if (s.startsWith(absolutePrefix)) {
+      return `../assets/${s.slice(absolutePrefix.length)}`
+    }
+  }
+  const idx = s.indexOf("/assets/")
+  if (idx >= 0) {
+    const after = s.slice(idx + "/assets/".length).split("?")[0].split("#")[0]
+    if (after && !after.includes("/")) {
+      return `../assets/${after}`
+    }
+  }
+  return null
+}
+
+function collectUsedInlineAssetSrcsFromDocJson(docJson: string): string[] {
+  const out = new Set<string>()
+  const visit = (node: unknown): void => {
+    if (!node || typeof node !== "object") return
+    const n = node as Record<string, unknown>
+    const attrs = n.attrs
+    if (typeof attrs === "object" && attrs) {
+      const src = (attrs as Record<string, unknown>).src
+      if (typeof src === "string") {
+        const c = normalizeImageSrcForPersistence(src)
+        if (c) out.add(c)
+      }
+    }
+    const content = n.content
+    if (Array.isArray(content)) {
+      for (const c of content) visit(c)
+    }
+  }
+  try {
+    const doc = JSON.parse(docJson) as unknown
+    visit(doc)
+  } catch {
+    /* ignore */
+  }
+  return [...out].sort()
+}
+
 function rewriteAssetPathsInReaderHtml(html: string, assetsBaseUrl: string): string {
   if (!html.includes("../assets/")) return html
   const base = assetsBaseUrl.replace(/\/?$/, "/")
@@ -97,6 +150,8 @@ export interface YabaEditorBridge {
   /** Sanitized reader HTML for the read-only viewer (TipTap parses HTML → document). */
   setReaderHtml: (html: string, options?: { assetsBaseUrl?: string }) => void
   getDocumentJson: () => string
+  /** JSON array string of canonical `../assets/<id>.<ext>` still referenced by the editor (for native pruning). */
+  getUsedInlineAssetSrcs: () => string
   /** JSON string of active marks / undo availability for native toolbars. */
   getActiveFormatting: () => string
   /** Restores DOM focus; reapplies the last remembered text cursor when possible. */
@@ -820,6 +875,12 @@ export function initEditorBridge(editor: Editor): void {
     getDocumentJson: () => {
       const raw = JSON.stringify(editorInstance?.getJSON() ?? JSON.parse(EMPTY_DOC_JSON))
       return normalizeDocumentJsonAssetPathsForPersistence(raw)
+    },
+    getUsedInlineAssetSrcs: () => {
+      const raw = JSON.stringify(editorInstance?.getJSON() ?? JSON.parse(EMPTY_DOC_JSON))
+      const normalized = normalizeDocumentJsonAssetPathsForPersistence(raw)
+      const list = collectUsedInlineAssetSrcsFromDocJson(normalized)
+      return JSON.stringify(list)
     },
     getActiveFormatting: () => {
       return getActiveFormattingJson(editorInstance)

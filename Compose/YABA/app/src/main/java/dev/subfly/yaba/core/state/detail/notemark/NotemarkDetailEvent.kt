@@ -9,9 +9,13 @@ sealed interface NotemarkDetailEvent {
     /**
      * Persist a snapshot of the editor document (JSON). The UI obtains this from
      * [dev.subfly.yaba.core.webview.WebViewEditorBridge.getDocumentJson] on lifecycle pause /
-     * disposal.
+     * disposal, and [dev.subfly.yaba.core.webview.WebViewEditorBridge.getUsedInlineAssetSrcs]
+     * so Core can delete on-disk `assets/` files no longer referenced by the document.
      */
-    data class OnSave(val documentJson: String) : NotemarkDetailEvent
+    data class OnSave(
+        val documentJson: String,
+        val usedInlineAssetSrcs: List<String> = emptyList(),
+    ) : NotemarkDetailEvent
 
     data object OnDeleteBookmark : NotemarkDetailEvent
 

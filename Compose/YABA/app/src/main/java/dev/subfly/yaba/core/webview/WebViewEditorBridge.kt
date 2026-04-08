@@ -7,6 +7,12 @@ package dev.subfly.yaba.core.webview
 interface WebViewEditorBridge : WebViewReaderBridge {
     override suspend fun getDocumentJson(): String
 
+    /**
+     * Canonical `../assets/<id>.<ext>` paths still referenced by the editor document, for pruning
+     * on-disk files after save. Empty if the bridge is not ready or the payload is not valid JSON.
+     */
+    suspend fun getUsedInlineAssetSrcs(): List<String>
+
     suspend fun getSelectedText(): String
 
     suspend fun setEditable(editable: Boolean)

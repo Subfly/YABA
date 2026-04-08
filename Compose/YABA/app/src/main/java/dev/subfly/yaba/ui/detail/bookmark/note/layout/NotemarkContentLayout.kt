@@ -204,8 +204,7 @@ internal fun NotemarkContentLayout(
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
         val bridge = editorBridge ?: return@LifecycleEventEffect
         scope.launch {
-            val json = bridge.getDocumentJson()
-            onEvent(NotemarkDetailEvent.OnSave(documentJson = json))
+            emitNotemarkSaveFromBridge(bridge, onEvent)
         }
     }
 
@@ -215,8 +214,7 @@ internal fun NotemarkContentLayout(
         } finally {
             withContext(NonCancellable) {
                 val bridge = editorBridge ?: return@withContext
-                val json = bridge.getDocumentJson()
-                onEvent(NotemarkDetailEvent.OnSave(documentJson = json))
+                emitNotemarkSaveFromBridge(bridge, onEvent)
             }
         }
     }
@@ -451,8 +449,7 @@ internal fun NotemarkContentLayout(
                                 is YabaWebHostEvent.NoteEditorIdleForAutosave -> {
                                     scope.launch {
                                         val bridge = editorBridge ?: return@launch
-                                        val json = bridge.getDocumentJson()
-                                        onEvent(NotemarkDetailEvent.OnSave(documentJson = json))
+                                        emitNotemarkSaveFromBridge(bridge, onEvent)
                                     }
                                 }
 
@@ -594,8 +591,7 @@ internal fun NotemarkContentLayout(
                     onSaveDocument = {
                         scope.launch {
                             val bridge = editorBridge ?: return@launch
-                            val json = bridge.getDocumentJson()
-                            onEvent(NotemarkDetailEvent.OnSave(documentJson = json))
+                            emitNotemarkSaveFromBridge(bridge, onEvent)
                         }
                     },
                 )
@@ -641,6 +637,15 @@ internal fun NotemarkContentLayout(
             loadingIndicator = {},
         )
     }
+}
+
+private suspend fun emitNotemarkSaveFromBridge(
+    bridge: WebViewEditorBridge,
+    onEvent: (NotemarkDetailEvent) -> Unit,
+) {
+    val json = bridge.getDocumentJson()
+    val used = bridge.getUsedInlineAssetSrcs()
+    onEvent(NotemarkDetailEvent.OnSave(documentJson = json, usedInlineAssetSrcs = used))
 }
 
 /**

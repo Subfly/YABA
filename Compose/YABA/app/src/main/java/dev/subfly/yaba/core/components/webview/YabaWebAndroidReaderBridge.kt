@@ -151,6 +151,19 @@ internal fun RichTextWebViewEditorBridge(
     return object : WebViewEditorBridge {
         override suspend fun getDocumentJson(): String = reader.getDocumentJson()
 
+        override suspend fun getUsedInlineAssetSrcs(): List<String> {
+            if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) {
+                return emptyList()
+            }
+            val raw = evaluateJs(webView, YabaEditorBridgeScripts.getUsedInlineAssetSrcsScript())
+            val decoded = decodeJsStringResult(raw)
+            if (decoded.isBlank()) return emptyList()
+            return runCatching {
+                val arr = JSONArray(decoded)
+                List(arr.length()) { i -> arr.getString(i) }
+            }.getOrElse { emptyList() }
+        }
+
         override suspend fun getSelectedText(): String {
             if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return ""
             val raw = evaluateJs(webView, YabaEditorBridgeScripts.getSelectedTextScript())

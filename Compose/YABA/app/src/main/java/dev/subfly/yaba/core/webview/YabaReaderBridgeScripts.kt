@@ -214,6 +214,18 @@ object YabaEditorBridgeScripts {
         })();
         """.trimIndent()
 
+    fun getUsedInlineAssetSrcsScript(): String =
+        """
+        (function() {
+            try {
+                if (window.YabaEditorBridge && typeof window.YabaEditorBridge.getUsedInlineAssetSrcs === "function") {
+                    return window.YabaEditorBridge.getUsedInlineAssetSrcs();
+                }
+                return "";
+            } catch(e) { return ""; }
+        })();
+        """.trimIndent()
+
     fun applyAnnotationToSelectionScript(annotationId: String): String {
         val escaped = escapeForJsSingleQuotedString(annotationId)
         return """

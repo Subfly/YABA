@@ -145,7 +145,7 @@ class NotemarkDetailStateMachine :
     }
 
     private fun onSave(event: NotemarkDetailEvent.OnSave) {
-        persistNoteDocumentJsonIfChanged(event.documentJson)
+        persistNoteDocumentJsonIfChanged(event.documentJson, event.usedInlineAssetSrcs)
     }
 
     private fun onWebInitialContentLoad(event: NotemarkDetailEvent.OnWebInitialContentLoad) {
@@ -169,13 +169,17 @@ class NotemarkDetailStateMachine :
         updateState { it.copy(pendingTocNavigate = null) }
     }
 
-    private fun persistNoteDocumentJsonIfChanged(json: String) {
+    private fun persistNoteDocumentJsonIfChanged(
+        json: String,
+        usedInlineAssetSrcs: List<String>,
+    ) {
         val bookmarkId = bookmarkIdFlow.value ?: return
         if (json == lastPersistedJson) return
         launch {
             val result = NotemarkManager.persistNoteDocumentJsonAwait(bookmarkId, json)
             if (result.isSuccess) {
                 lastPersistedJson = json
+                NotemarkManager.pruneUnusedInlineAssets(bookmarkId, usedInlineAssetSrcs.toSet())
             }
         }
     }
