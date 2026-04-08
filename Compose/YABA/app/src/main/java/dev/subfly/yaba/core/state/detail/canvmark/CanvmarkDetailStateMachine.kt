@@ -30,6 +30,8 @@ class CanvmarkDetailStateMachine :
     ) {
     private var isInitialized = false
     private var didBootstrap = false
+    /** Web shell reported [WebShellLoadResult.Loaded] (bridge ready + canvas host loaded). */
+    private var webShellLoadedOk = false
     private var dataSubscriptionJob: Job? = null
     private val bookmarkIdFlow = MutableStateFlow<String?>(null)
     private var lastPersistedSceneJson: String? = null
@@ -51,6 +53,7 @@ class CanvmarkDetailStateMachine :
         if (isInitialized) return
         isInitialized = true
         didBootstrap = false
+        webShellLoadedOk = false
         bookmarkIdFlow.value = bookmarkId
         AllBookmarksManager.recordBookmarkView(bookmarkId)
 
@@ -68,26 +71,37 @@ class CanvmarkDetailStateMachine :
                         combine(bookmarkFlow, canvasFlow) { bookmark, canvas ->
                             flow {
                                 val bookmarkModel = bookmark?.toBookmarkPreviewUiModel()
-                                if (canvas != null && !didBootstrap) {
-                                    didBootstrap = true
-                                    val sceneJson =
-                                        CanvmarkManager.readCanvasSceneJson(id).orEmpty()
-                                    lastPersistedSceneJson = sceneJson
-                                    emit(
-                                        currentState().copy(
-                                            bookmark = bookmarkModel,
-                                            initialSceneJson = sceneJson,
-                                            isLoading = true,
-                                            webContentLoadFailed = false,
-                                        ),
-                                    )
-                                } else {
-                                    emit(
-                                        currentState().copy(
-                                            bookmark = bookmarkModel,
-                                            isLoading = false,
-                                        ),
-                                    )
+                                when {
+                                    canvas != null && !didBootstrap -> {
+                                        didBootstrap = true
+                                        val sceneJson =
+                                            CanvmarkManager.readCanvasSceneJson(id).orEmpty()
+                                        lastPersistedSceneJson = sceneJson
+                                        emit(
+                                            currentState().copy(
+                                                bookmark = bookmarkModel,
+                                                initialSceneJson = sceneJson,
+                                                isLoading = !webShellLoadedOk,
+                                                webContentLoadFailed = false,
+                                            ),
+                                        )
+                                    }
+                                    !didBootstrap -> {
+                                        emit(
+                                            currentState().copy(
+                                                bookmark = bookmarkModel,
+                                                isLoading = true,
+                                            ),
+                                        )
+                                    }
+                                    else -> {
+                                        emit(
+                                            currentState().copy(
+                                                bookmark = bookmarkModel,
+                                                isLoading = !webShellLoadedOk,
+                                            ),
+                                        )
+                                    }
                                 }
                             }
                         }.flatMapLatest { it }
@@ -116,10 +130,12 @@ class CanvmarkDetailStateMachine :
     }
 
     private fun onWebInitialContentLoad(event: CanvmarkDetailEvent.OnWebInitialContentLoad) {
+        webShellLoadedOk = event.result == WebShellLoadResult.Loaded
         updateState {
+            val failed = event.result == WebShellLoadResult.Error
             it.copy(
-                isLoading = false,
-                webContentLoadFailed = event.result == WebShellLoadResult.Error,
+                isLoading = !failed && !(didBootstrap && webShellLoadedOk),
+                webContentLoadFailed = failed,
             )
         }
     }
@@ -190,6 +206,7 @@ class CanvmarkDetailStateMachine :
     override fun clear() {
         isInitialized = false
         didBootstrap = false
+        webShellLoadedOk = false
         lastPersistedSceneJson = null
         dataSubscriptionJob?.cancel()
         dataSubscriptionJob = null

@@ -4,6 +4,72 @@ import type {
 } from "@excalidraw/excalidraw/types"
 import { postToYabaNativeHost } from "./yaba-native-host"
 
+/** Excalidraw's undo/redo use CTRL_OR_CMD + Z (and redo also Ctrl+Shift+Z / Ctrl+Y). */
+function dispatchSyntheticUndoRedo(kind: "undo" | "redo"): void {
+  const root =
+    (document.querySelector(".excalidraw.excalidraw-container") as HTMLElement | null) ??
+    (document.querySelector(".excalidraw-container") as HTMLElement | null) ??
+    (document.querySelector(".excalidraw") as HTMLElement | null)
+  if (root && root.getAttribute("tabindex") == null) {
+    root.setAttribute("tabindex", "-1")
+  }
+  root?.focus()
+
+  // With handleKeyboardGlobally=false, Excalidraw listens on the root div, not document.
+  // Order: focused root first, then document/window (global listener when enabled).
+  const targets: EventTarget[] = []
+  if (root) targets.push(root)
+  targets.push(document, window, document.body)
+  const canvas = document.querySelector(".excalidraw__canvas")
+  if (canvas) targets.push(canvas)
+
+  const make = (init: KeyboardEventInit) =>
+    new KeyboardEvent("keydown", {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+      ...init,
+    })
+
+  const dispatches: KeyboardEventInit[] =
+    kind === "undo"
+      ? [
+          { key: "z", code: "KeyZ", ctrlKey: true },
+          { key: "z", code: "KeyZ", metaKey: true },
+        ]
+      : [
+          { key: "z", code: "KeyZ", ctrlKey: true, shiftKey: true },
+          { key: "z", code: "KeyZ", metaKey: true, shiftKey: true },
+          { key: "y", code: "KeyY", ctrlKey: true },
+        ]
+
+  for (const init of dispatches) {
+    for (const t of targets) {
+      t.dispatchEvent(make(init))
+    }
+  }
+}
+
+function executeUndoRedo(kind: "undo" | "redo"): void {
+  const api = excalidrawApi as ExcalidrawImperativeAPI & {
+    actionManager?: {
+      actions: Record<string, { name: string }>
+      executeAction: (action: { name: string }, source?: string) => void
+    }
+  }
+  const am = api?.actionManager
+  const action = am?.actions?.[kind]
+  if (am?.executeAction && action) {
+    try {
+      am.executeAction(action, "api")
+      return
+    } catch {
+      /* fall through to keyboard */
+    }
+  }
+  dispatchSyntheticUndoRedo(kind)
+}
+
 export type CanvasTool =
   | "selection"
   | "hand"
@@ -76,17 +142,41 @@ function normalizeCanvasTool(toolType: string): CanvasTool {
   }
 }
 
+function getHistoryAvailability(): { canUndo: boolean; canRedo: boolean } {
+  const api = excalidrawApi as ExcalidrawImperativeAPI & {
+    actionManager?: {
+      actions: { undo?: { name: string }; redo?: { name: string } }
+      isActionEnabled: (action: { name: string }) => boolean
+    }
+  }
+  const am = api?.actionManager
+  const undo = am?.actions?.undo
+  const redo = am?.actions?.redo
+  if (am?.isActionEnabled && undo && redo) {
+    try {
+      return {
+        canUndo: am.isActionEnabled(undo),
+        canRedo: am.isActionEnabled(redo),
+      }
+    } catch {
+      /* fall through */
+    }
+  }
+  return { canUndo: true, canRedo: true }
+}
+
 function publishMetrics(): void {
   if (!excalidrawApi) return
   const appState = excalidrawApi.getAppState()
   const elements = excalidrawApi.getSceneElements()
   const hasSelection = elements.some((el) => appState.selectedElementIds[el.id])
+  const { canUndo, canRedo } = getHistoryAvailability()
   const payload: HostCanvasMetrics = {
     type: "canvasMetrics",
     activeTool: normalizeCanvasTool(appState.activeTool?.type ?? "selection"),
     hasSelection,
-    canUndo: elements.length > 0,
-    canRedo: false,
+    canUndo,
+    canRedo,
   }
   const json = JSON.stringify(payload)
   if (json === lastMetricsJson) return
@@ -224,15 +314,11 @@ export function initCanvasBridge(api: ExcalidrawImperativeAPI): void {
       publishMetrics()
     },
     undo: () => {
-      window.dispatchEvent(
-        new KeyboardEvent("keydown", { key: "z", ctrlKey: true, metaKey: true })
-      )
+      executeUndoRedo("undo")
       publishMetrics()
     },
     redo: () => {
-      window.dispatchEvent(
-        new KeyboardEvent("keydown", { key: "z", shiftKey: true, ctrlKey: true, metaKey: true })
-      )
+      executeUndoRedo("redo")
       publishMetrics()
     },
     deleteSelected: () => {

@@ -178,7 +178,7 @@ internal fun CanvmarkEditorToolbar(
                 add(
                     CanvasToolbarAction(
                         key = "group-line",
-                        icon = "arrow-up-right-01",
+                        icon = "arrow-left-right-round",
                         tooltipText = "Line / Arrow",
                         selected = lineExpanded || lineOrArrowActive,
                         segmentAlpha = if (lineExpanded) expandedToggleAlpha(depth = 0) else null,
@@ -189,7 +189,7 @@ internal fun CanvmarkEditorToolbar(
                     add(
                         CanvasToolbarAction(
                             key = "tool-line",
-                            icon = "minus",
+                            icon = "liner",
                             tooltipText = "Line",
                             selected = isToolActive("line"),
                             segmentAlpha = expandedAreaAlpha(depth = 0),

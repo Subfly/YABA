@@ -11,6 +11,7 @@ function CanvasApp() {
     >
       <Excalidraw
         zenModeEnabled
+        handleKeyboardGlobally
         renderTopRightUI={() => null}
         excalidrawAPI={(api) => {
           if (!api) return
