@@ -46,6 +46,7 @@ import dev.subfly.yaba.core.webview.YabaWebPlatform
 import dev.subfly.yaba.ui.detail.bookmark.canvas.components.CanvmarkContentDropdownMenu
 import dev.subfly.yaba.ui.detail.bookmark.canvas.components.CanvmarkEditorToolbar
 import dev.subfly.yaba.ui.detail.bookmark.components.BookmarkDetailContentTopBar
+import dev.subfly.yaba.ui.detail.bookmark.components.BookmarkDetailTopBarScrim
 import dev.subfly.yaba.ui.detail.bookmark.components.bookmarkFolderAccentColor
 import dev.subfly.yaba.ui.detail.bookmark.util.bookmarkDetailIconButtonColors
 import dev.subfly.yaba.util.LocalContentNavigator
@@ -224,6 +225,7 @@ internal fun CanvmarkContentLayout(
                 .align(Alignment.TopCenter)
                 .fillMaxWidth(),
             color = folderAccent,
+            scrim = BookmarkDetailTopBarScrim.Subtle,
             onBack = navigator::removeLastOrNull,
             onShowDetail = onShowDetail,
             overflowMenu = {

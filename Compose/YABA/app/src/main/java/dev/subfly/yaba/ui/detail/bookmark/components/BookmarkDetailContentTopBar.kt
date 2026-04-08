@@ -25,6 +25,16 @@ import dev.subfly.yaba.ui.detail.bookmark.util.bookmarkDetailIconButtonColors
 import dev.subfly.yaba.core.model.ui.BookmarkPreviewUiModel
 import dev.subfly.yaba.core.model.utils.YabaColor
 
+/** Gradient + blur behind [BookmarkDetailContentTopBar]. */
+internal enum class BookmarkDetailTopBarScrim {
+    /** Strong gradient and blur (default for most bookmark details). */
+    Full,
+    /** Lighter gradient and milder blur — status bar legibility on bright canvas without heavy chrome. */
+    Subtle,
+    /** No scrim. */
+    None,
+}
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun BookmarkDetailContentTopBar(
@@ -35,35 +45,64 @@ internal fun BookmarkDetailContentTopBar(
     overflowMenu: @Composable () -> Unit,
     loadingIndicator: @Composable () -> Unit,
     title: (@Composable () -> Unit)? = null,
+    scrim: BookmarkDetailTopBarScrim = BookmarkDetailTopBarScrim.Full,
 ) {
     val iconButtonColors = bookmarkDetailIconButtonColors(color)
     val scheme = MaterialTheme.colorScheme
-    val scrimStrong = scheme.surface.copy(alpha = 0.82f)
-    val scrimSoft = scheme.surface.copy(alpha = 0.38f)
+    val scrimOnTopBar =
+        when (scrim) {
+            BookmarkDetailTopBarScrim.Full ->
+                Triple(
+                    scheme.surface.copy(alpha = 0.82f),
+                    scheme.surface.copy(alpha = 0.38f),
+                    188.dp,
+                )
+            BookmarkDetailTopBarScrim.Subtle ->
+                Triple(
+                    scheme.surface.copy(alpha = 0.26f),
+                    scheme.surface.copy(alpha = 0.10f),
+                    120.dp,
+                )
+            BookmarkDetailTopBarScrim.None -> null
+        }
+    val blurRadius =
+        when (scrim) {
+            BookmarkDetailTopBarScrim.Full -> 16.dp
+            BookmarkDetailTopBarScrim.Subtle -> 6.dp
+            BookmarkDetailTopBarScrim.None -> 0.dp
+        }
 
     Box(modifier = Modifier.fillMaxWidth()) {
-        Box(
+        if (scrimOnTopBar != null) {
+            val (scrimStrong, scrimSoft, scrimHeight) = scrimOnTopBar
+            Box(
+                modifier =
+                    modifier
+                        .align(Alignment.TopCenter)
+                        .fillMaxWidth()
+                        .height(scrimHeight)
+                        .graphicsLayer { clip = false }
+                        .background(
+                            brush =
+                                Brush.verticalGradient(
+                                    colorStops =
+                                        arrayOf(
+                                            0f to scrimStrong,
+                                            0.42f to scrimSoft,
+                                            0.82f to Color.Transparent,
+                                            1f to Color.Transparent,
+                                        ),
+                                ),
+                        )
+                        .blur(radius = blurRadius),
+            )
+        }
+        Column(
             modifier =
-                modifier
-                    .align(Alignment.TopCenter)
+                Modifier
                     .fillMaxWidth()
-                    .height(188.dp)
-                    .graphicsLayer { clip = false }
-                    .background(
-                        brush =
-                            Brush.verticalGradient(
-                                colorStops =
-                                    arrayOf(
-                                        0f to scrimStrong,
-                                        0.42f to scrimSoft,
-                                        0.82f to Color.Transparent,
-                                        1f to Color.Transparent,
-                                    ),
-                            ),
-                    )
-                    .blur(radius = 16.dp),
-        )
-        Column(modifier = Modifier.fillMaxWidth()) {
+                    .then(if (scrim == BookmarkDetailTopBarScrim.None) modifier else Modifier),
+        ) {
             TopAppBar(
                 modifier = Modifier.fillMaxWidth(),
                 colors =
