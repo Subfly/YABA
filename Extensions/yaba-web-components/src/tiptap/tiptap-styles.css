@@ -18,7 +18,12 @@ body[data-yaba-page="editor"] .yaba-editor-container {
 	font-size: var(--yaba-reader-font-size, 18px);
 	line-height: var(--yaba-reader-line-height, 1.6);
 	color: var(--yaba-reader-on-bg, var(--yaba-on-bg));
-	padding-top: calc(54px + env(safe-area-inset-top, 0px) + 1rem);
+	padding-top: calc(
+		var(--yaba-web-chrome-status-bar, 0px)
+			+ var(--yaba-web-chrome-top-bar, 54px)
+			+ var(--yaba-web-chrome-safe-area-top-additional, env(safe-area-inset-top, 0px))
+			+ 1rem
+	);
 	padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px) + 1rem);
 }
 

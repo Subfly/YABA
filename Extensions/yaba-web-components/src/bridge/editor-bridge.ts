@@ -88,6 +88,7 @@ export interface YabaEditorBridge {
   setPlatform: (platform: Platform) => void
   setAppearance: (mode: AppearanceMode) => void
   setCursorColor: (color: string) => void
+  setWebChromeInsets: (topChromeInsetPx: number) => void
   setReaderPreferences: (preferences: Partial<ReaderPreferences>) => void
   setEditable: (isEditable: boolean) => void
   setPlaceholder: (placeholder: string) => void
@@ -388,6 +389,10 @@ function applyInitialFocusStateAfterContent(editor: Editor): void {
   clearSelectionToCaretAtStart(editor)
   captureStoredCursorFromEditor()
   editor.commands.blur()
+  const container =
+    (editor.view.dom.closest("[data-yaba-editor-root]") as HTMLElement | null) ??
+    (document.querySelector(".yaba-editor-container") as HTMLElement | null)
+  container?.scrollTo({ top: 0, behavior: "auto" })
 }
 
 function getCanCreateAnnotationForCurrentSelection(): boolean {
@@ -609,6 +614,21 @@ function wireDefaultMarkdownClipboard(ed: Editor): void {
   })
 }
 
+function applyWebChromeInsetsToDocument(topChromeInsetPx: number): void {
+  const root = document.documentElement
+  const total = Math.max(0, Math.round(topChromeInsetPx))
+  /** Holds combined top chrome (Compose); not status-only. */
+  root.style.setProperty("--yaba-web-chrome-status-bar", `${total}px`)
+  /**
+   * Combined inset already includes the app bar row; clear CSS default so we do not add 54px twice.
+   */
+  root.style.setProperty("--yaba-web-chrome-top-bar", "0px")
+  /**
+   * Compose passes the full top inset. Android WebViews often mirror status via env(safe-area-inset-top).
+   */
+  root.style.setProperty("--yaba-web-chrome-safe-area-top-additional", "0px")
+}
+
 function applyReaderPreferences(): void {
   const page = document.body?.dataset.yabaPage
   /** Read-it-later viewer + note editor: same reader theme + typography pipeline (incl. automatic / system). */
@@ -712,6 +732,9 @@ export function initEditorBridge(editor: Editor): void {
     setCursorColor: (color: string) => {
       cursorColor = color
       applyReaderPreferences()
+    },
+    setWebChromeInsets: (topChromeInsetPx: number) => {
+      applyWebChromeInsetsToDocument(topChromeInsetPx)
     },
     setReaderPreferences: (prefs: Partial<ReaderPreferences>) => {
       readerPreferences = {

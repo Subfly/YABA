@@ -17,6 +17,7 @@ import dev.subfly.yaba.core.webview.YabaEpubReaderBridgeScripts
 import dev.subfly.yaba.core.webview.YabaPdfReaderBridgeScripts
 import dev.subfly.yaba.core.webview.YabaWebAppearance
 import dev.subfly.yaba.core.webview.YabaWebBridgeScripts
+import dev.subfly.yaba.core.webview.WebChromeInsets
 import dev.subfly.yaba.core.webview.YabaWebPlatform
 import dev.subfly.yaba.core.webview.escapeForJsSingleQuotedString
 import dev.subfly.yaba.core.webview.toJsAppearanceLiteral
@@ -259,6 +260,19 @@ internal suspend fun applyEditorReaderPreferences(
             readerLineHeight = readerPreferences.lineHeight.toJsReaderLineHeightLiteral(),
             platform = platform.toJsPlatformLiteral(),
             appearance = appearance.toJsAppearanceLiteral(),
+        ),
+    )
+}
+
+internal suspend fun applyEditorWebChromeInsets(
+    webView: WebView,
+    insets: WebChromeInsets,
+) {
+    if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return
+    evaluateJs(
+        webView,
+        YabaEditorBridgeScripts.applyWebChromeInsetsScript(
+            topChromeInsetPx = insets.topChromeInsetPx,
         ),
     )
 }

@@ -99,9 +99,15 @@ body[data-yaba-page="canvas"] [data-yaba-canvas] {
 }
 
 .yaba-web-chrome-spacer--top {
-  /* min-height: fallback when calc(env()) is unsupported and the whole height declaration is dropped */
-  min-height: 54px;
-  height: calc(54px + env(safe-area-inset-top, 0px));
+  /* Native may set combined top inset on --yaba-web-chrome-status-bar and --yaba-web-chrome-top-bar: 0. Fallback: 0 + 54px. */
+  min-height: calc(
+    var(--yaba-web-chrome-status-bar, 0px) + var(--yaba-web-chrome-top-bar, 54px)
+  );
+  height: calc(
+    var(--yaba-web-chrome-status-bar, 0px)
+      + var(--yaba-web-chrome-top-bar, 54px)
+      + var(--yaba-web-chrome-safe-area-top-additional, env(safe-area-inset-top, 0px))
+  );
 }
 
 .yaba-web-chrome-spacer--bottom {

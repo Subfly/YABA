@@ -163,6 +163,17 @@ object YabaEditorBridgeScripts {
         })();
         """.trimIndent()
 
+    fun applyWebChromeInsetsScript(topChromeInsetPx: Int): String =
+        """
+        (function() {
+            try {
+                if (window.YabaEditorBridge && typeof window.YabaEditorBridge.setWebChromeInsets === "function") {
+                    window.YabaEditorBridge.setWebChromeInsets($topChromeInsetPx);
+                }
+            } catch(e) {}
+        })();
+        """.trimIndent()
+
     /**
      * [annotationsJsonEscaped] must be safe inside a single-quoted JS string (use [escapeForJsSingleQuotedString] on JSON text).
      */
