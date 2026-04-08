@@ -72,7 +72,9 @@ import dev.subfly.yaba.core.model.utils.BookmarkKind
 import dev.subfly.yaba.core.model.utils.ReaderPreferences
 import dev.subfly.yaba.core.model.utils.YabaColor
 import dev.subfly.yaba.core.state.detail.notemark.NotemarkDetailEvent
+import dev.subfly.yaba.core.state.detail.DetailWebShellPhase
 import dev.subfly.yaba.core.state.detail.notemark.NotemarkDetailUIState
+import dev.subfly.yaba.core.state.detail.notemark.detailWebShellPhase
 import dev.subfly.yaba.core.webview.EditorFormattingState
 import dev.subfly.yaba.core.webview.InlineLinkTapEvent
 import dev.subfly.yaba.core.webview.InlineMentionTapEvent
@@ -127,21 +129,14 @@ internal fun NotemarkContentLayout(
     }
     val menuIconButtonColors = bookmarkDetailIconButtonColors(folderAccent)
 
-    val webAppearance = if (isSystemInDarkTheme()) YabaWebAppearance.Dark else YabaWebAppearance.Light
+    val webAppearance =
+        if (isSystemInDarkTheme()) YabaWebAppearance.Dark else YabaWebAppearance.Light
 
-    val ready by remember(state.isLoading, state.initialDocumentJson, state.webContentLoadFailed) {
-        derivedStateOf {
-            !state.isLoading &&
-                    state.initialDocumentJson != null &&
-                    state.webContentLoadFailed.not()
-        }
-    }
-    val canRenderEditor by remember(state.initialDocumentJson, state.webContentLoadFailed) {
-        derivedStateOf {
-            state.initialDocumentJson != null &&
-                    state.webContentLoadFailed.not()
-        }
-    }
+    val webShellPhase = remember(
+        state.isLoading,
+        state.initialDocumentJson,
+        state.webContentLoadFailed,
+    ) { state.detailWebShellPhase() }
 
     suspend fun awaitEditorBridge(
         timeoutMs: Long = 4_000L,
@@ -235,8 +230,9 @@ internal fun NotemarkContentLayout(
     }
 
     LaunchedEffect(resultStore.getResult(ResultStoreKeys.NOTEMARK_TABLE_INSERT), editorBridge) {
-        val r = resultStore.getResult<NotemarkTableSheetResult>(ResultStoreKeys.NOTEMARK_TABLE_INSERT)
-            ?: return@LaunchedEffect
+        val r =
+            resultStore.getResult<NotemarkTableSheetResult>(ResultStoreKeys.NOTEMARK_TABLE_INSERT)
+                ?: return@LaunchedEffect
         val bridge = editorBridge ?: return@LaunchedEffect
         resultStore.removeResult(ResultStoreKeys.NOTEMARK_TABLE_INSERT)
         bridge.dispatch(YabaEditorCommands.insertTablePayload(r.rows, r.cols, r.withHeaderRow))
@@ -255,6 +251,7 @@ internal fun NotemarkContentLayout(
                     bridge.dispatch(YabaEditorCommands.updateInlineMathPayload(r.latex, r.editPos))
                 }
             }
+
             else -> {
                 if (r.isBlock) {
                     bridge.dispatch(YabaEditorCommands.insertBlockMathPayload(r.latex))
@@ -274,9 +271,11 @@ internal fun NotemarkContentLayout(
             r.action == NotemarkInlineAction.REMOVE && r.editPos != null -> {
                 bridge.dispatch(YabaEditorCommands.removeLinkPayload(r.editPos))
             }
+
             r.editPos != null -> {
                 bridge.dispatch(YabaEditorCommands.updateLinkPayload(r.text, r.url, r.editPos))
             }
+
             else -> {
                 bridge.dispatch(YabaEditorCommands.insertLinkPayload(r.text, r.url))
             }
@@ -285,14 +284,16 @@ internal fun NotemarkContentLayout(
     }
 
     LaunchedEffect(resultStore.getResult(ResultStoreKeys.NOTEMARK_MENTION_INSERT), editorBridge) {
-        val r = resultStore.getResult<NotemarkMentionSheetResult>(ResultStoreKeys.NOTEMARK_MENTION_INSERT)
-            ?: return@LaunchedEffect
+        val r =
+            resultStore.getResult<NotemarkMentionSheetResult>(ResultStoreKeys.NOTEMARK_MENTION_INSERT)
+                ?: return@LaunchedEffect
         val bridge = editorBridge ?: return@LaunchedEffect
         resultStore.removeResult(ResultStoreKeys.NOTEMARK_MENTION_INSERT)
         when {
             r.action == NotemarkInlineAction.REMOVE && r.editPos != null -> {
                 bridge.dispatch(YabaEditorCommands.removeMentionPayload(r.editPos))
             }
+
             r.editPos != null -> {
                 bridge.dispatch(
                     YabaEditorCommands.updateMentionPayload(
@@ -304,6 +305,7 @@ internal fun NotemarkContentLayout(
                     ),
                 )
             }
+
             else -> {
                 bridge.dispatch(
                     YabaEditorCommands.insertMentionPayload(
@@ -323,8 +325,9 @@ internal fun NotemarkContentLayout(
         pendingLinkTap,
         editorBridge
     ) {
-        val action = resultStore.getResult<NotemarkInlineActionChoice>(ResultStoreKeys.NOTEMARK_LINK_ACTION)
-            ?: return@LaunchedEffect
+        val action =
+            resultStore.getResult<NotemarkInlineActionChoice>(ResultStoreKeys.NOTEMARK_LINK_ACTION)
+                ?: return@LaunchedEffect
         val tap = pendingLinkTap ?: return@LaunchedEffect
         if (action == NotemarkInlineActionChoice.REMOVE && editorBridge == null) {
             return@LaunchedEffect
@@ -335,6 +338,7 @@ internal fun NotemarkContentLayout(
                 openUrl(tap.url)
                 pendingLinkTap = null
             }
+
             NotemarkInlineActionChoice.EDIT -> {
                 openCreationSheet(
                     NotemarkLinkSheetRoute(
@@ -346,6 +350,7 @@ internal fun NotemarkContentLayout(
                 )
                 pendingLinkTap = null
             }
+
             NotemarkInlineActionChoice.REMOVE -> {
                 val bridge = editorBridge ?: return@LaunchedEffect
                 bridge.dispatch(YabaEditorCommands.removeLinkPayload(tap.documentPos))
@@ -360,8 +365,9 @@ internal fun NotemarkContentLayout(
         pendingMentionTap,
         editorBridge
     ) {
-        val action = resultStore.getResult<NotemarkInlineActionChoice>(ResultStoreKeys.NOTEMARK_MENTION_ACTION)
-            ?: return@LaunchedEffect
+        val action =
+            resultStore.getResult<NotemarkInlineActionChoice>(ResultStoreKeys.NOTEMARK_MENTION_ACTION)
+                ?: return@LaunchedEffect
         val tap = pendingMentionTap ?: return@LaunchedEffect
         if (action == NotemarkInlineActionChoice.REMOVE && editorBridge == null) {
             return@LaunchedEffect
@@ -372,6 +378,7 @@ internal fun NotemarkContentLayout(
                 openBookmarkByKind(tap.bookmarkKindCode, tap.bookmarkId)
                 pendingMentionTap = null
             }
+
             NotemarkInlineActionChoice.EDIT -> {
                 openCreationSheet(
                     NotemarkMentionSheetRoute(
@@ -383,6 +390,7 @@ internal fun NotemarkContentLayout(
                 )
                 pendingMentionTap = null
             }
+
             NotemarkInlineActionChoice.REMOVE -> {
                 val bridge = editorBridge ?: return@LaunchedEffect
                 bridge.dispatch(YabaEditorCommands.removeMentionPayload(tap.documentPos))
@@ -393,7 +401,8 @@ internal fun NotemarkContentLayout(
     }
 
     LaunchedEffect(resultStore.getResult(ResultStoreKeys.SELECTED_COLOR), editorBridge) {
-        val picked = resultStore.getResult<YabaColor>(ResultStoreKeys.SELECTED_COLOR) ?: return@LaunchedEffect
+        val picked = resultStore.getResult<YabaColor>(ResultStoreKeys.SELECTED_COLOR)
+            ?: return@LaunchedEffect
         val bridge = editorBridge ?: return@LaunchedEffect
         resultStore.removeResult(ResultStoreKeys.SELECTED_COLOR)
         when (picked) {
@@ -421,107 +430,123 @@ internal fun NotemarkContentLayout(
                 .fillMaxSize()
                 .imePadding(),
         ) {
-            Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-                if (canRenderEditor) {
-                    YabaWebView(
-                        modifier = Modifier.fillMaxSize(),
-                        baseUrl = WebComponentUris.getEditorUri(),
-                        feature = YabaWebFeature.Editor(
-                            initialDocumentJson = state.initialDocumentJson.orEmpty(),
-                            assetsBaseUrl = state.assetsBaseUrl,
-                            placeholderText = notePlaceholderText,
-                            platform = YabaWebPlatform.Compose,
-                            appearance = webAppearance,
-                            readerPreferences = ReaderPreferences(),
-                        ),
-                        onHostEvent = { ev ->
-                            when (ev) {
-                                is YabaWebHostEvent.ReaderMetrics -> {
-                                    ev.editorFormatting?.let { editorFormatting = it }
-                                }
+            Box(modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()) {
+                when (webShellPhase) {
+                    DetailWebShellPhase.Loading -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center,
+                        ) { CircularWavyProgressIndicator() }
+                    }
 
-                                is YabaWebHostEvent.InitialContentLoad ->
-                                    onEvent(NotemarkDetailEvent.OnWebInitialContentLoad(ev.result))
+                    DetailWebShellPhase.Unavailable -> {
+                        Surface(
+                            modifier = Modifier.fillMaxSize(),
+                            color = MaterialTheme.colorScheme.surface,
+                        ) {
+                            NoContentView(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .wrapContentSize(Alignment.Center),
+                                iconName = "cancel-square",
+                                labelRes = R.string.reader_not_available_title,
+                            ) { Text(text = stringResource(R.string.reader_not_available_description)) }
+                        }
+                    }
 
-                                is YabaWebHostEvent.TableOfContentsChanged ->
-                                    onEvent(NotemarkDetailEvent.OnTocChanged(ev.toc))
+                    DetailWebShellPhase.Bootstrapping,
+                    DetailWebShellPhase.Ready -> {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            YabaWebView(
+                                modifier = Modifier.fillMaxSize(),
+                                baseUrl = WebComponentUris.getEditorUri(),
+                                feature = YabaWebFeature.Editor(
+                                    initialDocumentJson = state.initialDocumentJson.orEmpty(),
+                                    assetsBaseUrl = state.assetsBaseUrl,
+                                    placeholderText = notePlaceholderText,
+                                    platform = YabaWebPlatform.Compose,
+                                    appearance = webAppearance,
+                                    readerPreferences = ReaderPreferences(),
+                                ),
+                                onHostEvent = { ev ->
+                                    when (ev) {
+                                        is YabaWebHostEvent.ReaderMetrics -> {
+                                            ev.editorFormatting?.let { editorFormatting = it }
+                                        }
 
-                                is YabaWebHostEvent.NoteEditorIdleForAutosave -> {
-                                    scope.launch {
-                                        val bridge = editorBridge ?: return@launch
-                                        emitNotemarkSaveFromBridge(bridge, onEvent)
+                                        is YabaWebHostEvent.InitialContentLoad ->
+                                            onEvent(NotemarkDetailEvent.OnWebInitialContentLoad(ev.result))
+
+                                        is YabaWebHostEvent.TableOfContentsChanged ->
+                                            onEvent(NotemarkDetailEvent.OnTocChanged(ev.toc))
+
+                                        is YabaWebHostEvent.NoteEditorIdleForAutosave -> {
+                                            scope.launch {
+                                                val bridge = editorBridge ?: return@launch
+                                                emitNotemarkSaveFromBridge(bridge, onEvent)
+                                            }
+                                        }
+
+                                        else -> Unit
                                     }
-                                }
-
-                                else -> Unit
+                                },
+                                onUrlClick = openUrl,
+                                onScrollDirectionChanged = { _ -> },
+                                onReaderBridgeReady = {},
+                                onEditorBridgeReady = { editorBridge = it },
+                                onAnnotationTap = {},
+                                onMathTap = { ev: MathTapEvent ->
+                                    scope.launch {
+                                        openCreationSheet(
+                                            NotemarkMathSheetRoute(
+                                                isBlock = ev.isBlock,
+                                                initialLatex = ev.latex,
+                                                isEdit = true,
+                                                editPos = ev.documentPos,
+                                            ),
+                                        )
+                                    }
+                                },
+                                onInlineLinkTap = { ev ->
+                                    pendingLinkTap = ev
+                                    scope.launch {
+                                        openCreationSheet(
+                                            NotemarkLinkActionSheetRoute(
+                                                text = ev.text,
+                                                url = ev.url,
+                                                editPos = ev.documentPos,
+                                            ),
+                                        )
+                                    }
+                                },
+                                onInlineMentionTap = { ev ->
+                                    pendingMentionTap = ev
+                                    scope.launch {
+                                        openCreationSheet(
+                                            NotemarkMentionActionSheetRoute(
+                                                text = ev.text,
+                                                bookmarkId = ev.bookmarkId,
+                                                bookmarkKindCode = ev.bookmarkKindCode,
+                                                editPos = ev.documentPos,
+                                            ),
+                                        )
+                                    }
+                                },
+                            )
+                            if (webShellPhase == DetailWebShellPhase.Bootstrapping) {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center,
+                                ) { CircularWavyProgressIndicator() }
                             }
-                        },
-                        onUrlClick = openUrl,
-                        onScrollDirectionChanged = { _ -> },
-                        onReaderBridgeReady = {},
-                        onEditorBridgeReady = { editorBridge = it },
-                        onAnnotationTap = {},
-                        onMathTap = { ev: MathTapEvent ->
-                            scope.launch {
-                                openCreationSheet(
-                                    NotemarkMathSheetRoute(
-                                        isBlock = ev.isBlock,
-                                        initialLatex = ev.latex,
-                                        isEdit = true,
-                                        editPos = ev.documentPos,
-                                    ),
-                                )
-                            }
-                        },
-                        onInlineLinkTap = { ev ->
-                            pendingLinkTap = ev
-                            scope.launch {
-                                openCreationSheet(
-                                    NotemarkLinkActionSheetRoute(
-                                        text = ev.text,
-                                        url = ev.url,
-                                        editPos = ev.documentPos,
-                                    ),
-                                )
-                            }
-                        },
-                        onInlineMentionTap = { ev ->
-                            pendingMentionTap = ev
-                            scope.launch {
-                                openCreationSheet(
-                                    NotemarkMentionActionSheetRoute(
-                                        text = ev.text,
-                                        bookmarkId = ev.bookmarkId,
-                                        bookmarkKindCode = ev.bookmarkKindCode,
-                                        editPos = ev.documentPos,
-                                    ),
-                                )
-                            }
-                        },
-                    )
-                }
-                if (state.isLoading) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center,
-                    ) { CircularWavyProgressIndicator() }
-                } else if (state.webContentLoadFailed || state.initialDocumentJson == null) {
-                    Surface(
-                        modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colorScheme.surface,
-                    ) {
-                        NoContentView(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .wrapContentSize(Alignment.Center),
-                            iconName = "cancel-square",
-                            labelRes = R.string.reader_not_available_title,
-                        ) { Text(text = stringResource(R.string.reader_not_available_description)) }
+                        }
                     }
                 }
             }
 
-            if (ready) {
+            if (webShellPhase == DetailWebShellPhase.Ready) {
                 NotemarkEditorToolbar(
                     modifier = Modifier.fillMaxWidth(),
                     color = folderAccent,

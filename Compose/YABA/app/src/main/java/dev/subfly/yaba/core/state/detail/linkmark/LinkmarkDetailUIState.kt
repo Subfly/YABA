@@ -5,6 +5,8 @@ import dev.subfly.yaba.core.model.ui.AnnotationUiModel
 import dev.subfly.yaba.core.model.ui.BookmarkPreviewUiModel
 import dev.subfly.yaba.core.model.ui.ReadableVersionUiModel
 import dev.subfly.yaba.core.model.utils.ReaderPreferences
+import dev.subfly.yaba.core.state.detail.DetailWebShellPhase
+import dev.subfly.yaba.core.state.detail.computeDetailWebShellPhase
 import dev.subfly.yaba.core.webview.Toc
 
 @Immutable
@@ -38,6 +40,16 @@ data class LinkmarkDetailUIState(
     /** One-shot: navigate reader to this ToC entry ([first] = id, [second] = [TocItem.extrasJson]). */
     val pendingTocNavigate: Pair<String, String?>? = null,
 )
+
+fun LinkmarkDetailUIState.detailWebShellPhase(): DetailWebShellPhase {
+    val blockingLoad = isLoading || isUpdatingReadable
+    val hasPayload = readableDocumentJson.isNullOrBlank().not()
+    return computeDetailWebShellPhase(
+        isLoading = blockingLoad,
+        hasWebPayload = hasPayload,
+        webContentLoadFailed = readerWebContentLoadFailed,
+    )
+}
 
 @Immutable
 data class LinkmarkLinkDetailsUiModel(

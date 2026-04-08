@@ -5,6 +5,8 @@ import dev.subfly.yaba.core.model.ui.AnnotationUiModel
 import dev.subfly.yaba.core.model.ui.BookmarkPreviewUiModel
 import dev.subfly.yaba.core.model.utils.DocmarkType
 import dev.subfly.yaba.core.model.utils.ReaderPreferences
+import dev.subfly.yaba.core.state.detail.DetailWebShellPhase
+import dev.subfly.yaba.core.state.detail.computeDetailWebShellPhase
 import dev.subfly.yaba.core.webview.Toc
 
 @Immutable
@@ -27,3 +29,10 @@ data class DocmarkDetailUIState(
     val toc: Toc? = null,
     val pendingTocNavigate: Pair<String, String?>? = null,
 )
+
+fun DocmarkDetailUIState.detailWebShellPhase(): DetailWebShellPhase =
+    computeDetailWebShellPhase(
+        isLoading = isLoading,
+        hasWebPayload = !documentAbsolutePath.isNullOrBlank(),
+        webContentLoadFailed = webContentLoadFailed,
+    )

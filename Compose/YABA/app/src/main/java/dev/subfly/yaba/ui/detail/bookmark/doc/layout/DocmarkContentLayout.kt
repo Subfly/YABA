@@ -44,7 +44,9 @@ import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.core.model.utils.DocmarkType
+import dev.subfly.yaba.core.state.detail.DetailWebShellPhase
 import dev.subfly.yaba.core.state.detail.docmark.DocmarkDetailEvent
+import dev.subfly.yaba.core.state.detail.docmark.detailWebShellPhase
 import dev.subfly.yaba.core.state.detail.docmark.DocmarkDetailUIState
 import dev.subfly.yaba.core.webview.WebComponentUris
 import dev.subfly.yaba.core.webview.WebViewReaderBridge
@@ -81,9 +83,11 @@ internal fun DocmarkContentLayout(
     var readerBridge by remember { mutableStateOf<WebViewReaderBridge?>(null) }
     val appearance = if (isSystemInDarkTheme()) YabaWebAppearance.Dark else YabaWebAppearance.Light
     val hasDocumentPath = !state.documentAbsolutePath.isNullOrBlank()
-    val showNoDocumentPlaceholder = !state.isLoading && !hasDocumentPath
-    val canRenderReader = hasDocumentPath && state.webContentLoadFailed.not()
-    val showReader = canRenderReader && state.isLoading.not()
+    val webShellPhase = remember(
+        state.isLoading,
+        state.documentAbsolutePath,
+        state.webContentLoadFailed,
+    ) { state.detailWebShellPhase() }
     var isMenuExpanded by remember { mutableStateOf(false) }
     var readerMetrics by remember { mutableStateOf(ReaderMetricsUiState()) }
     var isToolbarVisible by remember { mutableStateOf(true) }
@@ -139,125 +143,145 @@ internal fun DocmarkContentLayout(
             .background(color = MaterialTheme.colorScheme.background),
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            if (canRenderReader) {
-                if (showReader) {
-                    LaunchedEffect(state.scrollToAnnotationId, readerBridge) {
-                        val annotationId = state.scrollToAnnotationId ?: return@LaunchedEffect
-                        val bridge = readerBridge ?: return@LaunchedEffect
-                        bridge.scrollToAnnotation(annotationId)
-                        onEvent(DocmarkDetailEvent.OnClearScrollToAnnotation)
+            when (webShellPhase) {
+                DetailWebShellPhase.Loading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                    ) { CircularWavyProgressIndicator() }
+                }
+
+                DetailWebShellPhase.Unavailable -> {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.surface,
+                    ) {
+                        NoContentView(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .wrapContentSize(Alignment.Center),
+                            iconName = "cancel-square",
+                            labelRes = R.string.reader_not_available_title,
+                        ) {
+                            Text(text = stringResource(R.string.reader_not_available_description))
+                        }
+                    }
+                }
+
+                DetailWebShellPhase.Bootstrapping,
+                DetailWebShellPhase.Ready -> {
+                    if (webShellPhase == DetailWebShellPhase.Ready) {
+                        LaunchedEffect(state.scrollToAnnotationId, readerBridge) {
+                            val annotationId = state.scrollToAnnotationId ?: return@LaunchedEffect
+                            val bridge = readerBridge ?: return@LaunchedEffect
+                            bridge.scrollToAnnotation(annotationId)
+                            onEvent(DocmarkDetailEvent.OnClearScrollToAnnotation)
+                        }
+
+                        LaunchedEffect(state.pendingTocNavigate, readerBridge) {
+                            val pending = state.pendingTocNavigate ?: return@LaunchedEffect
+                            val bridge = readerBridge ?: return@LaunchedEffect
+                            bridge.navigateToTocItem(pending.first, pending.second)
+                            onEvent(DocmarkDetailEvent.OnClearTocNavigation)
+                        }
+
+                        DocmarkReaderFloatingToolbar(
+                            modifier = Modifier.padding(bottom = 8.dp),
+                            docmarkType = state.docmarkType,
+                            readerPreferences = state.readerPreferences,
+                            color = folderAccent,
+                            isVisible = isToolbarVisible || readerMetrics.hasSelection,
+                            hasSelection = readerMetrics.hasSelection,
+                            canGoPrev = readerMetrics.currentPage > 1,
+                            canGoNext = readerMetrics.currentPage < readerMetrics.pageCount,
+                            onEvent = onEvent,
+                            onPrevPage = {
+                                scope.launch {
+                                    readerBridge?.prevPage()
+                                }
+                            },
+                            onNextPage = {
+                                scope.launch {
+                                    readerBridge?.nextPage()
+                                }
+                            },
+                            onAnnotationClick = {
+                                val bridge = readerBridge ?: return@DocmarkReaderFloatingToolbar
+                                val resolvedBookmarkId =
+                                    bookmarkId ?: return@DocmarkReaderFloatingToolbar
+                                val readableVersionId =
+                                    selectedReadableVersionId ?: return@DocmarkReaderFloatingToolbar
+                                scope.launch {
+                                    val draft = bridge.getSelectionSnapshot(
+                                        resolvedBookmarkId,
+                                        readableVersionId
+                                    )
+                                    creationNavigator.add(
+                                        AnnotationCreationRoute(
+                                            bookmarkId = resolvedBookmarkId,
+                                            selectionDraft = draft,
+                                            annotationId = null,
+                                        ),
+                                    )
+                                    appStateManager.onShowCreationContent()
+                                }
+                            },
+                        )
                     }
 
-                    LaunchedEffect(state.pendingTocNavigate, readerBridge) {
-                        val pending = state.pendingTocNavigate ?: return@LaunchedEffect
-                        val bridge = readerBridge ?: return@LaunchedEffect
-                        bridge.navigateToTocItem(pending.first, pending.second)
-                        onEvent(DocmarkDetailEvent.OnClearTocNavigation)
-                    }
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        YabaWebView(
+                            modifier = Modifier.fillMaxSize(),
+                            baseUrl = webBaseUrl,
+                            feature = webFeature,
+                            onHostEvent = { ev ->
+                                when (ev) {
+                                    is YabaWebHostEvent.ReaderMetrics -> {
+                                        val nextMetrics =
+                                            ReaderMetricsUiState(
+                                                hasSelection = ev.canCreateAnnotation,
+                                                currentPage = ev.currentPage,
+                                                pageCount = ev.pageCount.coerceAtLeast(1),
+                                            )
+                                        if (readerMetrics != nextMetrics) {
+                                            readerMetrics = nextMetrics
+                                        }
+                                    }
 
-                    DocmarkReaderFloatingToolbar(
-                        modifier = Modifier.padding(bottom = 8.dp),
-                        docmarkType = state.docmarkType,
-                        readerPreferences = state.readerPreferences,
-                        color = folderAccent,
-                        isVisible = isToolbarVisible || readerMetrics.hasSelection,
-                        hasSelection = readerMetrics.hasSelection,
-                        canGoPrev = readerMetrics.currentPage > 1,
-                        canGoNext = readerMetrics.currentPage < readerMetrics.pageCount,
-                        onEvent = onEvent,
-                        onPrevPage = {
-                            scope.launch {
-                                readerBridge?.prevPage()
-                            }
-                        },
-                        onNextPage = {
-                            scope.launch {
-                                readerBridge?.nextPage()
-                            }
-                        },
-                        onAnnotationClick = {
-                            val bridge = readerBridge ?: return@DocmarkReaderFloatingToolbar
-                            val resolvedBookmarkId = bookmarkId ?: return@DocmarkReaderFloatingToolbar
-                            val readableVersionId = selectedReadableVersionId ?: return@DocmarkReaderFloatingToolbar
-                            scope.launch {
-                                val draft = bridge.getSelectionSnapshot(resolvedBookmarkId, readableVersionId)
+                                    is YabaWebHostEvent.InitialContentLoad ->
+                                        onEvent(DocmarkDetailEvent.OnWebInitialContentLoad(ev.result))
+
+                                    is YabaWebHostEvent.TableOfContentsChanged ->
+                                        onEvent(DocmarkDetailEvent.OnTocChanged(ev.toc))
+
+                                    else -> Unit
+                                }
+                            },
+                            onScrollDirectionChanged = { direction ->
+                                isToolbarVisible = when (direction) {
+                                    YabaWebScrollDirection.Down -> false
+                                    YabaWebScrollDirection.Up -> true
+                                }
+                            },
+                            onReaderBridgeReady = { bridge -> readerBridge = bridge },
+                            onAnnotationTap = { annotationId ->
+                                val resolvedBookmarkId = bookmarkId ?: return@YabaWebView
                                 creationNavigator.add(
                                     AnnotationCreationRoute(
                                         bookmarkId = resolvedBookmarkId,
-                                        selectionDraft = draft,
-                                        annotationId = null,
+                                        selectionDraft = null,
+                                        annotationId = annotationId,
                                     ),
                                 )
                                 appStateManager.onShowCreationContent()
-                            }
-                        },
-                    )
-                }
-                YabaWebView(
-                    modifier = Modifier.fillMaxSize(),
-                    baseUrl = webBaseUrl,
-                    feature = webFeature,
-                    onHostEvent = { ev ->
-                        when (ev) {
-                            is YabaWebHostEvent.ReaderMetrics -> {
-                                val nextMetrics =
-                                    ReaderMetricsUiState(
-                                        hasSelection = ev.canCreateAnnotation,
-                                        currentPage = ev.currentPage,
-                                        pageCount = ev.pageCount.coerceAtLeast(1),
-                                    )
-                                if (readerMetrics != nextMetrics) {
-                                    readerMetrics = nextMetrics
-                                }
-                            }
-
-                            is YabaWebHostEvent.InitialContentLoad ->
-                                onEvent(DocmarkDetailEvent.OnWebInitialContentLoad(ev.result))
-
-                            is YabaWebHostEvent.TableOfContentsChanged ->
-                                onEvent(DocmarkDetailEvent.OnTocChanged(ev.toc))
-
-                            else -> Unit
-                        }
-                    },
-                    onScrollDirectionChanged = { direction ->
-                        isToolbarVisible = when (direction) {
-                            YabaWebScrollDirection.Down -> false
-                            YabaWebScrollDirection.Up -> true
-                        }
-                    },
-                    onReaderBridgeReady = { bridge -> readerBridge = bridge },
-                    onAnnotationTap = { annotationId ->
-                        val resolvedBookmarkId = bookmarkId ?: return@YabaWebView
-                        creationNavigator.add(
-                            AnnotationCreationRoute(
-                                bookmarkId = resolvedBookmarkId,
-                                selectionDraft = null,
-                                annotationId = annotationId,
-                            ),
+                            },
                         )
-                        appStateManager.onShowCreationContent()
-                    },
-                )
-            }
-            if (state.isLoading) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) { CircularWavyProgressIndicator() }
-            } else if (showNoDocumentPlaceholder || state.webContentLoadFailed) {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.surface,
-                ) {
-                    NoContentView(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .wrapContentSize(Alignment.Center),
-                        iconName = "cancel-square",
-                        labelRes = R.string.reader_not_available_title,
-                    ) {
-                        Text(text = stringResource(R.string.reader_not_available_description))
+                        if (webShellPhase == DetailWebShellPhase.Bootstrapping) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center,
+                            ) { CircularWavyProgressIndicator() }
+                        }
                     }
                 }
             }

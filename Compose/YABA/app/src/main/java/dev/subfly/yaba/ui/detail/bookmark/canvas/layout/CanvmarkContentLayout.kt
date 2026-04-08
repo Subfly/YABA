@@ -17,9 +17,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -34,7 +33,9 @@ import dev.subfly.yaba.R
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.YabaIcon
 import dev.subfly.yaba.core.components.webview.YabaWebView
+import dev.subfly.yaba.core.state.detail.DetailWebShellPhase
 import dev.subfly.yaba.core.state.detail.canvmark.CanvmarkDetailEvent
+import dev.subfly.yaba.core.state.detail.canvmark.detailWebShellPhase
 import dev.subfly.yaba.core.state.detail.canvmark.CanvmarkDetailUIState
 import dev.subfly.yaba.core.webview.WebComponentUris
 import dev.subfly.yaba.core.webview.WebViewCanvasBridge
@@ -72,18 +73,11 @@ internal fun CanvmarkContentLayout(
     val webAppearance =
         if (isSystemInDarkTheme()) YabaWebAppearance.Dark else YabaWebAppearance.Light
 
-    val ready by remember(state.isLoading, state.initialSceneJson, state.webContentLoadFailed) {
-        derivedStateOf {
-            !state.isLoading &&
-                state.initialSceneJson != null &&
-                state.webContentLoadFailed.not()
-        }
-    }
-    val canRenderCanvas by remember(state.initialSceneJson, state.webContentLoadFailed) {
-        derivedStateOf {
-            state.initialSceneJson != null && state.webContentLoadFailed.not()
-        }
-    }
+    val webShellPhase = remember(
+        state.isLoading,
+        state.initialSceneJson,
+        state.webContentLoadFailed,
+    ) { state.detailWebShellPhase() }
 
     LaunchedEffect(canvasBridge, state.bookmark?.id) {
         try {
@@ -122,68 +116,86 @@ internal fun CanvmarkContentLayout(
                 .fillMaxSize()
                 .imePadding(),
         ) {
-            Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-                if (canRenderCanvas) {
-                    YabaWebView(
-                        modifier = Modifier.fillMaxSize(),
-                        baseUrl = WebComponentUris.getCanvasUri(),
-                        feature = YabaWebFeature.Canvas(
-                            initialSceneJson = state.initialSceneJson.orEmpty(),
-                            platform = YabaWebPlatform.Compose,
-                            appearance = webAppearance,
-                        ),
-                        onHostEvent = { event ->
-                            when (event) {
-                                is YabaWebHostEvent.InitialContentLoad ->
-                                    onEvent(CanvmarkDetailEvent.OnWebInitialContentLoad(event.result))
-
-                                is YabaWebHostEvent.CanvasIdleForAutosave -> {
-                                    scope.launch {
-                                        val json = canvasBridge?.getSceneJson().orEmpty()
-                                        if (json.isNotBlank()) {
-                                            onEvent(CanvmarkDetailEvent.OnSave(json))
-                                        }
-                                    }
-                                }
-
-                                is YabaWebHostEvent.CanvasMetrics ->
-                                    onEvent(CanvmarkDetailEvent.OnCanvasMetricsChanged(event.metrics))
-
-                                else -> Unit
-                            }
-                        },
-                        onCanvasBridgeReady = { bridge ->
-                            canvasBridge = bridge
-                        },
-                    )
-                }
-                if (state.isLoading) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        CircularWavyProgressIndicator()
-                    }
-                } else if (state.webContentLoadFailed || state.initialSceneJson == null) {
-                    Surface(
-                        modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colorScheme.surface,
-                    ) {
-                        NoContentView(
-                            modifier =
-                                Modifier
-                                    .fillMaxSize()
-                                    .wrapContentSize(Alignment.Center),
-                            iconName = "cancel-square",
-                            labelRes = R.string.reader_not_available_title,
+            Box(modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()) {
+                when (webShellPhase) {
+                    DetailWebShellPhase.Loading -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center,
                         ) {
-                            Text(text = stringResource(R.string.reader_not_available_description))
+                            CircularWavyProgressIndicator()
+                        }
+                    }
+
+                    DetailWebShellPhase.Unavailable -> {
+                        Surface(
+                            modifier = Modifier.fillMaxSize(),
+                            color = MaterialTheme.colorScheme.surface,
+                        ) {
+                            NoContentView(
+                                modifier =
+                                    Modifier
+                                        .fillMaxSize()
+                                        .wrapContentSize(Alignment.Center),
+                                iconName = "cancel-square",
+                                labelRes = R.string.reader_not_available_title,
+                            ) {
+                                Text(text = stringResource(R.string.reader_not_available_description))
+                            }
+                        }
+                    }
+
+                    DetailWebShellPhase.Bootstrapping,
+                    DetailWebShellPhase.Ready -> {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            YabaWebView(
+                                modifier = Modifier.fillMaxSize(),
+                                baseUrl = WebComponentUris.getCanvasUri(),
+                                feature = YabaWebFeature.Canvas(
+                                    initialSceneJson = state.initialSceneJson.orEmpty(),
+                                    platform = YabaWebPlatform.Compose,
+                                    appearance = webAppearance,
+                                ),
+                                onHostEvent = { event ->
+                                    when (event) {
+                                        is YabaWebHostEvent.InitialContentLoad ->
+                                            onEvent(CanvmarkDetailEvent.OnWebInitialContentLoad(event.result))
+
+                                        is YabaWebHostEvent.CanvasIdleForAutosave -> {
+                                            scope.launch {
+                                                val json = canvasBridge?.getSceneJson().orEmpty()
+                                                if (json.isNotBlank()) {
+                                                    onEvent(CanvmarkDetailEvent.OnSave(json))
+                                                }
+                                            }
+                                        }
+
+                                        is YabaWebHostEvent.CanvasMetrics ->
+                                            onEvent(CanvmarkDetailEvent.OnCanvasMetricsChanged(event.metrics))
+
+                                        else -> Unit
+                                    }
+                                },
+                                onCanvasBridgeReady = { bridge ->
+                                    canvasBridge = bridge
+                                },
+                            )
+                            if (webShellPhase == DetailWebShellPhase.Bootstrapping) {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center,
+                                ) {
+                                    CircularWavyProgressIndicator()
+                                }
+                            }
                         }
                     }
                 }
             }
 
-            if (ready) {
+            if (webShellPhase == DetailWebShellPhase.Ready) {
                 CanvmarkEditorToolbar(
                     modifier = Modifier.fillMaxWidth(),
                     color = folderAccent,

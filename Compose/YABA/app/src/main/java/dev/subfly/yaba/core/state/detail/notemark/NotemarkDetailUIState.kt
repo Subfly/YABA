@@ -2,6 +2,8 @@ package dev.subfly.yaba.core.state.detail.notemark
 
 import androidx.compose.runtime.Immutable
 import dev.subfly.yaba.core.model.ui.BookmarkPreviewUiModel
+import dev.subfly.yaba.core.state.detail.DetailWebShellPhase
+import dev.subfly.yaba.core.state.detail.computeDetailWebShellPhase
 import dev.subfly.yaba.core.webview.Toc
 
 @Immutable
@@ -30,3 +32,10 @@ data class NotemarkDetailUIState(
     val toc: Toc? = null,
     val pendingTocNavigate: Pair<String, String?>? = null,
 )
+
+fun NotemarkDetailUIState.detailWebShellPhase(): DetailWebShellPhase =
+    computeDetailWebShellPhase(
+        isLoading = isLoading,
+        hasWebPayload = initialDocumentJson != null,
+        webContentLoadFailed = webContentLoadFailed,
+    )
