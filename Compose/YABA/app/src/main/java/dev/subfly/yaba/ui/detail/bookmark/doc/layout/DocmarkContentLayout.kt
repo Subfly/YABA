@@ -18,6 +18,7 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -245,14 +246,19 @@ internal fun DocmarkContentLayout(
                     contentAlignment = Alignment.Center,
                 ) { CircularWavyProgressIndicator() }
             } else if (showNoDocumentPlaceholder || state.webContentLoadFailed) {
-                NoContentView(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .wrapContentSize(Alignment.Center),
-                    iconName = "cancel-square",
-                    labelRes = R.string.reader_not_available_title,
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.surface,
                 ) {
-                    Text(text = stringResource(R.string.reader_not_available_description))
+                    NoContentView(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .wrapContentSize(Alignment.Center),
+                        iconName = "cancel-square",
+                        labelRes = R.string.reader_not_available_title,
+                    ) {
+                        Text(text = stringResource(R.string.reader_not_available_description))
+                    }
                 }
             }
         }

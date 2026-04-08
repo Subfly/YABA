@@ -6,7 +6,6 @@ import dev.subfly.yaba.R
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +20,7 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedListItem
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -248,16 +248,13 @@ internal fun DocmarkDetailLayout(
                 DocmarkDetailPage.ANNOTATIONS -> {
                     if (state.annotations.isEmpty()) {
                         item {
-                            Box(
+                            Surface(
                                 modifier = Modifier
                                     .animateItem()
                                     .fillMaxWidth()
-                                    .padding(horizontal = 12.dp)
-                                    .background(
-                                        color = MaterialTheme.colorScheme.surface,
-                                        shape = RoundedCornerShape(12.dp),
-                                    ),
-                                contentAlignment = Alignment.Center,
+                                    .padding(horizontal = 12.dp),
+                                shape = RoundedCornerShape(12.dp),
+                                color = MaterialTheme.colorScheme.surface,
                             ) {
                                 NoContentView(
                                     modifier = Modifier

@@ -4,17 +4,15 @@ import androidx.compose.ui.res.stringResource
 
 import dev.subfly.yaba.R
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
@@ -38,15 +36,12 @@ internal fun BookmarkDetailTagSectionContent(
             label = stringResource(R.string.tags_title)
         )
         if (tags.isEmpty()) {
-            Box(
+            Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp)
-                    .background(
-                        color = MaterialTheme.colorScheme.surface,
-                        shape = RoundedCornerShape(12.dp),
-                    ),
-                contentAlignment = Alignment.Center,
+                    .padding(horizontal = 12.dp),
+                shape = RoundedCornerShape(12.dp),
+                color = MaterialTheme.colorScheme.surface,
             ) {
                 NoContentView(
                     modifier = Modifier.padding(12.dp).padding(vertical = 24.dp),

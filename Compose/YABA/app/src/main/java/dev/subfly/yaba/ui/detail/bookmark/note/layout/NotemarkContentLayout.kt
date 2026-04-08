@@ -18,6 +18,7 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -508,13 +509,18 @@ internal fun NotemarkContentLayout(
                         contentAlignment = Alignment.Center,
                     ) { CircularWavyProgressIndicator() }
                 } else if (state.webContentLoadFailed || state.initialDocumentJson == null) {
-                    NoContentView(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .wrapContentSize(Alignment.Center),
-                        iconName = "cancel-square",
-                        labelRes = R.string.reader_not_available_title,
-                    ) { Text(text = stringResource(R.string.reader_not_available_description)) }
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.surface,
+                    ) {
+                        NoContentView(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .wrapContentSize(Alignment.Center),
+                            iconName = "cancel-square",
+                            labelRes = R.string.reader_not_available_title,
+                        ) { Text(text = stringResource(R.string.reader_not_available_description)) }
+                    }
                 }
             }
 
