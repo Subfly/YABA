@@ -41,6 +41,9 @@ data class CanvasHostStyleState(
     val mixedEndArrowhead: Boolean = false,
     val availableStartArrowheads: List<String> = emptyList(),
     val availableEndArrowheads: List<String> = emptyList(),
+    /** Excalidraw fill pattern when shape has fill (`solid`, `hachure`, …). */
+    val fillStyleKey: String = "solid",
+    val mixedFillStyle: Boolean = false,
 ) {
     fun hasOptionGroup(id: String): Boolean = availableOptionGroups.contains(id)
 }

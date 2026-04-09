@@ -81,6 +81,9 @@ export type YabaNativeHostPayload =
       /** Allowed arrowhead keys for start/end pickers (Excalidraw union + "none"). */
       availableStartArrowheads: string[]
       availableEndArrowheads: string[]
+      /** Excalidraw fill hatch / pattern (meaningful when fill color is not transparent). */
+      fillStyleKey: "solid" | "hachure" | "cross-hatch" | "zigzag"
+      mixedFillStyle: boolean
     }
   | { type: "annotationTap"; id: string }
   | { type: "mathTap"; kind: "inline" | "block"; pos: number; latex: string }

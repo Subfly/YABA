@@ -197,6 +197,8 @@ internal object YabaNativeHostMessageParser {
                 mixedEndArrowhead = root.optBoolean("mixedEndArrowhead"),
                 availableStartArrowheads = parseStringArray(root, "availableStartArrowheads"),
                 availableEndArrowheads = parseStringArray(root, "availableEndArrowheads"),
+                fillStyleKey = root.optString("fillStyleKey", "solid"),
+                mixedFillStyle = root.optBoolean("mixedFillStyle"),
             ),
         )
 

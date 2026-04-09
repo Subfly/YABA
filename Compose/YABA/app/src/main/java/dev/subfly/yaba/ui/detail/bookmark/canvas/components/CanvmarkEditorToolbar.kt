@@ -212,10 +212,10 @@ internal fun CanvmarkEditorToolbar(
                 val insertExpanded = activeGroup == CanvasToolbarGroup.Insert
                 val insertMenuActive =
                     isToolActive("text") ||
-                        isToolActive("frame") ||
-                        isToolActive("ellipse") ||
-                        isToolActive("diamond") ||
-                        isToolActive("rectangle")
+                            isToolActive("frame") ||
+                            isToolActive("ellipse") ||
+                            isToolActive("diamond") ||
+                            isToolActive("rectangle")
                 add(
                     CanvasToolbarAction(
                         key = "group-insert",
@@ -299,9 +299,9 @@ internal fun CanvmarkEditorToolbar(
                             tooltipText = "Shape",
                             selected =
                                 shapeNested ||
-                                    isToolActive("ellipse") ||
-                                    isToolActive("diamond") ||
-                                    isToolActive("rectangle"),
+                                        isToolActive("ellipse") ||
+                                        isToolActive("diamond") ||
+                                        isToolActive("rectangle"),
                             segmentAlpha =
                                 if (shapeNested) {
                                     expandedToggleAlpha(depth = 1)
@@ -417,27 +417,22 @@ internal fun CanvmarkEditorToolbar(
             }
 
             item(key = "canvas-options-slot") {
-                AnimatedVisibility(
-                    visible = showOptionsAction,
-                    enter = fadeIn(),
-                    exit = fadeOut(),
-                ) {
+                AnimatedVisibility(visible = showOptionsAction) {
                     Box(
-                        modifier =
-                            Modifier
-                                .background(
-                                    color =
-                                        Color(color.iconTintArgb()).copy(
-                                            alpha =
-                                                if (optionsSheetVisible) {
-                                                    0.72f
-                                                } else {
-                                                    ToolbarBaseAlpha
-                                                },
-                                        ),
-                                )
-                                .padding(horizontal = 4.dp)
-                                .navigationBarsPadding(),
+                        modifier = Modifier
+                            .background(
+                                color =
+                                    Color(color.iconTintArgb()).copy(
+                                        alpha =
+                                            if (optionsSheetVisible) {
+                                                0.72f
+                                            } else {
+                                                ToolbarBaseAlpha
+                                            },
+                                    ),
+                            )
+                            .padding(horizontal = 4.dp)
+                            .navigationBarsPadding(),
                         contentAlignment = Alignment.Center,
                     ) {
                         CanvasToolbarPlainTooltipBox(tooltipText = "Options") {

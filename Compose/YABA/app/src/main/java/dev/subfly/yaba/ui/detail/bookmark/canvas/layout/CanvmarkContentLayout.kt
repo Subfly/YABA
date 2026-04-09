@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -275,7 +276,7 @@ internal fun CanvmarkContentLayout(
                     sheetState = optionsSheetState,
                     scrimColor = Color.Transparent,
                     sheetGesturesEnabled = false,
-                    dragHandle = null,
+                    dragHandle = { BottomSheetDefaults.DragHandle() },
                     containerColor = MaterialTheme.colorScheme.surface,
                 ) {
                     if (canShowOptionsSheet) {

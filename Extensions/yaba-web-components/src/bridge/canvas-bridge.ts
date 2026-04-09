@@ -155,6 +155,8 @@ export type ApplySelectionStylePayload = {
   /** Excalidraw arrowhead string, or `"none"` for null */
   startArrowheadKey?: string
   endArrowheadKey?: string
+  /** Excalidraw `fillStyle` for filled shapes */
+  fillStyleKey?: "solid" | "hachure" | "cross-hatch" | "zigzag"
 }
 
 /** Excalidraw `Arrowhead` union + `"none"` for UI / JSON transport */
@@ -174,9 +176,18 @@ export const EXCALI_ARROWHEAD_PICKER_ORDER: readonly string[] = [
   "crowfoot_one_or_many",
 ] as const
 
+type FillStyleKey = "solid" | "hachure" | "cross-hatch" | "zigzag"
+
+function fillStyleToKey(raw: string | undefined): FillStyleKey {
+  const s = String(raw ?? "solid")
+  if (s === "hachure" || s === "cross-hatch" || s === "zigzag" || s === "solid") return s
+  return "solid"
+}
+
 const OPTION_GROUP = {
   stroke: "stroke",
   background: "background",
+  fillType: "fillType",
   strokeWidth: "strokeWidth",
   strokeStyle: "strokeStyle",
   sloppiness: "sloppiness",
@@ -193,6 +204,7 @@ const OPTION_GROUP = {
 const OPTION_GROUP_SORT_ORDER: string[] = [
   OPTION_GROUP.stroke,
   OPTION_GROUP.background,
+  OPTION_GROUP.fillType,
   OPTION_GROUP.strokeWidth,
   OPTION_GROUP.strokeStyle,
   OPTION_GROUP.sloppiness,
@@ -237,6 +249,7 @@ function optionGroupsForElement(el: { type: string }): Set<string> {
     ;[
       OPTION_GROUP.stroke,
       OPTION_GROUP.background,
+      OPTION_GROUP.fillType,
       OPTION_GROUP.strokeWidth,
       OPTION_GROUP.strokeStyle,
       OPTION_GROUP.sloppiness,
@@ -257,7 +270,7 @@ function optionGroupsForElement(el: { type: string }): Set<string> {
     return common
   }
   // image, freedraw, generic
-  ;[OPTION_GROUP.stroke, OPTION_GROUP.background].forEach((g) => common.add(g))
+  ;[OPTION_GROUP.stroke, OPTION_GROUP.background, OPTION_GROUP.fillType].forEach((g) => common.add(g))
   return common
 }
 
@@ -516,6 +529,8 @@ function publishStyleState(): void {
       mixedEndArrowhead: false,
       availableStartArrowheads: arrowLists,
       availableEndArrowheads: arrowLists,
+      fillStyleKey: "solid",
+      mixedFillStyle: false,
     }
     const json = JSON.stringify(empty)
     if (json === lastStyleJson) return
@@ -553,6 +568,10 @@ function publishStyleState(): void {
   const fbBg = String(first.backgroundColor ?? "transparent")
   const mixedBackground = selected.some(
     (el: any) => bgToCode(String(el.backgroundColor ?? "transparent")) !== bgToCode(fbBg)
+  )
+  const fillStyleKey = fillStyleToKey(String(first.fillStyle ?? "solid"))
+  const mixedFillStyle = selected.some(
+    (el: any) => fillStyleToKey(String(el.fillStyle ?? "solid")) !== fillStyleKey
   )
   const mixedStrokeWidth = selected.some(
     (el: any) => strokeWidthToKey(Number(el.strokeWidth)) !== strokeWidthKey
@@ -627,6 +646,8 @@ function publishStyleState(): void {
     mixedEndArrowhead,
     availableStartArrowheads: arrowLists,
     availableEndArrowheads: arrowLists,
+    fillStyleKey,
+    mixedFillStyle,
   }
 
   const json = JSON.stringify(payload)
@@ -736,6 +757,9 @@ function applySelectionStylePayload(partial: ApplySelectionStylePayload): void {
         if (hx) updates.backgroundColor = hx
       }
     }
+    if (partial.fillStyleKey !== undefined) {
+      updates.fillStyle = partial.fillStyleKey
+    }
     if (partial.strokeWidthKey !== undefined) {
       const sw =
         partial.strokeWidthKey === "thin"
@@ -806,6 +830,9 @@ function applySelectionStylePayload(partial: ApplySelectionStylePayload): void {
       partial.backgroundYabaCode === 0
         ? "transparent"
         : yabaCodeToHex(partial.backgroundYabaCode) ?? "transparent"
+  }
+  if (partial.fillStyleKey !== undefined) {
+    ;(appPatch as Record<string, unknown>).currentItemFillStyle = partial.fillStyleKey
   }
   if (partial.strokeWidthKey !== undefined) {
     appPatch.currentItemStrokeWidth =

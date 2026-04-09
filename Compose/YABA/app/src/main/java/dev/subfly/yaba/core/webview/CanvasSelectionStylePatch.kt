@@ -18,6 +18,7 @@ data class CanvasSelectionStylePatch(
     val arrowTypeKey: String? = null,
     val startArrowheadKey: String? = null,
     val endArrowheadKey: String? = null,
+    val fillStyleKey: String? = null,
 ) {
     fun toJsonString(): String {
         val o = JSONObject()
@@ -32,6 +33,7 @@ data class CanvasSelectionStylePatch(
         arrowTypeKey?.let { o.put("arrowTypeKey", it) }
         startArrowheadKey?.let { o.put("startArrowheadKey", it) }
         endArrowheadKey?.let { o.put("endArrowheadKey", it) }
+        fillStyleKey?.let { o.put("fillStyleKey", it) }
         return o.toString()
     }
 }

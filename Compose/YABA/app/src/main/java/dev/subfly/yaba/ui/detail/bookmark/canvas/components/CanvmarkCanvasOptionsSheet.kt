@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,10 +17,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -36,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.components.YabaIcon
 import dev.subfly.yaba.core.model.utils.YabaColor
@@ -86,6 +91,22 @@ internal fun CanvmarkCanvasOptionsSheet(
                 selectedCode = style.backgroundYabaCode,
                 mixed = style.mixedBackground,
                 onSelect = { code -> onApplyPatch(CanvasSelectionStylePatch(backgroundYabaCode = code)) },
+            )
+        }
+
+        if (style.hasOptionGroup(CanvasOptionGroups.FILL_TYPE) && style.backgroundYabaCode > 0) {
+            LabeledChipRow(
+                label = "Fill pattern",
+                mixed = style.mixedFillStyle,
+                options =
+                    listOf(
+                        "solid" to "Solid",
+                        "hachure" to "Hachure",
+                        "cross-hatch" to "Cross-hatch",
+                        "zigzag" to "Zigzag",
+                    ),
+                selected = style.fillStyleKey,
+                onSelect = { onApplyPatch(CanvasSelectionStylePatch(fillStyleKey = it)) },
             )
         }
 
@@ -185,6 +206,7 @@ internal fun CanvmarkCanvasOptionsSheet(
                 mixed = style.mixedStartArrowhead,
                 keys = startKeys,
                 selectedKey = style.startArrowheadKey,
+                flipPreview = false,
                 onSelect = { onApplyPatch(CanvasSelectionStylePatch(startArrowheadKey = it)) },
             )
         }
@@ -195,6 +217,7 @@ internal fun CanvmarkCanvasOptionsSheet(
                 mixed = style.mixedEndArrowhead,
                 keys = endKeys,
                 selectedKey = style.endArrowheadKey,
+                flipPreview = true,
                 onSelect = { onApplyPatch(CanvasSelectionStylePatch(endArrowheadKey = it)) },
             )
         }
@@ -254,33 +277,54 @@ internal fun CanvmarkCanvasOptionsSheet(
 
         if (style.hasOptionGroup(CanvasOptionGroups.DELETE)) {
             Spacer(modifier = Modifier.height(4.dp))
-            Row(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .clip(MaterialTheme.shapes.medium)
-                        .background(MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.35f))
-                        .padding(vertical = 4.dp),
-                horizontalArrangement = Arrangement.Center,
+            Button(
+                onClick = onDeleteSelected,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors =
+                    ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                        contentColor = MaterialTheme.colorScheme.onError,
+                    ),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp),
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp),
             ) {
-                IconButton(onClick = onDeleteSelected) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        YabaIcon(
-                            name = "delete-02",
-                            color = MaterialTheme.colorScheme.onErrorContainer,
-                        )
-                        Spacer(modifier = Modifier.size(8.dp))
-                        Text(
-                            text = "Delete selection",
-                            color = MaterialTheme.colorScheme.onErrorContainer,
-                            style = MaterialTheme.typography.labelLarge,
-                        )
-                    }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    YabaIcon(
+                        name = "delete-02",
+                        color = MaterialTheme.colorScheme.onError,
+                    )
+                    Spacer(modifier = Modifier.size(10.dp))
+                    Text(
+                        text = "Delete selection",
+                        style = MaterialTheme.typography.labelLarge,
+                    )
                 }
             }
         }
     }
 }
+
+private fun excalidrawArrowheadLabel(key: String): String =
+    when (key) {
+        "none" -> "None"
+        "arrow" -> "Open arrow"
+        "triangle" -> "Triangle"
+        "triangle_outline" -> "Triangle outline"
+        "dot" -> "Dot"
+        "circle" -> "Circle"
+        "circle_outline" -> "Circle outline"
+        "diamond" -> "Diamond"
+        "diamond_outline" -> "Diamond outline"
+        "bar" -> "Bar"
+        "crowfoot_one" -> "Crow's foot (1)"
+        "crowfoot_many" -> "Crow's foot (N)"
+        "crowfoot_one_or_many" -> "Crow's foot (1/N)"
+        else -> key.replace('_', ' ').replaceFirstChar { c -> c.titlecase() }
+    }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -289,6 +333,7 @@ private fun ArrowheadPickerSection(
     mixed: Boolean,
     keys: List<String>,
     selectedKey: String,
+    flipPreview: Boolean,
     onSelect: (String) -> Unit,
 ) {
     val ink = MaterialTheme.colorScheme.onSurface
@@ -298,36 +343,58 @@ private fun ArrowheadPickerSection(
             style = MaterialTheme.typography.labelLarge,
         )
         FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             keys.forEach { key ->
                 val selected = !mixed && key == selectedKey
-                Box(
+                val desc = excalidrawArrowheadLabel(key)
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
                     modifier =
                         Modifier
-                            .size(48.dp)
-                            .clip(RoundedCornerShape(8.dp))
+                            .widthIn(min = 64.dp, max = 80.dp)
+                            .clip(RoundedCornerShape(10.dp))
                             .border(
                                 width = if (selected) 2.dp else 1.dp,
                                 color =
                                     if (selected) {
                                         MaterialTheme.colorScheme.primary
                                     } else {
-                                        MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
+                                        MaterialTheme.colorScheme.outline.copy(alpha = 0.35f)
                                     },
-                                shape = RoundedCornerShape(8.dp),
+                                shape = RoundedCornerShape(10.dp),
                             )
-                            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f))
+                            .background(
+                                if (selected) {
+                                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f)
+                                } else {
+                                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                                }
+                            )
                             .clickable { onSelect(key) }
-                            .padding(6.dp)
-                            .semantics { contentDescription = key },
-                    contentAlignment = Alignment.Center,
+                            .padding(horizontal = 6.dp, vertical = 8.dp)
+                            .semantics { contentDescription = desc },
                 ) {
-                    ExcalidrawArrowheadPreview(
-                        arrowheadKey = key,
-                        color = ink,
-                        modifier = Modifier.fillMaxSize(),
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(40.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        ExcalidrawArrowheadPreview(
+                            arrowheadKey = key,
+                            color = ink,
+                            flipHorizontally = flipPreview,
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    }
+                    Text(
+                        text = desc,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        maxLines = 2,
                     )
                 }
             }
