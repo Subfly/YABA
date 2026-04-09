@@ -1,16 +1,14 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef } from "react"
 import type { ExcalidrawImperativeAPI, ExcalidrawInitialDataState } from "@excalidraw/excalidraw/types"
 import { Excalidraw, FONT_FAMILY } from "@excalidraw/excalidraw"
 import "@excalidraw/excalidraw/index.css"
 import "./canvas-host.css"
 import { initCanvasBridge, onCanvasChanged } from "@/bridge/canvas-bridge"
-import { CanvasLinkBadgeLayer } from "./CanvasLinkBadgeLayer"
+import { parseMentionFromLink } from "@/bridge/canvas-inline"
+import { postToYabaNativeHost } from "@/bridge/yaba-native-host"
 
 function CanvasApp() {
   const rootRef = useRef<HTMLDivElement>(null)
-  const [excalidrawApi, setExcalidrawApi] = useState<ExcalidrawImperativeAPI | null>(null)
-  const [badgeRevision, setBadgeRevision] = useState(0)
-  const badgeRafRef = useRef<number | null>(null)
 
   /** Must be referentially stable — new objects each render make Excalidraw re-sync and can loop with onChange. */
   const initialData = useMemo<ExcalidrawInitialDataState>(
@@ -45,18 +43,41 @@ function CanvasApp() {
 
   const excalidrawAPI = useCallback((api: ExcalidrawImperativeAPI | null) => {
     if (!api) return
-    setExcalidrawApi((prev) => (prev != null ? prev : api))
     initCanvasBridge(api)
   }, [])
 
   const handleCanvasChange = useCallback(() => {
     onCanvasChanged()
-    if (badgeRafRef.current != null) {
-      cancelAnimationFrame(badgeRafRef.current)
+  }, [])
+
+  const handleLinkOpen = useCallback((element: unknown, event: CustomEvent<{ nativeEvent: unknown }>) => {
+    const el = element as { link?: unknown; text?: unknown; id?: unknown }
+    const link = typeof el.link === "string" ? el.link : ""
+    if (link === "") return
+    event?.preventDefault?.()
+
+    const text = typeof el.text === "string" ? el.text : ""
+    const elementId = typeof el.id === "string" ? el.id : ""
+    if (elementId === "") return
+
+    const mention = parseMentionFromLink(link)
+    if (mention) {
+      postToYabaNativeHost({
+        type: "canvasMentionTap",
+        elementId,
+        text: mention.text,
+        bookmarkId: mention.bookmarkId,
+        bookmarkKindCode: mention.bookmarkKindCode,
+        bookmarkLabel: mention.bookmarkLabel,
+      })
+      return
     }
-    badgeRafRef.current = requestAnimationFrame(() => {
-      badgeRafRef.current = null
-      setBadgeRevision((r) => r + 1)
+
+    postToYabaNativeHost({
+      type: "canvasLinkTap",
+      elementId,
+      text,
+      url: link,
     })
   }, [])
 
@@ -69,13 +90,6 @@ function CanvasApp() {
     el.addEventListener("contextmenu", preventContextMenu)
     return () => el.removeEventListener("contextmenu", preventContextMenu)
   }, [])
-
-  useEffect(
-    () => () => {
-      if (badgeRafRef.current != null) cancelAnimationFrame(badgeRafRef.current)
-    },
-    [],
-  )
 
   return (
     <div
@@ -96,9 +110,9 @@ function CanvasApp() {
         initialData={initialData}
         excalidrawAPI={excalidrawAPI}
         onChange={handleCanvasChange}
+        onLinkOpen={handleLinkOpen}
         UIOptions={uiOptions}
       />
-      <CanvasLinkBadgeLayer api={excalidrawApi} revision={badgeRevision} />
     </div>
   )
 }

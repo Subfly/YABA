@@ -51,3 +51,36 @@
   pointer-events: none !important;
   opacity: 0 !important;
 }
+
+/*
+ * Hyperlink editor bar/popup: YABA uses native ambiguity sheets via onLinkOpen instead.
+ * Hide the floating Excalidraw link UI only (not the small canvas link icon).
+ * Portals may render outside [data-yaba-canvas], so duplicate rules globally.
+ */
+[data-yaba-canvas] .excalidraw .excalidraw-hyperlinkContainer,
+[data-yaba-canvas] .excalidraw .excalidraw-hyperlinkContainer--edit,
+[data-yaba-canvas] .excalidraw .excalidraw-hyperlinkContainer--remove,
+[data-yaba-canvas] .excalidraw .excalidraw-hyperlinkContainer-link,
+[data-yaba-canvas] .excalidraw .excalidraw-hyperlinkContainer-input,
+[data-yaba-canvas] .excalidraw .excalidraw-hyperlinkContainer__buttons,
+[data-yaba-canvas] .excalidraw .ElementLinkDialog,
+[data-yaba-canvas] .excalidraw .ElementLinkDialog__header,
+[data-yaba-canvas] .excalidraw .ElementLinkDialog__input,
+[data-yaba-canvas] .excalidraw .ElementLinkDialog__actions,
+[data-yaba-canvas] .excalidraw .ElementLinkDialog__remove,
+.excalidraw-hyperlinkContainer,
+.excalidraw-hyperlinkContainer--edit,
+.excalidraw-hyperlinkContainer--remove,
+.excalidraw-hyperlinkContainer-link,
+.excalidraw-hyperlinkContainer-input,
+.excalidraw-hyperlinkContainer__buttons,
+.ElementLinkDialog,
+.ElementLinkDialog__header,
+.ElementLinkDialog__input,
+.ElementLinkDialog__actions,
+.ElementLinkDialog__remove {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+}

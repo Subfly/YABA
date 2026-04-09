@@ -159,7 +159,7 @@ internal fun CanvmarkContentLayout(
                     },
                 isEdit = ctx.hasSelection && link != null && !isMentionLink,
                 canvasElementId =
-                    if (ctx.hasSelection && link != null && !isMentionLink) {
+                    if (ctx.hasSelection) {
                         selectedId
                     } else {
                         null
@@ -180,7 +180,7 @@ internal fun CanvmarkContentLayout(
                 initialBookmarkId = mention?.bookmarkId,
                 isEdit = ctx.hasSelection && mention != null,
                 canvasElementId =
-                    if (ctx.hasSelection && mention != null) {
+                    if (ctx.hasSelection) {
                         selectedId
                     } else {
                         null
@@ -189,65 +189,75 @@ internal fun CanvmarkContentLayout(
         )
     }
 
-    LaunchedEffect(resultStore.getResult(ResultStoreKeys.INLINE_LINK_INSERT), canvasBridge) {
-        val r =
+    suspend fun consumePendingCanvasInlineInsertResults(bridge: WebViewCanvasBridge) {
+        val linkResult =
             resultStore.getResult<InlineLinkSheetResult>(ResultStoreKeys.INLINE_LINK_INSERT)
-                ?: return@LaunchedEffect
-        val bridge = canvasBridge ?: return@LaunchedEffect
-        resultStore.removeResult(ResultStoreKeys.INLINE_LINK_INSERT)
-        when (r.action) {
-            InlineSheetAction.REMOVE -> {
-                val id = r.canvasElementId ?: return@LaunchedEffect
-                bridge.applyCanvasInline(CanvasInlineApplyJson.clearLink(id))
-            }
+        if (linkResult != null) {
+            resultStore.removeResult(ResultStoreKeys.INLINE_LINK_INSERT)
+            when (linkResult.action) {
+                InlineSheetAction.REMOVE -> {
+                    val id = linkResult.canvasElementId
+                    if (id != null) {
+                        bridge.applyCanvasInline(CanvasInlineApplyJson.clearLink(id))
+                    }
+                }
 
-            InlineSheetAction.INSERT_OR_UPDATE -> {
-                val id = r.canvasElementId
-                if (id != null) {
-                    bridge.applyCanvasInline(CanvasInlineApplyJson.setUrlOnElement(id, r.url))
-                } else {
-                    bridge.applyCanvasInline(CanvasInlineApplyJson.insertTextWithUrl(r.text, r.url))
+                InlineSheetAction.INSERT_OR_UPDATE -> {
+                    val id = linkResult.canvasElementId
+                    if (id != null) {
+                        bridge.applyCanvasInline(CanvasInlineApplyJson.setUrlOnElement(id, linkResult.url))
+                    } else {
+                        bridge.applyCanvasInline(
+                            CanvasInlineApplyJson.insertTextWithUrl(linkResult.text, linkResult.url),
+                        )
+                    }
+                }
+            }
+        }
+
+        val mentionResult =
+            resultStore.getResult<InlineMentionSheetResult>(ResultStoreKeys.INLINE_MENTION_INSERT)
+        if (mentionResult != null) {
+            resultStore.removeResult(ResultStoreKeys.INLINE_MENTION_INSERT)
+            when (mentionResult.action) {
+                InlineSheetAction.REMOVE -> {
+                    val id = mentionResult.canvasElementId
+                    if (id != null) {
+                        bridge.applyCanvasInline(CanvasInlineApplyJson.clearLink(id))
+                    }
+                }
+
+                InlineSheetAction.INSERT_OR_UPDATE -> {
+                    val id = mentionResult.canvasElementId
+                    if (id != null) {
+                        bridge.applyCanvasInline(
+                            CanvasInlineApplyJson.setMentionOnElement(
+                                elementId = id,
+                                text = mentionResult.text,
+                                bookmarkId = mentionResult.bookmarkId,
+                                bookmarkKindCode = mentionResult.bookmarkKindCode,
+                                bookmarkLabel = mentionResult.bookmarkLabel,
+                            ),
+                        )
+                    } else {
+                        bridge.applyCanvasInline(
+                            CanvasInlineApplyJson.insertTextWithMention(
+                                displayText = mentionResult.text,
+                                bookmarkId = mentionResult.bookmarkId,
+                                bookmarkKindCode = mentionResult.bookmarkKindCode,
+                                bookmarkLabel = mentionResult.bookmarkLabel,
+                            ),
+                        )
+                    }
                 }
             }
         }
     }
 
-    LaunchedEffect(resultStore.getResult(ResultStoreKeys.INLINE_MENTION_INSERT), canvasBridge) {
-        val r =
-            resultStore.getResult<InlineMentionSheetResult>(ResultStoreKeys.INLINE_MENTION_INSERT)
-                ?: return@LaunchedEffect
+    LaunchedEffect(appState.showCreationContent, canvasBridge) {
         val bridge = canvasBridge ?: return@LaunchedEffect
-        resultStore.removeResult(ResultStoreKeys.INLINE_MENTION_INSERT)
-        when (r.action) {
-            InlineSheetAction.REMOVE -> {
-                val id = r.canvasElementId ?: return@LaunchedEffect
-                bridge.applyCanvasInline(CanvasInlineApplyJson.clearLink(id))
-            }
-
-            InlineSheetAction.INSERT_OR_UPDATE -> {
-                val id = r.canvasElementId
-                if (id != null) {
-                    bridge.applyCanvasInline(
-                        CanvasInlineApplyJson.setMentionOnElement(
-                            elementId = id,
-                            text = r.text,
-                            bookmarkId = r.bookmarkId,
-                            bookmarkKindCode = r.bookmarkKindCode,
-                            bookmarkLabel = r.bookmarkLabel,
-                        ),
-                    )
-                } else {
-                    bridge.applyCanvasInline(
-                        CanvasInlineApplyJson.insertTextWithMention(
-                            displayText = r.text,
-                            bookmarkId = r.bookmarkId,
-                            bookmarkKindCode = r.bookmarkKindCode,
-                            bookmarkLabel = r.bookmarkLabel,
-                        ),
-                    )
-                }
-            }
-        }
+        if (appState.showCreationContent) return@LaunchedEffect
+        consumePendingCanvasInlineInsertResults(bridge)
     }
 
     LaunchedEffect(

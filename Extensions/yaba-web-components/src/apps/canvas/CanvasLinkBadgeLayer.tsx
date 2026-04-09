@@ -3,6 +3,8 @@ import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types"
 import { sceneCoordsToViewportCoords } from "@excalidraw/excalidraw"
 import { postToYabaNativeHost } from "@/bridge/yaba-native-host"
 import { isYabaMentionLink, parseMentionFromLink } from "@/bridge/canvas-inline"
+import linkSquareIcon from "@/assets/link-square-01.svg"
+import mentionIcon from "@/assets/arrow-turn-backward.svg"
 
 type BadgeItem = {
   elementId: string
@@ -101,19 +103,19 @@ export function CanvasLinkBadgeLayer(props: {
             position: "absolute",
             left: b.x,
             top: b.y,
-            width: 26,
-            height: 26,
+            width: 24,
+            height: 24,
             padding: 0,
             border: "none",
-            borderRadius: 6,
-            background: "rgba(255,255,255,0.92)",
-            boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
+            borderRadius: 0,
+            background: "transparent",
+            boxShadow: "none",
             pointerEvents: "auto",
             cursor: "pointer",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            transform: "translate(-4px, -4px)",
+            transform: "translate(-2px, -2px)",
           }}
           onPointerDown={(e) => e.stopPropagation()}
           onClick={(e) => {
@@ -139,36 +141,16 @@ export function CanvasLinkBadgeLayer(props: {
           }}
           aria-label={b.kind === "mention" ? "Mention" : "Link"}
         >
-          {b.kind === "mention" ? <AtIcon /> : <LinkIcon />}
+          <img
+            src={b.kind === "mention" ? mentionIcon : linkSquareIcon}
+            alt=""
+            aria-hidden
+            width={24}
+            height={24}
+            style={{ display: "block", pointerEvents: "none" }}
+          />
         </button>
       ))}
     </div>
-  )
-}
-
-function LinkIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M10.5 13.5L13.5 10.5M9 15l-1.5 1.5a4 4 0 0 1-5.66-5.66L4.5 9M15 9l1.5-1.5a4 4 0 0 1 5.66 5.66L19.5 15"
-        stroke="#2563eb"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-    </svg>
-  )
-}
-
-function AtIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M12 14.5a2.5 2.5 0 0 0 2.45-2L16 9.5A6 6 0 1 0 9 19h.5"
-        stroke="#2563eb"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-      <path d="M16 19v-3" stroke="#2563eb" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
   )
 }

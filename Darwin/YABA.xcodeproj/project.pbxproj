@@ -604,7 +604,6 @@
 				96A8DFC02DB2F5A500A47601 /* Resources */,
 				96A8E0BD2DB5CAFF00A47601 /* Embed Foundation Extensions */,
 				967B9A5E2DD8D6D000181AA1 /* Copy Menu Item */,
-				9656892D2EE7827F0046CEFB /* Compile YABA KMP Framework */,
 			);
 			buildRules = (
 			);
@@ -825,27 +824,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		9656892D2EE7827F0046CEFB /* Compile YABA KMP Framework */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 8;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Compile YABA KMP Framework";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-			shellPath = /bin/sh;
-			shellScript = "cd \"$SRCROOT/../Core\"\n./gradlew :YABACore:embedAndSignAppleFrameworkForXcode\n";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		967B9A472DD8D3EF00181AA1 /* Sources */ = {
