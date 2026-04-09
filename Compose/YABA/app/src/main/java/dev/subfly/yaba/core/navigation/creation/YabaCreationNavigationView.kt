@@ -23,11 +23,11 @@ import dev.subfly.yaba.ui.creation.bookmark.imagemark.ImagemarkCreationContent
 import dev.subfly.yaba.ui.creation.bookmark.linkmark.LinkmarkCreationContent
 import dev.subfly.yaba.ui.creation.bookmark.notemark.NotemarkCreationContent
 import dev.subfly.yaba.ui.creation.folder.FolderCreationContent
-import dev.subfly.yaba.ui.creation.notemark.link.NotemarkLinkActionSheetContent
-import dev.subfly.yaba.ui.creation.notemark.link.NotemarkLinkCreationContent
+import dev.subfly.yaba.ui.creation.inline.link.InlineLinkActionSheetContent
+import dev.subfly.yaba.ui.creation.inline.link.InlineLinkSheetContent
+import dev.subfly.yaba.ui.creation.inline.mention.InlineMentionActionSheetContent
+import dev.subfly.yaba.ui.creation.inline.mention.InlineMentionSheetContent
 import dev.subfly.yaba.ui.creation.notemark.math.NotemarkMathCreationContent
-import dev.subfly.yaba.ui.creation.notemark.mention.NotemarkMentionActionSheetContent
-import dev.subfly.yaba.ui.creation.notemark.mention.NotemarkMentionCreationContent
 import dev.subfly.yaba.ui.creation.notemark.table.NotemarkTableCreationContent
 import dev.subfly.yaba.ui.creation.tag.TagCreationContent
 import dev.subfly.yaba.ui.selection.bookmark.BookmarkSelectionContent
@@ -137,17 +137,17 @@ fun YabaCreationNavigationView(
             entry<NotemarkMathSheetRoute> { key ->
                 NotemarkMathCreationContent(route = key)
             }
-            entry<NotemarkLinkSheetRoute> { key ->
-                NotemarkLinkCreationContent(route = key)
+            entry<InlineLinkSheetRoute> { key ->
+                InlineLinkSheetContent(route = key)
             }
-            entry<NotemarkLinkActionSheetRoute> { key ->
-                NotemarkLinkActionSheetContent()
+            entry<InlineLinkActionSheetRoute> { _ ->
+                InlineLinkActionSheetContent()
             }
-            entry<NotemarkMentionSheetRoute> { key ->
-                NotemarkMentionCreationContent(route = key)
+            entry<InlineMentionSheetRoute> { key ->
+                InlineMentionSheetContent(route = key)
             }
-            entry<NotemarkMentionActionSheetRoute> { _ ->
-                NotemarkMentionActionSheetContent()
+            entry<InlineMentionActionSheetRoute> { _ ->
+                InlineMentionActionSheetContent()
             }
             entry<BookmarkSelectionRoute> { key ->
                 BookmarkSelectionContent(selectedBookmarkId = key.selectedBookmarkId)

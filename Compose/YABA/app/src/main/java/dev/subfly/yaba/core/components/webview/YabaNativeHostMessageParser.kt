@@ -6,6 +6,8 @@ import dev.subfly.yaba.core.webview.InlineMentionTapEvent
 import dev.subfly.yaba.core.webview.MathTapEvent
 import dev.subfly.yaba.core.webview.CanvasHostMetrics
 import dev.subfly.yaba.core.webview.CanvasHostStyleState
+import dev.subfly.yaba.core.webview.CanvasLinkTapEvent
+import dev.subfly.yaba.core.webview.CanvasMentionTapEvent
 import dev.subfly.yaba.core.webview.Toc
 import dev.subfly.yaba.core.webview.TocItem
 import dev.subfly.yaba.core.webview.WebShellLoadResult
@@ -82,6 +84,40 @@ internal object YabaNativeHostMessageParser {
                     onInlineMentionTap?.invoke(
                         InlineMentionTapEvent(
                             documentPos = pos,
+                            text = text,
+                            bookmarkId = bookmarkId,
+                            bookmarkKindCode = bookmarkKindCode,
+                            bookmarkLabel = bookmarkLabel,
+                        ),
+                    )
+                }
+                null
+            }
+            "canvasLinkTap" -> {
+                val elementId = root.optString("elementId", "")
+                val text = root.optString("text", "")
+                val url = root.optString("url", "")
+                if (elementId.isNotBlank() && url.isNotBlank()) {
+                    return YabaWebHostEvent.CanvasLinkTap(
+                        CanvasLinkTapEvent(
+                            elementId = elementId,
+                            text = text,
+                            url = url,
+                        ),
+                    )
+                }
+                null
+            }
+            "canvasMentionTap" -> {
+                val elementId = root.optString("elementId", "")
+                val text = root.optString("text", "")
+                val bookmarkId = root.optString("bookmarkId", "")
+                val bookmarkKindCode = root.optInt("bookmarkKindCode", 0)
+                val bookmarkLabel = root.optString("bookmarkLabel", "")
+                if (elementId.isNotBlank() && bookmarkId.isNotBlank()) {
+                    return YabaWebHostEvent.CanvasMentionTap(
+                        CanvasMentionTapEvent(
+                            elementId = elementId,
                             text = text,
                             bookmarkId = bookmarkId,
                             bookmarkKindCode = bookmarkKindCode,

@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		967922FE2F7AB4CA00149EB1 /* YABACore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 967922FD2F7AB4CA00149EB1 /* YABACore.xcframework */; };
-		967922FF2F7AB4CA00149EB1 /* YABACore.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 967922FD2F7AB4CA00149EB1 /* YABACore.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		967B9A5B2DD8D68D00181AA1 /* YABAStatusMenuItem.app in Resources */ = {isa = PBXBuildFile; fileRef = 967B9A4B2DD8D3EF00181AA1 /* YABAStatusMenuItem.app */; platformFilters = (macos, ); };
 		967B9A5F2DD8D6E400181AA1 /* YABAStatusMenuItem.app in Copy Menu Item */ = {isa = PBXBuildFile; fileRef = 967B9A4B2DD8D3EF00181AA1 /* YABAStatusMenuItem.app */; platformFilters = (macos, ); settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		96A8E0B82DB5CAFF00A47601 /* YABAShare.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 96A8E0AE2DB5CAFF00A47601 /* YABAShare.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -71,17 +69,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		967923002F7AB4CA00149EB1 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				967922FF2F7AB4CA00149EB1 /* YABACore.xcframework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		967B9A5E2DD8D6D000181AA1 /* Copy Menu Item */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -443,11 +430,6 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		967923022F7AC8B100149EB1 /* Core */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Core;
-			sourceTree = "<group>";
-		};
 		967B9A4C2DD8D3EF00181AA1 /* YABAStatusMenuItem */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = YABAStatusMenuItem;
@@ -513,7 +495,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				967922FE2F7AB4CA00149EB1 /* YABACore.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -563,7 +544,6 @@
 		96A8DFB92DB2F5A500A47601 = {
 			isa = PBXGroup;
 			children = (
-				967923022F7AC8B100149EB1 /* Core */,
 				967B9A0D2DD80CFA00181AA1 /* Frameworks */,
 				96A8DFC32DB2F5A500A47601 /* Products */,
 				96A8DFC42DB2F5A500A47601 /* YABA */,
@@ -606,7 +586,6 @@
 				96275B422DDBF342002D3541 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				967923022F7AC8B100149EB1 /* Core */,
 				967B9A4C2DD8D3EF00181AA1 /* YABAStatusMenuItem */,
 			);
 			name = YABAStatusMenuItem;
@@ -626,7 +605,6 @@
 				96A8E0BD2DB5CAFF00A47601 /* Embed Foundation Extensions */,
 				967B9A5E2DD8D6D000181AA1 /* Copy Menu Item */,
 				9656892D2EE7827F0046CEFB /* Compile YABA KMP Framework */,
-				967923002F7AB4CA00149EB1 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -638,7 +616,6 @@
 				96EA39CC2E58EB9000B8411D /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				967923022F7AC8B100149EB1 /* Core */,
 				96A8DFC42DB2F5A500A47601 /* YABA */,
 			);
 			name = YABA;
@@ -661,7 +638,6 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				967923022F7AC8B100149EB1 /* Core */,
 				96A8E0AF2DB5CAFF00A47601 /* YABAShare */,
 			);
 			name = YABAShare;
@@ -684,7 +660,6 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				967923022F7AC8B100149EB1 /* Core */,
 				96EA396D2E56380700B8411D /* YABAKeyboard */,
 			);
 			name = YABAKeyboard;
@@ -707,7 +682,6 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				967923022F7AC8B100149EB1 /* Core */,
 				96EA39C02E58EB8F00B8411D /* YABAWidgets */,
 			);
 			name = YABAWidgetsExtension;
@@ -730,7 +704,6 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				967923022F7AC8B100149EB1 /* Core */,
 				96EB67142DD94580009EB9EC /* YABAShareMac */,
 			);
 			name = YABAShareMac;

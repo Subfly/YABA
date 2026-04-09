@@ -13,6 +13,11 @@ import type {
 } from "@excalidraw/excalidraw/types"
 import type { YabaNativeHostPayload } from "./contracts/native-host"
 import { postToYabaNativeHost } from "./yaba-native-host"
+import {
+  applyCanvasInlinePayload,
+  getCanvasSelectionLinkContext,
+  type ApplyCanvasInlinePayload,
+} from "./canvas-inline"
 
 /** Excalidraw's undo/redo use CTRL_OR_CMD + Z (and redo also Ctrl+Shift+Z / Ctrl+Y). */
 function dispatchSyntheticUndoRedo(kind: "undo" | "redo"): void {
@@ -885,6 +890,8 @@ export interface YabaCanvasBridge {
   canvasLayer: (action: "sendToBack" | "sendBackward" | "bringForward" | "bringToFront") => void
   toggleGridMode: () => void
   toggleObjectsSnapMode: () => void
+  applyCanvasInline: (json: string) => void
+  getCanvasSelectionLinkContext: () => string
 }
 
 export function initCanvasBridge(api: ExcalidrawImperativeAPI): void {
@@ -991,6 +998,26 @@ export function initCanvasBridge(api: ExcalidrawImperativeAPI): void {
       const s = api.getAppState()
       api.updateScene({ appState: { objectsSnapModeEnabled: !s.objectsSnapModeEnabled } })
       publishCanvasHostState()
+    },
+    applyCanvasInline: (json: string) => {
+      const api = excalidrawApi
+      if (!api) return
+      try {
+        const payload = JSON.parse(json) as ApplyCanvasInlinePayload
+        applyCanvasInlinePayload(api, payload)
+        publishCanvasHostState()
+      } catch {
+        /* ignore */
+      }
+    },
+    getCanvasSelectionLinkContext: () => {
+      const api = excalidrawApi
+      if (!api) return "{}"
+      try {
+        return JSON.stringify(getCanvasSelectionLinkContext(api))
+      } catch {
+        return "{}"
+      }
     },
   }
 }

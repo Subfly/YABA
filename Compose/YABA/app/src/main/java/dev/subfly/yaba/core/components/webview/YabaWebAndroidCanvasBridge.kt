@@ -64,4 +64,15 @@ internal fun CanvasWebViewBridge(
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.CANVAS_BRIDGE_READY_LOOSE)) return
         evaluateJs(webView, YabaCanvasBridgeScripts.TOGGLE_OBJECTS_SNAP_MODE_SCRIPT)
     }
+
+    override suspend fun applyCanvasInline(json: String) {
+        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.CANVAS_BRIDGE_READY_LOOSE)) return
+        evaluateJs(webView, YabaCanvasBridgeScripts.applyCanvasInlineScript(json))
+    }
+
+    override suspend fun getCanvasSelectionLinkContext(): String {
+        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.CANVAS_BRIDGE_READY_LOOSE)) return "{}"
+        val raw = evaluateJs(webView, YabaCanvasBridgeScripts.GET_CANVAS_SELECTION_LINK_CONTEXT_SCRIPT)
+        return decodeJsStringResult(raw)
+    }
 }

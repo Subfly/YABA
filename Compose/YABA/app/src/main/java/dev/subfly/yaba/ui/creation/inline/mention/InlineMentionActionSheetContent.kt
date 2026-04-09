@@ -1,4 +1,4 @@
-package dev.subfly.yaba.ui.creation.notemark.link
+package dev.subfly.yaba.ui.creation.inline.mention
 
 import androidx.compose.ui.res.stringResource
 
@@ -29,15 +29,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import dev.subfly.yaba.core.components.YabaIcon
+import dev.subfly.yaba.core.model.utils.YabaColor
+import dev.subfly.yaba.util.InlineActionChoice
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
-import dev.subfly.yaba.util.NotemarkInlineActionChoice
 import dev.subfly.yaba.util.ResultStoreKeys
-import dev.subfly.yaba.core.model.utils.YabaColor
 
-
-private data class NotemarkInlineActionItem(
+private data class InlineMentionActionRow(
     val label: String,
     val iconName: String,
     val color: YabaColor,
@@ -46,7 +45,7 @@ private data class NotemarkInlineActionItem(
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun NotemarkLinkActionSheetContent() {
+fun InlineMentionActionSheetContent() {
     val creationNavigator = LocalCreationContentNavigator.current
     val appStateManager = LocalAppStateManager.current
     val resultStore = LocalResultStore.current
@@ -63,11 +62,11 @@ fun NotemarkLinkActionSheetContent() {
             }
             creationNavigator.removeLastOrNull()
         }
-        LinkActionSelectionContent(
+        MentionActionSelectionContent(
             onEdit = {
                 resultStore.setResult(
-                    ResultStoreKeys.NOTEMARK_LINK_ACTION,
-                    NotemarkInlineActionChoice.EDIT
+                    ResultStoreKeys.INLINE_MENTION_ACTION,
+                    InlineActionChoice.EDIT,
                 )
                 if (creationNavigator.size == 2) {
                     appStateManager.onHideCreationContent()
@@ -76,8 +75,8 @@ fun NotemarkLinkActionSheetContent() {
             },
             onOpen = {
                 resultStore.setResult(
-                    ResultStoreKeys.NOTEMARK_LINK_ACTION,
-                    NotemarkInlineActionChoice.OPEN
+                    ResultStoreKeys.INLINE_MENTION_ACTION,
+                    InlineActionChoice.OPEN,
                 )
                 if (creationNavigator.size == 2) {
                     appStateManager.onHideCreationContent()
@@ -86,8 +85,8 @@ fun NotemarkLinkActionSheetContent() {
             },
             onRemove = {
                 resultStore.setResult(
-                    ResultStoreKeys.NOTEMARK_LINK_ACTION,
-                    NotemarkInlineActionChoice.REMOVE
+                    ResultStoreKeys.INLINE_MENTION_ACTION,
+                    InlineActionChoice.REMOVE,
                 )
                 if (creationNavigator.size == 2) {
                     appStateManager.onHideCreationContent()
@@ -112,7 +111,7 @@ private fun TopBar(
                 .copy(
                     containerColor = Color.Transparent,
                 ),
-        title = { Text(text = "Link Action") }, // TODO: localize
+        title = { Text(text = "Mention Action") }, // TODO: localize
         navigationIcon = {
             TextButton(
                 shapes = ButtonDefaults.shapes(),
@@ -126,29 +125,28 @@ private fun TopBar(
     )
 }
 
-// TODO: LOCALIZATION
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun LinkActionSelectionContent(
+private fun MentionActionSelectionContent(
     onEdit: () -> Unit,
     onOpen: () -> Unit,
     onRemove: () -> Unit,
 ) {
     listOf(
-        NotemarkInlineActionItem(
-            label = "Edit Link",
+        InlineMentionActionRow(
+            label = "Edit Mention",
             iconName = "edit-02",
             color = YabaColor.YELLOW,
             onClick = onEdit,
         ),
-        NotemarkInlineActionItem(
-            label = "Open Link",
+        InlineMentionActionRow(
+            label = "Open Bookmark",
             iconName = "link-circle",
             color = YabaColor.BLUE,
             onClick = onOpen,
         ),
-        NotemarkInlineActionItem(
-            label = "Remove Link",
+        InlineMentionActionRow(
+            label = "Remove Mention",
             iconName = "delete-02",
             color = YabaColor.RED,
             onClick = onRemove,

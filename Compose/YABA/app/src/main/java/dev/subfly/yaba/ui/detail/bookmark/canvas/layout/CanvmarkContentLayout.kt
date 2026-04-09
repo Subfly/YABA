@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
+import androidx.navigation3.runtime.NavKey
 import dev.subfly.yaba.R
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.YabaIcon
@@ -40,7 +42,22 @@ import dev.subfly.yaba.core.state.detail.DetailWebShellPhase
 import dev.subfly.yaba.core.state.detail.canvmark.CanvmarkDetailEvent
 import dev.subfly.yaba.core.state.detail.canvmark.detailWebShellPhase
 import dev.subfly.yaba.core.state.detail.canvmark.CanvmarkDetailUIState
+import dev.subfly.yaba.core.model.utils.BookmarkKind
+import dev.subfly.yaba.core.navigation.creation.InlineLinkActionSheetRoute
+import dev.subfly.yaba.core.navigation.creation.InlineLinkSheetRoute
+import dev.subfly.yaba.core.navigation.creation.InlineMentionActionSheetRoute
+import dev.subfly.yaba.core.navigation.creation.InlineMentionSheetRoute
+import dev.subfly.yaba.core.navigation.main.CanvasDetailRoute
+import dev.subfly.yaba.core.navigation.main.DocDetailRoute
+import dev.subfly.yaba.core.navigation.main.ImageDetailRoute
+import dev.subfly.yaba.core.navigation.main.LinkDetailRoute
+import dev.subfly.yaba.core.navigation.main.NoteDetailRoute
+import dev.subfly.yaba.core.webview.CanvasInlineApplyJson
+import dev.subfly.yaba.core.webview.CanvasLinkTapEvent
+import dev.subfly.yaba.core.webview.CanvasMentionTapEvent
+import dev.subfly.yaba.core.webview.CanvasSelectionLinkContext
 import dev.subfly.yaba.core.webview.WebComponentUris
+import dev.subfly.yaba.core.webview.parseYabaMentionLinkParams
 import dev.subfly.yaba.core.webview.WebViewCanvasBridge
 import dev.subfly.yaba.core.webview.YabaWebAppearance
 import dev.subfly.yaba.core.webview.YabaWebFeature
@@ -53,7 +70,16 @@ import dev.subfly.yaba.ui.detail.bookmark.components.BookmarkDetailContentTopBar
 import dev.subfly.yaba.ui.detail.bookmark.components.BookmarkDetailTopBarScrim
 import dev.subfly.yaba.ui.detail.bookmark.components.bookmarkFolderAccentColor
 import dev.subfly.yaba.ui.detail.bookmark.util.bookmarkDetailIconButtonColors
+import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalContentNavigator
+import dev.subfly.yaba.util.LocalCreationContentNavigator
+import dev.subfly.yaba.util.LocalResultStore
+import dev.subfly.yaba.util.InlineActionChoice
+import dev.subfly.yaba.util.InlineLinkSheetResult
+import dev.subfly.yaba.util.InlineMentionSheetResult
+import dev.subfly.yaba.util.InlineSheetAction
+import dev.subfly.yaba.util.ResultStoreKeys
+import dev.subfly.yaba.util.rememberUrlLauncher
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.launch
@@ -68,10 +94,18 @@ internal fun CanvmarkContentLayout(
     onEvent: (CanvmarkDetailEvent) -> Unit,
 ) {
     val navigator = LocalContentNavigator.current
+    val creationNavigator = LocalCreationContentNavigator.current
+    val appStateManager = LocalAppStateManager.current
+    val appState by appStateManager.state.collectAsState()
+    val resultStore = LocalResultStore.current
+    val openUrl = rememberUrlLauncher()
 
     val scope = rememberCoroutineScope()
     var canvasBridge by remember { mutableStateOf<WebViewCanvasBridge?>(null) }
     var isMenuExpanded by remember { mutableStateOf(false) }
+    var isCreationSheetOpening by remember { mutableStateOf(false) }
+    var pendingCanvasLinkTap by remember { mutableStateOf<CanvasLinkTapEvent?>(null) }
+    var pendingCanvasMentionTap by remember { mutableStateOf<CanvasMentionTapEvent?>(null) }
 
     val folderAccent = remember(state.bookmark) { bookmarkFolderAccentColor(state.bookmark) }
     val menuIconButtonColors = bookmarkDetailIconButtonColors(folderAccent)
@@ -83,6 +117,216 @@ internal fun CanvmarkContentLayout(
         state.initialSceneJson,
         state.webContentLoadFailed,
     ) { state.detailWebShellPhase() }
+
+    fun openBookmarkByKind(kindCode: Int, bookmarkId: String) {
+        val route =
+            when (BookmarkKind.fromCode(kindCode)) {
+                BookmarkKind.LINK -> LinkDetailRoute(bookmarkId = bookmarkId)
+                BookmarkKind.NOTE -> NoteDetailRoute(bookmarkId = bookmarkId)
+                BookmarkKind.IMAGE -> ImageDetailRoute(bookmarkId = bookmarkId)
+                BookmarkKind.FILE -> DocDetailRoute(bookmarkId = bookmarkId)
+                BookmarkKind.CANVAS -> CanvasDetailRoute(bookmarkId = bookmarkId)
+            }
+        navigator.add(route)
+    }
+
+    fun openCreationSheet(route: NavKey) {
+        if (appState.showCreationContent || isCreationSheetOpening) return
+        isCreationSheetOpening = true
+        try {
+            creationNavigator.add(route)
+            appStateManager.onShowCreationContent()
+        } finally {
+            isCreationSheetOpening = false
+        }
+    }
+
+    suspend fun openCanvasLinkSheetFromToolbar() {
+        val bridge = canvasBridge ?: return
+        val ctx = CanvasSelectionLinkContext.parse(bridge.getCanvasSelectionLinkContext())
+        val link = ctx.link
+        val mention = parseYabaMentionLinkParams(link)
+        val selectedId = ctx.selectedIds.firstOrNull()
+        val isMentionLink = mention != null
+        openCreationSheet(
+            InlineLinkSheetRoute(
+                initialText = ctx.primaryText,
+                initialUrl =
+                    when {
+                        link == null -> ""
+                        isMentionLink -> ""
+                        else -> link
+                    },
+                isEdit = ctx.hasSelection && link != null && !isMentionLink,
+                canvasElementId =
+                    if (ctx.hasSelection && link != null && !isMentionLink) {
+                        selectedId
+                    } else {
+                        null
+                    },
+            ),
+        )
+    }
+
+    suspend fun openCanvasMentionSheetFromToolbar() {
+        val bridge = canvasBridge ?: return
+        val ctx = CanvasSelectionLinkContext.parse(bridge.getCanvasSelectionLinkContext())
+        val link = ctx.link
+        val mention = parseYabaMentionLinkParams(link)
+        val selectedId = ctx.selectedIds.firstOrNull()
+        openCreationSheet(
+            InlineMentionSheetRoute(
+                initialText = ctx.primaryText,
+                initialBookmarkId = mention?.bookmarkId,
+                isEdit = ctx.hasSelection && mention != null,
+                canvasElementId =
+                    if (ctx.hasSelection && mention != null) {
+                        selectedId
+                    } else {
+                        null
+                    },
+            ),
+        )
+    }
+
+    LaunchedEffect(resultStore.getResult(ResultStoreKeys.INLINE_LINK_INSERT), canvasBridge) {
+        val r =
+            resultStore.getResult<InlineLinkSheetResult>(ResultStoreKeys.INLINE_LINK_INSERT)
+                ?: return@LaunchedEffect
+        val bridge = canvasBridge ?: return@LaunchedEffect
+        resultStore.removeResult(ResultStoreKeys.INLINE_LINK_INSERT)
+        when (r.action) {
+            InlineSheetAction.REMOVE -> {
+                val id = r.canvasElementId ?: return@LaunchedEffect
+                bridge.applyCanvasInline(CanvasInlineApplyJson.clearLink(id))
+            }
+
+            InlineSheetAction.INSERT_OR_UPDATE -> {
+                val id = r.canvasElementId
+                if (id != null) {
+                    bridge.applyCanvasInline(CanvasInlineApplyJson.setUrlOnElement(id, r.url))
+                } else {
+                    bridge.applyCanvasInline(CanvasInlineApplyJson.insertTextWithUrl(r.text, r.url))
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(resultStore.getResult(ResultStoreKeys.INLINE_MENTION_INSERT), canvasBridge) {
+        val r =
+            resultStore.getResult<InlineMentionSheetResult>(ResultStoreKeys.INLINE_MENTION_INSERT)
+                ?: return@LaunchedEffect
+        val bridge = canvasBridge ?: return@LaunchedEffect
+        resultStore.removeResult(ResultStoreKeys.INLINE_MENTION_INSERT)
+        when (r.action) {
+            InlineSheetAction.REMOVE -> {
+                val id = r.canvasElementId ?: return@LaunchedEffect
+                bridge.applyCanvasInline(CanvasInlineApplyJson.clearLink(id))
+            }
+
+            InlineSheetAction.INSERT_OR_UPDATE -> {
+                val id = r.canvasElementId
+                if (id != null) {
+                    bridge.applyCanvasInline(
+                        CanvasInlineApplyJson.setMentionOnElement(
+                            elementId = id,
+                            text = r.text,
+                            bookmarkId = r.bookmarkId,
+                            bookmarkKindCode = r.bookmarkKindCode,
+                            bookmarkLabel = r.bookmarkLabel,
+                        ),
+                    )
+                } else {
+                    bridge.applyCanvasInline(
+                        CanvasInlineApplyJson.insertTextWithMention(
+                            displayText = r.text,
+                            bookmarkId = r.bookmarkId,
+                            bookmarkKindCode = r.bookmarkKindCode,
+                            bookmarkLabel = r.bookmarkLabel,
+                        ),
+                    )
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(
+        resultStore.getResult(ResultStoreKeys.INLINE_LINK_ACTION),
+        pendingCanvasLinkTap,
+        canvasBridge,
+    ) {
+        val action =
+            resultStore.getResult<InlineActionChoice>(ResultStoreKeys.INLINE_LINK_ACTION)
+                ?: return@LaunchedEffect
+        val tap = pendingCanvasLinkTap ?: return@LaunchedEffect
+        if (action == InlineActionChoice.REMOVE && canvasBridge == null) {
+            return@LaunchedEffect
+        }
+        resultStore.removeResult(ResultStoreKeys.INLINE_LINK_ACTION)
+        when (action) {
+            InlineActionChoice.OPEN -> {
+                openUrl(tap.url)
+                pendingCanvasLinkTap = null
+            }
+
+            InlineActionChoice.EDIT -> {
+                openCreationSheet(
+                    InlineLinkSheetRoute(
+                        initialText = tap.text,
+                        initialUrl = tap.url,
+                        isEdit = true,
+                        canvasElementId = tap.elementId,
+                    ),
+                )
+                pendingCanvasLinkTap = null
+            }
+
+            InlineActionChoice.REMOVE -> {
+                val bridge = canvasBridge ?: return@LaunchedEffect
+                bridge.applyCanvasInline(CanvasInlineApplyJson.clearLink(tap.elementId))
+                pendingCanvasLinkTap = null
+            }
+        }
+    }
+
+    LaunchedEffect(
+        resultStore.getResult(ResultStoreKeys.INLINE_MENTION_ACTION),
+        pendingCanvasMentionTap,
+        canvasBridge,
+    ) {
+        val action =
+            resultStore.getResult<InlineActionChoice>(ResultStoreKeys.INLINE_MENTION_ACTION)
+                ?: return@LaunchedEffect
+        val tap = pendingCanvasMentionTap ?: return@LaunchedEffect
+        if (action == InlineActionChoice.REMOVE && canvasBridge == null) {
+            return@LaunchedEffect
+        }
+        resultStore.removeResult(ResultStoreKeys.INLINE_MENTION_ACTION)
+        when (action) {
+            InlineActionChoice.OPEN -> {
+                openBookmarkByKind(tap.bookmarkKindCode, tap.bookmarkId)
+                pendingCanvasMentionTap = null
+            }
+
+            InlineActionChoice.EDIT -> {
+                openCreationSheet(
+                    InlineMentionSheetRoute(
+                        initialText = tap.text,
+                        initialBookmarkId = tap.bookmarkId,
+                        isEdit = true,
+                        canvasElementId = tap.elementId,
+                    ),
+                )
+                pendingCanvasMentionTap = null
+            }
+
+            InlineActionChoice.REMOVE -> {
+                val bridge = canvasBridge ?: return@LaunchedEffect
+                bridge.applyCanvasInline(CanvasInlineApplyJson.clearLink(tap.elementId))
+                pendingCanvasMentionTap = null
+            }
+        }
+    }
 
     LaunchedEffect(canvasBridge, state.bookmark?.id) {
         try {
@@ -183,6 +427,35 @@ internal fun CanvmarkContentLayout(
                                         is YabaWebHostEvent.CanvasStyleState ->
                                             onEvent(CanvmarkDetailEvent.OnCanvasStyleStateChanged(event.style))
 
+                                        is YabaWebHostEvent.CanvasLinkTap -> {
+                                            pendingCanvasLinkTap = event.tap
+                                            scope.launch {
+                                                openCreationSheet(
+                                                    InlineLinkActionSheetRoute(
+                                                        text = event.tap.text,
+                                                        url = event.tap.url,
+                                                        editPos = -1,
+                                                        canvasElementId = event.tap.elementId,
+                                                    ),
+                                                )
+                                            }
+                                        }
+
+                                        is YabaWebHostEvent.CanvasMentionTap -> {
+                                            pendingCanvasMentionTap = event.tap
+                                            scope.launch {
+                                                openCreationSheet(
+                                                    InlineMentionActionSheetRoute(
+                                                        text = event.tap.text,
+                                                        bookmarkId = event.tap.bookmarkId,
+                                                        bookmarkKindCode = event.tap.bookmarkKindCode,
+                                                        editPos = -1,
+                                                        canvasElementId = event.tap.elementId,
+                                                    ),
+                                                )
+                                            }
+                                        }
+
                                         else -> Unit
                                     }
                                 },
@@ -219,6 +492,12 @@ internal fun CanvmarkContentLayout(
                     onCaptureImageFromCamera = { onEvent(CanvmarkDetailEvent.OnCaptureImageFromCamera) },
                     onToggleGridMode = { scope.launch { canvasBridge?.toggleGridMode() } },
                     onToggleObjectsSnapMode = { scope.launch { canvasBridge?.toggleObjectsSnapMode() } },
+                    onOpenLinkSheet = {
+                        scope.launch { openCanvasLinkSheetFromToolbar() }
+                    },
+                    onOpenMentionSheet = {
+                        scope.launch { openCanvasMentionSheetFromToolbar() }
+                    },
                     onSaveDocument = {
                         scope.launch {
                             val bridge = canvasBridge ?: return@launch

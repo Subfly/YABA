@@ -36,4 +36,12 @@ object YabaCanvasBridgeScripts {
 
     const val TOGGLE_OBJECTS_SNAP_MODE_SCRIPT: String =
         "window.YabaCanvasBridge?.toggleObjectsSnapMode?.();"
+
+    fun applyCanvasInlineScript(json: String): String {
+        val escaped = escapeForJsSingleQuotedString(json)
+        return "window.YabaCanvasBridge?.applyCanvasInline?.('$escaped');"
+    }
+
+    const val GET_CANVAS_SELECTION_LINK_CONTEXT_SCRIPT: String =
+        "window.YabaCanvasBridge?.getCanvasSelectionLinkContext?.() ?? '{}';"
 }

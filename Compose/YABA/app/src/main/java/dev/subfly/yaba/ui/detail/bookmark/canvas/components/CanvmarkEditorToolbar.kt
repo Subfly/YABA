@@ -120,6 +120,8 @@ internal fun CanvmarkEditorToolbar(
     onCaptureImageFromCamera: () -> Unit,
     onToggleGridMode: () -> Unit,
     onToggleObjectsSnapMode: () -> Unit,
+    onOpenLinkSheet: () -> Unit,
+    onOpenMentionSheet: () -> Unit,
     onSaveDocument: () -> Unit,
 ) {
     val toolbarSaveOpaqueColor = Color(color.iconTintArgb())
@@ -144,6 +146,8 @@ internal fun CanvmarkEditorToolbar(
             onCaptureImageFromCamera,
             onToggleGridMode,
             onToggleObjectsSnapMode,
+            onOpenLinkSheet,
+            onOpenMentionSheet,
         ) {
             mutableListOf<CanvasToolbarAction>().apply {
                 fun toggleGroup(group: CanvasToolbarGroup) {
@@ -347,6 +351,32 @@ internal fun CanvmarkEditorToolbar(
                             ),
                         )
                     }
+                    add(
+                        CanvasToolbarAction(
+                            key = "toolbar-link",
+                            icon = "link-04",
+                            tooltipText = "Link",
+                            segmentAlpha = expandedAreaAlpha(depth = 0),
+                            onClick = {
+                                onOpenLinkSheet()
+                                activeInsertNested = null
+                                activeGroup = null
+                            },
+                        ),
+                    )
+                    add(
+                        CanvasToolbarAction(
+                            key = "toolbar-mention",
+                            icon = "at",
+                            tooltipText = "Mention",
+                            segmentAlpha = expandedAreaAlpha(depth = 0),
+                            onClick = {
+                                onOpenMentionSheet()
+                                activeInsertNested = null
+                                activeGroup = null
+                            },
+                        ),
+                    )
                 }
 
                 val historyExpanded = activeGroup == CanvasToolbarGroup.History

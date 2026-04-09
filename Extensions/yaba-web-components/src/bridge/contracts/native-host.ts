@@ -104,6 +104,20 @@ export type YabaNativeHostPayload =
       bookmarkLabel: string
     }
   | {
+      type: "canvasLinkTap"
+      elementId: string
+      text: string
+      url: string
+    }
+  | {
+      type: "canvasMentionTap"
+      elementId: string
+      text: string
+      bookmarkId: string
+      bookmarkKindCode: number
+      bookmarkLabel: string
+    }
+  | {
       type: "converterJob"
       jobId: string
       kind: "html" | "pdf" | "epub"

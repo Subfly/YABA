@@ -1,4 +1,4 @@
-package dev.subfly.yaba.ui.creation.notemark.link
+package dev.subfly.yaba.ui.creation.inline.link
 
 import androidx.compose.ui.res.stringResource
 
@@ -33,18 +33,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.core.components.YabaIcon
-import dev.subfly.yaba.core.navigation.creation.NotemarkLinkSheetRoute
+import dev.subfly.yaba.core.model.utils.YabaColor
+import dev.subfly.yaba.core.navigation.creation.InlineLinkSheetRoute
+import dev.subfly.yaba.util.InlineLinkSheetResult
+import dev.subfly.yaba.util.InlineSheetAction
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
-import dev.subfly.yaba.util.NotemarkInlineAction
-import dev.subfly.yaba.util.NotemarkLinkSheetResult
 import dev.subfly.yaba.util.ResultStoreKeys
-import dev.subfly.yaba.core.model.utils.YabaColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NotemarkLinkCreationContent(route: NotemarkLinkSheetRoute) {
+fun InlineLinkSheetContent(route: InlineLinkSheetRoute) {
     val creationNavigator = LocalCreationContentNavigator.current
     val appStateManager = LocalAppStateManager.current
     val resultStore = LocalResultStore.current
@@ -61,7 +61,7 @@ fun NotemarkLinkCreationContent(route: NotemarkLinkSheetRoute) {
             .fillMaxWidth()
             .background(color = MaterialTheme.colorScheme.surfaceContainerLow),
     ) {
-        NotemarkLinkTopBar(
+        InlineLinkTopBar(
             title = if (route.isEdit) {
                 "Edit Link" // TODO: localize
             } else {
@@ -70,12 +70,13 @@ fun NotemarkLinkCreationContent(route: NotemarkLinkSheetRoute) {
             canPerformDone = linkText.isNotBlank() && linkUrl.isNotBlank(),
             onDone = {
                 resultStore.setResult(
-                    ResultStoreKeys.NOTEMARK_LINK_INSERT,
-                    NotemarkLinkSheetResult(
+                    ResultStoreKeys.INLINE_LINK_INSERT,
+                    InlineLinkSheetResult(
                         text = linkText.trim(),
                         url = linkUrl.trim(),
-                        action = NotemarkInlineAction.INSERT_OR_UPDATE,
+                        action = InlineSheetAction.INSERT_OR_UPDATE,
                         editPos = route.editPos,
+                        canvasElementId = route.canvasElementId,
                     ),
                 )
                 if (creationNavigator.size == 2) {
@@ -91,21 +92,21 @@ fun NotemarkLinkCreationContent(route: NotemarkLinkSheetRoute) {
             },
         )
 
-        NotemarkLinkTitleField(
+        InlineLinkTitleField(
             text = linkText,
             fieldAccent = YabaColor.BLUE,
             fieldAccentColor = Color(YabaColor.BLUE.iconTintArgb()),
             onTextChange = { linkText = it },
         )
 
-        NotemarkLinkUrlField(
+        InlineLinkUrlField(
             url = linkUrl,
             fieldAccent = YabaColor.BLUE,
             fieldAccentColor = Color(YabaColor.BLUE.iconTintArgb()),
             onUrlChange = { linkUrl = it },
         )
 
-        if (route.isEdit && route.editPos != null) {
+        if (route.isEdit && (route.editPos != null || route.canvasElementId != null)) {
             Spacer(modifier = Modifier.height(16.dp))
             TextButton(
                 modifier = Modifier
@@ -113,12 +114,13 @@ fun NotemarkLinkCreationContent(route: NotemarkLinkSheetRoute) {
                     .align(Alignment.CenterHorizontally),
                 onClick = {
                     resultStore.setResult(
-                        ResultStoreKeys.NOTEMARK_LINK_INSERT,
-                        NotemarkLinkSheetResult(
+                        ResultStoreKeys.INLINE_LINK_INSERT,
+                        InlineLinkSheetResult(
                             text = route.initialText,
                             url = route.initialUrl,
-                            action = NotemarkInlineAction.REMOVE,
+                            action = InlineSheetAction.REMOVE,
                             editPos = route.editPos,
+                            canvasElementId = route.canvasElementId,
                         ),
                     )
                     if (creationNavigator.size == 2) {
@@ -145,7 +147,7 @@ fun NotemarkLinkCreationContent(route: NotemarkLinkSheetRoute) {
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun NotemarkLinkTitleField(
+private fun InlineLinkTitleField(
     text: String,
     fieldAccent: YabaColor,
     fieldAccentColor: Color,
@@ -172,7 +174,7 @@ private fun NotemarkLinkTitleField(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun NotemarkLinkUrlField(
+private fun InlineLinkUrlField(
     url: String,
     fieldAccent: YabaColor,
     fieldAccentColor: Color,
@@ -199,7 +201,7 @@ private fun NotemarkLinkUrlField(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun NotemarkLinkTopBar(
+private fun InlineLinkTopBar(
     title: String,
     canPerformDone: Boolean,
     onDone: () -> Unit,

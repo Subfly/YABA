@@ -1,4 +1,4 @@
-package dev.subfly.yaba.ui.creation.notemark.mention
+package dev.subfly.yaba.ui.creation.inline.mention
 
 import androidx.compose.ui.res.stringResource
 
@@ -36,21 +36,22 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.core.components.YabaIcon
 import dev.subfly.yaba.core.components.item.bookmark.BookmarkItemView
+import dev.subfly.yaba.core.model.utils.BookmarkAppearance
+import dev.subfly.yaba.core.model.utils.YabaColor
 import dev.subfly.yaba.core.navigation.creation.BookmarkSelectionRoute
-import dev.subfly.yaba.core.navigation.creation.NotemarkMentionSheetRoute
+import dev.subfly.yaba.core.navigation.creation.InlineMentionSheetRoute
+import dev.subfly.yaba.core.state.creation.notemark.NotemarkMentionCreationEvent
+import dev.subfly.yaba.ui.creation.notemark.mention.NotemarkMentionCreationVM
+import dev.subfly.yaba.util.InlineMentionSheetResult
+import dev.subfly.yaba.util.InlineSheetAction
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
-import dev.subfly.yaba.util.NotemarkInlineAction
-import dev.subfly.yaba.util.NotemarkMentionSheetResult
 import dev.subfly.yaba.util.ResultStoreKeys
-import dev.subfly.yaba.core.model.utils.BookmarkAppearance
-import dev.subfly.yaba.core.model.utils.YabaColor
-import dev.subfly.yaba.core.state.creation.notemark.NotemarkMentionCreationEvent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NotemarkMentionCreationContent(route: NotemarkMentionSheetRoute) {
+fun InlineMentionSheetContent(route: InlineMentionSheetRoute) {
     val creationNavigator = LocalCreationContentNavigator.current
     val appStateManager = LocalAppStateManager.current
     val resultStore = LocalResultStore.current
@@ -87,20 +88,21 @@ fun NotemarkMentionCreationContent(route: NotemarkMentionSheetRoute) {
             .fillMaxWidth()
             .background(color = MaterialTheme.colorScheme.surfaceContainerLow),
     ) {
-        NotemarkMentionTopBar(
+        InlineMentionTopBar(
             title = "Mention Bookmark", // TODO: localize
             canPerformDone = canPerformDone,
             onDone = {
-                val b = bookmark ?: return@NotemarkMentionTopBar
+                val b = bookmark ?: return@InlineMentionTopBar
                 resultStore.setResult(
-                    ResultStoreKeys.NOTEMARK_MENTION_INSERT,
-                    NotemarkMentionSheetResult(
+                    ResultStoreKeys.INLINE_MENTION_INSERT,
+                    InlineMentionSheetResult(
                         text = state.mentionText.trim(),
                         bookmarkId = b.id,
                         bookmarkKindCode = b.kind.code,
                         bookmarkLabel = b.label,
-                        action = NotemarkInlineAction.INSERT_OR_UPDATE,
+                        action = InlineSheetAction.INSERT_OR_UPDATE,
                         editPos = route.editPos,
+                        canvasElementId = route.canvasElementId,
                     ),
                 )
                 if (creationNavigator.size == 2) {
@@ -116,7 +118,7 @@ fun NotemarkMentionCreationContent(route: NotemarkMentionSheetRoute) {
             },
         )
 
-        NotemarkMentionTitleField(
+        InlineMentionTitleField(
             text = state.mentionText,
             fieldAccent = fieldAccent,
             fieldAccentColor = fieldAccentColor,
@@ -168,7 +170,7 @@ fun NotemarkMentionCreationContent(route: NotemarkMentionSheetRoute) {
             }
         }
 
-        if (route.isEdit && route.editPos != null && bookmark != null) {
+        if (route.isEdit && (route.editPos != null || route.canvasElementId != null) && bookmark != null) {
             Spacer(modifier = Modifier.height(16.dp))
             TextButton(
                 modifier = Modifier
@@ -176,14 +178,15 @@ fun NotemarkMentionCreationContent(route: NotemarkMentionSheetRoute) {
                     .align(Alignment.CenterHorizontally),
                 onClick = {
                     resultStore.setResult(
-                        ResultStoreKeys.NOTEMARK_MENTION_INSERT,
-                        NotemarkMentionSheetResult(
+                        ResultStoreKeys.INLINE_MENTION_INSERT,
+                        InlineMentionSheetResult(
                             text = state.mentionText,
                             bookmarkId = bookmark.id,
                             bookmarkKindCode = bookmark.kind.code,
                             bookmarkLabel = bookmark.label,
-                            action = NotemarkInlineAction.REMOVE,
+                            action = InlineSheetAction.REMOVE,
                             editPos = route.editPos,
+                            canvasElementId = route.canvasElementId,
                         ),
                     )
                     if (creationNavigator.size == 2) {
@@ -210,7 +213,7 @@ fun NotemarkMentionCreationContent(route: NotemarkMentionSheetRoute) {
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun NotemarkMentionTitleField(
+private fun InlineMentionTitleField(
     text: String,
     fieldAccent: YabaColor,
     fieldAccentColor: Color,
@@ -237,7 +240,7 @@ private fun NotemarkMentionTitleField(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun NotemarkMentionTopBar(
+private fun InlineMentionTopBar(
     title: String,
     canPerformDone: Boolean,
     onDone: () -> Unit,

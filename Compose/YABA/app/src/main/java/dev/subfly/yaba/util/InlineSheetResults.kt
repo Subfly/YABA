@@ -18,31 +18,35 @@ data class NotemarkMathSheetResult(
 )
 
 @Serializable
-enum class NotemarkInlineAction {
+enum class InlineSheetAction {
     INSERT_OR_UPDATE,
     REMOVE,
 }
 
 @Serializable
-data class NotemarkLinkSheetResult(
+data class InlineLinkSheetResult(
     val text: String,
     val url: String,
-    val action: NotemarkInlineAction = NotemarkInlineAction.INSERT_OR_UPDATE,
+    val action: InlineSheetAction = InlineSheetAction.INSERT_OR_UPDATE,
     val editPos: Int? = null,
+    /** When set, targets an Excalidraw element on the canvas (instead of [editPos] in the note doc). */
+    val canvasElementId: String? = null,
 )
 
 @Serializable
-data class NotemarkMentionSheetResult(
+data class InlineMentionSheetResult(
     val text: String,
     val bookmarkId: String,
     val bookmarkKindCode: Int,
     val bookmarkLabel: String,
-    val action: NotemarkInlineAction = NotemarkInlineAction.INSERT_OR_UPDATE,
+    val action: InlineSheetAction = InlineSheetAction.INSERT_OR_UPDATE,
     val editPos: Int? = null,
+    /** When set, targets an Excalidraw element on the canvas (instead of [editPos] in the note doc). */
+    val canvasElementId: String? = null,
 )
 
 @Serializable
-enum class NotemarkInlineActionChoice {
+enum class InlineActionChoice {
     EDIT,
     OPEN,
     REMOVE,

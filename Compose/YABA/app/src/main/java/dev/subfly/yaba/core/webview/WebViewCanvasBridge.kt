@@ -13,4 +13,6 @@ interface WebViewCanvasBridge {
     suspend fun canvasLayer(action: String)
     suspend fun toggleGridMode()
     suspend fun toggleObjectsSnapMode()
+    suspend fun applyCanvasInline(json: String)
+    suspend fun getCanvasSelectionLinkContext(): String
 }
