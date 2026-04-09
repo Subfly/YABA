@@ -42,3 +42,20 @@
   max-width: 100% !important;
   max-height: 100% !important;
 }
+
+/*
+ * Context menu (long-press / right-click): Excalidraw renders <li data-testid={action.name}>.
+ * Hide embed-only / host-owned flows we do not support in YABA.
+ * Test ids must stay aligned with `contextMenuHiddenTestIds.ts` (separator cleanup uses the same set).
+ */
+[data-yaba-canvas] .excalidraw li[data-testid="copyAsPng"],
+[data-yaba-canvas] .excalidraw li[data-testid="copyAsSvg"],
+[data-yaba-canvas] .excalidraw li[data-testid="copyText"],
+[data-yaba-canvas] .excalidraw li[data-testid="copyStyles"],
+[data-yaba-canvas] .excalidraw li[data-testid="pasteStyles"],
+[data-yaba-canvas] .excalidraw li[data-testid="addToLibrary"],
+[data-yaba-canvas] .excalidraw li[data-testid="viewMode"],
+[data-yaba-canvas] .excalidraw li[data-testid="toggleCanvasMenu"],
+[data-yaba-canvas] .excalidraw li[data-testid="toggleEditMenu"] {
+  display: none !important;
+}

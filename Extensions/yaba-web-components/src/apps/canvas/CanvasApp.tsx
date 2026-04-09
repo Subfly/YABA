@@ -1,11 +1,22 @@
+import { useEffect, useRef } from "react"
 import { Excalidraw, FONT_FAMILY } from "@excalidraw/excalidraw"
 import "@excalidraw/excalidraw/index.css"
 import "./canvas-host.css"
 import { initCanvasBridge, onCanvasChanged } from "@/bridge/canvas-bridge"
+import { installCanvasContextMenuSeparatorCleanup } from "./contextMenuHiddenTestIds"
 
 function CanvasApp() {
+  const rootRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = rootRef.current
+    if (!el) return
+    return installCanvasContextMenuSeparatorCleanup(el)
+  }, [])
+
   return (
     <div
+      ref={rootRef}
       data-yaba-canvas
       style={{ width: "100%", height: "100%", minHeight: "100%", backgroundColor: "transparent" }}
     >
