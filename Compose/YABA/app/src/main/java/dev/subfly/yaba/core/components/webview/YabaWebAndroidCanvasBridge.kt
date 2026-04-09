@@ -54,4 +54,14 @@ internal fun CanvasWebViewBridge(
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.CANVAS_BRIDGE_READY_LOOSE)) return
         evaluateJs(webView, YabaCanvasBridgeScripts.canvasLayerScript(action))
     }
+
+    override suspend fun toggleGridMode() {
+        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.CANVAS_BRIDGE_READY_LOOSE)) return
+        evaluateJs(webView, YabaCanvasBridgeScripts.TOGGLE_GRID_MODE_SCRIPT)
+    }
+
+    override suspend fun toggleObjectsSnapMode() {
+        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.CANVAS_BRIDGE_READY_LOOSE)) return
+        evaluateJs(webView, YabaCanvasBridgeScripts.TOGGLE_OBJECTS_SNAP_MODE_SCRIPT)
+    }
 }

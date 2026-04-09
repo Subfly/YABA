@@ -5,4 +5,6 @@ data class CanvasHostMetrics(
     val hasSelection: Boolean = false,
     val canUndo: Boolean = false,
     val canRedo: Boolean = false,
+    val gridModeEnabled: Boolean = true,
+    val objectsSnapModeEnabled: Boolean = true,
 )

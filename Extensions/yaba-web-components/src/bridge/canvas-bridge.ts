@@ -115,6 +115,8 @@ type HostCanvasMetrics = {
   hasSelection: boolean
   canUndo: boolean
   canRedo: boolean
+  gridModeEnabled: boolean
+  objectsSnapModeEnabled: boolean
 }
 
 /** Mirrors [YabaColor] ARGB RGB channels (Compose). NONE = transparent */
@@ -405,6 +407,8 @@ const DEFAULT_SCENE: ExcalidrawInitialDataState = {
     viewBackgroundColor: "#ffffff",
     currentItemFontFamily: FONT_FAMILY.Excalifont,
     currentItemTextAlign: TEXT_ALIGN.CENTER,
+    gridModeEnabled: true,
+    objectsSnapModeEnabled: true,
   },
   files: {},
 }
@@ -480,6 +484,8 @@ function publishMetrics(): void {
     hasSelection,
     canUndo,
     canRedo,
+    gridModeEnabled: appState.gridModeEnabled ?? false,
+    objectsSnapModeEnabled: appState.objectsSnapModeEnabled ?? false,
   }
   const json = JSON.stringify(payload)
   if (json === lastMetricsJson) return
@@ -877,6 +883,8 @@ export interface YabaCanvasBridge {
   insertImageFromDataUrl: (dataUrl: string) => void
   applySelectionStyle: (json: string) => void
   canvasLayer: (action: "sendToBack" | "sendBackward" | "bringForward" | "bringToFront") => void
+  toggleGridMode: () => void
+  toggleObjectsSnapMode: () => void
 }
 
 export function initCanvasBridge(api: ExcalidrawImperativeAPI): void {
@@ -894,9 +902,14 @@ export function initCanvasBridge(api: ExcalidrawImperativeAPI): void {
         const parsed = sceneJson?.trim()
           ? (JSON.parse(sceneJson) as ExcalidrawInitialDataState)
           : DEFAULT_SCENE
+        const app = (parsed.appState ?? {}) as Record<string, unknown>
         excalidrawApi?.updateScene({
           elements: (parsed.elements ?? []) as any,
-          appState: (parsed.appState ?? {}) as any,
+          appState: {
+            ...app,
+            gridModeEnabled: (app.gridModeEnabled as boolean | undefined) ?? true,
+            objectsSnapModeEnabled: (app.objectsSnapModeEnabled as boolean | undefined) ?? true,
+          } as any,
           collaborators: new Map(),
         })
         if (parsed.files) {
@@ -963,6 +976,20 @@ export function initCanvasBridge(api: ExcalidrawImperativeAPI): void {
     },
     canvasLayer: (action) => {
       executeNamedAction(action)
+      publishCanvasHostState()
+    },
+    toggleGridMode: () => {
+      const api = excalidrawApi
+      if (!api) return
+      const s = api.getAppState()
+      api.updateScene({ appState: { gridModeEnabled: !s.gridModeEnabled } })
+      publishCanvasHostState()
+    },
+    toggleObjectsSnapMode: () => {
+      const api = excalidrawApi
+      if (!api) return
+      const s = api.getAppState()
+      api.updateScene({ appState: { objectsSnapModeEnabled: !s.objectsSnapModeEnabled } })
       publishCanvasHostState()
     },
   }

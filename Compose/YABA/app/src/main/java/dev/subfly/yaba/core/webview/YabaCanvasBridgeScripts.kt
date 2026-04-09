@@ -31,4 +31,9 @@ object YabaCanvasBridgeScripts {
         val escaped = escapeForJsSingleQuotedString(action)
         return "window.YabaCanvasBridge?.canvasLayer?.('$escaped');"
     }
+
+    const val TOGGLE_GRID_MODE_SCRIPT: String = "window.YabaCanvasBridge?.toggleGridMode?.();"
+
+    const val TOGGLE_OBJECTS_SNAP_MODE_SCRIPT: String =
+        "window.YabaCanvasBridge?.toggleObjectsSnapMode?.();"
 }

@@ -11,4 +11,6 @@ interface WebViewCanvasBridge {
     suspend fun insertImageFromDataUrl(dataUrl: String)
     suspend fun applySelectionStyle(json: String)
     suspend fun canvasLayer(action: String)
+    suspend fun toggleGridMode()
+    suspend fun toggleObjectsSnapMode()
 }

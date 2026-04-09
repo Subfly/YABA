@@ -3,7 +3,6 @@ import { Excalidraw, FONT_FAMILY } from "@excalidraw/excalidraw"
 import "@excalidraw/excalidraw/index.css"
 import "./canvas-host.css"
 import { initCanvasBridge, onCanvasChanged } from "@/bridge/canvas-bridge"
-import { installCanvasContextMenuSeparatorCleanup } from "./contextMenuHiddenTestIds"
 
 function CanvasApp() {
   const rootRef = useRef<HTMLDivElement>(null)
@@ -25,7 +24,9 @@ function CanvasApp() {
   useEffect(() => {
     const el = rootRef.current
     if (!el) return
-    return installCanvasContextMenuSeparatorCleanup(el)
+    const preventContextMenu = (e: Event) => e.preventDefault()
+    el.addEventListener("contextmenu", preventContextMenu)
+    return () => el.removeEventListener("contextmenu", preventContextMenu)
   }, [])
 
   return (
@@ -42,6 +43,8 @@ function CanvasApp() {
           elements: [],
           appState: {
             currentItemFontFamily: FONT_FAMILY.Excalifont,
+            gridModeEnabled: true,
+            objectsSnapModeEnabled: true,
           },
         }}
         excalidrawAPI={(api) => {

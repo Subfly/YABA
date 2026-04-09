@@ -217,6 +217,8 @@ internal fun CanvmarkContentLayout(
                     onToggleOptionsSheet = { onEvent(CanvmarkDetailEvent.OnToggleCanvasOptionsSheet) },
                     onPickImageFromGallery = { onEvent(CanvmarkDetailEvent.OnPickImageFromGallery) },
                     onCaptureImageFromCamera = { onEvent(CanvmarkDetailEvent.OnCaptureImageFromCamera) },
+                    onToggleGridMode = { scope.launch { canvasBridge?.toggleGridMode() } },
+                    onToggleObjectsSnapMode = { scope.launch { canvasBridge?.toggleObjectsSnapMode() } },
                     onSaveDocument = {
                         scope.launch {
                             val bridge = canvasBridge ?: return@launch

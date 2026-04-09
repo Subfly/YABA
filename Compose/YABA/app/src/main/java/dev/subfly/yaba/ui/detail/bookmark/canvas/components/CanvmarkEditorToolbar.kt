@@ -118,6 +118,8 @@ internal fun CanvmarkEditorToolbar(
     onToggleOptionsSheet: () -> Unit,
     onPickImageFromGallery: () -> Unit,
     onCaptureImageFromCamera: () -> Unit,
+    onToggleGridMode: () -> Unit,
+    onToggleObjectsSnapMode: () -> Unit,
     onSaveDocument: () -> Unit,
 ) {
     val toolbarSaveOpaqueColor = Color(color.iconTintArgb())
@@ -140,6 +142,8 @@ internal fun CanvmarkEditorToolbar(
             onRedo,
             onPickImageFromGallery,
             onCaptureImageFromCamera,
+            onToggleGridMode,
+            onToggleObjectsSnapMode,
         ) {
             mutableListOf<CanvasToolbarAction>().apply {
                 fun toggleGroup(group: CanvasToolbarGroup) {
@@ -378,6 +382,27 @@ internal fun CanvmarkEditorToolbar(
                         ),
                     )
                 }
+
+                add(
+                    CanvasToolbarAction(
+                        key = "toggle-grid",
+                        icon = "grid-table",
+                        tooltipText = "Toggle grid",
+                        selected = metrics.gridModeEnabled,
+                        segmentAlpha = null,
+                        onClick = onToggleGridMode,
+                    ),
+                )
+                add(
+                    CanvasToolbarAction(
+                        key = "toggle-snap-objects",
+                        icon = "connect",
+                        tooltipText = "Snap to objects",
+                        selected = metrics.objectsSnapModeEnabled,
+                        segmentAlpha = null,
+                        onClick = onToggleObjectsSnapMode,
+                    ),
+                )
 
             }
         }

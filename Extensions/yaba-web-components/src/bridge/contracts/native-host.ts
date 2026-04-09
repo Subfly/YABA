@@ -35,6 +35,8 @@ export type YabaNativeHostPayload =
       hasSelection: boolean
       canUndo: boolean
       canRedo: boolean
+      gridModeEnabled: boolean
+      objectsSnapModeEnabled: boolean
     }
   /** Selection-driven style snapshot for native options sheet (YABA palette codes + slots). */
   | {

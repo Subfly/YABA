@@ -161,6 +161,8 @@ internal object YabaNativeHostMessageParser {
                 hasSelection = root.optBoolean("hasSelection"),
                 canUndo = root.optBoolean("canUndo"),
                 canRedo = root.optBoolean("canRedo"),
+                gridModeEnabled = root.optBoolean("gridModeEnabled", true),
+                objectsSnapModeEnabled = root.optBoolean("objectsSnapModeEnabled", true),
             ),
         )
 
