@@ -765,55 +765,132 @@ function toExcalidrawTool(tool: CanvasTool): ExcalidrawImperativeAPI["setActiveT
 
 function makeImageElementFromDataUrl(dataUrl: string): void {
   if (!excalidrawApi) return
+
   const fileId = `img_${Date.now()}`
-  const appState = excalidrawApi.getAppState()
-  const viewportCenterX = appState.scrollX * -1 + appState.width / 2
-  const viewportCenterY = appState.scrollY * -1 + appState.height / 2
-  const imageElement = {
-    id: `el_${Date.now()}`,
-    type: "image" as const,
-    x: viewportCenterX - 150,
-    y: viewportCenterY - 100,
-    width: 300,
-    height: 200,
-    angle: 0,
-    strokeColor: "transparent",
-    backgroundColor: "transparent",
-    fillStyle: "solid" as const,
-    strokeWidth: 1,
-    strokeStyle: "solid" as const,
-    roughness: 0,
-    opacity: 100,
-    groupIds: [],
-    frameId: null,
-    roundness: null,
-    seed: Math.floor(Math.random() * 1_000_000),
-    version: 1,
-    versionNonce: Math.floor(Math.random() * 1_000_000),
-    isDeleted: false,
-    boundElements: null,
-    updated: Date.now(),
-    link: null,
-    locked: false,
-    fileId,
-    status: "saved" as const,
-    scale: [1, 1] as [number, number],
-    crop: null,
+  const elId = `el_${Date.now()}`
+  const mimeType = dataUrl.substring(5, dataUrl.indexOf(";")) || "image/png"
+
+  const img = new Image()
+  img.decoding = "async"
+  img.onload = () => {
+    if (!excalidrawApi) return
+    let w = img.naturalWidth
+    let h = img.naturalHeight
+    if (!Number.isFinite(w) || !Number.isFinite(h) || w <= 0 || h <= 0) {
+      w = 300
+      h = 200
+    }
+
+    const appState = excalidrawApi.getAppState()
+    const viewportCenterX = appState.scrollX * -1 + appState.width / 2
+    const viewportCenterY = appState.scrollY * -1 + appState.height / 2
+
+    const imageElement = {
+      id: elId,
+      type: "image" as const,
+      x: viewportCenterX - w / 2,
+      y: viewportCenterY - h / 2,
+      width: w,
+      height: h,
+      angle: 0,
+      strokeColor: "transparent",
+      backgroundColor: "transparent",
+      fillStyle: "solid" as const,
+      strokeWidth: 1,
+      strokeStyle: "solid" as const,
+      roughness: 0,
+      opacity: 100,
+      groupIds: [],
+      frameId: null,
+      roundness: null,
+      seed: Math.floor(Math.random() * 1_000_000),
+      version: 1,
+      versionNonce: Math.floor(Math.random() * 1_000_000),
+      isDeleted: false,
+      boundElements: null,
+      updated: Date.now(),
+      link: null,
+      locked: false,
+      fileId,
+      status: "saved" as const,
+      scale: [1, 1] as [number, number],
+      crop: null,
+    }
+
+    excalidrawApi.addFiles(
+      [
+        {
+          id: fileId,
+          dataURL: dataUrl,
+          mimeType,
+          created: Date.now(),
+          lastRetrieved: Date.now(),
+        },
+      ] as any
+    )
+    excalidrawApi.updateScene({
+      elements: [...excalidrawApi.getSceneElements(), imageElement as any],
+    })
+    publishCanvasHostState()
   }
-  excalidrawApi.addFiles(
-    [
-      {
-        id: fileId,
-        dataURL: dataUrl,
-        mimeType: dataUrl.substring(5, dataUrl.indexOf(";")) || "image/png",
-        created: Date.now(),
-        lastRetrieved: Date.now(),
-      },
-    ] as any
-  )
-  excalidrawApi.updateScene({
-    elements: [...excalidrawApi.getSceneElements(), imageElement as any],
-  })
+  img.onerror = () => {
+    /* keep prior 300×200 fallback if decode fails */
+    if (!excalidrawApi) return
+    const appState = excalidrawApi.getAppState()
+    const viewportCenterX = appState.scrollX * -1 + appState.width / 2
+    const viewportCenterY = appState.scrollY * -1 + appState.height / 2
+    const fw = 300
+    const fh = 200
+    excalidrawApi.addFiles(
+      [
+        {
+          id: fileId,
+          dataURL: dataUrl,
+          mimeType,
+          created: Date.now(),
+          lastRetrieved: Date.now(),
+        },
+      ] as any
+    )
+    excalidrawApi.updateScene({
+      elements: [
+        ...excalidrawApi.getSceneElements(),
+        {
+          id: elId,
+          type: "image" as const,
+          x: viewportCenterX - fw / 2,
+          y: viewportCenterY - fh / 2,
+          width: fw,
+          height: fh,
+          angle: 0,
+          strokeColor: "transparent",
+          backgroundColor: "transparent",
+          fillStyle: "solid" as const,
+          strokeWidth: 1,
+          strokeStyle: "solid" as const,
+          roughness: 0,
+          opacity: 100,
+          groupIds: [],
+          frameId: null,
+          roundness: null,
+          seed: Math.floor(Math.random() * 1_000_000),
+          version: 1,
+          versionNonce: Math.floor(Math.random() * 1_000_000),
+          isDeleted: false,
+          boundElements: null,
+          updated: Date.now(),
+          link: null,
+          locked: false,
+          fileId,
+          status: "saved" as const,
+          scale: [1, 1] as [number, number],
+          crop: null,
+        } as any,
+      ],
+    })
+    publishCanvasHostState()
+  }
+  img.src = dataUrl
 }
 
 function applySelectionStylePayload(partial: ApplySelectionStylePayload): void {
@@ -1046,7 +1123,6 @@ export function initCanvasBridge(api: ExcalidrawImperativeAPI): void {
     insertImageFromDataUrl: (dataUrl: string) => {
       if (!dataUrl.startsWith("data:image/")) return
       makeImageElementFromDataUrl(dataUrl)
-      publishCanvasHostState()
     },
     applySelectionStyle: (json: string) => {
       try {
