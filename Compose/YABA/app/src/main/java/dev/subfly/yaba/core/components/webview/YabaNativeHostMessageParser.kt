@@ -169,6 +169,10 @@ internal object YabaNativeHostMessageParser {
             CanvasHostStyleState(
                 hasSelection = root.optBoolean("hasSelection"),
                 selectionCount = root.optInt("selectionCount"),
+                selectionElementTypes = parseStringArray(root, "selectionElementTypes"),
+                primaryElementType = root.optString("primaryElementType", ""),
+                elementTypeMixed = root.optBoolean("elementTypeMixed"),
+                availableOptionGroups = parseStringArray(root, "availableOptionGroups"),
                 strokeYabaCode = root.optInt("strokeYabaCode"),
                 backgroundYabaCode = root.optInt("backgroundYabaCode"),
                 strokeWidthKey = root.optString("strokeWidthKey", "thin"),
@@ -185,8 +189,26 @@ internal object YabaNativeHostMessageParser {
                 mixedEdge = root.optBoolean("mixedEdge"),
                 mixedFontSize = root.optBoolean("mixedFontSize"),
                 mixedOpacity = root.optBoolean("mixedOpacity"),
+                arrowTypeKey = root.optString("arrowTypeKey", "sharp"),
+                mixedArrowType = root.optBoolean("mixedArrowType"),
+                startArrowheadKey = root.optString("startArrowheadKey", "none"),
+                endArrowheadKey = root.optString("endArrowheadKey", "none"),
+                mixedStartArrowhead = root.optBoolean("mixedStartArrowhead"),
+                mixedEndArrowhead = root.optBoolean("mixedEndArrowhead"),
+                availableStartArrowheads = parseStringArray(root, "availableStartArrowheads"),
+                availableEndArrowheads = parseStringArray(root, "availableEndArrowheads"),
             ),
         )
+
+    private fun parseStringArray(root: JSONObject, key: String): List<String> {
+        val arr: JSONArray = root.optJSONArray(key) ?: return emptyList()
+        return buildList {
+            for (i in 0 until arr.length()) {
+                val s = arr.optString(i, "").trim()
+                if (s.isNotEmpty()) add(s)
+            }
+        }
+    }
 
     private fun parseEditorFormatting(json: JSONObject): EditorFormattingState =
         EditorFormattingState(

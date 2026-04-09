@@ -41,6 +41,18 @@ export type YabaNativeHostPayload =
       type: "canvasStyleState"
       hasSelection: boolean
       selectionCount: number
+      /** Excalidraw element `type` values present in the selection (unique). */
+      selectionElementTypes: string[]
+      /** First selected element's `type` (for display / primary row). */
+      primaryElementType: string
+      /** True when selection contains more than one distinct element type. */
+      elementTypeMixed: boolean
+      /**
+       * Which option sections the native sheet should render. Source of truth from web.
+       * e.g. stroke, background, strokeWidth, strokeStyle, sloppiness, edges, fontSize,
+       * opacity, layers, delete, arrowType, startArrowhead, endArrowhead
+       */
+      availableOptionGroups: string[]
       strokeYabaCode: number
       backgroundYabaCode: number
       strokeWidthKey: "thin" | "bold" | "extraBold"
@@ -58,6 +70,17 @@ export type YabaNativeHostPayload =
       mixedEdge: boolean
       mixedFontSize: boolean
       mixedOpacity: boolean
+      /** Linear (`line` / `arrow`) routing: sharp straight, curved, or elbow orthogonal. */
+      arrowTypeKey: "sharp" | "curved" | "elbow"
+      mixedArrowType: boolean
+      /** Excalidraw `Arrowhead` string or "none" for null. */
+      startArrowheadKey: string
+      endArrowheadKey: string
+      mixedStartArrowhead: boolean
+      mixedEndArrowhead: boolean
+      /** Allowed arrowhead keys for start/end pickers (Excalidraw union + "none"). */
+      availableStartArrowheads: string[]
+      availableEndArrowheads: string[]
     }
   | { type: "annotationTap"; id: string }
   | { type: "mathTap"; kind: "inline" | "block"; pos: number; latex: string }

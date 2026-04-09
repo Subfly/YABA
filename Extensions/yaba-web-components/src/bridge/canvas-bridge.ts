@@ -150,6 +150,145 @@ export type ApplySelectionStylePayload = {
   fontSizeKey?: FontSizeKey
   /** 0–10 */
   opacityStep?: number
+  /** Linear (`line` / `arrow`) routing */
+  arrowTypeKey?: "sharp" | "curved" | "elbow"
+  /** Excalidraw arrowhead string, or `"none"` for null */
+  startArrowheadKey?: string
+  endArrowheadKey?: string
+}
+
+/** Excalidraw `Arrowhead` union + `"none"` for UI / JSON transport */
+export const EXCALI_ARROWHEAD_PICKER_ORDER: readonly string[] = [
+  "none",
+  "arrow",
+  "triangle",
+  "triangle_outline",
+  "dot",
+  "circle",
+  "circle_outline",
+  "diamond",
+  "diamond_outline",
+  "bar",
+  "crowfoot_one",
+  "crowfoot_many",
+  "crowfoot_one_or_many",
+] as const
+
+const OPTION_GROUP = {
+  stroke: "stroke",
+  background: "background",
+  strokeWidth: "strokeWidth",
+  strokeStyle: "strokeStyle",
+  sloppiness: "sloppiness",
+  edges: "edges",
+  fontSize: "fontSize",
+  opacity: "opacity",
+  layers: "layers",
+  delete: "delete",
+  arrowType: "arrowType",
+  startArrowhead: "startArrowhead",
+  endArrowhead: "endArrowhead",
+} as const
+
+const OPTION_GROUP_SORT_ORDER: string[] = [
+  OPTION_GROUP.stroke,
+  OPTION_GROUP.background,
+  OPTION_GROUP.strokeWidth,
+  OPTION_GROUP.strokeStyle,
+  OPTION_GROUP.sloppiness,
+  OPTION_GROUP.edges,
+  OPTION_GROUP.fontSize,
+  OPTION_GROUP.arrowType,
+  OPTION_GROUP.startArrowhead,
+  OPTION_GROUP.endArrowhead,
+  OPTION_GROUP.opacity,
+  OPTION_GROUP.layers,
+  OPTION_GROUP.delete,
+]
+
+function sortOptionGroups(groups: Set<string>): string[] {
+  const arr = [...groups]
+  arr.sort((a, b) => {
+    const ia = OPTION_GROUP_SORT_ORDER.indexOf(a)
+    const ib = OPTION_GROUP_SORT_ORDER.indexOf(b)
+    const va = ia === -1 ? 999 : ia
+    const vb = ib === -1 ? 999 : ib
+    if (va !== vb) return va - vb
+    return a.localeCompare(b)
+  })
+  return arr
+}
+
+function optionGroupsForElement(el: { type: string }): Set<string> {
+  const t = el.type
+  const common = new Set<string>([
+    OPTION_GROUP.opacity,
+    OPTION_GROUP.layers,
+    OPTION_GROUP.delete,
+  ])
+  if (t === "text") {
+    ;[OPTION_GROUP.stroke, OPTION_GROUP.fontSize].forEach((g) => common.add(g))
+    return common
+  }
+  if (t === "frame") {
+    return common
+  }
+  if (t === "rectangle" || t === "diamond" || t === "ellipse") {
+    ;[
+      OPTION_GROUP.stroke,
+      OPTION_GROUP.background,
+      OPTION_GROUP.strokeWidth,
+      OPTION_GROUP.strokeStyle,
+      OPTION_GROUP.sloppiness,
+      OPTION_GROUP.edges,
+    ].forEach((g) => common.add(g))
+    return common
+  }
+  if (t === "line" || t === "arrow") {
+    ;[
+      OPTION_GROUP.stroke,
+      OPTION_GROUP.strokeWidth,
+      OPTION_GROUP.strokeStyle,
+      OPTION_GROUP.sloppiness,
+      OPTION_GROUP.arrowType,
+      OPTION_GROUP.startArrowhead,
+      OPTION_GROUP.endArrowhead,
+    ].forEach((g) => common.add(g))
+    return common
+  }
+  // image, freedraw, generic
+  ;[OPTION_GROUP.stroke, OPTION_GROUP.background].forEach((g) => common.add(g))
+  return common
+}
+
+function intersectOptionGroups(selected: { type: string }[]): string[] {
+  if (selected.length === 0) return []
+  let acc = optionGroupsForElement(selected[0])
+  for (let i = 1; i < selected.length; i++) {
+    const next = optionGroupsForElement(selected[i])
+    acc = new Set([...acc].filter((g) => next.has(g)))
+  }
+  return sortOptionGroups(acc)
+}
+
+function arrowheadToKey(raw: string | null | undefined): string {
+  if (raw == null || raw === "") return "none"
+  return String(raw)
+}
+
+function keyToArrowhead(k: string | undefined): string | null {
+  if (k === undefined) return null
+  if (k === "none" || k === "") return null
+  return k
+}
+
+type ArrowTypeKey = "sharp" | "curved" | "elbow"
+
+function getArrowTypeKey(el: any): ArrowTypeKey {
+  if (el.type !== "line" && el.type !== "arrow") return "sharp"
+  if (el.type === "arrow" && el.elbowed === true) return "elbow"
+  if (el.roundness != null) return "curved"
+  return "sharp"
 }
 
 function parseHexRgb(hex: string): { r: number; g: number; b: number } | null {
@@ -342,33 +481,46 @@ function publishStyleState(): void {
   const selected = elements.filter((el) => appState.selectedElementIds[el.id] && !el.isDeleted)
   const n = selected.length
 
-  const base: YabaNativeHostPayload = {
-    type: "canvasStyleState",
-    hasSelection: n > 0,
-    selectionCount: n,
-    strokeYabaCode: 0,
-    backgroundYabaCode: 0,
-    strokeWidthKey: "thin",
-    strokeStyle: "solid",
-    roughnessKey: "architect",
-    edgeKey: "sharp",
-    fontSizeKey: "M",
-    opacityStep: 10,
-    mixedStroke: false,
-    mixedBackground: false,
-    mixedStrokeWidth: false,
-    mixedStrokeStyle: false,
-    mixedRoughness: false,
-    mixedEdge: false,
-    mixedFontSize: false,
-    mixedOpacity: false,
-  }
+  const arrowLists = [...EXCALI_ARROWHEAD_PICKER_ORDER]
 
   if (n === 0) {
-    const json = JSON.stringify(base)
+    const empty: YabaNativeHostPayload = {
+      type: "canvasStyleState",
+      hasSelection: false,
+      selectionCount: 0,
+      selectionElementTypes: [],
+      primaryElementType: "",
+      elementTypeMixed: false,
+      availableOptionGroups: [],
+      strokeYabaCode: 0,
+      backgroundYabaCode: 0,
+      strokeWidthKey: "thin",
+      strokeStyle: "solid",
+      roughnessKey: "architect",
+      edgeKey: "sharp",
+      fontSizeKey: "M",
+      opacityStep: 10,
+      mixedStroke: false,
+      mixedBackground: false,
+      mixedStrokeWidth: false,
+      mixedStrokeStyle: false,
+      mixedRoughness: false,
+      mixedEdge: false,
+      mixedFontSize: false,
+      mixedOpacity: false,
+      arrowTypeKey: "sharp",
+      mixedArrowType: false,
+      startArrowheadKey: "none",
+      endArrowheadKey: "none",
+      mixedStartArrowhead: false,
+      mixedEndArrowhead: false,
+      availableStartArrowheads: arrowLists,
+      availableEndArrowheads: arrowLists,
+    }
+    const json = JSON.stringify(empty)
     if (json === lastStyleJson) return
     lastStyleJson = json
-    postToYabaNativeHost(base)
+    postToYabaNativeHost(empty)
     return
   }
 
@@ -419,8 +571,38 @@ function publishStyleState(): void {
     return fontSizeToKey(Number(el.fontSize ?? FONT_SIZE_PRESETS.M)) !== fontSizeKey
   })
 
+  const selectionElementTypes = [...new Set(selected.map((e: any) => String(e.type)))]
+  const primaryElementType = String(first.type)
+  const elementTypeMixed = selectionElementTypes.length > 1
+  const availableOptionGroups = intersectOptionGroups(selected as { type: string }[])
+
+  const linearSelected = selected.filter((e: any) => e.type === "line" || e.type === "arrow")
+  let arrowTypeKey: ArrowTypeKey = "sharp"
+  let mixedArrowType = false
+  let startArrowheadKey = "none"
+  let endArrowheadKey = "none"
+  let mixedStartArrowhead = false
+  let mixedEndArrowhead = false
+  if (linearSelected.length > 0) {
+    const lf = linearSelected[0] as any
+    arrowTypeKey = getArrowTypeKey(lf)
+    startArrowheadKey = arrowheadToKey(lf.startArrowhead)
+    endArrowheadKey = arrowheadToKey(lf.endArrowhead)
+    mixedArrowType = linearSelected.some((e: any) => getArrowTypeKey(e) !== arrowTypeKey)
+    mixedStartArrowhead = linearSelected.some(
+      (e: any) => arrowheadToKey(e.startArrowhead) !== startArrowheadKey
+    )
+    mixedEndArrowhead = linearSelected.some((e: any) => arrowheadToKey(e.endArrowhead) !== endArrowheadKey)
+  }
+
   const payload: YabaNativeHostPayload = {
-    ...base,
+    type: "canvasStyleState",
+    hasSelection: true,
+    selectionCount: n,
+    selectionElementTypes,
+    primaryElementType,
+    elementTypeMixed,
+    availableOptionGroups,
     strokeYabaCode,
     backgroundYabaCode,
     strokeWidthKey,
@@ -437,6 +619,14 @@ function publishStyleState(): void {
     mixedEdge,
     mixedFontSize,
     mixedOpacity,
+    arrowTypeKey,
+    mixedArrowType,
+    startArrowheadKey,
+    endArrowheadKey,
+    mixedStartArrowhead,
+    mixedEndArrowhead,
+    availableStartArrowheads: arrowLists,
+    availableEndArrowheads: arrowLists,
   }
 
   const json = JSON.stringify(payload)
@@ -575,6 +765,31 @@ function applySelectionStylePayload(partial: ApplySelectionStylePayload): void {
       if (partial.fontSizeKey !== undefined) {
         updates.fontSize = FONT_SIZE_PRESETS[partial.fontSizeKey]
       }
+    }
+
+    if ((cur.type === "line" || cur.type === "arrow") && partial.arrowTypeKey !== undefined) {
+      const k = partial.arrowTypeKey
+      if (k === "elbow") {
+        updates.type = "arrow"
+        updates.elbowed = true
+        updates.roundness = null
+      } else if (k === "curved") {
+        if (cur.type === "arrow") {
+          updates.elbowed = false
+        }
+        updates.roundness = { type: ROUNDNESS.ADAPTIVE_RADIUS }
+      } else {
+        if (cur.type === "arrow") {
+          updates.elbowed = false
+        }
+        updates.roundness = null
+      }
+    }
+    if ((cur.type === "line" || cur.type === "arrow") && partial.startArrowheadKey !== undefined) {
+      updates.startArrowhead = keyToArrowhead(partial.startArrowheadKey)
+    }
+    if ((cur.type === "line" || cur.type === "arrow") && partial.endArrowheadKey !== undefined) {
+      updates.endArrowhead = keyToArrowhead(partial.endArrowheadKey)
     }
 
     if (Object.keys(updates).length === 0) return el
