@@ -1,9 +1,12 @@
 package dev.subfly.yaba.core.components.webview
 
 import android.webkit.WebView
+import dev.subfly.yaba.core.webview.CanvasExportPayload
 import dev.subfly.yaba.core.webview.WebViewCanvasBridge
 import dev.subfly.yaba.core.webview.YabaCanvasBridgeScripts
 import dev.subfly.yaba.core.webview.YabaWebBridgeScripts
+import kotlin.time.TimeSource
+import kotlinx.coroutines.delay
 
 @Suppress("FunctionName")
 internal fun CanvasWebViewBridge(
@@ -74,5 +77,20 @@ internal fun CanvasWebViewBridge(
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.CANVAS_BRIDGE_READY_LOOSE)) return "{}"
         val raw = evaluateJs(webView, YabaCanvasBridgeScripts.GET_CANVAS_SELECTION_LINK_CONTEXT_SCRIPT)
         return decodeJsStringResult(raw)
+    }
+
+    override suspend fun exportCanvasImage(requestJson: String): ByteArray? {
+        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.CANVAS_BRIDGE_READY)) return null
+        evaluateJs(webView, YabaCanvasBridgeScripts.exportCanvasImageKickoffScript(requestJson))
+        val deadline = TimeSource.Monotonic.markNow()
+        while (deadline.elapsedNow().inWholeMilliseconds < 120_000L) {
+            val raw = evaluateJs(webView, YabaCanvasBridgeScripts.EXPORT_CANVAS_IMAGE_POLL_SCRIPT)
+            val json = decodeJsStringResult(raw)
+            if (json.isNotBlank()) {
+                return CanvasExportPayload.decodeBytesOrNull(json)
+            }
+            delay(24L)
+        }
+        return null
     }
 }

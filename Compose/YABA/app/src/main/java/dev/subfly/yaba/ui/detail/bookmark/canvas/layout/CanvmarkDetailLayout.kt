@@ -30,13 +30,16 @@ import dev.subfly.yaba.core.components.YabaIcon
 import dev.subfly.yaba.core.model.utils.YabaColor
 import dev.subfly.yaba.core.state.detail.canvmark.CanvmarkDetailUIState
 import dev.subfly.yaba.ui.detail.composables.BookmarkDetailLabel
+import dev.subfly.yaba.ui.detail.composables.BookmarkDetailReminderSectionContent
 import dev.subfly.yaba.util.formatDateTime
+import dev.subfly.yaba.core.state.detail.canvmark.CanvmarkDetailEvent
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun CanvmarkDetailLayout(
     state: CanvmarkDetailUIState,
     onHide: () -> Unit,
+    onEvent: (CanvmarkDetailEvent) -> Unit,
 ) {
     val mainColor = state.bookmark?.parentFolder?.color ?: YabaColor.BLUE
     val bookmark = state.bookmark
@@ -118,6 +121,16 @@ internal fun CanvmarkDetailLayout(
                             },
                         )
                     }
+                }
+            }
+            state.reminderDateEpochMillis?.let { millis ->
+                item { Spacer(modifier = Modifier.height(24.dp)) }
+                item {
+                    BookmarkDetailReminderSectionContent(
+                        reminderDateEpochMillis = millis,
+                        mainColor = mainColor,
+                        onCancelReminder = { onEvent(CanvmarkDetailEvent.OnCancelReminder) },
+                    )
                 }
             }
             item { Spacer(modifier = Modifier.height(56.dp)) }

@@ -67,6 +67,13 @@ private val notificationTitlesByKind: Map<BookmarkKind, List<Int>> = mapOf(
         R.string.notification_title_4,
         R.string.notification_title_5,
     ),
+    BookmarkKind.CANVAS to listOf(
+        R.string.notification_title_1,
+        R.string.notification_title_2,
+        R.string.notification_title_3,
+        R.string.notification_title_4,
+        R.string.notification_title_5,
+    ),
 )
 
 private val notificationMessagesByKind: Map<BookmarkKind, List<Int>> = mapOf(
@@ -92,6 +99,13 @@ private val notificationMessagesByKind: Map<BookmarkKind, List<Int>> = mapOf(
         R.string.notification_message_5,
     ),
     BookmarkKind.FILE to listOf(
+        R.string.notification_message_1,
+        R.string.notification_message_2,
+        R.string.notification_message_3,
+        R.string.notification_message_4,
+        R.string.notification_message_5,
+    ),
+    BookmarkKind.CANVAS to listOf(
         R.string.notification_message_1,
         R.string.notification_message_2,
         R.string.notification_message_3,

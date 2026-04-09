@@ -16,4 +16,11 @@ sealed interface CanvmarkDetailEvent {
     data object OnCaptureImageFromCamera : CanvmarkDetailEvent
     data object OnConsumedPendingImageInsert : CanvmarkDetailEvent
     data object OnDeleteBookmark : CanvmarkDetailEvent
+    data class OnScheduleReminder(
+        val title: String,
+        val message: String,
+        val triggerAtEpochMillis: Long,
+    ) : CanvmarkDetailEvent
+    data object OnCancelReminder : CanvmarkDetailEvent
+    data class OnExportImageReady(val bytes: ByteArray, val extension: String) : CanvmarkDetailEvent
 }

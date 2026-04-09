@@ -17,6 +17,7 @@ data class CanvmarkDetailUIState(
     val canvasStyle: CanvasHostStyleState = CanvasHostStyleState(),
     val optionsSheetVisible: Boolean = false,
     val pendingImageDataUrl: String? = null,
+    val reminderDateEpochMillis: Long? = null,
 )
 
 fun CanvmarkDetailUIState.detailWebShellPhase(): DetailWebShellPhase =

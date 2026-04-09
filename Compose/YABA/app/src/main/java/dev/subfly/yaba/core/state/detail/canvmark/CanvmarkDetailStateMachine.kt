@@ -8,6 +8,7 @@ import dev.subfly.yaba.core.filesystem.BookmarkFileManager
 import dev.subfly.yaba.core.filesystem.access.YabaFileAccessor
 import dev.subfly.yaba.core.managers.AllBookmarksManager
 import dev.subfly.yaba.core.managers.CanvmarkManager
+import dev.subfly.yaba.core.notifications.NotificationManager
 import dev.subfly.yaba.core.model.ui.BookmarkPreviewUiModel
 import dev.subfly.yaba.core.state.base.BaseStateMachine
 import dev.subfly.yaba.core.webview.WebShellLoadResult
@@ -23,7 +24,7 @@ import kotlinx.coroutines.withContext
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, ExperimentalEncodingApi::class)
 class CanvmarkDetailStateMachine :
     BaseStateMachine<CanvmarkDetailUIState, CanvmarkDetailEvent>(
         initialState = CanvmarkDetailUIState(),
@@ -49,6 +50,9 @@ class CanvmarkDetailStateMachine :
             CanvmarkDetailEvent.OnCaptureImageFromCamera -> onCaptureImageFromCamera()
             CanvmarkDetailEvent.OnConsumedPendingImageInsert -> onConsumedPendingImageInsert()
             CanvmarkDetailEvent.OnDeleteBookmark -> onDeleteBookmark()
+            is CanvmarkDetailEvent.OnScheduleReminder -> onScheduleReminder(event)
+            CanvmarkDetailEvent.OnCancelReminder -> onCancelReminder()
+            is CanvmarkDetailEvent.OnExportImageReady -> onExportImageReady(event)
         }
     }
 
@@ -59,6 +63,11 @@ class CanvmarkDetailStateMachine :
         webShellLoadedOk = false
         bookmarkIdFlow.value = bookmarkId
         AllBookmarksManager.recordBookmarkView(bookmarkId)
+
+        launch {
+            val reminderDate = NotificationManager.getPendingReminderDate(bookmarkId)
+            updateState { it.copy(reminderDateEpochMillis = reminderDate) }
+        }
 
         dataSubscriptionJob?.cancel()
         dataSubscriptionJob = launch {
@@ -117,6 +126,7 @@ class CanvmarkDetailStateMachine :
                             metrics = current.metrics,
                             canvasStyle = current.canvasStyle,
                             optionsSheetVisible = current.optionsSheetVisible,
+                            reminderDateEpochMillis = current.reminderDateEpochMillis,
                         )
                     }
                 }
@@ -216,7 +226,51 @@ class CanvmarkDetailStateMachine :
         AllBookmarksManager.deleteBookmarks(listOf(bookmarkId))
     }
 
-    @OptIn(ExperimentalEncodingApi::class)
+    private fun onScheduleReminder(event: CanvmarkDetailEvent.OnScheduleReminder) {
+        val bookmarkId = bookmarkIdFlow.value ?: return
+        val bookmark = currentState().bookmark ?: return
+        launch {
+            NotificationManager.cancelReminder(bookmarkId)
+            NotificationManager.scheduleReminder(
+                bookmarkId = bookmarkId,
+                bookmarkKindCode = bookmark.kind.code,
+                title = event.title,
+                message = event.message,
+                bookmarkLabel = bookmark.label,
+                triggerDateEpochMillis = event.triggerAtEpochMillis,
+            )
+            updateState { it.copy(reminderDateEpochMillis = event.triggerAtEpochMillis) }
+        }
+    }
+
+    private fun onCancelReminder() {
+        val bookmarkId = bookmarkIdFlow.value ?: return
+        launch { NotificationManager.cancelReminder(bookmarkId) }
+        updateState { it.copy(reminderDateEpochMillis = null) }
+    }
+
+    private fun onExportImageReady(event: CanvmarkDetailEvent.OnExportImageReady) {
+        launch {
+            if (event.bytes.isEmpty()) return@launch
+            val label = currentState().bookmark?.label.orEmpty()
+            val base = sanitizeExportBaseName(label)
+            val ext = event.extension.lowercase().removePrefix(".")
+            if (ext != "png" && ext != "svg") return@launch
+            try {
+                YabaFileAccessor.saveFileCopy(
+                    bytes = event.bytes,
+                    suggestedName = base,
+                    extension = ext,
+                )
+            } catch (_: Exception) {
+                // Picker cancelled or write failed.
+            }
+        }
+    }
+
+    private fun sanitizeExportBaseName(label: String): String =
+        label.ifBlank { "canvas" }.replace(Regex("[^a-zA-Z0-9_-]"), "_")
+
     private fun toDataUrl(bytes: ByteArray, extension: String): String {
         val normalized = extension.lowercase().removePrefix(".")
         val mime = when (normalized) {

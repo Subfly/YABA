@@ -44,4 +44,55 @@ object YabaCanvasBridgeScripts {
 
     const val GET_CANVAS_SELECTION_LINK_CONTEXT_SCRIPT: String =
         "window.YabaCanvasBridge?.getCanvasSelectionLinkContext?.() ?? '{}';"
+
+    /**
+     * Starts async export; result is read via [EXPORT_CANVAS_IMAGE_POLL_SCRIPT].
+     * Android [WebView.evaluateJavascript] does not reliably await returned Promises, so we poll
+     * [window.__yabaCanvasExport] instead of returning the Promise from a single evaluation.
+     */
+    fun exportCanvasImageKickoffScript(requestJson: String): String {
+        val escaped = escapeForJsSingleQuotedString(requestJson)
+        return """
+            (function(){
+              try {
+                delete window.__yabaCanvasExport;
+                window.__yabaCanvasExport = { status: 'pending', value: null };
+                var b = window.YabaCanvasBridge;
+                if (!b || !b.exportImage) {
+                  window.__yabaCanvasExport = { status: 'ready', value: JSON.stringify({ok:false,error:'no_export'}) };
+                  return;
+                }
+                var p = b.exportImage('$escaped');
+                if (p && typeof p.then === 'function') {
+                  p.then(function(v) {
+                    window.__yabaCanvasExport = { status: 'ready', value: v };
+                  }).catch(function(e) {
+                    window.__yabaCanvasExport = { status: 'ready', value: JSON.stringify({ok:false,error:String(e)}) };
+                  });
+                } else {
+                  window.__yabaCanvasExport = { status: 'ready', value: JSON.stringify({ok:false,error:'not_a_promise'}) };
+                }
+              } catch (e) {
+                window.__yabaCanvasExport = { status: 'ready', value: JSON.stringify({ok:false,error:String(e)}) };
+              }
+            })();
+        """.trimIndent()
+    }
+
+    const val EXPORT_CANVAS_IMAGE_POLL_SCRIPT: String =
+        """
+            (function(){
+              try {
+                var w = window.__yabaCanvasExport;
+                if (!w) return '';
+                if (w.status === 'pending') return '';
+                if (w.status === 'ready') {
+                  var v = w.value;
+                  delete window.__yabaCanvasExport;
+                  return (typeof v === 'string') ? v : '';
+                }
+              } catch (e) {}
+              return '';
+            })();
+        """
 }

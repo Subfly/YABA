@@ -78,9 +78,13 @@ import dev.subfly.yaba.util.InlineActionChoice
 import dev.subfly.yaba.util.InlineLinkSheetResult
 import dev.subfly.yaba.util.InlineMentionSheetResult
 import dev.subfly.yaba.util.InlineSheetAction
+import dev.subfly.yaba.util.PrivateBookmarkPasswordReason
 import dev.subfly.yaba.util.ResultStoreKeys
+import dev.subfly.yaba.util.rememberPrivateBookmarkProtectedAction
 import dev.subfly.yaba.util.rememberUrlLauncher
+import kotlin.time.TimeSource
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -92,6 +96,7 @@ internal fun CanvmarkContentLayout(
     state: CanvmarkDetailUIState,
     onShowDetail: () -> Unit,
     onEvent: (CanvmarkDetailEvent) -> Unit,
+    onShowRemindMePicker: () -> Unit = {},
 ) {
     val navigator = LocalContentNavigator.current
     val creationNavigator = LocalCreationContentNavigator.current
@@ -106,6 +111,7 @@ internal fun CanvmarkContentLayout(
     var isCreationSheetOpening by remember { mutableStateOf(false) }
     var pendingCanvasLinkTap by remember { mutableStateOf<CanvasLinkTapEvent?>(null) }
     var pendingCanvasMentionTap by remember { mutableStateOf<CanvasMentionTapEvent?>(null) }
+    var pendingCanvasExport by remember { mutableStateOf<Pair<String, Boolean>?>(null) }
 
     val folderAccent = remember(state.bookmark) { bookmarkFolderAccentColor(state.bookmark) }
     val menuIconButtonColors = bookmarkDetailIconButtonColors(folderAccent)
@@ -117,6 +123,45 @@ internal fun CanvmarkContentLayout(
         state.initialSceneJson,
         state.webContentLoadFailed,
     ) { state.detailWebShellPhase() }
+
+    suspend fun awaitCanvasBridge(
+        timeoutMs: Long = 4_000L,
+        pollMs: Long = 75L,
+    ): WebViewCanvasBridge? {
+        val start = TimeSource.Monotonic.markNow()
+        while (start.elapsedNow().inWholeMilliseconds < timeoutMs) {
+            val bridge = canvasBridge
+            if (bridge != null) return bridge
+            delay(pollMs)
+        }
+        return canvasBridge
+    }
+
+    suspend fun exportCanvasImageWithRetry(format: String, exportBackground: Boolean): ByteArray? {
+        val bridge = awaitCanvasBridge() ?: return null
+        val jsonReq = """{"format":"$format","exportBackground":$exportBackground}"""
+        repeat(4) { attempt ->
+            val bytes = bridge.exportCanvasImage(jsonReq)
+            if (bytes != null && bytes.isNotEmpty()) return bytes
+            if (attempt < 3) delay(120)
+        }
+        return null
+    }
+
+    val runCanvasExportIfAllowed = rememberPrivateBookmarkProtectedAction(
+        model = state.bookmark,
+        reason = PrivateBookmarkPasswordReason.EDIT_BOOKMARK,
+    ) {
+        val req =
+            pendingCanvasExport.also { pendingCanvasExport = null }
+                ?: return@rememberPrivateBookmarkProtectedAction
+        val (fmt, bg) = req
+        scope.launch {
+            val bytes = exportCanvasImageWithRetry(fmt, bg) ?: return@launch
+            val ext = if (fmt == "svg") "svg" else "png"
+            onEvent(CanvmarkDetailEvent.OnExportImageReady(bytes = bytes, extension = ext))
+        }
+    }
 
     fun openBookmarkByKind(kindCode: Int, bookmarkId: String) {
         val route =
@@ -540,6 +585,15 @@ internal fun CanvmarkContentLayout(
                         onDismissRequest = { isMenuExpanded = false },
                         state = state,
                         onEvent = onEvent,
+                        onShowRemindMePicker = onShowRemindMePicker,
+                        onExportPng = { exportBackground ->
+                            pendingCanvasExport = "png" to exportBackground
+                            runCanvasExportIfAllowed()
+                        },
+                        onExportSvg = { exportBackground ->
+                            pendingCanvasExport = "svg" to exportBackground
+                            runCanvasExportIfAllowed()
+                        },
                     )
                 }
             },

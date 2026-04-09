@@ -22,13 +22,17 @@ internal object YabaWebAndroidSecurity {
      * OPS paths; it also loads layout stylesheets via `blob:` URLs, and injected `@font-face`
      * rules load font files as `blob:` URLs. Those require [base-uri 'self'] (not `'none'`),
      * and `blob:` on [style-src] and [font-src].
+     *
+     * Excalidraw (canvas) uses dynamic evaluation in font subsetting / bundled helpers
+     * (`subset-shared` and similar); export and rendering hit that path. CSP has no
+     * per-call-site allowlist — [script-src] must include `'unsafe-eval'` for those APIs.
      */
     const val CONTENT_SECURITY_POLICY: String =
         "default-src 'none'; " +
             "form-action 'none'; " +
             "connect-src 'self' blob:; " +
             "img-src 'self' blob: data: yaba-asset:; " +
-            "script-src 'self' 'wasm-unsafe-eval'; " +
+            "script-src 'self' 'wasm-unsafe-eval' 'unsafe-eval'; " +
             "style-src 'self' 'unsafe-inline' blob:; " +
             "font-src 'self' data: blob:; " +
             "worker-src 'self' blob:; " +

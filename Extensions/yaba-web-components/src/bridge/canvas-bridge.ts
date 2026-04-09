@@ -1,4 +1,4 @@
-import { FONT_FAMILY, newElementWith, ROUNDNESS } from "@excalidraw/excalidraw"
+import { exportToBlob, exportToSvg, FONT_FAMILY, newElementWith, ROUNDNESS } from "@excalidraw/excalidraw"
 
 /**
  * Values match `@excalidraw/excalidraw` `constants` (not re-exported from main entry; deep import breaks Vite).
@@ -396,6 +396,80 @@ function elementSupportsRoundness(el: { type: string }): boolean {
 function getEdgeKey(el: { roundness?: unknown }): "sharp" | "round" {
   if (el.roundness == null) return "sharp"
   return "round"
+}
+
+function bytesToBase64(bytes: Uint8Array): string {
+  let binary = ""
+  const chunkSize = 0x8000
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize))
+  }
+  return btoa(binary)
+}
+
+async function blobToBase64(blob: Blob): Promise<string> {
+  const buf = await blob.arrayBuffer()
+  return bytesToBase64(new Uint8Array(buf))
+}
+
+/** Must match the scale we expose in the app (e.g. Excalidraw “3x” export). */
+const YABA_EXPORT_SCALE = 3
+
+function buildCanvasExportAppState(exportBackground: boolean): Record<string, unknown> {
+  const api = excalidrawApi!
+  const appState = api.getAppState() as Record<string, unknown>
+  return {
+    ...appState,
+    exportBackground,
+    exportWithDarkMode: false,
+    exportEmbedScene: false,
+    exportScale: YABA_EXPORT_SCALE,
+  }
+}
+
+async function yabaExportCanvasImage(format: "png" | "svg", exportBackground: boolean): Promise<string> {
+  const api = excalidrawApi
+  if (!api) return JSON.stringify({ ok: false, error: "no_api" })
+  const elements = api.getSceneElements()
+  const files = api.getFiles()
+  const exportAppState = buildCanvasExportAppState(exportBackground)
+
+  try {
+    if (format === "png") {
+      /**
+       * `@excalidraw/utils` `exportToBlob` → `exportToCanvas` does **not** apply
+       * `appState.exportScale` unless `maxWidthOrHeight` is set. Otherwise it uses
+       * `getDimensions?.(w,h) ?? { width, height }` with `scale: ret.scale ?? 1`.
+       * So merging `exportScale: 3` into appState alone yields a 1× bitmap — blurry on device.
+       */
+      const blob = await exportToBlob({
+        elements,
+        files,
+        appState: exportAppState,
+        mimeType: "image/png",
+        exportPadding: 10,
+        getDimensions: (width: number, height: number) => ({
+          width: width * YABA_EXPORT_SCALE,
+          height: height * YABA_EXPORT_SCALE,
+          scale: YABA_EXPORT_SCALE,
+        }),
+      })
+      const base64 = await blobToBase64(blob)
+      return JSON.stringify({ ok: true, base64 })
+    }
+    const svg = await exportToSvg({
+      elements,
+      files,
+      appState: exportAppState,
+      exportPadding: 10,
+    })
+    const svgString = svg.outerHTML
+    const utf8 = new TextEncoder().encode(svgString)
+    const base64 = bytesToBase64(utf8)
+    return JSON.stringify({ ok: true, base64 })
+  } catch (e) {
+    return JSON.stringify({ ok: false, error: String(e) })
+  }
 }
 
 const CANVAS_AUTOSAVE_IDLE_MS = 1000
@@ -892,6 +966,8 @@ export interface YabaCanvasBridge {
   toggleObjectsSnapMode: () => void
   applyCanvasInline: (json: string) => void
   getCanvasSelectionLinkContext: () => string
+  /** JSON request `{ format: "png" | "svg", exportBackground: boolean }` → JSON result `{ ok, base64?, error? }`. */
+  exportImage: (requestJson: string) => Promise<string>
 }
 
 export function initCanvasBridge(api: ExcalidrawImperativeAPI): void {
@@ -1017,6 +1093,15 @@ export function initCanvasBridge(api: ExcalidrawImperativeAPI): void {
         return JSON.stringify(getCanvasSelectionLinkContext(api))
       } catch {
         return "{}"
+      }
+    },
+    exportImage: async (requestJson: string) => {
+      try {
+        const req = JSON.parse(requestJson) as { format: "png" | "svg"; exportBackground: boolean }
+        const fmt = req.format === "svg" ? "svg" : "png"
+        return await yabaExportCanvasImage(fmt, Boolean(req.exportBackground))
+      } catch (e) {
+        return JSON.stringify({ ok: false, error: String(e) })
       }
     },
   }

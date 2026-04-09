@@ -15,4 +15,5 @@ interface WebViewCanvasBridge {
     suspend fun toggleObjectsSnapMode()
     suspend fun applyCanvasInline(json: String)
     suspend fun getCanvasSelectionLinkContext(): String
+    suspend fun exportCanvasImage(requestJson: String): ByteArray?
 }
