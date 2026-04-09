@@ -36,6 +36,29 @@ export type YabaNativeHostPayload =
       canUndo: boolean
       canRedo: boolean
     }
+  /** Selection-driven style snapshot for native options sheet (YABA palette codes + slots). */
+  | {
+      type: "canvasStyleState"
+      hasSelection: boolean
+      selectionCount: number
+      strokeYabaCode: number
+      backgroundYabaCode: number
+      strokeWidthKey: "thin" | "bold" | "extraBold"
+      strokeStyle: "solid" | "dashed" | "dotted"
+      roughnessKey: "architect" | "artist" | "cartoonist"
+      edgeKey: "sharp" | "round"
+      fontSizeKey: "S" | "M" | "L" | "XL"
+      /** 0–10 → Excalidraw opacity 0–100 in steps of 10 */
+      opacityStep: number
+      mixedStroke: boolean
+      mixedBackground: boolean
+      mixedStrokeWidth: boolean
+      mixedStrokeStyle: boolean
+      mixedRoughness: boolean
+      mixedEdge: boolean
+      mixedFontSize: boolean
+      mixedOpacity: boolean
+    }
   | { type: "annotationTap"; id: string }
   | { type: "mathTap"; kind: "inline" | "block"; pos: number; latex: string }
   | {

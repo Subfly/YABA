@@ -2,6 +2,9 @@
 
 package dev.subfly.yaba.ui.detail.bookmark.canvas.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -108,10 +111,11 @@ internal fun CanvmarkEditorToolbar(
     modifier: Modifier = Modifier,
     color: YabaColor,
     metrics: CanvasHostMetrics,
+    optionsSheetVisible: Boolean,
     onToolSelected: (String) -> Unit,
     onUndo: () -> Unit,
     onRedo: () -> Unit,
-    onDeleteSelected: () -> Unit,
+    onToggleOptionsSheet: () -> Unit,
     onPickImageFromGallery: () -> Unit,
     onCaptureImageFromCamera: () -> Unit,
     onSaveDocument: () -> Unit,
@@ -119,8 +123,6 @@ internal fun CanvmarkEditorToolbar(
     val toolbarSaveOpaqueColor = Color(color.iconTintArgb())
     var activeGroup by remember { mutableStateOf<CanvasToolbarGroup?>(null) }
     var activeInsertNested by remember { mutableStateOf<CanvasInsertNested?>(null) }
-
-    val deleteIconColor = Color(YabaColor.RED.iconTintArgb())
 
     LaunchedEffect(activeGroup) {
         if (activeGroup != CanvasToolbarGroup.Insert) {
@@ -136,7 +138,6 @@ internal fun CanvmarkEditorToolbar(
             onToolSelected,
             onUndo,
             onRedo,
-            onDeleteSelected,
             onPickImageFromGallery,
             onCaptureImageFromCamera,
         ) {
@@ -378,20 +379,14 @@ internal fun CanvmarkEditorToolbar(
                     )
                 }
 
-                if (metrics.hasSelection) {
-                    add(
-                        CanvasToolbarAction(
-                            key = "delete-selected",
-                            icon = "delete-02",
-                            tooltipText = "Delete",
-                            segmentAlpha = expandedAreaAlpha(depth = 0),
-                            iconColorOverride = deleteIconColor,
-                            onClick = onDeleteSelected,
-                        ),
-                    )
-                }
             }
         }
+
+    val showOptionsAction =
+        metrics.activeTool == "selection" && metrics.hasSelection
+
+    val toolbarHead = actions.take(2)
+    val toolbarTail = actions.drop(2)
 
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -403,14 +398,73 @@ internal fun CanvmarkEditorToolbar(
             horizontalArrangement = Arrangement.Start,
         ) {
             items(
-                items = actions,
+                items = toolbarHead,
                 key = { it.key },
             ) { action ->
                 val extraPadding =
-                    when (action.key) {
-                        actions.first().key -> CanvasExtraPadding.START
-                        actions.last().key -> CanvasExtraPadding.END
-                        else -> CanvasExtraPadding.NONE
+                    if (action.key == actions.first().key) {
+                        CanvasExtraPadding.START
+                    } else {
+                        CanvasExtraPadding.NONE
+                    }
+
+                CanvasToolbarActionButton(
+                    modifier = Modifier.animateItem(),
+                    folderYabaColor = color,
+                    extraPadding = extraPadding,
+                    action = action,
+                )
+            }
+
+            item(key = "canvas-options-slot") {
+                AnimatedVisibility(
+                    visible = showOptionsAction,
+                    enter = fadeIn(),
+                    exit = fadeOut(),
+                ) {
+                    Box(
+                        modifier =
+                            Modifier
+                                .background(
+                                    color =
+                                        Color(color.iconTintArgb()).copy(
+                                            alpha =
+                                                if (optionsSheetVisible) {
+                                                    0.72f
+                                                } else {
+                                                    ToolbarBaseAlpha
+                                                },
+                                        ),
+                                )
+                                .padding(horizontal = 4.dp)
+                                .navigationBarsPadding(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        CanvasToolbarPlainTooltipBox(tooltipText = "Options") {
+                            IconButton(
+                                onClick = onToggleOptionsSheet,
+                                colors = bookmarkReaderToolbarIconButtonColors(color),
+                                shapes = IconButtonDefaults.shapes(),
+                            ) {
+                                YabaIcon(
+                                    name = "settings-05",
+                                    color = Color.White,
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            items(
+                items = toolbarTail,
+                key = { it.key },
+            ) { action ->
+                val extraPadding =
+                    if (action.key == actions.last().key) {
+                        CanvasExtraPadding.END
+                    } else {
+                        CanvasExtraPadding.NONE
                     }
 
                 CanvasToolbarActionButton(

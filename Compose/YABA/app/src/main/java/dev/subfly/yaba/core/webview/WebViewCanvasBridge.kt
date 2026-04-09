@@ -9,4 +9,6 @@ interface WebViewCanvasBridge {
     suspend fun redo()
     suspend fun deleteSelected()
     suspend fun insertImageFromDataUrl(dataUrl: String)
+    suspend fun applySelectionStyle(json: String)
+    suspend fun canvasLayer(action: String)
 }

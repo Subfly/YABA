@@ -36,5 +36,7 @@ sealed interface YabaWebHostEvent {
 
     data class CanvasMetrics(val metrics: CanvasHostMetrics) : YabaWebHostEvent
 
+    data class CanvasStyleState(val style: CanvasHostStyleState) : YabaWebHostEvent
+
     data class TableOfContentsChanged(val toc: Toc?) : YabaWebHostEvent
 }

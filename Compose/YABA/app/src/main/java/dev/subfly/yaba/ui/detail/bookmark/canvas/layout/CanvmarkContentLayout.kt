@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -43,6 +45,7 @@ import dev.subfly.yaba.core.webview.YabaWebAppearance
 import dev.subfly.yaba.core.webview.YabaWebFeature
 import dev.subfly.yaba.core.webview.YabaWebHostEvent
 import dev.subfly.yaba.core.webview.YabaWebPlatform
+import dev.subfly.yaba.ui.detail.bookmark.canvas.components.CanvmarkCanvasOptionsSheet
 import dev.subfly.yaba.ui.detail.bookmark.canvas.components.CanvmarkContentDropdownMenu
 import dev.subfly.yaba.ui.detail.bookmark.canvas.components.CanvmarkEditorToolbar
 import dev.subfly.yaba.ui.detail.bookmark.components.BookmarkDetailContentTopBar
@@ -176,6 +179,9 @@ internal fun CanvmarkContentLayout(
                                         is YabaWebHostEvent.CanvasMetrics ->
                                             onEvent(CanvmarkDetailEvent.OnCanvasMetricsChanged(event.metrics))
 
+                                        is YabaWebHostEvent.CanvasStyleState ->
+                                            onEvent(CanvmarkDetailEvent.OnCanvasStyleStateChanged(event.style))
+
                                         else -> Unit
                                     }
                                 },
@@ -201,12 +207,13 @@ internal fun CanvmarkContentLayout(
                     modifier = Modifier.fillMaxWidth(),
                     color = folderAccent,
                     metrics = state.metrics,
+                    optionsSheetVisible = state.optionsSheetVisible,
                     onToolSelected = { tool ->
                         scope.launch { canvasBridge?.setActiveTool(tool) }
                     },
                     onUndo = { scope.launch { canvasBridge?.undo() } },
                     onRedo = { scope.launch { canvasBridge?.redo() } },
-                    onDeleteSelected = { scope.launch { canvasBridge?.deleteSelected() } },
+                    onToggleOptionsSheet = { onEvent(CanvmarkDetailEvent.OnToggleCanvasOptionsSheet) },
                     onPickImageFromGallery = { onEvent(CanvmarkDetailEvent.OnPickImageFromGallery) },
                     onCaptureImageFromCamera = { onEvent(CanvmarkDetailEvent.OnCaptureImageFromCamera) },
                     onSaveDocument = {
@@ -246,5 +253,51 @@ internal fun CanvmarkContentLayout(
             },
             loadingIndicator = {},
         )
+
+        if (webShellPhase == DetailWebShellPhase.Bootstrapping ||
+            webShellPhase == DetailWebShellPhase.Ready
+        ) {
+            val optionsSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+            val canShowOptionsSheet =
+                state.metrics.activeTool == "selection" && state.metrics.hasSelection
+
+            LaunchedEffect(state.optionsSheetVisible, canShowOptionsSheet) {
+                if (state.optionsSheetVisible && canShowOptionsSheet) {
+                    optionsSheetState.show()
+                } else {
+                    optionsSheetState.hide()
+                }
+            }
+
+            if (optionsSheetState.isVisible || state.optionsSheetVisible) {
+                ModalBottomSheet(
+                    onDismissRequest = { onEvent(CanvmarkDetailEvent.OnDismissCanvasOptionsSheet) },
+                    sheetState = optionsSheetState,
+                    scrimColor = Color.Transparent,
+                    sheetGesturesEnabled = false,
+                    dragHandle = null,
+                    containerColor = MaterialTheme.colorScheme.surface,
+                ) {
+                    if (canShowOptionsSheet) {
+                        CanvmarkCanvasOptionsSheet(
+                            style = state.canvasStyle,
+                            onApplyPatch = { patch ->
+                                scope.launch {
+                                    canvasBridge?.applySelectionStyle(patch.toJsonString())
+                                }
+                            },
+                            onLayer = { action ->
+                                scope.launch {
+                                    canvasBridge?.canvasLayer(action)
+                                }
+                            },
+                            onDeleteSelected = {
+                                scope.launch { canvasBridge?.deleteSelected() }
+                            },
+                        )
+                    }
+                }
+            }
+        }
     }
 }

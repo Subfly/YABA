@@ -44,4 +44,14 @@ internal fun CanvasWebViewBridge(
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.CANVAS_BRIDGE_READY)) return
         evaluateJs(webView, YabaCanvasBridgeScripts.insertImageFromDataUrlScript(dataUrl))
     }
+
+    override suspend fun applySelectionStyle(json: String) {
+        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.CANVAS_BRIDGE_READY_LOOSE)) return
+        evaluateJs(webView, YabaCanvasBridgeScripts.applySelectionStyleScript(json))
+    }
+
+    override suspend fun canvasLayer(action: String) {
+        if (!waitForBridgeReady(webView, YabaWebBridgeScripts.CANVAS_BRIDGE_READY_LOOSE)) return
+        evaluateJs(webView, YabaCanvasBridgeScripts.canvasLayerScript(action))
+    }
 }

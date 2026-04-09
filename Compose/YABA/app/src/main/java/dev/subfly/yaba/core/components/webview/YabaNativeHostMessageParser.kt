@@ -5,6 +5,7 @@ import dev.subfly.yaba.core.webview.InlineLinkTapEvent
 import dev.subfly.yaba.core.webview.InlineMentionTapEvent
 import dev.subfly.yaba.core.webview.MathTapEvent
 import dev.subfly.yaba.core.webview.CanvasHostMetrics
+import dev.subfly.yaba.core.webview.CanvasHostStyleState
 import dev.subfly.yaba.core.webview.Toc
 import dev.subfly.yaba.core.webview.TocItem
 import dev.subfly.yaba.core.webview.WebShellLoadResult
@@ -35,6 +36,7 @@ internal object YabaNativeHostMessageParser {
             "canvasAutosaveIdle" -> YabaWebHostEvent.CanvasIdleForAutosave
             "readerMetrics" -> parseReaderMetrics(root)
             "canvasMetrics" -> parseCanvasMetrics(root)
+            "canvasStyleState" -> parseCanvasStyleState(root)
             "annotationTap" -> {
                 val id = root.optString("id", "")
                 if (id.isNotBlank()) onAnnotationTap?.invoke(id)
@@ -159,6 +161,30 @@ internal object YabaNativeHostMessageParser {
                 hasSelection = root.optBoolean("hasSelection"),
                 canUndo = root.optBoolean("canUndo"),
                 canRedo = root.optBoolean("canRedo"),
+            ),
+        )
+
+    private fun parseCanvasStyleState(root: JSONObject): YabaWebHostEvent.CanvasStyleState =
+        YabaWebHostEvent.CanvasStyleState(
+            CanvasHostStyleState(
+                hasSelection = root.optBoolean("hasSelection"),
+                selectionCount = root.optInt("selectionCount"),
+                strokeYabaCode = root.optInt("strokeYabaCode"),
+                backgroundYabaCode = root.optInt("backgroundYabaCode"),
+                strokeWidthKey = root.optString("strokeWidthKey", "thin"),
+                strokeStyle = root.optString("strokeStyle", "solid"),
+                roughnessKey = root.optString("roughnessKey", "architect"),
+                edgeKey = root.optString("edgeKey", "sharp"),
+                fontSizeKey = root.optString("fontSizeKey", "M"),
+                opacityStep = root.optInt("opacityStep", 10).coerceIn(0, 10),
+                mixedStroke = root.optBoolean("mixedStroke"),
+                mixedBackground = root.optBoolean("mixedBackground"),
+                mixedStrokeWidth = root.optBoolean("mixedStrokeWidth"),
+                mixedStrokeStyle = root.optBoolean("mixedStrokeStyle"),
+                mixedRoughness = root.optBoolean("mixedRoughness"),
+                mixedEdge = root.optBoolean("mixedEdge"),
+                mixedFontSize = root.optBoolean("mixedFontSize"),
+                mixedOpacity = root.optBoolean("mixedOpacity"),
             ),
         )
 

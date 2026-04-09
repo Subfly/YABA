@@ -21,4 +21,14 @@ object YabaCanvasBridgeScripts {
         val escaped = escapeForJsSingleQuotedString(dataUrl)
         return "window.YabaCanvasBridge?.insertImageFromDataUrl?.('$escaped');"
     }
+
+    fun applySelectionStyleScript(json: String): String {
+        val escaped = escapeForJsSingleQuotedString(json)
+        return "window.YabaCanvasBridge?.applySelectionStyle?.('$escaped');"
+    }
+
+    fun canvasLayerScript(action: String): String {
+        val escaped = escapeForJsSingleQuotedString(action)
+        return "window.YabaCanvasBridge?.canvasLayer?.('$escaped');"
+    }
 }

@@ -13,12 +13,13 @@
 [data-yaba-canvas] .excalidraw .App-toolbar-container,
 [data-yaba-canvas] .excalidraw .App-toolbar,
 [data-yaba-canvas] .excalidraw .App-toolbar--mobile,
-[data-yaba-canvas] .excalidraw .App-bottom-bar,
 [data-yaba-canvas] .excalidraw .App-menu_top,
 [data-yaba-canvas] .excalidraw .App-menu_bottom,
-[data-yaba-canvas] .excalidraw .App-mobile-menu,
 [data-yaba-canvas] .excalidraw .HintViewer,
 [data-yaba-canvas] .excalidraw .mobile-misc-tools-container,
+[data-yaba-canvas] .excalidraw .App-bottom-bar,
+[data-yaba-canvas] .excalidraw .App-mobile-menu,
+[data-yaba-canvas] .excalidraw .selected-shape-actions,
 [data-yaba-canvas] .excalidraw .default-sidebar-trigger {
   display: none !important;
   visibility: hidden !important;

@@ -7,6 +7,20 @@ import { installCanvasContextMenuSeparatorCleanup } from "./contextMenuHiddenTes
 
 function CanvasApp() {
   const rootRef = useRef<HTMLDivElement>(null)
+  const uiOptions = {
+    canvasActions: {
+      loadScene: false,
+      saveAsImage: false,
+      saveToActiveFile: false,
+      export: false,
+      clearCanvas: false,
+      toggleTheme: false,
+      changeViewBackgroundColor: false,
+    },
+    tools: {
+      image: false,
+    },
+  } as any
 
   useEffect(() => {
     const el = rootRef.current
@@ -37,20 +51,7 @@ function CanvasApp() {
         onChange={() => {
           onCanvasChanged()
         }}
-        UIOptions={{
-          canvasActions: {
-            loadScene: false,
-            saveAsImage: false,
-            saveToActiveFile: false,
-            export: false,
-            clearCanvas: false,
-            toggleTheme: false,
-            changeViewBackgroundColor: false,
-          },
-          tools: {
-            image: false,
-          },
-        }}
+        UIOptions={uiOptions}
       />
     </div>
   )

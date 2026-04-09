@@ -42,6 +42,9 @@ class CanvmarkDetailStateMachine :
             is CanvmarkDetailEvent.OnSave -> onSave(event.sceneJson)
             is CanvmarkDetailEvent.OnWebInitialContentLoad -> onWebInitialContentLoad(event)
             is CanvmarkDetailEvent.OnCanvasMetricsChanged -> onCanvasMetricsChanged(event)
+            is CanvmarkDetailEvent.OnCanvasStyleStateChanged -> onCanvasStyleStateChanged(event)
+            CanvmarkDetailEvent.OnToggleCanvasOptionsSheet -> onToggleCanvasOptionsSheet()
+            CanvmarkDetailEvent.OnDismissCanvasOptionsSheet -> onDismissCanvasOptionsSheet()
             CanvmarkDetailEvent.OnPickImageFromGallery -> onPickImageFromGallery()
             CanvmarkDetailEvent.OnCaptureImageFromCamera -> onCaptureImageFromCamera()
             CanvmarkDetailEvent.OnConsumedPendingImageInsert -> onConsumedPendingImageInsert()
@@ -112,6 +115,8 @@ class CanvmarkDetailStateMachine :
                         emitted.copy(
                             pendingImageDataUrl = current.pendingImageDataUrl,
                             metrics = current.metrics,
+                            canvasStyle = current.canvasStyle,
+                            optionsSheetVisible = current.optionsSheetVisible,
                         )
                     }
                 }
@@ -141,7 +146,29 @@ class CanvmarkDetailStateMachine :
     }
 
     private fun onCanvasMetricsChanged(event: CanvmarkDetailEvent.OnCanvasMetricsChanged) {
-        updateState { it.copy(metrics = event.metrics) }
+        val canShowOptions =
+            event.metrics.activeTool == "selection" && event.metrics.hasSelection
+        updateState {
+            it.copy(
+                metrics = event.metrics,
+                optionsSheetVisible = if (!canShowOptions) false else it.optionsSheetVisible,
+            )
+        }
+    }
+
+    private fun onCanvasStyleStateChanged(event: CanvmarkDetailEvent.OnCanvasStyleStateChanged) {
+        updateState { it.copy(canvasStyle = event.style) }
+    }
+
+    private fun onToggleCanvasOptionsSheet() {
+        val m = currentState().metrics
+        val canShow = m.activeTool == "selection" && m.hasSelection
+        if (!canShow) return
+        updateState { it.copy(optionsSheetVisible = !it.optionsSheetVisible) }
+    }
+
+    private fun onDismissCanvasOptionsSheet() {
+        updateState { it.copy(optionsSheetVisible = false) }
     }
 
     private fun onPickImageFromGallery() {
