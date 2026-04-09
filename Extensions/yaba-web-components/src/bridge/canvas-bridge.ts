@@ -1049,6 +1049,8 @@ export interface YabaCanvasBridge {
 
 export function initCanvasBridge(api: ExcalidrawImperativeAPI): void {
   excalidrawApi = api
+  // Reset each Excalidraw mount: flag is module-scoped; otherwise 2nd open never posts shellLoad.
+  shellLoadPublished = false
   lastMetricsJson = null
   lastStyleJson = null
   clearAutosaveTimer()
