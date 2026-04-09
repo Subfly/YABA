@@ -14,10 +14,16 @@ data class NotemarkDetailUIState(
     /** Base URL for resolving relative assets in the editor (`file://.../bookmarks/<id>/`). */
     val assetsBaseUrl: String? = null,
     /**
-     * Document JSON loaded once from disk for bootstrapping the WebView editor. Live edits stay
-     * in the WebView; persistence is triggered by [NotemarkDetailEvent.OnSave].
+     * Last known document JSON for this screen: set from disk at bootstrap and refreshed after each
+     * successful save so state matches persistence without reloading the WebView (see
+     * [editorContentLoadGeneration]).
      */
     val initialDocumentJson: String? = null,
+    /**
+     * Incremented only when the editor payload is first loaded from disk for this detail session.
+     * Drives a one-time WebView bootstrap; not incremented on save.
+     */
+    val editorContentLoadGeneration: Int = 0,
     val isLoading: Boolean = false,
     /** Set when [OnWebInitialContentLoad] reports [dev.subfly.yaba.core.webview.WebShellLoadResult.Error]. */
     val webContentLoadFailed: Boolean = false,

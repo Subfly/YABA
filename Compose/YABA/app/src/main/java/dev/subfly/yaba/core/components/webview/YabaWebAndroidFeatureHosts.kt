@@ -438,11 +438,12 @@ internal fun YabaEditorFeatureHost(
     LaunchedEffect(
         isPageReady,
         bridgeReadyFromWeb,
-        feature.initialDocumentJson,
+        feature.documentLoadGeneration,
         feature.assetsBaseUrl,
         rendererCrashed
     ) {
         if (!isPageReady || rendererCrashed || !bridgeReadyFromWeb) return@LaunchedEffect
+        if (feature.documentLoadGeneration == 0) return@LaunchedEffect
         applyEditorDocumentJson(
             webView,
             context,
@@ -586,8 +587,9 @@ internal fun YabaCanvasFeatureHost(
         onCanvasBridgeReadyState.value(bridge)
     }
 
-    LaunchedEffect(isPageReady, bridgeReadyFromWeb, feature.initialSceneJson, rendererCrashed) {
+    LaunchedEffect(isPageReady, bridgeReadyFromWeb, feature.sceneLoadGeneration, rendererCrashed) {
         if (!isPageReady || rendererCrashed || !bridgeReadyFromWeb) return@LaunchedEffect
+        if (feature.sceneLoadGeneration == 0) return@LaunchedEffect
         CanvasWebViewBridge(webView).setSceneJson(feature.initialSceneJson)
     }
 

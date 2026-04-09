@@ -10,7 +10,10 @@ import dev.subfly.yaba.core.webview.CanvasHostStyleState
 @Immutable
 data class CanvmarkDetailUIState(
     val bookmark: BookmarkPreviewUiModel? = null,
+    /** Last known scene JSON: from disk at bootstrap, refreshed after successful save. */
     val initialSceneJson: String? = null,
+    /** Incremented only when the scene is first loaded from disk; not on save. */
+    val canvasContentLoadGeneration: Int = 0,
     val isLoading: Boolean = false,
     val webContentLoadFailed: Boolean = false,
     val metrics: CanvasHostMetrics = CanvasHostMetrics(),

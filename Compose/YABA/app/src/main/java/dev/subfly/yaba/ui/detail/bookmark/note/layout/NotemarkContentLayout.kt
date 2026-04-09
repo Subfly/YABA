@@ -469,6 +469,7 @@ internal fun NotemarkContentLayout(
                                     platform = YabaWebPlatform.Compose,
                                     appearance = webAppearance,
                                     readerPreferences = ReaderPreferences(),
+                                    documentLoadGeneration = state.editorContentLoadGeneration,
                                 ),
                                 onHostEvent = { ev ->
                                     when (ev) {

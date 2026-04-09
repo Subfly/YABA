@@ -106,6 +106,7 @@ class NotemarkDetailStateMachine :
                                     val docJson =
                                         NotemarkManager.readNoteDocumentJson(id).orEmpty()
                                     lastPersistedJson = docJson
+                                    val loadGeneration = currentState().editorContentLoadGeneration + 1
                                     emit(
                                         currentState()
                                             .copy(
@@ -113,6 +114,7 @@ class NotemarkDetailStateMachine :
                                                 readableVersionId = vid,
                                                 assetsBaseUrl = assetsBaseUrl,
                                                 initialDocumentJson = docJson,
+                                                editorContentLoadGeneration = loadGeneration,
                                                 isLoading = true,
                                                 webContentLoadFailed = false,
                                             ),
@@ -180,6 +182,7 @@ class NotemarkDetailStateMachine :
             if (result.isSuccess) {
                 lastPersistedJson = json
                 NotemarkManager.pruneUnusedInlineAssets(bookmarkId, usedInlineAssetSrcs.toSet())
+                updateState { it.copy(initialDocumentJson = json) }
             }
         }
     }

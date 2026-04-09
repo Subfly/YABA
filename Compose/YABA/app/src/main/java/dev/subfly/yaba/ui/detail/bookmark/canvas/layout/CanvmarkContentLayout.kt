@@ -461,6 +461,7 @@ internal fun CanvmarkContentLayout(
                                     initialSceneJson = state.initialSceneJson.orEmpty(),
                                     platform = YabaWebPlatform.Compose,
                                     appearance = webAppearance,
+                                    sceneLoadGeneration = state.canvasContentLoadGeneration,
                                 ),
                                 onHostEvent = { event ->
                                     when (event) {

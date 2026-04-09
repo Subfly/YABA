@@ -21,12 +21,23 @@ sealed class YabaWebFeature {
         val platform: YabaWebPlatform = YabaWebPlatform.Compose,
         val appearance: YabaWebAppearance = YabaWebAppearance.Auto,
         val readerPreferences: ReaderPreferences = ReaderPreferences(),
+        /**
+         * Increments only when bootstrapping the editor from disk for this session. Hosts apply
+         * [initialDocumentJson] when this changes — not when the JSON string is refreshed after save
+         * (same generation) so the WebView is not reset.
+         */
+        val documentLoadGeneration: Int = 0,
     ) : YabaWebFeature()
 
     data class Canvas(
         val initialSceneJson: String,
         val platform: YabaWebPlatform = YabaWebPlatform.Compose,
         val appearance: YabaWebAppearance = YabaWebAppearance.Auto,
+        /**
+         * Increments only when bootstrapping the canvas from disk. Hosts apply [initialSceneJson]
+         * when this changes, not when JSON is refreshed after save.
+         */
+        val sceneLoadGeneration: Int = 0,
     ) : YabaWebFeature()
 
     data class HtmlConverter(

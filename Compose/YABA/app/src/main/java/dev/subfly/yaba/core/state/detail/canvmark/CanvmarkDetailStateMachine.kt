@@ -89,10 +89,12 @@ class CanvmarkDetailStateMachine :
                                         val sceneJson =
                                             CanvmarkManager.readCanvasSceneJson(id).orEmpty()
                                         lastPersistedSceneJson = sceneJson
+                                        val loadGeneration = currentState().canvasContentLoadGeneration + 1
                                         emit(
                                             currentState().copy(
                                                 bookmark = bookmarkModel,
                                                 initialSceneJson = sceneJson,
+                                                canvasContentLoadGeneration = loadGeneration,
                                                 isLoading = !webShellLoadedOk,
                                                 webContentLoadFailed = false,
                                             ),
@@ -140,6 +142,7 @@ class CanvmarkDetailStateMachine :
             val result = CanvmarkManager.persistCanvasSceneJsonAwait(bookmarkId, sceneJson)
             if (result.isSuccess) {
                 lastPersistedSceneJson = sceneJson
+                updateState { it.copy(initialSceneJson = sceneJson) }
             }
         }
     }
