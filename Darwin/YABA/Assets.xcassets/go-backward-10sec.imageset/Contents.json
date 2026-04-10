@@ -1,0 +1,15 @@
+{
+  "images" : [
+    {
+      "filename" : "go-backward-10sec.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  },
+  "properties" : {
+    "preserves-vector-representation" : true
+  }
+}

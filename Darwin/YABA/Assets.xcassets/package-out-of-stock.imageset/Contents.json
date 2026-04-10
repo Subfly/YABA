@@ -1,0 +1,15 @@
+{
+  "images" : [
+    {
+      "filename" : "package-out-of-stock.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  },
+  "properties" : {
+    "preserves-vector-representation" : true
+  }
+}
