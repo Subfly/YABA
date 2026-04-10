@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from "react"
+import { useCallback, useMemo, useRef } from "react"
 import type { ExcalidrawImperativeAPI, ExcalidrawInitialDataState } from "@excalidraw/excalidraw/types"
 import { Excalidraw, FONT_FAMILY } from "@excalidraw/excalidraw"
 import "@excalidraw/excalidraw/index.css"
@@ -82,14 +82,6 @@ function CanvasApp() {
   }, [])
 
   const renderTopRightUI = useCallback(() => null, [])
-
-  useEffect(() => {
-    const el = rootRef.current
-    if (!el) return
-    const preventContextMenu = (e: Event) => e.preventDefault()
-    el.addEventListener("contextmenu", preventContextMenu)
-    return () => el.removeEventListener("contextmenu", preventContextMenu)
-  }, [])
 
   return (
     <div

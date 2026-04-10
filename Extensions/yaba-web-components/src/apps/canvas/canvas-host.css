@@ -44,12 +44,16 @@
   max-height: 100% !important;
 }
 
-/* Context menu: driven from the native toolbar instead (grid, snap, etc.). */
-[data-yaba-canvas] .excalidraw .context-menu {
+/*
+ * Excalidraw context menu: keep the stock menu, but only Group / Ungroup.
+ * Each item is `li[data-testid="{actionName}"]` (see ContextMenu in @excalidraw/excalidraw).
+ */
+[data-yaba-canvas] .excalidraw .context-menu hr.context-menu-item-separator {
   display: none !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-  opacity: 0 !important;
+}
+
+[data-yaba-canvas] .excalidraw .context-menu li[data-testid]:not([data-testid="group"]):not([data-testid="ungroup"]) {
+  display: none !important;
 }
 
 /*
