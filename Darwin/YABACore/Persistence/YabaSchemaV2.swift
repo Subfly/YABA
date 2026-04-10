@@ -29,7 +29,6 @@ enum YabaSchemaV2: VersionedSchema {
             ReadableVersionModel.self,
             ReadableVersionPayloadModel.self,
             AnnotationModel.self,
-            DataLogV2Model.self,
         ]
     }
 }

@@ -73,10 +73,6 @@ All released Darwin bookmarks are treated as **linkmarks** only.
 - **Owning folder:** first legacy `Collection` in `bookmark.collections` with `collectionType == .folder`, else uncategorized system folder.
 - **Tags:** every legacy `Collection` with `collectionType == .tag` linked via `BookmarkModel.tags` ↔ `TagModel.bookmarks`.
 
-## DataLog
-
-Migrated rows copied to `DataLogEntryModel` (same logical fields, explicit `logId`).
-
 ## Not migrated from legacy bookmark into other subtypes
 
 No `ImageBookmarkModel`, `NoteBookmarkModel`, `DocBookmarkModel`, or `CanvasBookmarkModel` rows are created from legacy data.

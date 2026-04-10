@@ -23,10 +23,10 @@ final class FolderModel {
 
     var parent: FolderModel?
 
-    @Relationship(inverse: \FolderModel.parent)
+    @Relationship(deleteRule: .cascade, inverse: \FolderModel.parent)
     var children: [FolderModel] = []
 
-    @Relationship(deleteRule: .nullify, inverse: \BookmarkModel.folder)
+    @Relationship(deleteRule: .cascade, inverse: \BookmarkModel.folder)
     var bookmarks: [BookmarkModel] = []
 
     init(
@@ -486,33 +486,3 @@ final class AnnotationModel {
     }
 }
 
-// MARK: - Data log (v2 parity)
-
-/// Tombstones and sync metadata; mirrors legacy `DataLog` fields without renaming semantics.
-@Model
-final class DataLogV2Model {
-    var logId: String = UUID().uuidString
-    var entityId: String = ""
-    /// Raw strings compatible with legacy `EntityType` (`bookmark`, `collection`, `all`).
-    var entityTypeRaw: String = "bookmark"
-    /// Raw strings compatible with legacy `ActionType`.
-    var actionTypeRaw: String = "deleted"
-    var timestamp: Date = Date.now
-    var fieldChangesJSON: String?
-
-    init(
-        logId: String = UUID().uuidString,
-        entityId: String = "",
-        entityTypeRaw: String = "bookmark",
-        actionTypeRaw: String = "deleted",
-        timestamp: Date = .now,
-        fieldChangesJSON: String? = nil
-    ) {
-        self.logId = logId
-        self.entityId = entityId
-        self.entityTypeRaw = entityTypeRaw
-        self.actionTypeRaw = actionTypeRaw
-        self.timestamp = timestamp
-        self.fieldChangesJSON = fieldChangesJSON
-    }
-}

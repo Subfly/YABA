@@ -13,7 +13,6 @@ enum YabaV1ToV2Migrator {
     static func run(context: ModelContext) throws {
         let collections = try context.fetch(FetchDescriptor<YabaSchemaV1.Collection>())
         let bookmarks = try context.fetch(FetchDescriptor<YabaSchemaV1.Bookmark>())
-        let logs = try context.fetch(FetchDescriptor<YabaSchemaV1.DataLog>())
 
         var folderByLegacyId: [String: FolderModel] = [:]
         var tagByLegacyId: [String: TagModel] = [:]
@@ -139,18 +138,6 @@ enum YabaV1ToV2Migrator {
                 context.insert(payload)
                 bookmark.iconPayload = payload
             }
-        }
-
-        for log in logs {
-            let v2 = DataLogV2Model(
-                logId: log.logId,
-                entityId: log.entityId,
-                entityTypeRaw: log.entityType.rawValue,
-                actionTypeRaw: log.actionType.rawValue,
-                timestamp: log.timestamp,
-                fieldChangesJSON: log.fieldChangesJSON
-            )
-            context.insert(v2)
         }
 
         try context.save()

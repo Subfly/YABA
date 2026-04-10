@@ -8,7 +8,7 @@
 import Foundation
 
 /// Matches [BookmarkKind] in Compose (`code` 0…4).
-enum YabaCoreBookmarkKind: Int, Codable, CaseIterable, Sendable {
+public enum YabaCoreBookmarkKind: Int, Codable, CaseIterable, Sendable {
     case link = 0
     case note = 1
     case image = 2
@@ -17,13 +17,13 @@ enum YabaCoreBookmarkKind: Int, Codable, CaseIterable, Sendable {
 }
 
 /// Matches [DocmarkType] in Compose.
-enum YabaCoreDocmarkType: String, Codable, CaseIterable, Sendable {
+public enum YabaCoreDocmarkType: String, Codable, CaseIterable, Sendable {
     case pdf = "PDF"
     case epub = "EPUB"
 }
 
 /// Matches [AnnotationType] in Compose.
-enum YabaCoreAnnotationType: String, Codable, CaseIterable, Sendable {
+public enum YabaCoreAnnotationType: String, Codable, CaseIterable, Sendable {
     case readable = "READABLE"
     case pdf = "PDF"
     case epub = "EPUB"

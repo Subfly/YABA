@@ -1,0 +1,41 @@
+//
+//  DocmarkCreationEvent.swift
+//  YABACore
+//
+
+import Foundation
+
+public enum DocmarkCreationEvent: Sendable {
+    case onInit(docmarkId: String?, initialFolderId: String?, initialTagIds: [String]?)
+    case onPickDocument
+    case onClearDocument
+    case onDocumentFromShare(Data, sourceFileName: String?, docmarkType: YabaCoreDocmarkType)
+    case onCyclePreviewAppearance
+    case onDocumentMetadataExtracted(
+        metadataTitle: String?,
+        metadataDescription: String?,
+        metadataAuthor: String?,
+        metadataDate: String?
+    )
+    case onSetGeneratedPreview(imageData: Data?, fileExtension: String)
+    case onChangeLabel(String)
+    case onChangeDescription(String)
+    case onChangeSummary(String)
+    case onApplyFromMetadata
+    case onSelectFolderId(String?)
+    case onSelectTagIds([String])
+    case onWebInitialContentLoad(resultJson: String?)
+    case onSave
+    case onTogglePrivate
+    case onTogglePinned
+
+    case create(
+        bookmarkId: String,
+        folderId: String,
+        label: String,
+        bookmarkDescription: String?,
+        isPrivate: Bool,
+        isPinned: Bool,
+        tagIds: [String]
+    )
+}
