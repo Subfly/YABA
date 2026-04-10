@@ -168,7 +168,6 @@
 				Core/Util/AnnouncementSeverity.swift,
 				Core/Util/CardViewTypeImageSizing.swift,
 				Core/Util/ChangeBookmarkImageTip.swift,
-				Core/Util/Constants.swift,
 				Core/Util/CreationType.swift,
 				Core/Util/FABPosition.swift,
 				Core/Util/InverseLabelStyle.swift,
@@ -250,7 +249,6 @@
 				Core/Unfurl/YabaLinkPreview.swift,
 				Core/Util/CardViewTypeImageSizing.swift,
 				Core/Util/ChangeBookmarkImageTip.swift,
-				Core/Util/Constants.swift,
 				Core/Util/FABPosition.swift,
 				Core/Util/InverseLabelStyle.swift,
 				Core/Util/PreviewContentAppearance.swift,
@@ -300,7 +298,6 @@
 				Core/Model/YabaModelContainer.swift,
 				Core/Model/YabaSchema.swift,
 				Core/Move/MoveManager.swift,
-				Core/Util/Constants.swift,
 				LaunchScreen.storyboard,
 				Localizable.xcstrings,
 			);
@@ -358,7 +355,6 @@
 				Core/Unfurl/YabaLinkPreview.swift,
 				Core/Util/AnnouncementSeverity.swift,
 				Core/Util/CardViewTypeImageSizing.swift,
-				Core/Util/Constants.swift,
 				Core/Util/CreationType.swift,
 				Core/Util/FABPosition.swift,
 				Core/Util/InverseLabelStyle.swift,
@@ -412,7 +408,6 @@
 				Core/Unfurl/YabaLinkPreview.swift,
 				Core/Util/AnnouncementSeverity.swift,
 				Core/Util/CardViewTypeImageSizing.swift,
-				Core/Util/Constants.swift,
 				Core/Util/CreationType.swift,
 				Core/Util/FABPosition.swift,
 				Core/Util/PreviewContentAppearance.swift,
@@ -454,6 +449,11 @@
 				96A8E0BC2DB5CAFF00A47601 /* Exceptions for "YABAShare" folder in "YABAShare" target */,
 			);
 			path = YABAShare;
+			sourceTree = "<group>";
+		};
+		96DC5EE92F892665005760E3 /* YABACore */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = YABACore;
 			sourceTree = "<group>";
 		};
 		96EA396D2E56380700B8411D /* YABAKeyboard */ = {
@@ -553,6 +553,7 @@
 				96EB67142DD94580009EB9EC /* YABAShareMac */,
 				967B9A4C2DD8D3EF00181AA1 /* YABAStatusMenuItem */,
 				96EA39C02E58EB8F00B8411D /* YABAWidgets */,
+				96DC5EE92F892665005760E3 /* YABACore */,
 			);
 			sourceTree = "<group>";
 		};
@@ -587,6 +588,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				967B9A4C2DD8D3EF00181AA1 /* YABAStatusMenuItem */,
+				96DC5EE92F892665005760E3 /* YABACore */,
 			);
 			name = YABAStatusMenuItem;
 			packageProductDependencies = (
@@ -616,6 +618,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				96A8DFC42DB2F5A500A47601 /* YABA */,
+				96DC5EE92F892665005760E3 /* YABACore */,
 			);
 			name = YABA;
 			packageProductDependencies = (
@@ -638,6 +641,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				96A8E0AF2DB5CAFF00A47601 /* YABAShare */,
+				96DC5EE92F892665005760E3 /* YABACore */,
 			);
 			name = YABAShare;
 			packageProductDependencies = (
@@ -659,6 +663,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				96DC5EE92F892665005760E3 /* YABACore */,
 				96EA396D2E56380700B8411D /* YABAKeyboard */,
 			);
 			name = YABAKeyboard;
@@ -681,6 +686,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				96DC5EE92F892665005760E3 /* YABACore */,
 				96EA39C02E58EB8F00B8411D /* YABAWidgets */,
 			);
 			name = YABAWidgetsExtension;
@@ -703,6 +709,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				96DC5EE92F892665005760E3 /* YABACore */,
 				96EB67142DD94580009EB9EC /* YABAShareMac */,
 			);
 			name = YABAShareMac;
