@@ -38,9 +38,7 @@ import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalDeletionDialogManager
-import dev.subfly.yaba.util.Platform
 import dev.subfly.yaba.util.PrivateBookmarkPasswordReason
-import dev.subfly.yaba.util.YabaPlatform
 import dev.subfly.yaba.util.rememberPrivateBookmarkProtectedAction
 import dev.subfly.yaba.util.rememberPrivateBookmarkToggleAction
 
@@ -139,7 +137,6 @@ internal fun CanvmarkContentDropdownMenu(
     val deleteText = stringResource(R.string.delete)
     val privateActionText = if (bookmark?.isPrivate == true) "Private" else "Not Private"
 
-    val isAndroid = Platform == YabaPlatform.ANDROID
     val hasActiveReminder = state.reminderDateEpochMillis != null
 
     val isPinned = state.bookmark?.isPinned == true
@@ -183,29 +180,26 @@ internal fun CanvmarkContentDropdownMenu(
         remindMeText,
         cancelReminderText,
         hasActiveReminder,
-        isAndroid,
     ) {
         buildList {
-            if (isAndroid) {
-                if (hasActiveReminder) {
-                    add(
-                        CanvmarkDetailMenuAction(
-                            key = "cancel_reminder",
-                            icon = "notification-off-03",
-                            text = cancelReminderText,
-                            color = YabaColor.YELLOW,
-                        ),
-                    )
-                } else {
-                    add(
-                        CanvmarkDetailMenuAction(
-                            key = "remind_me",
-                            icon = "notification-01",
-                            text = remindMeText,
-                            color = YabaColor.YELLOW,
-                        ),
-                    )
-                }
+            if (hasActiveReminder) {
+                add(
+                    CanvmarkDetailMenuAction(
+                        key = "cancel_reminder",
+                        icon = "notification-off-03",
+                        text = cancelReminderText,
+                        color = YabaColor.YELLOW,
+                    ),
+                )
+            } else {
+                add(
+                    CanvmarkDetailMenuAction(
+                        key = "remind_me",
+                        icon = "notification-01",
+                        text = remindMeText,
+                        color = YabaColor.YELLOW,
+                    ),
+                )
             }
         }
     }

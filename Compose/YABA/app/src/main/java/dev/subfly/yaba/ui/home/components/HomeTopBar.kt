@@ -10,7 +10,6 @@ import dev.subfly.yaba.R
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButton
@@ -26,8 +25,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import dev.subfly.yaba.core.components.YabaIcon
-import dev.subfly.yaba.util.Platform
-import dev.subfly.yaba.util.YabaPlatform
 import dev.subfly.yaba.core.model.utils.SortOrderType
 import dev.subfly.yaba.core.model.utils.SortType
 
@@ -46,88 +43,44 @@ internal fun HomeTopBar(
         mutableStateOf(false)
     }
 
-    if (Platform == YabaPlatform.ANDROID) {
-        MediumTopAppBar(
-            modifier = modifier,
-            scrollBehavior = scrollBehavior,
-            title = {
-                Text(text = stringResource(R.string.yaba))
-            },
-            actions = {
-                AnimatedVisibility(visible = sessionUnlocked) {
-                    IconButton(
-                        onClick = onLockPrivateSessionClick,
-                        shapes = IconButtonDefaults.shapes(),
-                    ) {
-                        YabaIcon(name = "circle-unlock-02")
-                    }
-                }
+    MediumTopAppBar(
+        modifier = modifier,
+        scrollBehavior = scrollBehavior,
+        title = {
+            Text(text = stringResource(R.string.yaba))
+        },
+        actions = {
+            AnimatedVisibility(visible = sessionUnlocked) {
                 IconButton(
-                    onClick = onSearchClicked,
+                    onClick = onLockPrivateSessionClick,
                     shapes = IconButtonDefaults.shapes(),
                 ) {
-                    YabaIcon(name = "search-01")
-                }
-                Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
-                    IconButton(
-                        onClick = { isMenuExpanded = !isMenuExpanded },
-                        shapes = IconButtonDefaults.shapes(),
-                    ) {
-                        YabaIcon(name = "more-horizontal-circle-02")
-                    }
-                    HomeDropdownMenu(
-                        isExpanded = isMenuExpanded,
-                        onDismissRequest = { isMenuExpanded = false },
-                        onSortingChanged = onSortingChanged,
-                        onSortOrderChanged = onSortOrderChanged,
-                        onSettingsClicked = {
-                            // TODO: NAVIGATE TO SETTINGS
-                        }
-                    )
+                    YabaIcon(name = "circle-unlock-02")
                 }
             }
-        )
-    } else {
-        CenterAlignedTopAppBar(
-            modifier = modifier,
-            title = {
-                Text(text = stringResource(R.string.yaba))
-            },
-            actions = {
-                AnimatedVisibility(visible = sessionUnlocked) {
-                    IconButton(
-                        onClick = onLockPrivateSessionClick,
-                        shapes = IconButtonDefaults.shapes(),
-                    ) {
-                        YabaIcon(name = "circle-unlock-02")
-                    }
-                }
+            IconButton(
+                onClick = onSearchClicked,
+                shapes = IconButtonDefaults.shapes(),
+            ) {
+                YabaIcon(name = "search-01")
+            }
+            Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
                 IconButton(
-                    onClick = onSearchClicked,
+                    onClick = { isMenuExpanded = !isMenuExpanded },
                     shapes = IconButtonDefaults.shapes(),
                 ) {
-                    YabaIcon(name = "search-01")
+                    YabaIcon(name = "more-horizontal-circle-02")
                 }
-                Box(
-                    modifier = Modifier.wrapContentSize(Alignment.TopStart)
-                ) {
-                    IconButton(
-                        onClick = { isMenuExpanded = !isMenuExpanded },
-                        shapes = IconButtonDefaults.shapes(),
-                    ) {
-                        YabaIcon(name = "more-horizontal-circle-02")
+                HomeDropdownMenu(
+                    isExpanded = isMenuExpanded,
+                    onDismissRequest = { isMenuExpanded = false },
+                    onSortingChanged = onSortingChanged,
+                    onSortOrderChanged = onSortOrderChanged,
+                    onSettingsClicked = {
+                        // TODO: NAVIGATE TO SETTINGS
                     }
-                    HomeDropdownMenu(
-                        isExpanded = isMenuExpanded,
-                        onDismissRequest = { isMenuExpanded = false },
-                        onSortingChanged = onSortingChanged,
-                        onSortOrderChanged = onSortOrderChanged,
-                        onSettingsClicked = {
-                            // TODO: NAVIGATE TO SETTINGS
-                        }
-                    )
-                }
+                )
             }
-        )
-    }
+        },
+    )
 }

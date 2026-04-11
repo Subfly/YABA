@@ -63,8 +63,6 @@ import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalDeletionDialogManager
 import dev.subfly.yaba.util.LocalUserPreferences
 import dev.subfly.yaba.util.rememberPrivateBookmarkOpenClick
-import dev.subfly.yaba.util.Platform
-import dev.subfly.yaba.util.YabaPlatform
 import dev.subfly.yaba.util.rememberShareHandler
 import dev.subfly.yaba.core.filesystem.access.YabaFileAccessor
 import dev.subfly.yaba.core.managers.LinkmarkManager
@@ -147,9 +145,7 @@ fun HomeView(modifier: Modifier = Modifier) {
 
     Box(modifier = modifier.fillMaxSize()) {
         Scaffold(
-            modifier = if (Platform == YabaPlatform.ANDROID) {
-                Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
-            } else Modifier,
+            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
                 HomeTopBar(
                     scrollBehavior = scrollBehavior,
@@ -189,7 +185,7 @@ fun HomeView(modifier: Modifier = Modifier) {
                 contentPadding = paddings,
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 content = {
-                    if (Platform == YabaPlatform.ANDROID && userPreferences.showRecents) {
+                    if (userPreferences.showRecents) {
                         // Recent Bookmarks Section
                         header(key = "RECENTS_HEADER") {
                             HomeTitleContent(

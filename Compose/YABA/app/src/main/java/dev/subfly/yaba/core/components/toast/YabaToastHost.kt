@@ -3,9 +3,7 @@ package dev.subfly.yaba.core.components.toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -21,8 +19,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import dev.subfly.yaba.util.Platform
-import dev.subfly.yaba.util.YabaPlatform
 import dev.subfly.yaba.core.toast.ToastManager
 
 @Composable
@@ -30,12 +26,10 @@ fun YabaToastHost(modifier: Modifier = Modifier) {
     val toasts by ToastManager.visibleToasts.collectAsState()
     if (toasts.isEmpty()) return
 
-    val isMobile = Platform == YabaPlatform.ANDROID
-
     ToastOverlayWindow {
         Box(
             modifier = modifier.fillMaxSize(),
-            contentAlignment = if (isMobile) Alignment.BottomCenter else Alignment.BottomEnd,
+            contentAlignment = Alignment.BottomCenter,
         ) {
             Box(
                 Modifier
@@ -49,29 +43,17 @@ fun YabaToastHost(modifier: Modifier = Modifier) {
             Column(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalAlignment = if (isMobile) Alignment.CenterHorizontally else Alignment.End,
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 toasts.forEach { toast ->
                     AnimatedVisibility(
                         visible = toast.isVisible,
-                        enter = if (isMobile) {
-                            slideInVertically(initialOffsetY = { it }) + fadeIn()
-                        } else {
-                            slideInVertically(initialOffsetY = { it / 2 }) +
-                                    slideInHorizontally(initialOffsetX = { it / 2 }) +
-                                    fadeIn()
-                        },
-                        exit = if (isMobile) {
-                            slideOutVertically(targetOffsetY = { it }) + fadeOut()
-                        } else {
-                            slideOutVertically(targetOffsetY = { it / 2 }) +
-                                    slideOutHorizontally(targetOffsetX = { it }) +
-                                    fadeOut()
-                        },
+                        enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
+                        exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
                     ) {
                         YabaToast(
                             toast = toast,
-                            isMobile = isMobile,
+                            isMobile = true,
                             onDismissRequest = { ToastManager.dismiss(toast.id) },
                             onAcceptRequest = if (toast.acceptText != null) {
                                 { ToastManager.accept(toast.id) }

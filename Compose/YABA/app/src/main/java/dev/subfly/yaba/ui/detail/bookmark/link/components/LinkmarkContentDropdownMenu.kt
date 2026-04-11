@@ -35,9 +35,7 @@ import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalDeletionDialogManager
-import dev.subfly.yaba.util.Platform
 import dev.subfly.yaba.util.PrivateBookmarkPasswordReason
-import dev.subfly.yaba.util.YabaPlatform
 import dev.subfly.yaba.util.rememberPrivateBookmarkProtectedAction
 import dev.subfly.yaba.util.rememberPrivateBookmarkToggleAction
 import dev.subfly.yaba.util.rememberShareHandler
@@ -175,7 +173,6 @@ internal fun LinkmarkContentDropdownMenu(
     val mdLabel = "MD"
     val pdfLabel = "PDF"
 
-    val isAndroid = Platform == YabaPlatform.ANDROID
     val hasActiveReminder = state.reminderDateEpochMillis != null
 
     val isPinned = state.bookmark?.isPinned == true
@@ -207,14 +204,12 @@ internal fun LinkmarkContentDropdownMenu(
 
     val primaryRowCount = primaryActions.size + 2
 
-    val secondaryActions = remember(isAndroid, hasActiveReminder, remindMeText, cancelReminderText, shareText) {
+    val secondaryActions = remember(hasActiveReminder, remindMeText, cancelReminderText, shareText) {
         buildList {
-            if (isAndroid) {
-                if (hasActiveReminder) {
-                    add(DetailMenuAction(key = "cancel_reminder", icon = "notification-off-03", text = cancelReminderText, color = YabaColor.YELLOW))
-                } else {
-                    add(DetailMenuAction(key = "remind_me", icon = "notification-01", text = remindMeText, color = YabaColor.YELLOW))
-                }
+            if (hasActiveReminder) {
+                add(DetailMenuAction(key = "cancel_reminder", icon = "notification-off-03", text = cancelReminderText, color = YabaColor.YELLOW))
+            } else {
+                add(DetailMenuAction(key = "remind_me", icon = "notification-01", text = remindMeText, color = YabaColor.YELLOW))
             }
             add(DetailMenuAction(key = "share", icon = "share-03", text = shareText, color = YabaColor.INDIGO))
         }
