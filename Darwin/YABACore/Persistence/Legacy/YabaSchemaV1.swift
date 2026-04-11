@@ -1,8 +1,8 @@
 //
-//  YabaSchema.swift
-//  YABA
+//  YabaSchemaV1.swift
+//  YABACore
 //
-//  Created by Ali Taha on 28.05.2025.
+//  Legacy schema kept only for V1 -> V2 migration compatibility.
 //
 
 import Foundation
@@ -14,54 +14,54 @@ typealias YabaDataLog = YabaSchemaV1.DataLog
 
 enum YabaSchemaV1: VersionedSchema {
     static var versionIdentifier: Schema.Version = .init(1, 0, 0)
-    
+
     static var models: [any PersistentModel.Type] {
         [Bookmark.self, Collection.self, DataLog.self]
     }
-    
+
     @Model
     final class Bookmark {
         @Attribute(.spotlight)
         var label: String = "" // The only must have field, but thanks to CloudKit, I can't leave it non-optional...
-        
+
         @Attribute(.externalStorage, .allowsCloudEncryption)
         var imageDataHolder: Data? = nil
-        
+
         @Attribute(.externalStorage, .allowsCloudEncryption)
         var iconDataHolder: Data? = nil
-        
+
         var bookmarkId: String = UUID().uuidString
-        
+
         @Attribute(.allowsCloudEncryption)
         var bookmarkDescription: String = ""
-        
+
         @Attribute(.allowsCloudEncryption)
         var link: String = ""
-        
+
         @Attribute(.allowsCloudEncryption)
         var domain: String = ""
-        
+
         var createdAt: Date = Date.now
         var editedAt: Date = Date.now
-        
+
         @Attribute(.allowsCloudEncryption)
         var imageUrl: String? = nil
-        
+
         @Attribute(.allowsCloudEncryption)
         var iconUrl: String? = nil
-        
+
         @Attribute(.allowsCloudEncryption)
         var videoUrl: String? = nil
-        
+
         @Attribute(.allowsCloudEncryption)
         var readableHTML: String? = nil
-        
+
         var type: Int = 1
         var version: Int = 1
         var collections: [YabaCollection]? = []
-        
-        var bookmarkType: BookmarkType {
-            BookmarkType(rawValue: type) ?? .none
+
+        var bookmarkType: YabaLegacyBookmarkType {
+            YabaLegacyBookmarkType(rawValue: type) ?? .none
         }
 
         init(
@@ -78,9 +78,9 @@ enum YabaSchemaV1: VersionedSchema {
             iconUrl: String?,
             videoUrl: String?,
             readableHTML: String?,
-            type: BookmarkType = .none,
+            type: YabaLegacyBookmarkType = .none,
             version: Int = 1,
-            collections: [YabaCollection]? = [],
+            collections: [YabaCollection]? = []
         ) {
             self.bookmarkId = bookmarkId
             self.link = link
@@ -100,15 +100,15 @@ enum YabaSchemaV1: VersionedSchema {
             self.collections = collections
         }
     }
-    
+
     @Model
     final class Collection {
         // Below relationship already covers this one.
         var parent: Collection? = nil
-                
+
         @Relationship(inverse: \Collection.parent)
         var children: [Collection] = []
-        
+
         @Relationship(inverse: \Bookmark.collections)
         var bookmarks: [Bookmark]? = []
 
@@ -117,13 +117,13 @@ enum YabaSchemaV1: VersionedSchema {
         var icon: String = "folder-01"
         var createdAt: Date = Date.now
         var editedAt: Date = Date.now
-        var color: YabaColor = YabaColor.none
+        var color: YabaLegacyColor = YabaLegacyColor.none
         var order: Int = -1 // Used only in custom ordering active
         var type: Int = 1
         var version: Int = 1
-        
-        var collectionType: CollectionType {
-            CollectionType(rawValue: type) ?? .folder
+
+        var collectionType: YabaLegacyCollectionType {
+            YabaLegacyCollectionType(rawValue: type) ?? .folder
         }
 
         init(
@@ -133,12 +133,12 @@ enum YabaSchemaV1: VersionedSchema {
             createdAt: Date = .now,
             editedAt: Date = .now,
             bookmarks: [Bookmark]? = [],
-            color: YabaColor = .none,
-            type: CollectionType = .folder,
+            color: YabaLegacyColor = .none,
+            type: YabaLegacyCollectionType = .folder,
             version: Int = 1,
             parent: YabaCollection? = nil,
             children: [YabaCollection] = [],
-            order: Int = -1,
+            order: Int = -1
         ) {
             self.collectionId = collectionId
             self.label = label
@@ -154,7 +154,7 @@ enum YabaSchemaV1: VersionedSchema {
             self.order = order
         }
     }
-    
+
     /**
      - Initially designed to hold the all data.
      - Now, it is just a tombstone of all delete operations.
@@ -163,26 +163,26 @@ enum YabaSchemaV1: VersionedSchema {
     final class DataLog {
         var logId: String = UUID().uuidString
         var entityId: String = ""
-        var entityType: EntityType = EntityType.bookmark
-        var actionType: ActionType = ActionType.deleted
+        var entityType: YabaLegacyEntityType = YabaLegacyEntityType.bookmark
+        var actionType: YabaLegacyActionType = YabaLegacyActionType.deleted
         var timestamp: Date = Date.now
 
         var fieldChangesJSON: String?
-        var fieldChanges: [FieldChange]? {
+        var fieldChanges: [YabaLegacyFieldChange]? {
             guard let fieldChangesJSON,
                   let data = fieldChangesJSON.data(using: .utf8)
             else { return nil }
 
-            return try? JSONDecoder().decode([FieldChange].self, from: data)
+            return try? JSONDecoder().decode([YabaLegacyFieldChange].self, from: data)
         }
 
         init(
             logId: String = UUID().uuidString,
             entityId: String = "",
-            entityType: EntityType = .bookmark,
-            actionType: ActionType = .deleted,
+            entityType: YabaLegacyEntityType = .bookmark,
+            actionType: YabaLegacyActionType = .deleted,
             timestamp: Date = .now,
-            fieldChanges: [FieldChange]? = nil
+            fieldChanges: [YabaLegacyFieldChange]? = nil
         ) {
             self.logId = logId
             self.entityId = entityId

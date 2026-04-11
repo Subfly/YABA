@@ -1,5 +1,5 @@
 //
-//  DarwinConverterResultProcessor.swift
+//  YabaConverterResultProcessor.swift
 //  YABACore
 //
 //  Parity with Compose `ConverterResultProcessor.kt`.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum DarwinConverterResultProcessor {
+public enum YabaConverterResultProcessor {
     /// Downloads remote assets, rewrites `yaba-asset://` placeholders in JSON to `../assets/<id>.<ext>`.
     public static func process(
         documentJson: String,

@@ -2,7 +2,7 @@
 //  YabaCoreEnums.swift
 //  YABACore
 //
-//  Mirrors Compose KMP enums for persisted raw values.
+//  Mirrors Compose KMP enums for persisted/shared raw values.
 //
 
 import Foundation

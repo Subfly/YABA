@@ -55,7 +55,7 @@ public struct YabaWebLinkMetadata: Sendable, Equatable {
     }
 }
 
-/// Converter bridge result before [DarwinConverterResultProcessor] runs.
+/// Converter bridge result before [YabaConverterResultProcessor] runs.
 public struct YabaWebConverterResult: Sendable, Equatable {
     public var documentJson: String
     public var assets: [YabaWebConverterAsset]

@@ -31,7 +31,7 @@ public final class YabaLinkmarkUnfurlCoordinator {
             html: fetch.html,
             baseUrl: fetch.normalizedUrl
         )
-        let readable = await DarwinConverterResultProcessor.process(
+        let readable = await YabaConverterResultProcessor.process(
             documentJson: conv.documentJson,
             assets: conv.assets
         )

@@ -19,7 +19,7 @@ public struct YabaHtmlConverterResult: Sendable {
         self.assets = assets
     }
 
-    /// Structured result for [DarwinConverterResultProcessor] and link metadata updates.
+    /// Structured result for [YabaConverterResultProcessor] and link metadata updates.
     public func asWebConverterResult() -> YabaWebConverterResult {
         let meta: YabaWebLinkMetadata
         if let linkMetadataJson,
