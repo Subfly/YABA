@@ -10,6 +10,7 @@ import Combine
 import Network
 import SwiftUI
 
+#if false
 /// Simple network service for device discovery and sync communication
 /// Uses cross-platform compatible networking (no Apple-specific APIs)
 final class SimpleNetworkService: NSObject {
@@ -396,4 +397,10 @@ extension SimpleNetworkService: NetServiceDelegate {
         let devices = Array(connectedDevices.values).sorted { $0.name < $1.name }
         discoveredDevicesPublisher.send(devices)
     }
+}
+#endif
+
+/// Minimal stub while sync networking is disabled (full implementation in `#if false` above).
+final class SimpleNetworkService: NSObject {
+    override init() { super.init() }
 }

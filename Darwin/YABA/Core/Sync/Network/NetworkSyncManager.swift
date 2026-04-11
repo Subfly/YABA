@@ -11,6 +11,8 @@ import SwiftData
 import SwiftUI
 import UIKit
 
+// MARK: - Full implementation (disabled; preserved for re-enable)
+#if false
 /// Simplified network sync manager for device discovery and sync requests
 @MainActor
 @Observable
@@ -176,36 +178,8 @@ final class NetworkSyncManager {
     async throws
     {
         do {
-            let dataManager = DataManager()
-            
-            // Create a sync request from the incoming data
-            let request = SyncRequest(
-                deviceId: syncData.deviceId,
-                deviceName: syncData.deviceName,
-                timestamp: syncData.timestamp,
-                ipAddress: syncData.ipAddress,
-                bookmarks: syncData.bookmarks,
-                collections: syncData.collections,
-                deletionLogs: syncData.deletionLogs
-            )
-            
-            // Merge the incoming data with our local data
-            let _ = try await dataManager.handleIncomingSyncRequest(
-                request,
-                using: modelContext,
-                deviceId: deviceId,
-                deviceName: deviceName,
-                ipAddress: getLocalIPAddress() ?? "unknown"
-            )
-            
-            // Clear the received data and mark sync as completed
-            lastReceivedSyncData = nil
-            syncStatus = .completed
-            syncingWithDevice = nil
-            needsToSendOurData = false
-            
-            // Notify that sync completed
-            onSyncCompleted?(syncData.deviceName)
+            // Previously merged via DataManager.handleIncomingSyncRequest (removed with DataManager).
+            throw NetworkSyncError.unknown("Sync merge not available — restore merge implementation when re-enabling.")
             
         } catch {
             syncStatus = .failed(error.localizedDescription)
@@ -336,35 +310,8 @@ final class NetworkSyncManager {
         onSyncStarted?(device.name)
         
         do {
-            // Use DataManager to prepare sync data
-            let dataManager = DataManager()
-            let syncData = try dataManager.prepareSyncData(
-                using: modelContext,
-                deviceId: deviceId,
-                deviceName: deviceName,
-                ipAddress: getLocalIPAddress() ?? "unknown"
-            )
-            
-            // Check if deletion sync is prevented
-            let preventDeletionSync = UserDefaults.standard.bool(forKey: Constants.preventDeletionSyncKey)
-            let deletionLogs = preventDeletionSync ? [] : syncData.deletionLogs
-            
-            // Send our data to the other device
-            let message = SyncDataMessage(
-                deviceId: syncData.deviceId,
-                deviceName: syncData.deviceName,
-                timestamp: syncData.timestamp,
-                ipAddress: syncData.ipAddress,
-                bookmarks: syncData.bookmarks,
-                collections: syncData.collections,
-                deletionLogs: deletionLogs
-            )
-            
-            try await networkService.sendSyncData(message, to: device)
-            
-            // The other device will process our data and send their data back
-            // When we receive their data, handleIncomingSyncData will be called
-            // For now, we stay in syncing state until we get their response
+            // Previously used DataManager.prepareSyncData (removed with DataManager).
+            throw NetworkSyncError.unknown("Sync payload preparation not available — restore when re-enabling.")
             
         } catch {
             syncStatus = .failed(error.localizedDescription)
@@ -424,6 +371,19 @@ final class NetworkSyncManager {
         
         return address
     }
+}
+
+extension EnvironmentValues {
+    @Entry var networkSyncManager: NetworkSyncManager = .init()
+}
+#endif
+
+// MARK: - Active stub (sync disabled)
+@MainActor
+@Observable
+@preconcurrency
+final class NetworkSyncManager {
+    init() {}
 }
 
 extension EnvironmentValues {

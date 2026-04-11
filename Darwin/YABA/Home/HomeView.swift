@@ -94,34 +94,36 @@ struct HomeView: View {
                 onExitRequested: {}
             )
         }
-        #if !targetEnvironment(macCatalyst)
-        .fullScreenCover(isPresented: $homeState.shouldShowSyncSheet) {
-            SyncView().interactiveDismissDisabled()
-        }
-        #else
-        .sheet(isPresented: $homeState.shouldShowSyncSheet) {
-            SyncView().interactiveDismissDisabled()
-        }
-        #endif
+        // Sync UI disabled (see NetworkSyncManager / SyncView).
+        // #if !targetEnvironment(macCatalyst)
+        // .fullScreenCover(isPresented: $homeState.shouldShowSyncSheet) {
+        //     SyncView().interactiveDismissDisabled()
+        // }
+        // #else
+        // .sheet(isPresented: $homeState.shouldShowSyncSheet) {
+        //     SyncView().interactiveDismissDisabled()
+        // }
+        // #endif
         .navigationTitle("YABA")
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                #if targetEnvironment(macCatalyst)
-                MacOSHoverableToolbarIcon(
-                    bundleKey: "laptop-phone-sync",
-                    tooltipKey: "Synchronize Label",
-                    onPressed: {
-                        homeState.shouldShowSyncSheet = true
-                    }
-                )
-                #else
-                Button {
-                    homeState.shouldShowSyncSheet = true
-                } label: {
-                    YabaIconView(bundleKey: "laptop-phone-sync")
-                }
-                #endif
-            }
+            // Sync toolbar entry disabled.
+            // ToolbarItem(placement: .topBarLeading) {
+            //     #if targetEnvironment(macCatalyst)
+            //     MacOSHoverableToolbarIcon(
+            //         bundleKey: "laptop-phone-sync",
+            //         tooltipKey: "Synchronize Label",
+            //         onPressed: {
+            //             homeState.shouldShowSyncSheet = true
+            //         }
+            //     )
+            //     #else
+            //     Button {
+            //         homeState.shouldShowSyncSheet = true
+            //     } label: {
+            //         YabaIconView(bundleKey: "laptop-phone-sync")
+            //     }
+            //     #endif
+            // }
             ToolbarItem(placement: .topBarTrailing) {
                 #if targetEnvironment(macCatalyst)
                 MacOSHoverableToolbarIcon(

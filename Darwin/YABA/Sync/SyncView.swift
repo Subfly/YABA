@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+#if false
 struct SyncView: View {
     @Environment(\.dismiss)
     private var dismiss
@@ -93,13 +94,6 @@ struct SyncView: View {
                     Text("Sync Request Message \(request.fromDeviceName)")
                 }
             }
-            .toast(
-                state: state.toastManager.toastState,
-                isShowing: state.toastManager.isShowing,
-                onDismiss: {
-                    state.toastManager.hide()
-                }
-            )
             .onChange(of: state.pendingSyncRequests) { _, newRequests in
                 if let latestRequest = newRequests.first, currentSyncRequest == nil {
                     currentSyncRequest = latestRequest
@@ -299,4 +293,10 @@ private struct DiscoveredDeviceItem: View {
 
 #Preview {
     SyncView()
+}
+#endif
+
+/// Stub while sync UI is disabled (full implementation in `#if false` above).
+struct SyncView: View {
+    var body: some View { EmptyView() }
 }

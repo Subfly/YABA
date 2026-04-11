@@ -15,25 +15,8 @@ private class ItemState {
     var shouldShowEditDialog: Bool = false
     var shouldShowShareDialog: Bool = false
     var shouldShowDeleteDialog: Bool = false
-    var shouldShowFolderSelectionSheet: Bool = false
     var isHovered: Bool = false
     var isTargeted: Bool = false
-    var selectedFolderToMove: YabaCollection? = nil
-    
-    func handleFolderChangeRequest(
-        for bookmark: YabaBookmark,
-        with modelContext: ModelContext
-    ) {
-        guard let newFolder = selectedFolderToMove else { return }
-        
-        bookmark.collections?.removeAll { collection in
-            collection.collectionType == .folder
-        }
-        
-        bookmark.collections?.append(newFolder)
-        
-        try? modelContext.save()
-    }
 }
 
 struct BookmarkItemView: View {
@@ -42,9 +25,6 @@ struct BookmarkItemView: View {
     
     @Environment(\.appState)
     private var appState
-    
-    @Environment(\.moveManager)
-    private var moveManager
     
     @State
     private var itemState: ItemState = .init()
@@ -57,38 +37,6 @@ struct BookmarkItemView: View {
     
     var body: some View {
         selectableContent
-            .draggable(bookmark.mapToCodable()) {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(bookmark.getFolderColor().opacity(0.5))
-                    .frame(width: 54, height: 54)
-                    .overlay {
-                        BookmarkImage(bookmark: bookmark)
-                    }
-            }
-            .onDrop(
-                of: [.yabaCollection],
-                isTargeted: $itemState.isTargeted
-            ) { providers in
-                guard let provider = providers.first else {
-                    return false
-                }
-                
-                let _ = provider.loadTransferable(type: YabaCodableCollection.self) { result in
-                    switch result {
-                    case .success(let item):
-                        // Sometimes, just wtf...
-                        Task { @MainActor in
-                            moveManager.onMoveBookmark(
-                                bookmarkID: bookmark.bookmarkId,
-                                toCollectionID: item.collectionId
-                            )
-                        }
-                    case .failure: return
-                    }
-                }
-                
-                return true
-            }
             #if targetEnvironment(macCatalyst)
             .listRowBackground(
                 appState.selectedBookmark?.bookmarkId == bookmark.bookmarkId
@@ -146,7 +94,6 @@ struct BookmarkItemView: View {
             .contextMenu {
                 MenuActionItems(
                     shouldShowEditDialog: $itemState.shouldShowEditDialog,
-                    shouldShowFolderSelectionSheet: $itemState.shouldShowFolderSelectionSheet,
                     shouldShowShareDialog: $itemState.shouldShowShareDialog,
                     shouldShowDeleteDialog: $itemState.shouldShowDeleteDialog
                 )
@@ -162,7 +109,6 @@ struct BookmarkItemView: View {
             .contextMenu {
                 MenuActionItems(
                     shouldShowEditDialog: $itemState.shouldShowEditDialog,
-                    shouldShowFolderSelectionSheet: $itemState.shouldShowFolderSelectionSheet,
                     shouldShowShareDialog: $itemState.shouldShowShareDialog,
                     shouldShowDeleteDialog: $itemState.shouldShowDeleteDialog
                 )
@@ -228,23 +174,6 @@ private struct BookmarkItemViewWrappable: View {
                     ShareSheet(bookmarkLink: link)
                         .presentationDetents([.medium])
                         .presentationDragIndicator(.visible)
-                }
-            }
-            .sheet(isPresented: $itemState.shouldShowFolderSelectionSheet) {
-                NavigationView {
-                    if let folder = bookmark.getParentFolder() {
-                        SelectFolderContent(
-                            selectedFolder: $itemState.selectedFolderToMove,
-                            mode: .moveBookmarks(folder) {
-                                itemState.shouldShowFolderSelectionSheet = false
-                            }
-                        ).onDisappear {
-                            itemState.handleFolderChangeRequest(
-                                for: bookmark,
-                                with: modelContext
-                            )
-                        }
-                    }
                 }
             }
             .onHover { hovered in
@@ -338,16 +267,6 @@ private struct ListView: View {
                     .scaledToFit()
             }
         }.tint(.indigo)
-        Button {
-            state.shouldShowFolderSelectionSheet = true
-        } label: {
-            Label {
-                Text("Move")
-            } icon: {
-                YabaIconView(bundleKey: "arrow-move-up-right")
-                    .scaledToFit()
-            }
-        }.tint(.teal)
     }
     
     @ViewBuilder
@@ -666,7 +585,6 @@ private struct ClickableOptionsIcon: View {
             Menu {
                 MenuActionItems(
                     shouldShowEditDialog: $state.shouldShowEditDialog,
-                    shouldShowFolderSelectionSheet: $state.shouldShowFolderSelectionSheet,
                     shouldShowShareDialog: $state.shouldShowShareDialog,
                     shouldShowDeleteDialog: $state.shouldShowDeleteDialog
                 )
@@ -686,7 +604,6 @@ private struct ClickableOptionsIcon: View {
         Menu {
             MenuActionItems(
                 shouldShowEditDialog: $state.shouldShowEditDialog,
-                shouldShowFolderSelectionSheet: $state.shouldShowFolderSelectionSheet,
                 shouldShowShareDialog: $state.shouldShowShareDialog,
                 shouldShowDeleteDialog: $state.shouldShowDeleteDialog
             )
@@ -710,9 +627,6 @@ private struct MenuActionItems: View {
     var shouldShowEditDialog: Bool
     
     @Binding
-    var shouldShowFolderSelectionSheet: Bool
-    
-    @Binding
     var shouldShowShareDialog: Bool
     
     @Binding
@@ -727,16 +641,6 @@ private struct MenuActionItems: View {
                 Text("Edit")
             }
         }.tint(.orange)
-        Button {
-            shouldShowFolderSelectionSheet = true
-        } label: {
-            Label {
-                Text("Move")
-            } icon: {
-                YabaIconView(bundleKey: "arrow-move-up-right")
-                    .scaledToFit()
-            }
-        }.tint(.teal)
         Button {
             shouldShowShareDialog = true
         } label: {

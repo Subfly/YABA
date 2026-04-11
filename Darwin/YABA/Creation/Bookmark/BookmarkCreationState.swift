@@ -16,8 +16,6 @@ import WidgetKit
 @Observable
 internal class BookmarkCreationState {
     @ObservationIgnored
-    private let unfurler: Unfurler = .init()
-    @ObservationIgnored
     private var debouncedUrl = CurrentValueSubject<String, Never>("")
     @ObservationIgnored
     private var cancels = Set<AnyCancellable>()
@@ -54,8 +52,6 @@ internal class BookmarkCreationState {
     
     var uncatagroizedFolderCreationRequired: Bool = false
     
-    let toastManager: ToastManager = .init()
-    
     var shouldShowImageSelectionSheet: Bool = false
     
     @ObservationIgnored
@@ -69,69 +65,9 @@ internal class BookmarkCreationState {
         if urlString.isEmpty || urlString == lastFetchedUrl {
             return
         }
-        
-        isLoading = true
-        isImagesLoading = true
-        defer {
-            isLoading = false
-            isImagesLoading = false
-        }
-        
-        do {
-            if let fetched = try await unfurler.unfurl(urlString: urlString) {
-                self.host = fetched.host ?? ""
-                if label.isEmpty {
-                    self.label = fetched.title ?? ""
-                }
-                if description.isEmpty {
-                    self.description = fetched.description ?? ""
-                }
-                self.iconURL = fetched.iconURL
-                self.imageURL = fetched.imageURL
-                self.videoURL = fetched.videoURL
-                self.readableHTML = fetched.readableHTML
-                self.iconData = fetched.iconData
-                self.imageData = fetched.imageData
-                self.cleanerUrl = fetched.url
-                self.selectableImages = fetched.imageOptions
-            }
-            hasError = false
-            lastFetchedUrl = urlString
-            toastManager.show(
-                message: LocalizedStringKey("Generic Unfurl Success Text"),
-                accentColor: .green,
-                acceptText: LocalizedStringKey("Ok"),
-                iconType: .success,
-                onAcceptPressed: { self.toastManager.hide() }
-            )
-        } catch UnfurlError.cannotCreateURL(let message) {
-            toastManager.show(
-                message: message,
-                accentColor: .red,
-                acceptText: LocalizedStringKey("Ok"),
-                iconType: .error,
-                onAcceptPressed: { self.toastManager.hide() }
-            )
-            hasError = true
-        } catch UnfurlError.unableToUnfurl(let message) {
-            toastManager.show(
-                message: message,
-                accentColor: .red,
-                acceptText: LocalizedStringKey("Ok"),
-                iconType: .error,
-                onAcceptPressed: { self.toastManager.hide() }
-            )
-            hasError = true
-        } catch {
-            toastManager.show(
-                message: LocalizedStringKey("Generic Unfurl Error Text"),
-                accentColor: .red,
-                acceptText: LocalizedStringKey("Ok"),
-                iconType: .error,
-                onAcceptPressed: { self.toastManager.hide() }
-            )
-            hasError = true
-        }
+        cleanerUrl = urlString.trimmingCharacters(in: .whitespacesAndNewlines)
+        lastFetchedUrl = urlString
+        hasError = false
     }
     
     func listenUrlChanges(_ perform: @escaping (String) -> Void) {
@@ -276,15 +212,7 @@ internal class BookmarkCreationState {
             selectedFolder = bookmarkToEdit.collections?.first(where: { $0.collectionType == .folder })
             selectedTags = bookmarkToEdit.collections?.filter { $0.collectionType == .tag } ?? []
             
-            // MARK: FETCH EDITABLE IMAGES
-            isImagesLoading = true
-            Task { @MainActor in
-                let fetched = try? await unfurler.unfurl(urlString: bookmarkToEdit.link)
-                if let options = fetched?.imageOptions {
-                    self.selectableImages = options
-                }
-                self.isImagesLoading = false
-            }
+            isImagesLoading = false
         } else {
             selectedFolder = folderToFill
         }

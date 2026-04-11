@@ -27,8 +27,10 @@ struct SettingsView: View {
     @AppStorage(Constants.showMenuBarItem)
     private var showMenuBarItem: Bool = true
     
-    @AppStorage(Constants.preventDeletionSyncKey)
-    private var preventDeletionSync: Bool = false
+    // #if false
+    // @AppStorage(Constants.preventDeletionSyncKey)
+    // private var preventDeletionSync: Bool = false
+    // #endif
     
     @AppStorage(Constants.disableBackgroundAnimationKey)
     private var disableBackgroundAnimation: Bool = false
@@ -41,8 +43,9 @@ struct SettingsView: View {
     )
     private var useSimplifiedShare: Bool = false
     
-    @AppStorage(Constants.deviceNameKey)
-    private var deviceName: String = ""
+    // Used by commented `syncSection` (device display name for sync).
+    // @AppStorage(Constants.deviceNameKey)
+    // private var deviceName: String = ""
     
     @State
     private var settingsState = SettingsState()
@@ -81,8 +84,6 @@ struct SettingsView: View {
             }
             .navigationDestination(for: SettingsNavigationDestination.self) { destination in
                 switch destination {
-                case .mapper: MapperView(settingsState: $settingsState)
-                        .navigationBarBackButtonHidden()
                 case .previousAnnouncements: PreviousAnnouncementsView()
                         .navigationBarBackButtonHidden()
                 case .logs: EventsLogView()
@@ -91,13 +92,6 @@ struct SettingsView: View {
             }
         }
         .preferredColorScheme(preferredTheme.getScheme())
-        .toast(
-            state: settingsState.toastManager.toastState,
-            isShowing: settingsState.toastManager.isShowing,
-            onDismiss: {
-                settingsState.toastManager.hide()
-            }
-        )
     }
     
     @ViewBuilder
@@ -109,7 +103,7 @@ struct SettingsView: View {
             keyboardSection
             #endif
             announcementsSection
-            syncSection
+            // syncSection
             dataSection
             aboutSection
             socialsSection
@@ -280,48 +274,49 @@ struct SettingsView: View {
         }
     }
     
-    @ViewBuilder
-    private var syncSection: some View {
-        Section {
-            HStack {
-                Label {
-                    Text("Settings Name Device Label")
-                } icon: {
-                    YabaIconView(bundleKey: DeviceType.current.symbolName)
-                        .scaledToFit()
-                        .frame(width: 24, height: 24)
-                }
-                TextField("", text: $deviceName)
-                    .multilineTextAlignment(.trailing)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-            }
-            Toggle(isOn: $preventDeletionSync) {
-                Label {
-                    Text("Settings Prevent Deletion Sync Label")
-                } icon: {
-                    YabaIconView(bundleKey: "folder-transfer")
-                        .scaledToFit()
-                        .frame(width: 24, height: 24)
-                }
-            }
-        } header: {
-            Label {
-                Text("Synchronization")
-            } icon: {
-                YabaIconView(bundleKey: "computer-phone-sync")
-                    .scaledToFit()
-                    .frame(width: 18, height: 18)
-            }
-        } footer: {
-            Text("Settings Prevent Deletion Sync Description")
-        }
-    }
+    // Sync / device-name-for-sync section disabled — full UI preserved below.
+    // #if false
+    // @ViewBuilder
+    // private var syncSection: some View {
+    //     Section {
+    //         HStack {
+    //             Label {
+    //                 Text("Settings Name Device Label")
+    //             } icon: {
+    //                 YabaIconView(bundleKey: DeviceType.current.symbolName)
+    //                     .scaledToFit()
+    //                     .frame(width: 24, height: 24)
+    //             }
+    //             TextField("", text: $deviceName)
+    //                 .multilineTextAlignment(.trailing)
+    //                 .frame(maxWidth: .infinity, alignment: .trailing)
+    //         }
+    //         Toggle(isOn: $preventDeletionSync) {
+    //             Label {
+    //                 Text("Settings Prevent Deletion Sync Label")
+    //             } icon: {
+    //                 YabaIconView(bundleKey: "folder-transfer")
+    //                     .scaledToFit()
+    //                     .frame(width: 24, height: 24)
+    //             }
+    //         }
+    //     } header: {
+    //         Label {
+    //             Text("Synchronization")
+    //         } icon: {
+    //             YabaIconView(bundleKey: "computer-phone-sync")
+    //                 .scaledToFit()
+    //                 .frame(width: 18, height: 18)
+    //         }
+    //     } footer: {
+    //         Text("Settings Prevent Deletion Sync Description")
+    //     }
+    // }
+    // #endif
     
     @ViewBuilder
     private var dataSection: some View {
         Section {
-            importButton
-            exportButton
             deleteAllButton
         } header: {
             Label {
@@ -418,32 +413,6 @@ struct SettingsView: View {
                     .frame(width: 18, height: 18)
             }
         }
-        .fileExporter(
-            isPresented: $settingsState.shouldShowHtmlExportSheet,
-            document: settingsState.exportableHtmlDocument,
-            contentType: .html,
-            defaultFilename: "yaba_bookmarks",
-            onCompletion: { result in
-                switch result {
-                case .success:
-                    settingsState.toastManager.show(
-                        message: LocalizedStringKey("Export Successful Message"),
-                        accentColor: .green,
-                        acceptText: LocalizedStringKey("Ok"),
-                        iconType: .success,
-                        onAcceptPressed: { settingsState.toastManager.hide() }
-                    )
-                case .failure:
-                    settingsState.toastManager.show(
-                        message: LocalizedStringKey("Export Error Message"),
-                        accentColor: .red,
-                        acceptText: LocalizedStringKey("Ok"),
-                        iconType: .error,
-                        onAcceptPressed: { settingsState.toastManager.hide() }
-                    )
-                }
-            }
-        )
     }
     
     @ViewBuilder
@@ -574,186 +543,6 @@ struct SettingsView: View {
     }
     
     @ViewBuilder
-    private var importButton: some View {
-        HStack {
-            Label {
-                Text("Settings Import Title")
-            } icon: {
-                YabaIconView(bundleKey: "file-import")
-                    .scaledToFit()
-                    .frame(width: 24, height: 24)
-            }
-            Spacer()
-            YabaIconView(bundleKey: "arrow-right-01")
-                .scaledToFit()
-                .frame(width: 24, height: 24)
-                .foregroundStyle(.tertiary)
-        }
-        .contentShape(Rectangle())
-        .onTapGesture {
-            settingsState.shouldShowImportSheet = true
-        }
-        .fileImporter(
-            isPresented: $settingsState.shouldShowImportSheet,
-            allowedContentTypes: [.json, .commaSeparatedText, .html]
-        ) { result in
-            switch result {
-            case .success(let file):
-                settingsState.tryToImport(
-                    with: file,
-                    using: modelContext
-                )
-            case .failure:
-                settingsState.toastManager.show(
-                    message: LocalizedStringKey("Unable to Access File Message"),
-                    accentColor: .red,
-                    acceptText: LocalizedStringKey("Ok"),
-                    iconType: .error,
-                    onAcceptPressed: { settingsState.toastManager.hide() }
-                )
-            }
-        }
-        // I just love this beautiful SwiftUI hack...
-        .fileExporter(
-            isPresented: $settingsState.shouldShowMarkupExportSheet,
-            document: settingsState.exportableMarkupDocument,
-            contentType: .plainText,
-            defaultFilename: "yaba_export",
-            onCompletion: { result in
-                switch result {
-                case .success:
-                    settingsState.toastManager.show(
-                        message: LocalizedStringKey("Export Successful Message"),
-                        accentColor: .green,
-                        acceptText: LocalizedStringKey("Ok"),
-                        iconType: .success,
-                        onAcceptPressed: { settingsState.toastManager.hide() }
-                    )
-                case .failure:
-                    settingsState.toastManager.show(
-                        message: LocalizedStringKey("Export Error Message"),
-                        accentColor: .red,
-                        acceptText: LocalizedStringKey("Ok"),
-                        iconType: .error,
-                        onAcceptPressed: { settingsState.toastManager.hide() }
-                    )
-                }
-            }
-        )
-    }
-    
-    @ViewBuilder
-    private var exportButton: some View {
-        HStack {
-            Label {
-                HStack {
-                    Text("Settings Export Title")
-                    if settingsState.isExporting {
-                        ProgressView().controlSize(.regular)
-                    }
-                }
-            } icon: {
-                YabaIconView(bundleKey: "file-export")
-                    .scaledToFit()
-                    .frame(width: 24, height: 24)
-            }
-            Spacer()
-            YabaIconView(bundleKey: "arrow-right-01")
-                .scaledToFit()
-                .frame(width: 24, height: 24)
-                .foregroundStyle(.tertiary)
-        }
-        .contentShape(Rectangle())
-        .onTapGesture {
-            settingsState.shouldShowExportTypeSelection = true
-        }
-        .confirmationDialog(
-            "Export Type Selection Label",
-            isPresented: $settingsState.shouldShowExportTypeSelection,
-            actions: {
-                Button {
-                    settingsState.shouldShowExportTypeSelection = false
-                    settingsState.showExportSheet(
-                        using: modelContext,
-                        withType: .json
-                    )
-                } label: {
-                    Label {
-                        Text("JSON")
-                    } icon: {
-                        YabaIconView(bundleKey: "file-script")
-                    }
-                }
-                Button {
-                    settingsState.shouldShowExportTypeSelection = false
-                    settingsState.showExportSheet(
-                        using: modelContext,
-                        withType: .commaSeparatedText
-                    )
-                } label: {
-                    Label {
-                        Text("CSV")
-                    } icon: {
-                        YabaIconView(bundleKey: "csv-02")
-                    }
-                }
-                Button {
-                    settingsState.shouldShowExportTypeSelection = false
-                    settingsState.showExportSheet(
-                        using: modelContext,
-                        withType: .plainText
-                    )
-                } label: {
-                    Label {
-                        Text("MARKDOWN")
-                    } icon: {
-                        YabaIconView(bundleKey: "file-02")
-                    }
-                }
-                Button {
-                    settingsState.shouldShowExportTypeSelection = false
-                    settingsState.showExportSheet(
-                        using: modelContext,
-                        withType: .html
-                    )
-                } label: {
-                    Label {
-                        Text("HTML")
-                    } icon: {
-                        YabaIconView(bundleKey: "html-file-01")
-                    }
-                }
-            }
-        )
-        .fileExporter(
-            isPresented: $settingsState.shouldShowCsvExportSheet,
-            document: settingsState.exportableCsvDocument,
-            contentType: .commaSeparatedText,
-            defaultFilename: "yaba_export",
-            onCompletion: { result in
-                switch result {
-                case .success:
-                    settingsState.toastManager.show(
-                        message: LocalizedStringKey("Export Successful Message"),
-                        accentColor: .green,
-                        acceptText: LocalizedStringKey("Ok"),
-                        iconType: .success,
-                        onAcceptPressed: { settingsState.toastManager.hide() }
-                    )
-                case .failure:
-                    settingsState.toastManager.show(
-                        message: LocalizedStringKey("Export Error Message"),
-                        accentColor: .red,
-                        acceptText: LocalizedStringKey("Ok"),
-                        iconType: .error,
-                        onAcceptPressed: { settingsState.toastManager.hide() }
-                    )
-                }
-            }
-        )
-    }
-    
-    @ViewBuilder
     private var deleteAllButton: some View {
         HStack {
             Label {
@@ -805,33 +594,6 @@ struct SettingsView: View {
             },
             message: {
                 Text("Delete All Dialog Message")
-            }
-        )
-        // Best hack I have ever did in this project. Thanks Apple for non-stackable File Exporters...
-        .fileExporter(
-            isPresented: $settingsState.shouldShowJsonExportSheet,
-            document: settingsState.exportableJsonDocument,
-            contentType: .json,
-            defaultFilename: "yaba_export",
-            onCompletion: { result in
-                switch result {
-                case .success:
-                    settingsState.toastManager.show(
-                        message: LocalizedStringKey("Export Successful Message"),
-                        accentColor: .green,
-                        acceptText: LocalizedStringKey("Ok"),
-                        iconType: .success,
-                        onAcceptPressed: { settingsState.toastManager.hide() }
-                    )
-                case .failure:
-                    settingsState.toastManager.show(
-                        message: LocalizedStringKey("Export Error Message"),
-                        accentColor: .red,
-                        acceptText: LocalizedStringKey("Ok"),
-                        iconType: .error,
-                        onAcceptPressed: { settingsState.toastManager.hide() }
-                    )
-                }
             }
         )
     }

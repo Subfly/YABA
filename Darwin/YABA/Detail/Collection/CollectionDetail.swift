@@ -194,21 +194,6 @@ private struct CollectionDetail: View {
                 onExitRequested: {}
             )
         }
-        .sheet(isPresented: $state.shouldShowMoveBookmarksSheet) {
-            NavigationView {
-                if let collection {
-                    SelectFolderContent(
-                        selectedFolder: $state.selectedFolderToMove,
-                        // Sometimes, swift makes me wtf is this...
-                        mode: .moveBookmarks(collection) {
-                            state.shouldShowMoveBookmarksSheet = false
-                        },
-                    )
-                }
-            }.onDisappear {
-                state.handleChangeFolderRequest(with: modelContext)
-            }
-        }
         .alert(
             LocalizedStringKey("Bookmark Selection Delete All Message"),
             isPresented: $state.shouldShowDeleteDialog
@@ -331,17 +316,6 @@ private struct ToolbarItems: View {
                 }
                 if collection?.collectionType == .folder && state.isInSelectionMode {
                     Divider()
-                    Button {
-                        state.shouldShowMoveBookmarksSheet = true
-                    } label: {
-                        Label {
-                            Text("Bookmark Selection Move")
-                        } icon: {
-                            YabaIconView(bundleKey: "arrow-move-up-right")
-                        }
-                    }
-                    .disabled(state.selectedBookmarks.isEmpty)
-                    
                     Button {
                         state.shouldShowDeleteDialog = true
                     } label: {

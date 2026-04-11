@@ -24,11 +24,9 @@ struct YABAApp: App {
     @State
     private var appState: AppState = .init()
     
-    @State
-    private var networkSyncManager: NetworkSyncManager = .init()
-    
-    @State
-    private var moveManager: MoveManager = .init()
+    // Sync disabled — preserve wiring when re-enabling NetworkSyncManager.
+    // @State
+    // private var networkSyncManager: NetworkSyncManager = .init()
     
     var body: some Scene {
         WindowGroup {
@@ -36,8 +34,7 @@ struct YABAApp: App {
                 .modelContext(YabaModelContainer.getContext())
                 .environment(\.appState, appState)
                 .environment(\.deepLinkManager, deepLinkManager)
-                .environment(\.networkSyncManager, networkSyncManager)
-                .environment(\.moveManager, moveManager)
+                // .environment(\.networkSyncManager, networkSyncManager)
                 .preferredColorScheme(preferredTheme.getScheme())
                 .onAppear {
                     setupForMacCatalyst()

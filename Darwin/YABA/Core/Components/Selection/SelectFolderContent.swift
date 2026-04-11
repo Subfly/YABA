@@ -14,10 +14,6 @@ enum FolderSelectionMode {
         YabaCollection?, // the current collection itself
         (Bool) -> Void // onSelectCallback for selection
     )
-    case moveBookmarks(
-        YabaCollection, // containing folder of bookmark
-        () -> Void // onSelectCallback for selection
-    )
 }
 
 struct SelectFolderContent: View {
@@ -95,24 +91,16 @@ private struct SelectFolderSearchableContent: View {
         searchQuery: Binding<String>
     ) {
         self.mode = mode
-    
-        var parentFolder: YabaCollection? = nil
-        if case .moveBookmarks(let yabaCollection, _) = mode {
-            parentFolder = yabaCollection
-        }
-        
+
         let compareValue = CollectionType.folder.rawValue
         let query = searchQuery.wrappedValue
-        let parentCollectionId = parentFolder?.collectionId ?? ""
         _allFolders = Query(
             filter: #Predicate<YabaCollection> {
                 if query.isEmpty {
                     $0.type == compareValue
-                    && $0.collectionId != parentCollectionId
                 } else {
                     $0.type == compareValue
                     && $0.label.localizedStandardContains(query)
-                    && $0.collectionId != parentCollectionId
                 }
             }
         )
@@ -163,14 +151,6 @@ private struct SelectFolderSearchableContent: View {
                     }
                 }
             } else {
-                if case .parentSelection(let currentCollection, let onMoveToRoot) = mode {
-                    if currentCollection?.parent != nil {
-                        MoveToRootItem().onTapGesture {
-                            onMoveToRoot(true)
-                            selectedFolder = nil
-                        }
-                    }
-                }
                 ForEach(foldersToBeShown) { folder in
                     ListCollectionItemView(
                         collection: folder,
@@ -199,9 +179,7 @@ private struct SelectFolderSearchableContent: View {
                             /**
                              * Worst and best thing I've ever seen in a language
                              */
-                            if case .moveBookmarks(_, let onSelected) = mode {
-                                onSelected()
-                            } else if case .parentSelection(_, let onSelected) = mode {
+                            if case .parentSelection(_, let onSelected) = mode {
                                 onSelected(false)
                             }
                             selectedFolder = folder

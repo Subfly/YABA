@@ -12,9 +12,6 @@ enum SortingPickerType {
 }
 
 struct SortingPicker: View {
-    @Environment(\.moveManager)
-    private var moveManager
-    
     @AppStorage(Constants.preferredCollectionSortingKey)
     private var preferredCollectionSorting: SortType = .createdAt
     
@@ -57,15 +54,6 @@ struct SortingPicker: View {
             generateLabel(orderingDisabled: disableOrdering)
         }
         .buttonStyle(.plain)
-        .onChange(of: preferredCollectionSorting) { _, newValue in
-            if contentType == .bookmark {
-                return
-            }
-            
-            if newValue == .custom {
-                moveManager.onCustomSortCollections()
-            }
-        }
     }
     
     @ViewBuilder

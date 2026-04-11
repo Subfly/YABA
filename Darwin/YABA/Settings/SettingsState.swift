@@ -5,208 +5,24 @@
 //  Created by Ali Taha on 23.05.2025.
 //
 
-import UniformTypeIdentifiers
 import SwiftUI
 import SwiftData
+import UserNotifications
 import WidgetKit
 
 internal enum SettingsNavigationDestination: Hashable {
-    case mapper, previousAnnouncements, logs
+    case previousAnnouncements, logs
 }
 
 @MainActor
 @Observable
 internal class SettingsState {
-    @ObservationIgnored
-    private var dataManager: DataManager = .init()
-    
-    let toastManager: ToastManager = .init()
-    
     var settingsNavPath: [SettingsNavigationDestination] = []
-    
+
     var shouldShowGuideSheet: Bool = false
     var showDeleteAllDialog: Bool = false
-    var shouldShowImportSheet: Bool = false
-    var shouldShowExportTypeSelection: Bool = false
-    var shouldShowJsonExportSheet: Bool = false
-    var shouldShowCsvExportSheet: Bool = false
-    var shouldShowHtmlExportSheet: Bool = false
-    var shouldShowMarkupExportSheet: Bool = false
-    
-    var shouldShowHugeIconsAlert: Bool = false
-    var shouldShowIconKitchenAlert: Bool = false
-    
-    var isImporting: Bool = false
-    var isExporting: Bool = false
     var isDeleting: Bool = false
-    
-    /**
-     * Holds the data in a format as:
-     * URL - Label - Description - Created At
-     * respectively.
-     */
-    var mappedHeaders: Dictionary<MappableCSVHeaderValues, Int?> = [:]
-    var importedHeaders: [String] = []
-    var importedFileData: Data? = nil
-    var importedFileType: UTType? = nil
-    
-    var exportableJsonDocument: YabaExportableJsonDocument? = nil
-    var exportableCsvDocument: YabaExportableCsvDocument? = nil
-    var exportableHtmlDocument: YabaExportableHtmlDocument? = nil
-    var exportableMarkupDocument: YabaExportableMarkupDocument? = nil
-    
-    func reset() {
-        mappedHeaders = [
-            .url         : nil,
-            .label       : nil,
-            .description : nil,
-            .createdAt   : nil,
-        ]
-        importedHeaders = []
-        importedFileData = nil
-        importedFileType = nil
-    }
-    
-    func tryToImport(
-        with fileUrl: URL,
-        using modelContext: ModelContext
-    ) {
-        if fileUrl.startAccessingSecurityScopedResource() {
-            guard let fileData = try? Data(contentsOf: fileUrl) else {
-                toastManager.show(
-                    message: LocalizedStringKey("Unable to Access File Message"),
-                    accentColor: .red,
-                    acceptText: LocalizedStringKey("Ok"),
-                    iconType: .error,
-                    onAcceptPressed: { self.toastManager.hide() }
-                )
-                return
-            }
-            
-            let fileType = fileUrl.pathExtension.lowercased()
-            if !(["json", "csv", "html"].contains(fileType)) {
-                toastManager.show(
-                    message: LocalizedStringKey("Unsupported File Type Message"),
-                    accentColor: .red,
-                    acceptText: LocalizedStringKey("Ok"),
-                    iconType: .error,
-                    onAcceptPressed: { self.toastManager.hide() }
-                )
-                return
-            }
-            
-            if fileType == "json" {
-                do {
-                    try dataManager.importJSON(from: fileData, using: modelContext)
-                    self.toastManager.show(
-                        message: LocalizedStringKey("Import Successful Message"),
-                        accentColor: .green,
-                        acceptText: LocalizedStringKey("Ok"),
-                        iconType: .success,
-                        onAcceptPressed: { self.toastManager.hide() }
-                    )
-                } catch {
-                    importedFileData = fileData
-                    importedFileType = .json
-                    settingsNavPath.append(.mapper)
-                }
-            } else if fileType == "csv" {
-                do {
-                    try dataManager.importCSV(from: fileData, using: modelContext)
-                    self.toastManager.show(
-                        message: LocalizedStringKey("Import Successful Message"),
-                        accentColor: .green,
-                        acceptText: LocalizedStringKey("Ok"),
-                        iconType: .success,
-                        onAcceptPressed: { self.toastManager.hide() }
-                    )
-                } catch {
-                    importedFileData = fileData
-                    importedFileType = .commaSeparatedText
-                    importedHeaders = dataManager.extractCSVHeaders(from: fileData)
-                    settingsNavPath.append(.mapper)
-                }
-            } else if fileType == "html" {
-                do {
-                    try dataManager.importHTML(from: fileData, using: modelContext)
-                    self.toastManager.show(
-                        message: LocalizedStringKey("Import Successful Message"),
-                        accentColor: .green,
-                        acceptText: LocalizedStringKey("Ok"),
-                        iconType: .success,
-                        onAcceptPressed: { self.toastManager.hide() }
-                    )
-                } catch {
-                    importedFileData = fileData
-                    importedFileType = .html
-                    settingsNavPath.append(.mapper)
-                }
-            }
-            fileUrl.stopAccessingSecurityScopedResource()
-            
-            WidgetCenter.shared.reloadAllTimelines()
-        }
-    }
-    
-    func importFixedCSV(using modelContext: ModelContext) {
-        isImporting = true
-        defer { isImporting = false }
-        
-        do {
-            try dataManager.importFixedCSV(
-                using: modelContext,
-                headers: mappedHeaders,
-                data: importedFileData,
-                onFinish: {
-                    self.settingsNavPath.removeLast()
-                    self.toastManager.show(
-                        message: LocalizedStringKey("Import Successful Message"),
-                        accentColor: .green,
-                        acceptText: LocalizedStringKey("Ok"),
-                        iconType: .success,
-                        onAcceptPressed: { self.toastManager.hide() }
-                    )
-                    
-                    WidgetCenter.shared.reloadAllTimelines()
-                }
-            )
-        } catch {
-            handleError(error: error)
-        }
-    }
-    
-    func showExportSheet(
-        using modelContext: ModelContext,
-        withType type: UTType,
-    ) {
-        isExporting = true
-        defer { isExporting = false }
-        
-        do {
-            try dataManager.prepareExportableData(
-                using: modelContext,
-                withType: type,
-                onReady: { data in
-                    if type == .commaSeparatedText {
-                        self.exportableCsvDocument = .init(data: data)
-                        self.shouldShowCsvExportSheet = true
-                    } else if type == .json {
-                        self.exportableJsonDocument = .init(data: data)
-                        self.shouldShowJsonExportSheet = true
-                    } else if type == .plainText {
-                        self.exportableMarkupDocument = .init(data: data)
-                        self.shouldShowMarkupExportSheet = true
-                    } else if type == .html {
-                        self.exportableHtmlDocument = .init(data: data)
-                        self.shouldShowHtmlExportSheet = true
-                    }
-                }
-            )
-        } catch {
-            handleError(error: error)
-        }
-    }
-    
+
     func deleteAllData(
         using modelContext: ModelContext,
         onFinishCallback: @escaping () -> Void
@@ -216,67 +32,75 @@ internal class SettingsState {
             showDeleteAllDialog = false
             isDeleting = false
         }
-        
-        dataManager.deleteAllData(
-            using: modelContext,
-            onFinishCallback: {
-                self.toastManager.show(
-                    message: LocalizedStringKey("Delete All Successful Message"),
-                    accentColor: .green,
-                    acceptText: LocalizedStringKey("Ok"),
-                    iconType: .success,
-                    onAcceptPressed: { self.toastManager.hide() }
-                )
-                
-                WidgetCenter.shared.reloadAllTimelines()
-                
-                onFinishCallback()
+
+        Task { @MainActor in
+            UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+            UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+
+            try? YabaDataLogger.shared.logBulkDelete(shouldSave: false)
+
+            try? modelContext.delete(model: YabaBookmark.self)
+            try? await Task.sleep(for: .seconds(1))
+
+            let descriptor = FetchDescriptor<YabaCollection>(
+                predicate: #Predicate { _ in true }
+            )
+            if let collections = try? modelContext.fetch(descriptor) {
+                collections.forEach { collection in
+                    modelContext.delete(collection)
+                }
+                try? await Task.sleep(for: .seconds(1))
             }
-        )
+
+            try? modelContext.save()
+
+            WidgetCenter.shared.reloadAllTimelines()
+            onFinishCallback()
+        }
     }
-    
+
     func onNavigateToAnnouncements() {
         settingsNavPath.append(.previousAnnouncements)
     }
-    
+
     func onNavigateToLogs() {
         settingsNavPath.append(.logs)
     }
-    
+
     func onResetAppStorage() {
         @AppStorage(Constants.hasPassedOnboardingKey)
         var hasPassedOnboarding = false
-        
+
         @AppStorage(Constants.preferredThemeKey)
         var theme: ThemePreference = .system
-        
+
         @AppStorage(Constants.preferredContentAppearanceKey)
         var contentAppearance: ContentAppearance = .list
-        
+
         @AppStorage(Constants.preferredCardImageSizingKey)
         var imageSizing: CardImageSizing = .small
-        
+
         @AppStorage(Constants.preferredCollectionSortingKey)
         var collectionSortType: SortType = .createdAt
-        
+
         @AppStorage(Constants.preferredBookmarkSortingKey)
         var bookmarkSortType: SortType = .createdAt
-        
+
         @AppStorage(Constants.preferredSortOrderKey)
         var sortOrderType: SortOrderType = .ascending
-        
+
         @AppStorage(Constants.announcementsYaba1_2UpdateKey)
         var showUpdateAnnouncement: Bool = true
-        
+
         @AppStorage(Constants.announcementsCloudKitDropKey)
         var showCloudKitAnnouncement: Bool = true
-        
+
         @AppStorage(Constants.hasNamedDeviceKey)
         var hasNamedDevice: Bool = false
-        
+
         @AppStorage(Constants.deviceNameKey)
         var deviceName: String = ""
-        
+
         hasPassedOnboarding = false
         showUpdateAnnouncement = true
         showCloudKitAnnouncement = true
@@ -288,37 +112,5 @@ internal class SettingsState {
         bookmarkSortType = .createdAt
         sortOrderType = .ascending
         deviceName = ""
-    }
-    
-    private func handleError(error: Error) {
-        if let dataError = error as? DataError {
-            switch dataError {
-            case .invalidCSVEncoding(let message),
-                    .emptyCSV(let message),
-                    .emptyJSON(let message),
-                    .emptyHTML(let message),
-                    .exportableGenerationError(let message),
-                    .caseURLColumnNotSelected(let message),
-                    .invalidBookmarkUrl(let message),
-                    .invalidHTML(let message),
-                    .invalidJSON(let message),
-                    .unkownError(let message):
-                toastManager.show(
-                    message: message,
-                    accentColor: .red,
-                    acceptText: LocalizedStringKey("Ok"),
-                    iconType: .error,
-                    onAcceptPressed: { self.toastManager.hide() }
-                )
-            }
-        } else {
-            toastManager.show(
-                message: LocalizedStringKey("Data Manager Unknown Error Message"),
-                accentColor: .red,
-                acceptText: LocalizedStringKey("Ok"),
-                iconType: .error,
-                onAcceptPressed: { self.toastManager.hide() }
-            )
-        }
     }
 }

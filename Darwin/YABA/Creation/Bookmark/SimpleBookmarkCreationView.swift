@@ -100,13 +100,6 @@ struct SimpleBookmarkCreationView: View {
                 }
             )
         }
-        .toast(
-            state: creationState.toastManager.toastState,
-            isShowing: creationState.toastManager.isShowing,
-            onDismiss: {
-                creationState.toastManager.hide()
-            }
-        )
     }
     
     @ViewBuilder

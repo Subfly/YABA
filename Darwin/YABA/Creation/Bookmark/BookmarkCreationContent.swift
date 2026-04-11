@@ -187,13 +187,6 @@ struct BookmarkCreationContent: View {
             // Show the bookmark image change link
             ChangeBookmarkImageTip.isPresented = true
         }
-        .toast(
-            state: state.toastManager.toastState,
-            isShowing: state.toastManager.isShowing,
-            onDismiss: {
-                state.toastManager.hide()
-            }
-        )
     }
     
     @ViewBuilder

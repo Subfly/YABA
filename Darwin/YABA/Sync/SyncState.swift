@@ -9,6 +9,7 @@ import Foundation
 import SwiftData
 import SwiftUI
 
+#if false
 @MainActor
 @Observable
 internal class SyncState {
@@ -21,8 +22,6 @@ internal class SyncState {
     
     var selectedDeviceId: String?
     var isNetworkSyncRunning: Bool = false
-    
-    let toastManager: ToastManager = ToastManager()
     
     // Expose network manager properties for UI
     var discoveredDevices: [ConnectedDevice] {
@@ -68,75 +67,13 @@ internal class SyncState {
     private func setupSyncCallbacks() {
         guard let networkSyncManager = networkSyncManager else { return }
         
-        networkSyncManager.onSyncRequestSent = { [weak self] deviceName in
-            self?.toastManager.show(
-                message: "Sync Request Sent Message \(deviceName)",
-                contentColor: .primary,
-                accentColor: .blue,
-                iconType: .hint,
-                duration: .short
-            )
-        }
-        
-        networkSyncManager.onSyncRequestAccepted = { [weak self] deviceName in
-            self?.toastManager.show(
-                message: "Sync Request Accepted Message \(deviceName)",
-                contentColor: .primary,
-                accentColor: .green,
-                iconType: .success,
-                duration: .short
-            )
-        }
-        
-        networkSyncManager.onSyncRequestRejected = { [weak self] deviceName in
-            self?.toastManager.show(
-                message: "Sync Request Rejected Message \(deviceName)",
-                contentColor: .primary,
-                accentColor: .red,
-                iconType: .error,
-                duration: .short
-            )
-        }
-        
-        networkSyncManager.onSyncStarted = { [weak self] deviceName in
-            self?.toastManager.show(
-                message: "Syncing With Device Message \(deviceName)",
-                contentColor: .primary,
-                accentColor: .orange,
-                iconType: .hint,
-                duration: .long
-            )
-        }
-        
-        networkSyncManager.onSyncCompleted = { [weak self] deviceName in
-            self?.toastManager.show(
-                message: "Sync Complete Message \(deviceName)",
-                contentColor: .primary,
-                accentColor: .green,
-                iconType: .success,
-                duration: .short
-            )
-        }
-        
-        networkSyncManager.onSyncFailed = { [weak self] deviceName, error in
-            self?.toastManager.show(
-                message: "Sync Failed Message \(deviceName): \(error)",
-                contentColor: .primary,
-                accentColor: .red,
-                iconType: .error,
-                duration: .short
-            )
-        }
-        
-        networkSyncManager.onError = { [weak self] error in
-            self?.toastManager.show(
-                message: "Sync Error Message \(error)",
-                contentColor: .primary,
-                accentColor: .red,
-                iconType: .error,
-                duration: .short
-            )
-        }
+        networkSyncManager.onSyncRequestSent = { _ in }
+        networkSyncManager.onSyncRequestAccepted = { _ in }
+        networkSyncManager.onSyncRequestRejected = { _ in }
+        networkSyncManager.onSyncStarted = { _ in }
+        networkSyncManager.onSyncCompleted = { _ in }
+        networkSyncManager.onSyncFailed = { _, _ in }
+        networkSyncManager.onError = { _ in }
     }
     
     func startNetworkDiscovery() async throws {
@@ -195,3 +132,4 @@ internal class SyncState {
         try await networkSyncManager.completeSyncWithIncomingData(syncData, using: modelContext)
     }
 }
+#endif

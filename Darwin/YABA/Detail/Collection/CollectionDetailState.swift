@@ -14,9 +14,8 @@ import SwiftData
 internal class CollectionDetailState {
     var searchQuery: String = ""
     var shouldShowCreateBookmarkSheet: Bool = false
-    var shouldShowMoveBookmarksSheet: Bool = false
     var shouldShowDeleteDialog: Bool = false
-    
+
     var isInSelectionMode: Bool = false {
         didSet {
             if !isInSelectionMode {
@@ -25,8 +24,7 @@ internal class CollectionDetailState {
         }
     }
     var selectedBookmarks: Set<YabaBookmark> = []
-    var selectedFolderToMove: YabaCollection? = nil
-    
+
     func upsertBookmarkInSelections(_ bookmark: YabaBookmark) {
         if selectedBookmarks.contains(bookmark) {
             _ = withAnimation {
@@ -38,35 +36,14 @@ internal class CollectionDetailState {
             }
         }
     }
-    
-    func handleChangeFolderRequest(with modelContext: ModelContext) {
-        guard let selectedFolderToMove else {
-            return
-        }
-        
-        selectedBookmarks.forEach { bookmark in
-            selectedFolderToMove.version += 1
-            guard let oldParent = bookmark.getParentFolder() else { return }
-            oldParent.version += 1
-            bookmark.collections?.removeAll { collection in
-                collection.collectionType == .folder
-            }
-            bookmark.collections?.append(selectedFolderToMove)
-            bookmark.version += 1
-        }
-        
-        isInSelectionMode = false
-        
-        try? modelContext.save()
-    }
-    
+
     func handleDeletionRequest(with modelContext: ModelContext) {
         selectedBookmarks.forEach { bookmark in
             modelContext.delete(bookmark)
         }
-        
+
         isInSelectionMode = false
-        
+
         try? modelContext.save()
     }
 }

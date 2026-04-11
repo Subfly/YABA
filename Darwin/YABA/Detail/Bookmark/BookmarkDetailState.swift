@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import SwiftData
+import UserNotifications
 
 internal enum DetailMode {
     case detail, reader
@@ -16,13 +17,7 @@ internal enum DetailMode {
 @MainActor
 @Observable
 internal class BookmarkDetailState {
-    @ObservationIgnored
-    private var unfurler: Unfurler = .init()
-    
-    let toastManager: ToastManager = .init()
-    
     var shouldShowEditBookmarkSheet: Bool = false
-    var shouldShowFolderSelectionSheet: Bool = false
     var shouldShowTimePicker: Bool = false
     var shouldShowDeleteDialog: Bool = false
     var shouldShowShareDialog: Bool = false
@@ -34,7 +29,6 @@ internal class BookmarkDetailState {
     var meshColor: Color
     var reminderDate: Date?
     var folder: YabaCollection?
-    var selectedFolderToMove: YabaCollection?
     var tags: [YabaCollection]
     
     init(with bookmark: YabaBookmark?) {
@@ -96,13 +90,6 @@ internal class BookmarkDetailState {
                     onSuccessCalback()
                 } else if error != nil {
                     onDeclineCallback()
-                    self?.toastManager.show(
-                        message: LocalizedStringKey("Notifications Disabled Message"),
-                        accentColor: .red,
-                        acceptText: LocalizedStringKey("Ok"),
-                        iconType: .error,
-                        onAcceptPressed: { self?.toastManager.hide() }
-                    )
                 }
         }
     }
@@ -157,14 +144,6 @@ internal class BookmarkDetailState {
         withAnimation {
             reminderDate = selectedReminderDate
         }
-        let formattedDate = selectedReminderDate.formatted(date: .abbreviated, time: .shortened)
-        toastManager.show(
-            message: LocalizedStringKey("Setup Reminder Success Message \(formattedDate)"),
-            accentColor: .green,
-            acceptText: LocalizedStringKey("Ok"),
-            iconType: .success,
-            onAcceptPressed: { self.toastManager.hide() }
-        )
     }
     
     func onRemoveReminder(from bookmark: YabaBookmark) {
@@ -195,78 +174,6 @@ internal class BookmarkDetailState {
     func refetchData(with bookmark: YabaBookmark, using modelContext: ModelContext) async {
         isLoading = true
         defer { isLoading = false }
-        
-        do {
-            if let fetched = try await unfurler.unfurl(urlString: bookmark.link) {
-                bookmark.domain = fetched.host ?? ""
-                if bookmark.label.isEmpty {
-                    bookmark.label = fetched.title ?? ""
-                }
-                if bookmark.bookmarkDescription.isEmpty {
-                    bookmark.bookmarkDescription = fetched.description ?? ""
-                }
-                bookmark.iconUrl = fetched.iconURL
-                bookmark.imageUrl = fetched.imageURL
-                bookmark.videoUrl = fetched.videoURL
-                bookmark.readableHTML = fetched.readableHTML
-                bookmark.iconDataHolder = fetched.iconData
-                bookmark.imageDataHolder = fetched.imageData
-                bookmark.editedAt = .now
-            }
-            
-            try modelContext.save()
-            
-            toastManager.show(
-                message: LocalizedStringKey("Generic Unfurl Success Text"),
-                accentColor: .green,
-                acceptText: LocalizedStringKey("Ok"),
-                iconType: .success,
-                onAcceptPressed: { self.toastManager.hide() }
-            )
-        } catch UnfurlError.cannotCreateURL(let message) {
-            toastManager.show(
-                message: message,
-                accentColor: .red,
-                acceptText: LocalizedStringKey("Ok"),
-                iconType: .error,
-                onAcceptPressed: { self.toastManager.hide() }
-            )
-        } catch UnfurlError.unableToUnfurl(let message) {
-            toastManager.show(
-                message: message,
-                accentColor: .red,
-                acceptText: LocalizedStringKey("Ok"),
-                iconType: .error,
-                onAcceptPressed: { self.toastManager.hide() }
-            )
-        } catch {
-            toastManager.show(
-                message: LocalizedStringKey("Generic Unfurl Error Text"),
-                accentColor: .red,
-                acceptText: LocalizedStringKey("Ok"),
-                iconType: .error,
-                onAcceptPressed: { self.toastManager.hide() }
-            )
-        }
-    }
-    
-    func handleFolderChangeRequest(
-        for bookmark: YabaBookmark,
-        with modelContext: ModelContext
-    ) {
-        guard let newFolder = selectedFolderToMove else { return }
-        newFolder.version += 1
-        
-        guard let oldParent = bookmark.getParentFolder() else { return }
-        bookmark.collections?.removeAll { collection in
-            collection.collectionType == .folder
-        }
-        oldParent.version += 1
-        
-        bookmark.collections?.append(newFolder)
-        bookmark.version += 1
-        
-        try? modelContext.save()
     }
 }
 

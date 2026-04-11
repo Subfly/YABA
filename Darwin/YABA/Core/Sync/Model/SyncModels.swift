@@ -7,6 +7,7 @@
 
 import Foundation
 
+#if false
 // MARK: - Message Type Discriminator
 
 enum SyncMessageType: String, Codable {
@@ -80,9 +81,9 @@ struct SyncDataMessage: Codable, Equatable {
     }
 }
 
-// MARK: - DataManager Compatibility Types
+// MARK: - Sync payload types
 
-/// Sync request used by DataManager
+/// Sync request payload for network exchange
 struct SyncRequest: Codable, Equatable {
     let deviceId: String
     let deviceName: String
@@ -93,7 +94,7 @@ struct SyncRequest: Codable, Equatable {
     let deletionLogs: [YabaCodableDeletionLog]
 }
 
-/// Sync response used by DataManager
+/// Sync response payload for network exchange
 struct SyncResponse: Codable, Equatable {
     let deviceId: String
     let deviceName: String
@@ -129,3 +130,4 @@ struct SimpleSyncResult: Equatable {
     let mergedCollections: Int
     let error: String?
 }
+#endif
