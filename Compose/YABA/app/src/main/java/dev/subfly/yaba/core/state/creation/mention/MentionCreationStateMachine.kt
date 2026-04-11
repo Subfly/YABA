@@ -1,32 +1,32 @@
-package dev.subfly.yaba.core.state.creation.notemark
+package dev.subfly.yaba.core.state.creation.mention
 
 import dev.subfly.yaba.core.managers.AllBookmarksManager
 import dev.subfly.yaba.core.state.base.BaseStateMachine
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 
-class NotemarkMentionCreationStateMachine :
-    BaseStateMachine<NotemarkMentionCreationUIState, NotemarkMentionCreationEvent>(
-        initialState = NotemarkMentionCreationUIState(),
+class MentionCreationStateMachine :
+    BaseStateMachine<MentionCreationUIState, MentionCreationEvent>(
+        initialState = MentionCreationUIState(),
     ) {
     private var isInitialized = false
     private var bookmarkObservationJob: Job? = null
     private var shouldAutofillMentionFromBookmarkLabel = false
 
-    override fun onEvent(event: NotemarkMentionCreationEvent) {
+    override fun onEvent(event: MentionCreationEvent) {
         when (event) {
-            is NotemarkMentionCreationEvent.OnInit -> onInit(event)
-            is NotemarkMentionCreationEvent.OnChangeMentionText -> onChangeMentionText(event)
-            is NotemarkMentionCreationEvent.OnBookmarkPickedFromSelection ->
+            is MentionCreationEvent.OnInit -> onInit(event)
+            is MentionCreationEvent.OnChangeMentionText -> onChangeMentionText(event)
+            is MentionCreationEvent.OnBookmarkPickedFromSelection ->
                 onBookmarkPickedFromSelection(event)
         }
     }
 
-    private fun onInit(event: NotemarkMentionCreationEvent.OnInit) {
+    private fun onInit(event: MentionCreationEvent.OnInit) {
         if (isInitialized) return
         isInitialized = true
         updateState {
-            NotemarkMentionCreationUIState(
+            MentionCreationUIState(
                 mentionText = event.initialText,
                 selectedBookmarkId = event.initialBookmarkId,
                 isEdit = event.isEdit,
@@ -36,12 +36,12 @@ class NotemarkMentionCreationStateMachine :
         subscribeBookmark(event.initialBookmarkId)
     }
 
-    private fun onChangeMentionText(event: NotemarkMentionCreationEvent.OnChangeMentionText) {
+    private fun onChangeMentionText(event: MentionCreationEvent.OnChangeMentionText) {
         updateState { it.copy(mentionText = event.text) }
     }
 
     private fun onBookmarkPickedFromSelection(
-        event: NotemarkMentionCreationEvent.OnBookmarkPickedFromSelection,
+        event: MentionCreationEvent.OnBookmarkPickedFromSelection,
     ) {
         shouldAutofillMentionFromBookmarkLabel = true
         updateState { it.copy(selectedBookmarkId = event.bookmarkId) }

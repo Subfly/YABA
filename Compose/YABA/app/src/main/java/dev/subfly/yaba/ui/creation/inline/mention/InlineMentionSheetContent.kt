@@ -40,8 +40,8 @@ import dev.subfly.yaba.core.model.utils.BookmarkAppearance
 import dev.subfly.yaba.core.model.utils.YabaColor
 import dev.subfly.yaba.core.navigation.creation.BookmarkSelectionRoute
 import dev.subfly.yaba.core.navigation.creation.InlineMentionSheetRoute
-import dev.subfly.yaba.core.state.creation.notemark.NotemarkMentionCreationEvent
-import dev.subfly.yaba.ui.creation.notemark.mention.NotemarkMentionCreationVM
+import dev.subfly.yaba.core.state.creation.mention.MentionCreationEvent
+import dev.subfly.yaba.ui.creation.mention.MentionCreationVM
 import dev.subfly.yaba.util.InlineMentionSheetResult
 import dev.subfly.yaba.util.InlineSheetAction
 import dev.subfly.yaba.util.LocalAppStateManager
@@ -56,7 +56,7 @@ fun InlineMentionSheetContent(route: InlineMentionSheetRoute) {
     val appStateManager = LocalAppStateManager.current
     val resultStore = LocalResultStore.current
 
-    val vm = viewModel(key = route.routeId) { NotemarkMentionCreationVM() }
+    val vm = viewModel(key = route.routeId) { MentionCreationVM() }
     val state by vm.state.collectAsStateWithLifecycle()
 
     val fieldAccent = YabaColor.BLUE
@@ -64,7 +64,7 @@ fun InlineMentionSheetContent(route: InlineMentionSheetRoute) {
 
     LaunchedEffect(route.routeId) {
         vm.onEvent(
-            NotemarkMentionCreationEvent.OnInit(
+            MentionCreationEvent.OnInit(
                 initialText = route.initialText,
                 initialBookmarkId = route.initialBookmarkId,
                 isEdit = route.isEdit,
@@ -77,7 +77,7 @@ fun InlineMentionSheetContent(route: InlineMentionSheetRoute) {
         val selectedId = resultStore.getResult<String>(ResultStoreKeys.SELECTED_BOOKMARK)
             ?: return@LaunchedEffect
         resultStore.removeResult(ResultStoreKeys.SELECTED_BOOKMARK)
-        vm.onEvent(NotemarkMentionCreationEvent.OnBookmarkPickedFromSelection(bookmarkId = selectedId))
+        vm.onEvent(MentionCreationEvent.OnBookmarkPickedFromSelection(bookmarkId = selectedId))
     }
 
     val bookmark = state.selectedBookmark
@@ -122,7 +122,7 @@ fun InlineMentionSheetContent(route: InlineMentionSheetRoute) {
             text = state.mentionText,
             fieldAccent = fieldAccent,
             fieldAccentColor = fieldAccentColor,
-            onTextChange = { vm.onEvent(NotemarkMentionCreationEvent.OnChangeMentionText(it)) },
+            onTextChange = { vm.onEvent(MentionCreationEvent.OnChangeMentionText(it)) },
         )
 
         if (bookmark != null) {

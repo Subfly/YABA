@@ -1,13 +1,13 @@
 //
-//  NotemarkMentionCreationEvent.swift
+//  MentionCreationEvent.swift
 //  YABACore
 //
-//  Parity with Compose `NotemarkMentionCreationEvent` (creation/notemark).
+//  Parity with Compose `MentionCreationEvent` (creation/mention).
 //
 
 import Foundation
 
-public enum NotemarkMentionCreationEvent: Sendable {
+public enum MentionCreationEvent: Sendable {
     case onInit(
         initialText: String,
         initialBookmarkId: String?,

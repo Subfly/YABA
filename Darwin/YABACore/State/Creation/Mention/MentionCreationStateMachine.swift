@@ -1,17 +1,17 @@
 //
-//  NotemarkMentionCreationStateMachine.swift
+//  MentionCreationStateMachine.swift
 //  YABACore
 //
 
 import Foundation
 
 @MainActor
-public final class NotemarkMentionCreationStateMachine: YabaBaseObservableState<NotemarkMentionCreationUIState>, YabaScreenStateMachine {
-    public override init(initialState: NotemarkMentionCreationUIState = NotemarkMentionCreationUIState()) {
+public final class MentionCreationStateMachine: YabaBaseObservableState<MentionCreationUIState>, YabaScreenStateMachine {
+    public override init(initialState: MentionCreationUIState = MentionCreationUIState()) {
         super.init(initialState: initialState)
     }
 
-    public func send(_ event: NotemarkMentionCreationEvent) async {
+    public func send(_ event: MentionCreationEvent) async {
         switch event {
         case let .onInit(text, bookmarkId, isEdit, editPos):
             apply {

@@ -1,16 +1,16 @@
-package dev.subfly.yaba.core.state.creation.notemark
+package dev.subfly.yaba.core.state.creation.mention
 
-sealed interface NotemarkMentionCreationEvent {
+sealed interface MentionCreationEvent {
     data class OnInit(
         val initialText: String = "",
         val initialBookmarkId: String? = null,
         val isEdit: Boolean = false,
         val editPos: Int? = null,
-    ) : NotemarkMentionCreationEvent
+    ) : MentionCreationEvent
 
     data class OnChangeMentionText(
         val text: String,
-    ) : NotemarkMentionCreationEvent
+    ) : MentionCreationEvent
 
     /**
      * User finished the bookmark picker; [bookmarkId] is the only payload from selection.
@@ -18,5 +18,5 @@ sealed interface NotemarkMentionCreationEvent {
      */
     data class OnBookmarkPickedFromSelection(
         val bookmarkId: String,
-    ) : NotemarkMentionCreationEvent
+    ) : MentionCreationEvent
 }

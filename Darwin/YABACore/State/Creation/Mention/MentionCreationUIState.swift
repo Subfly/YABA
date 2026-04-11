@@ -1,11 +1,11 @@
 //
-//  NotemarkMentionCreationUIState.swift
+//  MentionCreationUIState.swift
 //  YABACore
 //
 
 import Foundation
 
-public struct NotemarkMentionCreationUIState: Sendable {
+public struct MentionCreationUIState: Sendable {
     public var mentionText: String
     public var selectedBookmarkId: String?
     /// Resolved from `@Query` or passed from selection; mirrors Compose `BookmarkUiModel` for display.
