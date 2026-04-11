@@ -42,17 +42,12 @@ internal class BookmarkCreationState {
     var selectedFolder: YabaCollection? = nil
     var selectedTags: [YabaCollection] = []
     
-    var selectableImages: [String: Data] = [:]
-    
     var isLoading: Bool = false
-    var isImagesLoading: Bool = false
     var hasError: Bool = false
     
     var contentAppearance: PreviewContentAppearance = .list
     
     var uncatagroizedFolderCreationRequired: Bool = false
-    
-    var shouldShowImageSelectionSheet: Bool = false
     
     @ObservationIgnored
     let isInEditMode: Bool
@@ -211,8 +206,6 @@ internal class BookmarkCreationState {
             selectedType = bookmarkToEdit.bookmarkType
             selectedFolder = bookmarkToEdit.collections?.first(where: { $0.collectionType == .folder })
             selectedTags = bookmarkToEdit.collections?.filter { $0.collectionType == .tag } ?? []
-            
-            isImagesLoading = false
         } else {
             selectedFolder = folderToFill
         }

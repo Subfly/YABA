@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import TipKit
 
 struct SimpleBookmarkCreationView: View {
     @Environment(\.modelContext)
@@ -17,8 +16,6 @@ struct SimpleBookmarkCreationView: View {
     
     @State
     private var creationState: BookmarkCreationState = .init(isInEditMode: false)
-    
-    private let changeBookmarkImageTip = ChangeBookmarkImageTip()
     
     let link: String
     let onExitRequested: () -> Void
@@ -35,10 +32,6 @@ struct SimpleBookmarkCreationView: View {
                         link: creationState.cleanerUrl
                     )
                     .redacted(reason: creationState.isLoading ? .placeholder : [])
-                    .onTapGesture {
-                        creationState.shouldShowImageSelectionSheet = true
-                    }
-                    TipView(changeBookmarkImageTip)
                     titleSection
                     infoSection
                 }
@@ -88,17 +81,6 @@ struct SimpleBookmarkCreationView: View {
                     using: modelContext
                 )
             }
-            ChangeBookmarkImageTip.isPresented = true
-        }
-        .sheet(isPresented: $creationState.shouldShowImageSelectionSheet) {
-            SelectImageContent(
-                selectables: creationState.selectableImages,
-                isLoading: creationState.isImagesLoading,
-                onSelectImage: { url, imageData in
-                    creationState.imageURL = url
-                    creationState.imageData = imageData
-                }
-            )
         }
     }
     

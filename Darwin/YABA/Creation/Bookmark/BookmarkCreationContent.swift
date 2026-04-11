@@ -7,7 +7,6 @@
 
 import SwiftUI
 import SwiftData
-import TipKit
 
 struct BookmarkCreationContent: View {
     @Environment(\.dismiss)
@@ -24,8 +23,6 @@ struct BookmarkCreationContent: View {
     
     @State
     private var state: BookmarkCreationState
-    
-    private let changeBookmarkImageTip = ChangeBookmarkImageTip()
     
     private let navigationTitle: String
     
@@ -65,10 +62,6 @@ struct BookmarkCreationContent: View {
                     Section {
                         bookmarkPreviewItem
                             .redacted(reason: state.isLoading ? .placeholder : [])
-                            .onTapGesture {
-                                state.shouldShowImageSelectionSheet = true
-                            }
-                        TipView(changeBookmarkImageTip)
                     } header: {
                         bookmarkPreviewHeader
                     }
@@ -153,16 +146,6 @@ struct BookmarkCreationContent: View {
         #if !targetEnvironment(macCatalyst)
         .presentationDragIndicator(.visible)
         #endif
-        .sheet(isPresented: $state.shouldShowImageSelectionSheet) {
-            SelectImageContent(
-                selectables: state.selectableImages,
-                isLoading: state.isImagesLoading,
-                onSelectImage: { url, imageData in
-                    state.imageURL = url
-                    state.imageData = imageData
-                }
-            )
-        }
         .tint(
             state.selectedFolder == nil
             ? .accentColor
@@ -184,8 +167,6 @@ struct BookmarkCreationContent: View {
                     using: modelContext
                 )
             }
-            // Show the bookmark image change link
-            ChangeBookmarkImageTip.isPresented = true
         }
     }
     
