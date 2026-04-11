@@ -56,10 +56,3 @@ struct YabaColorPicker: View {
         #endif
     }
 }
-
-#Preview {
-    YabaColorPicker(
-        selection: .constant(.blue),
-        onDismiss: {}
-    )
-}

@@ -180,6 +180,7 @@ struct CollectionCreationContent: View {
     @ViewBuilder
     private var iconPicker: some View {
         IconPickerView(
+            currentSelectedIcon: state.selectedIconName,
             onSelectIcon: { newName in
                 withAnimation {
                     state.selectedIconName = newName

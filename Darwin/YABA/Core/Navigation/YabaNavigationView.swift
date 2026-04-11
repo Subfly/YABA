@@ -36,7 +36,6 @@ struct YabaNavigationView: View {
                 }
             }
             .onAppear {
-                YabaDataLogger.shared.setContext(modelContext)
                 if !hasPassedOnboarding {
                     shouldShowOnboardingView = true
                 } else if !hasNamedDevice {

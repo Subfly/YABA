@@ -7,140 +7,150 @@
 
 import SwiftUI
 
+/// Two-step flow aligned with Compose: `IconCategorySelectionContent` → `IconSelectionContent`,
+/// driven by `IconCategorySelectionStateMachine` and `IconSelectionStateMachine` (YABACore).
 struct IconPickerView: View {
-    @State
-    private var data: IconPickerData = .init()
-    
+    let currentSelectedIcon: String
     let onSelectIcon: (String) -> Void
     let onCancel: () -> Void
-    
+
+    @State
+    private var categoryMachine = IconCategorySelectionStateMachine()
+    @State
+    private var iconMachine = IconSelectionStateMachine()
+
+    init(
+        currentSelectedIcon: String = "",
+        onSelectIcon: @escaping (String) -> Void,
+        onCancel: @escaping () -> Void
+    ) {
+        self.currentSelectedIcon = currentSelectedIcon
+        self.onSelectIcon = onSelectIcon
+        self.onCancel = onCancel
+    }
+
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(data.categories, id: \.self) { category in
-                    CategoryItemView(category: category, data: data, onSelectIcon: onSelectIcon)
+        NavigationStack {
+            categoryList
+                .navigationDestination(for: YabaIconCategory.self) { category in
+                    iconSelectionContent(for: category)
                 }
-            }
-            .listStyle(.sidebar)
-            .listRowSpacing(0)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel", role: .cancel) {
-                        onCancel()
-                    }
-                }
-            }
-            .navigationTitle("Pick Icon Category Title")
         }
     }
-}
 
-private struct CategoryItemView: View {
-    let category: IconCategory
-    let data: IconPickerData
-    let onSelectIcon: (String) -> Void
-    
-    var body: some View {
-        Section {
-            ForEach(category.subcategories, id: \.id) { subcategory in
-                NavigationLink {
-                    IconSelectionView(
-                        subcategory: subcategory,
-                        data: data,
-                        onSelectIcon: onSelectIcon
-                    )
-                } label: {
-                    HStack {
-                        HStack {
-                            YabaIconView(bundleKey: subcategory.headerIcon)
-                                .scaledToFit()
-                                .foregroundStyle(YabaColor(rawValue: subcategory.color)?.getUIColor() ?? .accentColor)
-                                .frame(width: 24, height: 24)
-                            Text(LocalizedStringKey(subcategory.name))
-                        }
-                        Spacer()
-                        HStack {
-                            Text("\(subcategory.iconCount)")
-                                .foregroundStyle(.secondary)
-                                .fontWeight(.medium)
-                        }.foregroundStyle(.secondary)
+    private var categoryList: some View {
+        Group {
+            if categoryMachine.state.isLoading, categoryMachine.state.categories.isEmpty {
+                ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                List(categoryMachine.state.categories) { category in
+                    NavigationLink(value: category) {
+                        IconCategoryRow(category: category)
                     }
-                    .contentShape(Rectangle())
+                }
+                .listStyle(.plain)
+            }
+        }
+        .navigationTitle(Text("Pick Icon Category Title"))
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Cancel", role: .cancel) {
+                    onCancel()
                 }
             }
-        } header: {
-            Label {
-                Text(LocalizedStringKey(category.name))
-            } icon: {
-                YabaIconView(bundleKey: category.headerIcon)
-                    .scaledToFit()
-                    .frame(width: 18, height: 18)
-            }.foregroundStyle(YabaColor(rawValue: category.color)?.getUIColor() ?? .accentColor)
-        } footer: {
-            Text(LocalizedStringKey(category.description))
+        }
+        .task {
+            await categoryMachine.send(.onInit)
         }
     }
-}
 
-private struct IconSelectionView: View {
-    let subcategory: IconSubcategory
-    let data: IconPickerData
-    let onSelectIcon: (String) -> Void
-    
-    private let columns = Array(
-        repeating: GridItem(
-            .adaptive(minimum: 60, maximum: 80),
-            spacing: 12
-        ),
-        count: 4
-    )
-    
-    var body: some View {
+    private func iconSelectionContent(for category: YabaIconCategory) -> some View {
         ScrollView {
-            LazyVGrid(columns: columns, spacing: 16) {
-                ForEach(data.currentIcons, id: \.name) { icon in
-                    PickableIcon(
-                        key: icon.name,
-                        onSelectIcon: onSelectIcon
-                    )
+            VStack(spacing: 0) {
+                if iconMachine.state.isLoadingIcons {
+                    ProgressView()
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                }
+                LazyVGrid(columns: iconGridColumns, spacing: 8) {
+                    ForEach(iconMachine.state.icons, id: \.name) { icon in
+                        IconGridCell(
+                            iconName: icon.name,
+                            isSelected: iconMachine.state.selectedIconName == icon.name
+                        ) {
+                            Task {
+                                await iconMachine.send(.onSelectIcon(iconName: icon.name))
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal, 12)
+                .padding(.bottom, 24)
+            }
+        }
+        .navigationTitle(Text(LocalizedStringKey(category.name)))
+        .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Done") {
+                    onSelectIcon(iconMachine.state.selectedIconName)
                 }
             }
-            .padding()
         }
-        .navigationTitle(LocalizedStringKey(subcategory.name))
-        .navigationBarTitleDisplayMode(.large)
-        .onAppear {
-            data.loadIcons(for: subcategory)
+        .task(id: category.id) {
+            await iconMachine.send(
+                .onInit(category: category, initialSelectedIcon: currentSelectedIcon)
+            )
         }
+    }
+
+    private var iconGridColumns: [GridItem] {
+        Array(repeating: GridItem(.flexible(), spacing: 8), count: 5)
     }
 }
 
-private struct PickableIcon: View {
-    @Environment(\.colorScheme)
-    private var colorScheme
-    
-    let key: String
-    let onSelectIcon: (String) -> Void
-    
+private struct IconCategoryRow: View {
+    let category: YabaIconCategory
+
     var body: some View {
-        Button {
-            onSelectIcon(key)
-        } label: {
-            VStack(spacing: 4) {
-                YabaIconView(bundleKey: key)
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 44, height: 44)
-                    .foregroundStyle(.primary)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 8)
-            .background(Color.clear)
-            .contentShape(Rectangle())
+        HStack(spacing: 12) {
+            YabaIconView(bundleKey: category.headerIcon)
+                .scaledToFit()
+                .foregroundStyle(YabaColor(rawValue: category.color)?.getUIColor() ?? .accentColor)
+                .frame(width: 28, height: 28)
+            Text(LocalizedStringKey(category.name))
+                .foregroundStyle(.primary)
+            Spacer()
+            Text("\(category.iconCount)")
+                .foregroundStyle(.secondary)
+                .fontWeight(.medium)
+            YabaIconView(bundleKey: "arrow-right-01")
+                .scaledToFit()
+                .frame(width: 20, height: 20)
+                .foregroundStyle(.tertiary)
+        }
+        .contentShape(Rectangle())
+    }
+}
+
+private struct IconGridCell: View {
+    let iconName: String
+    let isSelected: Bool
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            YabaIconView(bundleKey: iconName)
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 40, height: 40)
+                .frame(maxWidth: .infinity)
+                .padding(8)
+                .background {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(isSelected ? Color.accentColor.opacity(0.35) : Color.clear)
+                }
         }
         .buttonStyle(.plain)
     }
-}
-
-#Preview {
-    IconPickerView(onSelectIcon: { _ in }, onCancel: {})
 }

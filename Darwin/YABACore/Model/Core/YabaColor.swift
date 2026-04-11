@@ -26,7 +26,7 @@ public enum YabaColor: Int, Sendable, CaseIterable {
 }
 
 public extension YabaColor {
-    public func getUIColor() -> Color {
+    func getUIColor() -> Color {
         switch self {
         case .blue: return .blue
         case .brown: return .brown
@@ -45,7 +45,7 @@ public extension YabaColor {
         }
     }
 
-    public func getUIText() -> String {
+    func getUIText() -> String {
         switch self {
         case .blue: return "Blue"
         case .brown: return "Brown"

@@ -8,22 +8,51 @@
 
 import Foundation
 
-public struct YabaIconCategory: Sendable, Identifiable {
+public struct YabaIconCategory: Sendable, Identifiable, Hashable, Codable {
     public var id: String
+    public var name: String
+    public var iconCount: Int
     public var filename: String
+    public var headerIcon: String
+    public var color: Int
 
-    public init(id: String, filename: String) {
+    enum CodingKeys: String, CodingKey {
+        case id, name, filename, color
+        case iconCount = "icon_count"
+        case headerIcon = "header_icon"
+    }
+
+    public init(
+        id: String,
+        name: String,
+        iconCount: Int,
+        filename: String,
+        headerIcon: String,
+        color: Int
+    ) {
         self.id = id
+        self.name = name
+        self.iconCount = iconCount
         self.filename = filename
+        self.headerIcon = headerIcon
+        self.color = color
     }
 }
 
-public struct YabaIconItem: Sendable, Hashable {
+public struct YabaIconItem: Sendable, Hashable, Codable {
     public var name: String
 
     public init(name: String) {
         self.name = name
     }
+}
+
+private struct IconHeaderFile: Decodable {
+    let categories: [YabaIconCategory]
+}
+
+private struct IconCategoryFile: Decodable {
+    let icons: [YabaIconItem]
 }
 
 public enum IconManager {
@@ -34,16 +63,11 @@ public enum IconManager {
         await Task.detached {
             guard let url = BundleReader.url(forAssetPath: headerAssetPath, in: bundle),
                   let data = try? Data(contentsOf: url),
-                  let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                  let categories = json["categories"] as? [[String: Any]]
+                  let decoded = try? JSONDecoder().decode(IconHeaderFile.self, from: data)
             else {
                 return []
             }
-            return categories.compactMap { row in
-                guard let id = row["id"] as? String ?? row["name"] as? String else { return nil }
-                let filename = row["filename"] as? String ?? "\(id).json"
-                return YabaIconCategory(id: id, filename: filename)
-            }
+            return decoded.categories
         }.value
     }
 
@@ -54,15 +78,11 @@ public enum IconManager {
             let assetPath = "Assets/Metadata/\(name).json"
             guard let url = BundleReader.url(forAssetPath: assetPath, in: bundle),
                   let data = try? Data(contentsOf: url),
-                  let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                  let icons = json["icons"] as? [[String: Any]]
+                  let decoded = try? JSONDecoder().decode(IconCategoryFile.self, from: data)
             else {
                 return []
             }
-            return icons.compactMap { row in
-                guard let n = row["name"] as? String ?? row["id"] as? String else { return nil }
-                return YabaIconItem(name: n)
-            }
+            return decoded.icons
         }.value
     }
 }

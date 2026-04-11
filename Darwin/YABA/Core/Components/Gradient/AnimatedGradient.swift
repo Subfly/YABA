@@ -13,13 +13,13 @@ struct AnimatedGradient: View {
     @AppStorage(Constants.disableBackgroundAnimationKey)
     private var disableBackgroundAnimation: Bool = false
     
-    private let collectionColor: Color
+    private let color: Color
     
     @State
     private var shouldAnimate: Bool = false
     
-    init(collectionColor: Color) {
-        self.collectionColor = collectionColor
+    init(color: Color) {
+        self.color = color
     }
     
     var body: some View {
@@ -27,18 +27,18 @@ struct AnimatedGradient: View {
             colors: [
                 .clear, .clear, .clear,
                 .clear, .clear, .clear,
-                collectionColor.opacity(0.05), collectionColor.opacity(0.05), collectionColor.opacity(0.05),
-                collectionColor.opacity(0.1), collectionColor.opacity(0.1), collectionColor.opacity(0.1),
-                collectionColor.opacity(0.15), collectionColor.opacity(0.15), collectionColor.opacity(0.15),
-                collectionColor.opacity(0.2), collectionColor.opacity(0.2), collectionColor.opacity(0.2),
-                collectionColor.opacity(
+                color.opacity(0.05), color.opacity(0.05), color.opacity(0.05),
+                color.opacity(0.1), color.opacity(0.1), color.opacity(0.1),
+                color.opacity(0.15), color.opacity(0.15), color.opacity(0.15),
+                color.opacity(0.2), color.opacity(0.2), color.opacity(0.2),
+                color.opacity(
                     shouldAnimate ? 0.3 : 0.25
-                ), collectionColor.opacity(0.25), collectionColor.opacity(
+                ), color.opacity(0.25), color.opacity(
                     shouldAnimate ? 0.3 : 0.25
                 ),
-                collectionColor.opacity(
+                color.opacity(
                     shouldAnimate ? 0.25 : 0.3
-                ), collectionColor.opacity(0.3), collectionColor.opacity(
+                ), color.opacity(0.3), color.opacity(
                     shouldAnimate ? 0.25 : 0.3
                 ),
             ],
@@ -57,10 +57,4 @@ struct AnimatedGradient: View {
             }
         }
     }
-}
-
-#Preview {
-    AnimatedGradient(
-        collectionColor: .indigo
-    )
 }
