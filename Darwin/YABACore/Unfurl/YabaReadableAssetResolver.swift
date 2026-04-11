@@ -1,15 +1,15 @@
 //
-//  YabaDarwinReadableAssetResolver.swift
+//  YabaReadableAssetResolver.swift
 //  YABACore
 //
 //  In-memory registry of readable inline image bytes keyed by asset id, used by
-//  [YabaDarwinReadableAssetSchemeHandler] when the WebView resolves `yaba-asset:` image URLs.
+//  [YabaReadableAssetSchemeHandler] when the WebView resolves `yaba-asset:` image URLs.
 //
 
 import Foundation
 
-public final class YabaDarwinReadableAssetResolver: @unchecked Sendable {
-    public static let shared = YabaDarwinReadableAssetResolver()
+public final class YabaReadableAssetResolver: @unchecked Sendable {
+    public static let shared = YabaReadableAssetResolver()
 
     private let lock = NSLock()
     private var bytesByAssetId: [String: Data] = [:]
@@ -22,7 +22,7 @@ public final class YabaDarwinReadableAssetResolver: @unchecked Sendable {
         bytesByAssetId[assetId] = bytes
     }
 
-    public func register(unfurl: YabaDarwinReadableUnfurl) {
+    public func register(unfurl: YabaReadableUnfurl) {
         lock.lock()
         defer { lock.unlock() }
         for a in unfurl.assets {

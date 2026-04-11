@@ -33,7 +33,7 @@ public struct LinkmarkCreationUIState: Sendable {
     public var previewImageData: Data?
     public var previewIconData: Data?
     /// Latest processed readable (for save when bookmark exists or on first save).
-    public var pendingReadableUnfurl: YabaDarwinReadableUnfurl?
+    public var pendingReadableUnfurl: YabaReadableUnfurl?
 
     public init(
         editingBookmarkId: String? = nil,
@@ -60,7 +60,7 @@ public struct LinkmarkCreationUIState: Sendable {
         cleanedUrl: String? = nil,
         previewImageData: Data? = nil,
         previewIconData: Data? = nil,
-        pendingReadableUnfurl: YabaDarwinReadableUnfurl? = nil
+        pendingReadableUnfurl: YabaReadableUnfurl? = nil
     ) {
         self.editingBookmarkId = editingBookmarkId
         self.url = url

@@ -14,21 +14,21 @@ public final class YabaWKWebViewRuntime: NSObject {
     public let webView: WKWebView
     public private(set) var expectedBridgeFeature: String?
 
-    public var onHostEvent: ((YabaDarwinWebHostEvent) -> Void)?
+    public var onHostEvent: ((YabaWebHostEvent) -> Void)?
     public var onBridgeReady: (() -> Void)?
     public var onAnnotationTap: ((String) -> Void)?
-    public var onMathTap: ((YabaDarwinMathTapEvent) -> Void)?
-    public var onInlineLinkTap: ((YabaDarwinInlineLinkTapEvent) -> Void)?
-    public var onInlineMentionTap: ((YabaDarwinInlineMentionTapEvent) -> Void)?
+    public var onMathTap: ((YabaMathTapEvent) -> Void)?
+    public var onInlineLinkTap: ((YabaInlineLinkTapEvent) -> Void)?
+    public var onInlineMentionTap: ((YabaInlineMentionTapEvent) -> Void)?
 
     public var onLoadProgress: ((Double) -> Void)?
 
-    private let configuration: YabaDarwinWebRuntimeConfiguration
+    private let configuration: YabaWebRuntimeConfiguration
     private let scriptBridge = ScriptBridgeProxy()
     private let navProxy = NavigationProxy()
     private let uiProxy = UIDelegateProxy()
 
-    public init(configuration: YabaDarwinWebRuntimeConfiguration = YabaDarwinWebRuntimeConfiguration()) {
+    public init(configuration: YabaWebRuntimeConfiguration = YabaWebRuntimeConfiguration()) {
         self.configuration = configuration
         let config = WKWebViewConfiguration()
         config.websiteDataStore = configuration.websiteDataStore
@@ -75,7 +75,7 @@ public final class YabaWKWebViewRuntime: NSObject {
     }
 
     /// Resolves the bundled shell URL and loads it with read access to the web-components directory.
-    public func loadBundledShell(for feature: YabaDarwinWebFeature, bundle: Bundle = .main) {
+    public func loadBundledShell(for feature: YabaWebFeature, bundle: Bundle = .main) {
         expectedBridgeFeature = feature.expectedBridgeFeature
         guard let url = Self.resolveShellURL(for: feature, bundle: bundle),
               let readAccess = BundleReader.webComponentsBaseURL(in: bundle) else {
@@ -165,7 +165,7 @@ public final class YabaWKWebViewRuntime: NSObject {
         }
     }
 
-    private static func resolveShellURL(for feature: YabaDarwinWebFeature, bundle: Bundle) -> URL? {
+    private static func resolveShellURL(for feature: YabaWebFeature, bundle: Bundle) -> URL? {
         switch feature {
         case .readableViewer:
             return BundleReader.getViewerURL(in: bundle)

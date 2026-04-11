@@ -1,12 +1,12 @@
 //
-//  YabaDarwinWebRuntimeConfiguration.swift
+//  YabaWebRuntimeConfiguration.swift
 //  YABACore
 //
 
 import WebKit
 
 /// Tunable knobs for `YabaWKWebViewRuntime` (security-first defaults).
-public struct YabaDarwinWebRuntimeConfiguration: @unchecked Sendable {
+public struct YabaWebRuntimeConfiguration: @unchecked Sendable {
     /// When false, navigation delegate cancels non-file remote HTTP(S) loads.
     public var allowsRemoteHTTP: Bool
 

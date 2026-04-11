@@ -1,5 +1,5 @@
 //
-//  YabaDarwinWebConverterModels.swift
+//  YabaWebConverterModels.swift
 //  YABACore
 //
 //  Parity with Compose `WebConverterModels.kt`.
@@ -8,7 +8,7 @@
 import Foundation
 
 /// Asset placeholder from converter output (e.g. `yaba-asset://N` → remote URL).
-public struct YabaDarwinWebConverterAsset: Sendable, Equatable {
+public struct YabaWebConverterAsset: Sendable, Equatable {
     public var placeholder: String
     public var url: String
     public var alt: String?
@@ -21,7 +21,7 @@ public struct YabaDarwinWebConverterAsset: Sendable, Equatable {
 }
 
 /// Link metadata from the WebView converter bridge (web-meta-scraper + tidy-url on Core-fetched HTML).
-public struct YabaDarwinWebLinkMetadata: Sendable, Equatable {
+public struct YabaWebLinkMetadata: Sendable, Equatable {
     public var cleanedUrl: String
     public var title: String?
     public var description: String?
@@ -56,15 +56,15 @@ public struct YabaDarwinWebLinkMetadata: Sendable, Equatable {
 }
 
 /// Converter bridge result before [DarwinConverterResultProcessor] runs.
-public struct YabaDarwinWebConverterResult: Sendable, Equatable {
+public struct YabaWebConverterResult: Sendable, Equatable {
     public var documentJson: String
-    public var assets: [YabaDarwinWebConverterAsset]
-    public var linkMetadata: YabaDarwinWebLinkMetadata
+    public var assets: [YabaWebConverterAsset]
+    public var linkMetadata: YabaWebLinkMetadata
 
     public init(
         documentJson: String,
-        assets: [YabaDarwinWebConverterAsset],
-        linkMetadata: YabaDarwinWebLinkMetadata
+        assets: [YabaWebConverterAsset],
+        linkMetadata: YabaWebLinkMetadata
     ) {
         self.documentJson = documentJson
         self.assets = assets

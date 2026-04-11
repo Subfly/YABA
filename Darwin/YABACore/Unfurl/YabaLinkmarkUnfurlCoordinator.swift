@@ -1,5 +1,5 @@
 //
-//  YabaDarwinLinkmarkUnfurlCoordinator.swift
+//  YabaLinkmarkUnfurlCoordinator.swift
 //  YABACore
 //
 //  Orchestrates HTTP HTML fetch + hidden `converter.html` WebView conversion + asset download.
@@ -9,8 +9,8 @@ import Foundation
 
 /// Shared pipeline for linkmark creation/detail refresh (Compose parity).
 @MainActor
-public final class YabaDarwinLinkmarkUnfurlCoordinator {
-    public static let shared = YabaDarwinLinkmarkUnfurlCoordinator()
+public final class YabaLinkmarkUnfurlCoordinator {
+    public static let shared = YabaLinkmarkUnfurlCoordinator()
 
     private var converterRuntime: YabaWKWebViewRuntime?
 
@@ -18,15 +18,15 @@ public final class YabaDarwinLinkmarkUnfurlCoordinator {
 
     /// Fetches raw HTML, runs the web converter, then downloads reader assets and rewrites JSON.
     public func fetchAndConvert(urlString: String) async throws -> (
-        converter: YabaDarwinWebConverterResult,
-        readable: YabaDarwinReadableUnfurl
+        converter: YabaWebConverterResult,
+        readable: YabaReadableUnfurl
     ) {
-        let fetch = try await YabaDarwinUnfurler.fetchRawHtml(urlString)
+        let fetch = try await YabaUnfurler.fetchRawHtml(urlString)
         let rt = try await ensureConverterRuntime()
-        guard await YabaDarwinHtmlConversionRunner.waitForConverterBridge(runtime: rt, maxAttempts: 600) else {
-            throw YabaDarwinUnfurlError.converterBridgeNotReady
+        guard await YabaHtmlConversionRunner.waitForConverterBridge(runtime: rt, maxAttempts: 600) else {
+            throw YabaUnfurlError.converterBridgeNotReady
         }
-        let conv = try await YabaDarwinHtmlConversionRunner.run(
+        let conv = try await YabaHtmlConversionRunner.run(
             runtime: rt,
             html: fetch.html,
             baseUrl: fetch.normalizedUrl
@@ -42,11 +42,11 @@ public final class YabaDarwinLinkmarkUnfurlCoordinator {
         if let r = converterRuntime {
             return r
         }
-        let rt = YabaWKWebViewRuntime(configuration: YabaDarwinWebRuntimeConfiguration())
+        let rt = YabaWKWebViewRuntime(configuration: YabaWebRuntimeConfiguration())
         rt.loadBundledShell(for: .htmlConverter(inputHtml: nil, baseUrl: nil))
-        let ok = await YabaDarwinHtmlConversionRunner.waitForConverterBridge(runtime: rt, maxAttempts: 600)
+        let ok = await YabaHtmlConversionRunner.waitForConverterBridge(runtime: rt, maxAttempts: 600)
         guard ok else {
-            throw YabaDarwinUnfurlError.converterBridgeNotReady
+            throw YabaUnfurlError.converterBridgeNotReady
         }
         converterRuntime = rt
         return rt

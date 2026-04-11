@@ -181,14 +181,14 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
         apply { $0.isUpdatingReadable = true; $0.lastConverterErrorMessage = nil }
         defer { apply { $0.isUpdatingReadable = false } }
         do {
-            let (conv, readable) = try await YabaDarwinLinkmarkUnfurlCoordinator.shared.fetchAndConvert(urlString: url)
+            let (conv, readable) = try await YabaLinkmarkUnfurlCoordinator.shared.fetchAndConvert(urlString: url)
             await saveReadableBundle(bookmarkId: bid, converter: conv, readable: readable)
         } catch {
             apply { $0.lastConverterErrorMessage = String(describing: error) }
         }
     }
 
-    private func saveReadableFromConverterOutput(bookmarkId: String, result: YabaDarwinWebConverterResult) async {
+    private func saveReadableFromConverterOutput(bookmarkId: String, result: YabaWebConverterResult) async {
         let readable = await DarwinConverterResultProcessor.process(
             documentJson: result.documentJson,
             assets: result.assets
@@ -196,7 +196,7 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
         await saveReadableBundle(bookmarkId: bookmarkId, converter: result, readable: readable)
     }
 
-    private func saveReadableBundle(bookmarkId: String, converter: YabaDarwinWebConverterResult, readable: YabaDarwinReadableUnfurl) async {
+    private func saveReadableBundle(bookmarkId: String, converter: YabaWebConverterResult, readable: YabaReadableUnfurl) async {
         let rv = state.selectedReadableVersionId ?? UUID().uuidString
         apply { $0.selectedReadableVersionId = rv }
         ReadableContentManager.queueSaveLinkReadableUnfurl(
@@ -218,8 +218,8 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
                 metadataDate: meta.date
             )
         }
-        let img = await YabaDarwinUnfurler.downloadPreviewImageBytes(urlString: meta.image)
-        let logo = await YabaDarwinUnfurler.downloadPreviewImageBytes(urlString: meta.logo)
+        let img = await YabaUnfurler.downloadPreviewImageBytes(urlString: meta.image)
+        let logo = await YabaUnfurler.downloadPreviewImageBytes(urlString: meta.logo)
         AllBookmarksManager.queueSetBookmarkPreviewAssets(
             bookmarkId: bookmarkId,
             imageBytes: img,

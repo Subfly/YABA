@@ -24,7 +24,7 @@ public enum LinkmarkCreationEvent: Sendable {
     case onClearDescription
     case onApplyFromMetadata
     case onRefetch
-    case onConverterSucceeded(YabaDarwinWebConverterResult)
+    case onConverterSucceeded(YabaWebConverterResult)
     case onConverterFailed(errorMessage: String)
     case onSave
     case onTogglePrivate

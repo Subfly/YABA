@@ -1,5 +1,5 @@
 //
-//  YabaDarwinReaderModels.swift
+//  YabaReaderModels.swift
 //  YABACore
 //
 //  Parity with Compose reader metrics / editor formatting.
@@ -7,17 +7,17 @@
 
 import Foundation
 
-public struct YabaDarwinReaderMetricsEvent: Sendable, Codable, Equatable {
+public struct YabaReaderMetricsEvent: Sendable, Codable, Equatable {
     public var canCreateAnnotation: Bool
     public var currentPage: Int
     public var pageCount: Int
-    public var formatting: YabaDarwinEditorFormattingState?
+    public var formatting: YabaEditorFormattingState?
 
     public init(
         canCreateAnnotation: Bool,
         currentPage: Int,
         pageCount: Int,
-        formatting: YabaDarwinEditorFormattingState? = nil
+        formatting: YabaEditorFormattingState? = nil
     ) {
         self.canCreateAnnotation = canCreateAnnotation
         self.currentPage = currentPage
@@ -26,7 +26,7 @@ public struct YabaDarwinReaderMetricsEvent: Sendable, Codable, Equatable {
     }
 }
 
-public struct YabaDarwinEditorFormattingState: Sendable, Codable, Equatable {
+public struct YabaEditorFormattingState: Sendable, Codable, Equatable {
     public var headingLevel: Int
     public var bold: Bool
     public var italic: Bool

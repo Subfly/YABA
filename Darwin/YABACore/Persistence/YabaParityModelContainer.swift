@@ -1,5 +1,5 @@
 //
-//  YabaComposeParityModelContainer.swift
+//  YabaParityModelContainer.swift
 //  YABACore
 //
 //  Preferred entry for opening the on-disk store with V1→V2 migration.
@@ -10,7 +10,7 @@
 import Foundation
 import SwiftData
 
-public enum YabaComposeParityModelContainer {
+public enum YabaParityModelContainer {
     /// Builds a `ModelContainer` for the compose-parity schema, migrating from `YabaSchemaV1` when needed.
     /// Delegates to ``YabaCoreStore/sharedContainer(isStoredInMemoryOnly:)`` so callers share one store instance.
     public static func makeContainer(isStoredInMemoryOnly: Bool = false) throws -> ModelContainer {

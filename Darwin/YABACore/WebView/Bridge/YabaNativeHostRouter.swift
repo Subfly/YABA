@@ -14,11 +14,11 @@ public enum YabaNativeHostRouterDarwin {
     public static func createMessageHandler(
         expectedBridgeFeature: String?,
         onBridgeReady: @escaping () -> Void,
-        onHostEvent: @escaping (YabaDarwinWebHostEvent) -> Void,
+        onHostEvent: @escaping (YabaWebHostEvent) -> Void,
         onAnnotationTap: @escaping (String) -> Void,
-        onMathTap: @escaping (YabaDarwinMathTapEvent) -> Void,
-        onInlineLinkTap: @escaping (YabaDarwinInlineLinkTapEvent) -> Void,
-        onInlineMentionTap: @escaping (YabaDarwinInlineMentionTapEvent) -> Void
+        onMathTap: @escaping (YabaMathTapEvent) -> Void,
+        onInlineLinkTap: @escaping (YabaInlineLinkTapEvent) -> Void,
+        onInlineMentionTap: @escaping (YabaInlineMentionTapEvent) -> Void
     ) -> (String) -> Void {
         { json in
             guard let root = try? JSONSerialization.jsonObject(with: Data(json.utf8)) as? [String: Any],
@@ -35,9 +35,9 @@ public enum YabaNativeHostRouterDarwin {
                     onBridgeReady()
                 }
             case "converterJob":
-                YabaDarwinConverterJobRegistry.shared.handleConverterJobMessage(root)
+                YabaConverterJobRegistry.shared.handleConverterJobMessage(root)
             case "editorPdfExport":
-                YabaDarwinEditorPdfExportJobRegistry.shared.handleMessage(root)
+                YabaEditorPdfExportJobRegistry.shared.handleMessage(root)
             default:
                 if let event = YabaNativeHostMessageParserDarwin.parse(
                     json: json,

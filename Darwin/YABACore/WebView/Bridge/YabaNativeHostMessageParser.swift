@@ -12,10 +12,10 @@ public enum YabaNativeHostMessageParserDarwin {
     public static func parse(
         json: String,
         onAnnotationTap: ((String) -> Void)? = nil,
-        onMathTap: ((YabaDarwinMathTapEvent) -> Void)? = nil,
-        onInlineLinkTap: ((YabaDarwinInlineLinkTapEvent) -> Void)? = nil,
-        onInlineMentionTap: ((YabaDarwinInlineMentionTapEvent) -> Void)? = nil
-    ) -> YabaDarwinWebHostEvent? {
+        onMathTap: ((YabaMathTapEvent) -> Void)? = nil,
+        onInlineLinkTap: ((YabaInlineLinkTapEvent) -> Void)? = nil,
+        onInlineMentionTap: ((YabaInlineMentionTapEvent) -> Void)? = nil
+    ) -> YabaWebHostEvent? {
         guard let data = json.data(using: .utf8),
               let root = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
               let type = root["type"] as? String
@@ -48,7 +48,7 @@ public enum YabaNativeHostMessageParserDarwin {
             let latex = root["latex"] as? String ?? ""
             if pos >= 0 {
                 onMathTap?(
-                    YabaDarwinMathTapEvent(
+                    YabaMathTapEvent(
                         isBlock: kind == "block",
                         documentPos: pos,
                         latex: latex
@@ -62,7 +62,7 @@ public enum YabaNativeHostMessageParserDarwin {
             let url = root["url"] as? String ?? ""
             if pos >= 0, !url.isEmpty {
                 onInlineLinkTap?(
-                    YabaDarwinInlineLinkTapEvent(documentPos: pos, text: text, url: url)
+                    YabaInlineLinkTapEvent(documentPos: pos, text: text, url: url)
                 )
             }
             return nil
@@ -74,7 +74,7 @@ public enum YabaNativeHostMessageParserDarwin {
             let bookmarkLabel = root["bookmarkLabel"] as? String ?? ""
             if pos >= 0, !bookmarkId.isEmpty {
                 onInlineMentionTap?(
-                    YabaDarwinInlineMentionTapEvent(
+                    YabaInlineMentionTapEvent(
                         documentPos: pos,
                         text: text,
                         bookmarkId: bookmarkId,
@@ -115,23 +115,23 @@ public enum YabaNativeHostMessageParserDarwin {
         }
     }
 
-    private static func parseShellLoad(_ root: [String: Any]) -> YabaDarwinWebHostEvent {
+    private static func parseShellLoad(_ root: [String: Any]) -> YabaWebHostEvent {
         let result = root["result"] as? String ?? ""
         let shell: WebShellLoadResult = (result == "loaded") ? .loaded : .error
         return .initialContentLoad(shell)
     }
 
-    private static func parseToc(_ root: [String: Any]) -> YabaDarwinWebHostEvent {
+    private static func parseToc(_ root: [String: Any]) -> YabaWebHostEvent {
         guard let tocObj = root["toc"] as? [String: Any] else {
             return .tableOfContentsChanged(toc: nil)
         }
         let itemsArr = tocObj["items"] as? [[String: Any]] ?? []
         let items = parseTocItems(itemsArr)
-        return .tableOfContentsChanged(toc: YabaDarwinToc(items: items))
+        return .tableOfContentsChanged(toc: YabaToc(items: items))
     }
 
-    private static func parseTocItems(_ arr: [[String: Any]]) -> [YabaDarwinTocItem] {
-        arr.compactMap { o -> YabaDarwinTocItem? in
+    private static func parseTocItems(_ arr: [[String: Any]]) -> [YabaTocItem] {
+        arr.compactMap { o -> YabaTocItem? in
             let id = o["id"] as? String ?? ""
             let title = o["title"] as? String ?? ""
             let level = o["level"] as? Int ?? 1
@@ -139,7 +139,7 @@ public enum YabaNativeHostMessageParserDarwin {
             let extrasRaw = o["extrasJson"] as? String
             let trimmed = extrasRaw?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
             let extrasNorm: String? = trimmed.isEmpty ? nil : trimmed
-            return YabaDarwinTocItem(
+            return YabaTocItem(
                 id: id,
                 title: title,
                 level: level,
@@ -149,16 +149,16 @@ public enum YabaNativeHostMessageParserDarwin {
         }
     }
 
-    private static func parseReaderMetrics(_ root: [String: Any]) -> YabaDarwinWebHostEvent {
+    private static func parseReaderMetrics(_ root: [String: Any]) -> YabaWebHostEvent {
         let can = root["canCreateAnnotation"] as? Bool ?? false
         let page = max(1, root["currentPage"] as? Int ?? 1)
         let count = max(1, root["pageCount"] as? Int ?? 1)
-        var formatting: YabaDarwinEditorFormattingState?
+        var formatting: YabaEditorFormattingState?
         if let fmt = root["formatting"] as? [String: Any] {
             formatting = parseEditorFormatting(fmt)
         }
         return .readerMetrics(
-            YabaDarwinReaderMetricsEvent(
+            YabaReaderMetricsEvent(
                 canCreateAnnotation: can,
                 currentPage: page,
                 pageCount: count,
@@ -167,8 +167,8 @@ public enum YabaNativeHostMessageParserDarwin {
         )
     }
 
-    private static func parseEditorFormatting(_ json: [String: Any]) -> YabaDarwinEditorFormattingState {
-        YabaDarwinEditorFormattingState(
+    private static func parseEditorFormatting(_ json: [String: Any]) -> YabaEditorFormattingState {
+        YabaEditorFormattingState(
             headingLevel: json["headingLevel"] as? Int ?? 0,
             bold: json["bold"] as? Bool ?? false,
             italic: json["italic"] as? Bool ?? false,
@@ -199,9 +199,9 @@ public enum YabaNativeHostMessageParserDarwin {
         )
     }
 
-    private static func parseCanvasMetrics(_ root: [String: Any]) -> YabaDarwinWebHostEvent {
+    private static func parseCanvasMetrics(_ root: [String: Any]) -> YabaWebHostEvent {
         .canvasMetrics(
-            YabaDarwinCanvasHostMetrics(
+            YabaCanvasHostMetrics(
                 activeTool: root["activeTool"] as? String ?? "selection",
                 hasSelection: root["hasSelection"] as? Bool ?? false,
                 canUndo: root["canUndo"] as? Bool ?? false,
@@ -212,9 +212,9 @@ public enum YabaNativeHostMessageParserDarwin {
         )
     }
 
-    private static func parseCanvasStyleState(_ root: [String: Any]) -> YabaDarwinWebHostEvent {
+    private static func parseCanvasStyleState(_ root: [String: Any]) -> YabaWebHostEvent {
         .canvasStyleState(
-            YabaDarwinCanvasHostStyleState(
+            YabaCanvasHostStyleState(
                 hasSelection: root["hasSelection"] as? Bool ?? false,
                 selectionCount: root["selectionCount"] as? Int ?? 0,
                 selectionElementTypes: parseStringArray(root, key: "selectionElementTypes"),
@@ -257,19 +257,19 @@ public enum YabaNativeHostMessageParserDarwin {
     }
 }
 
-public struct YabaDarwinMathTapEvent: Sendable {
+public struct YabaMathTapEvent: Sendable {
     public var isBlock: Bool
     public var documentPos: Int
     public var latex: String
 }
 
-public struct YabaDarwinInlineLinkTapEvent: Sendable {
+public struct YabaInlineLinkTapEvent: Sendable {
     public var documentPos: Int
     public var text: String
     public var url: String
 }
 
-public struct YabaDarwinInlineMentionTapEvent: Sendable {
+public struct YabaInlineMentionTapEvent: Sendable {
     public var documentPos: Int
     public var text: String
     public var bookmarkId: String

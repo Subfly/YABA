@@ -1,5 +1,5 @@
 //
-//  YabaDarwinWebHostEvent.swift
+//  YabaWebHostEvent.swift
 //  YABACore
 //
 //  Parity with Compose `YabaWebHostEvent`.
@@ -7,10 +7,10 @@
 
 import Foundation
 
-public enum YabaDarwinWebHostEvent: Sendable {
-    case loadState(YabaDarwinWebLoadState)
-    case readerMetrics(YabaDarwinReaderMetricsEvent)
-    case htmlConverterSuccess(YabaDarwinWebConverterResult)
+public enum YabaWebHostEvent: Sendable {
+    case loadState(YabaWebLoadState)
+    case readerMetrics(YabaReaderMetricsEvent)
+    case htmlConverterSuccess(YabaWebConverterResult)
     case htmlConverterFailure(message: String)
     case pdfConverterSuccess(payloadJson: String)
     case pdfConverterFailure(message: String)
@@ -19,8 +19,8 @@ public enum YabaDarwinWebHostEvent: Sendable {
     case initialContentLoad(WebShellLoadResult)
     case noteEditorIdleForAutosave
     case canvasIdleForAutosave
-    case canvasMetrics(YabaDarwinCanvasHostMetrics)
-    case canvasStyleState(YabaDarwinCanvasHostStyleState)
+    case canvasMetrics(YabaCanvasHostMetrics)
+    case canvasStyleState(YabaCanvasHostStyleState)
     case canvasLinkTap(elementId: String, text: String, url: String)
     case canvasMentionTap(
         elementId: String,
@@ -29,5 +29,5 @@ public enum YabaDarwinWebHostEvent: Sendable {
         bookmarkKindCode: Int,
         bookmarkLabel: String
     )
-    case tableOfContentsChanged(toc: YabaDarwinToc?)
+    case tableOfContentsChanged(toc: YabaToc?)
 }

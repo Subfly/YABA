@@ -29,7 +29,7 @@ public enum YabaCoreStore {
         return container
     }
 
-    /// One-off container build (same as historical `YabaComposeParityModelContainer` implementation).
+    /// One-off container build (same as historical `YabaParityModelContainer` implementation).
     private static func makeFreshContainer(isStoredInMemoryOnly: Bool) throws -> ModelContainer {
         let schema = Schema(versionedSchema: YabaSchemaV2.self)
         let config = ModelConfiguration(
@@ -38,7 +38,7 @@ public enum YabaCoreStore {
         )
         return try ModelContainer(
             for: schema,
-            migrationPlan: YabaComposeParityMigrationPlan.self,
+            migrationPlan: YabaParityMigrationPlan.self,
             configurations: [config]
         )
     }

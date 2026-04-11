@@ -1,30 +1,30 @@
 //
-//  YabaDarwinTocModels.swift
+//  YabaTocModels.swift
 //  YABACore
 //
 
 import Foundation
 
-public struct YabaDarwinToc: Sendable, Codable, Equatable {
-    public var items: [YabaDarwinTocItem]
+public struct YabaToc: Sendable, Codable, Equatable {
+    public var items: [YabaTocItem]
 
-    public init(items: [YabaDarwinTocItem] = []) {
+    public init(items: [YabaTocItem] = []) {
         self.items = items
     }
 }
 
-public struct YabaDarwinTocItem: Sendable, Codable, Equatable {
+public struct YabaTocItem: Sendable, Codable, Equatable {
     public var id: String
     public var title: String
     public var level: Int
-    public var children: [YabaDarwinTocItem]
+    public var children: [YabaTocItem]
     public var extrasJson: String?
 
     public init(
         id: String,
         title: String,
         level: Int,
-        children: [YabaDarwinTocItem] = [],
+        children: [YabaTocItem] = [],
         extrasJson: String? = nil
     ) {
         self.id = id

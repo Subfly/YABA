@@ -1,12 +1,12 @@
 //
-//  YabaComposeParityMigrationPlan.swift
+//  YabaParityMigrationPlan.swift
 //  YABACore
 //
 
 import SwiftData
 
 /// Migrates released stores from `YabaSchemaV1` to compose-parity `YabaSchemaV2`.
-enum YabaComposeParityMigrationPlan: SchemaMigrationPlan {
+enum YabaParityMigrationPlan: SchemaMigrationPlan {
     static var schemas: [any VersionedSchema.Type] {
         [YabaSchemaV1.self, YabaSchemaV2.self]
     }

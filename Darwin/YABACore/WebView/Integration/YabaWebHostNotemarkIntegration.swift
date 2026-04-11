@@ -7,14 +7,14 @@ import Foundation
 
 @MainActor
 public enum YabaWebHostNotemarkIntegration {
-    public static func notemarkEvents(from event: YabaDarwinWebHostEvent) -> [NotemarkDetailEvent] {
+    public static func notemarkEvents(from event: YabaWebHostEvent) -> [NotemarkDetailEvent] {
         switch event {
         case let .initialContentLoad(result):
-            return [.onWebInitialContentLoad(resultJson: YabaDarwinWebJson.shellLoadResultJson(result))]
+            return [.onWebInitialContentLoad(resultJson: YabaWebJson.shellLoadResultJson(result))]
         case let .tableOfContentsChanged(toc):
             let json: String?
             if let unwrapped = toc {
-                json = try? YabaDarwinWebJson.encodeToString(unwrapped)
+                json = try? YabaWebJson.encodeToString(unwrapped)
             } else {
                 json = nil
             }

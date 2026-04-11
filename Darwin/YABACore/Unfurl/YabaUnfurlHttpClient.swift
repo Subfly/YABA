@@ -1,5 +1,5 @@
 //
-//  YabaDarwinUnfurlHttpClient.swift
+//  YabaUnfurlHttpClient.swift
 //  YABACore
 //
 //  Parity with Compose `UnfurlHttpClient` (Ktor) — URLSession for HTML and asset bytes.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum YabaDarwinUnfurlHttpClient {
+public enum YabaUnfurlHttpClient {
     private static let session: URLSession = {
         let config = URLSessionConfiguration.ephemeral
         config.timeoutIntervalForRequest = 30
@@ -24,7 +24,7 @@ public enum YabaDarwinUnfurlHttpClient {
         request.setValue("en-US,en;q=0.9", forHTTPHeaderField: "Accept-Language")
         let (data, response) = try await session.data(for: request)
         guard let http = response as? HTTPURLResponse, (200 ..< 300).contains(http.statusCode) else {
-            throw YabaDarwinUnfurlError.unableToFetchHtml
+            throw YabaUnfurlError.unableToFetchHtml
         }
         return String(data: data, encoding: .utf8) ?? ""
     }
@@ -35,7 +35,7 @@ public enum YabaDarwinUnfurlHttpClient {
         request.setValue("WhatsApp/2", forHTTPHeaderField: "User-Agent")
         let (data, response) = try await session.data(for: request)
         guard let http = response as? HTTPURLResponse, (200 ..< 300).contains(http.statusCode) else {
-            throw YabaDarwinUnfurlError.unableToFetchHtml
+            throw YabaUnfurlError.unableToFetchHtml
         }
         return data
     }

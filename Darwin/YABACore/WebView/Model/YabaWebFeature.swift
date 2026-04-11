@@ -1,5 +1,5 @@
 //
-//  YabaDarwinWebFeature.swift
+//  YabaWebFeature.swift
 //  YABACore
 //
 //  Which bundled shell to load and what data drives it — parity with Compose `YabaWebFeature`.
@@ -8,15 +8,15 @@
 import Foundation
 
 /// Bundled web feature selection for `YabaWKWebViewRuntime`.
-public enum YabaDarwinWebFeature: Sendable {
+public enum YabaWebFeature: Sendable {
     case readableViewer(
         initialDocumentJson: String,
         assetsBaseUrl: String?,
         readerTheme: YabaCoreReaderTheme,
         readerFontSize: YabaCoreReaderFontSize,
         readerLineHeight: YabaCoreReaderLineHeight,
-        platform: YabaDarwinWebPlatform,
-        appearance: YabaDarwinWebAppearance,
+        platform: YabaWebPlatform,
+        appearance: YabaWebAppearance,
         annotationsJson: String
     )
 
@@ -24,8 +24,8 @@ public enum YabaDarwinWebFeature: Sendable {
         initialDocumentJson: String,
         assetsBaseUrl: String?,
         placeholderText: String?,
-        platform: YabaDarwinWebPlatform,
-        appearance: YabaDarwinWebAppearance,
+        platform: YabaWebPlatform,
+        appearance: YabaWebAppearance,
         readerTheme: YabaCoreReaderTheme,
         readerFontSize: YabaCoreReaderFontSize,
         readerLineHeight: YabaCoreReaderLineHeight,
@@ -34,21 +34,21 @@ public enum YabaDarwinWebFeature: Sendable {
 
     case canvas(
         initialSceneJson: String,
-        platform: YabaDarwinWebPlatform,
-        appearance: YabaDarwinWebAppearance,
+        platform: YabaWebPlatform,
+        appearance: YabaWebAppearance,
         sceneLoadGeneration: Int
     )
 
     case htmlConverter(inputHtml: String?, baseUrl: String?)
 
-    case pdfExtractor(input: YabaDarwinWebPdfExtractorInput?)
+    case pdfExtractor(input: YabaWebPdfExtractorInput?)
 
-    case epubExtractor(input: YabaDarwinWebEpubExtractorInput?)
+    case epubExtractor(input: YabaWebEpubExtractorInput?)
 
     case pdfViewer(
         pdfUrl: String,
-        platform: YabaDarwinWebPlatform,
-        appearance: YabaDarwinWebAppearance,
+        platform: YabaWebPlatform,
+        appearance: YabaWebAppearance,
         annotationsJson: String
     )
 
@@ -57,8 +57,8 @@ public enum YabaDarwinWebFeature: Sendable {
         readerTheme: YabaCoreReaderTheme,
         readerFontSize: YabaCoreReaderFontSize,
         readerLineHeight: YabaCoreReaderLineHeight,
-        platform: YabaDarwinWebPlatform,
-        appearance: YabaDarwinWebAppearance,
+        platform: YabaWebPlatform,
+        appearance: YabaWebAppearance,
         annotationsJson: String
     )
 
@@ -75,14 +75,14 @@ public enum YabaDarwinWebFeature: Sendable {
     }
 }
 
-public struct YabaDarwinWebPdfExtractorInput: Sendable {
+public struct YabaWebPdfExtractorInput: Sendable {
     public var pdfUrl: String?
     public init(pdfUrl: String? = nil) {
         self.pdfUrl = pdfUrl
     }
 }
 
-public struct YabaDarwinWebEpubExtractorInput: Sendable {
+public struct YabaWebEpubExtractorInput: Sendable {
     public var epubUrl: String?
     public init(epubUrl: String? = nil) {
         self.epubUrl = epubUrl

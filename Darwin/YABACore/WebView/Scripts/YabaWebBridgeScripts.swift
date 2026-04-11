@@ -1,5 +1,5 @@
 //
-//  YabaDarwinWebBridgeScripts.swift
+//  YabaWebBridgeScripts.swift
 //  YABACore
 //
 //  Parity with Compose `YabaWebBridgeScripts.kt`.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum YabaDarwinWebBridgeScripts {
+public enum YabaWebBridgeScripts {
     public static let editorBridgeReady = """
     (function(){ try { return !!(window.YabaEditorBridge && window.YabaEditorBridge.isReady && window.YabaEditorBridge.isReady()); } catch(e){ return false; } })();
     """

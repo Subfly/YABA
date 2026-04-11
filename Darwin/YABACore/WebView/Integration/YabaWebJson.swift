@@ -1,11 +1,11 @@
 //
-//  YabaDarwinWebJson.swift
+//  YabaWebJson.swift
 //  YABACore
 //
 
 import Foundation
 
-public enum YabaDarwinWebJson {
+public enum YabaWebJson {
     public static func encodeToString(_ value: some Encodable) throws -> String {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.sortedKeys]

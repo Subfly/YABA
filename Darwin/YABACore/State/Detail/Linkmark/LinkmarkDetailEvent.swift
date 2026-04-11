@@ -15,7 +15,7 @@ public enum LinkmarkDetailEvent: Sendable {
     case onSaveReadableContent(documentJson: Data)
     case onUpdateReadableRequested
     case onUpdateLinkMetadataRequested
-    case onConverterSucceeded(YabaDarwinWebConverterResult)
+    case onConverterSucceeded(YabaWebConverterResult)
     case onConverterFailed(errorMessage: String)
     case onReaderWebInitialContentLoad(resultJson: String?)
     case onSelectReadableVersion(versionId: String)

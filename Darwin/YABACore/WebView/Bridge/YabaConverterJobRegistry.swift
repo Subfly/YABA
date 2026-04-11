@@ -1,5 +1,5 @@
 //
-//  YabaDarwinConverterJobRegistry.swift
+//  YabaConverterJobRegistry.swift
 //  YABACore
 //
 //  Parity with Compose `YabaConverterJobBridge.kt` — jobId-keyed completion for HTML/PDF/EPUB.
@@ -7,25 +7,25 @@
 
 import Foundation
 
-public struct YabaDarwinHtmlConverterResult: Sendable {
+public struct YabaHtmlConverterResult: Sendable {
     public var documentJson: String
     public var linkMetadataJson: String?
     /// When parsed from `outputJson`, includes asset descriptors for reader image download.
-    public var assets: [YabaDarwinWebConverterAsset]
+    public var assets: [YabaWebConverterAsset]
 
-    public init(documentJson: String, linkMetadataJson: String?, assets: [YabaDarwinWebConverterAsset] = []) {
+    public init(documentJson: String, linkMetadataJson: String?, assets: [YabaWebConverterAsset] = []) {
         self.documentJson = documentJson
         self.linkMetadataJson = linkMetadataJson
         self.assets = assets
     }
 
     /// Structured result for [DarwinConverterResultProcessor] and link metadata updates.
-    public func asWebConverterResult() -> YabaDarwinWebConverterResult {
-        let meta: YabaDarwinWebLinkMetadata
+    public func asWebConverterResult() -> YabaWebConverterResult {
+        let meta: YabaWebLinkMetadata
         if let linkMetadataJson,
            let data = linkMetadataJson.data(using: .utf8),
            let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
-            meta = YabaDarwinWebLinkMetadata(
+            meta = YabaWebLinkMetadata(
                 cleanedUrl: (obj["cleanedUrl"] as? String)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "",
                 title: (obj["title"] as? String)?.nilIfEmpty,
                 description: (obj["description"] as? String)?.nilIfEmpty,
@@ -37,9 +37,9 @@ public struct YabaDarwinHtmlConverterResult: Sendable {
                 logo: (obj["logo"] as? String)?.nilIfEmpty
             )
         } else {
-            meta = YabaDarwinWebLinkMetadata(cleanedUrl: "")
+            meta = YabaWebLinkMetadata(cleanedUrl: "")
         }
-        return YabaDarwinWebConverterResult(
+        return YabaWebConverterResult(
             documentJson: documentJson,
             assets: assets,
             linkMetadata: meta
@@ -48,17 +48,17 @@ public struct YabaDarwinHtmlConverterResult: Sendable {
 }
 
 /// Thread-safe registry for async converter jobs posted via `converterJob` messages.
-public final class YabaDarwinConverterJobRegistry: @unchecked Sendable {
-    public static let shared = YabaDarwinConverterJobRegistry()
+public final class YabaConverterJobRegistry: @unchecked Sendable {
+    public static let shared = YabaConverterJobRegistry()
 
     private let lock = NSLock()
-    private var htmlJobs: [String: (Result<YabaDarwinHtmlConverterResult, Error>) -> Void] = [:]
+    private var htmlJobs: [String: (Result<YabaHtmlConverterResult, Error>) -> Void] = [:]
     private var pdfJobs: [String: (Result<String, Error>) -> Void] = [:]
     private var epubJobs: [String: (Result<String, Error>) -> Void] = [:]
 
     private init() {}
 
-    public func registerHtmlJob(jobId: String, completion: @escaping (Result<YabaDarwinHtmlConverterResult, Error>) -> Void) {
+    public func registerHtmlJob(jobId: String, completion: @escaping (Result<YabaHtmlConverterResult, Error>) -> Void) {
         lock.lock()
         htmlJobs[jobId] = completion
         lock.unlock()
@@ -173,7 +173,7 @@ public final class YabaDarwinConverterJobRegistry: @unchecked Sendable {
         }
     }
 
-    private static func parseHtmlOutput(_ outputJson: String) -> YabaDarwinHtmlConverterResult? {
+    private static func parseHtmlOutput(_ outputJson: String) -> YabaHtmlConverterResult? {
         guard let data = outputJson.data(using: .utf8),
               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
         else {
@@ -186,7 +186,7 @@ public final class YabaDarwinConverterJobRegistry: @unchecked Sendable {
                 linkMetaJson = String(data: d, encoding: .utf8)
             }
         }
-        var assets: [YabaDarwinWebConverterAsset] = []
+        var assets: [YabaWebConverterAsset] = []
         if let assetsArr = json["assets"] as? [[String: Any]] {
             for item in assetsArr {
                 let placeholder = item["placeholder"] as? String ?? ""
@@ -194,17 +194,17 @@ public final class YabaDarwinConverterJobRegistry: @unchecked Sendable {
                 let altRaw = item["alt"] as? String
                 let alt = altRaw?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty
                 if !placeholder.isEmpty, !url.isEmpty {
-                    assets.append(YabaDarwinWebConverterAsset(placeholder: placeholder, url: url, alt: alt))
+                    assets.append(YabaWebConverterAsset(placeholder: placeholder, url: url, alt: alt))
                 }
             }
         }
-        return YabaDarwinHtmlConverterResult(documentJson: documentJson, linkMetadataJson: linkMetaJson, assets: assets)
+        return YabaHtmlConverterResult(documentJson: documentJson, linkMetadataJson: linkMetaJson, assets: assets)
     }
 }
 
 /// Minimal stub for `editorPdfExport` messages — extend when PDF export from editor is wired.
-public final class YabaDarwinEditorPdfExportJobRegistry: @unchecked Sendable {
-    public static let shared = YabaDarwinEditorPdfExportJobRegistry()
+public final class YabaEditorPdfExportJobRegistry: @unchecked Sendable {
+    public static let shared = YabaEditorPdfExportJobRegistry()
     private let lock = NSLock()
     private var jobs: [String: (Result<String, Error>) -> Void] = [:]
 

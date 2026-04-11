@@ -1,15 +1,15 @@
 //
-//  YabaDarwinReadableAssetSchemeHandler.swift
+//  YabaReadableAssetSchemeHandler.swift
 //  YABACore
 //
-//  Serves bytes registered in [YabaDarwinReadableAssetResolver] for `yaba-asset:` image URLs
+//  Serves bytes registered in [YabaReadableAssetResolver] for `yaba-asset:` image URLs
 //  (avoids relying on filesystem paths while keeping SwiftData-backed `Data`).
 //
 
 import Foundation
 import WebKit
 
-public final class YabaDarwinReadableAssetSchemeHandler: NSObject, WKURLSchemeHandler {
+public final class YabaReadableAssetSchemeHandler: NSObject, WKURLSchemeHandler {
     public override init() {
         super.init()
     }
@@ -22,7 +22,7 @@ public final class YabaDarwinReadableAssetSchemeHandler: NSObject, WKURLSchemeHa
         let last = url.lastPathComponent
         let assetId = (last as NSString).deletingPathExtension
         let ext = (last as NSString).pathExtension.lowercased()
-        guard !assetId.isEmpty, let data = YabaDarwinReadableAssetResolver.shared.bytes(forAssetId: assetId) else {
+        guard !assetId.isEmpty, let data = YabaReadableAssetResolver.shared.bytes(forAssetId: assetId) else {
             urlSchemeTask.didFailWithError(NSError(domain: "YabaAsset", code: 404, userInfo: [NSLocalizedDescriptionKey: "Asset not found"]))
             return
         }

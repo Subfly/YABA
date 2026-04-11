@@ -1,5 +1,5 @@
 //
-//  YabaDarwinWebLoadState.swift
+//  YabaWebLoadState.swift
 //  YABACore
 //
 //  Parity with Compose `WebLoadState`.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum YabaDarwinWebLoadState: Sendable {
+public enum YabaWebLoadState: Sendable {
     case idle
     case loading(progressFraction: Float?)
     case pageFinished

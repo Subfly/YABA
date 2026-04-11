@@ -1,5 +1,5 @@
 //
-//  YabaDarwinHtmlConversionRunner.swift
+//  YabaHtmlConversionRunner.swift
 //  YABACore
 //
 //  Parity with Compose `YabaWebAndroidConverters.runHtmlConversion`.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum YabaDarwinHtmlConversionRunner {
+public enum YabaHtmlConversionRunner {
     private static let jobTimeoutNs: UInt64 = 120_000_000_000
 
     /// Runs HTML → reader `documentJson` conversion after the converter shell and `YabaConverterBridge` are ready.
@@ -16,14 +16,14 @@ public enum YabaDarwinHtmlConversionRunner {
         runtime: YabaWKWebViewRuntime,
         html: String,
         baseUrl: String?
-    ) async throws -> YabaDarwinWebConverterResult {
-        try await withThrowingTaskGroup(of: YabaDarwinWebConverterResult.self) { group in
+    ) async throws -> YabaWebConverterResult {
+        try await withThrowingTaskGroup(of: YabaWebConverterResult.self) { group in
             group.addTask { @MainActor in
                 try await runConversion(runtime: runtime, html: html, baseUrl: baseUrl)
             }
             group.addTask {
                 try await Task.sleep(nanoseconds: jobTimeoutNs)
-                throw YabaDarwinUnfurlError.htmlConversionTimedOut
+                throw YabaUnfurlError.htmlConversionTimedOut
             }
             let first = try await group.next()!
             group.cancelAll()
@@ -36,12 +36,12 @@ public enum YabaDarwinHtmlConversionRunner {
         runtime: YabaWKWebViewRuntime,
         html: String,
         baseUrl: String?
-    ) async throws -> YabaDarwinWebConverterResult {
+    ) async throws -> YabaWebConverterResult {
         let jobId = UUID().uuidString
-        let result = try await withCheckedThrowingContinuation { (cont: CheckedContinuation<YabaDarwinWebConverterResult, Error>) in
+        let result = try await withCheckedThrowingContinuation { (cont: CheckedContinuation<YabaWebConverterResult, Error>) in
             var completed = false
             let lock = NSLock()
-            func finish(_ r: Result<YabaDarwinWebConverterResult, Error>) {
+            func finish(_ r: Result<YabaWebConverterResult, Error>) {
                 lock.lock()
                 defer { lock.unlock() }
                 guard !completed else { return }
@@ -51,7 +51,7 @@ public enum YabaDarwinHtmlConversionRunner {
                 case let .failure(e): cont.resume(throwing: e)
                 }
             }
-            YabaDarwinConverterJobRegistry.shared.registerHtmlJob(jobId: jobId) { res in
+            YabaConverterJobRegistry.shared.registerHtmlJob(jobId: jobId) { res in
                 switch res {
                 case let .success(h):
                     finish(.success(h.asWebConverterResult()))
@@ -61,7 +61,7 @@ public enum YabaDarwinHtmlConversionRunner {
             }
             Task { @MainActor in
                 do {
-                    let script = YabaDarwinWebBridgeScripts.sanitizeAndConvertHtmlToReaderHtmlScript(
+                    let script = YabaWebBridgeScripts.sanitizeAndConvertHtmlToReaderHtmlScript(
                         html: html,
                         baseUrl: baseUrl,
                         jobId: jobId
@@ -69,11 +69,11 @@ public enum YabaDarwinHtmlConversionRunner {
                     let raw = try await runtime.evaluateJavaScriptStringResult(script)
                     let rid = YabaWebJsEscaping.decodeJavaScriptStringResult(raw).trimmingCharacters(in: .whitespacesAndNewlines)
                     if rid.isEmpty || rid != jobId {
-                        YabaDarwinConverterJobRegistry.shared.removeHtmlJob(jobId: jobId)
-                        finish(.failure(YabaDarwinUnfurlError.htmlConversionStartFailed))
+                        YabaConverterJobRegistry.shared.removeHtmlJob(jobId: jobId)
+                        finish(.failure(YabaUnfurlError.htmlConversionStartFailed))
                     }
                 } catch {
-                    YabaDarwinConverterJobRegistry.shared.removeHtmlJob(jobId: jobId)
+                    YabaConverterJobRegistry.shared.removeHtmlJob(jobId: jobId)
                     finish(.failure(error))
                 }
             }
@@ -81,7 +81,7 @@ public enum YabaDarwinHtmlConversionRunner {
         defer {
             Task { @MainActor in
                 _ = try? await runtime.evaluateJavaScriptStringResult(
-                    YabaDarwinWebBridgeScripts.deleteHtmlConversionJobScript(jobId: jobId)
+                    YabaWebBridgeScripts.deleteHtmlConversionJobScript(jobId: jobId)
                 )
             }
         }
@@ -93,7 +93,7 @@ public enum YabaDarwinHtmlConversionRunner {
     public static func waitForConverterBridge(runtime: YabaWKWebViewRuntime, maxAttempts: Int = 600) async -> Bool {
         for _ in 0 ..< maxAttempts {
             do {
-                let raw = try await runtime.evaluateJavaScriptStringResult(YabaDarwinWebBridgeScripts.converterBridgeDefined)
+                let raw = try await runtime.evaluateJavaScriptStringResult(YabaWebBridgeScripts.converterBridgeDefined)
                 let s = raw.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
                 if s == "true" || s == "1" { return true }
             } catch {

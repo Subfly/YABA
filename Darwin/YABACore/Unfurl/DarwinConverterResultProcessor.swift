@@ -11,27 +11,27 @@ public enum DarwinConverterResultProcessor {
     /// Downloads remote assets, rewrites `yaba-asset://` placeholders in JSON to `../assets/<id>.<ext>`.
     public static func process(
         documentJson: String,
-        assets: [YabaDarwinWebConverterAsset]
-    ) async -> YabaDarwinReadableUnfurl {
-        var readables: [(YabaDarwinReadableAssetPayload, String, String)] = []
+        assets: [YabaWebConverterAsset]
+    ) async -> YabaReadableUnfurl {
+        var readables: [(YabaReadableAssetPayload, String, String)] = []
         for asset in assets {
             guard let url = URL(string: asset.url),
                   url.scheme == "http" || url.scheme == "https"
             else { continue }
-            guard let bytes = try? await YabaDarwinUnfurlHttpClient.getBytes(url: url) else { continue }
+            guard let bytes = try? await YabaUnfurlHttpClient.getBytes(url: url) else { continue }
             let size = bytes.count
             guard size >= 1024, size <= 5 * 1024 * 1024 else { continue }
             let ext = inferImageExtension(bytes: bytes, url: asset.url)
             let assetId = UUID().uuidString
             let relativePath = "../assets/\(assetId).\(ext)"
-            let payload = YabaDarwinReadableAssetPayload(assetId: assetId, pathExtension: ext, bytes: bytes)
+            let payload = YabaReadableAssetPayload(assetId: assetId, pathExtension: ext, bytes: bytes)
             readables.append((payload, asset.placeholder, relativePath))
         }
         var resultJson = documentJson
         for (_, placeholder, replacement) in readables {
             resultJson = resultJson.replacingOccurrences(of: placeholder, with: replacement)
         }
-        return YabaDarwinReadableUnfurl(
+        return YabaReadableUnfurl(
             documentJson: resultJson,
             assets: readables.map { $0.0 }
         )

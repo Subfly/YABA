@@ -1,5 +1,5 @@
 //
-//  YabaComposeParityModels.swift
+//  YabaParityModels.swift
 //  YABACore
 //
 //  Compose-aligned SwiftData layer (schema v2). Order matters for type resolution.

@@ -1,5 +1,5 @@
 //
-//  YabaDarwinCanvasModels.swift
+//  YabaCanvasModels.swift
 //  YABACore
 //
 //  Parity with Compose `CanvasHostMetrics` / `CanvasHostStyleState`.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct YabaDarwinCanvasHostMetrics: Sendable, Codable, Equatable {
+public struct YabaCanvasHostMetrics: Sendable, Codable, Equatable {
     public var activeTool: String
     public var hasSelection: Bool
     public var canUndo: Bool
@@ -32,7 +32,7 @@ public struct YabaDarwinCanvasHostMetrics: Sendable, Codable, Equatable {
     }
 }
 
-public struct YabaDarwinCanvasHostStyleState: Sendable, Codable, Equatable {
+public struct YabaCanvasHostStyleState: Sendable, Codable, Equatable {
     public var hasSelection: Bool
     public var selectionCount: Int
     public var selectionElementTypes: [String]

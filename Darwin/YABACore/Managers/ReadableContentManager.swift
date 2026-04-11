@@ -71,7 +71,7 @@ public enum ReadableContentManager {
     public static func queueSaveLinkReadableUnfurl(
         bookmarkId: String,
         readableVersionId: String,
-        unfurl: YabaDarwinReadableUnfurl
+        unfurl: YabaReadableUnfurl
     ) {
         YabaCoreOperationQueue.shared.queue(name: "SaveLinkReadable:\(bookmarkId):\(readableVersionId)") { context in
             guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context) else {
@@ -101,7 +101,7 @@ public enum ReadableContentManager {
                 version.inlineAssets.append(row)
             }
             bookmark.editedAt = .now
-            YabaDarwinReadableAssetResolver.shared.register(unfurl: unfurl)
+            YabaReadableAssetResolver.shared.register(unfurl: unfurl)
         }
     }
 }
