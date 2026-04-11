@@ -29,6 +29,10 @@ public final class NotemarkDetailStateMachine: YabaBaseObservableState<NotemarkD
             AllBookmarksManager.queueDeleteBookmarks(bookmarkIds: [bookmarkId])
         case .onRequestNotificationPermission:
             _ = await ReminderManager.requestAuthorization()
+            let granted = await ReminderManager.authorizationGranted()
+            if !granted {
+                YabaCoreToastManager.shared.showNotificationPermissionDeniedToast()
+            }
         case .onPickImageFromGallery, .onCaptureImageFromCamera,
              .onWebInitialContentLoad:
             break
@@ -57,7 +61,10 @@ public final class NotemarkDetailStateMachine: YabaBaseObservableState<NotemarkD
                     fireAt: fireAt
                 )
                 apply { $0.reminderDate = fireAt }
-            } catch {}
+                YabaCoreToastManager.shared.showReminderScheduledToast(fireAt: fireAt)
+            } catch {
+                YabaCoreToastManager.shared.showReminderScheduleFailedToast()
+            }
         case .onCancelReminder:
             guard let bid = state.bookmarkId else { return }
             ReminderManager.cancelReminder(bookmarkId: bid)

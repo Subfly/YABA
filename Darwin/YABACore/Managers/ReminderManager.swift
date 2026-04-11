@@ -7,6 +7,9 @@
 //
 //  Title and message use **localization keys** resolved on iOS via `Bundle` (default `.main`).
 //
+//  User-visible toasts for permission / schedule outcomes are emitted by detail state machines
+//  (see `YabaCoreToastManager`) rather than from this enum.
+//
 
 import Foundation
 import SwiftData

@@ -46,7 +46,10 @@ public final class CanvmarkDetailStateMachine: YabaBaseObservableState<CanvmarkD
                     fireAt: fireAt
                 )
                 apply { $0.reminderDate = fireAt }
-            } catch {}
+                YabaCoreToastManager.shared.showReminderScheduledToast(fireAt: fireAt)
+            } catch {
+                YabaCoreToastManager.shared.showReminderScheduleFailedToast()
+            }
         case .onCancelReminder:
             guard let bid = state.bookmarkId else { return }
             ReminderManager.cancelReminder(bookmarkId: bid)

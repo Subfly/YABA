@@ -25,6 +25,10 @@ public final class ImagemarkDetailStateMachine: YabaBaseObservableState<Imagemar
             break
         case .onRequestNotificationPermission:
             _ = await ReminderManager.requestAuthorization()
+            let granted = await ReminderManager.authorizationGranted()
+            if !granted {
+                YabaCoreToastManager.shared.showNotificationPermissionDeniedToast()
+            }
         case let .onScheduleReminder(titleKey, messageKey, fireAt):
             guard let bid = state.bookmarkId else { return }
             do {
@@ -36,7 +40,10 @@ public final class ImagemarkDetailStateMachine: YabaBaseObservableState<Imagemar
                     fireAt: fireAt
                 )
                 apply { $0.reminderDate = fireAt }
-            } catch {}
+                YabaCoreToastManager.shared.showReminderScheduledToast(fireAt: fireAt)
+            } catch {
+                YabaCoreToastManager.shared.showReminderScheduleFailedToast()
+            }
         case .onCancelReminder:
             guard let bid = state.bookmarkId else { return }
             ReminderManager.cancelReminder(bookmarkId: bid)

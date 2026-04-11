@@ -106,8 +106,12 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
                 $0.pendingTocNavigationExtrasJson = nil
             }
         case .onRequestNotificationPermission:
-            let ok = await ReminderManager.requestAuthorization()
-            apply { $0.hasNotificationPermission = ok }
+            _ = await ReminderManager.requestAuthorization()
+            let granted = await ReminderManager.authorizationGranted()
+            apply { $0.hasNotificationPermission = granted }
+            if !granted {
+                YabaCoreToastManager.shared.showNotificationPermissionDeniedToast()
+            }
         case let .onScheduleReminder(fireAt, titleKey, messageKey):
             guard let bid = state.bookmarkId else { return }
             do {
@@ -119,8 +123,9 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
                     fireAt: fireAt
                 )
                 apply { $0.reminderDate = fireAt }
+                YabaCoreToastManager.shared.showReminderScheduledToast(fireAt: fireAt)
             } catch {
-                // Scheduling failed; leave existing UI state.
+                YabaCoreToastManager.shared.showReminderScheduleFailedToast()
             }
         case .onCancelReminder:
             guard let bid = state.bookmarkId else { return }
