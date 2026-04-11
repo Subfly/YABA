@@ -10,10 +10,40 @@ import Foundation
 public struct YabaDarwinHtmlConverterResult: Sendable {
     public var documentJson: String
     public var linkMetadataJson: String?
+    /// When parsed from `outputJson`, includes asset descriptors for reader image download.
+    public var assets: [YabaDarwinWebConverterAsset]
 
-    public init(documentJson: String, linkMetadataJson: String?) {
+    public init(documentJson: String, linkMetadataJson: String?, assets: [YabaDarwinWebConverterAsset] = []) {
         self.documentJson = documentJson
         self.linkMetadataJson = linkMetadataJson
+        self.assets = assets
+    }
+
+    /// Structured result for [DarwinConverterResultProcessor] and link metadata updates.
+    public func asWebConverterResult() -> YabaDarwinWebConverterResult {
+        let meta: YabaDarwinWebLinkMetadata
+        if let linkMetadataJson,
+           let data = linkMetadataJson.data(using: .utf8),
+           let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+            meta = YabaDarwinWebLinkMetadata(
+                cleanedUrl: (obj["cleanedUrl"] as? String)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "",
+                title: (obj["title"] as? String)?.nilIfEmpty,
+                description: (obj["description"] as? String)?.nilIfEmpty,
+                author: (obj["author"] as? String)?.nilIfEmpty,
+                date: (obj["date"] as? String)?.nilIfEmpty,
+                audio: (obj["audio"] as? String)?.nilIfEmpty,
+                video: (obj["video"] as? String)?.nilIfEmpty,
+                image: (obj["image"] as? String)?.nilIfEmpty,
+                logo: (obj["logo"] as? String)?.nilIfEmpty
+            )
+        } else {
+            meta = YabaDarwinWebLinkMetadata(cleanedUrl: "")
+        }
+        return YabaDarwinWebConverterResult(
+            documentJson: documentJson,
+            assets: assets,
+            linkMetadata: meta
+        )
     }
 }
 
@@ -156,7 +186,19 @@ public final class YabaDarwinConverterJobRegistry: @unchecked Sendable {
                 linkMetaJson = String(data: d, encoding: .utf8)
             }
         }
-        return YabaDarwinHtmlConverterResult(documentJson: documentJson, linkMetadataJson: linkMetaJson)
+        var assets: [YabaDarwinWebConverterAsset] = []
+        if let assetsArr = json["assets"] as? [[String: Any]] {
+            for item in assetsArr {
+                let placeholder = item["placeholder"] as? String ?? ""
+                let url = item["url"] as? String ?? ""
+                let altRaw = item["alt"] as? String
+                let alt = altRaw?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty
+                if !placeholder.isEmpty, !url.isEmpty {
+                    assets.append(YabaDarwinWebConverterAsset(placeholder: placeholder, url: url, alt: alt))
+                }
+            }
+        }
+        return YabaDarwinHtmlConverterResult(documentJson: documentJson, linkMetadataJson: linkMetaJson, assets: assets)
     }
 }
 

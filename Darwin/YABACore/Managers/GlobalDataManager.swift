@@ -14,8 +14,8 @@ public enum GlobalDataManager {
     public static func queueWipeAllLocalData() {
         YabaCoreOperationQueue.shared.queue(name: "WipeAllLocalData") { context in
             ReminderManager.cancelAllReminders()
-            try context.delete(TagModel.self)
-            try context.delete(FolderModel.self)
+            try context.delete(model: TagModel.self)
+            try context.delete(model: FolderModel.self)
         }
     }
 }

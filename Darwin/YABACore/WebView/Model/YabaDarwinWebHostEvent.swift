@@ -10,7 +10,7 @@ import Foundation
 public enum YabaDarwinWebHostEvent: Sendable {
     case loadState(YabaDarwinWebLoadState)
     case readerMetrics(YabaDarwinReaderMetricsEvent)
-    case htmlConverterSuccess(documentJson: String, linkMetadataJson: String?)
+    case htmlConverterSuccess(YabaDarwinWebConverterResult)
     case htmlConverterFailure(message: String)
     case pdfConverterSuccess(payloadJson: String)
     case pdfConverterFailure(message: String)

@@ -28,6 +28,7 @@ enum YabaSchemaV2: VersionedSchema {
             CanvasBookmarkPayloadModel.self,
             ReadableVersionModel.self,
             ReadableVersionPayloadModel.self,
+            ReadableInlineAssetModel.self,
             AnnotationModel.self,
         ]
     }

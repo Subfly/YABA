@@ -26,6 +26,15 @@ public struct LinkmarkCreationUIState: Sendable {
     public var lastError: String?
     public var converterError: String?
 
+    /// True while fetching + converting URL content in Core.
+    public var isFetchingLinkContent: Bool
+    public var lastFetchedUrl: String?
+    public var cleanedUrl: String?
+    public var previewImageData: Data?
+    public var previewIconData: Data?
+    /// Latest processed readable (for save when bookmark exists or on first save).
+    public var pendingReadableUnfurl: YabaDarwinReadableUnfurl?
+
     public init(
         editingBookmarkId: String? = nil,
         url: String = "",
@@ -45,7 +54,13 @@ public struct LinkmarkCreationUIState: Sendable {
         cardImageSizing: YabaCoreCardImageSizing = .small,
         isSaving: Bool = false,
         lastError: String? = nil,
-        converterError: String? = nil
+        converterError: String? = nil,
+        isFetchingLinkContent: Bool = false,
+        lastFetchedUrl: String? = nil,
+        cleanedUrl: String? = nil,
+        previewImageData: Data? = nil,
+        previewIconData: Data? = nil,
+        pendingReadableUnfurl: YabaDarwinReadableUnfurl? = nil
     ) {
         self.editingBookmarkId = editingBookmarkId
         self.url = url
@@ -66,5 +81,11 @@ public struct LinkmarkCreationUIState: Sendable {
         self.isSaving = isSaving
         self.lastError = lastError
         self.converterError = converterError
+        self.isFetchingLinkContent = isFetchingLinkContent
+        self.lastFetchedUrl = lastFetchedUrl
+        self.cleanedUrl = cleanedUrl
+        self.previewImageData = previewImageData
+        self.previewIconData = previewIconData
+        self.pendingReadableUnfurl = pendingReadableUnfurl
     }
 }

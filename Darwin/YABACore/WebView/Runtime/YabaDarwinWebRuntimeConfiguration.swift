@@ -15,13 +15,18 @@ public struct YabaDarwinWebRuntimeConfiguration: @unchecked Sendable {
 
     public var websiteDataStore: WKWebsiteDataStore
 
+    /// When set, registers a `WKURLSchemeHandler` for the `yaba-asset` scheme (inline reader images from SwiftData).
+    public var yabaAssetSchemeHandler: (WKURLSchemeHandler & NSObject)?
+
     public init(
         allowsRemoteHTTP: Bool = false,
         allowsRemoteNavigation: Bool = false,
-        websiteDataStore: WKWebsiteDataStore = .nonPersistent()
+        websiteDataStore: WKWebsiteDataStore = .nonPersistent(),
+        yabaAssetSchemeHandler: (WKURLSchemeHandler & NSObject)? = nil
     ) {
         self.allowsRemoteHTTP = allowsRemoteHTTP
         self.allowsRemoteNavigation = allowsRemoteNavigation
         self.websiteDataStore = websiteDataStore
+        self.yabaAssetSchemeHandler = yabaAssetSchemeHandler
     }
 }

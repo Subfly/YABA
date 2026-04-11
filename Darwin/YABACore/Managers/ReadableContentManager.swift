@@ -66,4 +66,42 @@ public enum ReadableContentManager {
             bookmark.editedAt = .now
         }
     }
+
+    /// Persists link readable JSON plus inline image bytes for one version.
+    public static func queueSaveLinkReadableUnfurl(
+        bookmarkId: String,
+        readableVersionId: String,
+        unfurl: YabaDarwinReadableUnfurl
+    ) {
+        YabaCoreOperationQueue.shared.queue(name: "SaveLinkReadable:\(bookmarkId):\(readableVersionId)") { context in
+            guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context) else {
+                return
+            }
+            let data = Data(unfurl.documentJson.utf8)
+            let payload = ReadableVersionPayloadModel(documentJson: data, readableVersion: nil)
+            context.insert(payload)
+            let version = ReadableVersionModel(
+                readableVersionId: readableVersionId,
+                createdAt: .now,
+                relativePathHint: nil,
+                payload: payload,
+                bookmark: bookmark
+            )
+            context.insert(version)
+            payload.readableVersion = version
+            bookmark.readableVersions.append(version)
+            for a in unfurl.assets {
+                let row = ReadableInlineAssetModel(
+                    assetId: a.assetId,
+                    pathExtension: a.pathExtension,
+                    bytes: a.bytes,
+                    readableVersion: version
+                )
+                context.insert(row)
+                version.inlineAssets.append(row)
+            }
+            bookmark.editedAt = .now
+            YabaDarwinReadableAssetResolver.shared.register(unfurl: unfurl)
+        }
+    }
 }

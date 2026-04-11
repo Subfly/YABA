@@ -7,6 +7,9 @@ import Foundation
 
 public struct LinkmarkDetailUIState: Sendable {
     public var bookmarkId: String?
+    /// Resolved link URL for Core refresh pipelines (set via [LinkmarkDetailEvent.onLinkSourceUrl]).
+    public var linkSourceUrl: String?
+    public var isUpdatingReadable: Bool
     public var selectedReadableVersionId: String?
     public var readerTheme: YabaCoreReaderTheme
     public var readerFontSize: YabaCoreReaderFontSize
@@ -24,6 +27,8 @@ public struct LinkmarkDetailUIState: Sendable {
 
     public init(
         bookmarkId: String? = nil,
+        linkSourceUrl: String? = nil,
+        isUpdatingReadable: Bool = false,
         selectedReadableVersionId: String? = nil,
         readerTheme: YabaCoreReaderTheme = .system,
         readerFontSize: YabaCoreReaderFontSize = .medium,
@@ -40,6 +45,8 @@ public struct LinkmarkDetailUIState: Sendable {
         lastConverterErrorMessage: String? = nil
     ) {
         self.bookmarkId = bookmarkId
+        self.linkSourceUrl = linkSourceUrl
+        self.isUpdatingReadable = isUpdatingReadable
         self.selectedReadableVersionId = selectedReadableVersionId
         self.readerTheme = readerTheme
         self.readerFontSize = readerFontSize

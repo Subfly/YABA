@@ -409,6 +409,9 @@ final class ReadableVersionModel {
     @Relationship(deleteRule: .cascade, inverse: \AnnotationModel.readableVersion)
     var annotations: [AnnotationModel] = []
 
+    @Relationship(deleteRule: .cascade, inverse: \ReadableInlineAssetModel.readableVersion)
+    var inlineAssets: [ReadableInlineAssetModel] = []
+
     init(
         readableVersionId: String = UUID().uuidString,
         createdAt: Date = .now,
@@ -421,6 +424,30 @@ final class ReadableVersionModel {
         self.relativePathHint = relativePathHint
         self.payload = payload
         self.bookmark = bookmark
+    }
+}
+
+/// Inline images for a readable version (reader JSON references `../assets/<assetId>.<ext>`); bytes stored for iCloud sync.
+@Model
+final class ReadableInlineAssetModel {
+    var assetId: String = UUID().uuidString
+    var pathExtension: String = "jpg"
+
+    @Attribute(.externalStorage)
+    var bytes: Data?
+
+    var readableVersion: ReadableVersionModel?
+
+    init(
+        assetId: String = UUID().uuidString,
+        pathExtension: String = "jpg",
+        bytes: Data? = nil,
+        readableVersion: ReadableVersionModel? = nil
+    ) {
+        self.assetId = assetId
+        self.pathExtension = pathExtension
+        self.bytes = bytes
+        self.readableVersion = readableVersion
     }
 }
 

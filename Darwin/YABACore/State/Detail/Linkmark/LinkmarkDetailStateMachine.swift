@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 @MainActor
 public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkDetailUIState>, YabaScreenStateMachine {
@@ -21,6 +22,8 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
                 $0.reminderDate = reminderDate
                 $0.hasNotificationPermission = granted
             }
+        case let .onLinkSourceUrl(url):
+            apply { $0.linkSourceUrl = url }
         case let .onSaveReadableContent(data):
             guard let bid = state.bookmarkId else { return }
             let rv = state.selectedReadableVersionId ?? UUID().uuidString
@@ -31,36 +34,12 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
                 documentJson: data
             )
         case .onUpdateReadableRequested, .onUpdateLinkMetadataRequested:
-            break
+            await refreshLinkFromSource()
         case let .onReaderWebInitialContentLoad(resultJson):
             apply { $0.readerWebInitialLoadResultJson = resultJson }
-        case let .onConverterSucceeded(documentJson, linkMetadataJson):
+        case let .onConverterSucceeded(result):
             guard let bid = state.bookmarkId else { return }
-            let rv = state.selectedReadableVersionId ?? UUID().uuidString
-            apply { $0.selectedReadableVersionId = rv }
-            ReadableVersionManager.queueInsertReadableVersion(
-                bookmarkId: bid,
-                readableVersionId: rv,
-                documentJson: Data(documentJson.utf8)
-            )
-            if let meta = linkMetadataJson,
-               let data = meta.data(using: .utf8),
-               let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
-                let cleaned = (obj["cleanedUrl"] as? String)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-                if !cleaned.isEmpty {
-                    LinkmarkManager.queueCreateOrUpdateLinkDetails(
-                        bookmarkId: bid,
-                        url: cleaned,
-                        domain: LinkmarkManager.extractDomain(from: cleaned),
-                        videoUrl: obj["video"] as? String,
-                        audioUrl: obj["audio"] as? String,
-                        metadataTitle: obj["title"] as? String,
-                        metadataDescription: obj["description"] as? String,
-                        metadataAuthor: obj["author"] as? String,
-                        metadataDate: obj["date"] as? String
-                    )
-                }
-            }
+            await saveReadableFromConverterOutput(bookmarkId: bid, result: result)
         case let .onConverterFailed(errorMessage):
             apply { $0.lastConverterErrorMessage = errorMessage }
             YabaCoreToastManager.shared.show(
@@ -192,5 +171,59 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
                 metadataDate: metadataDate
             )
         }
+    }
+
+    private func refreshLinkFromSource() async {
+        guard let bid = state.bookmarkId,
+              let url = state.linkSourceUrl?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !url.isEmpty
+        else { return }
+        apply { $0.isUpdatingReadable = true; $0.lastConverterErrorMessage = nil }
+        defer { apply { $0.isUpdatingReadable = false } }
+        do {
+            let (conv, readable) = try await YabaDarwinLinkmarkUnfurlCoordinator.shared.fetchAndConvert(urlString: url)
+            await saveReadableBundle(bookmarkId: bid, converter: conv, readable: readable)
+        } catch {
+            apply { $0.lastConverterErrorMessage = String(describing: error) }
+        }
+    }
+
+    private func saveReadableFromConverterOutput(bookmarkId: String, result: YabaDarwinWebConverterResult) async {
+        let readable = await DarwinConverterResultProcessor.process(
+            documentJson: result.documentJson,
+            assets: result.assets
+        )
+        await saveReadableBundle(bookmarkId: bookmarkId, converter: result, readable: readable)
+    }
+
+    private func saveReadableBundle(bookmarkId: String, converter: YabaDarwinWebConverterResult, readable: YabaDarwinReadableUnfurl) async {
+        let rv = state.selectedReadableVersionId ?? UUID().uuidString
+        apply { $0.selectedReadableVersionId = rv }
+        ReadableContentManager.queueSaveLinkReadableUnfurl(
+            bookmarkId: bookmarkId,
+            readableVersionId: rv,
+            unfurl: readable
+        )
+        let meta = converter.linkMetadata
+        if let cleaned = meta.cleanedUrl.nilIfEmpty {
+            LinkmarkManager.queueCreateOrUpdateLinkDetails(
+                bookmarkId: bookmarkId,
+                url: cleaned,
+                domain: LinkmarkManager.extractDomain(from: cleaned),
+                videoUrl: meta.video,
+                audioUrl: meta.audio,
+                metadataTitle: meta.title,
+                metadataDescription: meta.description,
+                metadataAuthor: meta.author,
+                metadataDate: meta.date
+            )
+        }
+        let img = await YabaDarwinUnfurler.downloadPreviewImageBytes(urlString: meta.image)
+        let logo = await YabaDarwinUnfurler.downloadPreviewImageBytes(urlString: meta.logo)
+        AllBookmarksManager.queueSetBookmarkPreviewAssets(
+            bookmarkId: bookmarkId,
+            imageBytes: img,
+            iconBytes: logo
+        )
     }
 }

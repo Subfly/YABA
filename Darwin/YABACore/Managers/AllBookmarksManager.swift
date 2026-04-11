@@ -73,6 +73,34 @@ public enum AllBookmarksManager {
         }
     }
 
+    /// Card preview image / favicon bytes on the base bookmark.
+    public static func queueSetBookmarkPreviewAssets(bookmarkId: String, imageBytes: Data?, iconBytes: Data?) {
+        YabaCoreOperationQueue.shared.queue(name: "PreviewAssets:\(bookmarkId)") { context in
+            guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context) else {
+                return
+            }
+            if let imageBytes {
+                if let existing = bookmark.imagePayload {
+                    existing.bytes = imageBytes
+                } else {
+                    let p = BookmarkImagePayloadModel(bytes: imageBytes, bookmark: bookmark)
+                    context.insert(p)
+                    bookmark.imagePayload = p
+                }
+            }
+            if let iconBytes {
+                if let existing = bookmark.iconPayload {
+                    existing.bytes = iconBytes
+                } else {
+                    let p = BookmarkIconPayloadModel(bytes: iconBytes, bookmark: bookmark)
+                    context.insert(p)
+                    bookmark.iconPayload = p
+                }
+            }
+            bookmark.editedAt = .now
+        }
+    }
+
     public static func queueRecordBookmarkView(bookmarkId: String) {
         YabaCoreOperationQueue.shared.queue(name: "RecordBookmarkView:\(bookmarkId)") { context in
             guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context) else { return }

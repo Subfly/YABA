@@ -33,6 +33,9 @@ public final class YabaWKWebViewRuntime: NSObject {
         let config = WKWebViewConfiguration()
         config.websiteDataStore = configuration.websiteDataStore
         config.defaultWebpagePreferences.allowsContentJavaScript = true
+        if let assetHandler = configuration.yabaAssetSchemeHandler {
+            config.setURLSchemeHandler(assetHandler, forURLScheme: "yaba-asset")
+        }
         config.userContentController.addUserScript(YabaWKBridgeUserScript.nativeHostBridgeScript())
         config.userContentController.add(scriptBridge, name: YabaNativeHostRouterDarwin.nativeHostScriptMessageName)
 

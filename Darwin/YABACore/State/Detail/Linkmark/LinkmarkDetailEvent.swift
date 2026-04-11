@@ -10,10 +10,12 @@ import Foundation
 
 public enum LinkmarkDetailEvent: Sendable {
     case onInit(bookmarkId: String)
+    /// Call when the UI has resolved the link URL (needed for refresh).
+    case onLinkSourceUrl(String)
     case onSaveReadableContent(documentJson: Data)
     case onUpdateReadableRequested
     case onUpdateLinkMetadataRequested
-    case onConverterSucceeded(documentJson: String, linkMetadataJson: String?)
+    case onConverterSucceeded(YabaDarwinWebConverterResult)
     case onConverterFailed(errorMessage: String)
     case onReaderWebInitialContentLoad(resultJson: String?)
     case onSelectReadableVersion(versionId: String)

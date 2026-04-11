@@ -22,8 +22,8 @@ public enum YabaWebHostLinkmarkIntegration {
                 json = nil
             }
             return [.onTocChanged(tocJson: json)]
-        case let .htmlConverterSuccess(documentJson, linkMetadataJson):
-            return [.onConverterSucceeded(documentJson: documentJson, linkMetadataJson: linkMetadataJson)]
+        case let .htmlConverterSuccess(result):
+            return [.onConverterSucceeded(result)]
         case let .htmlConverterFailure(message):
             return [.onConverterFailed(errorMessage: message)]
         case .readerMetrics:

@@ -43,4 +43,29 @@ public enum YabaDarwinWebBridgeScripts {
     public static let canvasBridgeReadyLoose = """
     (function(){ try { return !!(window.YabaCanvasBridge && window.YabaCanvasBridge.isReady); } catch(e){ return false; } })();
     """
+
+    /// Starts async HTML → reader document conversion; returns `jobId` string when successful.
+    public static func sanitizeAndConvertHtmlToReaderHtmlScript(html: String, baseUrl: String?, jobId: String) -> String {
+        let htmlEscaped = YabaWebJsEscaping.escapeForJsSingleQuotedString(html)
+        let baseUrlLiteral = baseUrl.map { "'\(YabaWebJsEscaping.escapeForJsSingleQuotedString($0))'" } ?? "null"
+        let jobIdEscaped = YabaWebJsEscaping.escapeForJsSingleQuotedString(jobId)
+        return """
+        (function() {
+            try {
+                return window.YabaConverterBridge.startHtmlConversion({
+                    html: '\(htmlEscaped)',
+                    baseUrl: \(baseUrlLiteral),
+                    jobId: '\(jobIdEscaped)'
+                });
+            } catch (e) {
+                return "";
+            }
+        })();
+        """
+    }
+
+    public static func deleteHtmlConversionJobScript(jobId: String) -> String {
+        let jobIdEscaped = YabaWebJsEscaping.escapeForJsSingleQuotedString(jobId)
+        return "(function(){ try { window.YabaConverterBridge.deleteHtmlConversionJob('\(jobIdEscaped)'); } catch(e){} })();"
+    }
 }
