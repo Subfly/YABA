@@ -14,12 +14,33 @@ public final class ImagemarkDetailStateMachine: YabaBaseObservableState<Imagemar
     public func send(_ event: ImagemarkDetailEvent) async {
         switch event {
         case let .onInit(bookmarkId):
-            apply { $0.bookmarkId = bookmarkId }
+            let reminderDate = await ReminderManager.getPendingReminderDate(bookmarkId: bookmarkId)
+            apply {
+                $0.bookmarkId = bookmarkId
+                $0.reminderDate = reminderDate
+            }
         case let .onDeleteBookmark(bookmarkId):
             AllBookmarksManager.queueDeleteBookmarks(bookmarkIds: [bookmarkId])
-        case .onShareImage, .onExportImage, .onRequestNotificationPermission,
-             .onScheduleReminder, .onCancelReminder:
+        case .onShareImage, .onExportImage:
             break
+        case .onRequestNotificationPermission:
+            _ = await ReminderManager.requestAuthorization()
+        case let .onScheduleReminder(titleKey, messageKey, fireAt):
+            guard let bid = state.bookmarkId else { return }
+            do {
+                try await ReminderManager.scheduleReminderResolvingLabel(
+                    bookmarkId: bid,
+                    bookmarkKindCode: YabaCoreBookmarkKind.image.rawValue,
+                    titleKey: titleKey,
+                    messageKey: messageKey,
+                    fireAt: fireAt
+                )
+                apply { $0.reminderDate = fireAt }
+            } catch {}
+        case .onCancelReminder:
+            guard let bid = state.bookmarkId else { return }
+            ReminderManager.cancelReminder(bookmarkId: bid)
+            apply { $0.reminderDate = nil }
         case let .updateSummary(bookmarkId, summary):
             ImagemarkManager.queueCreateOrUpdateImageDetails(bookmarkId: bookmarkId, summary: summary)
         }

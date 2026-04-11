@@ -14,7 +14,13 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
     public func send(_ event: LinkmarkDetailEvent) async {
         switch event {
         case let .onInit(bookmarkId):
-            apply { $0.bookmarkId = bookmarkId }
+            let reminderDate = await ReminderManager.getPendingReminderDate(bookmarkId: bookmarkId)
+            let granted = await ReminderManager.authorizationGranted()
+            apply {
+                $0.bookmarkId = bookmarkId
+                $0.reminderDate = reminderDate
+                $0.hasNotificationPermission = granted
+            }
         case let .onSaveReadableContent(data):
             guard let bid = state.bookmarkId else { return }
             let rv = state.selectedReadableVersionId ?? UUID().uuidString
@@ -99,8 +105,27 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
                 $0.pendingTocNavigationId = nil
                 $0.pendingTocNavigationExtrasJson = nil
             }
-        case .onRequestNotificationPermission, .onScheduleReminder, .onCancelReminder:
-            break
+        case .onRequestNotificationPermission:
+            let ok = await ReminderManager.requestAuthorization()
+            apply { $0.hasNotificationPermission = ok }
+        case let .onScheduleReminder(fireAt, titleKey, messageKey):
+            guard let bid = state.bookmarkId else { return }
+            do {
+                try await ReminderManager.scheduleReminderResolvingLabel(
+                    bookmarkId: bid,
+                    bookmarkKindCode: YabaCoreBookmarkKind.link.rawValue,
+                    titleKey: titleKey,
+                    messageKey: messageKey,
+                    fireAt: fireAt
+                )
+                apply { $0.reminderDate = fireAt }
+            } catch {
+                // Scheduling failed; leave existing UI state.
+            }
+        case .onCancelReminder:
+            guard let bid = state.bookmarkId else { return }
+            ReminderManager.cancelReminder(bookmarkId: bid)
+            apply { $0.reminderDate = nil }
         case let .onExportMarkdownReady(md):
             apply { $0.lastExportMarkdown = md }
         case let .onExportPdfReady(b64):

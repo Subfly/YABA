@@ -14,6 +14,7 @@ public struct DocmarkDetailUIState: Sendable {
     public var tocJson: String?
     public var pendingTocNavigationId: String?
     public var pendingTocNavigationExtrasJson: String?
+    public var reminderDate: Date?
 
     public init(
         bookmarkId: String? = nil,
@@ -23,7 +24,8 @@ public struct DocmarkDetailUIState: Sendable {
         scrollToAnnotationId: String? = nil,
         tocJson: String? = nil,
         pendingTocNavigationId: String? = nil,
-        pendingTocNavigationExtrasJson: String? = nil
+        pendingTocNavigationExtrasJson: String? = nil,
+        reminderDate: Date? = nil
     ) {
         self.bookmarkId = bookmarkId
         self.readerTheme = readerTheme
@@ -33,5 +35,6 @@ public struct DocmarkDetailUIState: Sendable {
         self.tocJson = tocJson
         self.pendingTocNavigationId = pendingTocNavigationId
         self.pendingTocNavigationExtrasJson = pendingTocNavigationExtrasJson
+        self.reminderDate = reminderDate
     }
 }

@@ -23,7 +23,7 @@ public enum DocmarkDetailEvent: Sendable {
     case onNavigateToTocItem(id: String, extrasJson: String?)
     case onClearTocNavigation
     case onRequestNotificationPermission
-    case onScheduleReminder(title: String, message: String, triggerAtEpochMillis: Int64)
+    case onScheduleReminder(titleKey: String, messageKey: String, fireAt: Date)
     case onCancelReminder
     case onWebInitialContentLoad(resultJson: String?)
 

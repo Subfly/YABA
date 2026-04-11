@@ -10,7 +10,7 @@ public enum NotemarkDetailEvent: Sendable {
     case onSave(documentJson: String, usedInlineAssetSrcs: [String])
     case onDeleteBookmark(bookmarkId: String)
     case onRequestNotificationPermission
-    case onScheduleReminder(title: String, message: String, triggerAtEpochMillis: Int64)
+    case onScheduleReminder(titleKey: String, messageKey: String, fireAt: Date)
     case onCancelReminder
     case onPickImageFromGallery
     case onCaptureImageFromCamera

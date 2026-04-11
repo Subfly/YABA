@@ -13,6 +13,7 @@ public enum GlobalDataManager {
     /// Deletes all persisted v2 entities in the store accessed via `YabaCoreStore`.
     public static func queueWipeAllLocalData() {
         YabaCoreOperationQueue.shared.queue(name: "WipeAllLocalData") { context in
+            ReminderManager.cancelAllReminders()
             try context.delete(TagModel.self)
             try context.delete(FolderModel.self)
         }

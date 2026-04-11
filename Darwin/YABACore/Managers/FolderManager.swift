@@ -146,6 +146,16 @@ public enum FolderManager {
     private static func deleteFolderCascadeInternal(rootFolderId: String, context: ModelContext) throws {
         if Constants.Folder.isSystemFolder(rootFolderId) { return }
         guard let folder = try YabaCorePersistenceHelpers.folder(folderId: rootFolderId, context: context) else { return }
+        let bookmarkIds = collectBookmarkIdsInSubtree(folder: folder)
+        ReminderManager.cancelReminders(bookmarkIds: bookmarkIds)
         context.delete(folder)
+    }
+
+    private static func collectBookmarkIdsInSubtree(folder: FolderModel) -> [String] {
+        var ids = folder.bookmarks.map(\.bookmarkId)
+        for child in folder.children {
+            ids += collectBookmarkIdsInSubtree(folder: child)
+        }
+        return ids
     }
 }

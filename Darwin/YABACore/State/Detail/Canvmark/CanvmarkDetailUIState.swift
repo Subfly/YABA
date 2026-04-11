@@ -12,6 +12,7 @@ public struct CanvmarkDetailUIState: Sendable {
     public var styleJson: String?
     public var pendingExportImageData: Data?
     public var pendingExportImageExtension: String
+    public var reminderDate: Date?
 
     public init(
         bookmarkId: String? = nil,
@@ -19,7 +20,8 @@ public struct CanvmarkDetailUIState: Sendable {
         metricsJson: String? = nil,
         styleJson: String? = nil,
         pendingExportImageData: Data? = nil,
-        pendingExportImageExtension: String = "png"
+        pendingExportImageExtension: String = "png",
+        reminderDate: Date? = nil
     ) {
         self.bookmarkId = bookmarkId
         self.canvasOptionsSheetOpen = canvasOptionsSheetOpen
@@ -27,5 +29,6 @@ public struct CanvmarkDetailUIState: Sendable {
         self.styleJson = styleJson
         self.pendingExportImageData = pendingExportImageData
         self.pendingExportImageExtension = pendingExportImageExtension
+        self.reminderDate = reminderDate
     }
 }

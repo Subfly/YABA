@@ -17,7 +17,8 @@ public struct LinkmarkDetailUIState: Sendable {
     public var pendingTocNavigationExtrasJson: String?
     public var lastExportMarkdown: String?
     public var lastExportPdfBase64: String?
-    public var pendingReminderTitle: String?
+    public var reminderDate: Date?
+    public var hasNotificationPermission: Bool
 
     public init(
         bookmarkId: String? = nil,
@@ -31,7 +32,8 @@ public struct LinkmarkDetailUIState: Sendable {
         pendingTocNavigationExtrasJson: String? = nil,
         lastExportMarkdown: String? = nil,
         lastExportPdfBase64: String? = nil,
-        pendingReminderTitle: String? = nil
+        reminderDate: Date? = nil,
+        hasNotificationPermission: Bool = false
     ) {
         self.bookmarkId = bookmarkId
         self.selectedReadableVersionId = selectedReadableVersionId
@@ -44,6 +46,7 @@ public struct LinkmarkDetailUIState: Sendable {
         self.pendingTocNavigationExtrasJson = pendingTocNavigationExtrasJson
         self.lastExportMarkdown = lastExportMarkdown
         self.lastExportPdfBase64 = lastExportPdfBase64
-        self.pendingReminderTitle = pendingReminderTitle
+        self.reminderDate = reminderDate
+        self.hasNotificationPermission = hasNotificationPermission
     }
 }

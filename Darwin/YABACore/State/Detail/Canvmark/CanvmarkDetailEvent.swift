@@ -17,7 +17,7 @@ public enum CanvmarkDetailEvent: Sendable {
     case onCaptureImageFromCamera
     case onConsumedPendingImageInsert
     case onDeleteBookmark(bookmarkId: String)
-    case onScheduleReminder(title: String, message: String, triggerAtEpochMillis: Int64)
+    case onScheduleReminder(titleKey: String, messageKey: String, fireAt: Date)
     case onCancelReminder
     case onExportImageReady(Data, fileExtension: String)
     case saveScene(bookmarkId: String, sceneData: Data)

@@ -11,7 +11,7 @@ public enum ImagemarkDetailEvent: Sendable {
     case onShareImage
     case onExportImage
     case onRequestNotificationPermission
-    case onScheduleReminder(title: String, message: String, triggerAtEpochMillis: Int64)
+    case onScheduleReminder(titleKey: String, messageKey: String, fireAt: Date)
     case onCancelReminder
 
     case updateSummary(bookmarkId: String, summary: String?)

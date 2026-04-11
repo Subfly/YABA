@@ -115,6 +115,7 @@ public enum AllBookmarksManager {
     public static func queueDeleteBookmarks(bookmarkIds: [String]) {
         guard !bookmarkIds.isEmpty else { return }
         YabaCoreOperationQueue.shared.queue(name: "DeleteBookmarks:\(bookmarkIds.count)") { context in
+            ReminderManager.cancelReminders(bookmarkIds: bookmarkIds)
             for id in bookmarkIds {
                 if let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: id, context: context) {
                     context.delete(bookmark)
@@ -125,6 +126,7 @@ public enum AllBookmarksManager {
 
     /// Called from `FolderManager` cascade when a bookmark must be removed without extra queue nesting.
     public static func deleteBookmarkInContext(bookmarkId: String, context: ModelContext) throws {
+        ReminderManager.cancelReminder(bookmarkId: bookmarkId)
         if let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context) {
             context.delete(bookmark)
         }

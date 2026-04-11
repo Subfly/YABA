@@ -14,7 +14,11 @@ public final class NotemarkDetailStateMachine: YabaBaseObservableState<NotemarkD
     public func send(_ event: NotemarkDetailEvent) async {
         switch event {
         case let .onInit(bookmarkId):
-            apply { $0.bookmarkId = bookmarkId }
+            let reminderDate = await ReminderManager.getPendingReminderDate(bookmarkId: bookmarkId)
+            apply {
+                $0.bookmarkId = bookmarkId
+                $0.reminderDate = reminderDate
+            }
         case let .onSave(documentJson, _):
             guard let bid = state.bookmarkId else { return }
             NotemarkManager.queueSaveNoteDocumentData(bookmarkId: bid, documentBody: Data(documentJson.utf8))
@@ -23,7 +27,9 @@ public final class NotemarkDetailStateMachine: YabaBaseObservableState<NotemarkD
             NotemarkManager.queueCreateOrUpdateNoteDetails(bookmarkId: bid, readableVersionId: versionId)
         case let .onDeleteBookmark(bookmarkId):
             AllBookmarksManager.queueDeleteBookmarks(bookmarkIds: [bookmarkId])
-        case .onRequestNotificationPermission, .onPickImageFromGallery, .onCaptureImageFromCamera,
+        case .onRequestNotificationPermission:
+            _ = await ReminderManager.requestAuthorization()
+        case .onPickImageFromGallery, .onCaptureImageFromCamera,
              .onWebInitialContentLoad:
             break
         case .onConsumedInlineImageInsert:
@@ -40,10 +46,22 @@ public final class NotemarkDetailStateMachine: YabaBaseObservableState<NotemarkD
                 $0.pendingTocNavigationId = nil
                 $0.pendingTocNavigationExtrasJson = nil
             }
-        case .onScheduleReminder:
-            break
+        case let .onScheduleReminder(titleKey, messageKey, fireAt):
+            guard let bid = state.bookmarkId else { return }
+            do {
+                try await ReminderManager.scheduleReminderResolvingLabel(
+                    bookmarkId: bid,
+                    bookmarkKindCode: YabaCoreBookmarkKind.note.rawValue,
+                    titleKey: titleKey,
+                    messageKey: messageKey,
+                    fireAt: fireAt
+                )
+                apply { $0.reminderDate = fireAt }
+            } catch {}
         case .onCancelReminder:
-            break
+            guard let bid = state.bookmarkId else { return }
+            ReminderManager.cancelReminder(bookmarkId: bid)
+            apply { $0.reminderDate = nil }
         case let .onExportMarkdownReady(md):
             apply { $0.lastExportMarkdown = md }
         case let .onExportPdfReady(b64):

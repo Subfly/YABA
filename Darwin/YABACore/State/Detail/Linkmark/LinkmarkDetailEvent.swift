@@ -3,6 +3,7 @@
 //  YABACore
 //
 //  Parity with Compose `LinkmarkDetailEvent` — complex payloads use `Data`/`String` for host bridges.
+//  Reminder `titleKey` / `messageKey` are iOS `Localizable.strings` keys (resolved in `ReminderManager`).
 //
 
 import Foundation
@@ -41,13 +42,7 @@ public enum LinkmarkDetailEvent: Sendable {
     case onNavigateToTocItem(id: String, extrasJson: String?)
     case onClearTocNavigation
     case onRequestNotificationPermission
-    case onScheduleReminder(
-        selectedDateMillis: Int64,
-        hour: Int,
-        minute: Int,
-        title: String,
-        message: String
-    )
+    case onScheduleReminder(fireAt: Date, titleKey: String, messageKey: String)
     case onCancelReminder
     case onExportMarkdownReady(String)
     case onExportPdfReady(base64: String)
