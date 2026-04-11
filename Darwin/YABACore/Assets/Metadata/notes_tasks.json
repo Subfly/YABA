@@ -1,0 +1,83 @@
+{
+  "metadata": {
+    "id": "notes_tasks",
+    "name": "Notes and Tasks",
+    "main_category": "notes_tasks",
+    "icon_count": 24,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "note-01"
+    },
+    {
+      "name": "note-02"
+    },
+    {
+      "name": "note-03"
+    },
+    {
+      "name": "note-04"
+    },
+    {
+      "name": "note-05"
+    },
+    {
+      "name": "note-add"
+    },
+    {
+      "name": "note-done"
+    },
+    {
+      "name": "note-edit"
+    },
+    {
+      "name": "note-remove"
+    },
+    {
+      "name": "notebook"
+    },
+    {
+      "name": "sticky-note-01"
+    },
+    {
+      "name": "sticky-note-02"
+    },
+    {
+      "name": "task-01"
+    },
+    {
+      "name": "task-02"
+    },
+    {
+      "name": "task-add-01"
+    },
+    {
+      "name": "task-add-02"
+    },
+    {
+      "name": "task-daily-01"
+    },
+    {
+      "name": "task-daily-02"
+    },
+    {
+      "name": "task-done-01"
+    },
+    {
+      "name": "task-done-02"
+    },
+    {
+      "name": "task-edit-01"
+    },
+    {
+      "name": "task-edit-02"
+    },
+    {
+      "name": "task-remove-01"
+    },
+    {
+      "name": "task-remove-02"
+    }
+  ]
+}

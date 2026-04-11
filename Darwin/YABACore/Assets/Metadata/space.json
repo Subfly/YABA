@@ -1,0 +1,92 @@
+{
+  "metadata": {
+    "id": "space",
+    "name": "Space and Planets",
+    "main_category": "space",
+    "icon_count": 27,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "alien-01"
+    },
+    {
+      "name": "alien-02"
+    },
+    {
+      "name": "asteroid-01"
+    },
+    {
+      "name": "asteroid-02"
+    },
+    {
+      "name": "astronaut-01"
+    },
+    {
+      "name": "astronaut-02"
+    },
+    {
+      "name": "black-hole"
+    },
+    {
+      "name": "comet-01"
+    },
+    {
+      "name": "comet-02"
+    },
+    {
+      "name": "constellation"
+    },
+    {
+      "name": "earth"
+    },
+    {
+      "name": "falling-star"
+    },
+    {
+      "name": "galaxy"
+    },
+    {
+      "name": "jupiter"
+    },
+    {
+      "name": "monster"
+    },
+    {
+      "name": "moon"
+    },
+    {
+      "name": "moon-landing"
+    },
+    {
+      "name": "orbit-01"
+    },
+    {
+      "name": "orbit-02"
+    },
+    {
+      "name": "rocket-01"
+    },
+    {
+      "name": "rocket-02"
+    },
+    {
+      "name": "satellite-01"
+    },
+    {
+      "name": "satellite-02"
+    },
+    {
+      "name": "saturn-01"
+    },
+    {
+      "name": "saturn-02"
+    },
+    {
+      "name": "solar-system"
+    },
+    {
+      "name": "spaceship"
+    }
+  ]
+}

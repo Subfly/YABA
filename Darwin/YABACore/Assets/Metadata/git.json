@@ -1,0 +1,41 @@
+{
+  "metadata": {
+    "id": "git",
+    "name": "Git and Branches",
+    "main_category": "git",
+    "icon_count": 10,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "git-branch"
+    },
+    {
+      "name": "git-commit"
+    },
+    {
+      "name": "git-compare"
+    },
+    {
+      "name": "git-fork"
+    },
+    {
+      "name": "git-merge"
+    },
+    {
+      "name": "git-pull-request"
+    },
+    {
+      "name": "git-pull-request-closed"
+    },
+    {
+      "name": "git-pull-request-draft"
+    },
+    {
+      "name": "github"
+    },
+    {
+      "name": "gitlab"
+    }
+  ]
+}

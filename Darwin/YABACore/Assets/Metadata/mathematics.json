@@ -1,0 +1,455 @@
+{
+  "metadata": {
+    "id": "mathematics",
+    "name": "Math and Operators",
+    "main_category": "mathematics",
+    "icon_count": 148,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "1st-brecket"
+    },
+    {
+      "name": "1st-brecket-circle"
+    },
+    {
+      "name": "1st-brecket-square"
+    },
+    {
+      "name": "2nd-brecket"
+    },
+    {
+      "name": "2nd-brecket-circle"
+    },
+    {
+      "name": "2nd-brecket-square"
+    },
+    {
+      "name": "3rd-brecket"
+    },
+    {
+      "name": "3rd-brecket-circle"
+    },
+    {
+      "name": "3rd-brecket-square"
+    },
+    {
+      "name": "abacus"
+    },
+    {
+      "name": "absolute"
+    },
+    {
+      "name": "acute"
+    },
+    {
+      "name": "alpha"
+    },
+    {
+      "name": "alpha-circle"
+    },
+    {
+      "name": "alpha-square"
+    },
+    {
+      "name": "angle"
+    },
+    {
+      "name": "angle-1"
+    },
+    {
+      "name": "approximately-equal"
+    },
+    {
+      "name": "approximately-equal-circle"
+    },
+    {
+      "name": "approximately-equal-square"
+    },
+    {
+      "name": "beta"
+    },
+    {
+      "name": "calculator"
+    },
+    {
+      "name": "compass"
+    },
+    {
+      "name": "cone-01"
+    },
+    {
+      "name": "cone-02"
+    },
+    {
+      "name": "congruent-to"
+    },
+    {
+      "name": "congruent-to-circle"
+    },
+    {
+      "name": "congruent-to-square"
+    },
+    {
+      "name": "coordinate-01"
+    },
+    {
+      "name": "cordinate-02"
+    },
+    {
+      "name": "cos"
+    },
+    {
+      "name": "cosine-0"
+    },
+    {
+      "name": "cosine-01"
+    },
+    {
+      "name": "cube"
+    },
+    {
+      "name": "cylinder-01"
+    },
+    {
+      "name": "cylinder-02"
+    },
+    {
+      "name": "cylinder-03"
+    },
+    {
+      "name": "cylinder-04"
+    },
+    {
+      "name": "diameter"
+    },
+    {
+      "name": "divide-sign"
+    },
+    {
+      "name": "divide-sign-circle"
+    },
+    {
+      "name": "divide-sign-square"
+    },
+    {
+      "name": "equal-sign"
+    },
+    {
+      "name": "equal-sign-circle"
+    },
+    {
+      "name": "equal-sign-square"
+    },
+    {
+      "name": "function"
+    },
+    {
+      "name": "function-circle"
+    },
+    {
+      "name": "function-of-x"
+    },
+    {
+      "name": "function-square"
+    },
+    {
+      "name": "greater-than"
+    },
+    {
+      "name": "greater-than-circle"
+    },
+    {
+      "name": "greater-than-square"
+    },
+    {
+      "name": "hexagon"
+    },
+    {
+      "name": "hyperbole"
+    },
+    {
+      "name": "inequality-01"
+    },
+    {
+      "name": "inequality-02"
+    },
+    {
+      "name": "inequality-circle-01"
+    },
+    {
+      "name": "inequality-circle-02"
+    },
+    {
+      "name": "inequality-square-01"
+    },
+    {
+      "name": "inequality-square-02"
+    },
+    {
+      "name": "infinity-01"
+    },
+    {
+      "name": "infinity-02"
+    },
+    {
+      "name": "infinity-circle"
+    },
+    {
+      "name": "infinity-square"
+    },
+    {
+      "name": "insert-pi"
+    },
+    {
+      "name": "left-angle"
+    },
+    {
+      "name": "left-triangle"
+    },
+    {
+      "name": "less-than"
+    },
+    {
+      "name": "less-than-circle"
+    },
+    {
+      "name": "less-than-square"
+    },
+    {
+      "name": "matrix"
+    },
+    {
+      "name": "minus-plus-01"
+    },
+    {
+      "name": "minus-plus-02"
+    },
+    {
+      "name": "minus-plus-circle-01"
+    },
+    {
+      "name": "minus-plus-circle-02"
+    },
+    {
+      "name": "minus-plus-square-01"
+    },
+    {
+      "name": "minus-plus-square-02"
+    },
+    {
+      "name": "minus-sign"
+    },
+    {
+      "name": "minus-sign-circle"
+    },
+    {
+      "name": "minus-sign-square"
+    },
+    {
+      "name": "more-or-less"
+    },
+    {
+      "name": "more-or-less-circle"
+    },
+    {
+      "name": "more-or-less-square"
+    },
+    {
+      "name": "multiplication-sign"
+    },
+    {
+      "name": "multiplication-sign-circle"
+    },
+    {
+      "name": "multiplication-sign-square"
+    },
+    {
+      "name": "n-th-root"
+    },
+    {
+      "name": "n-th-root-circle"
+    },
+    {
+      "name": "n-th-root-circle-1"
+    },
+    {
+      "name": "not-equal-sign"
+    },
+    {
+      "name": "not-equal-sign-circle"
+    },
+    {
+      "name": "not-equal-sign-square"
+    },
+    {
+      "name": "obtuse"
+    },
+    {
+      "name": "octagon"
+    },
+    {
+      "name": "parabola-01"
+    },
+    {
+      "name": "parabola-02"
+    },
+    {
+      "name": "parabola-03"
+    },
+    {
+      "name": "parallelogram"
+    },
+    {
+      "name": "pentagon"
+    },
+    {
+      "name": "percent"
+    },
+    {
+      "name": "percent-circle"
+    },
+    {
+      "name": "percent-square"
+    },
+    {
+      "name": "pi"
+    },
+    {
+      "name": "pi-circle"
+    },
+    {
+      "name": "pi-square"
+    },
+    {
+      "name": "plus-minus-01"
+    },
+    {
+      "name": "plus-minus-02"
+    },
+    {
+      "name": "plus-minus-circle-01"
+    },
+    {
+      "name": "plus-minus-circle-02"
+    },
+    {
+      "name": "plus-minus-square-01"
+    },
+    {
+      "name": "plus-minus-square-02"
+    },
+    {
+      "name": "plus-sign"
+    },
+    {
+      "name": "plus-sign-circle"
+    },
+    {
+      "name": "plus-sign-square"
+    },
+    {
+      "name": "prism"
+    },
+    {
+      "name": "pyramid"
+    },
+    {
+      "name": "radius"
+    },
+    {
+      "name": "rectangular"
+    },
+    {
+      "name": "reflex"
+    },
+    {
+      "name": "remove-pi"
+    },
+    {
+      "name": "rhombus"
+    },
+    {
+      "name": "right-angle"
+    },
+    {
+      "name": "right-triangle"
+    },
+    {
+      "name": "root-01"
+    },
+    {
+      "name": "root-02"
+    },
+    {
+      "name": "root-02-1"
+    },
+    {
+      "name": "root-1st-brecket"
+    },
+    {
+      "name": "root-3rd-brecket"
+    },
+    {
+      "name": "root-circle"
+    },
+    {
+      "name": "segment"
+    },
+    {
+      "name": "sin"
+    },
+    {
+      "name": "sine-01"
+    },
+    {
+      "name": "sine-02"
+    },
+    {
+      "name": "sphere"
+    },
+    {
+      "name": "square-01"
+    },
+    {
+      "name": "square-circle"
+    },
+    {
+      "name": "square-root-square"
+    },
+    {
+      "name": "square-square"
+    },
+    {
+      "name": "summation-01"
+    },
+    {
+      "name": "summation-02"
+    },
+    {
+      "name": "summation-circle"
+    },
+    {
+      "name": "summation-square"
+    },
+    {
+      "name": "tan"
+    },
+    {
+      "name": "triangle-01"
+    },
+    {
+      "name": "triangle-02"
+    },
+    {
+      "name": "x-variable"
+    },
+    {
+      "name": "x-variable-circle"
+    },
+    {
+      "name": "x-variable-square"
+    }
+  ]
+}

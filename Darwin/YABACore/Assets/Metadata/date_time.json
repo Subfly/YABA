@@ -1,0 +1,194 @@
+{
+  "metadata": {
+    "id": "date_time",
+    "name": "Time and Calendar",
+    "main_category": "date_time",
+    "icon_count": 61,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "alarm-clock"
+    },
+    {
+      "name": "appointment-01"
+    },
+    {
+      "name": "appointment-02"
+    },
+    {
+      "name": "calendar-01"
+    },
+    {
+      "name": "calendar-02"
+    },
+    {
+      "name": "calendar-03"
+    },
+    {
+      "name": "calendar-04"
+    },
+    {
+      "name": "calendar-add-01"
+    },
+    {
+      "name": "calendar-add-02"
+    },
+    {
+      "name": "calendar-block-01"
+    },
+    {
+      "name": "calendar-block-02"
+    },
+    {
+      "name": "calendar-check-in-01"
+    },
+    {
+      "name": "calendar-check-in-02"
+    },
+    {
+      "name": "calendar-check-out-01"
+    },
+    {
+      "name": "calendar-check-out-02"
+    },
+    {
+      "name": "calendar-download-01"
+    },
+    {
+      "name": "calendar-download-02"
+    },
+    {
+      "name": "calendar-favorite-01"
+    },
+    {
+      "name": "calendar-favorite-02"
+    },
+    {
+      "name": "calendar-lock-01"
+    },
+    {
+      "name": "calendar-lock-02"
+    },
+    {
+      "name": "calendar-love-01"
+    },
+    {
+      "name": "calendar-love-02"
+    },
+    {
+      "name": "calendar-minus-01"
+    },
+    {
+      "name": "calendar-minus-02"
+    },
+    {
+      "name": "calendar-remove-01"
+    },
+    {
+      "name": "calendar-remove-02"
+    },
+    {
+      "name": "calendar-setting-01"
+    },
+    {
+      "name": "calendar-setting-02"
+    },
+    {
+      "name": "calendar-upload-01"
+    },
+    {
+      "name": "calendar-upload-02"
+    },
+    {
+      "name": "calendar-user"
+    },
+    {
+      "name": "clock-01"
+    },
+    {
+      "name": "clock-02"
+    },
+    {
+      "name": "clock-03"
+    },
+    {
+      "name": "clock-04"
+    },
+    {
+      "name": "clock-05"
+    },
+    {
+      "name": "coming-soon-01"
+    },
+    {
+      "name": "coming-soon-02"
+    },
+    {
+      "name": "date-time"
+    },
+    {
+      "name": "digital-clock"
+    },
+    {
+      "name": "hourglass"
+    },
+    {
+      "name": "hourglass-off"
+    },
+    {
+      "name": "smart-watch-01"
+    },
+    {
+      "name": "smart-watch-02"
+    },
+    {
+      "name": "smart-watch-03"
+    },
+    {
+      "name": "smart-watch-04"
+    },
+    {
+      "name": "stop-watch"
+    },
+    {
+      "name": "time-01"
+    },
+    {
+      "name": "time-02"
+    },
+    {
+      "name": "time-03"
+    },
+    {
+      "name": "time-04"
+    },
+    {
+      "name": "time-half-pass"
+    },
+    {
+      "name": "time-quarter"
+    },
+    {
+      "name": "time-quarter-02"
+    },
+    {
+      "name": "time-quarter-pass"
+    },
+    {
+      "name": "time-schedule"
+    },
+    {
+      "name": "timer-01"
+    },
+    {
+      "name": "timer-02"
+    },
+    {
+      "name": "watch-01"
+    },
+    {
+      "name": "watch-02"
+    }
+  ]
+}

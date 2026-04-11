@@ -1,0 +1,302 @@
+{
+  "metadata": {
+    "id": "education",
+    "name": "School and Learning",
+    "main_category": "education",
+    "icon_count": 97,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "assignments"
+    },
+    {
+      "name": "audio-book-01"
+    },
+    {
+      "name": "audio-book-02"
+    },
+    {
+      "name": "audio-book-03"
+    },
+    {
+      "name": "audio-book-04"
+    },
+    {
+      "name": "backpack-01"
+    },
+    {
+      "name": "backpack-02"
+    },
+    {
+      "name": "backpack-03"
+    },
+    {
+      "name": "binoculars"
+    },
+    {
+      "name": "board-math"
+    },
+    {
+      "name": "book bookmark-01"
+    },
+    {
+      "name": "book bookmark-02"
+    },
+    {
+      "name": "book-01"
+    },
+    {
+      "name": "book-02"
+    },
+    {
+      "name": "book-03"
+    },
+    {
+      "name": "book-04"
+    },
+    {
+      "name": "book-download"
+    },
+    {
+      "name": "book-edit"
+    },
+    {
+      "name": "book-open-01"
+    },
+    {
+      "name": "book-open-02"
+    },
+    {
+      "name": "book-upload"
+    },
+    {
+      "name": "books-01"
+    },
+    {
+      "name": "books-02"
+    },
+    {
+      "name": "brain"
+    },
+    {
+      "name": "brain-01"
+    },
+    {
+      "name": "browser"
+    },
+    {
+      "name": "canvas"
+    },
+    {
+      "name": "certificate"
+    },
+    {
+      "name": "chemistry-01"
+    },
+    {
+      "name": "chemistry-02"
+    },
+    {
+      "name": "chemistry-03"
+    },
+    {
+      "name": "clip"
+    },
+    {
+      "name": "cliparts"
+    },
+    {
+      "name": "clipboard"
+    },
+    {
+      "name": "computer-video-call"
+    },
+    {
+      "name": "conversation"
+    },
+    {
+      "name": "desk"
+    },
+    {
+      "name": "diploma"
+    },
+    {
+      "name": "dna"
+    },
+    {
+      "name": "drawing-compass"
+    },
+    {
+      "name": "elearning-exchange"
+    },
+    {
+      "name": "frameworks"
+    },
+    {
+      "name": "geology-crust"
+    },
+    {
+      "name": "gift"
+    },
+    {
+      "name": "glasses"
+    },
+    {
+      "name": "global-education"
+    },
+    {
+      "name": "globe"
+    },
+    {
+      "name": "globe-02"
+    },
+    {
+      "name": "graduate-female"
+    },
+    {
+      "name": "graduate-male"
+    },
+    {
+      "name": "graduation-scroll"
+    },
+    {
+      "name": "idea"
+    },
+    {
+      "name": "knowledge-01"
+    },
+    {
+      "name": "knowledge-02"
+    },
+    {
+      "name": "libraries"
+    },
+    {
+      "name": "library"
+    },
+    {
+      "name": "locker"
+    },
+    {
+      "name": "math"
+    },
+    {
+      "name": "mentor"
+    },
+    {
+      "name": "mentoring"
+    },
+    {
+      "name": "moon"
+    },
+    {
+      "name": "mortarboard-01"
+    },
+    {
+      "name": "mortarboard-02"
+    },
+    {
+      "name": "note"
+    },
+    {
+      "name": "notebook-01"
+    },
+    {
+      "name": "notebook-02"
+    },
+    {
+      "name": "online-learning-01"
+    },
+    {
+      "name": "online-learning-02"
+    },
+    {
+      "name": "online-learning-03"
+    },
+    {
+      "name": "online-learning-04"
+    },
+    {
+      "name": "paint-board"
+    },
+    {
+      "name": "pencil"
+    },
+    {
+      "name": "physics"
+    },
+    {
+      "name": "quiz-01"
+    },
+    {
+      "name": "quiz-02"
+    },
+    {
+      "name": "quiz-03"
+    },
+    {
+      "name": "quiz-04"
+    },
+    {
+      "name": "quiz-05"
+    },
+    {
+      "name": "saturn"
+    },
+    {
+      "name": "school"
+    },
+    {
+      "name": "school-bell-01"
+    },
+    {
+      "name": "school-bell-02"
+    },
+    {
+      "name": "school-report-card"
+    },
+    {
+      "name": "school-tie"
+    },
+    {
+      "name": "stationery"
+    },
+    {
+      "name": "student"
+    },
+    {
+      "name": "student-card"
+    },
+    {
+      "name": "students"
+    },
+    {
+      "name": "study-lamp"
+    },
+    {
+      "name": "teacher"
+    },
+    {
+      "name": "teaching"
+    },
+    {
+      "name": "telescope-01"
+    },
+    {
+      "name": "telescope-02"
+    },
+    {
+      "name": "test-tube-01"
+    },
+    {
+      "name": "test-tube-02"
+    },
+    {
+      "name": "test-tube-03"
+    },
+    {
+      "name": "user"
+    }
+  ]
+}

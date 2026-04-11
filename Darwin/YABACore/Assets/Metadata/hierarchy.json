@@ -1,0 +1,191 @@
+{
+  "metadata": {
+    "id": "hierarchy",
+    "name": "Hierarchy and Flow",
+    "main_category": "hierarchy",
+    "icon_count": 60,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "flow"
+    },
+    {
+      "name": "flow-circle"
+    },
+    {
+      "name": "flow-connection"
+    },
+    {
+      "name": "flow-square"
+    },
+    {
+      "name": "flowchart-01"
+    },
+    {
+      "name": "flowchart-02"
+    },
+    {
+      "name": "hierarchy"
+    },
+    {
+      "name": "hierarchy-circle-01"
+    },
+    {
+      "name": "hierarchy-circle-02"
+    },
+    {
+      "name": "hierarchy-circle-03"
+    },
+    {
+      "name": "hierarchy-files"
+    },
+    {
+      "name": "hierarchy-square-01"
+    },
+    {
+      "name": "hierarchy-square-02"
+    },
+    {
+      "name": "hierarchy-square-03"
+    },
+    {
+      "name": "hierarchy-square-04"
+    },
+    {
+      "name": "hierarchy-square-05"
+    },
+    {
+      "name": "hierarchy-square-06"
+    },
+    {
+      "name": "hierarchy-square-07"
+    },
+    {
+      "name": "hierarchy-square-08"
+    },
+    {
+      "name": "hierarchy-square-10"
+    },
+    {
+      "name": "node-add"
+    },
+    {
+      "name": "node-edit"
+    },
+    {
+      "name": "node-move-down"
+    },
+    {
+      "name": "node-move-up"
+    },
+    {
+      "name": "node-remove"
+    },
+    {
+      "name": "pipeline"
+    },
+    {
+      "name": "pyramid-maslowo"
+    },
+    {
+      "name": "pyramid-structure-01"
+    },
+    {
+      "name": "pyramid-structure-02"
+    },
+    {
+      "name": "scheme"
+    },
+    {
+      "name": "structure-01"
+    },
+    {
+      "name": "structure-02"
+    },
+    {
+      "name": "structure-03"
+    },
+    {
+      "name": "structure-04"
+    },
+    {
+      "name": "structure-05"
+    },
+    {
+      "name": "structure-add"
+    },
+    {
+      "name": "structure-check"
+    },
+    {
+      "name": "structure-fail"
+    },
+    {
+      "name": "structure-folder"
+    },
+    {
+      "name": "structure-folder-circle"
+    },
+    {
+      "name": "subnode-add"
+    },
+    {
+      "name": "subnode-delete"
+    },
+    {
+      "name": "time-management"
+    },
+    {
+      "name": "time-management-circle"
+    },
+    {
+      "name": "workflow-circle-01"
+    },
+    {
+      "name": "workflow-circle-02"
+    },
+    {
+      "name": "workflow-circle-03"
+    },
+    {
+      "name": "workflow-circle-04"
+    },
+    {
+      "name": "workflow-circle-05"
+    },
+    {
+      "name": "workflow-circle-06"
+    },
+    {
+      "name": "workflow-square-01"
+    },
+    {
+      "name": "workflow-square-02"
+    },
+    {
+      "name": "workflow-square-03"
+    },
+    {
+      "name": "workflow-square-04"
+    },
+    {
+      "name": "workflow-square-05"
+    },
+    {
+      "name": "workflow-square-06"
+    },
+    {
+      "name": "workflow-square-07"
+    },
+    {
+      "name": "workflow-square-08"
+    },
+    {
+      "name": "workflow-square-09"
+    },
+    {
+      "name": "workflow-square-10"
+    }
+  ]
+}

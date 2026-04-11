@@ -1,0 +1,212 @@
+{
+  "metadata": {
+    "id": "programming",
+    "name": "Code and APIs",
+    "main_category": "programming",
+    "icon_count": 67,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "api"
+    },
+    {
+      "name": "binary-code"
+    },
+    {
+      "name": "bug-01"
+    },
+    {
+      "name": "bug-02"
+    },
+    {
+      "name": "c++"
+    },
+    {
+      "name": "c-programming"
+    },
+    {
+      "name": "code"
+    },
+    {
+      "name": "code-circle"
+    },
+    {
+      "name": "code-folder"
+    },
+    {
+      "name": "code-square"
+    },
+    {
+      "name": "command-line"
+    },
+    {
+      "name": "computer-programming-01"
+    },
+    {
+      "name": "computer-programming-02"
+    },
+    {
+      "name": "computer-terminal-01"
+    },
+    {
+      "name": "computer-terminal-02"
+    },
+    {
+      "name": "console"
+    },
+    {
+      "name": "danger"
+    },
+    {
+      "name": "database"
+    },
+    {
+      "name": "database-export"
+    },
+    {
+      "name": "database-import"
+    },
+    {
+      "name": "database-locked"
+    },
+    {
+      "name": "database-restore"
+    },
+    {
+      "name": "database-setting"
+    },
+    {
+      "name": "database-sync"
+    },
+    {
+      "name": "developer"
+    },
+    {
+      "name": "document-code"
+    },
+    {
+      "name": "incognito"
+    },
+    {
+      "name": "inspect-code"
+    },
+    {
+      "name": "java"
+    },
+    {
+      "name": "java-script"
+    },
+    {
+      "name": "language-skill"
+    },
+    {
+      "name": "laptop-programming"
+    },
+    {
+      "name": "message-programming"
+    },
+    {
+      "name": "mobile-programming-01"
+    },
+    {
+      "name": "mobile-programming-02"
+    },
+    {
+      "name": "php"
+    },
+    {
+      "name": "pin-code"
+    },
+    {
+      "name": "programming-flag"
+    },
+    {
+      "name": "property-add"
+    },
+    {
+      "name": "property-delete"
+    },
+    {
+      "name": "property-edit"
+    },
+    {
+      "name": "property-new"
+    },
+    {
+      "name": "property-search"
+    },
+    {
+      "name": "property-view"
+    },
+    {
+      "name": "re_"
+    },
+    {
+      "name": "repository"
+    },
+    {
+      "name": "server-stack-01"
+    },
+    {
+      "name": "server-stack-02"
+    },
+    {
+      "name": "server-stack-03"
+    },
+    {
+      "name": "sidebar-left"
+    },
+    {
+      "name": "sidebar-right"
+    },
+    {
+      "name": "software"
+    },
+    {
+      "name": "software-license"
+    },
+    {
+      "name": "software-uninstall"
+    },
+    {
+      "name": "source-code"
+    },
+    {
+      "name": "source-code-circle"
+    },
+    {
+      "name": "source-code-square"
+    },
+    {
+      "name": "sql"
+    },
+    {
+      "name": "step-into"
+    },
+    {
+      "name": "step-out"
+    },
+    {
+      "name": "step-over"
+    },
+    {
+      "name": "translate"
+    },
+    {
+      "name": "translation"
+    },
+    {
+      "name": "variable"
+    },
+    {
+      "name": "web-design-01"
+    },
+    {
+      "name": "web-design-02"
+    },
+    {
+      "name": "web-programming"
+    }
+  ]
+}

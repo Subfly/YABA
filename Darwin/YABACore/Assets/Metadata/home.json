@@ -1,0 +1,56 @@
+{
+  "metadata": {
+    "id": "home",
+    "name": "Home and Living",
+    "main_category": "home",
+    "icon_count": 15,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "door-01"
+    },
+    {
+      "name": "door-02"
+    },
+    {
+      "name": "home-01"
+    },
+    {
+      "name": "home-02"
+    },
+    {
+      "name": "home-03"
+    },
+    {
+      "name": "home-04"
+    },
+    {
+      "name": "home-05"
+    },
+    {
+      "name": "home-06"
+    },
+    {
+      "name": "home-07"
+    },
+    {
+      "name": "home-08"
+    },
+    {
+      "name": "home-09"
+    },
+    {
+      "name": "home-10"
+    },
+    {
+      "name": "home-11"
+    },
+    {
+      "name": "home-12"
+    },
+    {
+      "name": "home-13"
+    }
+  ]
+}

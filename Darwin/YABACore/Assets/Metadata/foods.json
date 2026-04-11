@@ -1,0 +1,305 @@
+{
+  "metadata": {
+    "id": "foods",
+    "name": "Food and Drink",
+    "main_category": "foods",
+    "icon_count": 98,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "apple"
+    },
+    {
+      "name": "apple-pie"
+    },
+    {
+      "name": "apricot"
+    },
+    {
+      "name": "avocado"
+    },
+    {
+      "name": "banana"
+    },
+    {
+      "name": "bbq-grill"
+    },
+    {
+      "name": "birthday-cake"
+    },
+    {
+      "name": "biscuit"
+    },
+    {
+      "name": "bread-01"
+    },
+    {
+      "name": "bread-02"
+    },
+    {
+      "name": "bread-03"
+    },
+    {
+      "name": "bread-04"
+    },
+    {
+      "name": "broccoli"
+    },
+    {
+      "name": "bubble-tea-01"
+    },
+    {
+      "name": "bubble-tea-02"
+    },
+    {
+      "name": "carrot"
+    },
+    {
+      "name": "cheese"
+    },
+    {
+      "name": "cheese-cake-01"
+    },
+    {
+      "name": "cheese-cake-02"
+    },
+    {
+      "name": "cherry"
+    },
+    {
+      "name": "chicken-thighs"
+    },
+    {
+      "name": "chocolate"
+    },
+    {
+      "name": "chopsticks"
+    },
+    {
+      "name": "cinnamon-roll"
+    },
+    {
+      "name": "coffee-01"
+    },
+    {
+      "name": "coffee-02"
+    },
+    {
+      "name": "coffee-beans"
+    },
+    {
+      "name": "cookie"
+    },
+    {
+      "name": "corn"
+    },
+    {
+      "name": "cotton-candy"
+    },
+    {
+      "name": "crab"
+    },
+    {
+      "name": "croissant"
+    },
+    {
+      "name": "cupcake-01"
+    },
+    {
+      "name": "cupcake-02"
+    },
+    {
+      "name": "cupcake-03"
+    },
+    {
+      "name": "dim-sum-01"
+    },
+    {
+      "name": "dim-sum-02"
+    },
+    {
+      "name": "doughnut"
+    },
+    {
+      "name": "drink"
+    },
+    {
+      "name": "eggs"
+    },
+    {
+      "name": "fish-food"
+    },
+    {
+      "name": "french-fries-01"
+    },
+    {
+      "name": "french-fries-02"
+    },
+    {
+      "name": "fry"
+    },
+    {
+      "name": "grapes"
+    },
+    {
+      "name": "hamburger-01"
+    },
+    {
+      "name": "hamburger-02"
+    },
+    {
+      "name": "honey-01"
+    },
+    {
+      "name": "honey-02"
+    },
+    {
+      "name": "hotdog"
+    },
+    {
+      "name": "ice-cream-01"
+    },
+    {
+      "name": "ice-cream-02"
+    },
+    {
+      "name": "ice-cream-03"
+    },
+    {
+      "name": "ice-cream-04"
+    },
+    {
+      "name": "ice-cubes"
+    },
+    {
+      "name": "lollipop"
+    },
+    {
+      "name": "milk-bottle"
+    },
+    {
+      "name": "milk-carton"
+    },
+    {
+      "name": "milk-coconut"
+    },
+    {
+      "name": "milk-oat"
+    },
+    {
+      "name": "mochi"
+    },
+    {
+      "name": "mushroom"
+    },
+    {
+      "name": "natural-food"
+    },
+    {
+      "name": "noodles"
+    },
+    {
+      "name": "nut"
+    },
+    {
+      "name": "octopus"
+    },
+    {
+      "name": "orange"
+    },
+    {
+      "name": "organic-food"
+    },
+    {
+      "name": "paella"
+    },
+    {
+      "name": "pie"
+    },
+    {
+      "name": "pizza-01"
+    },
+    {
+      "name": "pizza-02"
+    },
+    {
+      "name": "pizza-03"
+    },
+    {
+      "name": "pizza-04"
+    },
+    {
+      "name": "popcorn"
+    },
+    {
+      "name": "prawn"
+    },
+    {
+      "name": "pumpkin"
+    },
+    {
+      "name": "rice-bowl-01"
+    },
+    {
+      "name": "rice-bowl-02"
+    },
+    {
+      "name": "sausage"
+    },
+    {
+      "name": "shellfish"
+    },
+    {
+      "name": "snail"
+    },
+    {
+      "name": "soda-can"
+    },
+    {
+      "name": "soft-drink-01"
+    },
+    {
+      "name": "soft-drink-02"
+    },
+    {
+      "name": "spaghetti"
+    },
+    {
+      "name": "steak"
+    },
+    {
+      "name": "street-food"
+    },
+    {
+      "name": "sushi-01"
+    },
+    {
+      "name": "sushi-02"
+    },
+    {
+      "name": "sushi-03"
+    },
+    {
+      "name": "taco-01"
+    },
+    {
+      "name": "taco-02"
+    },
+    {
+      "name": "tea"
+    },
+    {
+      "name": "tea-pod"
+    },
+    {
+      "name": "vegetarian-food"
+    },
+    {
+      "name": "watermelon"
+    },
+    {
+      "name": "yogurt"
+    }
+  ]
+}

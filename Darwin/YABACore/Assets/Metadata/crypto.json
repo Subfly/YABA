@@ -1,0 +1,236 @@
+{
+  "metadata": {
+    "id": "crypto",
+    "name": "Crypto and Blockchain",
+    "main_category": "crypto",
+    "icon_count": 75,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "anonymous"
+    },
+    {
+      "name": "bitcoin-01"
+    },
+    {
+      "name": "bitcoin-02"
+    },
+    {
+      "name": "bitcoin-03"
+    },
+    {
+      "name": "bitcoin-04"
+    },
+    {
+      "name": "bitcoin-bag"
+    },
+    {
+      "name": "bitcoin-cloud"
+    },
+    {
+      "name": "bitcoin-cpu"
+    },
+    {
+      "name": "bitcoin-credit-card"
+    },
+    {
+      "name": "bitcoin-database"
+    },
+    {
+      "name": "bitcoin-down-01"
+    },
+    {
+      "name": "bitcoin-down-02"
+    },
+    {
+      "name": "bitcoin-ellipse"
+    },
+    {
+      "name": "bitcoin-eye"
+    },
+    {
+      "name": "bitcoin-filter"
+    },
+    {
+      "name": "bitcoin-flashdisk"
+    },
+    {
+      "name": "bitcoin-graph"
+    },
+    {
+      "name": "bitcoin-invoice"
+    },
+    {
+      "name": "bitcoin-key"
+    },
+    {
+      "name": "bitcoin-location"
+    },
+    {
+      "name": "bitcoin-lock"
+    },
+    {
+      "name": "bitcoin-mail"
+    },
+    {
+      "name": "bitcoin-mind"
+    },
+    {
+      "name": "bitcoin-money-01"
+    },
+    {
+      "name": "bitcoin-money-02"
+    },
+    {
+      "name": "bitcoin-pie-chart"
+    },
+    {
+      "name": "bitcoin-piggy-bank"
+    },
+    {
+      "name": "bitcoin-presentation"
+    },
+    {
+      "name": "bitcoin-receipt"
+    },
+    {
+      "name": "bitcoin-rectangle"
+    },
+    {
+      "name": "bitcoin-safe"
+    },
+    {
+      "name": "bitcoin-search"
+    },
+    {
+      "name": "bitcoin-setting"
+    },
+    {
+      "name": "bitcoin-shield"
+    },
+    {
+      "name": "bitcoin-shopping"
+    },
+    {
+      "name": "bitcoin-smartphone-01"
+    },
+    {
+      "name": "bitcoin-smartphone-02"
+    },
+    {
+      "name": "bitcoin-store"
+    },
+    {
+      "name": "bitcoin-tag"
+    },
+    {
+      "name": "bitcoin-target"
+    },
+    {
+      "name": "bitcoin-transaction"
+    },
+    {
+      "name": "bitcoin-up-01"
+    },
+    {
+      "name": "bitcoin-up-02"
+    },
+    {
+      "name": "bitcoin-wallet"
+    },
+    {
+      "name": "bitcoin-withdraw"
+    },
+    {
+      "name": "blockchain-01"
+    },
+    {
+      "name": "blockchain-02"
+    },
+    {
+      "name": "blockchain-03"
+    },
+    {
+      "name": "blockchain-04"
+    },
+    {
+      "name": "blockchain-05"
+    },
+    {
+      "name": "blockchain-06"
+    },
+    {
+      "name": "blockchain-07"
+    },
+    {
+      "name": "centralized"
+    },
+    {
+      "name": "ethereum"
+    },
+    {
+      "name": "ethereum-ellipse"
+    },
+    {
+      "name": "ethereum-rectangle"
+    },
+    {
+      "name": "exchange-01"
+    },
+    {
+      "name": "exchange-02"
+    },
+    {
+      "name": "exchange-03"
+    },
+    {
+      "name": "ico"
+    },
+    {
+      "name": "litecoin"
+    },
+    {
+      "name": "market-analysis"
+    },
+    {
+      "name": "mining-01"
+    },
+    {
+      "name": "mining-02"
+    },
+    {
+      "name": "mining-03"
+    },
+    {
+      "name": "peer-to-peer-01"
+    },
+    {
+      "name": "peer-to-peer-02"
+    },
+    {
+      "name": "peer-to-peer-03"
+    },
+    {
+      "name": "profit"
+    },
+    {
+      "name": "purse"
+    },
+    {
+      "name": "ripple"
+    },
+    {
+      "name": "shield-blockchain"
+    },
+    {
+      "name": "shield-energy"
+    },
+    {
+      "name": "stake"
+    },
+    {
+      "name": "usdt"
+    }
+  ]
+}

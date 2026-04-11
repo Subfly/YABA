@@ -1,0 +1,140 @@
+{
+  "metadata": {
+    "id": "settings",
+    "name": "Settings and Gear",
+    "main_category": "settings",
+    "icon_count": 43,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "account-setting-01"
+    },
+    {
+      "name": "account-setting-02"
+    },
+    {
+      "name": "account-setting-03"
+    },
+    {
+      "name": "configuration-01"
+    },
+    {
+      "name": "configuration-02"
+    },
+    {
+      "name": "customize"
+    },
+    {
+      "name": "gears"
+    },
+    {
+      "name": "installing-updates-01"
+    },
+    {
+      "name": "installing-updates-02"
+    },
+    {
+      "name": "list-setting"
+    },
+    {
+      "name": "more"
+    },
+    {
+      "name": "repair"
+    },
+    {
+      "name": "setting-01"
+    },
+    {
+      "name": "setting-02"
+    },
+    {
+      "name": "setting-03"
+    },
+    {
+      "name": "setting-04"
+    },
+    {
+      "name": "setting-05"
+    },
+    {
+      "name": "setting-06"
+    },
+    {
+      "name": "setting-07"
+    },
+    {
+      "name": "setting-done-03"
+    },
+    {
+      "name": "setting-done-04"
+    },
+    {
+      "name": "setting-error-03"
+    },
+    {
+      "name": "setting-error-04"
+    },
+    {
+      "name": "settings-done-01"
+    },
+    {
+      "name": "settings-done-02"
+    },
+    {
+      "name": "settings-error-01"
+    },
+    {
+      "name": "settings-error-02"
+    },
+    {
+      "name": "setup-01"
+    },
+    {
+      "name": "setup-02"
+    },
+    {
+      "name": "sliders-horizontal"
+    },
+    {
+      "name": "sliders-vertical"
+    },
+    {
+      "name": "streering-wheel"
+    },
+    {
+      "name": "system-update-01"
+    },
+    {
+      "name": "system-update-02"
+    },
+    {
+      "name": "time-setting-01"
+    },
+    {
+      "name": "time-setting-02"
+    },
+    {
+      "name": "time-setting-03"
+    },
+    {
+      "name": "tire"
+    },
+    {
+      "name": "toggle-off"
+    },
+    {
+      "name": "toggle-on"
+    },
+    {
+      "name": "tools"
+    },
+    {
+      "name": "wrench-01"
+    },
+    {
+      "name": "wrench-02"
+    }
+  ]
+}

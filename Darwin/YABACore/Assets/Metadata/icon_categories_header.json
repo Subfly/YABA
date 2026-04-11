@@ -1,0 +1,473 @@
+{
+  "metadata": {
+    "total_categories": 58,
+    "total_icons": 4478,
+    "version": "3.0"
+  },
+  "categories": [
+    {
+      "id": "add_remove",
+      "name": "Plus and Minus",
+      "icon_count": 27,
+      "filename": "add_remove.json",
+      "header_icon": "add circle-half-dot",
+      "color": 1
+    },
+    {
+      "id": "ai",
+      "name": "AI and ML",
+      "icon_count": 93,
+      "filename": "ai.json",
+      "header_icon": "ai-audio",
+      "color": 2
+    },
+    {
+      "id": "alert_notification",
+      "name": "Alerts and Banners",
+      "icon_count": 27,
+      "filename": "alert_notification.json",
+      "header_icon": "alert-01",
+      "color": 3
+    },
+    {
+      "id": "animation",
+      "name": "Motion and Effects",
+      "icon_count": 35,
+      "filename": "animation.json",
+      "header_icon": "bounce-left",
+      "color": 4
+    },
+    {
+      "id": "arrows",
+      "name": "Arrows and Chevrons",
+      "icon_count": 153,
+      "filename": "arrows.json",
+      "header_icon": "arrow-all-direction-round",
+      "color": 5
+    },
+    {
+      "id": "awards",
+      "name": "Awards and Medals",
+      "icon_count": 38,
+      "filename": "awards.json",
+      "header_icon": "award-01",
+      "color": 6
+    },
+    {
+      "id": "bookmarks",
+      "name": "Bookmarks and Pins",
+      "icon_count": 41,
+      "filename": "bookmarks.json",
+      "header_icon": "all-bookmark",
+      "color": 7
+    },
+    {
+      "id": "buildings",
+      "name": "Buildings and Places",
+      "icon_count": 70,
+      "filename": "buildings.json",
+      "header_icon": "barns",
+      "color": 8
+    },
+    {
+      "id": "business",
+      "name": "Charts and Business",
+      "icon_count": 307,
+      "filename": "business.json",
+      "header_icon": "activity-01",
+      "color": 9
+    },
+    {
+      "id": "check",
+      "name": "Checks and Status",
+      "icon_count": 39,
+      "filename": "check.json",
+      "header_icon": "check-unread-01",
+      "color": 10
+    },
+    {
+      "id": "clothing",
+      "name": "Clothing and Style",
+      "icon_count": 64,
+      "filename": "clothing.json",
+      "header_icon": "baby-01",
+      "color": 11
+    },
+    {
+      "id": "communication",
+      "name": "Chat and Messages",
+      "icon_count": 231,
+      "filename": "communication.json",
+      "header_icon": "bubble-chat",
+      "color": 12
+    },
+    {
+      "id": "crypto",
+      "name": "Crypto and Blockchain",
+      "icon_count": 75,
+      "filename": "crypto.json",
+      "header_icon": "anonymous",
+      "color": 13
+    },
+    {
+      "id": "dashboard",
+      "name": "Dashboard Widgets",
+      "icon_count": 24,
+      "filename": "dashboard.json",
+      "header_icon": "dashboard-browsing",
+      "color": 1
+    },
+    {
+      "id": "date_time",
+      "name": "Time and Calendar",
+      "icon_count": 61,
+      "filename": "date_time.json",
+      "header_icon": "alarm-clock",
+      "color": 2
+    },
+    {
+      "id": "devices",
+      "name": "Devices and Screens",
+      "icon_count": 147,
+      "filename": "devices.json",
+      "header_icon": "3d-view",
+      "color": 3
+    },
+    {
+      "id": "download_upload",
+      "name": "Upload and Download",
+      "icon_count": 20,
+      "filename": "download_upload.json",
+      "header_icon": "cloud-download",
+      "color": 4
+    },
+    {
+      "id": "e_commerce",
+      "name": "Shopping and Sales",
+      "icon_count": 147,
+      "filename": "e_commerce.json",
+      "header_icon": "affiliate",
+      "color": 5
+    },
+    {
+      "id": "editing",
+      "name": "Edit and Transform",
+      "icon_count": 305,
+      "filename": "editing.json",
+      "header_icon": "3d-move",
+      "color": 6
+    },
+    {
+      "id": "education",
+      "name": "School and Learning",
+      "icon_count": 97,
+      "filename": "education.json",
+      "header_icon": "assignments",
+      "color": 7
+    },
+    {
+      "id": "emojis",
+      "name": "Faces and Emojis",
+      "icon_count": 60,
+      "filename": "emojis.json",
+      "header_icon": "angle",
+      "color": 8
+    },
+    {
+      "id": "energy",
+      "name": "Energy and Power",
+      "icon_count": 86,
+      "filename": "energy.json",
+      "header_icon": "atomic-power",
+      "color": 9
+    },
+    {
+      "id": "files",
+      "name": "Files and Formats",
+      "icon_count": 149,
+      "filename": "files.json",
+      "header_icon": "7z-01",
+      "color": 10
+    },
+    {
+      "id": "filter_sorting",
+      "name": "Filter and Sort",
+      "icon_count": 27,
+      "filename": "filter_sorting.json",
+      "header_icon": "filter",
+      "color": 11
+    },
+    {
+      "id": "foods",
+      "name": "Food and Drink",
+      "icon_count": 98,
+      "filename": "foods.json",
+      "header_icon": "apple",
+      "color": 12
+    },
+    {
+      "id": "furnitures",
+      "name": "Furniture and Decor",
+      "icon_count": 73,
+      "filename": "furnitures.json",
+      "header_icon": "baby-bed-01",
+      "color": 13
+    },
+    {
+      "id": "gaming",
+      "name": "Games and Controllers",
+      "icon_count": 129,
+      "filename": "gaming.json",
+      "header_icon": "adventure",
+      "color": 1
+    },
+    {
+      "id": "git",
+      "name": "Git and Branches",
+      "icon_count": 10,
+      "filename": "git.json",
+      "header_icon": "git-branch",
+      "color": 2
+    },
+    {
+      "id": "gym",
+      "name": "Fitness and Gym",
+      "icon_count": 49,
+      "filename": "gym.json",
+      "header_icon": "back-muscle-body",
+      "color": 3
+    },
+    {
+      "id": "hands",
+      "name": "Hands and Gestures",
+      "icon_count": 166,
+      "filename": "hands.json",
+      "header_icon": "clapping-01",
+      "color": 4
+    },
+    {
+      "id": "hierarchy",
+      "name": "Hierarchy and Flow",
+      "icon_count": 60,
+      "filename": "hierarchy.json",
+      "header_icon": "flow",
+      "color": 5
+    },
+    {
+      "id": "home",
+      "name": "Home and Living",
+      "icon_count": 15,
+      "filename": "home.json",
+      "header_icon": "door-01",
+      "color": 6
+    },
+    {
+      "id": "image_camera",
+      "name": "Photo and Video",
+      "icon_count": 74,
+      "filename": "image_camera.json",
+      "header_icon": "4k",
+      "color": 7
+    },
+    {
+      "id": "kitchen",
+      "name": "Kitchen and Cooking",
+      "icon_count": 42,
+      "filename": "kitchen.json",
+      "header_icon": "apron",
+      "color": 8
+    },
+    {
+      "id": "layout",
+      "name": "Layout and Grid",
+      "icon_count": 43,
+      "filename": "layout.json",
+      "header_icon": "border-all-01",
+      "color": 9
+    },
+    {
+      "id": "legal",
+      "name": "Legal and Contracts",
+      "icon_count": 36,
+      "filename": "legal.json",
+      "header_icon": "agreement-01",
+      "color": 10
+    },
+    {
+      "id": "link_unlink",
+      "name": "Links and Chains",
+      "icon_count": 27,
+      "filename": "link_unlink.json",
+      "header_icon": "link-01",
+      "color": 11
+    },
+    {
+      "id": "login_logout",
+      "name": "Login and Logout",
+      "icon_count": 16,
+      "filename": "login_logout.json",
+      "header_icon": "login-01",
+      "color": 12
+    },
+    {
+      "id": "logistics",
+      "name": "Shipping and Logistics",
+      "icon_count": 84,
+      "filename": "logistics.json",
+      "header_icon": "accident",
+      "color": 13
+    },
+    {
+      "id": "logos",
+      "name": "Brands and Logos",
+      "icon_count": 187,
+      "filename": "logos.json",
+      "header_icon": "adobe-after-effect",
+      "color": 1
+    },
+    {
+      "id": "maps",
+      "name": "Maps and Location",
+      "icon_count": 99,
+      "filename": "maps.json",
+      "header_icon": "compass",
+      "color": 2
+    },
+    {
+      "id": "mathematics",
+      "name": "Math and Operators",
+      "icon_count": 148,
+      "filename": "mathematics.json",
+      "header_icon": "1st-brecket",
+      "color": 3
+    },
+    {
+      "id": "media",
+      "name": "Playback and Media",
+      "icon_count": 62,
+      "filename": "media.json",
+      "header_icon": "backward-01",
+      "color": 4
+    },
+    {
+      "id": "medical",
+      "name": "Medical and Health",
+      "icon_count": 78,
+      "filename": "medical.json",
+      "header_icon": "lungs",
+      "color": 5
+    },
+    {
+      "id": "menu",
+      "name": "Menus and Sheets",
+      "icon_count": 28,
+      "filename": "menu.json",
+      "header_icon": "menu-01",
+      "color": 6
+    },
+    {
+      "id": "mouse",
+      "name": "Pointers and Cursors",
+      "icon_count": 78,
+      "filename": "mouse.json",
+      "header_icon": "cursor-01",
+      "color": 7
+    },
+    {
+      "id": "notes_tasks",
+      "name": "Notes and Tasks",
+      "icon_count": 24,
+      "filename": "notes_tasks.json",
+      "header_icon": "note-01",
+      "color": 8
+    },
+    {
+      "id": "presentation",
+      "name": "Slides and Present",
+      "icon_count": 15,
+      "filename": "presentation.json",
+      "header_icon": "co-present",
+      "color": 9
+    },
+    {
+      "id": "programming",
+      "name": "Code and APIs",
+      "icon_count": 67,
+      "filename": "programming.json",
+      "header_icon": "api",
+      "color": 10
+    },
+    {
+      "id": "science_technology",
+      "name": "Science and Lab",
+      "icon_count": 22,
+      "filename": "science_technology.json",
+      "header_icon": "acceleration",
+      "color": 11
+    },
+    {
+      "id": "search",
+      "name": "Search and Find",
+      "icon_count": 15,
+      "filename": "search.json",
+      "header_icon": "search-01",
+      "color": 12
+    },
+    {
+      "id": "security",
+      "name": "Security and Locks",
+      "icon_count": 93,
+      "filename": "security.json",
+      "header_icon": "access",
+      "color": 13
+    },
+    {
+      "id": "settings",
+      "name": "Settings and Gear",
+      "icon_count": 43,
+      "filename": "settings.json",
+      "header_icon": "account-setting-01",
+      "color": 1
+    },
+    {
+      "id": "shapes",
+      "name": "Basic Shapes",
+      "icon_count": 15,
+      "filename": "shapes.json",
+      "header_icon": "circle",
+      "color": 2
+    },
+    {
+      "id": "space",
+      "name": "Space and Planets",
+      "icon_count": 27,
+      "filename": "space.json",
+      "header_icon": "alien-01",
+      "color": 3
+    },
+    {
+      "id": "users",
+      "name": "Users and Profiles",
+      "icon_count": 67,
+      "filename": "users.json",
+      "header_icon": "account-recovery",
+      "color": 4
+    },
+    {
+      "id": "weather",
+      "name": "Weather and Sky",
+      "icon_count": 96,
+      "filename": "weather.json",
+      "header_icon": "avalanche",
+      "color": 5
+    },
+    {
+      "id": "wifi",
+      "name": "Wi-Fi and Network",
+      "icon_count": 69,
+      "filename": "wifi.json",
+      "header_icon": "cellular-network",
+      "color": 6
+    }
+  ]
+}

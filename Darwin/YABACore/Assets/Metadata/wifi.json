@@ -1,0 +1,218 @@
+{
+  "metadata": {
+    "id": "wifi",
+    "name": "Wi-Fi and Network",
+    "main_category": "wifi",
+    "icon_count": 69,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "cellular-network"
+    },
+    {
+      "name": "cellular-network-offline"
+    },
+    {
+      "name": "full-signal"
+    },
+    {
+      "name": "gps-disconnected"
+    },
+    {
+      "name": "gps-signal-01"
+    },
+    {
+      "name": "gps-signal-02"
+    },
+    {
+      "name": "headset-connected"
+    },
+    {
+      "name": "home-wifi"
+    },
+    {
+      "name": "hotspot"
+    },
+    {
+      "name": "hotspot-offline"
+    },
+    {
+      "name": "internet"
+    },
+    {
+      "name": "internet-antenna-01"
+    },
+    {
+      "name": "internet-antenna-02"
+    },
+    {
+      "name": "internet-antenna-03"
+    },
+    {
+      "name": "internet-antenna-04"
+    },
+    {
+      "name": "live-streaming-01"
+    },
+    {
+      "name": "live-streaming-02"
+    },
+    {
+      "name": "live-streaming-03"
+    },
+    {
+      "name": "low-signal"
+    },
+    {
+      "name": "medium-signal"
+    },
+    {
+      "name": "no-internet"
+    },
+    {
+      "name": "no-signal"
+    },
+    {
+      "name": "router-01"
+    },
+    {
+      "name": "router-02"
+    },
+    {
+      "name": "rss"
+    },
+    {
+      "name": "rss-connected-01"
+    },
+    {
+      "name": "rss-connected-02"
+    },
+    {
+      "name": "rss-error"
+    },
+    {
+      "name": "rss-locked"
+    },
+    {
+      "name": "rss-unlocked"
+    },
+    {
+      "name": "satellite"
+    },
+    {
+      "name": "secured-network"
+    },
+    {
+      "name": "security-wifi"
+    },
+    {
+      "name": "shared-wifi"
+    },
+    {
+      "name": "signal-full-01"
+    },
+    {
+      "name": "signal-full-02"
+    },
+    {
+      "name": "signal-low-01"
+    },
+    {
+      "name": "signal-low-02"
+    },
+    {
+      "name": "signal-low-medium"
+    },
+    {
+      "name": "signal-medium-01"
+    },
+    {
+      "name": "signal-medium-02"
+    },
+    {
+      "name": "signal-no-01"
+    },
+    {
+      "name": "signal-no-02"
+    },
+    {
+      "name": "smartphone-lost-wifi"
+    },
+    {
+      "name": "smartphone-wifi"
+    },
+    {
+      "name": "wifi-01"
+    },
+    {
+      "name": "wifi-02"
+    },
+    {
+      "name": "wifi-circle"
+    },
+    {
+      "name": "wifi-connected-01"
+    },
+    {
+      "name": "wifi-connected-02"
+    },
+    {
+      "name": "wifi-connected-03"
+    },
+    {
+      "name": "wifi-disconnected-01"
+    },
+    {
+      "name": "wifi-disconnected-02"
+    },
+    {
+      "name": "wifi-disconnected-03"
+    },
+    {
+      "name": "wifi-disconnected-04"
+    },
+    {
+      "name": "wifi-error-01"
+    },
+    {
+      "name": "wifi-error-02"
+    },
+    {
+      "name": "wifi-full-signal"
+    },
+    {
+      "name": "wifi-location"
+    },
+    {
+      "name": "wifi-lock"
+    },
+    {
+      "name": "wifi-low-signal"
+    },
+    {
+      "name": "wifi-medium-signal"
+    },
+    {
+      "name": "wifi-no-signal"
+    },
+    {
+      "name": "wifi-off-01"
+    },
+    {
+      "name": "wifi-off-02"
+    },
+    {
+      "name": "wifi-square"
+    },
+    {
+      "name": "wifi-unlock"
+    },
+    {
+      "name": "wireless"
+    },
+    {
+      "name": "wireless-cloud-access"
+    }
+  ]
+}

@@ -2,8 +2,8 @@
 //  IconManager.swift
 //  YABACore
 //
-//  Bundled icon taxonomy (Compose `IconManager`). Darwin: load from app bundle resources when
-//  `icon_categories_header.json` (and per-category files) are added to the YABACore or app target.
+//  Bundled icon taxonomy (Compose `IconManager`). Loads metadata JSON via `BundleReader` from
+//  `Assets/Metadata/` under `Darwin/YABACore/Assets`.
 //
 
 import Foundation
@@ -27,13 +27,12 @@ public struct YabaIconItem: Sendable, Hashable {
 }
 
 public enum IconManager {
-    private static let headerResource = "icon_categories_header"
-    private static let metadataSubdirectory = "metadata"
+    private static let headerAssetPath = "Assets/Metadata/icon_categories_header.json"
 
-    /// Returns categories from `metadata/icon_categories_header.json` in the given bundle, or `[]` if missing.
+    /// Returns categories from `Assets/Metadata/icon_categories_header.json` in the given bundle, or `[]` if missing.
     public static func loadAllCategories(in bundle: Bundle = .main) async -> [YabaIconCategory] {
         await Task.detached {
-            guard let url = bundle.url(forResource: headerResource, withExtension: "json", subdirectory: metadataSubdirectory),
+            guard let url = BundleReader.url(forAssetPath: headerAssetPath, in: bundle),
                   let data = try? Data(contentsOf: url),
                   let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                   let categories = json["categories"] as? [[String: Any]]
@@ -48,11 +47,12 @@ public enum IconManager {
         }.value
     }
 
-    /// Loads icon name list from `metadata/<category.filename>` in the bundle, or `[]` if missing.
+    /// Loads icon name list from `Assets/Metadata/<category.filename>` in the bundle, or `[]` if missing.
     public static func loadIconsForCategory(_ category: YabaIconCategory, in bundle: Bundle = .main) async -> [YabaIconItem] {
         await Task.detached {
             let name = category.filename.replacingOccurrences(of: ".json", with: "")
-            guard let url = bundle.url(forResource: name, withExtension: "json", subdirectory: metadataSubdirectory),
+            let assetPath = "Assets/Metadata/\(name).json"
+            guard let url = BundleReader.url(forAssetPath: assetPath, in: bundle),
                   let data = try? Data(contentsOf: url),
                   let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                   let icons = json["icons"] as? [[String: Any]]

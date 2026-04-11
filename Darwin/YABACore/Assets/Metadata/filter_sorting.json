@@ -1,0 +1,92 @@
+{
+  "metadata": {
+    "id": "filter_sorting",
+    "name": "Filter and Sort",
+    "main_category": "filter_sorting",
+    "icon_count": 27,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "filter"
+    },
+    {
+      "name": "filter-add"
+    },
+    {
+      "name": "filter-edit"
+    },
+    {
+      "name": "filter-horizontal"
+    },
+    {
+      "name": "filter-mail-circle"
+    },
+    {
+      "name": "filter-mail-square"
+    },
+    {
+      "name": "filter-remove"
+    },
+    {
+      "name": "filter-reset"
+    },
+    {
+      "name": "filter-vertical"
+    },
+    {
+      "name": "preference-horizontal"
+    },
+    {
+      "name": "preference-vertical"
+    },
+    {
+      "name": "sort-by-down-01"
+    },
+    {
+      "name": "sort-by-down-02"
+    },
+    {
+      "name": "sort-by-up-01"
+    },
+    {
+      "name": "sort-by-up-02"
+    },
+    {
+      "name": "sorting-01"
+    },
+    {
+      "name": "sorting-02"
+    },
+    {
+      "name": "sorting-03"
+    },
+    {
+      "name": "sorting-04"
+    },
+    {
+      "name": "sorting-05"
+    },
+    {
+      "name": "sorting-1-9"
+    },
+    {
+      "name": "sorting-9-1"
+    },
+    {
+      "name": "sorting-a-z-01"
+    },
+    {
+      "name": "sorting-a-z-02"
+    },
+    {
+      "name": "sorting-down"
+    },
+    {
+      "name": "sorting-up"
+    },
+    {
+      "name": "sorting-z-a-01"
+    }
+  ]
+}

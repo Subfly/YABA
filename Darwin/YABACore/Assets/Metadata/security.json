@@ -1,0 +1,290 @@
+{
+  "metadata": {
+    "id": "security",
+    "name": "Security and Locks",
+    "main_category": "security",
+    "icon_count": 93,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "access"
+    },
+    {
+      "name": "authorized"
+    },
+    {
+      "name": "biometric-access"
+    },
+    {
+      "name": "biometric-device"
+    },
+    {
+      "name": "blocked"
+    },
+    {
+      "name": "cctv-camera"
+    },
+    {
+      "name": "circle-lock-01"
+    },
+    {
+      "name": "circle-lock-02"
+    },
+    {
+      "name": "circle-lock-add-01"
+    },
+    {
+      "name": "circle-lock-add-02"
+    },
+    {
+      "name": "circle-lock-check-01"
+    },
+    {
+      "name": "circle-lock-check-02"
+    },
+    {
+      "name": "circle-lock-minus-01"
+    },
+    {
+      "name": "circle-lock-minus-02"
+    },
+    {
+      "name": "circle-lock-remove-01"
+    },
+    {
+      "name": "circle-lock-remove-02"
+    },
+    {
+      "name": "circle-password"
+    },
+    {
+      "name": "circle-unlock-01"
+    },
+    {
+      "name": "circle-unlock-02"
+    },
+    {
+      "name": "computer-protection"
+    },
+    {
+      "name": "connect"
+    },
+    {
+      "name": "contracts"
+    },
+    {
+      "name": "device-access"
+    },
+    {
+      "name": "door-lock"
+    },
+    {
+      "name": "drive"
+    },
+    {
+      "name": "encrypt"
+    },
+    {
+      "name": "face-id"
+    },
+    {
+      "name": "finger-access"
+    },
+    {
+      "name": "finger-print"
+    },
+    {
+      "name": "finger-print-add"
+    },
+    {
+      "name": "finger-print-check"
+    },
+    {
+      "name": "finger-print-minus"
+    },
+    {
+      "name": "finger-print-remove"
+    },
+    {
+      "name": "finger-print-scan"
+    },
+    {
+      "name": "fingerprint-scan"
+    },
+    {
+      "name": "fire-security"
+    },
+    {
+      "name": "firewall"
+    },
+    {
+      "name": "forgot-password"
+    },
+    {
+      "name": "id"
+    },
+    {
+      "name": "id-not-verified"
+    },
+    {
+      "name": "id-verified"
+    },
+    {
+      "name": "identity-card"
+    },
+    {
+      "name": "iris-scan"
+    },
+    {
+      "name": "key-01"
+    },
+    {
+      "name": "key-02"
+    },
+    {
+      "name": "key-generator-fob"
+    },
+    {
+      "name": "lock"
+    },
+    {
+      "name": "lock-computer"
+    },
+    {
+      "name": "lock-key"
+    },
+    {
+      "name": "lock-password"
+    },
+    {
+      "name": "lock-sync-01"
+    },
+    {
+      "name": "lock-sync-02"
+    },
+    {
+      "name": "locked"
+    },
+    {
+      "name": "login-method"
+    },
+    {
+      "name": "microsoft-admin"
+    },
+    {
+      "name": "mobile-protection"
+    },
+    {
+      "name": "mobile-security"
+    },
+    {
+      "name": "open-source"
+    },
+    {
+      "name": "qr-code"
+    },
+    {
+      "name": "recovery-mail"
+    },
+    {
+      "name": "reset-password"
+    },
+    {
+      "name": "security"
+    },
+    {
+      "name": "security-block"
+    },
+    {
+      "name": "security-check"
+    },
+    {
+      "name": "security-key-usb"
+    },
+    {
+      "name": "security-lock"
+    },
+    {
+      "name": "security-password"
+    },
+    {
+      "name": "shared-drive"
+    },
+    {
+      "name": "shield-01"
+    },
+    {
+      "name": "shield-02"
+    },
+    {
+      "name": "shield-key"
+    },
+    {
+      "name": "shield-user"
+    },
+    {
+      "name": "sms-code"
+    },
+    {
+      "name": "speech-to-text"
+    },
+    {
+      "name": "square-lock-01"
+    },
+    {
+      "name": "square-lock-02"
+    },
+    {
+      "name": "square-lock-add-01"
+    },
+    {
+      "name": "square-lock-add-02"
+    },
+    {
+      "name": "square-lock-check-01"
+    },
+    {
+      "name": "square-lock-check-02"
+    },
+    {
+      "name": "square-lock-minus-01"
+    },
+    {
+      "name": "square-lock-minus-02"
+    },
+    {
+      "name": "square-lock-remove"
+    },
+    {
+      "name": "square-lock-remove-01"
+    },
+    {
+      "name": "square-password"
+    },
+    {
+      "name": "square-unlock-01"
+    },
+    {
+      "name": "square-unlock-02"
+    },
+    {
+      "name": "two-factor-access"
+    },
+    {
+      "name": "universal-access"
+    },
+    {
+      "name": "universal-access-circle"
+    },
+    {
+      "name": "voice-iD"
+    },
+    {
+      "name": "web-protection"
+    },
+    {
+      "name": "web-security"
+    }
+  ]
+}

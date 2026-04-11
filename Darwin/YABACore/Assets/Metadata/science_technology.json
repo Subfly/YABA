@@ -1,0 +1,77 @@
+{
+  "metadata": {
+    "id": "science_technology",
+    "name": "Science and Lab",
+    "main_category": "science_technology",
+    "icon_count": 22,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "acceleration"
+    },
+    {
+      "name": "atom-01"
+    },
+    {
+      "name": "atom-02"
+    },
+    {
+      "name": "bacteria"
+    },
+    {
+      "name": "black-hole"
+    },
+    {
+      "name": "bot"
+    },
+    {
+      "name": "bounding-box"
+    },
+    {
+      "name": "cells"
+    },
+    {
+      "name": "gravity"
+    },
+    {
+      "name": "magnet"
+    },
+    {
+      "name": "molecules"
+    },
+    {
+      "name": "nano-technology"
+    },
+    {
+      "name": "pendulum"
+    },
+    {
+      "name": "prism"
+    },
+    {
+      "name": "pulley"
+    },
+    {
+      "name": "siri"
+    },
+    {
+      "name": "solar-system"
+    },
+    {
+      "name": "submerge"
+    },
+    {
+      "name": "test-tube"
+    },
+    {
+      "name": "triangle-03"
+    },
+    {
+      "name": "ufo"
+    },
+    {
+      "name": "wind-turbine"
+    }
+  ]
+}

@@ -1,0 +1,932 @@
+{
+  "metadata": {
+    "id": "business",
+    "name": "Charts and Business",
+    "main_category": "business",
+    "icon_count": 307,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "activity-01"
+    },
+    {
+      "name": "activity-02"
+    },
+    {
+      "name": "activity-03"
+    },
+    {
+      "name": "activity-04"
+    },
+    {
+      "name": "add-invoice"
+    },
+    {
+      "name": "add-money-circle"
+    },
+    {
+      "name": "address-book"
+    },
+    {
+      "name": "advertisiment"
+    },
+    {
+      "name": "analysis-text-link"
+    },
+    {
+      "name": "analytics-01"
+    },
+    {
+      "name": "analytics-02"
+    },
+    {
+      "name": "analytics-03"
+    },
+    {
+      "name": "analytics-down"
+    },
+    {
+      "name": "analytics-up"
+    },
+    {
+      "name": "archive"
+    },
+    {
+      "name": "at"
+    },
+    {
+      "name": "atm-01"
+    },
+    {
+      "name": "atm-02"
+    },
+    {
+      "name": "attchment"
+    },
+    {
+      "name": "auto-conversations"
+    },
+    {
+      "name": "balance-scale"
+    },
+    {
+      "name": "balloons"
+    },
+    {
+      "name": "bank"
+    },
+    {
+      "name": "bar-chart"
+    },
+    {
+      "name": "bar-chart-horizontal"
+    },
+    {
+      "name": "bitcoin"
+    },
+    {
+      "name": "bitcoin-circle"
+    },
+    {
+      "name": "bitcoin-receive"
+    },
+    {
+      "name": "bitcoin-send"
+    },
+    {
+      "name": "bitcoin-square"
+    },
+    {
+      "name": "brain-03"
+    },
+    {
+      "name": "briefcase-01"
+    },
+    {
+      "name": "briefcase-02"
+    },
+    {
+      "name": "briefcase-03"
+    },
+    {
+      "name": "briefcase-04"
+    },
+    {
+      "name": "briefcase-05"
+    },
+    {
+      "name": "briefcase-06"
+    },
+    {
+      "name": "briefcase-07"
+    },
+    {
+      "name": "briefcase-08"
+    },
+    {
+      "name": "briefcase-09"
+    },
+    {
+      "name": "briefcase-dollar"
+    },
+    {
+      "name": "brochure"
+    },
+    {
+      "name": "c"
+    },
+    {
+      "name": "cafe"
+    },
+    {
+      "name": "calculate"
+    },
+    {
+      "name": "calculator"
+    },
+    {
+      "name": "card-exchange-01"
+    },
+    {
+      "name": "card-exchange-02"
+    },
+    {
+      "name": "cash-01"
+    },
+    {
+      "name": "cash-02"
+    },
+    {
+      "name": "cashback"
+    },
+    {
+      "name": "cashback-bitcoin"
+    },
+    {
+      "name": "cashback-euro"
+    },
+    {
+      "name": "cashback-pound"
+    },
+    {
+      "name": "cashback-yen"
+    },
+    {
+      "name": "cashier"
+    },
+    {
+      "name": "cashier-02"
+    },
+    {
+      "name": "chart"
+    },
+    {
+      "name": "chart-01"
+    },
+    {
+      "name": "chart-02"
+    },
+    {
+      "name": "chart-03"
+    },
+    {
+      "name": "chart-average"
+    },
+    {
+      "name": "chart-bar-line"
+    },
+    {
+      "name": "chart-breakout-circle"
+    },
+    {
+      "name": "chart-breakout-square"
+    },
+    {
+      "name": "chart-bubble-01"
+    },
+    {
+      "name": "chart-bubble-02"
+    },
+    {
+      "name": "chart-column"
+    },
+    {
+      "name": "chart-decrease"
+    },
+    {
+      "name": "chart-down"
+    },
+    {
+      "name": "chart-evaluation"
+    },
+    {
+      "name": "chart-high-low"
+    },
+    {
+      "name": "chart-histogram"
+    },
+    {
+      "name": "chart-increase"
+    },
+    {
+      "name": "chart-line-data-01"
+    },
+    {
+      "name": "chart-line-data-02"
+    },
+    {
+      "name": "chart-line-data-03"
+    },
+    {
+      "name": "chart-maximum"
+    },
+    {
+      "name": "chart-medium"
+    },
+    {
+      "name": "chart-minimum"
+    },
+    {
+      "name": "chart-radar"
+    },
+    {
+      "name": "chart-relationship"
+    },
+    {
+      "name": "chart-ring"
+    },
+    {
+      "name": "chart-rose"
+    },
+    {
+      "name": "chart-scatter"
+    },
+    {
+      "name": "chart-up"
+    },
+    {
+      "name": "coins-01"
+    },
+    {
+      "name": "coins-02"
+    },
+    {
+      "name": "coins-bitcoin"
+    },
+    {
+      "name": "coins-dollar"
+    },
+    {
+      "name": "coins-euro"
+    },
+    {
+      "name": "coins-pound"
+    },
+    {
+      "name": "coins-swap"
+    },
+    {
+      "name": "coins-yen"
+    },
+    {
+      "name": "complaint"
+    },
+    {
+      "name": "computer-dollar"
+    },
+    {
+      "name": "conference"
+    },
+    {
+      "name": "contact"
+    },
+    {
+      "name": "contact-book"
+    },
+    {
+      "name": "content-writing"
+    },
+    {
+      "name": "corporate"
+    },
+    {
+      "name": "covariate"
+    },
+    {
+      "name": "credit-card"
+    },
+    {
+      "name": "credit-card-accept"
+    },
+    {
+      "name": "credit-card-add"
+    },
+    {
+      "name": "credit-card-change"
+    },
+    {
+      "name": "credit-card-defrost"
+    },
+    {
+      "name": "credit-card-freeze"
+    },
+    {
+      "name": "credit-card-not-accept"
+    },
+    {
+      "name": "credit-card-not-found"
+    },
+    {
+      "name": "credit-card-pos"
+    },
+    {
+      "name": "crowdfunding"
+    },
+    {
+      "name": "custom-field"
+    },
+    {
+      "name": "customer-service-01"
+    },
+    {
+      "name": "customer-service-02"
+    },
+    {
+      "name": "departement"
+    },
+    {
+      "name": "diamond-02"
+    },
+    {
+      "name": "discount"
+    },
+    {
+      "name": "dollar-01"
+    },
+    {
+      "name": "dollar-02"
+    },
+    {
+      "name": "dollar-circle"
+    },
+    {
+      "name": "dollar-receive-01"
+    },
+    {
+      "name": "dollar-receive-02"
+    },
+    {
+      "name": "dollar-send-01"
+    },
+    {
+      "name": "dollar-send-02"
+    },
+    {
+      "name": "dollar-square"
+    },
+    {
+      "name": "estimate-01"
+    },
+    {
+      "name": "estimate-02"
+    },
+    {
+      "name": "euro"
+    },
+    {
+      "name": "euro-circle"
+    },
+    {
+      "name": "euro-receive"
+    },
+    {
+      "name": "euro-send"
+    },
+    {
+      "name": "euro-square"
+    },
+    {
+      "name": "file-bitcoin"
+    },
+    {
+      "name": "file-dollar"
+    },
+    {
+      "name": "file-euro"
+    },
+    {
+      "name": "file-pound"
+    },
+    {
+      "name": "file-yen"
+    },
+    {
+      "name": "fireworks"
+    },
+    {
+      "name": "garlands"
+    },
+    {
+      "name": "gift-card-02"
+    },
+    {
+      "name": "gold"
+    },
+    {
+      "name": "gold-ingots"
+    },
+    {
+      "name": "hotel-bell"
+    },
+    {
+      "name": "idea"
+    },
+    {
+      "name": "important-book"
+    },
+    {
+      "name": "invoice"
+    },
+    {
+      "name": "job-link"
+    },
+    {
+      "name": "job-search"
+    },
+    {
+      "name": "job-share"
+    },
+    {
+      "name": "kanban"
+    },
+    {
+      "name": "labor"
+    },
+    {
+      "name": "lifebuoy"
+    },
+    {
+      "name": "luggage-01"
+    },
+    {
+      "name": "luggage-02"
+    },
+    {
+      "name": "manager"
+    },
+    {
+      "name": "master-card"
+    },
+    {
+      "name": "meeting-room"
+    },
+    {
+      "name": "megaphone-03"
+    },
+    {
+      "name": "menu-restaurant"
+    },
+    {
+      "name": "microscope"
+    },
+    {
+      "name": "money-01"
+    },
+    {
+      "name": "money-02"
+    },
+    {
+      "name": "money-03"
+    },
+    {
+      "name": "money-04"
+    },
+    {
+      "name": "money-add-01"
+    },
+    {
+      "name": "money-add-02"
+    },
+    {
+      "name": "money-bag-01"
+    },
+    {
+      "name": "money-bag-02"
+    },
+    {
+      "name": "money-exchange-01"
+    },
+    {
+      "name": "money-exchange-02"
+    },
+    {
+      "name": "money-exchange-03"
+    },
+    {
+      "name": "money-not-found-01"
+    },
+    {
+      "name": "money-not-found-02"
+    },
+    {
+      "name": "money-not-found-03"
+    },
+    {
+      "name": "money-not-found-04"
+    },
+    {
+      "name": "money-receive-01"
+    },
+    {
+      "name": "money-receive-02"
+    },
+    {
+      "name": "money-receive-circle"
+    },
+    {
+      "name": "money-receive-flow-01"
+    },
+    {
+      "name": "money-receive-flow-02"
+    },
+    {
+      "name": "money-receive-square"
+    },
+    {
+      "name": "money-remove-01"
+    },
+    {
+      "name": "money-remove-02"
+    },
+    {
+      "name": "money-safe"
+    },
+    {
+      "name": "money-saving-jar"
+    },
+    {
+      "name": "money-security"
+    },
+    {
+      "name": "money-send-01"
+    },
+    {
+      "name": "money-send-02"
+    },
+    {
+      "name": "money-send-circle"
+    },
+    {
+      "name": "money-send-flow-01"
+    },
+    {
+      "name": "money-send-flow-02"
+    },
+    {
+      "name": "money-send-square"
+    },
+    {
+      "name": "new-job"
+    },
+    {
+      "name": "new-office"
+    },
+    {
+      "name": "news"
+    },
+    {
+      "name": "no-meeting-room"
+    },
+    {
+      "name": "office"
+    },
+    {
+      "name": "party"
+    },
+    {
+      "name": "passport"
+    },
+    {
+      "name": "passport-expired"
+    },
+    {
+      "name": "passport-valid"
+    },
+    {
+      "name": "pay-by-check"
+    },
+    {
+      "name": "payment-01"
+    },
+    {
+      "name": "payment-02"
+    },
+    {
+      "name": "payment-success-01"
+    },
+    {
+      "name": "payment-success-02"
+    },
+    {
+      "name": "permanent-job"
+    },
+    {
+      "name": "pie-chart"
+    },
+    {
+      "name": "pie-chart-01"
+    },
+    {
+      "name": "pie-chart-02"
+    },
+    {
+      "name": "pie-chart-03"
+    },
+    {
+      "name": "pie-chart-04"
+    },
+    {
+      "name": "pie-chart-05"
+    },
+    {
+      "name": "pie-chart-06"
+    },
+    {
+      "name": "pie-chart-07"
+    },
+    {
+      "name": "pie-chart-08"
+    },
+    {
+      "name": "pie-chart-09"
+    },
+    {
+      "name": "pie-chart-square"
+    },
+    {
+      "name": "piggy-bank"
+    },
+    {
+      "name": "pin-02"
+    },
+    {
+      "name": "podcast"
+    },
+    {
+      "name": "pound"
+    },
+    {
+      "name": "pound-circle"
+    },
+    {
+      "name": "pound-receive"
+    },
+    {
+      "name": "pound-send"
+    },
+    {
+      "name": "pound-square"
+    },
+    {
+      "name": "profile-02"
+    },
+    {
+      "name": "progress-01"
+    },
+    {
+      "name": "progress-02"
+    },
+    {
+      "name": "progress-03"
+    },
+    {
+      "name": "progress-04"
+    },
+    {
+      "name": "projector"
+    },
+    {
+      "name": "qq-plot"
+    },
+    {
+      "name": "qr-code"
+    },
+    {
+      "name": "question"
+    },
+    {
+      "name": "radial"
+    },
+    {
+      "name": "registered"
+    },
+    {
+      "name": "restaurant"
+    },
+    {
+      "name": "restaurant-02"
+    },
+    {
+      "name": "restaurant-03"
+    },
+    {
+      "name": "restaurant-table"
+    },
+    {
+      "name": "reverse-withdrawal-01"
+    },
+    {
+      "name": "reverse-withdrawal-02"
+    },
+    {
+      "name": "riyal"
+    },
+    {
+      "name": "riyal-rectangle"
+    },
+    {
+      "name": "save-money-dollar"
+    },
+    {
+      "name": "save-money-euro"
+    },
+    {
+      "name": "save-money-pound"
+    },
+    {
+      "name": "save-money-yen"
+    },
+    {
+      "name": "savings"
+    },
+    {
+      "name": "scratch-card"
+    },
+    {
+      "name": "search-dollar"
+    },
+    {
+      "name": "self-transfer"
+    },
+    {
+      "name": "seo"
+    },
+    {
+      "name": "service"
+    },
+    {
+      "name": "spoon-and-fork"
+    },
+    {
+      "name": "spoon-and-knife"
+    },
+    {
+      "name": "stamp"
+    },
+    {
+      "name": "start-up-01"
+    },
+    {
+      "name": "start-up-02"
+    },
+    {
+      "name": "strategy"
+    },
+    {
+      "name": "target-01"
+    },
+    {
+      "name": "target-02"
+    },
+    {
+      "name": "target-03"
+    },
+    {
+      "name": "target-dollar"
+    },
+    {
+      "name": "taxes"
+    },
+    {
+      "name": "tie"
+    },
+    {
+      "name": "tips"
+    },
+    {
+      "name": "trade-down"
+    },
+    {
+      "name": "trade-up"
+    },
+    {
+      "name": "trademark"
+    },
+    {
+      "name": "transaction-history"
+    },
+    {
+      "name": "travel-bag"
+    },
+    {
+      "name": "umbrella"
+    },
+    {
+      "name": "umbrella-dollar"
+    },
+    {
+      "name": "vision"
+    },
+    {
+      "name": "waiter"
+    },
+    {
+      "name": "waiters"
+    },
+    {
+      "name": "wallet-01"
+    },
+    {
+      "name": "wallet-02"
+    },
+    {
+      "name": "wallet-03"
+    },
+    {
+      "name": "wallet-04"
+    },
+    {
+      "name": "wallet-05"
+    },
+    {
+      "name": "wallet-add-01"
+    },
+    {
+      "name": "wallet-add-02"
+    },
+    {
+      "name": "wallet-done-01"
+    },
+    {
+      "name": "wallet-done-02"
+    },
+    {
+      "name": "wallet-not-found-01"
+    },
+    {
+      "name": "wallet-not-found-02"
+    },
+    {
+      "name": "wallet-remove-01"
+    },
+    {
+      "name": "wallet-remove-02"
+    },
+    {
+      "name": "waterfall down-03"
+    },
+    {
+      "name": "waterfall-down-01"
+    },
+    {
+      "name": "waterfall-up-01"
+    },
+    {
+      "name": "waterfall-up-02"
+    },
+    {
+      "name": "wedding"
+    },
+    {
+      "name": "whiteboard"
+    },
+    {
+      "name": "work"
+    },
+    {
+      "name": "work-alert"
+    },
+    {
+      "name": "work-history"
+    },
+    {
+      "name": "work-update"
+    },
+    {
+      "name": "yen"
+    },
+    {
+      "name": "yen-circle"
+    },
+    {
+      "name": "yen-receive"
+    },
+    {
+      "name": "yen-send"
+    },
+    {
+      "name": "yen-square"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Build yaba-web-components and copy dist into the Android app assets.
+# Build yaba-web-components and copy dist into the Android app assets and Darwin YABACore bundle assets.
 # Run this before building the app when web components have changed.
 #
 # Usage: ./Scripts/build_web_components.sh
@@ -9,7 +9,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 WEB_COMPONENTS_DIR="$ROOT/Extensions/yaba-web-components"
 DIST_DIR="$WEB_COMPONENTS_DIR/dist"
-TARGET_DIR="$ROOT/Compose/YABA/app/src/main/assets/files/web-components"
+COMPOSE_TARGET_DIR="$ROOT/Compose/YABA/app/src/main/assets/files/web-components"
+DARWIN_TARGET_DIR="$ROOT/Darwin/YABACore/Assets/WebComponents"
 
 if [[ ! -d "$WEB_COMPONENTS_DIR" ]]; then
     echo "Error: Web components directory not found: $WEB_COMPONENTS_DIR"
@@ -17,7 +18,8 @@ if [[ ! -d "$WEB_COMPONENTS_DIR" ]]; then
 fi
 
 echo "Deleting previous build files..."
-rm -rf "$TARGET_DIR"
+rm -rf "$COMPOSE_TARGET_DIR"
+rm -rf "$DARWIN_TARGET_DIR"
 rm -rf "$DIST_DIR"
 
 echo "Building web components..."
@@ -30,7 +32,13 @@ if [[ ! -d "$DIST_DIR" ]]; then
 fi
 
 echo "Copying dist to Compose app assets..."
-mkdir -p "$TARGET_DIR"
-cp -R "$DIST_DIR"/* "$TARGET_DIR"
+mkdir -p "$COMPOSE_TARGET_DIR"
+cp -R "$DIST_DIR"/* "$COMPOSE_TARGET_DIR"
 
-echo "Done. Web components copied to $TARGET_DIR"
+echo "Copying dist to Darwin YABACore Assets..."
+mkdir -p "$DARWIN_TARGET_DIR"
+cp -R "$DIST_DIR"/* "$DARWIN_TARGET_DIR"
+
+echo "Done. Web components copied to:"
+echo "  - $COMPOSE_TARGET_DIR"
+echo "  - $DARWIN_TARGET_DIR"

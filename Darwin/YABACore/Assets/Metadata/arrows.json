@@ -1,0 +1,470 @@
+{
+  "metadata": {
+    "id": "arrows",
+    "name": "Arrows and Chevrons",
+    "main_category": "arrows",
+    "icon_count": 153,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "arrow-all-direction-round"
+    },
+    {
+      "name": "arrow-data-transfer-diagonal-round"
+    },
+    {
+      "name": "arrow-data-transfer-horizontal-round"
+    },
+    {
+      "name": "arrow-data-transfer-vertical-round"
+    },
+    {
+      "name": "arrow-diagonal-round"
+    },
+    {
+      "name": "arrow-down-01-round"
+    },
+    {
+      "name": "arrow-down-02"
+    },
+    {
+      "name": "arrow-down-03-round"
+    },
+    {
+      "name": "arrow-down-04-round"
+    },
+    {
+      "name": "arrow-down-05"
+    },
+    {
+      "name": "arrow-down-double-round"
+    },
+    {
+      "name": "arrow-down-left-01"
+    },
+    {
+      "name": "arrow-down-left-02-round"
+    },
+    {
+      "name": "arrow-down-right-01"
+    },
+    {
+      "name": "arrow-down-right-02-round"
+    },
+    {
+      "name": "arrow-expand"
+    },
+    {
+      "name": "arrow-expand-01"
+    },
+    {
+      "name": "arrow-expand-02"
+    },
+    {
+      "name": "arrow-expand-diagonal-01"
+    },
+    {
+      "name": "arrow-expand-diagonal-02"
+    },
+    {
+      "name": "arrow-horizontal"
+    },
+    {
+      "name": "arrow-left-01-round"
+    },
+    {
+      "name": "arrow-left-02"
+    },
+    {
+      "name": "arrow-left-03-round"
+    },
+    {
+      "name": "arrow-left-04-round"
+    },
+    {
+      "name": "arrow-left-05"
+    },
+    {
+      "name": "arrow-left-double-round"
+    },
+    {
+      "name": "arrow-left-right-round"
+    },
+    {
+      "name": "arrow-move-down-left-round"
+    },
+    {
+      "name": "arrow-move-down-right-round"
+    },
+    {
+      "name": "arrow-move-left-down-round"
+    },
+    {
+      "name": "arrow-move-right-down-round"
+    },
+    {
+      "name": "arrow-move-up-left-round"
+    },
+    {
+      "name": "arrow-move-up-right-round"
+    },
+    {
+      "name": "arrow-reload-horizontal-round"
+    },
+    {
+      "name": "arrow-reload-vertical-round"
+    },
+    {
+      "name": "arrow-right-01-round"
+    },
+    {
+      "name": "arrow-right-02"
+    },
+    {
+      "name": "arrow-right-03-round"
+    },
+    {
+      "name": "arrow-right-04-round"
+    },
+    {
+      "name": "arrow-right-05"
+    },
+    {
+      "name": "arrow-right-double-round"
+    },
+    {
+      "name": "arrow-shrink"
+    },
+    {
+      "name": "arrow-shrink-01"
+    },
+    {
+      "name": "arrow-shrink-02"
+    },
+    {
+      "name": "arrow-turn-backward-round"
+    },
+    {
+      "name": "arrow-turn-down-round"
+    },
+    {
+      "name": "arrow-turn-forward-round"
+    },
+    {
+      "name": "arrow-turn-up-round"
+    },
+    {
+      "name": "arrow-up-01-round"
+    },
+    {
+      "name": "arrow-up-02"
+    },
+    {
+      "name": "arrow-up-03-round"
+    },
+    {
+      "name": "arrow-up-04-round"
+    },
+    {
+      "name": "arrow-up-05-round"
+    },
+    {
+      "name": "arrow-up-double-round"
+    },
+    {
+      "name": "arrow-up-down-round"
+    },
+    {
+      "name": "arrow-up-left-01"
+    },
+    {
+      "name": "arrow-up-left-02-round"
+    },
+    {
+      "name": "arrow-up-right-01"
+    },
+    {
+      "name": "arrow-up-right-02-round"
+    },
+    {
+      "name": "arrow-vertical-round"
+    },
+    {
+      "name": "circle-arrow-data-transfer-diagonal-round"
+    },
+    {
+      "name": "circle-arrow-data-transfer-horizontal-round"
+    },
+    {
+      "name": "circle-arrow-data-transfer-vertical-round"
+    },
+    {
+      "name": "circle-arrow-diagonal-01-round"
+    },
+    {
+      "name": "circle-arrow-diagonal-02-round"
+    },
+    {
+      "name": "circle-arrow-down-01-round"
+    },
+    {
+      "name": "circle-arrow-down-02"
+    },
+    {
+      "name": "circle-arrow-down-03"
+    },
+    {
+      "name": "circle-arrow-down-double-round"
+    },
+    {
+      "name": "circle-arrow-down-left"
+    },
+    {
+      "name": "circle-arrow-down-right"
+    },
+    {
+      "name": "circle-arrow-expand-01-round"
+    },
+    {
+      "name": "circle-arrow-expand-02-round"
+    },
+    {
+      "name": "circle-arrow-horizontal-round"
+    },
+    {
+      "name": "circle-arrow-left-01-round"
+    },
+    {
+      "name": "circle-arrow-left-02"
+    },
+    {
+      "name": "circle-arrow-left-03"
+    },
+    {
+      "name": "circle-arrow-left-double-round"
+    },
+    {
+      "name": "circle-arrow-left-right-round"
+    },
+    {
+      "name": "circle-arrow-move-down-left"
+    },
+    {
+      "name": "circle-arrow-move-down-right"
+    },
+    {
+      "name": "circle-arrow-move-left-down"
+    },
+    {
+      "name": "circle-arrow-move-right-down"
+    },
+    {
+      "name": "circle-arrow-move-up-left"
+    },
+    {
+      "name": "circle-arrow-move-up-right-round"
+    },
+    {
+      "name": "circle-arrow-reload-01-round"
+    },
+    {
+      "name": "circle-arrow-reload-02-round"
+    },
+    {
+      "name": "circle-arrow-right-01-round"
+    },
+    {
+      "name": "circle-arrow-right-02"
+    },
+    {
+      "name": "circle-arrow-right-03"
+    },
+    {
+      "name": "circle-arrow-right-double-round"
+    },
+    {
+      "name": "circle-arrow-shrink-01-round"
+    },
+    {
+      "name": "circle-arrow-shrink-02-round"
+    },
+    {
+      "name": "circle-arrow-up-01-round"
+    },
+    {
+      "name": "circle-arrow-up-02"
+    },
+    {
+      "name": "circle-arrow-up-03"
+    },
+    {
+      "name": "circle-arrow-up-double-round"
+    },
+    {
+      "name": "circle-arrow-up-down-round"
+    },
+    {
+      "name": "circle-arrow-up-left"
+    },
+    {
+      "name": "circle-arrow-up-right"
+    },
+    {
+      "name": "circle-arrow-vertical-round"
+    },
+    {
+      "name": "curvy-left-direction"
+    },
+    {
+      "name": "curvy-left-right-direction"
+    },
+    {
+      "name": "curvy-right-direction"
+    },
+    {
+      "name": "curvy-up-down-direction"
+    },
+    {
+      "name": "diagonal-scroll-point-01-round"
+    },
+    {
+      "name": "diagonal-scroll-point-02-round"
+    },
+    {
+      "name": "horizonal-scroll-point-round"
+    },
+    {
+      "name": "square-arrow-data-transfer-diagonal-round"
+    },
+    {
+      "name": "square-arrow-data-transfer-horizontal-round"
+    },
+    {
+      "name": "square-arrow-data-transfer-vertical-round"
+    },
+    {
+      "name": "square-arrow-diagonal-01-round"
+    },
+    {
+      "name": "square-arrow-diagonal-02-round"
+    },
+    {
+      "name": "square-arrow-down-01-round"
+    },
+    {
+      "name": "square-arrow-down-02"
+    },
+    {
+      "name": "square-arrow-down-03"
+    },
+    {
+      "name": "square-arrow-down-double-round"
+    },
+    {
+      "name": "square-arrow-down-left"
+    },
+    {
+      "name": "square-arrow-down-right"
+    },
+    {
+      "name": "square-arrow-expand-01-round"
+    },
+    {
+      "name": "square-arrow-expand-02-round"
+    },
+    {
+      "name": "square-arrow-horizontal-round"
+    },
+    {
+      "name": "square-arrow-left-01-round"
+    },
+    {
+      "name": "square-arrow-left-02"
+    },
+    {
+      "name": "square-arrow-left-03"
+    },
+    {
+      "name": "square-arrow-left-double-round"
+    },
+    {
+      "name": "square-arrow-left-right-round"
+    },
+    {
+      "name": "square-arrow-move-down-left"
+    },
+    {
+      "name": "square-arrow-move-down-right"
+    },
+    {
+      "name": "square-arrow-move-left-down"
+    },
+    {
+      "name": "square-arrow-move-left-up"
+    },
+    {
+      "name": "square-arrow-move-right-down"
+    },
+    {
+      "name": "square-arrow-move-right-up"
+    },
+    {
+      "name": "square-arrow-reload-01-round"
+    },
+    {
+      "name": "square-arrow-reload-02-round"
+    },
+    {
+      "name": "square-arrow-right-01-round"
+    },
+    {
+      "name": "square-arrow-right-02"
+    },
+    {
+      "name": "square-arrow-right-03"
+    },
+    {
+      "name": "square-arrow-right-double-round"
+    },
+    {
+      "name": "square-arrow-shrink-01-round"
+    },
+    {
+      "name": "square-arrow-shrink-02-round"
+    },
+    {
+      "name": "square-arrow-up-01-round"
+    },
+    {
+      "name": "square-arrow-up-02"
+    },
+    {
+      "name": "square-arrow-up-03"
+    },
+    {
+      "name": "square-arrow-up-double-round"
+    },
+    {
+      "name": "square-arrow-up-down-round"
+    },
+    {
+      "name": "square-arrow-up-left"
+    },
+    {
+      "name": "square-arrow-up-right"
+    },
+    {
+      "name": "square-arrow-vertical-round"
+    },
+    {
+      "name": "unfold-less-round"
+    },
+    {
+      "name": "unfold-more-round"
+    },
+    {
+      "name": "vertical-scroll-point-round"
+    }
+  ]
+}

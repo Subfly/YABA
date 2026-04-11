@@ -1,0 +1,290 @@
+{
+  "metadata": {
+    "id": "ai",
+    "name": "AI and ML",
+    "main_category": "ai",
+    "icon_count": 93,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "ai-audio"
+    },
+    {
+      "name": "ai-beautify"
+    },
+    {
+      "name": "ai-book"
+    },
+    {
+      "name": "ai-brain-01"
+    },
+    {
+      "name": "ai-brain-02"
+    },
+    {
+      "name": "ai-brain-03"
+    },
+    {
+      "name": "ai-brain-04"
+    },
+    {
+      "name": "ai-brain-05"
+    },
+    {
+      "name": "ai-browser"
+    },
+    {
+      "name": "ai-chat-01"
+    },
+    {
+      "name": "ai-chat-02"
+    },
+    {
+      "name": "ai-chemistry-01"
+    },
+    {
+      "name": "ai-chemistry-02"
+    },
+    {
+      "name": "ai-chemistry-03"
+    },
+    {
+      "name": "ai-chip"
+    },
+    {
+      "name": "ai-cloud"
+    },
+    {
+      "name": "ai-cloud-01"
+    },
+    {
+      "name": "ai-cloud-02"
+    },
+    {
+      "name": "ai-computer"
+    },
+    {
+      "name": "ai-content-generator"
+    },
+    {
+      "name": "ai-content-generator-02"
+    },
+    {
+      "name": "ai-dna"
+    },
+    {
+      "name": "ai-editing"
+    },
+    {
+      "name": "ai-eraser"
+    },
+    {
+      "name": "ai-file"
+    },
+    {
+      "name": "ai-folder-01"
+    },
+    {
+      "name": "ai-folder-02"
+    },
+    {
+      "name": "ai-game"
+    },
+    {
+      "name": "ai-generative"
+    },
+    {
+      "name": "ai-idea"
+    },
+    {
+      "name": "ai-image"
+    },
+    {
+      "name": "ai-innovation-01"
+    },
+    {
+      "name": "ai-innovation-02"
+    },
+    {
+      "name": "ai-innovation-03"
+    },
+    {
+      "name": "ai-laptop"
+    },
+    {
+      "name": "ai-learning"
+    },
+    {
+      "name": "ai-lock"
+    },
+    {
+      "name": "ai-magic"
+    },
+    {
+      "name": "ai-mail"
+    },
+    {
+      "name": "ai-mail-01"
+    },
+    {
+      "name": "ai-mail-02"
+    },
+    {
+      "name": "ai-mic"
+    },
+    {
+      "name": "ai-network"
+    },
+    {
+      "name": "ai-phone-01"
+    },
+    {
+      "name": "ai-phone-02"
+    },
+    {
+      "name": "ai-programming"
+    },
+    {
+      "name": "ai-scan"
+    },
+    {
+      "name": "ai-scheduling"
+    },
+    {
+      "name": "ai-search"
+    },
+    {
+      "name": "ai-search-02"
+    },
+    {
+      "name": "ai-security-01"
+    },
+    {
+      "name": "ai-security-02"
+    },
+    {
+      "name": "ai-security-03"
+    },
+    {
+      "name": "ai-setting"
+    },
+    {
+      "name": "ai-sheets"
+    },
+    {
+      "name": "ai-smartwatch"
+    },
+    {
+      "name": "ai-user"
+    },
+    {
+      "name": "ai-video"
+    },
+    {
+      "name": "ai-view"
+    },
+    {
+      "name": "ai-vision-recognition"
+    },
+    {
+      "name": "ai-voice"
+    },
+    {
+      "name": "ai-voice-generator"
+    },
+    {
+      "name": "ai-web-browsing"
+    },
+    {
+      "name": "algorithm"
+    },
+    {
+      "name": "apple-intelligence"
+    },
+    {
+      "name": "artificial-intelligence-01"
+    },
+    {
+      "name": "artificial-intelligence-02"
+    },
+    {
+      "name": "artificial-intelligence-03"
+    },
+    {
+      "name": "artificial-intelligence-04"
+    },
+    {
+      "name": "artificial-intelligence-05"
+    },
+    {
+      "name": "artificial-intelligence-06"
+    },
+    {
+      "name": "artificial-intelligence-07"
+    },
+    {
+      "name": "artificial-intelligence-08"
+    },
+    {
+      "name": "camera-ai"
+    },
+    {
+      "name": "chat-bot"
+    },
+    {
+      "name": "chip"
+    },
+    {
+      "name": "cloud-server"
+    },
+    {
+      "name": "hologram"
+    },
+    {
+      "name": "machine-robot"
+    },
+    {
+      "name": "magic-wand-04"
+    },
+    {
+      "name": "magic-wand-05"
+    },
+    {
+      "name": "neural-network"
+    },
+    {
+      "name": "perplexity-ai"
+    },
+    {
+      "name": "robot-01"
+    },
+    {
+      "name": "robot-02"
+    },
+    {
+      "name": "robotic"
+    },
+    {
+      "name": "scan-image"
+    },
+    {
+      "name": "siri-new"
+    },
+    {
+      "name": "token-circle"
+    },
+    {
+      "name": "token-square"
+    },
+    {
+      "name": "user-ai"
+    },
+    {
+      "name": "video-ai"
+    },
+    {
+      "name": "video-camera-ai"
+    }
+  ]
+}

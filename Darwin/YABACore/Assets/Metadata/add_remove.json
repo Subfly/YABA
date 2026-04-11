@@ -1,0 +1,92 @@
+{
+  "metadata": {
+    "id": "add_remove",
+    "name": "Plus and Minus",
+    "main_category": "add_remove",
+    "icon_count": 27,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "add circle-half-dot"
+    },
+    {
+      "name": "add-01"
+    },
+    {
+      "name": "add-02"
+    },
+    {
+      "name": "add-circle"
+    },
+    {
+      "name": "add-square"
+    },
+    {
+      "name": "cancel-01"
+    },
+    {
+      "name": "cancel-02"
+    },
+    {
+      "name": "cancel-circle"
+    },
+    {
+      "name": "cancel-circle-half-dot"
+    },
+    {
+      "name": "cancel-square"
+    },
+    {
+      "name": "delete-01"
+    },
+    {
+      "name": "delete-02"
+    },
+    {
+      "name": "delete-03"
+    },
+    {
+      "name": "delete-04"
+    },
+    {
+      "name": "delete-put-back"
+    },
+    {
+      "name": "delete-throw"
+    },
+    {
+      "name": "eraser"
+    },
+    {
+      "name": "eraser-add"
+    },
+    {
+      "name": "remove-01"
+    },
+    {
+      "name": "remove-02"
+    },
+    {
+      "name": "remove-circle"
+    },
+    {
+      "name": "remove-circle-half-dot"
+    },
+    {
+      "name": "remove-square"
+    },
+    {
+      "name": "restore-bin"
+    },
+    {
+      "name": "unavailable"
+    },
+    {
+      "name": "waste"
+    },
+    {
+      "name": "waste-restore"
+    }
+  ]
+}

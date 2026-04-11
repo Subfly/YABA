@@ -1,0 +1,263 @@
+{
+  "metadata": {
+    "id": "logistics",
+    "name": "Shipping and Logistics",
+    "main_category": "logistics",
+    "icon_count": 84,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "accident"
+    },
+    {
+      "name": "airplane-01"
+    },
+    {
+      "name": "airplane-02"
+    },
+    {
+      "name": "airplane-landing-01"
+    },
+    {
+      "name": "airplane-landing-02"
+    },
+    {
+      "name": "airplane-seat"
+    },
+    {
+      "name": "airplane-seat-02"
+    },
+    {
+      "name": "airplane-take-off-01"
+    },
+    {
+      "name": "airplane-take-off-02"
+    },
+    {
+      "name": "airport"
+    },
+    {
+      "name": "ambulance"
+    },
+    {
+      "name": "anchor"
+    },
+    {
+      "name": "bicycle-01"
+    },
+    {
+      "name": "boat"
+    },
+    {
+      "name": "bus-01"
+    },
+    {
+      "name": "bus-02"
+    },
+    {
+      "name": "bus-03"
+    },
+    {
+      "name": "cable-car"
+    },
+    {
+      "name": "camper"
+    },
+    {
+      "name": "car-01"
+    },
+    {
+      "name": "car-02"
+    },
+    {
+      "name": "car-03"
+    },
+    {
+      "name": "car-04"
+    },
+    {
+      "name": "car-05"
+    },
+    {
+      "name": "car-alert"
+    },
+    {
+      "name": "car-parking-01"
+    },
+    {
+      "name": "car-parking-02"
+    },
+    {
+      "name": "car-signal"
+    },
+    {
+      "name": "car-time"
+    },
+    {
+      "name": "caravan"
+    },
+    {
+      "name": "container-truck"
+    },
+    {
+      "name": "crane"
+    },
+    {
+      "name": "drone"
+    },
+    {
+      "name": "ferry-boat"
+    },
+    {
+      "name": "fuel-station"
+    },
+    {
+      "name": "garbage-truck"
+    },
+    {
+      "name": "golf-cart"
+    },
+    {
+      "name": "helicopter"
+    },
+    {
+      "name": "hot-air-balloon"
+    },
+    {
+      "name": "lift-truck"
+    },
+    {
+      "name": "metro"
+    },
+    {
+      "name": "motorbike-01"
+    },
+    {
+      "name": "motorbike-02"
+    },
+    {
+      "name": "parking-area-circle"
+    },
+    {
+      "name": "parking-area-square"
+    },
+    {
+      "name": "petrol-pump"
+    },
+    {
+      "name": "pickup-01"
+    },
+    {
+      "name": "pickup-02"
+    },
+    {
+      "name": "plane"
+    },
+    {
+      "name": "police-car"
+    },
+    {
+      "name": "road"
+    },
+    {
+      "name": "rocket"
+    },
+    {
+      "name": "school-bus"
+    },
+    {
+      "name": "scooter-01"
+    },
+    {
+      "name": "scooter-02"
+    },
+    {
+      "name": "scooter-03"
+    },
+    {
+      "name": "scooter-04"
+    },
+    {
+      "name": "scooter-electric"
+    },
+    {
+      "name": "seat-selector"
+    },
+    {
+      "name": "semi-truck"
+    },
+    {
+      "name": "shipping-center"
+    },
+    {
+      "name": "speed-train-01"
+    },
+    {
+      "name": "speed-train-02"
+    },
+    {
+      "name": "submarine"
+    },
+    {
+      "name": "tanker-truck"
+    },
+    {
+      "name": "taxi"
+    },
+    {
+      "name": "taxi-02"
+    },
+    {
+      "name": "tow-truck"
+    },
+    {
+      "name": "toy-train"
+    },
+    {
+      "name": "tractor"
+    },
+    {
+      "name": "traffic-incident"
+    },
+    {
+      "name": "traffic-jam-01"
+    },
+    {
+      "name": "traffic-jam-02"
+    },
+    {
+      "name": "traffic-light"
+    },
+    {
+      "name": "train-01"
+    },
+    {
+      "name": "train-02"
+    },
+    {
+      "name": "tram"
+    },
+    {
+      "name": "truck"
+    },
+    {
+      "name": "truck-delivery"
+    },
+    {
+      "name": "truck-monster"
+    },
+    {
+      "name": "truck-return"
+    },
+    {
+      "name": "ufo"
+    },
+    {
+      "name": "van"
+    },
+    {
+      "name": "zeppelin"
+    }
+  ]
+}

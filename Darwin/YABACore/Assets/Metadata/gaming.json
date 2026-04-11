@@ -1,0 +1,398 @@
+{
+  "metadata": {
+    "id": "gaming",
+    "name": "Games and Controllers",
+    "main_category": "gaming",
+    "icon_count": 129,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "adventure"
+    },
+    {
+      "name": "aircraft-game"
+    },
+    {
+      "name": "american-football"
+    },
+    {
+      "name": "ammo"
+    },
+    {
+      "name": "angry-bird"
+    },
+    {
+      "name": "archer"
+    },
+    {
+      "name": "armored-boot"
+    },
+    {
+      "name": "badminton"
+    },
+    {
+      "name": "badminton-shuttle"
+    },
+    {
+      "name": "baseball"
+    },
+    {
+      "name": "baseball-bat"
+    },
+    {
+      "name": "baseball-helmet"
+    },
+    {
+      "name": "basketball-01"
+    },
+    {
+      "name": "basketball-02"
+    },
+    {
+      "name": "basketball-hoop"
+    },
+    {
+      "name": "bicycle"
+    },
+    {
+      "name": "billiard-01"
+    },
+    {
+      "name": "billiard-02"
+    },
+    {
+      "name": "block-game"
+    },
+    {
+      "name": "body-armor"
+    },
+    {
+      "name": "bomb"
+    },
+    {
+      "name": "bowling"
+    },
+    {
+      "name": "bowling-ball"
+    },
+    {
+      "name": "bowling-pins"
+    },
+    {
+      "name": "boxing-glove"
+    },
+    {
+      "name": "bullet"
+    },
+    {
+      "name": "bulletproof-vest"
+    },
+    {
+      "name": "cards-01"
+    },
+    {
+      "name": "cards-02"
+    },
+    {
+      "name": "castle"
+    },
+    {
+      "name": "chess-01"
+    },
+    {
+      "name": "chess-02"
+    },
+    {
+      "name": "chess-pawn"
+    },
+    {
+      "name": "chip"
+    },
+    {
+      "name": "clubs-01"
+    },
+    {
+      "name": "clubs-02"
+    },
+    {
+      "name": "cricket-bat"
+    },
+    {
+      "name": "cricket-helmet"
+    },
+    {
+      "name": "curling"
+    },
+    {
+      "name": "dart"
+    },
+    {
+      "name": "diamond"
+    },
+    {
+      "name": "dice"
+    },
+    {
+      "name": "dice-faces-01"
+    },
+    {
+      "name": "dice-faces-02"
+    },
+    {
+      "name": "dice-faces-03"
+    },
+    {
+      "name": "dice-faces-04"
+    },
+    {
+      "name": "dice-faces-05"
+    },
+    {
+      "name": "dice-faces-06"
+    },
+    {
+      "name": "domino"
+    },
+    {
+      "name": "ds3-tool"
+    },
+    {
+      "name": "fencing"
+    },
+    {
+      "name": "fencing-mask"
+    },
+    {
+      "name": "fins"
+    },
+    {
+      "name": "football"
+    },
+    {
+      "name": "football-pitch"
+    },
+    {
+      "name": "frisbee"
+    },
+    {
+      "name": "game-controller-01"
+    },
+    {
+      "name": "game-controller-02"
+    },
+    {
+      "name": "game-controller-03"
+    },
+    {
+      "name": "gem"
+    },
+    {
+      "name": "gnome"
+    },
+    {
+      "name": "golf-ball"
+    },
+    {
+      "name": "golf-bat"
+    },
+    {
+      "name": "golf-hole"
+    },
+    {
+      "name": "greek-helmet"
+    },
+    {
+      "name": "gun"
+    },
+    {
+      "name": "gymnastic"
+    },
+    {
+      "name": "hockey"
+    },
+    {
+      "name": "horse"
+    },
+    {
+      "name": "horse-head"
+    },
+    {
+      "name": "horse-saddle"
+    },
+    {
+      "name": "ice-hockey"
+    },
+    {
+      "name": "ice-skating"
+    },
+    {
+      "name": "joker"
+    },
+    {
+      "name": "joystick-01"
+    },
+    {
+      "name": "joystick-02"
+    },
+    {
+      "name": "joystick-03"
+    },
+    {
+      "name": "joystick-04"
+    },
+    {
+      "name": "joystick-05"
+    },
+    {
+      "name": "kayak"
+    },
+    {
+      "name": "kite"
+    },
+    {
+      "name": "knight-shield"
+    },
+    {
+      "name": "mask-theater-01"
+    },
+    {
+      "name": "mask-theater-02"
+    },
+    {
+      "name": "maze"
+    },
+    {
+      "name": "mushroom"
+    },
+    {
+      "name": "nintendo"
+    },
+    {
+      "name": "nintendo-switch"
+    },
+    {
+      "name": "olympic-torch"
+    },
+    {
+      "name": "pacman-01"
+    },
+    {
+      "name": "pacman-02"
+    },
+    {
+      "name": "paragliding"
+    },
+    {
+      "name": "pokeball"
+    },
+    {
+      "name": "pokemon"
+    },
+    {
+      "name": "pool-table"
+    },
+    {
+      "name": "potion"
+    },
+    {
+      "name": "puzzle"
+    },
+    {
+      "name": "racing-flag"
+    },
+    {
+      "name": "rocking-horse"
+    },
+    {
+      "name": "roller-skate"
+    },
+    {
+      "name": "rubiks-cube"
+    },
+    {
+      "name": "seesaw"
+    },
+    {
+      "name": "ski"
+    },
+    {
+      "name": "slide"
+    },
+    {
+      "name": "spades"
+    },
+    {
+      "name": "spartan-helmet"
+    },
+    {
+      "name": "steering"
+    },
+    {
+      "name": "super-mario"
+    },
+    {
+      "name": "super-mario-toad"
+    },
+    {
+      "name": "surfboard"
+    },
+    {
+      "name": "swimming"
+    },
+    {
+      "name": "swimming-cap"
+    },
+    {
+      "name": "sword-01"
+    },
+    {
+      "name": "sword-02"
+    },
+    {
+      "name": "sword-03"
+    },
+    {
+      "name": "table-tennis-bat"
+    },
+    {
+      "name": "tennis-ball"
+    },
+    {
+      "name": "tennis-racket"
+    },
+    {
+      "name": "tetris"
+    },
+    {
+      "name": "tic-tac-toe"
+    },
+    {
+      "name": "trampoline"
+    },
+    {
+      "name": "versus"
+    },
+    {
+      "name": "video-console"
+    },
+    {
+      "name": "volleyball"
+    },
+    {
+      "name": "vr"
+    },
+    {
+      "name": "vr-glasses"
+    },
+    {
+      "name": "water-polo"
+    },
+    {
+      "name": "whistle"
+    },
+    {
+      "name": "wind-surf"
+    }
+  ]
+}

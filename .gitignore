@@ -11,6 +11,7 @@
 # Web components build artifacts
 Extensions/yaba-web-components/dist/
 Compose/YABA/app/src/main/assets/files/web-components/
+Darwin/YABACore/Assets/WebComponents/
 
 # AI, agents, indexings
 .gitnexus

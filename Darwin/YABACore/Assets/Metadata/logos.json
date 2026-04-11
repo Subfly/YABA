@@ -1,0 +1,572 @@
+{
+  "metadata": {
+    "id": "logos",
+    "name": "Brands and Logos",
+    "main_category": "logos",
+    "icon_count": 187,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "adobe-after-effect"
+    },
+    {
+      "name": "adobe-illustrator"
+    },
+    {
+      "name": "adobe-indesign"
+    },
+    {
+      "name": "adobe-photoshop"
+    },
+    {
+      "name": "adobe-premier"
+    },
+    {
+      "name": "adobe-xd"
+    },
+    {
+      "name": "airbnb"
+    },
+    {
+      "name": "amazon"
+    },
+    {
+      "name": "amie"
+    },
+    {
+      "name": "android"
+    },
+    {
+      "name": "app-store"
+    },
+    {
+      "name": "apple"
+    },
+    {
+      "name": "apple-finder"
+    },
+    {
+      "name": "apple-music"
+    },
+    {
+      "name": "apple-news"
+    },
+    {
+      "name": "apple-reminder"
+    },
+    {
+      "name": "apple-stocks"
+    },
+    {
+      "name": "apple-vision-pro"
+    },
+    {
+      "name": "arc-browser"
+    },
+    {
+      "name": "asterisk"
+    },
+    {
+      "name": "asterisk-02"
+    },
+    {
+      "name": "bebo"
+    },
+    {
+      "name": "behance-01"
+    },
+    {
+      "name": "behance-02"
+    },
+    {
+      "name": "bing"
+    },
+    {
+      "name": "blogger"
+    },
+    {
+      "name": "bluesky"
+    },
+    {
+      "name": "bootstrap"
+    },
+    {
+      "name": "brandfetch"
+    },
+    {
+      "name": "capcut"
+    },
+    {
+      "name": "capcut-rectangle"
+    },
+    {
+      "name": "castbox"
+    },
+    {
+      "name": "chat-gpt"
+    },
+    {
+      "name": "chrome"
+    },
+    {
+      "name": "claude"
+    },
+    {
+      "name": "codesandbox"
+    },
+    {
+      "name": "coinbase"
+    },
+    {
+      "name": "copilot"
+    },
+    {
+      "name": "creative-market"
+    },
+    {
+      "name": "css-3"
+    },
+    {
+      "name": "datev"
+    },
+    {
+      "name": "deepseek"
+    },
+    {
+      "name": "deviantart"
+    },
+    {
+      "name": "digg"
+    },
+    {
+      "name": "discord"
+    },
+    {
+      "name": "dribbble"
+    },
+    {
+      "name": "dropbox"
+    },
+    {
+      "name": "envato"
+    },
+    {
+      "name": "facebook-01"
+    },
+    {
+      "name": "facebook-02"
+    },
+    {
+      "name": "figma"
+    },
+    {
+      "name": "fiverr"
+    },
+    {
+      "name": "flaticon"
+    },
+    {
+      "name": "flickr"
+    },
+    {
+      "name": "forrst"
+    },
+    {
+      "name": "foursquare"
+    },
+    {
+      "name": "framer"
+    },
+    {
+      "name": "gitbook"
+    },
+    {
+      "name": "github-01"
+    },
+    {
+      "name": "google"
+    },
+    {
+      "name": "google-doc"
+    },
+    {
+      "name": "google-drive"
+    },
+    {
+      "name": "google-gemini"
+    },
+    {
+      "name": "google-lens"
+    },
+    {
+      "name": "google-maps"
+    },
+    {
+      "name": "google-photos"
+    },
+    {
+      "name": "google-sheet"
+    },
+    {
+      "name": "grok"
+    },
+    {
+      "name": "grok-02"
+    },
+    {
+      "name": "hackerrank"
+    },
+    {
+      "name": "halal-lab"
+    },
+    {
+      "name": "hangout"
+    },
+    {
+      "name": "html-5"
+    },
+    {
+      "name": "hugeicons"
+    },
+    {
+      "name": "iconjar"
+    },
+    {
+      "name": "imo"
+    },
+    {
+      "name": "instagram"
+    },
+    {
+      "name": "jsx-01"
+    },
+    {
+      "name": "kickstarter-01"
+    },
+    {
+      "name": "kickstarter-02"
+    },
+    {
+      "name": "kimi-ai"
+    },
+    {
+      "name": "klarna"
+    },
+    {
+      "name": "ko-fi"
+    },
+    {
+      "name": "last.fm"
+    },
+    {
+      "name": "layers-logo"
+    },
+    {
+      "name": "leetcode"
+    },
+    {
+      "name": "line"
+    },
+    {
+      "name": "linkedin-01"
+    },
+    {
+      "name": "linkedin-02"
+    },
+    {
+      "name": "loom"
+    },
+    {
+      "name": "lottiefiles"
+    },
+    {
+      "name": "mastodon"
+    },
+    {
+      "name": "mcp-server"
+    },
+    {
+      "name": "medium"
+    },
+    {
+      "name": "medium-square"
+    },
+    {
+      "name": "messenger"
+    },
+    {
+      "name": "meta"
+    },
+    {
+      "name": "microsoft"
+    },
+    {
+      "name": "mistral"
+    },
+    {
+      "name": "mollie"
+    },
+    {
+      "name": "mymind"
+    },
+    {
+      "name": "nike"
+    },
+    {
+      "name": "notion-01"
+    },
+    {
+      "name": "notion-02"
+    },
+    {
+      "name": "npm"
+    },
+    {
+      "name": "office-365"
+    },
+    {
+      "name": "path"
+    },
+    {
+      "name": "payoneer"
+    },
+    {
+      "name": "paypal"
+    },
+    {
+      "name": "periscope"
+    },
+    {
+      "name": "pexels"
+    },
+    {
+      "name": "picasa"
+    },
+    {
+      "name": "pinterest"
+    },
+    {
+      "name": "plaxo"
+    },
+    {
+      "name": "play-store"
+    },
+    {
+      "name": "python"
+    },
+    {
+      "name": "quora"
+    },
+    {
+      "name": "qwen"
+    },
+    {
+      "name": "react"
+    },
+    {
+      "name": "reddit"
+    },
+    {
+      "name": "replit"
+    },
+    {
+      "name": "safari"
+    },
+    {
+      "name": "scribd"
+    },
+    {
+      "name": "shopify"
+    },
+    {
+      "name": "shutterstock"
+    },
+    {
+      "name": "signal"
+    },
+    {
+      "name": "sketch"
+    },
+    {
+      "name": "skool"
+    },
+    {
+      "name": "skype"
+    },
+    {
+      "name": "slack"
+    },
+    {
+      "name": "slideshare"
+    },
+    {
+      "name": "snapchat"
+    },
+    {
+      "name": "soundcloud"
+    },
+    {
+      "name": "spotify"
+    },
+    {
+      "name": "stripe"
+    },
+    {
+      "name": "stumbleupon"
+    },
+    {
+      "name": "swarm"
+    },
+    {
+      "name": "tailwindcss"
+    },
+    {
+      "name": "teamviewer"
+    },
+    {
+      "name": "telegram"
+    },
+    {
+      "name": "threads"
+    },
+    {
+      "name": "threads-ellipse"
+    },
+    {
+      "name": "threads-rectangle"
+    },
+    {
+      "name": "tiktok"
+    },
+    {
+      "name": "tiktok-1"
+    },
+    {
+      "name": "tiltify"
+    },
+    {
+      "name": "trello"
+    },
+    {
+      "name": "tumblr"
+    },
+    {
+      "name": "twitch"
+    },
+    {
+      "name": "twitter"
+    },
+    {
+      "name": "twitter-square"
+    },
+    {
+      "name": "typescript-01"
+    },
+    {
+      "name": "uber"
+    },
+    {
+      "name": "unsplash"
+    },
+    {
+      "name": "upwork"
+    },
+    {
+      "name": "viber"
+    },
+    {
+      "name": "vimeo"
+    },
+    {
+      "name": "vine"
+    },
+    {
+      "name": "vine-square"
+    },
+    {
+      "name": "visual-studio-code"
+    },
+    {
+      "name": "vk"
+    },
+    {
+      "name": "vk-square"
+    },
+    {
+      "name": "w3schools"
+    },
+    {
+      "name": "wattpad"
+    },
+    {
+      "name": "wattpad-square"
+    },
+    {
+      "name": "waze"
+    },
+    {
+      "name": "webflow"
+    },
+    {
+      "name": "webhook"
+    },
+    {
+      "name": "wechat"
+    },
+    {
+      "name": "whatsapp"
+    },
+    {
+      "name": "whatsapp-business"
+    },
+    {
+      "name": "wikipedia"
+    },
+    {
+      "name": "windows-new"
+    },
+    {
+      "name": "windows-old"
+    },
+    {
+      "name": "wise"
+    },
+    {
+      "name": "wordpress"
+    },
+    {
+      "name": "wps-office"
+    },
+    {
+      "name": "wps-office-rectangle"
+    },
+    {
+      "name": "x"
+    },
+    {
+      "name": "x-ellipse"
+    },
+    {
+      "name": "x-rectangle"
+    },
+    {
+      "name": "xing"
+    },
+    {
+      "name": "yelp"
+    },
+    {
+      "name": "youtube"
+    },
+    {
+      "name": "zoom"
+    },
+    {
+      "name": "zoom-circle"
+    },
+    {
+      "name": "zoom-square"
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "metadata": {
+    "id": "legal",
+    "name": "Legal and Contracts",
+    "main_category": "legal",
+    "icon_count": 36,
+    "version": "3.0"
+  },
+  "icons": [
+    {
+      "name": "agreement-01"
+    },
+    {
+      "name": "agreement-02"
+    },
+    {
+      "name": "agreement-03"
+    },
+    {
+      "name": "auction"
+    },
+    {
+      "name": "audit-01"
+    },
+    {
+      "name": "audit-02"
+    },
+    {
+      "name": "copyright"
+    },
+    {
+      "name": "court-house"
+    },
+    {
+      "name": "court-law"
+    },
+    {
+      "name": "handcuffs"
+    },
+    {
+      "name": "identification"
+    },
+    {
+      "name": "investigation"
+    },
+    {
+      "name": "judge"
+    },
+    {
+      "name": "justice-scale-01"
+    },
+    {
+      "name": "justice-scale-02"
+    },
+    {
+      "name": "legal-01"
+    },
+    {
+      "name": "legal-02"
+    },
+    {
+      "name": "legal-document-01"
+    },
+    {
+      "name": "legal-document-02"
+    },
+    {
+      "name": "legal-hammer"
+    },
+    {
+      "name": "passport"
+    },
+    {
+      "name": "podium"
+    },
+    {
+      "name": "police-badge"
+    },
+    {
+      "name": "police-cap"
+    },
+    {
+      "name": "police-station"
+    },
+    {
+      "name": "prison"
+    },
+    {
+      "name": "prison-guard"
+    },
+    {
+      "name": "prisoner"
+    },
+    {
+      "name": "register"
+    },
+    {
+      "name": "sheriff-01"
+    },
+    {
+      "name": "sheriff-02"
+    },
+    {
+      "name": "stamp-01"
+    },
+    {
+      "name": "stamp-02"
+    },
+    {
+      "name": "subpoena"
+    },
+    {
+      "name": "trade-mark"
+    },
+    {
+      "name": "wanted"
+    }
+  ]
+}
