@@ -12,18 +12,18 @@ enum PreviewContentAppearance: Int, Hashable, CaseIterable {
     
     func getUITitle() -> LocalizedStringKey {
         return switch self {
-        case .list: ViewType.list.getUITitle()
-        case .cardSmallImage: CardViewTypeImageSizing.small.getUITitle()
-        case .cardBigImage: CardViewTypeImageSizing.big.getUITitle()
+        case .list: ContentAppearance.list.getUITitle()
+        case .cardSmallImage: CardImageSizing.small.getUITitle()
+        case .cardBigImage: CardImageSizing.big.getUITitle()
         //case .grid: LocalizedStringKey("View Grid")
         }
     }
     
     func getUIIconName() -> String {
         return switch self {
-        case .list: ViewType.list.getUIIconName()
-        case .cardSmallImage: CardViewTypeImageSizing.small.getUIIconName()
-        case .cardBigImage: CardViewTypeImageSizing.big.getUIIconName()
+        case .list: ContentAppearance.list.getUIIconName()
+        case .cardSmallImage: CardImageSizing.small.getUIIconName()
+        case .cardBigImage: CardImageSizing.big.getUIIconName()
         //case .grid: LocalizedStringKey("View Grid")
         }
     }

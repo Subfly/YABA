@@ -38,7 +38,7 @@ private class ItemState {
 
 struct BookmarkItemView: View {
     @AppStorage(Constants.preferredContentAppearanceKey)
-    private var contentAppearance: ViewType = .list
+    private var contentAppearance: ContentAppearance = .list
     
     @Environment(\.appState)
     private var appState
@@ -259,10 +259,10 @@ private struct BookmarkItemViewWrappable: View {
 
 private struct MainLabel: View {
     @AppStorage(Constants.preferredContentAppearanceKey)
-    private var contentAppearance: ViewType = .list
+    private var contentAppearance: ContentAppearance = .list
     
     @AppStorage(Constants.preferredCardImageSizingKey)
-    private var cardSizing: CardViewTypeImageSizing = .small
+    private var cardSizing: CardImageSizing = .small
     
     let bookmark: YabaBookmark
     
@@ -495,10 +495,10 @@ private struct GridView: View {
 
 private struct BookmarkImage: View {
     @AppStorage(Constants.preferredContentAppearanceKey)
-    private var contentAppearance: ViewType = .list
+    private var contentAppearance: ContentAppearance = .list
     
     @AppStorage(Constants.preferredCardImageSizingKey)
-    private var cardSizing: CardViewTypeImageSizing = .small
+    private var cardSizing: CardImageSizing = .small
     
     let bookmark: YabaBookmark
     
@@ -655,7 +655,7 @@ private struct TagsAreaView: View {
 
 private struct ClickableOptionsIcon: View {
     @AppStorage(Constants.preferredContentAppearanceKey)
-    private var contentAppearance: ViewType = .list
+    private var contentAppearance: ContentAppearance = .list
     
     @Binding
     var state: ItemState

@@ -68,7 +68,7 @@ private struct CollectionDetail: View {
     private var modelContext
     
     @AppStorage(Constants.preferredContentAppearanceKey)
-    private var contentAppearance: ViewType = .list
+    private var contentAppearance: ContentAppearance = .list
     
     @AppStorage(Constants.preferredBookmarkSortingKey)
     private var preferredSorting: SortType = .createdAt
@@ -233,7 +233,7 @@ private struct CollectionDetail: View {
 
 private struct SearchableContent: View {
     @AppStorage(Constants.preferredContentAppearanceKey)
-    private var contentAppearance: ViewType = .list
+    private var contentAppearance: ContentAppearance = .list
     
     @Binding
     var selectedBookmarks: Set<YabaBookmark>

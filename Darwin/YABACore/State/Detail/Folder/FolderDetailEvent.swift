@@ -14,8 +14,8 @@ public enum FolderDetailEvent: Sendable {
     case onToggleBookmarkSelection(bookmarkId: String)
     case onDeleteSelected(bookmarkIds: [String])
     case onDeleteBookmark(bookmarkId: String)
-    case onChangeSort(sortType: YabaCoreSortType, sortOrder: YabaCoreSortOrderType)
-    case onChangeAppearance(appearance: YabaCoreBookmarkAppearance, cardImageSizing: YabaCoreCardImageSizing?)
+    case onChangeSort(sortType: SortType, sortOrder: SortOrderType)
+    case onChangeAppearance(appearance: BookmarkAppearance, cardImageSizing: CardImageSizing?)
 
     case updateMetadata(folderId: String, label: String, description: String?, icon: String, colorRaw: Int)
     case move(folderId: String, newParentId: String?)

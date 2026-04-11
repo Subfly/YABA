@@ -42,15 +42,15 @@ public final class CanvmarkDetailStateMachine: YabaBaseObservableState<CanvmarkD
             do {
                 try await ReminderManager.scheduleReminderResolvingLabel(
                     bookmarkId: bid,
-                    bookmarkKindCode: YabaCoreBookmarkKind.canvas.rawValue,
+                    bookmarkKindCode: BookmarkKind.canvas.rawValue,
                     titleKey: titleKey,
                     messageKey: messageKey,
                     fireAt: fireAt
                 )
                 apply { $0.reminderDate = fireAt }
-                YabaCoreToastManager.shared.showReminderScheduledToast(fireAt: fireAt)
+                CoreToastManager.shared.showReminderScheduledToast(fireAt: fireAt)
             } catch {
-                YabaCoreToastManager.shared.showReminderScheduleFailedToast()
+                CoreToastManager.shared.showReminderScheduleFailedToast()
             }
         case .onCancelReminder:
             guard let bid = state.bookmarkId else { return }

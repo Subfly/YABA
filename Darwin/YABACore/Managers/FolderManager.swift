@@ -12,7 +12,7 @@ public enum FolderManager {
     // MARK: - System folder
 
     public static func queueEnsureUncategorizedFolderExists() {
-        YabaCoreOperationQueue.shared.queue(name: "EnsureUncategorizedFolder") { context in
+        CoreOperationQueue.shared.queue(name: "EnsureUncategorizedFolder") { context in
             try ensureUncategorizedFolderInternal(context: context)
         }
     }
@@ -26,7 +26,7 @@ public enum FolderManager {
         colorRaw: Int = 0,
         parentFolderId: String?
     ) {
-        YabaCoreOperationQueue.shared.queue(name: "CreateFolder:\(folderId)") { context in
+        CoreOperationQueue.shared.queue(name: "CreateFolder:\(folderId)") { context in
             try createFolderInternal(
                 folderId: folderId,
                 label: label,
@@ -46,7 +46,7 @@ public enum FolderManager {
         icon: String,
         colorRaw: Int
     ) {
-        YabaCoreOperationQueue.shared.queue(name: "UpdateFolder:\(folderId)") { context in
+        CoreOperationQueue.shared.queue(name: "UpdateFolder:\(folderId)") { context in
             guard let folder = try YabaCorePersistenceHelpers.folder(folderId: folderId, context: context) else { return }
             folder.label = label
             folder.folderDescription = folderDescription
@@ -58,13 +58,13 @@ public enum FolderManager {
 
     /// Moves a folder under a new parent. System folders cannot be moved.
     public static func queueMoveFolder(folderId: String, newParentFolderId: String?) {
-        YabaCoreOperationQueue.shared.queue(name: "MoveFolder:\(folderId)") { context in
+        CoreOperationQueue.shared.queue(name: "MoveFolder:\(folderId)") { context in
             try moveFolderInternal(folderId: folderId, newParentFolderId: newParentFolderId, context: context)
         }
     }
 
     public static func queueDeleteFolder(folderId: String) {
-        YabaCoreOperationQueue.shared.queue(name: "DeleteFolder:\(folderId)") { context in
+        CoreOperationQueue.shared.queue(name: "DeleteFolder:\(folderId)") { context in
             try deleteFolderCascadeInternal(rootFolderId: folderId, context: context)
         }
     }

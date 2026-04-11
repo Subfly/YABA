@@ -8,7 +8,7 @@
 //  Title and message use **localization keys** resolved on iOS via `Bundle` (default `.main`).
 //
 //  User-visible toasts for permission / schedule outcomes are emitted by detail state machines
-//  (see `YabaCoreToastManager`) rather than from this enum.
+//  (see `CoreToastManager`) rather than from this enum.
 //
 
 import Foundation
@@ -148,7 +148,7 @@ public enum ReminderManager {
     }
 
     private static func resolveBookmarkLabel(bookmarkId: String) -> String {
-        guard let context = try? YabaCoreStore.makeWriteContext() else { return "" }
+        guard let context = try? CoreStore.makeWriteContext() else { return "" }
         return (try? YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context))?.label ?? ""
     }
 

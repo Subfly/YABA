@@ -12,7 +12,7 @@ public struct DocmarkCreationUIState: Sendable {
     public var summary: String
     public var selectedFolderId: String?
     public var selectedTagIds: [String]
-    public var docmarkType: YabaCoreDocmarkType?
+    public var docmarkType: DocmarkType?
     public var pickedDocumentData: Data?
     public var sourceFileName: String?
     public var previewImageData: Data?
@@ -20,8 +20,8 @@ public struct DocmarkCreationUIState: Sendable {
     public var metadataDescription: String?
     public var metadataAuthor: String?
     public var metadataDate: String?
-    public var bookmarkAppearance: YabaCoreBookmarkAppearance
-    public var cardImageSizing: YabaCoreCardImageSizing
+    public var bookmarkAppearance: BookmarkAppearance
+    public var cardImageSizing: CardImageSizing
     public var isPrivate: Bool
     public var isPinned: Bool
     public var isSaving: Bool
@@ -34,7 +34,7 @@ public struct DocmarkCreationUIState: Sendable {
         summary: String = "",
         selectedFolderId: String? = nil,
         selectedTagIds: [String] = [],
-        docmarkType: YabaCoreDocmarkType? = .pdf,
+        docmarkType: DocmarkType? = .pdf,
         pickedDocumentData: Data? = nil,
         sourceFileName: String? = nil,
         previewImageData: Data? = nil,
@@ -42,8 +42,8 @@ public struct DocmarkCreationUIState: Sendable {
         metadataDescription: String? = nil,
         metadataAuthor: String? = nil,
         metadataDate: String? = nil,
-        bookmarkAppearance: YabaCoreBookmarkAppearance = .list,
-        cardImageSizing: YabaCoreCardImageSizing = .small,
+        bookmarkAppearance: BookmarkAppearance = .list,
+        cardImageSizing: CardImageSizing = .small,
         isPrivate: Bool = false,
         isPinned: Bool = false,
         isSaving: Bool = false,

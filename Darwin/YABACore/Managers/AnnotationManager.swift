@@ -12,14 +12,14 @@ public enum AnnotationManager {
     public static func queueInsertAnnotation(
         bookmarkId: String,
         readableVersionId: String?,
-        type: YabaCoreAnnotationType,
+        type: AnnotationType,
         annotationId: String = UUID().uuidString,
         colorRoleRaw: Int = 0,
         note: String? = nil,
         quoteText: String? = nil,
         extrasJson: String? = nil
     ) {
-        YabaCoreOperationQueue.shared.queue(name: "InsertAnnotation:\(bookmarkId)") { context in
+        CoreOperationQueue.shared.queue(name: "InsertAnnotation:\(bookmarkId)") { context in
             guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context) else {
                 return
             }
@@ -48,7 +48,7 @@ public enum AnnotationManager {
     }
 
     public static func queueUpdateAnnotation(annotationId: String, colorRoleRaw: Int, note: String?) {
-        YabaCoreOperationQueue.shared.queue(name: "UpdateAnnotation:\(annotationId)") { context in
+        CoreOperationQueue.shared.queue(name: "UpdateAnnotation:\(annotationId)") { context in
             let p = #Predicate<AnnotationModel> { $0.annotationId == annotationId }
             var d = FetchDescriptor(predicate: p)
             d.fetchLimit = 1
@@ -61,7 +61,7 @@ public enum AnnotationManager {
     }
 
     public static func queueDeleteAnnotation(annotationId: String) {
-        YabaCoreOperationQueue.shared.queue(name: "DeleteAnnotation:\(annotationId)") { context in
+        CoreOperationQueue.shared.queue(name: "DeleteAnnotation:\(annotationId)") { context in
             let p = #Predicate<AnnotationModel> { $0.annotationId == annotationId }
             var d = FetchDescriptor(predicate: p)
             d.fetchLimit = 1

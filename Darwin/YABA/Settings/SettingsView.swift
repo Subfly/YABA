@@ -19,7 +19,7 @@ struct SettingsView: View {
     private var appState
     
     @AppStorage(Constants.preferredThemeKey)
-    private var preferredTheme: ThemeType = .system
+    private var preferredTheme: ThemePreference = .system
     
     @AppStorage(Constants.showRecentsKey)
     private var showRecents: Bool = true

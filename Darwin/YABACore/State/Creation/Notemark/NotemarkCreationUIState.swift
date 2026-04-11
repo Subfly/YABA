@@ -12,8 +12,8 @@ public struct NotemarkCreationUIState: Sendable {
     public var selectedFolderId: String?
     public var selectedTagIds: [String]
     public var documentJson: String
-    public var bookmarkAppearance: YabaCoreBookmarkAppearance
-    public var cardImageSizing: YabaCoreCardImageSizing
+    public var bookmarkAppearance: BookmarkAppearance
+    public var cardImageSizing: CardImageSizing
     public var isPrivate: Bool
     public var isPinned: Bool
     public var isSaving: Bool
@@ -26,8 +26,8 @@ public struct NotemarkCreationUIState: Sendable {
         selectedFolderId: String? = nil,
         selectedTagIds: [String] = [],
         documentJson: String = "",
-        bookmarkAppearance: YabaCoreBookmarkAppearance = .list,
-        cardImageSizing: YabaCoreCardImageSizing = .small,
+        bookmarkAppearance: BookmarkAppearance = .list,
+        cardImageSizing: CardImageSizing = .small,
         isPrivate: Bool = false,
         isPinned: Bool = false,
         isSaving: Bool = false,

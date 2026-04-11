@@ -11,7 +11,7 @@ import SwiftData
 @MainActor
 struct HomeCollectionView: View {
     @AppStorage(Constants.preferredContentAppearanceKey)
-    private var contentAppearance: ViewType = .list
+    private var contentAppearance: ContentAppearance = .list
     
     let collections: [YabaCollection]
     let onNavigationCallback: (YabaCollection) -> Void

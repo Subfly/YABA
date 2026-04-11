@@ -7,9 +7,9 @@ import Foundation
 
 public struct DocmarkDetailUIState: Sendable {
     public var bookmarkId: String?
-    public var readerTheme: YabaCoreReaderTheme
-    public var readerFontSize: YabaCoreReaderFontSize
-    public var readerLineHeight: YabaCoreReaderLineHeight
+    public var readerTheme: ReaderTheme
+    public var readerFontSize: ReaderFontSize
+    public var readerLineHeight: ReaderLineHeight
     public var scrollToAnnotationId: String?
     public var tocJson: String?
     public var pendingTocNavigationId: String?
@@ -19,9 +19,9 @@ public struct DocmarkDetailUIState: Sendable {
 
     public init(
         bookmarkId: String? = nil,
-        readerTheme: YabaCoreReaderTheme = .system,
-        readerFontSize: YabaCoreReaderFontSize = .medium,
-        readerLineHeight: YabaCoreReaderLineHeight = .normal,
+        readerTheme: ReaderTheme = .system,
+        readerFontSize: ReaderFontSize = .medium,
+        readerLineHeight: ReaderLineHeight = .normal,
         scrollToAnnotationId: String? = nil,
         tocJson: String? = nil,
         pendingTocNavigationId: String? = nil,

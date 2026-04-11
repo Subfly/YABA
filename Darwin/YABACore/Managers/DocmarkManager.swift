@@ -11,7 +11,7 @@ import SwiftData
 public enum DocmarkManager {
     /// Ensures a `DocBookmarkModel` row exists after base bookmark creation (empty metadata).
     public static func queueEnsureInitialDocDetail(bookmarkId: String) {
-        YabaCoreOperationQueue.shared.queue(name: "EnsureInitialDocDetail:\(bookmarkId)") { context in
+        CoreOperationQueue.shared.queue(name: "EnsureInitialDocDetail:\(bookmarkId)") { context in
             try upsertDocDetails(
                 bookmarkId: bookmarkId,
                 summary: nil,
@@ -28,13 +28,13 @@ public enum DocmarkManager {
     public static func queueCreateOrUpdateDocDetails(
         bookmarkId: String,
         summary: String? = nil,
-        docmarkType: YabaCoreDocmarkType? = nil,
+        docmarkType: DocmarkType? = nil,
         metadataTitle: String? = nil,
         metadataDescription: String? = nil,
         metadataAuthor: String? = nil,
         metadataDate: String? = nil
     ) {
-        YabaCoreOperationQueue.shared.queue(name: "CreateOrUpdateDocDetails:\(bookmarkId)") { context in
+        CoreOperationQueue.shared.queue(name: "CreateOrUpdateDocDetails:\(bookmarkId)") { context in
             try upsertDocDetails(
                 bookmarkId: bookmarkId,
                 summary: summary,
@@ -51,7 +51,7 @@ public enum DocmarkManager {
     private static func upsertDocDetails(
         bookmarkId: String,
         summary: String?,
-        docmarkType: YabaCoreDocmarkType?,
+        docmarkType: DocmarkType?,
         metadataTitle: String?,
         metadataDescription: String?,
         metadataAuthor: String?,

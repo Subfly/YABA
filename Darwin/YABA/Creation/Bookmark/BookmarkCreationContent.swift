@@ -17,10 +17,10 @@ struct BookmarkCreationContent: View {
     private var modelContext
     
     @AppStorage(Constants.preferredContentAppearanceKey)
-    private var storedContentAppearance: ViewType = .list
+    private var storedContentAppearance: ContentAppearance = .list
     
     @AppStorage(Constants.preferredCardImageSizingKey)
-    private var storedCardImageSizing: CardViewTypeImageSizing = .small
+    private var storedCardImageSizing: CardImageSizing = .small
     
     @State
     private var state: BookmarkCreationState
@@ -230,10 +230,10 @@ struct BookmarkCreationContent: View {
             } label: {
                 if state.contentAppearance != .list {
                     Label {
-                        Text(ViewType.card.getUITitle())
+                        Text(ContentAppearance.card.getUITitle())
                             .textCase(.none)
                     } icon: {
-                        YabaIconView(bundleKey: ViewType.card.getUIIconName())
+                        YabaIconView(bundleKey: ContentAppearance.card.getUIIconName())
                             .scaledToFit()
                             .frame(width: 18, height: 18)
                     }

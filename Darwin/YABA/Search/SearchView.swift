@@ -86,7 +86,7 @@ struct SearchView: View {
 
 private struct SearchableContent: View {
     @AppStorage(Constants.preferredContentAppearanceKey)
-    private var contentAppearance: ViewType = .list
+    private var contentAppearance: ContentAppearance = .list
     
     @Query
     private var bookmarks: [YabaBookmark]

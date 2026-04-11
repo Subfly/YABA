@@ -15,7 +15,7 @@ public enum LinkmarkDetailEvent: Sendable {
     case onSaveReadableContent(documentJson: Data)
     case onUpdateReadableRequested
     case onUpdateLinkMetadataRequested
-    case onConverterSucceeded(YabaWebConverterResult)
+    case onConverterSucceeded(WebConverterResult)
     case onConverterFailed(errorMessage: String)
     case onReaderWebInitialContentLoad(resultJson: String?)
     case onSelectReadableVersion(versionId: String)
@@ -24,17 +24,17 @@ public enum LinkmarkDetailEvent: Sendable {
     case onToggleReaderTheme
     case onToggleReaderFontSize
     case onToggleReaderLineHeight
-    case onSetReaderTheme(YabaCoreReaderTheme)
-    case onSetReaderFontSize(YabaCoreReaderFontSize)
-    case onSetReaderLineHeight(YabaCoreReaderLineHeight)
+    case onSetReaderTheme(ReaderTheme)
+    case onSetReaderFontSize(ReaderFontSize)
+    case onSetReaderLineHeight(ReaderLineHeight)
     case onCreateAnnotation(
         annotationId: String,
         readableVersionId: String,
-        colorRole: YabaCoreColorRole,
+        colorRole: YabaColor,
         note: String?,
         quoteText: String?
     )
-    case onUpdateAnnotation(annotationId: String, colorRole: YabaCoreColorRole, note: String?)
+    case onUpdateAnnotation(annotationId: String, colorRole: YabaColor, note: String?)
     case onDeleteAnnotation(annotationId: String)
     case onAnnotationReadableCreateCommitted(annotationId: String, documentJson: String)
     case onAnnotationReadableDeleteCommitted(annotationId: String, documentJson: String)

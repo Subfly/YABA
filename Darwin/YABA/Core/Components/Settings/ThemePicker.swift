@@ -9,11 +9,11 @@ import SwiftUI
 
 struct ThemePicker: View {
     @AppStorage(Constants.preferredThemeKey)
-    private var preferredTheme: ThemeType = .system
+    private var preferredTheme: ThemePreference = .system
     
     var body: some View {
         Menu {
-            ForEach(ThemeType.allCases, id: \.self) { type in
+            ForEach(ThemePreference.allCases, id: \.self) { type in
                 Button {
                     withAnimation {
                         preferredTheme = type

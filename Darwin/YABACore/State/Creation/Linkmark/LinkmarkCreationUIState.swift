@@ -20,8 +20,8 @@ public struct LinkmarkCreationUIState: Sendable {
     public var audioUrl: String?
     public var isPrivate: Bool
     public var isPinned: Bool
-    public var bookmarkAppearance: YabaCoreBookmarkAppearance
-    public var cardImageSizing: YabaCoreCardImageSizing
+    public var bookmarkAppearance: BookmarkAppearance
+    public var cardImageSizing: CardImageSizing
     public var isSaving: Bool
     public var lastError: String?
     public var converterError: String?
@@ -33,7 +33,7 @@ public struct LinkmarkCreationUIState: Sendable {
     public var previewImageData: Data?
     public var previewIconData: Data?
     /// Latest processed readable (for save when bookmark exists or on first save).
-    public var pendingReadableUnfurl: YabaReadableUnfurl?
+    public var pendingReadableUnfurl: ReadableUnfurl?
 
     public init(
         editingBookmarkId: String? = nil,
@@ -50,8 +50,8 @@ public struct LinkmarkCreationUIState: Sendable {
         audioUrl: String? = nil,
         isPrivate: Bool = false,
         isPinned: Bool = false,
-        bookmarkAppearance: YabaCoreBookmarkAppearance = .list,
-        cardImageSizing: YabaCoreCardImageSizing = .small,
+        bookmarkAppearance: BookmarkAppearance = .list,
+        cardImageSizing: CardImageSizing = .small,
         isSaving: Bool = false,
         lastError: String? = nil,
         converterError: String? = nil,
@@ -60,7 +60,7 @@ public struct LinkmarkCreationUIState: Sendable {
         cleanedUrl: String? = nil,
         previewImageData: Data? = nil,
         previewIconData: Data? = nil,
-        pendingReadableUnfurl: YabaReadableUnfurl? = nil
+        pendingReadableUnfurl: ReadableUnfurl? = nil
     ) {
         self.editingBookmarkId = editingBookmarkId
         self.url = url

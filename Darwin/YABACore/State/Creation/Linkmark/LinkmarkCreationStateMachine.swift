@@ -123,7 +123,7 @@ public final class LinkmarkCreationStateMachine: YabaBaseObservableState<Linkmar
         apply { $0.isFetchingLinkContent = true; $0.converterError = nil }
         defer { apply { $0.isFetchingLinkContent = false } }
         do {
-            let (conv, readable) = try await YabaLinkmarkUnfurlCoordinator.shared.fetchAndConvert(urlString: trimmed)
+            let (conv, readable) = try await LinkmarkUnfurlCoordinator.shared.fetchAndConvert(urlString: trimmed)
             await applyFetchResult(converter: conv, readable: readable)
         } catch {
             apply {
@@ -132,17 +132,17 @@ public final class LinkmarkCreationStateMachine: YabaBaseObservableState<Linkmar
         }
     }
 
-    private func applyConverterResult(_ result: YabaWebConverterResult) async {
-        let readable = await YabaConverterResultProcessor.process(
+    private func applyConverterResult(_ result: WebConverterResult) async {
+        let readable = await ConverterResultProcessor.process(
             documentJson: result.documentJson,
             assets: result.assets
         )
         await applyFetchResult(converter: result, readable: readable)
     }
 
-    private func applyFetchResult(converter: YabaWebConverterResult, readable: YabaReadableUnfurl) async {
-        let imageData = await YabaUnfurler.downloadPreviewImageBytes(urlString: converter.linkMetadata.image)
-        let logoData = await YabaUnfurler.downloadPreviewImageBytes(urlString: converter.linkMetadata.logo)
+    private func applyFetchResult(converter: WebConverterResult, readable: ReadableUnfurl) async {
+        let imageData = await Unfurler.downloadPreviewImageBytes(urlString: converter.linkMetadata.image)
+        let logoData = await Unfurler.downloadPreviewImageBytes(urlString: converter.linkMetadata.logo)
         let meta = converter.linkMetadata
         let urlTrim = state.url.trimmingCharacters(in: .whitespacesAndNewlines)
         apply {
@@ -159,7 +159,7 @@ public final class LinkmarkCreationStateMachine: YabaBaseObservableState<Linkmar
             $0.pendingReadableUnfurl = readable
             $0.converterError = nil
         }
-        YabaReadableAssetResolver.shared.register(unfurl: readable)
+        ReadableAssetResolver.shared.register(unfurl: readable)
         if let bid = state.editingBookmarkId {
             let rv = UUID().uuidString
             ReadableContentManager.queueSaveLinkReadableUnfurl(

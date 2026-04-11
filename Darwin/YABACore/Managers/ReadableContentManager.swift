@@ -13,7 +13,7 @@ public enum ReadableContentManager {
     /// When a docmark has no readable rows yet, inserts a minimal JSON placeholder version so
     /// annotations can attach (Compose `ensureDocmarkAnnotationReadableVersionIfNeeded`).
     public static func queueEnsureDocmarkReadableVersionIfNeeded(bookmarkId: String) {
-        YabaCoreOperationQueue.shared.queue(name: "EnsureDocmarkReadable:\(bookmarkId)") { context in
+        CoreOperationQueue.shared.queue(name: "EnsureDocmarkReadable:\(bookmarkId)") { context in
             guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context) else {
                 return
             }
@@ -38,7 +38,7 @@ public enum ReadableContentManager {
 
     /// Persists notemark editor JSON into payload + ensures a readable version row exists for anchoring.
     public static func queueSyncNotemarkReadableMirror(bookmarkId: String, versionId: String, documentJson: String) {
-        YabaCoreOperationQueue.shared.queue(name: "SyncNotemarkReadable:\(bookmarkId)") { context in
+        CoreOperationQueue.shared.queue(name: "SyncNotemarkReadable:\(bookmarkId)") { context in
             guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context) else {
                 return
             }
@@ -71,9 +71,9 @@ public enum ReadableContentManager {
     public static func queueSaveLinkReadableUnfurl(
         bookmarkId: String,
         readableVersionId: String,
-        unfurl: YabaReadableUnfurl
+        unfurl: ReadableUnfurl
     ) {
-        YabaCoreOperationQueue.shared.queue(name: "SaveLinkReadable:\(bookmarkId):\(readableVersionId)") { context in
+        CoreOperationQueue.shared.queue(name: "SaveLinkReadable:\(bookmarkId):\(readableVersionId)") { context in
             guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context) else {
                 return
             }
@@ -101,7 +101,7 @@ public enum ReadableContentManager {
                 version.inlineAssets.append(row)
             }
             bookmark.editedAt = .now
-            YabaReadableAssetResolver.shared.register(unfurl: unfurl)
+            ReadableAssetResolver.shared.register(unfurl: unfurl)
         }
     }
 }

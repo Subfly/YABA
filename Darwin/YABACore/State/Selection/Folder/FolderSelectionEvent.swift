@@ -9,7 +9,7 @@ import Foundation
 
 public enum FolderSelectionEvent: Sendable {
     case onInit(
-        mode: YabaCoreFolderSelectionMode,
+        mode: FolderSelectionMode,
         contextFolderId: String?,
         contextBookmarkIds: [String]?
     )

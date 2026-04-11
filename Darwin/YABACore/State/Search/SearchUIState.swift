@@ -9,19 +9,19 @@ public struct SearchUIState: Sendable {
     public var query: String
     public var enabledFolderFilterIds: Set<String>
     public var enabledTagFilterIds: Set<String>
-    public var sortType: YabaCoreSortType
-    public var sortOrder: YabaCoreSortOrderType
-    public var bookmarkAppearance: YabaCoreBookmarkAppearance
-    public var cardImageSizing: YabaCoreCardImageSizing?
+    public var sortType: SortType
+    public var sortOrder: SortOrderType
+    public var bookmarkAppearance: BookmarkAppearance
+    public var cardImageSizing: CardImageSizing?
 
     public init(
         query: String = "",
         enabledFolderFilterIds: Set<String> = [],
         enabledTagFilterIds: Set<String> = [],
-        sortType: YabaCoreSortType = .editedAt,
-        sortOrder: YabaCoreSortOrderType = .descending,
-        bookmarkAppearance: YabaCoreBookmarkAppearance = .list,
-        cardImageSizing: YabaCoreCardImageSizing? = .small
+        sortType: SortType = .editedAt,
+        sortOrder: SortOrderType = .descending,
+        bookmarkAppearance: BookmarkAppearance = .list,
+        cardImageSizing: CardImageSizing? = .small
     ) {
         self.query = query
         self.enabledFolderFilterIds = enabledFolderFilterIds

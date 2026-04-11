@@ -14,7 +14,7 @@ public enum CanvmarkManager {
         sceneData: Data,
         touchEditedAt: Bool = true
     ) {
-        YabaCoreOperationQueue.shared.queue(name: "SaveCanvmarkScene:\(bookmarkId)") { context in
+        CoreOperationQueue.shared.queue(name: "SaveCanvmarkScene:\(bookmarkId)") { context in
             try saveCanvasSceneInternal(
                 bookmarkId: bookmarkId,
                 sceneData: sceneData,
@@ -25,7 +25,7 @@ public enum CanvmarkManager {
     }
 
     public static func queueCreateOrUpdateCanvasDetails(bookmarkId: String) {
-        YabaCoreOperationQueue.shared.queue(name: "CreateOrUpdateCanvasDetails:\(bookmarkId)") { context in
+        CoreOperationQueue.shared.queue(name: "CreateOrUpdateCanvasDetails:\(bookmarkId)") { context in
             try createOrUpdateCanvasDetailsInternal(bookmarkId: bookmarkId, context: context)
         }
     }

@@ -10,7 +10,7 @@ import SwiftData
 
 struct HomeView: View {
     @AppStorage(Constants.preferredContentAppearanceKey)
-    private var contentAppearance: ViewType = .list
+    private var contentAppearance: ContentAppearance = .list
     
     @AppStorage(Constants.preferredCollectionSortingKey)
     private var preferredSorting: SortType = .createdAt

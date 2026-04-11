@@ -42,7 +42,7 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
             await saveReadableFromConverterOutput(bookmarkId: bid, result: result)
         case let .onConverterFailed(errorMessage):
             apply { $0.lastConverterErrorMessage = errorMessage }
-            YabaCoreToastManager.shared.show(
+            CoreToastManager.shared.show(
                 message: LocalizedStringKey(stringLiteral: errorMessage),
                 iconType: .error,
                 duration: .short
@@ -123,22 +123,22 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
             let granted = await ReminderManager.authorizationGranted()
             apply { $0.hasNotificationPermission = granted }
             if !granted {
-                YabaCoreToastManager.shared.showNotificationPermissionDeniedToast()
+                CoreToastManager.shared.showNotificationPermissionDeniedToast()
             }
         case let .onScheduleReminder(fireAt, titleKey, messageKey):
             guard let bid = state.bookmarkId else { return }
             do {
                 try await ReminderManager.scheduleReminderResolvingLabel(
                     bookmarkId: bid,
-                    bookmarkKindCode: YabaCoreBookmarkKind.link.rawValue,
+                    bookmarkKindCode: BookmarkKind.link.rawValue,
                     titleKey: titleKey,
                     messageKey: messageKey,
                     fireAt: fireAt
                 )
                 apply { $0.reminderDate = fireAt }
-                YabaCoreToastManager.shared.showReminderScheduledToast(fireAt: fireAt)
+                CoreToastManager.shared.showReminderScheduledToast(fireAt: fireAt)
             } catch {
-                YabaCoreToastManager.shared.showReminderScheduleFailedToast()
+                CoreToastManager.shared.showReminderScheduleFailedToast()
             }
         case .onCancelReminder:
             guard let bid = state.bookmarkId else { return }
@@ -181,22 +181,22 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
         apply { $0.isUpdatingReadable = true; $0.lastConverterErrorMessage = nil }
         defer { apply { $0.isUpdatingReadable = false } }
         do {
-            let (conv, readable) = try await YabaLinkmarkUnfurlCoordinator.shared.fetchAndConvert(urlString: url)
+            let (conv, readable) = try await LinkmarkUnfurlCoordinator.shared.fetchAndConvert(urlString: url)
             await saveReadableBundle(bookmarkId: bid, converter: conv, readable: readable)
         } catch {
             apply { $0.lastConverterErrorMessage = String(describing: error) }
         }
     }
 
-    private func saveReadableFromConverterOutput(bookmarkId: String, result: YabaWebConverterResult) async {
-        let readable = await YabaConverterResultProcessor.process(
+    private func saveReadableFromConverterOutput(bookmarkId: String, result: WebConverterResult) async {
+        let readable = await ConverterResultProcessor.process(
             documentJson: result.documentJson,
             assets: result.assets
         )
         await saveReadableBundle(bookmarkId: bookmarkId, converter: result, readable: readable)
     }
 
-    private func saveReadableBundle(bookmarkId: String, converter: YabaWebConverterResult, readable: YabaReadableUnfurl) async {
+    private func saveReadableBundle(bookmarkId: String, converter: WebConverterResult, readable: ReadableUnfurl) async {
         let rv = state.selectedReadableVersionId ?? UUID().uuidString
         apply { $0.selectedReadableVersionId = rv }
         ReadableContentManager.queueSaveLinkReadableUnfurl(
@@ -218,8 +218,8 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
                 metadataDate: meta.date
             )
         }
-        let img = await YabaUnfurler.downloadPreviewImageBytes(urlString: meta.image)
-        let logo = await YabaUnfurler.downloadPreviewImageBytes(urlString: meta.logo)
+        let img = await Unfurler.downloadPreviewImageBytes(urlString: meta.image)
+        let logo = await Unfurler.downloadPreviewImageBytes(urlString: meta.logo)
         AllBookmarksManager.queueSetBookmarkPreviewAssets(
             bookmarkId: bookmarkId,
             imageBytes: img,

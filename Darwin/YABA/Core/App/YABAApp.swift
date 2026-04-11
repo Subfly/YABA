@@ -16,7 +16,7 @@ struct YABAApp: App {
     private var appDelegate
     
     @AppStorage(Constants.preferredThemeKey)
-    private var preferredTheme: ThemeType = .system
+    private var preferredTheme: ThemePreference = .system
     
     @State
     private var deepLinkManager: DeepLinkManager = .init()

@@ -17,7 +17,7 @@ public enum AllBookmarksManager {
     public static func queueCreateBookmark(
         bookmarkId: String = UUID().uuidString,
         folderId: String,
-        kind: YabaCoreBookmarkKind,
+        kind: BookmarkKind,
         label: String,
         bookmarkDescription: String? = nil,
         isPrivate: Bool = false,
@@ -25,7 +25,7 @@ public enum AllBookmarksManager {
         tagIds: [String] = []
     ) {
         precondition(!label.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, "Bookmark label required")
-        YabaCoreOperationQueue.shared.queue(name: "CreateBookmarkBase:\(bookmarkId)") { context in
+        CoreOperationQueue.shared.queue(name: "CreateBookmarkBase:\(bookmarkId)") { context in
             try createBaseBookmarkInternal(
                 bookmarkId: bookmarkId,
                 folderId: folderId,
@@ -43,7 +43,7 @@ public enum AllBookmarksManager {
     public static func queueUpdateBookmarkMetadata(
         bookmarkId: String,
         folderId: String,
-        kind: YabaCoreBookmarkKind,
+        kind: BookmarkKind,
         label: String,
         bookmarkDescription: String?,
         isPrivate: Bool,
@@ -51,7 +51,7 @@ public enum AllBookmarksManager {
         tagIds: [String]?
     ) {
         precondition(!label.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, "Bookmark label required")
-        YabaCoreOperationQueue.shared.queue(name: "UpdateBookmark:\(bookmarkId)") { context in
+        CoreOperationQueue.shared.queue(name: "UpdateBookmark:\(bookmarkId)") { context in
             try updateBookmarkMetadataInternal(
                 bookmarkId: bookmarkId,
                 folderId: folderId,
@@ -67,7 +67,7 @@ public enum AllBookmarksManager {
     }
 
     public static func queueTouchEditedAt(bookmarkId: String) {
-        YabaCoreOperationQueue.shared.queue(name: "TouchBookmarkEditedAt:\(bookmarkId)") { context in
+        CoreOperationQueue.shared.queue(name: "TouchBookmarkEditedAt:\(bookmarkId)") { context in
             guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context) else { return }
             bookmark.editedAt = .now
         }
@@ -75,7 +75,7 @@ public enum AllBookmarksManager {
 
     /// Card preview image / favicon bytes on the base bookmark.
     public static func queueSetBookmarkPreviewAssets(bookmarkId: String, imageBytes: Data?, iconBytes: Data?) {
-        YabaCoreOperationQueue.shared.queue(name: "PreviewAssets:\(bookmarkId)") { context in
+        CoreOperationQueue.shared.queue(name: "PreviewAssets:\(bookmarkId)") { context in
             guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context) else {
                 return
             }
@@ -102,7 +102,7 @@ public enum AllBookmarksManager {
     }
 
     public static func queueRecordBookmarkView(bookmarkId: String) {
-        YabaCoreOperationQueue.shared.queue(name: "RecordBookmarkView:\(bookmarkId)") { context in
+        CoreOperationQueue.shared.queue(name: "RecordBookmarkView:\(bookmarkId)") { context in
             guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context) else { return }
             bookmark.viewCount += 1
             bookmark.editedAt = .now
@@ -112,7 +112,7 @@ public enum AllBookmarksManager {
     // MARK: - Pin / private
 
     public static func queueToggleBookmarkPinned(bookmarkId: String) {
-        YabaCoreOperationQueue.shared.queue(name: "TogglePin:\(bookmarkId)") { context in
+        CoreOperationQueue.shared.queue(name: "TogglePin:\(bookmarkId)") { context in
             guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context) else { return }
             let newPinned = !bookmark.isPinned
             bookmark.isPinned = newPinned
@@ -122,7 +122,7 @@ public enum AllBookmarksManager {
     }
 
     public static func queueToggleBookmarkPrivate(bookmarkId: String) {
-        YabaCoreOperationQueue.shared.queue(name: "TogglePrivate:\(bookmarkId)") { context in
+        CoreOperationQueue.shared.queue(name: "TogglePrivate:\(bookmarkId)") { context in
             guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context) else { return }
             let newPrivate = !bookmark.isPrivate
             bookmark.isPrivate = newPrivate
@@ -135,14 +135,14 @@ public enum AllBookmarksManager {
 
     public static func queueMoveBookmarksToFolder(bookmarkIds: [String], targetFolderId: String) {
         guard !bookmarkIds.isEmpty else { return }
-        YabaCoreOperationQueue.shared.queue(name: "MoveBookmarks:\(bookmarkIds.count)") { context in
+        CoreOperationQueue.shared.queue(name: "MoveBookmarks:\(bookmarkIds.count)") { context in
             try moveBookmarksToFolderInternal(bookmarkIds: bookmarkIds, targetFolderId: targetFolderId, context: context)
         }
     }
 
     public static func queueDeleteBookmarks(bookmarkIds: [String]) {
         guard !bookmarkIds.isEmpty else { return }
-        YabaCoreOperationQueue.shared.queue(name: "DeleteBookmarks:\(bookmarkIds.count)") { context in
+        CoreOperationQueue.shared.queue(name: "DeleteBookmarks:\(bookmarkIds.count)") { context in
             ReminderManager.cancelReminders(bookmarkIds: bookmarkIds)
             for id in bookmarkIds {
                 if let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: id, context: context) {
@@ -163,13 +163,13 @@ public enum AllBookmarksManager {
     // MARK: - Tags
 
     public static func queueAddTagToBookmark(tagId: String, bookmarkId: String) {
-        YabaCoreOperationQueue.shared.queue(name: "AddTag:\(tagId):\(bookmarkId)") { context in
+        CoreOperationQueue.shared.queue(name: "AddTag:\(tagId):\(bookmarkId)") { context in
             try addTagToBookmarkInternal(tagId: tagId, bookmarkId: bookmarkId, context: context)
         }
     }
 
     public static func queueRemoveTagFromBookmark(tagId: String, bookmarkId: String) {
-        YabaCoreOperationQueue.shared.queue(name: "RemoveTag:\(tagId):\(bookmarkId)") { context in
+        CoreOperationQueue.shared.queue(name: "RemoveTag:\(tagId):\(bookmarkId)") { context in
             try removeTagFromBookmarkInternal(tagId: tagId, bookmarkId: bookmarkId, context: context)
         }
     }
@@ -180,7 +180,7 @@ public enum AllBookmarksManager {
     private static func createBaseBookmarkInternal(
         bookmarkId: String,
         folderId: String,
-        kind: YabaCoreBookmarkKind,
+        kind: BookmarkKind,
         label: String,
         bookmarkDescription: String?,
         isPrivate: Bool,
@@ -215,7 +215,7 @@ public enum AllBookmarksManager {
     private static func updateBookmarkMetadataInternal(
         bookmarkId: String,
         folderId: String,
-        kind: YabaCoreBookmarkKind,
+        kind: BookmarkKind,
         label: String,
         bookmarkDescription: String?,
         isPrivate: Bool,

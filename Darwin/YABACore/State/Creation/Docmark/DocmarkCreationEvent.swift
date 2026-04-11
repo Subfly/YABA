@@ -9,7 +9,7 @@ public enum DocmarkCreationEvent: Sendable {
     case onInit(docmarkId: String?, initialFolderId: String?, initialTagIds: [String]?)
     case onPickDocument
     case onClearDocument
-    case onDocumentFromShare(Data, sourceFileName: String?, docmarkType: YabaCoreDocmarkType)
+    case onDocumentFromShare(Data, sourceFileName: String?, docmarkType: DocmarkType)
     case onCyclePreviewAppearance
     case onDocumentMetadataExtracted(
         metadataTitle: String?,

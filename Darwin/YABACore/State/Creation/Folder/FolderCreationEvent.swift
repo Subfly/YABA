@@ -10,7 +10,7 @@ import Foundation
 public enum FolderCreationEvent: Sendable {
     case onInitWithFolder(folderId: String?)
     case onSelectNewParent(parentFolderId: String?)
-    case onSelectNewColor(YabaCoreColorRole)
+    case onSelectNewColor(YabaColor)
     case onSelectNewIcon(String)
     case onChangeLabel(String)
     case onChangeDescription(String)

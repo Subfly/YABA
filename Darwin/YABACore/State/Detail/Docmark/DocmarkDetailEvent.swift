@@ -13,9 +13,9 @@ public enum DocmarkDetailEvent: Sendable {
     case onToggleReaderTheme
     case onToggleReaderFontSize
     case onToggleReaderLineHeight
-    case onSetReaderTheme(YabaCoreReaderTheme)
-    case onSetReaderFontSize(YabaCoreReaderFontSize)
-    case onSetReaderLineHeight(YabaCoreReaderLineHeight)
+    case onSetReaderTheme(ReaderTheme)
+    case onSetReaderFontSize(ReaderFontSize)
+    case onSetReaderLineHeight(ReaderLineHeight)
     case onDeleteAnnotation(annotationId: String)
     case onScrollToAnnotation(annotationId: String)
     case onClearScrollToAnnotation
@@ -27,5 +27,5 @@ public enum DocmarkDetailEvent: Sendable {
     case onCancelReminder
     case onWebInitialContentLoad(resultJson: String?)
 
-    case updateDocMetadata(bookmarkId: String, summary: String?, type: YabaCoreDocmarkType?)
+    case updateDocMetadata(bookmarkId: String, summary: String?, type: DocmarkType?)
 }

@@ -9,8 +9,8 @@ public struct AnnotationCreationUIState: Sendable {
     public var bookmarkId: String
     public var readableVersionId: String?
     public var annotationId: String?
-    public var annotationType: YabaCoreAnnotationType
-    public var colorRole: YabaCoreColorRole
+    public var annotationType: AnnotationType
+    public var colorRole: YabaColor
     public var note: String
     public var quoteText: String?
     public var extrasJson: String?
@@ -20,8 +20,8 @@ public struct AnnotationCreationUIState: Sendable {
         bookmarkId: String = "",
         readableVersionId: String? = nil,
         annotationId: String? = nil,
-        annotationType: YabaCoreAnnotationType = .readable,
-        colorRole: YabaCoreColorRole = .none,
+        annotationType: AnnotationType = .readable,
+        colorRole: YabaColor = .none,
         note: String = "",
         quoteText: String? = nil,
         extrasJson: String? = nil,

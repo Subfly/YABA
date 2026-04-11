@@ -248,13 +248,13 @@ internal class SettingsState {
         var hasPassedOnboarding = false
         
         @AppStorage(Constants.preferredThemeKey)
-        var theme: ThemeType = .system
+        var theme: ThemePreference = .system
         
         @AppStorage(Constants.preferredContentAppearanceKey)
-        var contentAppearance: ViewType = .list
+        var contentAppearance: ContentAppearance = .list
         
         @AppStorage(Constants.preferredCardImageSizingKey)
-        var imageSizing: CardViewTypeImageSizing = .small
+        var imageSizing: CardImageSizing = .small
         
         @AppStorage(Constants.preferredCollectionSortingKey)
         var collectionSortType: SortType = .createdAt

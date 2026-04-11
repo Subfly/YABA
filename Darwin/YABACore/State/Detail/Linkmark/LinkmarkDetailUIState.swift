@@ -11,9 +11,9 @@ public struct LinkmarkDetailUIState: Sendable {
     public var linkSourceUrl: String?
     public var isUpdatingReadable: Bool
     public var selectedReadableVersionId: String?
-    public var readerTheme: YabaCoreReaderTheme
-    public var readerFontSize: YabaCoreReaderFontSize
-    public var readerLineHeight: YabaCoreReaderLineHeight
+    public var readerTheme: ReaderTheme
+    public var readerFontSize: ReaderFontSize
+    public var readerLineHeight: ReaderLineHeight
     public var scrollToAnnotationId: String?
     public var tocJson: String?
     public var pendingTocNavigationId: String?
@@ -30,9 +30,9 @@ public struct LinkmarkDetailUIState: Sendable {
         linkSourceUrl: String? = nil,
         isUpdatingReadable: Bool = false,
         selectedReadableVersionId: String? = nil,
-        readerTheme: YabaCoreReaderTheme = .system,
-        readerFontSize: YabaCoreReaderFontSize = .medium,
-        readerLineHeight: YabaCoreReaderLineHeight = .normal,
+        readerTheme: ReaderTheme = .system,
+        readerFontSize: ReaderFontSize = .medium,
+        readerLineHeight: ReaderLineHeight = .normal,
         scrollToAnnotationId: String? = nil,
         tocJson: String? = nil,
         pendingTocNavigationId: String? = nil,

@@ -9,11 +9,11 @@ import SwiftUI
 
 struct FABLocationPicker: View {
     @AppStorage(Constants.preferredFabPositionKey)
-    private var preferredPosition: FABPosition = .center
+    private var preferredPosition: FabPosition = .center
     
     var body: some View {
         Menu {
-            ForEach(FABPosition.allCases, id: \.self) { position in
+            ForEach(FabPosition.allCases, id: \.self) { position in
                 Button {
                     withAnimation {
                         preferredPosition = position

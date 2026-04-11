@@ -8,9 +8,9 @@
 import Foundation
 
 public enum AnnotationCreationEvent: Sendable {
-    case onInitWithSelection(YabaReadableSelectionDraft)
+    case onInitWithSelection(ReadableSelectionDraft)
     case onInitWithAnnotation(bookmarkId: String, annotationId: String)
-    case onSelectNewColor(YabaCoreColorRole)
+    case onSelectNewColor(YabaColor)
     case onChangeNote(String)
     case onChangeQuote(String?)
     case onSave
@@ -20,7 +20,7 @@ public enum AnnotationCreationEvent: Sendable {
     case create(
         bookmarkId: String,
         readableVersionId: String?,
-        type: YabaCoreAnnotationType,
+        type: AnnotationType,
         note: String?,
         quote: String?
     )

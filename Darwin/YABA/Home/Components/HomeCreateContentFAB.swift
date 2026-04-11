@@ -30,7 +30,7 @@ struct HomeCreateContentFAB: View {
 @available(iOS 26, *)
 private struct GlassyHomeCreateContentFAB: View {
     @AppStorage(Constants.preferredFabPositionKey)
-    private var preferredPosition: FABPosition = .center
+    private var preferredPosition: FabPosition = .center
     
     @Namespace private var animation
     
@@ -119,7 +119,7 @@ private struct GlassyHomeCreateContentFAB: View {
 
 private struct LegacyHomeCreateContentFAB: View {
     @AppStorage(Constants.preferredFabPositionKey)
-    private var preferredPosition: FABPosition = .center
+    private var preferredPosition: FabPosition = .center
     
     @Binding
     var isActive: Bool

@@ -20,7 +20,7 @@ public enum LinkmarkManager {
         metadataAuthor: String? = nil,
         metadataDate: String? = nil
     ) {
-        YabaCoreOperationQueue.shared.queue(name: "CreateOrUpdateLinkDetails:\(bookmarkId)") { context in
+        CoreOperationQueue.shared.queue(name: "CreateOrUpdateLinkDetails:\(bookmarkId)") { context in
             try createOrUpdateLinkDetailsInternal(
                 bookmarkId: bookmarkId,
                 url: url,

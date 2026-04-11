@@ -11,10 +11,10 @@ public enum HomeEvent: Sendable {
     case onInit
 
     // Preferences (host may mirror to `UserDefaults` / `@AppStorage`)
-    case onChangeBookmarkAppearance(YabaCoreBookmarkAppearance)
-    case onChangeCardImageSizing(YabaCoreCardImageSizing)
-    case onChangeCollectionSorting(YabaCoreSortType)
-    case onChangeSortOrder(YabaCoreSortOrderType)
+    case onChangeBookmarkAppearance(BookmarkAppearance)
+    case onChangeCardImageSizing(CardImageSizing)
+    case onChangeCollectionSorting(SortType)
+    case onChangeSortOrder(SortOrderType)
 
     case onToggleFolderExpanded(folderId: String)
     case onDeleteFolder(folderId: String)

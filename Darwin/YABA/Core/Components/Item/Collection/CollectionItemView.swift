@@ -314,7 +314,7 @@ private struct InteractableView: View {
     private var appState
     
     @AppStorage(Constants.preferredContentAppearanceKey)
-    private var contentAppearance: ViewType = .list
+    private var contentAppearance: ContentAppearance = .list
     
     @Binding
     var itemState: CollectionItemState

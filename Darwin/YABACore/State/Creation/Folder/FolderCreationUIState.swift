@@ -11,7 +11,7 @@ public struct FolderCreationUIState: Sendable {
     public var label: String
     public var folderDescription: String
     public var icon: String
-    public var colorRole: YabaCoreColorRole
+    public var colorRole: YabaColor
     public var lastError: String?
 
     public init(
@@ -20,7 +20,7 @@ public struct FolderCreationUIState: Sendable {
         label: String = "",
         folderDescription: String = "",
         icon: String = "folder-01",
-        colorRole: YabaCoreColorRole = .none,
+        colorRole: YabaColor = .none,
         lastError: String? = nil
     ) {
         self.existingFolderId = existingFolderId

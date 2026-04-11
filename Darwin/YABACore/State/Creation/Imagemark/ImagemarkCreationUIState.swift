@@ -14,8 +14,8 @@ public struct ImagemarkCreationUIState: Sendable {
     public var selectedTagIds: [String]
     public var imageData: Data?
     public var imageFileExtension: String
-    public var bookmarkAppearance: YabaCoreBookmarkAppearance
-    public var cardImageSizing: YabaCoreCardImageSizing
+    public var bookmarkAppearance: BookmarkAppearance
+    public var cardImageSizing: CardImageSizing
     public var isPrivate: Bool
     public var isPinned: Bool
     public var isSaving: Bool
@@ -30,8 +30,8 @@ public struct ImagemarkCreationUIState: Sendable {
         selectedTagIds: [String] = [],
         imageData: Data? = nil,
         imageFileExtension: String = "jpg",
-        bookmarkAppearance: YabaCoreBookmarkAppearance = .list,
-        cardImageSizing: YabaCoreCardImageSizing = .small,
+        bookmarkAppearance: BookmarkAppearance = .list,
+        cardImageSizing: CardImageSizing = .small,
         isPrivate: Bool = false,
         isPinned: Bool = false,
         isSaving: Bool = false,

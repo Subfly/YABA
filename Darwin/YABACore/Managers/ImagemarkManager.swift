@@ -10,7 +10,7 @@ import SwiftData
 
 public enum ImagemarkManager {
     public static func queueCreateOrUpdateImageDetails(bookmarkId: String, summary: String?) {
-        YabaCoreOperationQueue.shared.queue(name: "CreateOrUpdateImageDetails:\(bookmarkId)") { context in
+        CoreOperationQueue.shared.queue(name: "CreateOrUpdateImageDetails:\(bookmarkId)") { context in
             try upsertImageDetails(bookmarkId: bookmarkId, summary: summary, context: context)
         }
     }

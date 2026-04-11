@@ -10,20 +10,20 @@ public struct FolderDetailUIState: Sendable {
     public var query: String
     public var selectionMode: Bool
     public var selectedBookmarkIds: Set<String>
-    public var sortType: YabaCoreSortType
-    public var sortOrder: YabaCoreSortOrderType
-    public var bookmarkAppearance: YabaCoreBookmarkAppearance
-    public var cardImageSizing: YabaCoreCardImageSizing?
+    public var sortType: SortType
+    public var sortOrder: SortOrderType
+    public var bookmarkAppearance: BookmarkAppearance
+    public var cardImageSizing: CardImageSizing?
 
     public init(
         folderId: String? = nil,
         query: String = "",
         selectionMode: Bool = false,
         selectedBookmarkIds: Set<String> = [],
-        sortType: YabaCoreSortType = .editedAt,
-        sortOrder: YabaCoreSortOrderType = .descending,
-        bookmarkAppearance: YabaCoreBookmarkAppearance = .list,
-        cardImageSizing: YabaCoreCardImageSizing? = .small
+        sortType: SortType = .editedAt,
+        sortOrder: SortOrderType = .descending,
+        bookmarkAppearance: BookmarkAppearance = .list,
+        cardImageSizing: CardImageSizing? = .small
     ) {
         self.folderId = folderId
         self.query = query

@@ -15,7 +15,7 @@ public enum NotemarkManager {
         documentBody: Data?,
         touchEditedAt: Bool = true
     ) {
-        YabaCoreOperationQueue.shared.queue(name: "SaveNotemarkDocument:\(bookmarkId)") { context in
+        CoreOperationQueue.shared.queue(name: "SaveNotemarkDocument:\(bookmarkId)") { context in
             try saveNoteDocumentInternal(
                 bookmarkId: bookmarkId,
                 documentBody: documentBody,
@@ -29,7 +29,7 @@ public enum NotemarkManager {
         bookmarkId: String,
         readableVersionId: String? = nil
     ) {
-        YabaCoreOperationQueue.shared.queue(name: "CreateOrUpdateNoteDetails:\(bookmarkId)") { context in
+        CoreOperationQueue.shared.queue(name: "CreateOrUpdateNoteDetails:\(bookmarkId)") { context in
             try createOrUpdateNoteDetailsInternal(
                 bookmarkId: bookmarkId,
                 readableVersionId: readableVersionId,

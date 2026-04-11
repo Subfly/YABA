@@ -15,7 +15,7 @@ public enum ReadableVersionManager {
         relativePathHint: String? = nil,
         documentJson: Data? = nil
     ) {
-        YabaCoreOperationQueue.shared.queue(name: "InsertReadableVersion:\(bookmarkId)") { context in
+        CoreOperationQueue.shared.queue(name: "InsertReadableVersion:\(bookmarkId)") { context in
             guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context) else {
                 return
             }
@@ -36,7 +36,7 @@ public enum ReadableVersionManager {
     }
 
     public static func queueDeleteReadableVersion(readableVersionId: String) {
-        YabaCoreOperationQueue.shared.queue(name: "DeleteReadableVersion:\(readableVersionId)") { context in
+        CoreOperationQueue.shared.queue(name: "DeleteReadableVersion:\(readableVersionId)") { context in
             let p = #Predicate<ReadableVersionModel> { $0.readableVersionId == readableVersionId }
             var d = FetchDescriptor(predicate: p)
             d.fetchLimit = 1

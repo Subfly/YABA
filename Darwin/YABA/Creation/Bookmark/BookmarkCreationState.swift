@@ -217,8 +217,8 @@ internal class BookmarkCreationState {
         link: String?,
         bookmarkToEdit: YabaBookmark?,
         collectionToFill: YabaCollection?,
-        storedContentAppearance: ViewType,
-        storedCardImageSizing: CardViewTypeImageSizing,
+        storedContentAppearance: ContentAppearance,
+        storedCardImageSizing: CardImageSizing,
         using modelContext: ModelContext
     ) async {
         /// MARK: PREVIEW TYPE SELECTION

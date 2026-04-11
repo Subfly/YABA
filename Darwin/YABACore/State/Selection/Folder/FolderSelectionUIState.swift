@@ -6,13 +6,13 @@
 import Foundation
 
 public struct FolderSelectionUIState: Sendable {
-    public var mode: YabaCoreFolderSelectionMode
+    public var mode: FolderSelectionMode
     public var contextFolderId: String?
     public var contextBookmarkIds: [String]?
     public var searchQuery: String
 
     public init(
-        mode: YabaCoreFolderSelectionMode = .folderSelection,
+        mode: FolderSelectionMode = .folderSelection,
         contextFolderId: String? = nil,
         contextBookmarkIds: [String]? = nil,
         searchQuery: String = ""

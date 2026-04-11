@@ -9,10 +9,10 @@ import SwiftUI
 
 struct ContentAppearancePicker: View {
     @AppStorage(Constants.preferredContentAppearanceKey)
-    private var preferredContentAppearance: ViewType = .list
+    private var preferredContentAppearance: ContentAppearance = .list
     
     @AppStorage(Constants.preferredCardImageSizingKey)
-    private var preferredCardViewImageSizing: CardViewTypeImageSizing = .small
+    private var preferredCardViewImageSizing: CardImageSizing = .small
     
     var body: some View {
         Menu {
@@ -26,14 +26,14 @@ struct ContentAppearancePicker: View {
                         if preferredContentAppearance == .list {
                             YabaIconView(bundleKey: "tick-01")
                         }
-                        Text(ViewType.list.getUITitle())
+                        Text(ContentAppearance.list.getUITitle())
                     }
                 } icon: {
-                    YabaIconView(bundleKey: ViewType.list.getUIIconName())
+                    YabaIconView(bundleKey: ContentAppearance.list.getUIIconName())
                 }
             }
             Menu {
-                ForEach(CardViewTypeImageSizing.allCases, id: \.self) { sizing in
+                ForEach(CardImageSizing.allCases, id: \.self) { sizing in
                     Button {
                         withAnimation {
                             preferredCardViewImageSizing = sizing
@@ -58,10 +58,10 @@ struct ContentAppearancePicker: View {
                         if preferredContentAppearance == .card {
                             YabaIconView(bundleKey: "tick-01")
                         }
-                        Text(ViewType.card.getUITitle())
+                        Text(ContentAppearance.card.getUITitle())
                     }
                 } icon: {
-                    YabaIconView(bundleKey: ViewType.card.getUIIconName())
+                    YabaIconView(bundleKey: ContentAppearance.card.getUIIconName())
                 }
             }
         } label: {

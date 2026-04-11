@@ -3,7 +3,7 @@
 //  YABACore
 //
 //  Compose-first tag rules. Methods taking `ModelContext` are synchronous and are intended to be
-//  called from `YabaCoreOperationQueue` work items (never nest another queue operation).
+//  called from `CoreOperationQueue` work items (never nest another queue operation).
 //
 
 import Foundation
@@ -13,7 +13,7 @@ public enum TagManager {
     // MARK: - System tags (Compose `CoreConstants.Tag`)
 
     /// Ensures the Pinned system tag row exists. Call only from the serial operation queue or a
-    /// single-threaded migration context — **not** re-entrant through `YabaCoreOperationQueue`.
+    /// single-threaded migration context — **not** re-entrant through `CoreOperationQueue`.
     static func ensurePinnedTag(using context: ModelContext) throws -> TagModel {
         let id = Constants.Tag.Pinned.id
         if let existing = try YabaCorePersistenceHelpers.tag(tagId: id, context: context) {
@@ -57,7 +57,7 @@ public enum TagManager {
 
     /// Queued: create a user tag row.
     public static func queueCreateTag(tagId: String = UUID().uuidString, label: String, icon: String, colorRaw: Int) {
-        YabaCoreOperationQueue.shared.queue(name: "CreateTag:\(tagId)") { context in
+        CoreOperationQueue.shared.queue(name: "CreateTag:\(tagId)") { context in
             if try YabaCorePersistenceHelpers.tag(tagId: tagId, context: context) != nil { return }
             let now = Date.now
             let tag = TagModel(
@@ -76,7 +76,7 @@ public enum TagManager {
 
     /// Queued: update label, icon, and color for an existing tag.
     public static func queueUpdateTagMetadata(tagId: String, label: String, icon: String, colorRaw: Int) {
-        YabaCoreOperationQueue.shared.queue(name: "UpdateTag:\(tagId)") { context in
+        CoreOperationQueue.shared.queue(name: "UpdateTag:\(tagId)") { context in
             guard let tag = try YabaCorePersistenceHelpers.tag(tagId: tagId, context: context) else { return }
             tag.label = label
             tag.icon = icon
@@ -87,7 +87,7 @@ public enum TagManager {
 
     /// Queued: hide non-user system tag or delete a normal tag (Compose parity).
     public static func queueDeleteOrHideTag(tagId: String) {
-        YabaCoreOperationQueue.shared.queue(name: "DeleteOrHideTag:\(tagId)") { context in
+        CoreOperationQueue.shared.queue(name: "DeleteOrHideTag:\(tagId)") { context in
             try deleteOrHideTagInternal(tagId: tagId, context: context)
         }
     }

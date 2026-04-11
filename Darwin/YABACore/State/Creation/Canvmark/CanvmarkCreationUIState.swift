@@ -12,8 +12,8 @@ public struct CanvmarkCreationUIState: Sendable {
     public var selectedFolderId: String?
     public var selectedTagIds: [String]
     public var sceneData: Data?
-    public var bookmarkAppearance: YabaCoreBookmarkAppearance
-    public var cardImageSizing: YabaCoreCardImageSizing
+    public var bookmarkAppearance: BookmarkAppearance
+    public var cardImageSizing: CardImageSizing
     public var isPrivate: Bool
     public var isPinned: Bool
     public var isSaving: Bool
@@ -26,8 +26,8 @@ public struct CanvmarkCreationUIState: Sendable {
         selectedFolderId: String? = nil,
         selectedTagIds: [String] = [],
         sceneData: Data? = nil,
-        bookmarkAppearance: YabaCoreBookmarkAppearance = .list,
-        cardImageSizing: YabaCoreCardImageSizing = .small,
+        bookmarkAppearance: BookmarkAppearance = .list,
+        cardImageSizing: CardImageSizing = .small,
         isPrivate: Bool = false,
         isPinned: Bool = false,
         isSaving: Bool = false,
