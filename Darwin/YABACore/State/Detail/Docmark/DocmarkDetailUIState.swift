@@ -15,6 +15,7 @@ public struct DocmarkDetailUIState: Sendable {
     public var pendingTocNavigationId: String?
     public var pendingTocNavigationExtrasJson: String?
     public var reminderDate: Date?
+    public var webInitialContentLoadResultJson: String?
 
     public init(
         bookmarkId: String? = nil,
@@ -25,7 +26,8 @@ public struct DocmarkDetailUIState: Sendable {
         tocJson: String? = nil,
         pendingTocNavigationId: String? = nil,
         pendingTocNavigationExtrasJson: String? = nil,
-        reminderDate: Date? = nil
+        reminderDate: Date? = nil,
+        webInitialContentLoadResultJson: String? = nil
     ) {
         self.bookmarkId = bookmarkId
         self.readerTheme = readerTheme
@@ -36,5 +38,6 @@ public struct DocmarkDetailUIState: Sendable {
         self.pendingTocNavigationId = pendingTocNavigationId
         self.pendingTocNavigationExtrasJson = pendingTocNavigationExtrasJson
         self.reminderDate = reminderDate
+        self.webInitialContentLoadResultJson = webInitialContentLoadResultJson
     }
 }

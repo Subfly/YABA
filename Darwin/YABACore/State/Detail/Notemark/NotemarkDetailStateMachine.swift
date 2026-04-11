@@ -33,9 +33,10 @@ public final class NotemarkDetailStateMachine: YabaBaseObservableState<NotemarkD
             if !granted {
                 YabaCoreToastManager.shared.showNotificationPermissionDeniedToast()
             }
-        case .onPickImageFromGallery, .onCaptureImageFromCamera,
-             .onWebInitialContentLoad:
+        case .onPickImageFromGallery, .onCaptureImageFromCamera:
             break
+        case let .onWebInitialContentLoad(resultJson):
+            apply { $0.webInitialContentLoadResultJson = resultJson }
         case .onConsumedInlineImageInsert:
             apply { $0.inlineImageDocumentSrc = nil }
         case let .onTocChanged(tocJson):

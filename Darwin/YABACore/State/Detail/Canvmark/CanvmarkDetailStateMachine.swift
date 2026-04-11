@@ -22,7 +22,9 @@ public final class CanvmarkDetailStateMachine: YabaBaseObservableState<CanvmarkD
         case let .onSave(sceneJson):
             guard let bid = state.bookmarkId else { return }
             CanvmarkManager.queueSaveCanvasSceneData(bookmarkId: bid, sceneData: Data(sceneJson.utf8))
-        case .onWebInitialContentLoad, .onPickImageFromGallery, .onCaptureImageFromCamera,
+        case let .onWebInitialContentLoad(resultJson):
+            apply { $0.webInitialContentLoadResultJson = resultJson }
+        case .onPickImageFromGallery, .onCaptureImageFromCamera,
              .onConsumedPendingImageInsert:
             break
         case let .onCanvasMetricsChanged(metricsJson):

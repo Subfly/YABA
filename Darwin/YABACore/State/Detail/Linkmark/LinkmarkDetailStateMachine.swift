@@ -32,8 +32,42 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
             )
         case .onUpdateReadableRequested, .onUpdateLinkMetadataRequested:
             break
-        case .onConverterSucceeded, .onConverterFailed, .onReaderWebInitialContentLoad:
-            break
+        case let .onReaderWebInitialContentLoad(resultJson):
+            apply { $0.readerWebInitialLoadResultJson = resultJson }
+        case let .onConverterSucceeded(documentJson, linkMetadataJson):
+            guard let bid = state.bookmarkId else { return }
+            let rv = state.selectedReadableVersionId ?? UUID().uuidString
+            apply { $0.selectedReadableVersionId = rv }
+            ReadableVersionManager.queueInsertReadableVersion(
+                bookmarkId: bid,
+                readableVersionId: rv,
+                documentJson: Data(documentJson.utf8)
+            )
+            if let meta = linkMetadataJson,
+               let data = meta.data(using: .utf8),
+               let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                let cleaned = (obj["cleanedUrl"] as? String)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+                if !cleaned.isEmpty {
+                    LinkmarkManager.queueCreateOrUpdateLinkDetails(
+                        bookmarkId: bid,
+                        url: cleaned,
+                        domain: LinkmarkManager.extractDomain(from: cleaned),
+                        videoUrl: obj["video"] as? String,
+                        audioUrl: obj["audio"] as? String,
+                        metadataTitle: obj["title"] as? String,
+                        metadataDescription: obj["description"] as? String,
+                        metadataAuthor: obj["author"] as? String,
+                        metadataDate: obj["date"] as? String
+                    )
+                }
+            }
+        case let .onConverterFailed(errorMessage):
+            apply { $0.lastConverterErrorMessage = errorMessage }
+            YabaCoreToastManager.shared.show(
+                message: LocalizedStringKey(stringLiteral: errorMessage),
+                iconType: .error,
+                duration: .short
+            )
         case let .onSelectReadableVersion(versionId):
             apply { $0.selectedReadableVersionId = versionId }
         case let .onDeleteReadableVersion(versionId):

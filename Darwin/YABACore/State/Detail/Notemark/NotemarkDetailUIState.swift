@@ -14,6 +14,7 @@ public struct NotemarkDetailUIState: Sendable {
     public var lastExportMarkdown: String?
     public var lastExportPdfBase64: String?
     public var reminderDate: Date?
+    public var webInitialContentLoadResultJson: String?
 
     public init(
         bookmarkId: String? = nil,
@@ -23,7 +24,8 @@ public struct NotemarkDetailUIState: Sendable {
         pendingTocNavigationExtrasJson: String? = nil,
         lastExportMarkdown: String? = nil,
         lastExportPdfBase64: String? = nil,
-        reminderDate: Date? = nil
+        reminderDate: Date? = nil,
+        webInitialContentLoadResultJson: String? = nil
     ) {
         self.bookmarkId = bookmarkId
         self.inlineImageDocumentSrc = inlineImageDocumentSrc
@@ -33,5 +35,6 @@ public struct NotemarkDetailUIState: Sendable {
         self.lastExportMarkdown = lastExportMarkdown
         self.lastExportPdfBase64 = lastExportPdfBase64
         self.reminderDate = reminderDate
+        self.webInitialContentLoadResultJson = webInitialContentLoadResultJson
     }
 }

@@ -21,8 +21,10 @@ public final class DocmarkDetailStateMachine: YabaBaseObservableState<DocmarkDet
             }
         case let .onDeleteBookmark(bookmarkId):
             AllBookmarksManager.queueDeleteBookmarks(bookmarkIds: [bookmarkId])
-        case .onShareDocument, .onExportDocument, .onWebInitialContentLoad:
+        case .onShareDocument, .onExportDocument:
             break
+        case let .onWebInitialContentLoad(resultJson):
+            apply { $0.webInitialContentLoadResultJson = resultJson }
         case .onRequestNotificationPermission:
             _ = await ReminderManager.requestAuthorization()
             let granted = await ReminderManager.authorizationGranted()

@@ -19,6 +19,8 @@ public struct LinkmarkDetailUIState: Sendable {
     public var lastExportPdfBase64: String?
     public var reminderDate: Date?
     public var hasNotificationPermission: Bool
+    public var readerWebInitialLoadResultJson: String?
+    public var lastConverterErrorMessage: String?
 
     public init(
         bookmarkId: String? = nil,
@@ -33,7 +35,9 @@ public struct LinkmarkDetailUIState: Sendable {
         lastExportMarkdown: String? = nil,
         lastExportPdfBase64: String? = nil,
         reminderDate: Date? = nil,
-        hasNotificationPermission: Bool = false
+        hasNotificationPermission: Bool = false,
+        readerWebInitialLoadResultJson: String? = nil,
+        lastConverterErrorMessage: String? = nil
     ) {
         self.bookmarkId = bookmarkId
         self.selectedReadableVersionId = selectedReadableVersionId
@@ -48,5 +52,7 @@ public struct LinkmarkDetailUIState: Sendable {
         self.lastExportPdfBase64 = lastExportPdfBase64
         self.reminderDate = reminderDate
         self.hasNotificationPermission = hasNotificationPermission
+        self.readerWebInitialLoadResultJson = readerWebInitialLoadResultJson
+        self.lastConverterErrorMessage = lastConverterErrorMessage
     }
 }
