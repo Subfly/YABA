@@ -2,8 +2,8 @@
 //  IconManager.swift
 //  YABACore
 //
-//  Bundled icon taxonomy (Compose `IconManager`). Loads metadata JSON via `BundleReader` from
-//  `Assets/Metadata/` under `Darwin/YABACore/Assets`.
+//  Bundled icon taxonomy (Compose `IconManager`). JSON files are looked up by **file name** in the
+//  bundle root (see `BundleReader` — Xcode does not preserve source folder paths in the product).
 //
 
 import Foundation
@@ -56,12 +56,12 @@ private struct IconCategoryFile: Decodable {
 }
 
 public enum IconManager {
-    private static let headerAssetPath = "Assets/Metadata/icon_categories_header.json"
+    private static let headerFileName = "icon_categories_header.json"
 
-    /// Returns categories from `Assets/Metadata/icon_categories_header.json` in the given bundle, or `[]` if missing.
+    /// Returns categories from `icon_categories_header.json` in the given bundle, or `[]` if missing.
     public static func loadAllCategories(in bundle: Bundle = .main) async -> [YabaIconCategory] {
         await Task.detached {
-            guard let url = BundleReader.url(forAssetPath: headerAssetPath, in: bundle),
+            guard let url = BundleReader.urlForBundledFileName(headerFileName, in: bundle),
                   let data = try? Data(contentsOf: url),
                   let decoded = try? JSONDecoder().decode(IconHeaderFile.self, from: data)
             else {
@@ -71,12 +71,10 @@ public enum IconManager {
         }.value
     }
 
-    /// Loads icon name list from `Assets/Metadata/<category.filename>` in the bundle, or `[]` if missing.
+    /// Loads icon name list from the category’s JSON file (e.g. `add_remove.json`) in the bundle, or `[]` if missing.
     public static func loadIconsForCategory(_ category: YabaIconCategory, in bundle: Bundle = .main) async -> [YabaIconItem] {
         await Task.detached {
-            let name = category.filename.replacingOccurrences(of: ".json", with: "")
-            let assetPath = "Assets/Metadata/\(name).json"
-            guard let url = BundleReader.url(forAssetPath: assetPath, in: bundle),
+            guard let url = BundleReader.urlForBundledFileName(category.filename, in: bundle),
                   let data = try? Data(contentsOf: url),
                   let decoded = try? JSONDecoder().decode(IconCategoryFile.self, from: data)
             else {

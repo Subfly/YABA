@@ -2,8 +2,9 @@
 //  BundleReader.swift
 //  YABACore
 //
-//  Reads bundled resources under `Darwin/YABACore/Assets` (metadata, web-components) from the app
-//  bundle. Mirrors the role of Compose `dev.subfly.yaba.core.util.BundleReader`.
+//  Resolves bundled files by **resource name** only. Xcode copies resources into the app/framework
+//  bundle without preserving project folder paths, so `Bundle.url(forResource:withExtension:subdirectory:)`
+//  must use `subdirectory: nil` and the actual file name (e.g. `icon_categories_header.json`).
 //
 
 import Foundation
@@ -12,29 +13,30 @@ public enum BundleReaderError: Error, Sendable {
     case fileNotFound(String)
 }
 
-/// Resolves and reads files synced under `YABACore/Assets` (e.g. `Assets/Metadata/...`, `Assets/WebComponents/...`).
 public enum BundleReader {
-    /// Directory segment for yaba-web-components HTML and chunks (matches `Scripts/build_web_components.sh` output).
-    public static let webComponentsAssetDirectory = "Assets/WebComponents"
+    // MARK: - URL resolution (flat bundle layout)
 
-    /// Resolves a bundle resource URL from a `/`-separated path relative to the module bundle root, e.g. `Assets/Metadata/icon_categories_header.json`.
-    public static func url(forAssetPath assetPath: String, in bundle: Bundle = .main) -> URL? {
-        let path = assetPath.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-        guard !path.isEmpty else { return nil }
-        let nsPath = path as NSString
-        let directory = nsPath.deletingLastPathComponent
-        let fileName = nsPath.lastPathComponent
-        let base = (fileName as NSString).deletingPathExtension
-        let ext = (fileName as NSString).pathExtension
-        let subdirectory = directory.isEmpty ? nil : directory
+    /// Looks up a file in the bundle by **file name only** (e.g. `icon_categories_header.json`, `viewer.html`).
+    public static func urlForBundledFileName(_ fileName: String, in bundle: Bundle = .main) -> URL? {
+        let trimmed = fileName.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        guard !trimmed.isEmpty else { return nil }
+        let base = (trimmed as NSString).deletingPathExtension
+        let ext = (trimmed as NSString).pathExtension
         return bundle.url(
             forResource: base,
             withExtension: ext.isEmpty ? nil : ext,
-            subdirectory: subdirectory
+            subdirectory: nil
         )
     }
 
-    /// Reads UTF-8 text from a bundled asset path.
+    /// Backward-compatible: accepts a path string but resolves using **only the last path component** (the file name).
+    public static func url(forAssetPath assetPath: String, in bundle: Bundle = .main) -> URL? {
+        let trimmed = assetPath.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        guard !trimmed.isEmpty else { return nil }
+        return urlForBundledFileName((trimmed as NSString).lastPathComponent, in: bundle)
+    }
+
+    /// Reads UTF-8 text from a bundled file (by path or file name; lookup uses the file name only).
     public static func readAssetText(_ assetPath: String, in bundle: Bundle = .main) throws -> String {
         guard let url = url(forAssetPath: assetPath, in: bundle) else {
             throw BundleReaderError.fileNotFound(assetPath)
@@ -42,7 +44,9 @@ public enum BundleReader {
         return try String(contentsOf: url, encoding: .utf8)
     }
 
-    /// Base directory URL for web-component assets (chunks, CSS), for `WKWebView` / `loadFileURL` base URLs.
+    // MARK: - Web components (HTML shells + chunks, all looked up by file name at bundle root)
+
+    /// Directory URL suitable for `WKWebView.loadFileURL(_:allowingReadAccessTo:)` — parent of a known shell HTML file.
     public static func webComponentsBaseURL(in bundle: Bundle = .main) -> URL? {
         let entryNames = [
             "viewer.html",
@@ -53,7 +57,7 @@ public enum BundleReader {
             "epub-viewer.html",
         ]
         for name in entryNames {
-            if let url = url(forAssetPath: "\(webComponentsAssetDirectory)/\(name)", in: bundle) {
+            if let url = urlForBundledFileName(name, in: bundle) {
                 return url.deletingLastPathComponent()
             }
         }
@@ -61,7 +65,7 @@ public enum BundleReader {
     }
 
     public static func webComponentURL(named fileName: String, in bundle: Bundle = .main) -> URL? {
-        url(forAssetPath: "\(webComponentsAssetDirectory)/\(fileName)", in: bundle)
+        urlForBundledFileName(fileName, in: bundle)
     }
 
     public static func getViewerURL(in bundle: Bundle = .main) -> URL? {
