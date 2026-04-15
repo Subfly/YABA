@@ -1,6 +1,3 @@
-// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
-
-#if false
 //
 //  CreateContentFAB.swift
 //  YABA
@@ -216,5 +213,3 @@ private struct LegacyHomeCreateContentFAB: View {
         }
     )
 }
-
-#endif

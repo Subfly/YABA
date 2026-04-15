@@ -33,7 +33,7 @@ public final class ReadableAssetResolver: @unchecked Sendable {
     public func bytes(forAssetId assetId: String) -> Data? {
         lock.lock()
         defer { lock.unlock() }
-        bytesByAssetId[assetId]
+        return bytesByAssetId[assetId]
     }
 
     public func clear() {

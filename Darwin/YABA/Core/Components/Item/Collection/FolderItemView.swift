@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import YABACore
 
 struct FolderItemView: View {
     @Environment(\.appState)

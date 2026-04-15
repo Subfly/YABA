@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import YABACore
 
 struct PresentableFolderItemView: View {
     let model: FolderModel?

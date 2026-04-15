@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import YABACore
 
 struct TagItemView: View {
     @Environment(\.appState)
@@ -31,10 +30,11 @@ struct TagItemView: View {
             }
             Spacer()
             HStack {
+                /**
                 CollectionItemOverflowMenu(isHovered: $itemState.isHovered) {
                     Button("TODO") { itemState.shouldShowCreateBookmarkSheet = true }
                     Button("TODO") { itemState.shouldShowEditSheet = true }
-                }
+                }*/
                 Text("\(tag.bookmarks.count)")
                     .foregroundStyle(.secondary)
                     .fontWeight(.medium)

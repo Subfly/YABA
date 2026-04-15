@@ -1,6 +1,3 @@
-// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
-
-#if false
 //
 //  HomeState.swift
 //  YABA
@@ -14,12 +11,12 @@ import SwiftUI
 @MainActor
 internal class HomeState {
     var isFABActive: Bool = false
-    var shouldShowCreateContentSheet: Bool = false
+    
+    var shouldShowBackground: Bool = false
+    var shouldShowCreateFolderSheet: Bool = false
+    var shouldShowCreateTagSheet: Bool = false
     var shouldShowCreateBookmarkSheet: Bool = false
     // var shouldShowSyncSheet: Bool = false
-    var selectedContentCreationType: CollectionType? = nil
-    var shouldShowBackground: Bool = false
+    
     var saveBookmarkRequest: DeepLinkSaveBookmarkRequest? = nil
 }
-
-#endif

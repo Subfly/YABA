@@ -11,12 +11,11 @@ import SwiftUI
 /// under `YABA/Home`, `YABA/Detail`, `YABA/Onboarding`, and related folders.
 struct YabaNavigationView: View {
     var body: some View {
-        ContentUnavailableView {
-            Label("YABA", systemImage: "bookmark.fill")
-        } description: {
-            Text("Ground-up UI — replace this shell as new screens land in Core.")
+        NavigationSplitView {
+            HomeView()
+        } detail: {
+            EmptyView()
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 

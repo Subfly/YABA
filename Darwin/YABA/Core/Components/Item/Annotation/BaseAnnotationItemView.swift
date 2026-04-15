@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import YABACore
 
 struct BaseAnnotationItemView: View {
     private let quotePreview: String

@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import YABACore
 
 struct AnnotationItemView: View {
     let annotation: AnnotationModel

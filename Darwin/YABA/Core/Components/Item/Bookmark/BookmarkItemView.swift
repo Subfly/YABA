@@ -8,7 +8,6 @@
 import SwiftData
 import SwiftUI
 import UIKit
-import YABACore
 
 struct BookmarkItemView: View {
     @AppStorage(Constants.preferredContentAppearanceKey)

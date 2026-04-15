@@ -1,6 +1,3 @@
-// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
-
-#if false
 //
 //  HomeView.swift
 //  YABA
@@ -12,42 +9,22 @@ import SwiftUI
 import SwiftData
 
 struct HomeView: View {
-    @AppStorage(Constants.preferredContentAppearanceKey)
-    private var contentAppearance: ContentAppearance = .list
-    
-    @AppStorage(Constants.preferredCollectionSortingKey)
-    private var preferredSorting: SortType = .createdAt
-    
-    @AppStorage(Constants.preferredSortOrderKey)
-    private var preferredSortOrder: SortOrderType = .ascending
-    
     @Environment(\.deepLinkManager)
     private var deepLinkManager
     
     @State
     private var homeState: HomeState = .init()
     
-    let onNavigationCallbackForCollection: (YabaCollection) -> Void
-    let onNavigationCallbackForBookmark: (YabaBookmark) -> Void
-    let onNavigationCallbackForSearch: () -> Void
-    let onNavigationCallbackForSettings: () -> Void
-    
     var body: some View {
         ZStack {
             #if !targetEnvironment(macCatalyst)
-            AnimatedGradient(collectionColor: .accentColor)
+            AnimatedGradient(color: .accentColor)
             #endif
-            SequentialView(
-                preferredSorting: preferredSorting,
-                preferredOrder: preferredSortOrder,
-                onNavigationCallbackForCollection: onNavigationCallbackForCollection,
-                onNavigationCallbackForBookmark: onNavigationCallbackForBookmark
-            )
-            .scrollContentBackground(.hidden)
-            #if targetEnvironment(macCatalyst)
-            .listRowSpacing(2)
-            .listStyle(.sidebar)
-            #endif
+            SequentialView()
+                .scrollContentBackground(.hidden)
+                #if targetEnvironment(macCatalyst)
+                .listStyle(.sidebar)
+                #endif
             
             HomeCreateContentFAB(
                 isActive: $homeState.isFABActive,
@@ -56,11 +33,9 @@ struct HomeView: View {
                         homeState.isFABActive.toggle()
                         switch creationType {
                         case .tag:
-                            homeState.selectedContentCreationType = .tag
-                            homeState.shouldShowCreateContentSheet = true
+                            homeState.shouldShowCreateTagSheet = true
                         case .folder:
-                            homeState.selectedContentCreationType = .folder
-                            homeState.shouldShowCreateContentSheet = true
+                            homeState.shouldShowCreateFolderSheet = true
                         case .bookmark:
                             homeState.shouldShowCreateBookmarkSheet = true
                         default:
@@ -72,30 +47,17 @@ struct HomeView: View {
             .transition(.blurReplace)
             .ignoresSafeArea()
         }
-        .sheet(isPresented: $homeState.shouldShowCreateContentSheet) {
-            if let creationType = homeState.selectedContentCreationType {
-                CollectionCreationContent(
-                    collectionType: creationType,
-                    collectionToEdit: nil,
-                    onEditCallback: { _ in }
-                )
-            }
+        .sheet(isPresented: $homeState.shouldShowCreateFolderSheet) {
+            // TODO: SHOW FOLDER CREATION CONTENT
+        }
+        .sheet(isPresented: $homeState.shouldShowCreateTagSheet) {
+            // TODO: SHOW TAG CREATION CONTENT
         }
         .sheet(isPresented: $homeState.shouldShowCreateBookmarkSheet) {
-            BookmarkCreationContent(
-                bookmarkToEdit: nil,
-                collectionToFill: nil,
-                link: nil,
-                onExitRequested: {}
-            )
+            // TODO: SHOW BOOKMARK CREATION CONTENT
         }
         .sheet(item: $homeState.saveBookmarkRequest) { request in
-            BookmarkCreationContent(
-                bookmarkToEdit: nil,
-                collectionToFill: nil,
-                link: request.link,
-                onExitRequested: {}
-            )
+            // TODO: SHOW BOOKMARK CREATION CONTENT
         }
         // Sync UI disabled (see NetworkSyncManager / SyncView).
         // #if !targetEnvironment(macCatalyst)
@@ -132,20 +94,24 @@ struct HomeView: View {
                 MacOSHoverableToolbarIcon(
                     bundleKey: "search-01",
                     tooltipKey: "Search Title",
-                    onPressed: onNavigationCallbackForSearch
+                    onPressed: {
+                        // TODO: SHOW SEARCH VIEW IN DETAIL
+                    }
                 )
                 #else
                 Button {
-                    onNavigationCallbackForSearch()
+                    // TODO: SHOW SEARCH VIEW IN DETAIL
                 } label: {
                     YabaIconView(bundleKey: "search-01")
                 }
                 #endif
             }
+            if #available(iOS 26, *) {
+                ToolbarSpacer(.fixed, placement: .topBarTrailing)
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 #if targetEnvironment(macCatalyst)
                 Menu {
-                    ContentAppearancePicker()
                     SortingPicker(contentType: .collection)
                     Button {
                         onNavigationCallbackForSettings()
@@ -165,10 +131,9 @@ struct HomeView: View {
                 }
                 #else
                 Menu {
-                    ContentAppearancePicker()
                     SortingPicker(contentType: .collection)
                     Button {
-                        onNavigationCallbackForSettings()
+                        // TODO: SHOW SETTINGS SHEET
                     } label: {
                         Label {
                             Text("Settings Title")
@@ -196,68 +161,15 @@ struct HomeView: View {
 private struct SequentialView: View {
     @AppStorage(Constants.showRecentsKey)
     private var showRecents: Bool = true
-    
-    @Query
-    private var collections: [YabaCollection]
-    
-    let onNavigationCallbackForCollection: (YabaCollection) -> Void
-    let onNavigationCallbackForBookmark: (YabaBookmark) -> Void
-    
-    init(
-        preferredSorting: SortType,
-        preferredOrder: SortOrderType,
-        onNavigationCallbackForCollection: @escaping (YabaCollection) -> Void,
-        onNavigationCallbackForBookmark: @escaping (YabaBookmark) -> Void
-    ) {
-        self.onNavigationCallbackForCollection = onNavigationCallbackForCollection
-        self.onNavigationCallbackForBookmark = onNavigationCallbackForBookmark
-        
-        let sortDescriptor: SortDescriptor<YabaCollection> = switch preferredSorting {
-        case .createdAt:
-                .init(\.createdAt, order: preferredOrder == .ascending ? .forward : .reverse)
-        case .editedAt:
-                .init(\.editedAt, order: preferredOrder == .ascending ? .forward : .reverse)
-        case .label:
-                .init(\.label, order: preferredOrder == .ascending ? .forward : .reverse)
-        case .custom:
-                .init(\.order, order: .forward)
-        }
-        
-        _collections = Query(
-            sort: [sortDescriptor],
-            animation: .smooth
-        )
-    }
         
     var body: some View {
-        ScrollView {
-            LazyVStack {
-                Spacer().frame(height: 24)
-                HomeAnnouncementsView()
-                if showRecents && UIDevice.current.userInterfaceIdiom == .phone {
-                    Spacer().frame(height: 24)
-                    HomeRecentsView(
-                        onNavigationCallback: onNavigationCallbackForBookmark
-                    )
-                }
-                Spacer().frame(height: 24)
-                HomeCollectionView(
-                    collectionType: .folder,
-                    collections: collections.filter {
-                        $0.collectionType == .folder && $0.parent == nil
-                    },
-                    onNavigationCallback: onNavigationCallbackForCollection
-                )
-                Spacer().frame(height: 24)
-                HomeCollectionView(
-                    collectionType: .tag,
-                    collections: collections.filter { $0.collectionType == .tag },
-                    onNavigationCallback: onNavigationCallbackForCollection
-                )
-                Spacer().frame(height: 100)
+        List {
+            //TODO HomeAnnouncementsView()
+            if showRecents && UIDevice.current.userInterfaceIdiom == .phone {
+                //TODO HomeRecentsView(onNavigationCallback: onNavigationCallbackForBookmark)
             }
+            HomeCollectionView(collectionType: .folder)
+            HomeCollectionView(collectionType: .tag)
         }
     }
 }
-
-#endif

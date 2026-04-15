@@ -11,11 +11,11 @@ import SwiftUI
 
 // MARK: - Legacy name aliases (v2 models)
 
-public typealias YabaBookmark = BookmarkModel
+typealias YabaBookmark = BookmarkModel
 
-public typealias YabaFolder = FolderModel
+typealias YabaFolder = FolderModel
 
-public typealias YabaTag = TagModel
+typealias YabaTag = TagModel
 
 // MARK: - YabaColor + codes
 
@@ -30,7 +30,7 @@ public extension YabaColor {
 
 // MARK: - Bookmark
 
-public extension BookmarkModel {
+extension BookmarkModel {
     /// Compose `BookmarkKind.code` parity.
     var kindCode: Int { kindRaw }
 
@@ -105,7 +105,7 @@ public extension BookmarkModel {
 
 // MARK: - Folder
 
-public extension FolderModel {
+extension FolderModel {
     var colorCode: Int { colorRaw }
 
     var color: YabaColor {
@@ -134,7 +134,7 @@ public extension FolderModel {
 
 // MARK: - Tag
 
-public extension TagModel {
+extension TagModel {
     var colorCode: Int { colorRaw }
 
     var color: YabaColor {
@@ -144,7 +144,7 @@ public extension TagModel {
 
 // MARK: - Annotation
 
-public extension AnnotationModel {
+extension AnnotationModel {
     /// Parsed annotation kind from persisted `typeRaw`.
     var type: AnnotationType {
         AnnotationType(rawValue: typeRaw) ?? .readable
@@ -158,7 +158,7 @@ public extension AnnotationModel {
 
 // MARK: - Doc bookmark subtype
 
-public extension DocBookmarkModel {
+extension DocBookmarkModel {
     var docmarkType: DocmarkType {
         DocmarkType(rawValue: docmarkTypeRaw) ?? .pdf
     }

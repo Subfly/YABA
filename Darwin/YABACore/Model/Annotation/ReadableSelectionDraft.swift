@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct ReadableSelectionDraft: Sendable {
+public struct ReadableSelectionDraft: Sendable, Equatable {
     public var bookmarkId: String
     public var readableVersionId: String
     public var quoteText: String?

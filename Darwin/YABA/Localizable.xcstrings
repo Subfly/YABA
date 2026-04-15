@@ -8189,6 +8189,7 @@
     },
     "Data Manager Empty HTML Message" : {
       "comment" : "Message to show in toast when HTML is empty during Data Manager operations.",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -8668,6 +8669,7 @@
     },
     "Data Manager Invalid HTML Encoding Message" : {
       "comment" : "Message to show in toast when HTML is invalid during Data Manager operations.",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -9527,6 +9529,9 @@
           }
         }
       }
+    },
+    "Delete Folder Title" : {
+
     },
     "Delete Tag Title" : {
       "comment" : "Title to show in dialog when a tag is deleting",
@@ -24421,6 +24426,7 @@
     },
     "Map CSV Column Header Label %lld %@" : {
       "comment" : "Header name of \"Column\" in CSV mapping table.",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -24994,6 +25000,7 @@
       }
     },
     "Map HTML Label" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -34003,6 +34010,9 @@
           }
         }
       }
+    },
+    "Placeholder" : {
+
     },
     "Preview" : {
       "comment" : "Title to show while previewing an item",
@@ -43219,6 +43229,7 @@
     },
     "Sync Complete Message %@" : {
       "comment" : "Message to show in toast when syncing is completed",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -43410,6 +43421,7 @@
     },
     "Sync Error Message %@" : {
       "comment" : "Message to show in toast when syncing has an error",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -43505,6 +43517,7 @@
     },
     "Sync Failed Message %@: %@" : {
       "comment" : "Message to show in toast when syncing has failed",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -43600,6 +43613,7 @@
     },
     "Sync Request Accepted Message %@" : {
       "comment" : "Message to show in toast when sync request has been accepted",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -43790,6 +43804,7 @@
     },
     "Sync Request Rejected Message %@" : {
       "comment" : "Message to show in toast when sync request has been rejected",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -43885,6 +43900,7 @@
     },
     "Sync Request Sent Message %@" : {
       "comment" : "Message to show in toast when sync request has been sent",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -44649,6 +44665,7 @@
     },
     "Syncing With Device Message %@" : {
       "comment" : "Message to show in toast when sync is going on",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -45317,6 +45334,9 @@
           }
         }
       }
+    },
+    "TODO" : {
+
     },
     "Tooltip Title Change Background Color" : {
       "comment" : "Title of tooltip to show in change background color button",

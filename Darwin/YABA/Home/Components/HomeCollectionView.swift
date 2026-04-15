@@ -1,6 +1,3 @@
-// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
-
-#if false
 //
 //  HomeCollectionView.swift
 //  YABA
@@ -13,25 +10,20 @@ import SwiftData
 
 @MainActor
 struct HomeCollectionView: View {
-    @AppStorage(Constants.preferredContentAppearanceKey)
-    private var contentAppearance: ContentAppearance = .list
+    @AppStorage(Constants.preferredCollectionSortingKey)
+    private var preferredSorting: SortType = .createdAt
     
-    let collections: [YabaCollection]
-    let onNavigationCallback: (YabaCollection) -> Void
+    @AppStorage(Constants.preferredSortOrderKey)
+    private var preferredSortOrder: SortOrderType = .ascending
     
+    private let collectionType: CollectionType
     private let labelTitle: String
     private let noCollectionsTitle: String
     private let noCollectionsMessage: String
     private let collectionIcon: String
     
-    init(
-        collectionType: CollectionType,
-        collections: [YabaCollection],
-        onNavigationCallback: @escaping (YabaCollection) -> Void
-    ) {
-        self.collections = collections
-        self.onNavigationCallback = onNavigationCallback
-        
+    init(collectionType: CollectionType) {
+        self.collectionType = collectionType
         switch collectionType {
         case .folder:
             labelTitle = "Folders Title"
@@ -47,184 +39,157 @@ struct HomeCollectionView: View {
     }
     
     var body: some View {
-        ListSection(
-            collections: collections,
-            labelTitle: labelTitle,
-            collectionIcon: collectionIcon,
-            onNavigationCallback: onNavigationCallback
-        ) {
-            ContentUnavailableView {
-                Label {
-                    Text(LocalizedStringKey(noCollectionsTitle))
-                } icon: {
-                    YabaIconView(bundleKey: collectionIcon)
-                        .scaledToFit()
-                        .frame(width: 52, height: 52)
-                }
-            } description: {
-                Text(LocalizedStringKey(noCollectionsMessage))
-            }
-        }
-    }
-}
-
-private struct ListSection<NoCollectionView: View>: View {
-    @State
-    private var isExpandedGeneral: Bool = true
-    
-    @State
-    private var isExpandedMobile: Bool = false
-    
-    let collections: [YabaCollection]
-    let labelTitle: String
-    let collectionIcon: String
-    let onNavigationCallback: (YabaCollection) -> Void
-    @ViewBuilder let noCollectionView: NoCollectionView
-    
-    var body: some View {
-        if UIDevice.current.userInterfaceIdiom == .phone {
-            mobileView
-        } else {
-            generalView
-        }
-    }
-    
-    @ViewBuilder
-    private var mobileView: some View {
-        generateHeaderView(includeExpansion: false)
-        if collections.isEmpty {
-            noCollectionView
-        } else {
-            if collections.count <= 10 {
-                generateItems(
-                    for: collections,
-                    includeSpacerAtStart: true
-                )
-            } else {
-                generateItems(
-                    for: Array(collections.prefix(10)),
-                    includeSpacerAtStart: true
-                )
-                if isExpandedMobile {
-                    generateItems(
-                        for: Array(collections.suffix(from: 10)),
-                        includeSpacerAtStart: false
-                    )
-                }
-            }
-        }
-        if collections.count > 10 {
-            HStack {
-                Spacer()
-                Label {
-                    Text(
-                        isExpandedMobile
-                        ? LocalizedStringKey("Show Less Label")
-                        : LocalizedStringKey("Show More Label")
-                    )
-                    .font(.callout)
-                    .foregroundStyle(Color(.secondaryLabel))
-                } icon: {
-                    YabaIconView(bundleKey: isExpandedMobile ? "arrow-up-01" : "arrow-down-01")
-                        .scaledToFit()
-                        .frame(width: 18, height: 18)
-                        .foregroundStyle(Color(.secondaryLabel))
-                }
-                .labelStyle(InverseLabelStyle())
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    withAnimation {
-                        isExpandedMobile.toggle()
-                    }
-                }
-                Spacer()
-            }.padding(.top)
-        }
-    }
-    
-    @ViewBuilder
-    private var generalView: some View {
-        generateHeaderView(includeExpansion: true)
-        if isExpandedGeneral {
-            if collections.isEmpty {
-                noCollectionView
-            } else {
-                generateItems(
-                    for: collections,
-                    includeSpacerAtStart: true
-                )
-            }
-        } else {
-            EmptyView()
-        }
-    }
-    
-    @ViewBuilder
-    private func generateHeaderView(includeExpansion: Bool = false) -> some View {
-        HStack {
-            Label {
-                Text(LocalizedStringKey(labelTitle))
-                    .font(.headline)
-                    .fontWeight(.semibold)
-            } icon: {
-                YabaIconView(bundleKey: collectionIcon)
-                    .scaledToFit()
-                    .frame(width: 22, height: 22)
-            }
-            .foregroundStyle(.secondary)
-            .font(.headline)
-            Spacer()
-            if includeExpansion {
-                YabaIconView(bundleKey: "arrow-right-01")
-                    .scaledToFit()
-                    .frame(width: 22, height: 22)
-                    .foregroundStyle(.secondary)
-                    .rotationEffect(isExpandedGeneral ? .init(degrees: 90) : .zero)
-                    .animation(.smooth, value: isExpandedGeneral)
-            }
-        }
-        .contentShape(Rectangle())
-        .padding(.horizontal)
-        .padding(.bottom)
-        .onTapGesture {
-            withAnimation {
-                isExpandedGeneral.toggle()
-            }
-        }
-    }
-    
-    @ViewBuilder
-    private func generateItems(
-        for given: [YabaCollection],
-        includeSpacerAtStart: Bool,
-    ) -> some View {
-        ForEach(given) { collection in
-            HomeCollectionItemView(
-                collection: collection,
-                isInSelectionMode: false,
-                isInBookmarkDetail: false,
-                onDeleteCallback: { _ in },
-                onEditCallback: { _ in },
-                onNavigationCallback: onNavigationCallback
+        switch collectionType {
+        case .folder:
+            FolderView(
+                title: labelTitle,
+                icon: collectionIcon,
+                preferredSorting: preferredSorting,
+                preferredOrder: preferredSortOrder,
+                noCollectionView: { noCollectionsContent }
+            )
+        case .tag:
+            TagView(
+                title: labelTitle,
+                icon: collectionIcon,
+                preferredSorting: preferredSorting,
+                preferredOrder: preferredSortOrder,
+                noCollectionView: { noCollectionsContent }
             )
         }
     }
+    
+    @ViewBuilder
+    private var noCollectionsContent: some View {
+        ContentUnavailableView {
+            Label {
+                Text(LocalizedStringKey(noCollectionsTitle))
+            } icon: {
+                YabaIconView(bundleKey: collectionIcon)
+                    .scaledToFit()
+                    .frame(width: 52, height: 52)
+            }
+        } description: {
+            Text(LocalizedStringKey(noCollectionsMessage))
+        }
+    }
 }
 
-#Preview {
-    HomeCollectionView(
-        collectionType: .folder,
-        collections: [],
-        onNavigationCallback: { _ in }
-    )
+private struct FolderView<NoCollectionView: View>: View {
+    @State
+    private var isExpanded: Bool = true
+    
+    @Query
+    private var folders: [YabaFolder]
+    
+    @ViewBuilder
+    let noCollectionView: NoCollectionView
+    
+    let title: String
+    let icon: String
+    
+    init(
+        title: String,
+        icon: String,
+        preferredSorting: SortType,
+        preferredOrder: SortOrderType,
+        @ViewBuilder noCollectionView: () -> NoCollectionView,
+    ) {
+        self.title = title
+        self.icon = icon
+        self.noCollectionView = noCollectionView()
+
+        let sortDescriptor: SortDescriptor<YabaFolder> = switch preferredSorting {
+        case .createdAt:
+                .init(\.createdAt, order: preferredOrder == .ascending ? .forward : .reverse)
+        case .editedAt:
+                .init(\.editedAt, order: preferredOrder == .ascending ? .forward : .reverse)
+        case .label:
+                .init(\.label, order: preferredOrder == .ascending ? .forward : .reverse)
+        }
+        
+        _folders = Query(
+            sort: [sortDescriptor],
+            animation: .smooth
+        )
+    }
+    
+    var body: some View {
+        Section(isExpanded: $isExpanded) {
+            if folders.isEmpty {
+                noCollectionView
+            } else {
+                ForEach(folders) { folder in
+                    Text(folder.label)
+                }
+            }
+        } header: {
+            Label {
+                Text(LocalizedStringKey(title))
+            } icon: {
+                YabaIconView(bundleKey: icon)
+                    .frame(width: 22, height: 22)
+            }
+        }
+    }
 }
 
-#Preview {
-    HomeCollectionView(
-        collectionType: .tag,
-        collections: [],
-        onNavigationCallback: { _ in }
-    )
-}
 
-#endif
+private struct TagView<NoCollectionView: View>: View {
+    @State
+    private var isExpanded: Bool = true
+    
+    @Query
+    private var tags: [YabaTag]
+    
+    @ViewBuilder
+    let noCollectionView: NoCollectionView
+    
+    let title: String
+    let icon: String
+    
+    init(
+        title: String,
+        icon: String,
+        preferredSorting: SortType,
+        preferredOrder: SortOrderType,
+        @ViewBuilder noCollectionView: () -> NoCollectionView,
+    ) {
+        self.title = title
+        self.icon = icon
+        self.noCollectionView = noCollectionView()
+
+        let sortDescriptor: SortDescriptor<YabaTag> = switch preferredSorting {
+        case .createdAt:
+                .init(\.createdAt, order: preferredOrder == .ascending ? .forward : .reverse)
+        case .editedAt:
+                .init(\.editedAt, order: preferredOrder == .ascending ? .forward : .reverse)
+        case .label:
+                .init(\.label, order: preferredOrder == .ascending ? .forward : .reverse)
+        }
+        
+        _tags = Query(
+            sort: [sortDescriptor],
+            animation: .smooth
+        )
+    }
+    
+    var body: some View {
+        Section(isExpanded: $isExpanded) {
+            if tags.isEmpty {
+                noCollectionView
+            } else {
+                ForEach(tags) { tag in
+                    Text(tag.label)
+                }
+            }
+        } header: {
+            Label {
+                Text(LocalizedStringKey(title))
+            } icon: {
+                YabaIconView(bundleKey: icon)
+                    .frame(width: 22, height: 22)
+            }
+        }
+    }
+}

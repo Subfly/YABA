@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import YABACore
 
 /// Vertical color strips for ancestor folders, left of the row content.
 struct HierarchyColorBarsView: View {

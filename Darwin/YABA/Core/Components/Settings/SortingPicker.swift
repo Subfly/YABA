@@ -24,40 +24,17 @@ struct SortingPicker: View {
     let contentType: SortingPickerType
     
     var body: some View {
-        /**
-         * Bookmarks don't have custom sort feature
-         * as it is impossible to hold sort order of bookmark
-         * for each tag and folder. I know it is not really impossible
-         * but YABA's database is not designed for that and it
-         * will complicate the whole business logic a lot.
-         */
-        let availableCases = SortType.allCases.filter { type in
-            if contentType == .bookmark {
-                type != .custom
-            } else {
-                true
-            }
-        }
-        
-        let disableOrdering = if contentType == .collection {
-            preferredCollectionSorting == .custom
-        } else {
-            false
-        }
-        
         Menu {
-            generateSortTypes(with: availableCases)
-            if !disableOrdering {
-                orderTypeSection
-            }
+            generateSortTypes(with: SortType.allCases)
+            orderTypeSection
         } label: {
-            generateLabel(orderingDisabled: disableOrdering)
+            label
         }
         .buttonStyle(.plain)
     }
     
     @ViewBuilder
-    private func generateLabel(orderingDisabled: Bool) -> some View {
+    private var label: some View {
         HStack {
             Label {
                 if contentType == .collection {
@@ -84,11 +61,9 @@ struct SortingPicker: View {
                         .frame(width: 24, height: 24)
                     Text(preferredBookmarkSorting.getUITitle())
                 }
-                if !orderingDisabled {
-                    YabaIconView(bundleKey: preferredSortOrder.getUIIconName())
-                        .scaledToFit()
-                        .frame(width: 24, height: 24)
-                }
+                YabaIconView(bundleKey: preferredSortOrder.getUIIconName())
+                    .scaledToFit()
+                    .frame(width: 24, height: 24)
             }
         }.contentShape(Rectangle())
     }

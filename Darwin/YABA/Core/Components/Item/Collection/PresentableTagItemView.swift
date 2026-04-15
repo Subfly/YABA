@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import YABACore
 
 struct PresentableTagItemView: View {
     let model: TagModel?
