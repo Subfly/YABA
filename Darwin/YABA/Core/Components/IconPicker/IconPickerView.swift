@@ -49,7 +49,7 @@ struct IconPickerView: View {
                         IconCategoryRow(category: category)
                     }
                 }
-                .listStyle(.plain)
+                .listStyle(.sidebar)
             }
         }
         .navigationTitle(Text("Pick Icon Category Title"))
@@ -125,10 +125,6 @@ private struct IconCategoryRow: View {
             Text("\(category.iconCount)")
                 .foregroundStyle(.secondary)
                 .fontWeight(.medium)
-            YabaIconView(bundleKey: "arrow-right-01")
-                .scaledToFit()
-                .frame(width: 20, height: 20)
-                .foregroundStyle(.tertiary)
         }
         .contentShape(Rectangle())
     }
