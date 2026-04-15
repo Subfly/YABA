@@ -28,8 +28,6 @@ public final class FolderSelectionStateMachine: YabaBaseObservableState<FolderSe
             let ids = state.contextBookmarkIds ?? []
             guard !ids.isEmpty else { return }
             AllBookmarksManager.queueMoveBookmarksToFolder(bookmarkIds: ids, targetFolderId: targetFolderId)
-        case .ensureUncategorizedExists:
-            FolderManager.queueEnsureUncategorizedFolderExists()
         }
     }
 }

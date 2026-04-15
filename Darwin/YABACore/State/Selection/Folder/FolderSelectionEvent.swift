@@ -16,5 +16,4 @@ public enum FolderSelectionEvent: Sendable {
     case onSearchQueryChanged(String)
     case onMoveFolderToSelected(targetFolderId: String?)
     case onMoveBookmarksToSelected(targetFolderId: String)
-    case ensureUncategorizedExists
 }

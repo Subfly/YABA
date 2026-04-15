@@ -37,77 +37,17 @@ struct SelectFolderContent: View {
     }
 
     var body: some View {
-        List {
-            if snapshot.canMoveToRoot {
-                Button {
-                    onPick(nil)
-                    dismiss()
-                } label: {
-                    HStack(spacing: 12) {
-                        YabaIconView(bundleKey: "arrow-move-up-right")
-                            .scaledToFit()
-                            .frame(width: 24, height: 24)
-                            .foregroundStyle(.primary)
-                        Text("Select Folder Move To Root Label")
-                        Spacer()
-                    }
-                }
-                .buttonStyle(.plain)
-            }
-
-            if visibleFolders.isEmpty {
-                if machine.state.searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                    ContentUnavailableView {
-                        Label {
-                            Text("Select Folder No Folders Available Title")
-                        } icon: {
-                            YabaIconView(bundleKey: "folder-01")
-                                .scaledToFit()
-                                .frame(width: 52, height: 52)
-                        }
-                    } description: {
-                        Text("Select Folder No Folders Available Description")
-                    }
-                } else {
-                    ContentUnavailableView {
-                        Label {
-                            Text("Select Folder No Folder Found In Search Title")
-                        } icon: {
-                            YabaIconView(bundleKey: "search-01")
-                                .scaledToFit()
-                                .frame(width: 52, height: 52)
-                        }
-                    } description: {
-                        Text(
-                            LocalizedStringKey(
-                                "Select Folder No Folder Found In Search Description \(machine.state.searchQuery)"
-                            )
-                        )
-                    }
-                }
-            } else {
-                ForEach(visibleFolders, id: \.folderId) { folder in
-                    Button {
-                        onPick(folder.folderId)
-                        dismiss()
-                    } label: {
-                        HStack {
-                            YabaIconView(bundleKey: folder.icon)
-                                .scaledToFit()
-                                .foregroundStyle(folder.color.getUIColor())
-                                .frame(width: 24, height: 24)
-                            if folder.folderId == Constants.uncategorizedCollectionId {
-                                Text(LocalizedStringKey(Constants.uncategorizedCollectionLabelKey))
-                            } else {
-                                Text(folder.label)
-                            }
-                            Spacer()
-                        }
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-        }
+        let rules = FolderSelectionRules.build(
+            mode: mode,
+            contextFolderId: contextFolderId,
+            allFolders: allFoldersQuery
+        )
+        SelectFolderQueryList(
+            rules: rules,
+            searchQuery: machine.state.searchQuery,
+            onPick: onPick
+        )
+        .id("\(machine.state.searchQuery)\(rules.stableKey)")
         .listRowSpacing(0)
         #if !os(visionOS)
         .scrollDismissesKeyboard(.immediately)
@@ -154,99 +94,206 @@ struct SelectFolderContent: View {
             )
         }
     }
+}
 
-    // MARK: - Compose parity (FolderSelectionStateMachine.applyModeExclusions + observe rules)
+// MARK: - Query-backed list
 
-    private var snapshot: SelectionSnapshot {
-        SelectionSnapshot(
-            mode: mode,
-            contextFolderId: contextFolderId,
-            allFolders: allFoldersQuery
+/// Lists folders using a SwiftData `@Query` + `#Predicate` so filtering runs in the store (not on a copied array).
+private struct SelectFolderQueryList: View {
+    @Environment(\.dismiss)
+    private var dismiss
+
+    @Query
+    private var folders: [FolderModel]
+
+    let rules: FolderSelectionRules
+    let trimmedSearch: String
+    let onPick: (String?) -> Void
+
+    init(
+        rules: FolderSelectionRules,
+        searchQuery: String,
+        onPick: @escaping (String?) -> Void
+    ) {
+        self.rules = rules
+        let trimmed = searchQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+        self.trimmedSearch = trimmed
+        self.onPick = onPick
+
+        let uncategorizedId = Constants.Folder.Uncategorized.id
+        let excludeSystem = rules.excludeSystemFolderTargets
+        let hideEmptyUncategorized = rules.hideEmptyUncategorizedWithNoBookmarks
+        let excluded = rules.excludedFolderIds
+        let parentEx = rules.excludeParentFolderId
+
+        _folders = Query(
+            filter: #Predicate<FolderModel> { folder in
+                (trimmed.isEmpty || folder.label.localizedStandardContains(trimmed))
+                    && (!excludeSystem || folder.folderId != uncategorizedId)
+                    && !excluded.contains(folder.folderId)
+                    && (parentEx.isEmpty || folder.folderId != parentEx)
+                    && (!hideEmptyUncategorized
+                        || folder.folderId != uncategorizedId
+                        || !folder.bookmarks.isEmpty)
+            },
+            sort: [SortDescriptor(\FolderModel.label)],
+            animation: .smooth
         )
     }
 
-    private var visibleFolders: [FolderModel] {
-        let q = machine.state.searchQuery.trimmingCharacters(in: .whitespacesAndNewlines)
-        let base = snapshot.filteredFolders
-        guard !q.isEmpty else { return base }
-        let lower = q.lowercased()
-        return base.filter { $0.label.lowercased().contains(lower) }
+    var body: some View {
+        List {
+            if rules.canMoveToRoot {
+                Button {
+                    onPick(nil)
+                    dismiss()
+                } label: {
+                    HStack(spacing: 12) {
+                        YabaIconView(bundleKey: "arrow-move-up-right")
+                            .scaledToFit()
+                            .frame(width: 24, height: 24)
+                            .foregroundStyle(.primary)
+                        Text("Select Folder Move To Root Label")
+                        Spacer()
+                    }
+                }
+                .buttonStyle(.plain)
+            }
+
+            if folders.isEmpty {
+                if trimmedSearch.isEmpty {
+                    ContentUnavailableView {
+                        Label {
+                            Text("Select Folder No Folders Available Title")
+                        } icon: {
+                            YabaIconView(bundleKey: "folder-01")
+                                .scaledToFit()
+                                .frame(width: 52, height: 52)
+                        }
+                    } description: {
+                        Text("Select Folder No Folders Available Description")
+                    }
+                } else {
+                    ContentUnavailableView {
+                        Label {
+                            Text("Select Folder No Folder Found In Search Title")
+                        } icon: {
+                            YabaIconView(bundleKey: "search-01")
+                                .scaledToFit()
+                                .frame(width: 52, height: 52)
+                        }
+                    } description: {
+                        Text(
+                            LocalizedStringKey(
+                                "Select Folder No Folder Found In Search Description \(trimmedSearch)"
+                            )
+                        )
+                    }
+                }
+            } else {
+                ForEach(folders, id: \.folderId) { folder in
+                    Button {
+                        onPick(folder.folderId)
+                        dismiss()
+                    } label: {
+                        HStack {
+                            YabaIconView(bundleKey: folder.icon)
+                                .scaledToFit()
+                                .foregroundStyle(folder.color.getUIColor())
+                                .frame(width: 24, height: 24)
+                            if folder.folderId == Constants.uncategorizedCollectionId {
+                                Text(LocalizedStringKey(Constants.uncategorizedCollectionLabelKey))
+                            } else {
+                                Text(folder.label)
+                            }
+                            Spacer()
+                        }
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
     }
 }
 
-// MARK: - Selection snapshot
+// MARK: - Rules (same logic as previous `SelectionSnapshot`, used to build the predicate)
 
-/// Mirrors Compose `FolderSelectionStateMachine` init + `applyModeExclusions` + `observeAllFoldersSorted` empty-system-folder rule.
-private struct SelectionSnapshot {
+private struct FolderSelectionRules: Equatable {
     let mode: FolderSelectionMode
-    private let afterEmptySystemFilter: [FolderModel]
-    private let excludedIds: Set<String>
-    private let currentParentId: String?
+    /// Sorted for stable `stableKey` / `Equatable`.
+    let excludedFolderIds: [String]
+    let excludeParentFolderId: String
+    let excludeSystemFolderTargets: Bool
+    let hideEmptyUncategorizedWithNoBookmarks: Bool
     let canMoveToRoot: Bool
 
-    init(mode: FolderSelectionMode, contextFolderId: String?, allFolders: [FolderModel]) {
-        self.mode = mode
+    var stableKey: String {
+        excludedFolderIds.joined(separator: "\u{1e}")
+            + "|" + excludeParentFolderId
+            + "|" + String(excludeSystemFolderTargets)
+            + "|" + String(hideEmptyUncategorizedWithNoBookmarks)
+            + "|" + String(canMoveToRoot)
+            + "|" + mode.rawValue
+    }
 
-        let includeEmptySystemFolders = mode == .folderSelection || mode == .parentSelection
-        if includeEmptySystemFolders {
-            self.afterEmptySystemFilter = allFolders
-        } else {
-            self.afterEmptySystemFilter = allFolders.filter { folder in
-                if Constants.Folder.isSystemFolder(folder.folderId), folder.bookmarks.isEmpty {
-                    return false
-                }
-                return true
-            }
-        }
+    static func build(
+        mode: FolderSelectionMode,
+        contextFolderId: String?,
+        allFolders: [FolderModel]
+    ) -> FolderSelectionRules {
+        let hideEmptyUncategorizedWithNoBookmarks =
+            !(mode == .folderSelection || mode == .parentSelection)
+
+        let excludeSystemFolderTargets =
+            mode == .parentSelection
+            || mode == .folderMove
+            || mode == .bookmarksMove
 
         switch mode {
         case .folderSelection:
-            self.excludedIds = []
-            self.currentParentId = nil
-            self.canMoveToRoot = false
+            return FolderSelectionRules(
+                mode: mode,
+                excludedFolderIds: [],
+                excludeParentFolderId: "",
+                excludeSystemFolderTargets: excludeSystemFolderTargets,
+                hideEmptyUncategorizedWithNoBookmarks: hideEmptyUncategorizedWithNoBookmarks,
+                canMoveToRoot: false
+            )
 
         case .parentSelection, .folderMove:
             if let fid = contextFolderId,
                let folder = allFolders.first(where: { $0.folderId == fid })
             {
                 let descendants = Set(folder.getDescendants().map(\.folderId))
-                self.excludedIds = Set([fid]).union(descendants)
-                self.currentParentId = folder.parent?.folderId
-                self.canMoveToRoot = folder.parent != nil
-            } else {
-                self.excludedIds = []
-                self.currentParentId = nil
-                self.canMoveToRoot = false
+                let excluded = Set([fid]).union(descendants).sorted()
+                return FolderSelectionRules(
+                    mode: mode,
+                    excludedFolderIds: excluded,
+                    excludeParentFolderId: folder.parent?.folderId ?? "",
+                    excludeSystemFolderTargets: excludeSystemFolderTargets,
+                    hideEmptyUncategorizedWithNoBookmarks: hideEmptyUncategorizedWithNoBookmarks,
+                    canMoveToRoot: folder.parent != nil
+                )
             }
+            return FolderSelectionRules(
+                mode: mode,
+                excludedFolderIds: [],
+                excludeParentFolderId: "",
+                excludeSystemFolderTargets: excludeSystemFolderTargets,
+                hideEmptyUncategorizedWithNoBookmarks: hideEmptyUncategorizedWithNoBookmarks,
+                canMoveToRoot: false
+            )
 
         case .bookmarksMove:
-            self.excludedIds = contextFolderId.map { Set([$0]) } ?? []
-            self.currentParentId = nil
-            self.canMoveToRoot = false
+            let excluded: [String] = contextFolderId.map { [$0] } ?? []
+            return FolderSelectionRules(
+                mode: mode,
+                excludedFolderIds: excluded,
+                excludeParentFolderId: "",
+                excludeSystemFolderTargets: excludeSystemFolderTargets,
+                hideEmptyUncategorizedWithNoBookmarks: hideEmptyUncategorizedWithNoBookmarks,
+                canMoveToRoot: false
+            )
         }
-    }
-
-    var filteredFolders: [FolderModel] {
-        let excludeSystemAsTargets =
-            mode == .parentSelection ||
-            mode == .folderMove ||
-            mode == .bookmarksMove
-
-        var result = afterEmptySystemFilter
-
-        if excludeSystemAsTargets {
-            result = result.filter { !Constants.Folder.isSystemFolder($0.folderId) }
-        }
-
-        if !excludedIds.isEmpty {
-            result = result.filter { !excludedIds.contains($0.folderId) }
-        }
-
-        let excludeCurrentParent = mode == .parentSelection || mode == .folderMove
-        if excludeCurrentParent, let p = currentParentId {
-            result = result.filter { $0.folderId != p }
-        }
-
-        return result
     }
 }
