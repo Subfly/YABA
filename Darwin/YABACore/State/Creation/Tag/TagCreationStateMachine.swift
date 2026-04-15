@@ -23,11 +23,7 @@ public final class TagCreationStateMachine: YabaBaseObservableState<TagCreationU
             apply { $0.label = label }
         case .onSave:
             let label = state.label.trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !label.isEmpty else {
-                apply { $0.lastError = "Label required" }
-                return
-            }
-            apply { $0.lastError = nil }
+            guard !label.isEmpty else { return }
             let colorRaw = state.colorRole.rawValue
             if let id = state.existingTagId {
                 TagManager.queueUpdateTagMetadata(tagId: id, label: label, icon: state.icon, colorRaw: colorRaw)

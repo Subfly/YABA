@@ -36,8 +36,7 @@ struct FolderItemView: View {
         )
         .onHover { itemState.isHovered = $0 }
         .sheet(isPresented: $itemState.shouldShowEditSheet) {
-            // TODO: Folder edit sheet
-            EmptyView()
+            FolderCreationContent(existingFolderId: folder.folderId)
         }
         .sheet(isPresented: $itemState.shouldShowCreateBookmarkSheet) {
             // TODO: Create bookmark in folder

@@ -56,8 +56,7 @@ struct TagItemView: View {
             onNavigationCallback(tag)
         }
         .sheet(isPresented: $itemState.shouldShowEditSheet) {
-            // TODO: Tag edit
-            EmptyView()
+            TagCreationContent(existingTagId: tag.tagId)
         }
         .sheet(isPresented: $itemState.shouldShowCreateBookmarkSheet) {
             // TODO: Create bookmark with tag

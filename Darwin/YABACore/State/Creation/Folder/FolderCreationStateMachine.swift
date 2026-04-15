@@ -27,11 +27,7 @@ public final class FolderCreationStateMachine: YabaBaseObservableState<FolderCre
             apply { $0.folderDescription = text }
         case .onSave:
             let label = state.label.trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !label.isEmpty else {
-                apply { $0.lastError = "Label required" }
-                return
-            }
-            apply { $0.lastError = nil }
+            guard !label.isEmpty else { return }
             let colorRaw = state.colorRole.rawValue
             if let id = state.existingFolderId {
                 FolderManager.queueUpdateFolderMetadata(
@@ -41,9 +37,8 @@ public final class FolderCreationStateMachine: YabaBaseObservableState<FolderCre
                     icon: state.icon,
                     colorRaw: colorRaw
                 )
-                if let parent = state.parentFolderId {
-                    FolderManager.queueMoveFolder(folderId: id, newParentFolderId: parent)
-                }
+                // Always sync parent (including `nil` for root) when editing — matches Compose move semantics.
+                FolderManager.queueMoveFolder(folderId: id, newParentFolderId: state.parentFolderId)
             } else {
                 let newId = UUID().uuidString
                 FolderManager.queueCreateFolder(

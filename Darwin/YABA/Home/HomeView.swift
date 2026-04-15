@@ -48,10 +48,10 @@ struct HomeView: View {
             .ignoresSafeArea()
         }
         .sheet(isPresented: $homeState.shouldShowCreateFolderSheet) {
-            // TODO: SHOW FOLDER CREATION CONTENT
+            FolderCreationContent()
         }
         .sheet(isPresented: $homeState.shouldShowCreateTagSheet) {
-            // TODO: SHOW TAG CREATION CONTENT
+            TagCreationContent()
         }
         .sheet(isPresented: $homeState.shouldShowCreateBookmarkSheet) {
             // TODO: SHOW BOOKMARK CREATION CONTENT
