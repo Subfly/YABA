@@ -19,17 +19,28 @@ struct PresentableFolderItemView: View {
         Button(action: onPressed) {
             HStack {
                 YabaIconView(bundleKey: model?.icon ?? "folder-01")
+                    .frame(width: 24, height: 24)
                     .foregroundStyle((model?.color ?? nullModelPresentableColor).getUIColor())
-                Text(model?.label ?? "TODO")
+                if let model {
+                    if model.folderId == Constants.uncategorizedCollectionId {
+                        Text(LocalizedStringKey(Constants.uncategorizedCollectionLabelKey))
+                    } else {
+                        Text(model.label)
+                    }
+                } else {
+                    Text(LocalizedStringKey("Folder Creation Select Folder Message"))
+                }
                 Spacer()
                 YabaIconView(bundleKey: "arrow-right-01")
+                    .frame(width: 22, height: 22)
                     .foregroundStyle((model?.color ?? nullModelPresentableColor).getUIColor())
             }
         }
         .buttonStyle(.plain)
         .sheet(isPresented: $itemState.shouldShowEditSheet) {
-            // TODO: Edit selected folder from presenter
-            EmptyView()
+            if let model {
+                FolderCreationContent(existingFolderId: model.folderId)
+            }
         }
     }
 }

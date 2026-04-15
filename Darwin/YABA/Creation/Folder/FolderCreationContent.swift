@@ -59,7 +59,6 @@ struct FolderCreationContent: View {
                 parentFolderRow
                     .padding(.horizontal)
             }
-            .padding(.vertical)
             .navigationTitle(Text(LocalizedStringKey(navigationTitleKey)))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -125,7 +124,7 @@ struct FolderCreationContent: View {
                 }
             }
         }
-        .presentationDetents([.medium])
+        .presentationDetents([.fraction(0.4)])
         #if !targetEnvironment(macCatalyst)
         .presentationDragIndicator(.visible)
         #endif

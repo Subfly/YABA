@@ -18,7 +18,7 @@ public enum BookmarkKind: Int, Codable, CaseIterable, Sendable {
 }
 
 public extension BookmarkKind {
-    public func getUITitle() -> LocalizedStringKey {
+    func getUITitle() -> LocalizedStringKey {
         switch self {
         case .link: return LocalizedStringKey("Bookmark Type Link")
         case .note: return LocalizedStringKey("Bookmark Type None")
@@ -28,7 +28,7 @@ public extension BookmarkKind {
         }
     }
 
-    public func getIconName() -> String {
+    func getIconName() -> String {
         switch self {
         case .link: return "safari"
         case .note: return "bookmark-02"

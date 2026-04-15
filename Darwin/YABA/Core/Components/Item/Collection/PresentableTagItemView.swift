@@ -20,8 +20,13 @@ struct PresentableTagItemView: View {
         Button(action: onPressed) {
             HStack {
                 YabaIconView(bundleKey: model?.icon ?? "tag-01")
+                    .frame(width: 24, height: 24)
                     .foregroundStyle((model?.color ?? nullModelPresentableColor).getUIColor())
-                Text(model?.label ?? "TODO")
+                if let model {
+                    Text(model.label)
+                } else {
+                    Text(LocalizedStringKey("Select Tags No Tags Selected Title"))
+                }
                 Spacer()
             }
         }
@@ -33,8 +38,9 @@ struct PresentableTagItemView: View {
             }
         }
         .sheet(isPresented: $itemState.shouldShowEditSheet) {
-            // TODO: Tag edit from presenter
-            EmptyView()
+            if let model {
+                TagCreationContent(existingTagId: model.tagId)
+            }
         }
     }
 }
