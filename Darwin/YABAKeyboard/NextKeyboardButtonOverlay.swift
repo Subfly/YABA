@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  NextKeyboardButtonOverlay.swift
 //  YABA
@@ -19,3 +22,5 @@ internal struct NextKeyboardButtonOverlay: UIViewRepresentable {
     }
     func updateUIView(_ button: UIButton, context: Context) {}
 }
+
+#endif

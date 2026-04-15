@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  HomeAnnouncementsView.swift
 //  YABA
@@ -78,3 +81,5 @@ struct HomeAnnouncementsView: View {
 #Preview {
     HomeAnnouncementsView()
 }
+
+#endif

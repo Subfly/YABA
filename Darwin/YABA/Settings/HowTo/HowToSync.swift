@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  HowToSync.swift
 //  YABA
@@ -85,3 +88,5 @@ private struct GeneralSync: View {
 #Preview {
     HowToSync()
 }
+
+#endif

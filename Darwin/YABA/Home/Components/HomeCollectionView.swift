@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  HomeCollectionView.swift
 //  YABA
@@ -223,3 +226,5 @@ private struct ListSection<NoCollectionView: View>: View {
         onNavigationCallback: { _ in }
     )
 }
+
+#endif

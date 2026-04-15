@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  BookmarkCreationState.swift
 //  YABA
@@ -277,3 +280,5 @@ internal class BookmarkCreationState {
         label = ""
     }
 }
+
+#endif

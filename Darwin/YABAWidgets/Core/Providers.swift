@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  Provider.swift
 //  YABA
@@ -82,3 +85,5 @@ internal struct CategoryProvider: AppIntentTimelineProvider {
         return configuration
     }
 }
+
+#endif

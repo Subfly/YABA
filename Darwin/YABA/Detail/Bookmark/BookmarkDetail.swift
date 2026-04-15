@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  BookmarkDetail.swift
 //  YABA
@@ -715,3 +718,5 @@ private struct TagsSection: View {
         onDeleteBookmarkCallback: { _ in }
     )
 }
+
+#endif

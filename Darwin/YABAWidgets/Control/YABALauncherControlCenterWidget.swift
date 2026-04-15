@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  YABALauncherControlCenterWidget.swift
 //  YABAKeyboard
@@ -24,3 +27,5 @@ struct YABALauncherControlCenterWidget: ControlWidget {
         .description("Widget Open YABA Title")
     }
 }
+
+#endif

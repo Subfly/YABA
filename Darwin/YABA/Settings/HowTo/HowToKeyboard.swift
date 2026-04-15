@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  HowToKeyboard.swift
 //  YABA
@@ -145,3 +148,5 @@ private struct iPhoneKeyboard: View {
 #Preview {
     HowToKeyboard()
 }
+
+#endif

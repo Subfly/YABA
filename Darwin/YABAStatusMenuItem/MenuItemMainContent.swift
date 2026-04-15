@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  MenuItemMainContent.swift
 //  YABAStatusMenuItem
@@ -336,3 +339,5 @@ private struct NewBookmarkButton: View {
 #Preview {
     MenuItemMainContent(onCreateNewBookmarkRequested: {})
 }
+
+#endif

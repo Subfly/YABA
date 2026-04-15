@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  HowToPage.swift
 //  YABA
@@ -124,3 +127,5 @@ internal struct HowToPage: View {
         }.padding(.trailing)
     }
 }
+
+#endif

@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  CategoryWidget.swift
 //  YABAKeyboard
@@ -102,3 +105,5 @@ private struct CollectionView: View {
 } timeline: {
     CategoryEntry(date: .now, configuration: CategoryAppIntent())
 }
+
+#endif

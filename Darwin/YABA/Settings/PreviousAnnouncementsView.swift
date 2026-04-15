@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  PreviousAnnouncementsView.swift
 //  YABA
@@ -144,3 +147,5 @@ internal struct PreviousAnnouncementsView: View {
 #Preview {
     PreviousAnnouncementsView()
 }
+
+#endif

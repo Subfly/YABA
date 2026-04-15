@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  FloatingPanel.swift
 //  YABA
@@ -40,3 +43,5 @@ internal class FloatingPanel: NSPanel {
         }
     }
 }
+
+#endif

@@ -5,22 +5,21 @@
 //  Created by Ali Taha on 22.04.2025.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
+
+#if false
 
 struct SelectTagsContent: View {
     @Environment(\.dismiss)
     private var dismiss
-    
-    @State
-    private var showTagCreationSheet: Bool = false
-    
+
     @State
     private var searchQuery: String = ""
-    
+
     @Binding
-    var selectedTags: [YabaCollection]
-    
+    var selectedTags: [TagModel]
+
     var body: some View {
         SelectTagsSearchableContent(
             selectedTags: $selectedTags,
@@ -42,10 +41,11 @@ struct SelectTagsContent: View {
             }
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    showTagCreationSheet = true
+                    // Tag creation UI archived (`YABA/Creation/Collection`).
                 } label: {
                     Image(systemName: "plus")
                 }
+                .disabled(true)
             }
             ToolbarItem(placement: .primaryAction) {
                 Button {
@@ -55,49 +55,38 @@ struct SelectTagsContent: View {
                 }
             }
         }
-        .sheet(isPresented: $showTagCreationSheet) {
-            CollectionCreationContent(
-                collectionType: .tag,
-                collectionToEdit: nil,
-                onEditCallback: { _ in }
-            )
-        }
     }
 }
 
 private struct SelectTagsSearchableContent: View {
     @Environment(\.dismiss)
     private var dismiss
-    
+
     @Query
-    private var allTags: [YabaCollection]
-    
+    private var allTags: [TagModel]
+
     @Binding
-    var selectedTags: [YabaCollection]
-    
+    var selectedTags: [TagModel]
+
     @Binding
     var searchQuery: String
-    
+
     init(
-        selectedTags: Binding<[YabaCollection]>,
+        selectedTags: Binding<[TagModel]>,
         searchQuery: Binding<String>
     ) {
-        let compareValue = CollectionType.tag.rawValue
         let query = searchQuery.wrappedValue
         _allTags = Query(
-            filter: #Predicate<YabaCollection> {
-                if query.isEmpty {
-                    $0.type == compareValue
-                } else {
-                    $0.type == compareValue
-                    && $0.label.localizedStandardContains(query)
-                }
-            }
+            filter: #Predicate<TagModel> {
+                query.isEmpty || $0.label.localizedStandardContains(query)
+            },
+            sort: [SortDescriptor(\.label)],
+            animation: .smooth
         )
         _selectedTags = selectedTags
         _searchQuery = searchQuery
     }
-    
+
     var body: some View {
         List {
             Section {
@@ -117,30 +106,18 @@ private struct SelectTagsSearchableContent: View {
                     }
                 } else {
                     ForEach(selectedTags) { tag in
-                        ListCollectionItemView(
-                            collection: tag,
-                            isInSelectionMode: true,
-                            isInBookmarkDetail: false,
-                            onDeleteCallback: { collection in
-                                withAnimation {
-                                    if let indexOfTag = selectedTags.firstIndex(of: collection) {
-                                        selectedTags.remove(at: indexOfTag)
-                                    }
-                                }
-                            },
-                            onEditCallback: { collection in
-                                withAnimation {
-                                    if let indexOfTag = selectedTags.firstIndex(of: collection) {
-                                        selectedTags[indexOfTag] = collection
-                                    }
-                                }
-                            },
-                            onNavigationCallback: { _ in }
-                        )
+                        HStack {
+                            YabaIconView(bundleKey: tag.icon)
+                                .scaledToFit()
+                                .foregroundStyle(tag.color.getUIColor())
+                                .frame(width: 24, height: 24)
+                            Text(tag.label)
+                            Spacer()
+                        }
                         .contentShape(Rectangle())
                         .onTapGesture {
                             withAnimation {
-                                if let indexOfTag = selectedTags.firstIndex(of: tag) {
+                                if let indexOfTag = selectedTags.firstIndex(where: { $0.tagId == tag.tagId }) {
                                     selectedTags.remove(at: indexOfTag)
                                 }
                             }
@@ -157,8 +134,9 @@ private struct SelectTagsSearchableContent: View {
                 }
             }
             Section {
-                // Thanks swiftdata for this...
-                let tags = allTags.filter({ !selectedTags.contains($0) })
+                let tags = allTags.filter { candidate in
+                    !selectedTags.contains(where: { $0.tagId == candidate.tagId })
+                }
                 if tags.isEmpty {
                     if searchQuery.isEmpty {
                         if selectedTags.isEmpty {
@@ -213,14 +191,14 @@ private struct SelectTagsSearchableContent: View {
                     }
                 } else {
                     ForEach(tags) { tag in
-                        ListCollectionItemView(
-                            collection: tag,
-                            isInSelectionMode: true,
-                            isInBookmarkDetail: false,
-                            onDeleteCallback: { _ in },
-                            onEditCallback: { _ in },
-                            onNavigationCallback: { _ in }
-                        )
+                        HStack {
+                            YabaIconView(bundleKey: tag.icon)
+                                .scaledToFit()
+                                .foregroundStyle(tag.color.getUIColor())
+                                .frame(width: 24, height: 24)
+                            Text(tag.label)
+                            Spacer()
+                        }
                         .contentShape(Rectangle())
                         .onTapGesture {
                             withAnimation {
@@ -238,10 +216,13 @@ private struct SelectTagsSearchableContent: View {
                         .frame(width: 18, height: 18)
                 }
             }
-        }.listRowSpacing(0)
+        }
+        .listRowSpacing(0)
     }
 }
 
 #Preview {
     SelectTagsContent(selectedTags: .constant([]))
 }
+
+#endif

@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  OnboardingState.swift
 //  YABA
@@ -135,3 +138,5 @@ internal class OnboardingState {
         return decoded.allCollections()
     }
 }
+
+#endif

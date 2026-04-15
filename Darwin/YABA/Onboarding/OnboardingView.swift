@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  OnboardingView.swift
 //  YABA
@@ -111,3 +114,5 @@ struct OnboardingView: View {
         .padding(.bottom)
     }
 }
+
+#endif

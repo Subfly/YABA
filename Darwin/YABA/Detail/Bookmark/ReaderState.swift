@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  ReaderState.swift
 //  YABA
@@ -293,3 +296,5 @@ private let styling: String = """
 </body>
 </html>
 """
+
+#endif

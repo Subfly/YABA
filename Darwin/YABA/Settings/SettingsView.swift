@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  SettingsView.swift
 //  YABA
@@ -631,3 +634,5 @@ struct SettingsView: View {
 #Preview {
     SettingsView()
 }
+
+#endif

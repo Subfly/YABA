@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  BookmarkDetailTip.swift
 //  YABA
@@ -35,3 +38,5 @@ struct BookmarkDetailTip: Tip {
             .resizable()
     }
 }
+
+#endif

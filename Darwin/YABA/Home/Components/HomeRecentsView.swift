@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  HomeRecentsView.swift
 //  YABA
@@ -51,3 +54,5 @@ struct HomeRecentsView: View {
 #Preview {
     HomeRecentsView(onNavigationCallback: { _ in })
 }
+
+#endif

@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  SimpleEntry.swift
 //  YABA
@@ -16,3 +19,5 @@ internal struct CategoryEntry: TimelineEntry {
     let date: Date
     let configuration: CategoryAppIntent
 }
+
+#endif

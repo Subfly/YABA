@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  SyncState.swift
 //  YABA
@@ -132,4 +135,6 @@ internal class SyncState {
         try await networkSyncManager.completeSyncWithIncomingData(syncData, using: modelContext)
     }
 }
+#endif
+
 #endif

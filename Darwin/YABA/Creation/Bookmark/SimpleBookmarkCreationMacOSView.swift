@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  SimpleBookmarkCreationView.swift
 //  YABAShareMac
@@ -218,3 +221,5 @@ struct SimpleBookmarkCreationMacOSView: View {
         onClickClose: {}
     )
 }
+
+#endif

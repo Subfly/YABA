@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  HomeView.swift
 //  YABA
@@ -256,3 +259,5 @@ private struct SequentialView: View {
         }
     }
 }
+
+#endif

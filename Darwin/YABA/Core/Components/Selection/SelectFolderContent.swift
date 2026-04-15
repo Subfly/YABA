@@ -5,32 +5,31 @@
 //  Created by Ali Taha on 22.04.2025.
 //
 
-import SwiftUI
+#if false
+
 import SwiftData
+import SwiftUI
 
 enum FolderSelectionMode {
     case folderSelection
     case parentSelection(
-        YabaCollection?, // the current collection itself
-        (Bool) -> Void // onSelectCallback for selection
+        FolderModel?,
+        (Bool) -> Void
     )
 }
 
 struct SelectFolderContent: View {
     @Environment(\.dismiss)
     private var dismiss
-    
-    @State
-    private var showFolderCreationSheet: Bool = false
-    
+
     @State
     private var searchQuery: String = ""
-    
+
     @Binding
-    var selectedFolder: YabaCollection?
-    
+    var selectedFolder: FolderModel?
+
     let mode: FolderSelectionMode
-    
+
     var body: some View {
         SelectFolderSearchableContent(
             mode: mode,
@@ -53,19 +52,13 @@ struct SelectFolderContent: View {
             }
             ToolbarItem(placement: .primaryAction) {
                 Button {
-                    showFolderCreationSheet = true
+                    // Folder creation UI archived (`YABA/Creation/Collection`).
                 } label: {
                     YabaIconView(bundleKey: "folder-add")
                         .scaledToFit()
                 }
+                .disabled(true)
             }
-        }
-        .sheet(isPresented: $showFolderCreationSheet) {
-            CollectionCreationContent(
-                collectionType: .folder,
-                collectionToEdit: nil,
-                onEditCallback: { _ in }
-            )
         }
     }
 }
@@ -73,45 +66,39 @@ struct SelectFolderContent: View {
 private struct SelectFolderSearchableContent: View {
     @Environment(\.dismiss)
     private var dismiss
-    
+
     @Query
-    private var allFolders: [YabaCollection]
-    
+    private var allFolders: [FolderModel]
+
     @Binding
-    var selectedFolder: YabaCollection?
-    
+    var selectedFolder: FolderModel?
+
     @Binding
     var searchQuery: String
-    
+
     let mode: FolderSelectionMode
-    
+
     init(
         mode: FolderSelectionMode,
-        selectedFolder: Binding<YabaCollection?>,
+        selectedFolder: Binding<FolderModel?>,
         searchQuery: Binding<String>
     ) {
         self.mode = mode
-
-        let compareValue = CollectionType.folder.rawValue
         let query = searchQuery.wrappedValue
         _allFolders = Query(
-            filter: #Predicate<YabaCollection> {
-                if query.isEmpty {
-                    $0.type == compareValue
-                } else {
-                    $0.type == compareValue
-                    && $0.label.localizedStandardContains(query)
-                }
-            }
+            filter: #Predicate<FolderModel> {
+                query.isEmpty || $0.label.localizedStandardContains(query)
+            },
+            sort: [SortDescriptor(\.label)],
+            animation: .smooth
         )
-        
         _selectedFolder = selectedFolder
         _searchQuery = searchQuery
     }
-    
+
     var body: some View {
-        let foldersToBeShown = if case .parentSelection(let currentCollection, _) = mode {
-            availableParentFolders(for: currentCollection, from: allFolders)
+        let foldersToBeShown = if case .parentSelection(let current, _) = mode {
+            availableParentFolders(for: current, from: allFolders)
         } else {
             allFolders
         }
@@ -152,33 +139,22 @@ private struct SelectFolderSearchableContent: View {
                 }
             } else {
                 ForEach(foldersToBeShown) { folder in
-                    ListCollectionItemView(
-                        collection: folder,
-                        isInSelectionMode: true,
-                        isInBookmarkDetail: false,
-                        onDeleteCallback: { collection in
-                            withAnimation {
-                                if selectedFolder?.id == collection.id {
-                                    selectedFolder = nil
-                                }
-                            }
-                        },
-                        onEditCallback: { collection in
-                            withAnimation {
-                                if selectedFolder?.id == collection.id {
-                                    selectedFolder = collection
-                                }
-                            }
-                        },
-                        onNavigationCallback: { _ in }
-                    )
+                    HStack {
+                        YabaIconView(bundleKey: folder.icon)
+                            .scaledToFit()
+                            .foregroundStyle(folder.color.getUIColor())
+                            .frame(width: 24, height: 24)
+                        if folder.folderId == Constants.uncategorizedCollectionId {
+                            Text(LocalizedStringKey(Constants.uncategorizedCollectionLabelKey))
+                        } else {
+                            Text(folder.label)
+                        }
+                        Spacer()
+                    }
                     .contentShape(Rectangle())
                     .onTapGesture {
                         withAnimation {
                             dismiss()
-                            /**
-                             * Worst and best thing I've ever seen in a language
-                             */
                             if case .parentSelection(_, let onSelected) = mode {
                                 onSelected(false)
                             }
@@ -187,26 +163,22 @@ private struct SelectFolderSearchableContent: View {
                     }
                 }
             }
-        }.listRowSpacing(0)
+        }
+        .listRowSpacing(0)
     }
-    
+
     func availableParentFolders(
-        for currentCollection: YabaCollection?,
-        from allFolders: [YabaCollection]
-    ) -> [YabaCollection] {
-        guard let currentCollection else { return allFolders }
-        
-        // Collect all descendant IDs (recursive)
-        let descendantIds = Set(currentCollection.getDescendants().map { $0.collectionId })
-        
-        return allFolders.filter { collection in
-            // Exclude:
-            // - the current collection itself
-            // - its current parent
-            // - any of its descendants
-            collection.collectionId != currentCollection.collectionId &&
-            collection.collectionId != currentCollection.parent?.collectionId &&
-            !descendantIds.contains(collection.collectionId)
+        for current: FolderModel?,
+        from allFolders: [FolderModel]
+    ) -> [FolderModel] {
+        guard let current else { return allFolders }
+
+        let descendantIds = Set(current.getDescendants().map(\.folderId))
+
+        return allFolders.filter { folder in
+            folder.folderId != current.folderId &&
+                folder.folderId != current.parent?.folderId &&
+                !descendantIds.contains(folder.folderId)
         }
     }
 }
@@ -217,3 +189,5 @@ private struct SelectFolderSearchableContent: View {
         mode: .folderSelection
     )
 }
+
+#endif

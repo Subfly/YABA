@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  HowToTips.swift
 //  YABA
@@ -79,3 +82,5 @@ private struct GeneralTips: View {
 #Preview {
     HowToTips()
 }
+
+#endif

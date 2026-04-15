@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  CreateTagState.swift
 //  YABA
@@ -20,3 +23,5 @@ internal class CollectionCreationState {
     var selectedParentFolder: YabaCollection? = nil
     var moveToRoot: Bool = false
 }
+
+#endif

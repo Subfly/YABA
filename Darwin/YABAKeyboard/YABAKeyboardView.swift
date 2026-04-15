@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  YABAKeyboardView.swift
 //  YABAKeyboard
@@ -51,3 +54,5 @@ internal struct YABAKeyboardView: View {
         onDelete: {}
     )
 }
+
+#endif

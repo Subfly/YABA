@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  AppIntent.swift
 //  YABAWidgets
@@ -342,3 +345,5 @@ internal struct QuickmarkIntent: AppIntent {
         return .result(opensIntent: OpenURLIntent(url))
     }
 }
+
+#endif

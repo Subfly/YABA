@@ -31,9 +31,9 @@ struct YABAApp: App {
     var body: some Scene {
         WindowGroup {
             YabaNavigationView()
-                .modelContext(YabaModelContainer.getContext())
+                .modelContext(try! ParityModelContainer.makeContext())
                 .environment(\.appState, appState)
-                .environment(\.deepLinkManager, deepLinkManager)
+                // .environment(\.deepLinkManager, deepLinkManager)
                 // .environment(\.networkSyncManager, networkSyncManager)
                 .preferredColorScheme(preferredTheme.getScheme())
                 .onAppear {

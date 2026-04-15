@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  DonePage.swift
 //  YABA
@@ -61,3 +64,5 @@ internal struct DonePage: View {
         }
     }
 }
+
+#endif

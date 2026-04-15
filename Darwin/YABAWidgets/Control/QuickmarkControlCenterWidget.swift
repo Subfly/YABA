@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  QuickmarkControlCenterWidget.swift
 //  YABAKeyboard
@@ -23,3 +26,5 @@ struct QuickmarkControlCenterWidget: ControlWidget {
         .description("Widget Create a Quick Bookmark")
     }
 }
+
+#endif

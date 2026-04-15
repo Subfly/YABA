@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  SearchView.swift
 //  YABA
@@ -178,3 +181,5 @@ private struct SearchableContent: View {
         }
     }
 }
+
+#endif

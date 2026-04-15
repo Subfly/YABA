@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  HowToWidgets.swift
 //  YABA
@@ -124,3 +127,5 @@ private struct GeneralWidgets: View {
 #Preview {
     HowToWidgets()
 }
+
+#endif

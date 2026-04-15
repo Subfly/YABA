@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  BookmarkWidget.swift
 //  YABAKeyboard
@@ -184,3 +187,5 @@ private struct BookmarkView: View {
 } timeline: {
     BookmarksListEntry(date: .now, configuration: BookmarkListAppIntent())
 }
+
+#endif

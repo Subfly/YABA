@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  KeyboardPadNavigationView.swift
 //  YABA
@@ -119,3 +122,5 @@ internal struct KeyboardPadNavigationView: View {
         }
     }
 }
+
+#endif

@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  PromisesPage.swift
 //  YABA
@@ -107,3 +110,5 @@ internal struct PromisesPage: View {
         .padding(.trailing)
     }
 }
+
+#endif

@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  SettingsState.swift
 //  YABA
@@ -114,3 +117,5 @@ internal class SettingsState {
         deviceName = ""
     }
 }
+
+#endif

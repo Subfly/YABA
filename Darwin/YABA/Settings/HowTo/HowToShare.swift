@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  HowToShare.swift
 //  YABA
@@ -175,3 +178,5 @@ private struct iPhoneShare: View {
 #Preview {
     HowToShare()
 }
+
+#endif

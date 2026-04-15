@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  SyncView.swift
 //  YABA
@@ -300,3 +303,5 @@ private struct DiscoveredDeviceItem: View {
 struct SyncView: View {
     var body: some View { EmptyView() }
 }
+
+#endif

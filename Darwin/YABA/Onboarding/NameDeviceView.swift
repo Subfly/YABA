@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  NameDeviceView.swift
 //  YABA
@@ -71,3 +74,5 @@ struct NameDeviceView: View {
 #Preview {
     NameDeviceView {}
 }
+
+#endif

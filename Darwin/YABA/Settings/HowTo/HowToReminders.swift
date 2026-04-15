@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  HowToReminder.swift
 //  YABA
@@ -73,3 +76,5 @@ struct HowToReminders: View {
 #Preview {
     HowToReminders()
 }
+
+#endif

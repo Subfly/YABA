@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  ReaderView.swift
 //  YABA
@@ -234,3 +237,5 @@ internal struct DisplayWebViewRepresentable: UIViewRepresentable {
         uiView.loadHTMLString(html, baseURL: nil)
     }
 }
+
+#endif

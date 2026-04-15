@@ -1,3 +1,6 @@
+// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
+
+#if false
 //
 //  HomeState.swift
 //  YABA
@@ -18,3 +21,5 @@ internal class HomeState {
     var shouldShowBackground: Bool = false
     var saveBookmarkRequest: DeepLinkSaveBookmarkRequest? = nil
 }
+
+#endif
