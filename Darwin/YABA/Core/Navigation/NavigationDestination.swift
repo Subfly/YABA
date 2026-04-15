@@ -8,7 +8,8 @@
 import Foundation
 
 enum NavigationDestination: Hashable {
-    case collectionDetail(collection: YabaCollection?)
-    case bookmarkDetail(bookmark: YabaBookmark?)
+    case folderDetail(id: String)
+    case tagDetail(id: String)
+    case bookmarkDetail(bookmarkId: String)
     case search
 }

@@ -10,8 +10,9 @@ import SwiftUI
 
 @Observable
 class AppState {
-    var selectedCollection: YabaCollection?
-    var selectedBookmark: YabaBookmark?
+    var selectedFolder: FolderModel?
+    var selectedTag: TagModel?
+    var selectedBookmark: BookmarkModel?
 }
 
 extension EnvironmentValues {

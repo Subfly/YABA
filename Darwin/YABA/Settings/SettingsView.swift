@@ -584,7 +584,8 @@ struct SettingsView: View {
                         onFinishCallback: {
                             withAnimation {
                                 appState.selectedBookmark = nil
-                                appState.selectedCollection = nil
+                                appState.selectedFolder = nil
+                                appState.selectedTag = nil
                             }
                         }
                     )

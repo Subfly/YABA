@@ -10,11 +10,12 @@ import SwiftUI
 @MainActor
 @Observable
 internal class CollectionItemState {
-    var isHovered: Bool = false
-    var isTargeted: Bool = false
-    var isExpanded: Bool = false
     var shouldShowDeleteDialog: Bool = false
     var shouldShowEditSheet: Bool = false
     var shouldShowMenuItems: Bool = false
     var shouldShowCreateBookmarkSheet: Bool = false
+    
+    var isHovered: Bool = false
+    var isTargeted: Bool = false
+    var isExpanded: Bool = false
 }
