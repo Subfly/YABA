@@ -50,11 +50,16 @@ struct ImagemarkCreationContent: View {
                 folderId: machine.state.selectedFolderId,
                 uncategorizedCreationRequired: machine.state.uncategorizedFolderCreationRequired
             ) { folderForPresentation, mainTint in
-                formList(
-                    mainTint: mainTint,
-                    folderForPresentation: folderForPresentation,
-                    privatePinSheet: $privatePinSheet
-                )
+                ZStack {
+                    #if !targetEnvironment(macCatalyst)
+                    AnimatedGradient(color: mainTint)
+                    #endif
+                    formList(
+                        mainTint: mainTint,
+                        folderForPresentation: folderForPresentation,
+                        privatePinSheet: $privatePinSheet
+                    )
+                }
             }
             .id("\(machine.state.selectedFolderId ?? "")-\(machine.state.uncategorizedFolderCreationRequired)")
         }
@@ -199,6 +204,8 @@ struct ImagemarkCreationContent: View {
                 }
             }
         }
+        .listStyle(.sidebar)
+        .scrollContentBackground(.hidden)
         .tint(mainTint)
         #if !os(visionOS)
         .scrollDismissesKeyboard(.immediately)
