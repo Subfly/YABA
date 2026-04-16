@@ -27,6 +27,9 @@ struct CanvmarkCreationContent: View {
     @State
     private var previewContentAppearance: PreviewContentAppearance = .list
 
+    @State
+    private var privatePinSheet: PrivateBookmarkPinRoute?
+
     let preselectedFolderId: String?
     let preselectedTagIds: [String]
     let editingBookmarkId: String?
@@ -44,7 +47,8 @@ struct CanvmarkCreationContent: View {
             ) { folderForPresentation, mainTint in
                 formList(
                     mainTint: mainTint,
-                    folderForPresentation: folderForPresentation
+                    folderForPresentation: folderForPresentation,
+                    privatePinSheet: $privatePinSheet
                 )
             }
             .id("\(machine.state.selectedFolderId ?? "")-\(machine.state.uncategorizedFolderCreationRequired)")
@@ -64,13 +68,25 @@ struct CanvmarkCreationContent: View {
                 }
             }
         )
+        .sheet(item: $privatePinSheet) { route in
+            switch route {
+            case .create:
+                BookmarkPasswordCreateSheet()
+            case let .entry(bookmarkId, reason):
+                BookmarkPasswordEntrySheet(bookmarkId: bookmarkId, reason: reason)
+            }
+        }
         .task(id: editingBookmarkId) {
             await bootstrap()
             syncPreviewAppearanceFromMachine()
         }
     }
 
-    private func formList(mainTint: Color, folderForPresentation: FolderModel?) -> some View {
+    private func formList(
+        mainTint: Color,
+        folderForPresentation: FolderModel?,
+        privatePinSheet: Binding<PrivateBookmarkPinRoute?>
+    ) -> some View {
         List {
             Section {
                 previewContent(fallbackIcon: "pen-tool-02", mainTint: mainTint)
@@ -94,7 +110,7 @@ struct CanvmarkCreationContent: View {
                 )
                 .lineLimit(3 ... 8)
                 .safeAreaInset(edge: .leading) { fieldIcon("paragraph", mainTint: mainTint) }
-                Toggle(isOn: isPrivateBinding) {
+                Toggle(isOn: privateToggleBinding(privatePinSheet: privatePinSheet)) {
                     Label {
                         Text("Bookmark Creation Toggle Private Title")
                     } icon: {
@@ -185,12 +201,16 @@ struct CanvmarkCreationContent: View {
         )
     }
 
-    private var isPrivateBinding: Binding<Bool> {
+    private func privateToggleBinding(privatePinSheet: Binding<PrivateBookmarkPinRoute?>) -> Binding<Bool> {
         Binding(
             get: { machine.state.isPrivate },
             set: { newValue in
                 guard newValue != machine.state.isPrivate else { return }
-                Task { await machine.send(.onTogglePrivate) }
+                Task {
+                    await PrivateBookmarkCreationPinGate.run(pinSheet: privatePinSheet) {
+                        await machine.send(.onTogglePrivate)
+                    }
+                }
             }
         )
     }
