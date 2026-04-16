@@ -16,6 +16,9 @@ struct SelectFolderContent: View {
     @State
     private var machine = FolderSelectionStateMachine()
 
+    @State
+    private var showCreateFolderSheet = false
+
     @Query(sort: [SortDescriptor(\FolderModel.label)])
     private var allFoldersQuery: [FolderModel]
 
@@ -73,7 +76,6 @@ struct SelectFolderContent: View {
                     } label: {
                         Text("Cancel")
                     }
-                    .foregroundStyle(.red)
                 } else {
                     Button {
                         dismiss()
@@ -83,6 +85,19 @@ struct SelectFolderContent: View {
                     .buttonRepeatBehavior(.enabled)
                 }
             }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showCreateFolderSheet = true
+                } label: {
+                    YabaIconView(bundleKey: "add-01")
+                        .scaledToFit()
+                        .frame(width: 22, height: 22)
+                }
+                .accessibilityLabel(Text("Create Folder Title"))
+            }
+        }
+        .sheet(isPresented: $showCreateFolderSheet) {
+            FolderCreationContent()
         }
         .task {
             await machine.send(
@@ -244,8 +259,10 @@ private struct FolderSelectionRules: Equatable {
         let hideEmptyUncategorizedWithNoBookmarks =
             !(mode == .folderSelection || mode == .parentSelection)
 
+        /// Bookmark creation folder picker: user should not pick Uncategorized (default is virtual); other flows unchanged.
         let excludeSystemFolderTargets =
-            mode == .parentSelection
+            mode == .folderSelection
+            || mode == .parentSelection
             || mode == .folderMove
             || mode == .bookmarksMove
 
