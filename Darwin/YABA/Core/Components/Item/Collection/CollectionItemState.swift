@@ -14,7 +14,8 @@ internal class CollectionItemState {
     var shouldShowEditSheet: Bool = false
     var shouldShowMenuItems: Bool = false
     var shouldShowCreateBookmarkSheet: Bool = false
-    
+    var shouldShowMoveFolderSheet: Bool = false
+
     var isHovered: Bool = false
     var isTargeted: Bool = false
     var isExpanded: Bool = false
