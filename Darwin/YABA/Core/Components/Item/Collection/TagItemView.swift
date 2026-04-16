@@ -39,7 +39,12 @@ struct TagItemView: View {
         .modifier(
             TagRowInteractionModifier(
                 isSystemTag: isSystemTag,
-                onNewBookmark: { itemState.shouldShowCreateBookmarkSheet = true },
+                onNewBookmark: {
+                    itemState.bookmarkTypeSelection = BookmarkTypeSelectionContext(
+                        preselectedFolderId: nil,
+                        preselectedTagIds: [tag.tagId]
+                    )
+                },
                 onEdit: { itemState.shouldShowEditSheet = true },
                 onDelete: { itemState.shouldShowDeleteDialog = true }
             )
@@ -54,10 +59,7 @@ struct TagItemView: View {
         .sheet(isPresented: $itemState.shouldShowEditSheet) {
             TagCreationContent(existingTagId: tag.tagId)
         }
-        .sheet(isPresented: $itemState.shouldShowCreateBookmarkSheet) {
-            // TODO: Create bookmark with tag (pre-select `tag` like Compose `ResultStoreKeys.SELECTED_TAGS`)
-            EmptyView()
-        }
+        .bookmarkCreateTwoStepSheets(typeSelection: $itemState.bookmarkTypeSelection)
         .alert(
             LocalizedStringKey("Delete Tag Title"),
             isPresented: $itemState.shouldShowDeleteDialog

@@ -37,7 +37,7 @@ struct HomeView: View {
                         case .folder:
                             homeState.shouldShowCreateFolderSheet = true
                         case .bookmark:
-                            homeState.shouldShowCreateBookmarkSheet = true
+                            homeState.bookmarkTypeSelection = BookmarkTypeSelectionContext()
                         default:
                             break
                         }
@@ -53,12 +53,10 @@ struct HomeView: View {
         .sheet(isPresented: $homeState.shouldShowCreateTagSheet) {
             TagCreationContent()
         }
-        .sheet(isPresented: $homeState.shouldShowCreateBookmarkSheet) {
-            // TODO: SHOW BOOKMARK CREATION CONTENT
+        .sheet(item: $homeState.bookmarkFlow) { context in
+            BookmarkFlowSheet(context: context)
         }
-        .sheet(item: $homeState.saveBookmarkRequest) { request in
-            // TODO: SHOW BOOKMARK CREATION CONTENT
-        }
+        .bookmarkCreateTwoStepSheets(typeSelection: $homeState.bookmarkTypeSelection)
         // Sync UI disabled (see NetworkSyncManager / SyncView).
         // #if !targetEnvironment(macCatalyst)
         // .fullScreenCover(isPresented: $homeState.shouldShowSyncSheet) {
@@ -114,7 +112,7 @@ struct HomeView: View {
                 Menu {
                     SortingPicker(contentType: .collection)
                     Button {
-                        onNavigationCallbackForSettings()
+                        // TODO: SHOW SETTINGS (Catalyst)
                     } label: {
                         Label {
                             Text("Settings Title")
@@ -148,11 +146,9 @@ struct HomeView: View {
             }
         }
         .onChange(of: deepLinkManager.saveRequest) { oldValue, newValue in
-            if oldValue == nil {
-                if let newRequest = newValue {
-                    homeState.saveBookmarkRequest = newRequest
-                    deepLinkManager.onHandleDeeplink()
-                }
+            if oldValue == nil, let newRequest = newValue {
+                homeState.bookmarkFlow = .deepLink(url: newRequest.link)
+                deepLinkManager.onHandleDeeplink()
             }
         }
     }

@@ -31,6 +31,8 @@ public final class NotemarkCreationStateMachine: YabaBaseObservableState<Notemar
             apply { $0.label = s }
         case let .onChangeDescription(s):
             apply { $0.bookmarkDescription = s }
+        case let .onChangeDocumentJson(s):
+            apply { $0.documentJson = s }
         case let .onSelectFolderId(id):
             apply { $0.selectedFolderId = id }
         case let .onSelectTagIds(ids):

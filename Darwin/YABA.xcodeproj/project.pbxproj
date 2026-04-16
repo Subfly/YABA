@@ -135,9 +135,6 @@
 				Core/Util/InverseLabelStyle.swift,
 				Core/Util/PreviewContentAppearance.swift,
 				"Core/Util/UINavigationController+Extension.swift",
-				Creation/Bookmark/BookmarkCreationContent.swift,
-				Creation/Bookmark/BookmarkCreationState.swift,
-				Creation/Bookmark/SimpleBookmarkCreationView.swift,
 				Credits.rtf,
 				LaunchScreen.storyboard,
 				Localizable.xcstrings,
@@ -172,8 +169,6 @@
 				Core/Navigation/NavigationDestination.swift,
 				Core/Util/InverseLabelStyle.swift,
 				Core/Util/PreviewContentAppearance.swift,
-				Creation/Bookmark/BookmarkCreationContent.swift,
-				Creation/Bookmark/BookmarkCreationState.swift,
 				Detail/Collection/CollectionDetail.swift,
 				Detail/Collection/CollectionDetailState.swift,
 				LaunchScreen.storyboard,
@@ -213,7 +208,6 @@
 		96EB670A2DD91588009EB9EC /* Exceptions for "YABA" folder in "YABA" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Creation/Bookmark/SimpleBookmarkCreationMacOSView.swift,
 				Info.plist,
 			);
 			platformFiltersByRelativePath = {
@@ -229,8 +223,6 @@
 				Core/Util/CreationType.swift,
 				Core/Util/InverseLabelStyle.swift,
 				Core/Util/PreviewContentAppearance.swift,
-				Creation/Bookmark/BookmarkCreationState.swift,
-				Creation/Bookmark/SimpleBookmarkCreationMacOSView.swift,
 				Credits.rtf,
 				Localizable.xcstrings,
 			);
@@ -250,8 +242,6 @@
 				Core/Util/AnnouncementSeverity.swift,
 				Core/Util/CreationType.swift,
 				Core/Util/PreviewContentAppearance.swift,
-				Creation/Bookmark/BookmarkCreationState.swift,
-				Creation/Bookmark/SimpleBookmarkCreationMacOSView.swift,
 				Credits.rtf,
 				Localizable.xcstrings,
 			);

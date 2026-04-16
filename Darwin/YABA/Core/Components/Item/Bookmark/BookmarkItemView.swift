@@ -618,8 +618,7 @@ private struct BookmarkSheetsAndAlertsModifier: ViewModifier {
                 Text("Delete Content Message \(bookmark.label)")
             }
             .sheet(isPresented: $itemState.shouldShowEditSheet) {
-                // TODO: Hook `BookmarkCreationContent` / kind-specific editors when parity sheets are ready.
-                EmptyView()
+                BookmarkFlowSheet(context: .edit(bookmarkId: bookmark.bookmarkId))
             }
             .sheet(isPresented: $itemState.shouldShowShareSheet) {
                 // TODO: `ShareSheet` or share payload when wired.

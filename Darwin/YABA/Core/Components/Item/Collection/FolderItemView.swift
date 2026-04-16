@@ -44,7 +44,12 @@ struct FolderItemView: View {
         .modifier(
             FolderRowInteractionModifier(
                 isSystemFolder: isSystemFolder,
-                onNewBookmark: { itemState.shouldShowCreateBookmarkSheet = true },
+                onNewBookmark: {
+                    itemState.bookmarkTypeSelection = BookmarkTypeSelectionContext(
+                        preselectedFolderId: folder.folderId,
+                        preselectedTagIds: []
+                    )
+                },
                 onEdit: { itemState.shouldShowEditSheet = true },
                 onMove: { itemState.shouldShowMoveFolderSheet = true },
                 onDelete: { itemState.shouldShowDeleteDialog = true }
@@ -74,10 +79,7 @@ struct FolderItemView: View {
                 )
             }
         }
-        .sheet(isPresented: $itemState.shouldShowCreateBookmarkSheet) {
-            // TODO: Create bookmark in folder (pre-select `folder` like Compose `ResultStoreKeys.SELECTED_FOLDER`)
-            EmptyView()
-        }
+        .bookmarkCreateTwoStepSheets(typeSelection: $itemState.bookmarkTypeSelection)
         .alert(
             LocalizedStringKey("Delete Folder Title"),
             isPresented: $itemState.shouldShowDeleteDialog

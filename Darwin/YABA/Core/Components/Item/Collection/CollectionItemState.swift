@@ -16,6 +16,9 @@ internal class CollectionItemState {
     var shouldShowCreateBookmarkSheet: Bool = false
     var shouldShowMoveFolderSheet: Bool = false
 
+    /// Row “new bookmark” flow: type sheet → kind form (`bookmarkCreateTwoStepSheets`).
+    var bookmarkTypeSelection: BookmarkTypeSelectionContext?
+
     var isHovered: Bool = false
     var isTargeted: Bool = false
 }

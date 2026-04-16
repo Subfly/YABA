@@ -15,8 +15,11 @@ internal class HomeState {
     var shouldShowBackground: Bool = false
     var shouldShowCreateFolderSheet: Bool = false
     var shouldShowCreateTagSheet: Bool = false
-    var shouldShowCreateBookmarkSheet: Bool = false
     // var shouldShowSyncSheet: Bool = false
-    
-    var saveBookmarkRequest: DeepLinkSaveBookmarkRequest? = nil
+
+    /// Presents `BookmarkFlowSheet` for edit (`BookmarkItemView`) or deep-link link capture.
+    var bookmarkFlow: BookmarkFlowContext?
+
+    /// FAB bookmark create: type sheet → kind form (`bookmarkCreateTwoStepSheets` on `HomeView`).
+    var bookmarkTypeSelection: BookmarkTypeSelectionContext?
 }
