@@ -74,6 +74,7 @@ struct CanvmarkCreationContent: View {
         List {
             Section {
                 previewContent(fallbackIcon: "pen-tool-02", mainTint: mainTint)
+                    .bookmarkCreationPreviewListRowBackground(appearance: previewContentAppearance)
             } header: {
                 previewHeader(mainTint: mainTint)
             }
@@ -261,47 +262,102 @@ struct CanvmarkCreationContent: View {
             HStack(alignment: .center, spacing: 12) {
                 placeholderPreviewImage(fallbackIcon: fallbackIcon, width: 56, height: 56, mainTint: mainTint)
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(machine.state.label.isEmpty ? "Bookmark Title Placeholder" : machine.state.label)
-                        .font(.headline)
-                        .lineLimit(1)
-                    Text(machine.state.bookmarkDescription.isEmpty ? "Bookmark Description Placeholder" : machine.state.bookmarkDescription)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(2)
+                    if machine.state.label.isEmpty {
+                        Text("Bookmark Title Placeholder")
+                            .font(.headline)
+                            .lineLimit(1)
+                    } else {
+                        Text(machine.state.label)
+                            .font(.headline)
+                            .lineLimit(1)
+                    }
+                    if machine.state.bookmarkDescription.isEmpty {
+                        Text("Bookmark Description Placeholder")
+                            .foregroundStyle(.secondary)
+                            .lineLimit(2)
+                    } else {
+                        Text(machine.state.bookmarkDescription)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(2)
+                    }
                 }
             }
         case .cardSmallImage:
             VStack(alignment: .leading, spacing: 8) {
                 HStack(alignment: .center, spacing: 10) {
                     placeholderPreviewImage(fallbackIcon: fallbackIcon, width: 56, height: 56, mainTint: mainTint)
-                    Text(machine.state.label.isEmpty ? "Bookmark Title Placeholder" : machine.state.label)
-                        .font(.headline)
-                        .lineLimit(2)
+                    if machine.state.label.isEmpty {
+                        Text("Bookmark Title Placeholder")
+                            .font(.headline)
+                            .lineLimit(2)
+                    } else {
+                        Text(machine.state.label)
+                            .font(.headline)
+                            .lineLimit(2)
+                    }
                     Spacer(minLength: 0)
                 }
-                Text(machine.state.bookmarkDescription.isEmpty ? "Bookmark Description Placeholder" : machine.state.bookmarkDescription)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(4)
+                if machine.state.bookmarkDescription.isEmpty {
+                    Text("Bookmark Description Placeholder")
+                        .foregroundStyle(.secondary)
+                        .lineLimit(4)
+                } else {
+                    Text(machine.state.bookmarkDescription)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(4)
+                }
             }
         case .cardBigImage:
             VStack(alignment: .leading, spacing: 10) {
                 placeholderPreviewImage(fallbackIcon: fallbackIcon, width: nil, height: 160, mainTint: mainTint)
-                Text(machine.state.label.isEmpty ? "Bookmark Title Placeholder" : machine.state.label)
-                    .font(.headline)
-                Text(machine.state.bookmarkDescription.isEmpty ? "Bookmark Description Placeholder" : machine.state.bookmarkDescription)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(3)
+                if machine.state.label.isEmpty {
+                    Text("Bookmark Title Placeholder")
+                        .font(.headline)
+                } else {
+                    Text(machine.state.label)
+                        .font(.headline)
+                }
+                if machine.state.bookmarkDescription.isEmpty {
+                    Text("Bookmark Description Placeholder")
+                        .foregroundStyle(.secondary)
+                        .lineLimit(3)
+                } else {
+                    Text(machine.state.bookmarkDescription)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(3)
+                }
             }
         case .grid:
             HStack {
                 Spacer(minLength: 0)
                 VStack(spacing: 0) {
                     placeholderPreviewImage(fallbackIcon: fallbackIcon, width: 200, height: 200, mainTint: mainTint)
-                    HStack {
-                        Text(machine.state.label.isEmpty ? "Bookmark Title Placeholder" : machine.state.label)
-                            .font(.headline)
-                            .lineLimit(2)
-                            .multilineTextAlignment(.leading)
-                        Spacer(minLength: 0)
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack {
+                            if machine.state.label.isEmpty {
+                                Text("Bookmark Title Placeholder")
+                                    .font(.headline)
+                                    .lineLimit(2)
+                                    .multilineTextAlignment(.leading)
+                            } else {
+                                Text(machine.state.label)
+                                    .font(.headline)
+                                    .lineLimit(2)
+                                    .multilineTextAlignment(.leading)
+                            }
+                            Spacer(minLength: 0)
+                        }
+                        if machine.state.bookmarkDescription.isEmpty {
+                            Text("Bookmark Description Placeholder")
+                                .foregroundStyle(.secondary)
+                                .lineLimit(2)
+                                .multilineTextAlignment(.leading)
+                        } else {
+                            Text(machine.state.bookmarkDescription)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(2)
+                                .multilineTextAlignment(.leading)
+                        }
                     }
                     .padding()
                 }
