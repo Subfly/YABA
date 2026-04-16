@@ -9,9 +9,6 @@
 import SwiftUI
 
 struct FolderItemView: View {
-    @Environment(\.appState)
-    private var appState
-
     @State
     private var itemState = CollectionItemState()
 
@@ -42,12 +39,6 @@ struct FolderItemView: View {
                 .foregroundStyle(.secondary)
             }
             .buttonStyle(.plain)
-            .simultaneousGesture(
-                TapGesture().onEnded {
-                    appState.selectedFolder = folder
-                    appState.selectedTag = nil
-                }
-            )
         }
         .contentShape(Rectangle())
         .modifier(
@@ -62,7 +53,6 @@ struct FolderItemView: View {
         .listRowBackground(
             ItemListRowChrome.listRowBackground(
                 cornerRadius: 8,
-                isSelected: appState.selectedFolder?.folderId == folder.folderId,
                 isHovered: itemState.isHovered
             )
         )
@@ -138,21 +128,21 @@ private struct FolderRowInteractionModifier: ViewModifier {
                         }
                     }
                     Button {
-                        onEdit()
-                    } label: {
-                        Label {
-                            Text(LocalizedStringKey("Edit"))
-                        } icon: {
-                            YabaIconView(bundleKey: "edit-02")
-                        }
-                    }
-                    Button {
                         onMove()
                     } label: {
                         Label {
                             Text(LocalizedStringKey("Move"))
                         } icon: {
                             YabaIconView(bundleKey: "arrow-move-up-right")
+                        }
+                    }
+                    Button {
+                        onEdit()
+                    } label: {
+                        Label {
+                            Text(LocalizedStringKey("Edit"))
+                        } icon: {
+                            YabaIconView(bundleKey: "edit-02")
                         }
                     }
                     Divider()
@@ -168,17 +158,17 @@ private struct FolderRowInteractionModifier: ViewModifier {
                 }
                 .swipeActions(edge: .leading, allowsFullSwipe: false) {
                     Button {
-                        onMove()
-                    } label: {
-                        swipeLabel(iconKey: "arrow-move-up-right", titleKey: "Move")
-                    }
-                    .tint(YabaColor.teal.getUIColor())
-                    Button {
                         onNewBookmark()
                     } label: {
                         swipeLabel(iconKey: "bookmark-add-02", titleKey: "New Bookmark")
                     }
                     .tint(YabaColor.blue.getUIColor())
+                    Button {
+                        onMove()
+                    } label: {
+                        swipeLabel(iconKey: "arrow-move-up-right", titleKey: "Move")
+                    }
+                    .tint(YabaColor.teal.getUIColor())
                 }
                 .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                     Button {

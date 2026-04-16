@@ -21,9 +21,6 @@ struct YABAApp: App {
     @State
     private var deepLinkManager: DeepLinkManager = .init()
     
-    @State
-    private var appState: AppState = .init()
-    
     // Sync disabled — preserve wiring when re-enabling NetworkSyncManager.
     // @State
     // private var networkSyncManager: NetworkSyncManager = .init()
@@ -32,7 +29,6 @@ struct YABAApp: App {
         WindowGroup {
             YabaNavigationView()
                 .modelContext(try! ParityModelContainer.makeContext())
-                .environment(\.appState, appState)
                 // .environment(\.deepLinkManager, deepLinkManager)
                 // .environment(\.networkSyncManager, networkSyncManager)
                 .preferredColorScheme(preferredTheme.getScheme())

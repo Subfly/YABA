@@ -8,9 +8,6 @@
 import SwiftUI
 
 struct TagItemView: View {
-    @Environment(\.appState)
-    private var appState
-
     @State
     private var itemState = CollectionItemState()
 
@@ -37,6 +34,7 @@ struct TagItemView: View {
             }
             .foregroundStyle(.secondary)
         }
+        .buttonStyle(.plain)
         .contentShape(Rectangle())
         .modifier(
             TagRowInteractionModifier(
@@ -46,17 +44,9 @@ struct TagItemView: View {
                 onDelete: { itemState.shouldShowDeleteDialog = true }
             )
         )
-        .buttonStyle(.plain)
-        .simultaneousGesture(
-            TapGesture().onEnded {
-                appState.selectedTag = tag
-                appState.selectedFolder = nil
-            }
-        )
         .listRowBackground(
             ItemListRowChrome.listRowBackground(
                 cornerRadius: 8,
-                isSelected: appState.selectedTag?.tagId == tag.tagId,
                 isHovered: itemState.isHovered
             )
         )

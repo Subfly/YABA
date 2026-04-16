@@ -16,9 +16,6 @@ struct BookmarkItemView: View {
     @AppStorage(Constants.preferredCardImageSizingKey)
     private var cardSizing: CardImageSizing = .small
 
-    @Environment(\.appState)
-    private var appState
-
     @State
     private var itemState = BookmarkItemState()
 
@@ -32,7 +29,6 @@ struct BookmarkItemView: View {
     var body: some View {
         selectableContent
             .modifier(BookmarkListRowBackgroundModifier(
-                isSelected: appState.selectedBookmark?.bookmarkId == bookmark.bookmarkId,
                 isHovered: itemState.isHovered
             ))
     }
@@ -96,11 +92,7 @@ struct BookmarkItemView: View {
 
     private var gridCellFill: Color {
         #if targetEnvironment(macCatalyst)
-        Color.gray.opacity(
-            appState.selectedBookmark?.persistentModelID == bookmark.persistentModelID
-                ? 0.3
-                : itemState.isHovered ? 0.2 : 0.1
-        )
+        Color.gray.opacity(itemState.isHovered ? 0.2 : 0.1)
         #else
         Color(UIColor.secondarySystemFill)
         #endif
@@ -110,7 +102,6 @@ struct BookmarkItemView: View {
 // MARK: - List row background
 
 private struct BookmarkListRowBackgroundModifier: ViewModifier {
-    let isSelected: Bool
     let isHovered: Bool
 
     func body(content: Content) -> some View {
@@ -118,7 +109,6 @@ private struct BookmarkListRowBackgroundModifier: ViewModifier {
             .listRowBackground(
                 ItemListRowChrome.listRowBackground(
                     cornerRadius: 8,
-                    isSelected: isSelected,
                     isHovered: isHovered
                 )
             )
@@ -600,9 +590,6 @@ private struct BookmarkOverflowMenuContent: View {
 // MARK: - Sheets & alerts + navigation
 
 private struct BookmarkSheetsAndAlertsModifier: ViewModifier {
-    @Environment(\.appState)
-    private var appState
-
     let bookmark: BookmarkModel
 
     @Binding
@@ -642,7 +629,6 @@ private struct BookmarkSheetsAndAlertsModifier: ViewModifier {
                 itemState.isHovered = hovered
             }
             .onTapGesture {
-                appState.selectedBookmark = bookmark
                 onNavigationCallback(bookmark)
             }
     }
