@@ -109,6 +109,9 @@ private struct FolderView<NoCollectionView: View>: View {
         }
         
         _folders = Query(
+            filter: #Predicate<FolderModel> { folder in
+                folder.parent == nil
+            },
             sort: [sortDescriptor],
             animation: .smooth
         )
@@ -120,7 +123,13 @@ private struct FolderView<NoCollectionView: View>: View {
                 noCollectionView
             } else {
                 ForEach(folders) { folder in
-                    Text(folder.label)
+                    NavigationLink {
+                        EmptyView()
+                    } label: {
+                        FolderItemView(folder: folder)
+                    }
+                    .buttonStyle(.plain)
+                    .navigationLinkIndicatorVisibility(.hidden)
                 }
             }
         } header: {
@@ -180,7 +189,13 @@ private struct TagView<NoCollectionView: View>: View {
                 noCollectionView
             } else {
                 ForEach(tags) { tag in
-                    Text(tag.label)
+                    NavigationLink {
+                        EmptyView()
+                    } label: {
+                        TagItemView(tag: tag)
+                    }
+                    .buttonStyle(.plain)
+                    .navigationLinkIndicatorVisibility(.hidden)
                 }
             }
         } header: {

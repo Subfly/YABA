@@ -15,26 +15,41 @@ struct FolderItemView: View {
     private var itemState = CollectionItemState()
 
     let folder: FolderModel
-    let parentColors: [YabaColor]
-    let hasChildren: Bool
-    let isExpanded: Bool
-    let isInSelectionMode: Bool
-    let isInBookmarkDetail: Bool
-    let onToggleExpanded: () -> Void
-    let onNavigationCallback: (FolderModel) -> Void
+
+    private var parentColors: [YabaColor] {
+        folder.getParentColorsInOrder()
+    }
+
+    private var hasChildren: Bool {
+        !folder.children.isEmpty
+    }
+
+    private var sortedChildren: [FolderModel] {
+        folder.children.sorted {
+            $0.label.localizedStandardCompare($1.label) == .orderedAscending
+        }
+    }
 
     var body: some View {
-        BaseCollectionItemView(parentColors: parentColors) {
-            rowLabel
-        }
-        .listRowBackground(
-            ItemListRowChrome.listRowBackground(
-                cornerRadius: 8,
-                isSelected: appState.selectedFolder?.folderId == folder.folderId,
-                isHovered: itemState.isHovered
+        VStack(alignment: .leading, spacing: 0) {
+            BaseCollectionItemView(parentColors: parentColors) {
+                rowLabel
+            }
+            .listRowBackground(
+                ItemListRowChrome.listRowBackground(
+                    cornerRadius: 8,
+                    isSelected: appState.selectedFolder?.folderId == folder.folderId,
+                    isHovered: itemState.isHovered
+                )
             )
-        )
-        .onHover { itemState.isHovered = $0 }
+            .onHover { itemState.isHovered = $0 }
+
+            if itemState.isExpanded {
+                ForEach(sortedChildren, id: \.folderId) { child in
+                    FolderItemView(folder: child)
+                }
+            }
+        }
         .sheet(isPresented: $itemState.shouldShowEditSheet) {
             FolderCreationContent(existingFolderId: folder.folderId)
         }
@@ -74,39 +89,43 @@ struct FolderItemView: View {
                 } else {
                     Text(folder.label)
                 }
+                Spacer(minLength: 0)
+                HStack {
+                    /**
+                    CollectionItemOverflowMenu(isHovered: $itemState.isHovered) {
+                        // TODO: Menu actions (new bookmark, edit, move, delete)
+                        Button("TODO") { itemState.shouldShowCreateBookmarkSheet = true }
+                        Button("TODO") { itemState.shouldShowEditSheet = true }
+                    }*/
+                    Text("\(folder.bookmarks.count)")
+                        .foregroundStyle(.secondary)
+                        .fontWeight(.medium)
+                }
+                .foregroundStyle(.secondary)
             }
-            Spacer()
-            HStack {
-                /**
-                CollectionItemOverflowMenu(isHovered: $itemState.isHovered) {
-                    // TODO: Menu actions (new bookmark, edit, move, delete)
-                    Button("TODO") { itemState.shouldShowCreateBookmarkSheet = true }
-                    Button("TODO") { itemState.shouldShowEditSheet = true }
-                }*/
-                Text("\(folder.bookmarks.count)")
-                    .foregroundStyle(.secondary)
-                    .fontWeight(.medium)
-            }
-            .foregroundStyle(.secondary)
-            if !isInSelectionMode && !isInBookmarkDetail && hasChildren {
+            .buttonStyle(.plain)
+            .simultaneousGesture(
+                TapGesture().onEnded {
+                    appState.selectedFolder = folder
+                    appState.selectedTag = nil
+                }
+            )
+
+            if hasChildren {
                 YabaIconView(bundleKey: "arrow-right-01")
                     .scaledToFit()
                     .frame(width: 20, height: 20)
                     .foregroundStyle(folder.color.getUIColor())
-                    .rotationEffect(isExpanded ? .degrees(90) : .zero)
-                    .animation(.smooth, value: isExpanded)
+                    .rotationEffect(itemState.isExpanded ? .degrees(90) : .zero)
+                    .animation(.smooth, value: itemState.isExpanded)
+                    .contentShape(Rectangle())
                     .onTapGesture {
                         withAnimation {
-                            onToggleExpanded()
+                            itemState.isExpanded.toggle()
                         }
                     }
             }
         }
         .contentShape(Rectangle())
-        .onTapGesture {
-            appState.selectedFolder = folder
-            appState.selectedTag = nil
-            onNavigationCallback(folder)
-        }
     }
 }

@@ -178,7 +178,6 @@
 				Creation/Bookmark/BookmarkCreationState.swift,
 				Detail/Collection/CollectionDetail.swift,
 				Detail/Collection/CollectionDetailState.swift,
-				Home/Components/HomeCollectionView.swift,
 				LaunchScreen.storyboard,
 				Localizable.xcstrings,
 			);

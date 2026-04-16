@@ -15,9 +15,6 @@ struct TagItemView: View {
     private var itemState = CollectionItemState()
 
     let tag: TagModel
-    let isInSelectionMode: Bool
-    let isInBookmarkDetail: Bool
-    let onNavigationCallback: (TagModel) -> Void
 
     var body: some View {
         HStack {
@@ -42,6 +39,13 @@ struct TagItemView: View {
             .foregroundStyle(.secondary)
         }
         .contentShape(Rectangle())
+        .buttonStyle(.plain)
+        .simultaneousGesture(
+            TapGesture().onEnded {
+                appState.selectedTag = tag
+                appState.selectedFolder = nil
+            }
+        )
         .listRowBackground(
             ItemListRowChrome.listRowBackground(
                 cornerRadius: 8,
@@ -50,11 +54,6 @@ struct TagItemView: View {
             )
         )
         .onHover { itemState.isHovered = $0 }
-        .onTapGesture {
-            appState.selectedTag = tag
-            appState.selectedFolder = nil
-            onNavigationCallback(tag)
-        }
         .sheet(isPresented: $itemState.shouldShowEditSheet) {
             TagCreationContent(existingTagId: tag.tagId)
         }
