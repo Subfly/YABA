@@ -16,12 +16,17 @@ public final class LinkmarkCreationStateMachine: YabaBaseObservableState<Linkmar
 
     public func send(_ event: LinkmarkCreationEvent) async {
         switch event {
-        case let .onInit(linkmarkId, initialUrl, initialFolderId, initialTagIds):
+        case let .onInit(linkmarkId, initialUrl, initialFolderId, initialTagIds, uncategorizedFolderCreationRequired):
             apply {
                 $0.editingBookmarkId = linkmarkId
                 if let u = initialUrl { $0.url = u }
                 $0.selectedFolderId = initialFolderId
                 $0.selectedTagIds = initialTagIds ?? []
+                if linkmarkId == nil {
+                    $0.uncategorizedFolderCreationRequired = uncategorizedFolderCreationRequired
+                } else {
+                    $0.uncategorizedFolderCreationRequired = false
+                }
             }
         case .onCyclePreviewAppearance:
             apply {
@@ -39,7 +44,10 @@ public final class LinkmarkCreationStateMachine: YabaBaseObservableState<Linkmar
         case let .onChangeDescription(d):
             apply { $0.bookmarkDescription = d }
         case let .onSelectFolderId(id):
-            apply { $0.selectedFolderId = id }
+            apply {
+                $0.selectedFolderId = id
+                $0.uncategorizedFolderCreationRequired = false
+            }
         case let .onSelectTagIds(ids):
             apply { $0.selectedTagIds = ids }
         case .onClearLabel:
@@ -58,7 +66,7 @@ public final class LinkmarkCreationStateMachine: YabaBaseObservableState<Linkmar
         case let .onConverterFailed(err):
             apply { $0.converterError = err }
         case .onSave:
-            persistFromState()
+            await persistFromState()
         case .onTogglePrivate:
             apply { $0.isPrivate.toggle() }
         case .onTogglePinned:
@@ -188,13 +196,27 @@ public final class LinkmarkCreationStateMachine: YabaBaseObservableState<Linkmar
         }
     }
 
-    private func persistFromState() {
+    private func persistFromState() async {
         let folderId = state.selectedFolderId
         let label = state.label.trimmingCharacters(in: .whitespacesAndNewlines)
         let url = state.url.trimmingCharacters(in: .whitespacesAndNewlines)
         guard let folderId, !folderId.isEmpty else {
             apply { $0.lastError = "Folder required" }
             return
+        }
+        if state.uncategorizedFolderCreationRequired {
+            do {
+                try await CoreOperationQueue.shared.queueAndAwait(name: "EnsureUncategorizedFolderVisible") { context in
+                    try FolderManager.ensureUncategorizedFolderVisibleInContext(context)
+                }
+                apply { $0.uncategorizedFolderCreationRequired = false }
+            } catch {
+                apply {
+                    $0.lastError = String(describing: error)
+                    $0.isSaving = false
+                }
+                return
+            }
         }
         guard !label.isEmpty else {
             apply { $0.lastError = "Label required" }

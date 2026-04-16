@@ -6,7 +6,12 @@
 import Foundation
 
 public enum NotemarkCreationEvent: Sendable {
-    case onInit(notemarkId: String?, initialFolderId: String?, initialTagIds: [String]?)
+    case onInit(
+        notemarkId: String?,
+        initialFolderId: String?,
+        initialTagIds: [String]?,
+        uncategorizedFolderCreationRequired: Bool
+    )
     case onCyclePreviewAppearance
     case onChangeLabel(String)
     case onChangeDescription(String)

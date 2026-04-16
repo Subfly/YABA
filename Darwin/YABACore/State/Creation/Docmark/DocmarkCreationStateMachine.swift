@@ -13,11 +13,16 @@ public final class DocmarkCreationStateMachine: YabaBaseObservableState<DocmarkC
 
     public func send(_ event: DocmarkCreationEvent) async {
         switch event {
-        case let .onInit(id, folderId, tagIds):
+        case let .onInit(id, folderId, tagIds, uncategorizedFolderCreationRequired):
             apply {
                 $0.editingBookmarkId = id
                 $0.selectedFolderId = folderId
                 $0.selectedTagIds = tagIds ?? []
+                if id == nil {
+                    $0.uncategorizedFolderCreationRequired = uncategorizedFolderCreationRequired
+                } else {
+                    $0.uncategorizedFolderCreationRequired = false
+                }
             }
         case .onPickDocument:
             break
@@ -61,13 +66,16 @@ public final class DocmarkCreationStateMachine: YabaBaseObservableState<DocmarkC
                 if let d = $0.metadataDescription, !d.isEmpty { $0.bookmarkDescription = d }
             }
         case let .onSelectFolderId(id):
-            apply { $0.selectedFolderId = id }
+            apply {
+                $0.selectedFolderId = id
+                $0.uncategorizedFolderCreationRequired = false
+            }
         case let .onSelectTagIds(ids):
             apply { $0.selectedTagIds = ids }
         case .onWebInitialContentLoad:
             break
         case .onSave:
-            persist()
+            await persist()
         case .onTogglePrivate:
             apply { $0.isPrivate.toggle() }
         case .onTogglePinned:
@@ -87,12 +95,26 @@ public final class DocmarkCreationStateMachine: YabaBaseObservableState<DocmarkC
         }
     }
 
-    private func persist() {
+    private func persist() async {
         let folderId = state.selectedFolderId
         let label = state.label.trimmingCharacters(in: .whitespacesAndNewlines)
         guard let folderId, !folderId.isEmpty else {
             apply { $0.lastError = "Folder required" }
             return
+        }
+        if state.uncategorizedFolderCreationRequired {
+            do {
+                try await CoreOperationQueue.shared.queueAndAwait(name: "EnsureUncategorizedFolderVisible") { context in
+                    try FolderManager.ensureUncategorizedFolderVisibleInContext(context)
+                }
+                apply { $0.uncategorizedFolderCreationRequired = false }
+            } catch {
+                apply {
+                    $0.lastError = String(describing: error)
+                    $0.isSaving = false
+                }
+                return
+            }
         }
         guard !label.isEmpty else {
             apply { $0.lastError = "Label required" }

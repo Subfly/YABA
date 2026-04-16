@@ -6,7 +6,12 @@
 import Foundation
 
 public enum ImagemarkCreationEvent: Sendable {
-    case onInit(imagemarkId: String?, initialFolderId: String?, initialTagIds: [String]?)
+    case onInit(
+        imagemarkId: String?,
+        initialFolderId: String?,
+        initialTagIds: [String]?,
+        uncategorizedFolderCreationRequired: Bool
+    )
     case onCyclePreviewAppearance
     case onPickFromGallery
     case onImageFromShare(Data, fileExtension: String)

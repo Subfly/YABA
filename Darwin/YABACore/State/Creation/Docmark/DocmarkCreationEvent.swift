@@ -6,7 +6,12 @@
 import Foundation
 
 public enum DocmarkCreationEvent: Sendable {
-    case onInit(docmarkId: String?, initialFolderId: String?, initialTagIds: [String]?)
+    case onInit(
+        docmarkId: String?,
+        initialFolderId: String?,
+        initialTagIds: [String]?,
+        uncategorizedFolderCreationRequired: Bool
+    )
     case onPickDocument
     case onClearDocument
     case onDocumentFromShare(Data, sourceFileName: String?, docmarkType: DocmarkType)

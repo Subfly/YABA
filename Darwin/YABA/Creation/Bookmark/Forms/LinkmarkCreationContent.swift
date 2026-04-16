@@ -28,9 +28,6 @@ struct LinkmarkCreationContent: View {
     @State
     private var previewContentAppearance: PreviewContentAppearance = .list
 
-    @Query(sort: [SortDescriptor(\FolderModel.label)])
-    private var folders: [FolderModel]
-
     let preselectedFolderId: String?
     let preselectedTagIds: [String]
     let initialUrl: String?
@@ -43,7 +40,16 @@ struct LinkmarkCreationContent: View {
 
     var body: some View {
         NavigationStack {
-            formList
+            BookmarkCreationFolderVisuals(
+                folderId: machine.state.selectedFolderId,
+                uncategorizedCreationRequired: machine.state.uncategorizedFolderCreationRequired
+            ) { folderForPresentation, mainTint in
+                formList(
+                    mainTint: mainTint,
+                    folderForPresentation: folderForPresentation
+                )
+            }
+            .id("\(machine.state.selectedFolderId ?? "")-\(machine.state.uncategorizedFolderCreationRequired)")
         }
         .bookmarkFolderAndTagSheets(
             showFolderSheet: $showFolderSheet,
@@ -66,15 +72,16 @@ struct LinkmarkCreationContent: View {
         }
     }
 
-    private var formList: some View {
+    private func formList(mainTint: Color, folderForPresentation: FolderModel?) -> some View {
         List {
             Section {
                 previewContent(
                     imageData: machine.state.previewImageData,
-                    fallbackIcon: "bookmark-02"
+                    fallbackIcon: "bookmark-02",
+                    mainTint: mainTint
                 )
             } header: {
-                previewHeader
+                previewHeader(mainTint: mainTint)
             }
 
             Section {
@@ -89,18 +96,18 @@ struct LinkmarkCreationContent: View {
                 .textInputAutocapitalization(.never)
                 .disabled(isEditing)
                 .safeAreaInset(edge: .leading) {
-                    fieldIcon("link-02")
+                    fieldIcon("link-02", mainTint: mainTint)
                 }
 
                 if let cleaned = machine.state.cleanedUrl, !cleaned.isEmpty {
                     HStack {
-                        fieldIcon("clean")
+                        fieldIcon("clean", mainTint: mainTint)
                         Text(cleaned)
                             .foregroundStyle(.secondary)
                     }
                 } else {
                     HStack {
-                        fieldIcon("clean")
+                        fieldIcon("clean", mainTint: mainTint)
                         Text("Create Bookmark Cleaned URL Placeholder")
                             .foregroundStyle(.tertiary)
                     }
@@ -127,7 +134,7 @@ struct LinkmarkCreationContent: View {
                     prompt: Text("Create Bookmark Title Placeholder")
                 )
                 .safeAreaInset(edge: .leading) {
-                    fieldIcon("text")
+                    fieldIcon("text", mainTint: mainTint)
                 }
 
                 TextField(
@@ -138,14 +145,14 @@ struct LinkmarkCreationContent: View {
                 )
                 .lineLimit(3 ... 8)
                 .safeAreaInset(edge: .leading) {
-                    fieldIcon("paragraph")
+                    fieldIcon("paragraph", mainTint: mainTint)
                 }
 
                 Toggle(isOn: isPrivateBinding) {
                     Label {
                         Text("Bookmark Creation Toggle Private Title")
                     } icon: {
-                        fieldIcon(machine.state.isPrivate ? "circle-lock-02" : "circle-unlock-02")
+                        fieldIcon(machine.state.isPrivate ? "circle-lock-02" : "circle-unlock-02", mainTint: mainTint)
                             .animation(.smooth, value: machine.state.isPrivate)
                     }
                 }
@@ -153,7 +160,7 @@ struct LinkmarkCreationContent: View {
                     Label {
                         Text("Bookmark Creation Toggle Pinned Title")
                     } icon: {
-                        fieldIcon(machine.state.isPinned ? "pin" : "pin-off")
+                        fieldIcon(machine.state.isPinned ? "pin" : "pin-off", mainTint: mainTint)
                             .animation(.smooth, value: machine.state.isPinned)
                     }
                 }
@@ -165,7 +172,7 @@ struct LinkmarkCreationContent: View {
                         Label {
                             Text("Bookmark Creation Apply From Metadata Title")
                         } icon: {
-                            fieldIcon("checkmark-badge-02")
+                            fieldIcon("checkmark-badge-02", mainTint: mainTint)
                         }
                     }
                 }
@@ -197,7 +204,7 @@ struct LinkmarkCreationContent: View {
             }
 
             BookmarkFormFolderTagRows(
-                selectedFolderId: machine.state.selectedFolderId,
+                folderForPresentation: folderForPresentation,
                 selectedTagIds: machine.state.selectedTagIds,
                 onFolderNavigate: { showFolderSheet = true },
                 onTagsNavigate: { showTagSheet = true }
@@ -255,16 +262,7 @@ struct LinkmarkCreationContent: View {
         return !title.isEmpty || !description.isEmpty
     }
 
-    private var selectedFolder: FolderModel? {
-        guard let selectedFolderId = machine.state.selectedFolderId else { return nil }
-        return folders.first { $0.folderId == selectedFolderId }
-    }
-
-    private var mainTint: Color {
-        selectedFolder?.color.getUIColor() ?? .accentColor
-    }
-
-    private var previewHeader: some View {
+    private func previewHeader(mainTint: Color) -> some View {
         HStack {
             Label {
                 Text("Preview")
@@ -383,11 +381,11 @@ struct LinkmarkCreationContent: View {
     }
 
     @ViewBuilder
-    private func previewContent(imageData: Data?, fallbackIcon: String) -> some View {
+    private func previewContent(imageData: Data?, fallbackIcon: String, mainTint: Color) -> some View {
         switch previewContentAppearance {
         case .list:
             HStack(alignment: .center, spacing: 12) {
-                previewImage(imageData: imageData, fallbackIcon: fallbackIcon, width: 56, height: 56)
+                previewImage(imageData: imageData, fallbackIcon: fallbackIcon, width: 56, height: 56, mainTint: mainTint)
                 VStack(alignment: .leading, spacing: 4) {
                     Text(machine.state.label.isEmpty ? "Bookmark Title Placeholder" : machine.state.label)
                         .font(.headline)
@@ -406,7 +404,7 @@ struct LinkmarkCreationContent: View {
         case .cardSmallImage:
             VStack(alignment: .leading, spacing: 8) {
                 HStack(alignment: .center, spacing: 10) {
-                    previewImage(imageData: imageData, fallbackIcon: fallbackIcon, width: 56, height: 56)
+                    previewImage(imageData: imageData, fallbackIcon: fallbackIcon, width: 56, height: 56, mainTint: mainTint)
                     Text(machine.state.label.isEmpty ? "Bookmark Title Placeholder" : machine.state.label)
                         .font(.headline)
                         .lineLimit(2)
@@ -418,7 +416,7 @@ struct LinkmarkCreationContent: View {
             }
         case .cardBigImage:
             VStack(alignment: .leading, spacing: 10) {
-                previewImage(imageData: imageData, fallbackIcon: fallbackIcon, width: nil, height: 160)
+                previewImage(imageData: imageData, fallbackIcon: fallbackIcon, width: nil, height: 160, mainTint: mainTint)
                 Text(machine.state.label.isEmpty ? "Bookmark Title Placeholder" : machine.state.label)
                     .font(.headline)
                 Text(machine.state.bookmarkDescription.isEmpty ? "Bookmark Description Placeholder" : machine.state.bookmarkDescription)
@@ -429,7 +427,7 @@ struct LinkmarkCreationContent: View {
             HStack {
                 Spacer(minLength: 0)
                 VStack(spacing: 0) {
-                    previewImage(imageData: imageData, fallbackIcon: fallbackIcon, width: 200, height: 200)
+                    previewImage(imageData: imageData, fallbackIcon: fallbackIcon, width: 200, height: 200, mainTint: mainTint)
                     HStack {
                         Text(machine.state.label.isEmpty ? "Bookmark Title Placeholder" : machine.state.label)
                             .font(.headline)
@@ -454,7 +452,8 @@ struct LinkmarkCreationContent: View {
         imageData: Data?,
         fallbackIcon: String,
         width: CGFloat?,
-        height: CGFloat
+        height: CGFloat,
+        mainTint: Color
     ) -> some View {
         if let imageData, let image = UIImage(data: imageData) {
             Image(uiImage: image)
@@ -475,7 +474,7 @@ struct LinkmarkCreationContent: View {
         }
     }
 
-    private func fieldIcon(_ bundleKey: String) -> some View {
+    private func fieldIcon(_ bundleKey: String, mainTint: Color) -> some View {
         YabaIconView(bundleKey: bundleKey)
             .scaledToFit()
             .frame(width: 24, height: 24)
@@ -512,12 +511,17 @@ struct LinkmarkCreationContent: View {
             machine.replaceState(BookmarkFlowHydration.linkmarkUIState(from: bookmark))
             return
         }
+        let resolved = BookmarkCreationFolderResolution.resolveForNewBookmark(
+            modelContext: modelContext,
+            preselectedFolderId: preselectedFolderId
+        )
         await machine.send(
             .onInit(
                 linkmarkId: nil,
                 initialUrl: initialUrl,
-                initialFolderId: preselectedFolderId,
-                initialTagIds: preselectedTagIds
+                initialFolderId: resolved.selectedFolderId,
+                initialTagIds: preselectedTagIds,
+                uncategorizedFolderCreationRequired: resolved.uncategorizedFolderCreationRequired
             )
         )
     }

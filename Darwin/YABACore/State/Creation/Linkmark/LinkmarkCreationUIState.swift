@@ -11,6 +11,8 @@ public struct LinkmarkCreationUIState: Sendable {
     public var label: String
     public var bookmarkDescription: String
     public var selectedFolderId: String?
+    /// When true, `selectedFolderId` may point at Uncategorized before the folder row exists; save must materialize it first (Compose parity).
+    public var uncategorizedFolderCreationRequired: Bool
     public var selectedTagIds: [String]
     public var metadataTitle: String?
     public var metadataDescription: String?
@@ -41,6 +43,7 @@ public struct LinkmarkCreationUIState: Sendable {
         label: String = "",
         bookmarkDescription: String = "",
         selectedFolderId: String? = nil,
+        uncategorizedFolderCreationRequired: Bool = false,
         selectedTagIds: [String] = [],
         metadataTitle: String? = nil,
         metadataDescription: String? = nil,
@@ -67,6 +70,7 @@ public struct LinkmarkCreationUIState: Sendable {
         self.label = label
         self.bookmarkDescription = bookmarkDescription
         self.selectedFolderId = selectedFolderId
+        self.uncategorizedFolderCreationRequired = uncategorizedFolderCreationRequired
         self.selectedTagIds = selectedTagIds
         self.metadataTitle = metadataTitle
         self.metadataDescription = metadataDescription

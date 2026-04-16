@@ -10,6 +10,7 @@ public struct CanvmarkCreationUIState: Sendable {
     public var label: String
     public var bookmarkDescription: String
     public var selectedFolderId: String?
+    public var uncategorizedFolderCreationRequired: Bool
     public var selectedTagIds: [String]
     public var sceneData: Data?
     public var bookmarkAppearance: BookmarkAppearance
@@ -24,6 +25,7 @@ public struct CanvmarkCreationUIState: Sendable {
         label: String = "",
         bookmarkDescription: String = "",
         selectedFolderId: String? = nil,
+        uncategorizedFolderCreationRequired: Bool = false,
         selectedTagIds: [String] = [],
         sceneData: Data? = nil,
         bookmarkAppearance: BookmarkAppearance = .list,
@@ -37,6 +39,7 @@ public struct CanvmarkCreationUIState: Sendable {
         self.label = label
         self.bookmarkDescription = bookmarkDescription
         self.selectedFolderId = selectedFolderId
+        self.uncategorizedFolderCreationRequired = uncategorizedFolderCreationRequired
         self.selectedTagIds = selectedTagIds
         self.sceneData = sceneData
         self.bookmarkAppearance = bookmarkAppearance

@@ -11,6 +11,7 @@ public struct DocmarkCreationUIState: Sendable {
     public var bookmarkDescription: String
     public var summary: String
     public var selectedFolderId: String?
+    public var uncategorizedFolderCreationRequired: Bool
     public var selectedTagIds: [String]
     public var docmarkType: DocmarkType?
     public var pickedDocumentData: Data?
@@ -33,6 +34,7 @@ public struct DocmarkCreationUIState: Sendable {
         bookmarkDescription: String = "",
         summary: String = "",
         selectedFolderId: String? = nil,
+        uncategorizedFolderCreationRequired: Bool = false,
         selectedTagIds: [String] = [],
         docmarkType: DocmarkType? = .pdf,
         pickedDocumentData: Data? = nil,
@@ -54,6 +56,7 @@ public struct DocmarkCreationUIState: Sendable {
         self.bookmarkDescription = bookmarkDescription
         self.summary = summary
         self.selectedFolderId = selectedFolderId
+        self.uncategorizedFolderCreationRequired = uncategorizedFolderCreationRequired
         self.selectedTagIds = selectedTagIds
         self.docmarkType = docmarkType
         self.pickedDocumentData = pickedDocumentData

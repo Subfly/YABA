@@ -42,6 +42,7 @@ enum BookmarkFlowHydration {
 
         state.previewImageData = bookmark.imagePayload?.bytes
         state.previewIconData = bookmark.iconPayload?.bytes
+        state.uncategorizedFolderCreationRequired = false
         return state
     }
 
@@ -61,6 +62,7 @@ enum BookmarkFlowHydration {
         {
             state.documentJson = json
         }
+        state.uncategorizedFolderCreationRequired = false
         return state
     }
 
@@ -76,6 +78,7 @@ enum BookmarkFlowHydration {
         state.isPrivate = bookmark.isPrivate
         state.isPinned = bookmark.isPinned
         state.imageData = bookmark.imagePayload?.bytes
+        state.uncategorizedFolderCreationRequired = false
         return state
     }
 
@@ -100,6 +103,7 @@ enum BookmarkFlowHydration {
             state.metadataDate = doc.metadataDate
         }
         state.previewImageData = bookmark.imagePayload?.bytes
+        state.uncategorizedFolderCreationRequired = false
         return state
     }
 
@@ -114,6 +118,7 @@ enum BookmarkFlowHydration {
         state.isPrivate = bookmark.isPrivate
         state.isPinned = bookmark.isPinned
         state.sceneData = bookmark.canvasDetail?.payload?.sceneData
+        state.uncategorizedFolderCreationRequired = false
         return state
     }
 }

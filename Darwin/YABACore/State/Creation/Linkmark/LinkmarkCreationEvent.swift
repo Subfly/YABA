@@ -12,7 +12,8 @@ public enum LinkmarkCreationEvent: Sendable {
         linkmarkId: String?,
         initialUrl: String?,
         initialFolderId: String?,
-        initialTagIds: [String]?
+        initialTagIds: [String]?,
+        uncategorizedFolderCreationRequired: Bool
     )
     case onCyclePreviewAppearance
     case onChangeUrl(String)

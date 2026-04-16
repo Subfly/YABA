@@ -9,21 +9,14 @@ import SwiftData
 import SwiftUI
 
 struct BookmarkFormFolderTagRows: View {
-    @Query(sort: [SortDescriptor(\FolderModel.label)])
-    private var folders: [FolderModel]
-
     @Query(sort: [SortDescriptor(\TagModel.label)])
     private var allTags: [TagModel]
 
-    let selectedFolderId: String?
+    /// Resolved folder for the row (includes virtual Uncategorized from the parent).
+    let folderForPresentation: FolderModel?
     let selectedTagIds: [String]
     let onFolderNavigate: () -> Void
     let onTagsNavigate: () -> Void
-
-    private var folderModel: FolderModel? {
-        guard let selectedFolderId else { return nil }
-        return folders.first { $0.folderId == selectedFolderId }
-    }
 
     private var selectedTagModels: [TagModel] {
         let set = Set(selectedTagIds)
@@ -41,7 +34,7 @@ struct BookmarkFormFolderTagRows: View {
     var body: some View {
         Section {
             PresentableFolderItemView(
-                model: folderModel,
+                model: folderForPresentation,
                 nullModelPresentableColor: YabaColor.blue
             ) {
                 onFolderNavigate()

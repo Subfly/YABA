@@ -11,6 +11,7 @@ public struct ImagemarkCreationUIState: Sendable {
     public var bookmarkDescription: String
     public var summary: String
     public var selectedFolderId: String?
+    public var uncategorizedFolderCreationRequired: Bool
     public var selectedTagIds: [String]
     public var imageData: Data?
     public var imageFileExtension: String
@@ -27,6 +28,7 @@ public struct ImagemarkCreationUIState: Sendable {
         bookmarkDescription: String = "",
         summary: String = "",
         selectedFolderId: String? = nil,
+        uncategorizedFolderCreationRequired: Bool = false,
         selectedTagIds: [String] = [],
         imageData: Data? = nil,
         imageFileExtension: String = "jpg",
@@ -42,6 +44,7 @@ public struct ImagemarkCreationUIState: Sendable {
         self.bookmarkDescription = bookmarkDescription
         self.summary = summary
         self.selectedFolderId = selectedFolderId
+        self.uncategorizedFolderCreationRequired = uncategorizedFolderCreationRequired
         self.selectedTagIds = selectedTagIds
         self.imageData = imageData
         self.imageFileExtension = imageFileExtension

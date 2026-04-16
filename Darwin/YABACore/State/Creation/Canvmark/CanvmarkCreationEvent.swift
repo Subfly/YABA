@@ -6,7 +6,12 @@
 import Foundation
 
 public enum CanvmarkCreationEvent: Sendable {
-    case onInit(canvmarkId: String?, initialFolderId: String?, initialTagIds: [String]?)
+    case onInit(
+        canvmarkId: String?,
+        initialFolderId: String?,
+        initialTagIds: [String]?,
+        uncategorizedFolderCreationRequired: Bool
+    )
     case onCyclePreviewAppearance
     case onChangeLabel(String)
     case onChangeDescription(String)

@@ -13,8 +13,31 @@ public enum FolderManager {
 
     public static func queueEnsureUncategorizedFolderExists() {
         CoreOperationQueue.shared.queue(name: "EnsureUncategorizedFolder") { context in
-            try ensureUncategorizedFolderInternal(context: context)
+            try ensureUncategorizedFolderVisibleInternal(context: context)
         }
+    }
+
+    /// In-memory model for UI when the Uncategorized row is not persisted yet.
+    static func virtualUncategorizedFolderModel() -> FolderModel {
+        let now = Date.now
+        return FolderModel(
+            folderId: Constants.Folder.Uncategorized.id,
+            label: Constants.Folder.Uncategorized.name,
+            folderDescription: Constants.Folder.Uncategorized.descriptionText,
+            icon: Constants.Folder.Uncategorized.icon,
+            colorRaw: 1,
+            createdAt: now,
+            editedAt: now,
+            isHidden: false,
+            parent: nil,
+            children: [],
+            bookmarks: []
+        )
+    }
+
+    /// Ensures the Uncategorized system folder exists **and** is visible (Compose `ensureUncategorizedFolderVisible` parity).
+    public static func ensureUncategorizedFolderVisibleInContext(_ context: ModelContext) throws {
+        try ensureUncategorizedFolderVisibleInternal(context: context)
     }
 
     /// Creates a user folder (system folders cannot be created here).
@@ -91,6 +114,16 @@ public enum FolderManager {
             bookmarks: []
         )
         context.insert(folder)
+    }
+
+    private static func ensureUncategorizedFolderVisibleInternal(context: ModelContext) throws {
+        try ensureUncategorizedFolderInternal(context: context)
+        let id = Constants.Folder.Uncategorized.id
+        guard let folder = try YabaCorePersistenceHelpers.folder(folderId: id, context: context) else {
+            return
+        }
+        folder.isHidden = false
+        folder.editedAt = .now
     }
 
     private static func createFolderInternal(
