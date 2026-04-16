@@ -8,89 +8,48 @@
 import SwiftData
 import SwiftUI
 
-#if false
-
 struct SelectTagsContent: View {
     @Environment(\.dismiss)
     private var dismiss
 
     @State
-    private var searchQuery: String = ""
+    private var machine = TagSelectionStateMachine()
 
-    @Binding
-    var selectedTags: [TagModel]
+    @State
+    private var showCreateTagSheet = false
 
-    var body: some View {
-        SelectTagsSearchableContent(
-            selectedTags: $selectedTags,
-            searchQuery: $searchQuery
-        )
-        #if !os(visionOS)
-        .scrollDismissesKeyboard(.immediately)
-        #endif
-        .searchable(text: $searchQuery, prompt: "Tags Search Prompt")
-        .navigationTitle("Select Tags Title")
-        .navigationBarBackButtonHidden()
-        .toolbar {
-            ToolbarItem(placement: .navigation) {
-                Button {
-                    dismiss()
-                } label: {
-                    YabaIconView(bundleKey: "arrow-left-01")
-                }.buttonRepeatBehavior(.enabled)
-            }
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    // Tag creation UI archived (`YABA/Creation/Collection`).
-                } label: {
-                    Image(systemName: "plus")
-                }
-                .disabled(true)
-            }
-            ToolbarItem(placement: .primaryAction) {
-                Button {
-                    dismiss()
-                } label: {
-                    Text("Done")
-                }
-            }
-        }
-    }
-}
-
-private struct SelectTagsSearchableContent: View {
-    @Environment(\.dismiss)
-    private var dismiss
-
-    @Query
+    @Query(sort: [SortDescriptor(\TagModel.label)])
     private var allTags: [TagModel]
 
-    @Binding
-    var selectedTags: [TagModel]
+    let initialTagIds: [String]
+    let onDone: ([String]) -> Void
 
-    @Binding
-    var searchQuery: String
+    private var trimmedSearch: String {
+        machine.state.searchQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
 
-    init(
-        selectedTags: Binding<[TagModel]>,
-        searchQuery: Binding<String>
-    ) {
-        let query = searchQuery.wrappedValue
-        _allTags = Query(
-            filter: #Predicate<TagModel> {
-                query.isEmpty || $0.label.localizedStandardContains(query)
-            },
-            sort: [SortDescriptor(\.label)],
-            animation: .smooth
-        )
-        _selectedTags = selectedTags
-        _searchQuery = searchQuery
+    private var excludedIdsSorted: [String] {
+        Array(machine.state.selectedTagIds).sorted()
+    }
+
+    /// Bumps the inner `@Query` when search or selection changes (same idea as `SelectFolderContent`).
+    private var selectableQueryIdentity: String {
+        trimmedSearch + "\u{1e}" + excludedIdsSorted.joined(separator: "\u{1f}")
+    }
+
+    private var selectedTagModelsForDisplay: [TagModel] {
+        let selected = machine.state.selectedTagIds
+        return allTags
+            .filter { selected.contains($0.tagId) }
+            .sorted {
+                $0.label.localizedStandardCompare($1.label) == .orderedAscending
+            }
     }
 
     var body: some View {
         List {
             Section {
-                if selectedTags.isEmpty {
+                if machine.state.selectedTagIds.isEmpty {
                     ContentUnavailableView {
                         Label {
                             Text("Select Tags No Tags Selected Title")
@@ -105,7 +64,7 @@ private struct SelectTagsSearchableContent: View {
                         )
                     }
                 } else {
-                    ForEach(selectedTags) { tag in
+                    ForEach(selectedTagModelsForDisplay, id: \.tagId) { tag in
                         HStack {
                             YabaIconView(bundleKey: tag.icon)
                                 .scaledToFit()
@@ -115,11 +74,11 @@ private struct SelectTagsSearchableContent: View {
                             Spacer()
                         }
                         .contentShape(Rectangle())
+                        .opacity(Constants.Tag.isSystemTag(tag.tagId) ? 0.55 : 1)
                         .onTapGesture {
-                            withAnimation {
-                                if let indexOfTag = selectedTags.firstIndex(where: { $0.tagId == tag.tagId }) {
-                                    selectedTags.remove(at: indexOfTag)
-                                }
+                            guard !Constants.Tag.isSystemTag(tag.tagId) else { return }
+                            Task { @MainActor in
+                                await machine.send(.onDeselectTag(tagId: tag.tagId))
                             }
                         }
                     }
@@ -133,80 +92,19 @@ private struct SelectTagsSearchableContent: View {
                         .frame(width: 18, height: 18)
                 }
             }
+
             Section {
-                let tags = allTags.filter { candidate in
-                    !selectedTags.contains(where: { $0.tagId == candidate.tagId })
-                }
-                if tags.isEmpty {
-                    if searchQuery.isEmpty {
-                        if selectedTags.isEmpty {
-                            ContentUnavailableView {
-                                Label {
-                                    Text("Select Tags No Tags Available Title")
-                                } icon: {
-                                    YabaIconView(bundleKey: "tag-01")
-                                        .scaledToFit()
-                                        .frame(width: 52, height: 52)
-                                }
-                            } description: {
-                                Text(
-                                    LocalizedStringKey(
-                                        "Select Tags No Tags Available Description"
-                                    )
-                                )
-                            }
-                        } else {
-                            ContentUnavailableView {
-                                Label {
-                                    Text("Select Tags No More Tags Left Title")
-                                } icon: {
-                                    YabaIconView(bundleKey: "tags")
-                                        .scaledToFit()
-                                        .frame(width: 52, height: 52)
-                                }
-                            } description: {
-                                Text(
-                                    LocalizedStringKey(
-                                        "Select Tags No More Tags Left Description"
-                                    )
-                                )
-                            }
-                        }
-                    } else {
-                        ContentUnavailableView {
-                            Label {
-                                Text("Select Tags No Tags Found In Search Title")
-                            } icon: {
-                                YabaIconView(bundleKey: "search-01")
-                                    .scaledToFit()
-                                    .frame(width: 52, height: 52)
-                            }
-                        } description: {
-                            Text(
-                                LocalizedStringKey(
-                                    "Select Tags No Tags Found In Search Description \(searchQuery)"
-                                )
-                            )
+                SelectTagsSelectableQueryList(
+                    excludedSortedIds: excludedIdsSorted,
+                    trimmedSearch: trimmedSearch,
+                    selectedIsEmpty: machine.state.selectedTagIds.isEmpty,
+                    onAdd: { tag in
+                        Task { @MainActor in
+                            await machine.send(.onSelectTag(tagId: tag.tagId))
                         }
                     }
-                } else {
-                    ForEach(tags) { tag in
-                        HStack {
-                            YabaIconView(bundleKey: tag.icon)
-                                .scaledToFit()
-                                .foregroundStyle(tag.color.getUIColor())
-                                .frame(width: 24, height: 24)
-                            Text(tag.label)
-                            Spacer()
-                        }
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            withAnimation {
-                                selectedTags.append(tag)
-                            }
-                        }
-                    }
-                }
+                )
+                .id(selectableQueryIdentity)
             } header: {
                 Label {
                     Text("Selectable Tags Label Title")
@@ -218,11 +116,167 @@ private struct SelectTagsSearchableContent: View {
             }
         }
         .listRowSpacing(0)
+        .scrollDismissesKeyboard(.immediately)
+        .searchable(
+            text: Binding(
+                get: { machine.state.searchQuery },
+                set: { newValue in
+                    Task {
+                        await machine.send(.onSearchQueryChanged(newValue))
+                    }
+                }
+            ),
+            prompt: Text("Tags Search Prompt")
+        )
+        .navigationTitle("Select Tags Title")
+        .navigationBarBackButtonHidden()
+        .toolbar {
+            ToolbarItem(placement: .navigation) {
+                Button {
+                    dismiss()
+                } label: {
+                    YabaIconView(bundleKey: "arrow-left-01")
+                }
+                .buttonRepeatBehavior(.enabled)
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showCreateTagSheet = true
+                } label: {
+                    YabaIconView(bundleKey: "add-01")
+                        .scaledToFit()
+                        .frame(width: 22, height: 22)
+                }
+                .accessibilityLabel(Text("Create Tag Title"))
+            }
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    let ids = Array(machine.state.selectedTagIds).sorted()
+                    onDone(ids)
+                    dismiss()
+                } label: {
+                    Text("Done")
+                }
+            }
+        }
+        .task {
+            await machine.send(.onInit(selectedTagIds: initialTagIds))
+        }
+        .sheet(isPresented: $showCreateTagSheet) {
+            TagCreationContent()
+        }
     }
 }
 
-#Preview {
-    SelectTagsContent(selectedTags: .constant([]))
-}
+// MARK: - Query-backed selectable list
 
-#endif
+/// Lists tags eligible for multi-select using SwiftData filtering (not a full in-memory scan).
+private struct SelectTagsSelectableQueryList: View {
+    @Query
+    private var selectableTags: [TagModel]
+
+    let trimmedSearch: String
+    let selectedIsEmpty: Bool
+    let onAdd: (TagModel) -> Void
+
+    init(
+        excludedSortedIds: [String],
+        trimmedSearch: String,
+        selectedIsEmpty: Bool,
+        onAdd: @escaping (TagModel) -> Void
+    ) {
+        self.trimmedSearch = trimmedSearch
+        self.selectedIsEmpty = selectedIsEmpty
+        self.onAdd = onAdd
+
+        let trimmed = trimmedSearch
+        let excluded = excludedSortedIds
+        let pinnedId = Constants.Tag.Pinned.id
+        let privateId = Constants.Tag.Private.id
+
+        _selectableTags = Query(
+            filter: #Predicate<TagModel> { tag in
+                !tag.isHidden
+                    && tag.tagId != pinnedId
+                    && tag.tagId != privateId
+                    && !excluded.contains(tag.tagId)
+                    && (trimmed.isEmpty || tag.label.localizedStandardContains(trimmed))
+            },
+            sort: [SortDescriptor(\.label)],
+            animation: .smooth
+        )
+    }
+
+    var body: some View {
+        Group {
+            if selectableTags.isEmpty {
+                if trimmedSearch.isEmpty {
+                    if selectedIsEmpty {
+                        ContentUnavailableView {
+                            Label {
+                                Text("Select Tags No Tags Available Title")
+                            } icon: {
+                                YabaIconView(bundleKey: "tag-01")
+                                    .scaledToFit()
+                                    .frame(width: 52, height: 52)
+                            }
+                        } description: {
+                            Text(
+                                LocalizedStringKey(
+                                    "Select Tags No Tags Available Description"
+                                )
+                            )
+                        }
+                    } else {
+                        ContentUnavailableView {
+                            Label {
+                                Text("Select Tags No More Tags Left Title")
+                            } icon: {
+                                YabaIconView(bundleKey: "tags")
+                                    .scaledToFit()
+                                    .frame(width: 52, height: 52)
+                            }
+                        } description: {
+                            Text(
+                                LocalizedStringKey(
+                                    "Select Tags No More Tags Left Description"
+                                )
+                            )
+                        }
+                    }
+                } else {
+                    ContentUnavailableView {
+                        Label {
+                            Text("Select Tags No Tags Found In Search Title")
+                        } icon: {
+                            YabaIconView(bundleKey: "search-01")
+                                .scaledToFit()
+                                .frame(width: 52, height: 52)
+                        }
+                    } description: {
+                        Text(
+                            LocalizedStringKey(
+                                "Select Tags No Tags Found In Search Description \(trimmedSearch)"
+                            )
+                        )
+                    }
+                }
+            } else {
+                ForEach(selectableTags, id: \.tagId) { tag in
+                    HStack {
+                        YabaIconView(bundleKey: tag.icon)
+                            .scaledToFit()
+                            .foregroundStyle(tag.color.getUIColor())
+                            .frame(width: 24, height: 24)
+                        Text(tag.label)
+                        Spacer()
+                    }
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        onAdd(tag)
+                    }
+                }
+            }
+        }
+    }
+}

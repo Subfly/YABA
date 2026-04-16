@@ -27,7 +27,15 @@ struct BookmarkFormFolderTagRows: View {
 
     private var selectedTagModels: [TagModel] {
         let set = Set(selectedTagIds)
-        return allTags.filter { set.contains($0.tagId) }
+        return allTags
+            .filter { set.contains($0.tagId) }
+            .sorted {
+                $0.label.localizedStandardCompare($1.label) == .orderedAscending
+            }
+    }
+
+    private var hasSelectedTags: Bool {
+        !selectedTagIds.isEmpty
     }
 
     var body: some View {
@@ -49,40 +57,61 @@ struct BookmarkFormFolderTagRows: View {
         }
 
         Section {
-            Button {
-                onTagsNavigate()
-            } label: {
-                HStack {
-                    if selectedTagModels.isEmpty {
-                        Text(LocalizedStringKey("Select Tags No Tags Selected Message"))
-                            .foregroundStyle(.secondary)
-                    } else {
-                        VStack(alignment: .leading, spacing: 8) {
-                            ForEach(selectedTagModels, id: \.tagId) { tag in
-                                HStack {
-                                    YabaIconView(bundleKey: tag.icon)
-                                        .scaledToFit()
-                                        .foregroundStyle(tag.color.getUIColor())
-                                        .frame(width: 22, height: 22)
-                                    Text(tag.label)
-                                    Spacer()
-                                }
-                            }
-                        }
+            if !hasSelectedTags {
+                ContentUnavailableView {
+                    Label {
+                        Text("Create Bookmark No Tags Selected Title")
+                    } icon: {
+                        YabaIconView(bundleKey: "tag-01")
+                            .scaledToFit()
+                            .frame(width: 52, height: 52)
                     }
-                    Spacer(minLength: 0)
-                    YabaIconView(bundleKey: "arrow-right-01")
-                        .frame(width: 22, height: 22)
+                } description: {
+                    Text("Create Bookmark No Tags Selected Description")
+                }
+            } else {
+                ForEach(selectedTagModels, id: \.tagId) { tag in
+                    HStack {
+                        YabaIconView(bundleKey: tag.icon)
+                            .frame(width: 24, height: 24)
+                            .foregroundStyle(tag.color.getUIColor())
+                        Text(tag.label)
+                    }
                 }
             }
-            .buttonStyle(.plain)
         } header: {
-            Label {
-                Text("Tags")
-            } icon: {
-                YabaIconView(bundleKey: "tag-01")
-                    .scaledToFit()
-                    .frame(width: 18, height: 18)
+            HStack {
+                Label {
+                    Text("Tags")
+                } icon: {
+                    YabaIconView(bundleKey: "tag-01")
+                        .scaledToFit()
+                        .frame(width: 18, height: 18)
+                }
+                Spacer()
+                Button {
+                    onTagsNavigate()
+                } label: {
+                    Label {
+                        Text(
+                            LocalizedStringKey(
+                                hasSelectedTags
+                                    ? "Create Bookmark Edit Tags"
+                                    : "Create Bookmark Add Tags"
+                            )
+                        )
+                        .textCase(.none)
+                    } icon: {
+                        YabaIconView(
+                            bundleKey: hasSelectedTags
+                                ? "edit-02"
+                                : "plus-sign"
+                        )
+                        .scaledToFit()
+                        .frame(width: 18, height: 18)
+                    }
+                }
+                .buttonStyle(.borderless)
             }
         }
     }

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 @MainActor
 public final class TagSelectionStateMachine: YabaBaseObservableState<TagSelectionUIState>, YabaScreenStateMachine {
@@ -18,9 +19,13 @@ public final class TagSelectionStateMachine: YabaBaseObservableState<TagSelectio
         case let .onSearchQueryChanged(q):
             apply { $0.searchQuery = q }
         case let .onSelectTag(tagId):
-            apply { $0.selectedTagIds.insert(tagId) }
+            withAnimation(.smooth) {
+                apply { $0.selectedTagIds.insert(tagId) }
+            }
         case let .onDeselectTag(tagId):
-            apply { $0.selectedTagIds.remove(tagId) }
+            withAnimation(.smooth) {
+                apply { $0.selectedTagIds.remove(tagId) }
+            }
         }
     }
 }

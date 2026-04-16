@@ -27,7 +27,7 @@ struct BookmarkFolderTagSheetModifier: ViewModifier {
             }
             .sheet(isPresented: $showTagSheet) {
                 NavigationStack {
-                    BookmarkTagSelectionContent(
+                    SelectTagsContent(
                         initialTagIds: tagSelectionInitialIds,
                         onDone: onTagsPicked
                     )
