@@ -87,6 +87,8 @@ private struct FolderView<NoCollectionView: View>: View {
     
     let title: String
     let icon: String
+    private let preferredSorting: SortType
+    private let preferredOrder: SortOrderType
     
     init(
         title: String,
@@ -97,6 +99,8 @@ private struct FolderView<NoCollectionView: View>: View {
     ) {
         self.title = title
         self.icon = icon
+        self.preferredSorting = preferredSorting
+        self.preferredOrder = preferredOrder
         self.noCollectionView = noCollectionView()
 
         let sortDescriptor: SortDescriptor<YabaFolder> = switch preferredSorting {
@@ -122,15 +126,11 @@ private struct FolderView<NoCollectionView: View>: View {
             if folders.isEmpty {
                 noCollectionView
             } else {
-                ForEach(folders) { folder in
-                    NavigationLink {
-                        EmptyView()
-                    } label: {
-                        FolderItemView(folder: folder)
-                    }
-                    .buttonStyle(.plain)
-                    .navigationLinkIndicatorVisibility(.hidden)
-                }
+                SortedFolderOutlineGroup(
+                    folders: Array(folders),
+                    sorting: preferredSorting,
+                    order: preferredOrder
+                )
             }
         } header: {
             Label {
@@ -138,6 +138,85 @@ private struct FolderView<NoCollectionView: View>: View {
             } icon: {
                 YabaIconView(bundleKey: icon)
                     .frame(width: 22, height: 22)
+            }
+        }
+    }
+}
+
+// MARK: - Folder outline sorting (matches `Query` sort + applies to nested levels)
+
+private struct SortedFolderOutlineGroup: View {
+    let folders: [FolderModel]
+    let sorting: SortType
+    let order: SortOrderType
+
+    var body: some View {
+        OutlineGroup(
+            sortedFolderModels(folders, sorting: sorting, order: order).map {
+                HomeFolderOutlineNode(folder: $0, sorting: sorting, order: order)
+            },
+            id: \.id,
+            children: \.childNodes
+        ) { node in
+            NavigationLink {
+                EmptyView()
+            } label: {
+                FolderItemView(folder: node.folder)
+            }
+            .buttonStyle(.plain)
+            .navigationLinkIndicatorVisibility(.hidden)
+        }
+    }
+}
+
+
+/// Carries the user’s sort preference so `OutlineGroup` children use the same order as root folders.
+private struct HomeFolderOutlineNode: Identifiable {
+    let id: String
+    let folder: FolderModel
+    let sorting: SortType
+    let order: SortOrderType
+
+    init(folder: FolderModel, sorting: SortType, order: SortOrderType) {
+        self.folder = folder
+        self.sorting = sorting
+        self.order = order
+        self.id = folder.folderId
+    }
+
+    var childNodes: [HomeFolderOutlineNode]? {
+        let list = Array(folder.children)
+        guard !list.isEmpty else { return nil }
+        let sorted = sortedFolderModels(list, sorting: sorting, order: order)
+        return sorted.map { HomeFolderOutlineNode(folder: $0, sorting: sorting, order: order) }
+    }
+}
+
+private func sortedFolderModels(
+    _ folders: [FolderModel],
+    sorting: SortType,
+    order: SortOrderType,
+) -> [FolderModel] {
+    let ascending = order == .ascending
+    switch sorting {
+    case .createdAt:
+        return folders.sorted { a, b in
+            ascending ? a.createdAt < b.createdAt : a.createdAt > b.createdAt
+        }
+    case .editedAt:
+        return folders.sorted { a, b in
+            ascending ? a.editedAt < b.editedAt : a.editedAt > b.editedAt
+        }
+    case .label:
+        return folders.sorted { a, b in
+            let cmp = a.label.localizedStandardCompare(b.label)
+            switch cmp {
+            case .orderedSame:
+                return false
+            case .orderedAscending:
+                return ascending
+            case .orderedDescending:
+                return !ascending
             }
         }
     }

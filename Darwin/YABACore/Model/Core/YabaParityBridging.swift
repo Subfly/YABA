@@ -112,16 +112,6 @@ extension FolderModel {
         YabaColor.from(colorCode: colorRaw)
     }
 
-    func getParentColorsInOrder() -> [YabaColor] {
-        var stack: [YabaColor] = []
-        var current: FolderModel? = parent
-        while let folder = current {
-            stack.append(folder.color)
-            current = folder.parent
-        }
-        return stack.reversed()
-    }
-
     func getDescendants() -> [FolderModel] {
         var result: [FolderModel] = []
         for child in children {

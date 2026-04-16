@@ -18,5 +18,4 @@ internal class CollectionItemState {
 
     var isHovered: Bool = false
     var isTargeted: Bool = false
-    var isExpanded: Bool = false
 }

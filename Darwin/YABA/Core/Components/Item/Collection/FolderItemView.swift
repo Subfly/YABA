@@ -2,7 +2,8 @@
 //  FolderItemView.swift
 //  YABA
 //
-//  Full folder row (parity with Compose `FolderItemView`). Sheets/alerts are stubbed — TODO wire call sites + flows.
+//  Full folder row (parity with Compose `FolderItemView`). Nested hierarchy is handled by
+//  `OutlineGroup` at list call sites — this view is a single row only. Sheets/alerts stubbed — TODO.
 //
 
 import SwiftUI
@@ -20,49 +21,52 @@ struct FolderItemView: View {
         Constants.Folder.isSystemFolder(folder.folderId)
     }
 
-    private var parentColors: [YabaColor] {
-        folder.getParentColorsInOrder()
-    }
-
-    private var hasChildren: Bool {
-        !folder.children.isEmpty
-    }
-
-    private var sortedChildren: [FolderModel] {
-        folder.children.sorted {
-            $0.label.localizedStandardCompare($1.label) == .orderedAscending
-        }
-    }
-
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            BaseCollectionItemView(parentColors: parentColors) {
-                rowLabel
-            }
-            .modifier(
-                FolderRowInteractionModifier(
-                    isSystemFolder: isSystemFolder,
-                    onNewBookmark: { itemState.shouldShowCreateBookmarkSheet = true },
-                    onEdit: { itemState.shouldShowEditSheet = true },
-                    onMove: { itemState.shouldShowMoveFolderSheet = true },
-                    onDelete: { itemState.shouldShowDeleteDialog = true }
-                )
-            )
-            .listRowBackground(
-                ItemListRowChrome.listRowBackground(
-                    cornerRadius: 8,
-                    isSelected: appState.selectedFolder?.folderId == folder.folderId,
-                    isHovered: itemState.isHovered
-                )
-            )
-            .onHover { itemState.isHovered = $0 }
-
-            if itemState.isExpanded {
-                ForEach(sortedChildren, id: \.folderId) { child in
-                    FolderItemView(folder: child)
+        HStack {
+            HStack {
+                YabaIconView(bundleKey: folder.icon)
+                    .scaledToFit()
+                    .foregroundStyle(folder.color.getUIColor())
+                    .frame(width: 24, height: 24)
+                if folder.folderId == Constants.uncategorizedCollectionId {
+                    Text(LocalizedStringKey(Constants.uncategorizedCollectionLabelKey))
+                } else {
+                    Text(folder.label)
                 }
+                Spacer(minLength: 0)
+                HStack {
+                    Text("\(folder.bookmarks.count)")
+                        .foregroundStyle(.secondary)
+                        .fontWeight(.medium)
+                }
+                .foregroundStyle(.secondary)
             }
+            .buttonStyle(.plain)
+            .simultaneousGesture(
+                TapGesture().onEnded {
+                    appState.selectedFolder = folder
+                    appState.selectedTag = nil
+                }
+            )
         }
+        .contentShape(Rectangle())
+        .modifier(
+            FolderRowInteractionModifier(
+                isSystemFolder: isSystemFolder,
+                onNewBookmark: { itemState.shouldShowCreateBookmarkSheet = true },
+                onEdit: { itemState.shouldShowEditSheet = true },
+                onMove: { itemState.shouldShowMoveFolderSheet = true },
+                onDelete: { itemState.shouldShowDeleteDialog = true }
+            )
+        )
+        .listRowBackground(
+            ItemListRowChrome.listRowBackground(
+                cornerRadius: 8,
+                isSelected: appState.selectedFolder?.folderId == folder.folderId,
+                isHovered: itemState.isHovered
+            )
+        )
+        .onHover { itemState.isHovered = $0 }
         .sheet(isPresented: $itemState.shouldShowEditSheet) {
             FolderCreationContent(existingFolderId: folder.folderId)
         }
@@ -102,52 +106,6 @@ struct FolderItemView: View {
         } message: {
             Text("Delete Content Message \(folder.label)")
         }
-    }
-
-    private var rowLabel: some View {
-        HStack {
-            HStack {
-                YabaIconView(bundleKey: folder.icon)
-                    .scaledToFit()
-                    .foregroundStyle(folder.color.getUIColor())
-                    .frame(width: 24, height: 24)
-                if folder.folderId == Constants.uncategorizedCollectionId {
-                    Text(LocalizedStringKey(Constants.uncategorizedCollectionLabelKey))
-                } else {
-                    Text(folder.label)
-                }
-                Spacer(minLength: 0)
-                HStack {
-                    Text("\(folder.bookmarks.count)")
-                        .foregroundStyle(.secondary)
-                        .fontWeight(.medium)
-                }
-                .foregroundStyle(.secondary)
-            }
-            .buttonStyle(.plain)
-            .simultaneousGesture(
-                TapGesture().onEnded {
-                    appState.selectedFolder = folder
-                    appState.selectedTag = nil
-                }
-            )
-
-            if hasChildren {
-                YabaIconView(bundleKey: "arrow-right-01")
-                    .scaledToFit()
-                    .frame(width: 20, height: 20)
-                    .foregroundStyle(folder.color.getUIColor())
-                    .rotationEffect(itemState.isExpanded ? .degrees(90) : .zero)
-                    .animation(.smooth, value: itemState.isExpanded)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        withAnimation {
-                            itemState.isExpanded.toggle()
-                        }
-                    }
-            }
-        }
-        .contentShape(Rectangle())
     }
 }
 
