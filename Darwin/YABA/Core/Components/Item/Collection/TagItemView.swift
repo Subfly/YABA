@@ -24,7 +24,11 @@ struct TagItemView: View {
                     .scaledToFit()
                     .foregroundStyle(tag.color.getUIColor())
                     .frame(width: 24, height: 24)
-                Text(tag.label)
+                if tag.tagId == Constants.Tag.Pinned.id {
+                    Text(LocalizedStringKey(Constants.Tag.Pinned.name))
+                } else {
+                    Text(tag.label)
+                }
             }
             Spacer()
             HStack {

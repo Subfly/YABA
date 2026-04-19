@@ -68,14 +68,18 @@ struct BookmarkFormFolderTagRows: View {
                         YabaIconView(bundleKey: tag.icon)
                             .frame(width: 24, height: 24)
                             .foregroundStyle(tag.color.getUIColor())
-                        Text(tag.label)
+                        if tag.tagId == Constants.Tag.Pinned.id {
+                            Text(LocalizedStringKey(Constants.Tag.Pinned.name))
+                        } else {
+                            Text(tag.label)
+                        }
                     }
                 }
             }
         } header: {
             HStack {
                 Label {
-                    Text("Tags")
+                    Text("Tags Title")
                 } icon: {
                     YabaIconView(bundleKey: "tag-01")
                         .scaledToFit()

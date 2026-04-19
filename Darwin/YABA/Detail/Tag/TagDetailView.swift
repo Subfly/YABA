@@ -67,7 +67,7 @@ struct TagDetailView: View {
                 }
             }
         }
-        .navigationTitle(Text(tag?.label ?? ""))
+        .navigationTitle(navigationTitle)
         .searchable(
             text: Binding(
                 get: { machine.state.query },
@@ -76,7 +76,7 @@ struct TagDetailView: View {
                 }
             ),
             placement: .navigationBarDrawer(displayMode: .always),
-            prompt: Text("Search Collection \(tag?.label ?? "")")
+            prompt: Text("Search Collection \(tagLabelForSearchPrompt)")
         )
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
@@ -160,6 +160,22 @@ struct TagDetailView: View {
 
     private var tag: YabaTag? {
         tagResults.first
+    }
+
+    private var navigationTitle: Text {
+        if tagId == Constants.Tag.Pinned.id {
+            Text(LocalizedStringKey(Constants.Tag.Pinned.name))
+        } else {
+            Text(tag?.label ?? "")
+        }
+    }
+
+    private var tagLabelForSearchPrompt: String {
+        if tagId == Constants.Tag.Pinned.id {
+            String(localized: String.LocalizationValue(Constants.Tag.Pinned.name))
+        } else {
+            tag?.label ?? ""
+        }
     }
 
     private var tagTint: Color {

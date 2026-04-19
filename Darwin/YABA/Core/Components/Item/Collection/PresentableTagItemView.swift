@@ -23,7 +23,11 @@ struct PresentableTagItemView: View {
                     .frame(width: 24, height: 24)
                     .foregroundStyle((model?.color ?? nullModelPresentableColor).getUIColor())
                 if let model {
-                    Text(model.label)
+                    if model.tagId == Constants.Tag.Pinned.id {
+                        Text(LocalizedStringKey(Constants.Tag.Pinned.name))
+                    } else {
+                        Text(model.label)
+                    }
                 } else {
                     Text(LocalizedStringKey("Select Tags No Tags Selected Title"))
                 }
