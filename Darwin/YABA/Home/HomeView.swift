@@ -11,16 +11,29 @@ import SwiftData
 struct HomeView: View {
     @Environment(\.deepLinkManager)
     private var deepLinkManager
-    
+
+    /// Opens global search in the split-view detail column.
+    let onOpenSearch: () -> Void
+    /// Opens folder bookmark list in the detail column.
+    let onSelectFolder: (String) -> Void
+    /// Opens tag bookmark list in the detail column.
+    let onSelectTag: (String) -> Void
+
     @State
     private var homeState: HomeState = .init()
-    
+
+    @State
+    private var homeStateMachine = HomeStateMachine()
+
     var body: some View {
         ZStack {
             #if !targetEnvironment(macCatalyst)
             AnimatedGradient(color: .accentColor)
             #endif
-            SequentialView()
+            SequentialView(
+                onSelectFolder: onSelectFolder,
+                onSelectTag: onSelectTag
+            )
                 .scrollContentBackground(.hidden)
                 #if targetEnvironment(macCatalyst)
                 .listStyle(.sidebar)
@@ -68,6 +81,9 @@ struct HomeView: View {
         // }
         // #endif
         .navigationTitle("YABA")
+        .task {
+            await homeStateMachine.send(.onInit)
+        }
         .toolbar {
             // Sync toolbar entry disabled.
             // ToolbarItem(placement: .topBarLeading) {
@@ -92,13 +108,11 @@ struct HomeView: View {
                 MacOSHoverableToolbarIcon(
                     bundleKey: "search-01",
                     tooltipKey: "Search Title",
-                    onPressed: {
-                        // TODO: SHOW SEARCH VIEW IN DETAIL
-                    }
+                    onPressed: onOpenSearch
                 )
                 #else
                 Button {
-                    // TODO: SHOW SEARCH VIEW IN DETAIL
+                    onOpenSearch()
                 } label: {
                     YabaIconView(bundleKey: "search-01")
                 }
@@ -155,17 +169,20 @@ struct HomeView: View {
 }
 
 private struct SequentialView: View {
+    let onSelectFolder: (String) -> Void
+    let onSelectTag: (String) -> Void
+
     @AppStorage(Constants.showRecentsKey)
     private var showRecents: Bool = true
-        
+
     var body: some View {
         List {
             //TODO HomeAnnouncementsView()
             if showRecents && UIDevice.current.userInterfaceIdiom == .phone {
-                //TODO HomeRecentsView(onNavigationCallback: onNavigationCallbackForBookmark)
+                HomeRecentsView()
             }
-            HomeCollectionView(collectionType: .folder)
-            HomeCollectionView(collectionType: .tag)
+            HomeCollectionView(collectionType: .folder, onSelectFolder: onSelectFolder)
+            HomeCollectionView(collectionType: .tag, onSelectTag: onSelectTag)
         }
     }
 }

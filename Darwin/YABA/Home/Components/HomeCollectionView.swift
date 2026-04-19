@@ -21,9 +21,17 @@ struct HomeCollectionView: View {
     private let noCollectionsTitle: String
     private let noCollectionsMessage: String
     private let collectionIcon: String
-    
-    init(collectionType: CollectionType) {
+    private let onSelectFolder: (String) -> Void
+    private let onSelectTag: (String) -> Void
+
+    init(
+        collectionType: CollectionType,
+        onSelectFolder: @escaping (String) -> Void = { _ in },
+        onSelectTag: @escaping (String) -> Void = { _ in }
+    ) {
         self.collectionType = collectionType
+        self.onSelectFolder = onSelectFolder
+        self.onSelectTag = onSelectTag
         switch collectionType {
         case .folder:
             labelTitle = "Folders Title"
@@ -37,7 +45,7 @@ struct HomeCollectionView: View {
             collectionIcon = "tag-01"
         }
     }
-    
+
     var body: some View {
         switch collectionType {
         case .folder:
@@ -46,6 +54,7 @@ struct HomeCollectionView: View {
                 icon: collectionIcon,
                 preferredSorting: preferredSorting,
                 preferredOrder: preferredSortOrder,
+                onSelectFolder: onSelectFolder,
                 noCollectionView: { noCollectionsContent }
             )
         case .tag:
@@ -54,6 +63,7 @@ struct HomeCollectionView: View {
                 icon: collectionIcon,
                 preferredSorting: preferredSorting,
                 preferredOrder: preferredSortOrder,
+                onSelectTag: onSelectTag,
                 noCollectionView: { noCollectionsContent }
             )
         }
@@ -84,23 +94,26 @@ private struct FolderView<NoCollectionView: View>: View {
     
     @ViewBuilder
     let noCollectionView: NoCollectionView
-    
+
     let title: String
     let icon: String
     private let preferredSorting: SortType
     private let preferredOrder: SortOrderType
-    
+    let onSelectFolder: (String) -> Void
+
     init(
         title: String,
         icon: String,
         preferredSorting: SortType,
         preferredOrder: SortOrderType,
+        onSelectFolder: @escaping (String) -> Void,
         @ViewBuilder noCollectionView: () -> NoCollectionView,
     ) {
         self.title = title
         self.icon = icon
         self.preferredSorting = preferredSorting
         self.preferredOrder = preferredOrder
+        self.onSelectFolder = onSelectFolder
         self.noCollectionView = noCollectionView()
 
         let sortDescriptor: SortDescriptor<YabaFolder> = switch preferredSorting {
@@ -129,7 +142,8 @@ private struct FolderView<NoCollectionView: View>: View {
                 SortedFolderOutlineGroup(
                     folders: Array(folders),
                     sorting: preferredSorting,
-                    order: preferredOrder
+                    order: preferredOrder,
+                    onSelectFolder: onSelectFolder
                 )
             }
         } header: {
@@ -149,6 +163,7 @@ private struct SortedFolderOutlineGroup: View {
     let folders: [FolderModel]
     let sorting: SortType
     let order: SortOrderType
+    let onSelectFolder: (String) -> Void
 
     var body: some View {
         OutlineGroup(
@@ -158,13 +173,12 @@ private struct SortedFolderOutlineGroup: View {
             id: \.id,
             children: \.childNodes
         ) { node in
-            NavigationLink {
-                EmptyView()
+            Button {
+                onSelectFolder(node.folder.folderId)
             } label: {
                 FolderItemView(folder: node.folder)
             }
             .buttonStyle(.plain)
-            .navigationLinkIndicatorVisibility(.hidden)
         }
     }
 }
@@ -232,19 +246,22 @@ private struct TagView<NoCollectionView: View>: View {
     
     @ViewBuilder
     let noCollectionView: NoCollectionView
-    
+
     let title: String
     let icon: String
-    
+    let onSelectTag: (String) -> Void
+
     init(
         title: String,
         icon: String,
         preferredSorting: SortType,
         preferredOrder: SortOrderType,
+        onSelectTag: @escaping (String) -> Void,
         @ViewBuilder noCollectionView: () -> NoCollectionView,
     ) {
         self.title = title
         self.icon = icon
+        self.onSelectTag = onSelectTag
         self.noCollectionView = noCollectionView()
 
         let sortDescriptor: SortDescriptor<YabaTag> = switch preferredSorting {
@@ -268,13 +285,12 @@ private struct TagView<NoCollectionView: View>: View {
                 noCollectionView
             } else {
                 ForEach(tags) { tag in
-                    NavigationLink {
-                        EmptyView()
+                    Button {
+                        onSelectTag(tag.tagId)
                     } label: {
                         TagItemView(tag: tag)
                     }
                     .buttonStyle(.plain)
-                    .navigationLinkIndicatorVisibility(.hidden)
                 }
             }
         } header: {

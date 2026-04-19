@@ -1,6 +1,3 @@
-// ARCHIVED: Previous implementation preserved below (not compiled). UI rebuild in progress.
-
-#if false
 //
 //  HomeRecentsView.swift
 //  YABA
@@ -8,18 +5,34 @@
 //  Created by Ali Taha on 5.06.2025.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct HomeRecentsView: View {
-    @Query(sort: \YabaBookmark.editedAt, order: .reverse, animation: .smooth)
+    @Query
     private var bookmarks: [YabaBookmark]
-    
-    let onNavigationCallback: (YabaBookmark) -> Void
-    
+
+    init() {
+        var descriptor = FetchDescriptor<YabaBookmark>(
+            sortBy: [SortDescriptor(\.editedAt, order: .reverse)]
+        )
+        descriptor.fetchLimit = 5
+        _bookmarks = Query(descriptor, animation: .smooth)
+    }
+
     var body: some View {
         if !bookmarks.isEmpty {
-            HStack {
+            Section {
+                ForEach(bookmarks) { bookmark in
+                    BookmarkItemView(
+                        bookmark: bookmark,
+                        isInRecents: true,
+                        isSelected: false,
+                        isInSelectionMode: false,
+                        onNavigationCallback: { _ in }
+                    )
+                }
+            } header: {
                 Label {
                     Text("Home Recents Label")
                         .font(.headline)
@@ -30,29 +43,7 @@ struct HomeRecentsView: View {
                         .frame(width: 22, height: 22)
                 }
                 .foregroundStyle(.secondary)
-                .font(.headline)
-                Spacer()
-            }
-            .contentShape(Rectangle())
-            .padding(.horizontal)
-            .padding(.bottom)
-            
-            ForEach(bookmarks.prefix(5)) { bookmark in
-                BookmarkItemView(
-                    bookmark: bookmark,
-                    isInRecents: true,
-                    isSelected: false,
-                    isInSelectionMode: false,
-                    onNavigationCallback: onNavigationCallback
-                )
-                Spacer().frame(height: 6)
             }
         }
     }
 }
-
-#Preview {
-    HomeRecentsView(onNavigationCallback: { _ in })
-}
-
-#endif

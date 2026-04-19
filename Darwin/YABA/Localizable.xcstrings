@@ -34137,6 +34137,16 @@
         }
       }
     },
+    "Pinned Bookmarks" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pinned Bookmarks"
+          }
+        }
+      }
+    },
     "Placeholder" : {
 
     },

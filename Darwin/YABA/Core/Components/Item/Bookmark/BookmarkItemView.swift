@@ -28,7 +28,6 @@ struct BookmarkItemView: View {
     @State
     private var itemState = BookmarkItemState()
 
-    /// V2 base bookmark model (`YabaBookmark` == `BookmarkModel` in YABACore).
     let bookmark: BookmarkModel
     let isInRecents: Bool
     let isSelected: Bool
