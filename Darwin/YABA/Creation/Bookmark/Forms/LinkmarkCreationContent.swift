@@ -102,6 +102,7 @@ struct LinkmarkCreationContent: View {
                     mainTint: mainTint
                 )
                 .bookmarkCreationPreviewListRowBackground(appearance: previewContentAppearance)
+                .redacted(reason: machine.state.isFetchingLinkContent ? .placeholder : [])
             } header: {
                 previewHeader(mainTint: mainTint)
             }
@@ -133,10 +134,6 @@ struct LinkmarkCreationContent: View {
                         Text("Create Bookmark Cleaned URL Placeholder")
                             .foregroundStyle(.tertiary)
                     }
-                }
-
-                if machine.state.isFetchingLinkContent {
-                    ProgressView()
                 }
             } header: {
                 Label {
@@ -231,20 +228,6 @@ struct LinkmarkCreationContent: View {
                 onFolderNavigate: { showFolderSheet = true },
                 onTagsNavigate: { showTagSheet = true }
             )
-
-            if let lastError = machine.state.lastError {
-                Section {
-                    Text(lastError)
-                        .foregroundStyle(.red)
-                }
-            }
-
-            if let converterError = machine.state.converterError {
-                Section {
-                    Text(converterError)
-                        .foregroundStyle(.red)
-                }
-            }
         }
         .listStyle(.sidebar)
         .scrollContentBackground(.hidden)

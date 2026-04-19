@@ -994,6 +994,15 @@
         }
       }
     },
+    "Bookmark Creation Apply From Metadata Title" : {
+
+    },
+    "Bookmark Creation Clear Document Action" : {
+
+    },
+    "Bookmark Creation Clear Image Action" : {
+
+    },
     "Bookmark Creation Link Info Message" : {
       "comment" : "Message to show in footer of link section in bookmark creation sheet to inform user about link cleaning.",
       "extractionState" : "manual",
@@ -1089,6 +1098,48 @@
           }
         }
       }
+    },
+    "Bookmark Creation Metadata Audio URL Label" : {
+
+    },
+    "Bookmark Creation Metadata Author Label" : {
+
+    },
+    "Bookmark Creation Metadata Date Label" : {
+
+    },
+    "Bookmark Creation Metadata Description Label" : {
+
+    },
+    "Bookmark Creation Metadata Section Title" : {
+
+    },
+    "Bookmark Creation Metadata Title Label" : {
+
+    },
+    "Bookmark Creation Metadata Video URL Label" : {
+
+    },
+    "Bookmark Creation Pick Another Document Action" : {
+
+    },
+    "Bookmark Creation Pick Another Image Action" : {
+
+    },
+    "Bookmark Creation Pick Document Action" : {
+
+    },
+    "Bookmark Creation Pick Image Action" : {
+
+    },
+    "Bookmark Creation Source File Label" : {
+
+    },
+    "Bookmark Creation Toggle Pinned Title" : {
+
+    },
+    "Bookmark Creation Toggle Private Title" : {
+
     },
     "Bookmark Description Placeholder" : {
       "comment" : "Placeholder to show when bookmark description is empty",
@@ -2332,6 +2383,21 @@
           }
         }
       }
+    },
+    "Bookmark Item Action Delete Label" : {
+
+    },
+    "Bookmark Item Action Edit Label" : {
+
+    },
+    "Bookmark Item Action Share Label" : {
+
+    },
+    "Bookmark Item Action Toggle Private Label" : {
+
+    },
+    "Bookmark Item Share Unavailable Message" : {
+
     },
     "Bookmark List Configuration Description" : {
       "localizations" : {
@@ -6265,6 +6331,9 @@
           }
         }
       }
+    },
+    "Create Bookmark Summary Placeholder" : {
+
     },
     "Create Bookmark Title" : {
       "comment" : "Title to show while creating a bookmark",
@@ -34110,6 +34179,45 @@
         }
       }
     },
+    "Private Bookmark Confirm New Password Field" : {
+
+    },
+    "Private Bookmark Confirm Password Label" : {
+
+    },
+    "Private Bookmark Create Password Title" : {
+
+    },
+    "Private Bookmark Edit Password Title" : {
+
+    },
+    "Private Bookmark Enter Password Section Header" : {
+
+    },
+    "Private Bookmark Enter Password Title" : {
+
+    },
+    "Private Bookmark New Password Field" : {
+
+    },
+    "Private Bookmark Old Password Field" : {
+
+    },
+    "Private Bookmark Password Created Toast" : {
+
+    },
+    "Private Bookmark Password Label" : {
+
+    },
+    "Private Bookmark Password Updated Toast" : {
+
+    },
+    "Private Session Locked Toast" : {
+
+    },
+    "Private Session Unlocked Toast" : {
+
+    },
     "Quick Bookmark" : {
       "shouldTranslate" : false
     },
@@ -44854,6 +44962,9 @@
           }
         }
       }
+    },
+    "Tags" : {
+
     },
     "Tags Search Prompt" : {
       "comment" : "Prompt to show while searching in tags selection",

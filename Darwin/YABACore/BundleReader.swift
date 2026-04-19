@@ -2,9 +2,8 @@
 //  BundleReader.swift
 //  YABACore
 //
-//  Resolves bundled files by **resource name** only. Xcode copies resources into the app/framework
-//  bundle without preserving project folder paths, so `Bundle.url(forResource:withExtension:subdirectory:)`
-//  must use `subdirectory: nil` and the actual file name (e.g. `icon_categories_header.json`).
+//  Resolves bundled files by **resource name**. Icons/metadata use a flat lookup at bundle root.
+//  Web shells and their `chunks/` / `assets/` live under `WebComponents/` (see `webComponentURL`).
 //
 
 import Foundation
@@ -44,10 +43,30 @@ public enum BundleReader {
         return try String(contentsOf: url, encoding: .utf8)
     }
 
-    // MARK: - Web components (HTML shells + chunks, all looked up by file name at bundle root)
+    // MARK: - Web components (HTML shells + `chunks/` + `assets/` under `WebComponents/`)
 
-    /// Directory URL suitable for `WKWebView.loadFileURL(_:allowingReadAccessTo:)` — parent of a known shell HTML file.
+    /// Folder under the bundle root (`bundle.bundleURL`) containing Vite output.
+    private static let webComponentsSubdirectory = "WebComponents"
+
+    private static func webComponentsDirectoryURL(in bundle: Bundle) -> URL? {
+        let root = bundle.bundleURL.standardizedFileURL
+        let dir = root.appendingPathComponent(webComponentsSubdirectory, isDirectory: true)
+        var isDir: ObjCBool = false
+        guard FileManager.default.fileExists(atPath: dir.path, isDirectory: &isDir), isDir.boolValue else {
+            return nil
+        }
+        return dir.standardizedFileURL
+    }
+
+    /// Directory URL for `WKWebView.loadFileURL(_:allowingReadAccessTo:)`.
+    ///
+    /// Uses the `WebComponents` folder directly to match:
+    /// `folderURL = Bundle.main.bundleURL.appendingPathComponent("WebComponents")`
+    /// `webView.loadFileURL(fileURL, allowingReadAccessTo: folderURL)`
     public static func webComponentsBaseURL(in bundle: Bundle = .main) -> URL? {
+        if let dir = webComponentsDirectoryURL(in: bundle) {
+            return dir
+        }
         let entryNames = [
             "viewer.html",
             "editor.html",
@@ -57,15 +76,43 @@ public enum BundleReader {
             "epub-viewer.html",
         ]
         for name in entryNames {
-            if let url = urlForBundledFileName(name, in: bundle) {
-                return url.deletingLastPathComponent()
+            if let url = webComponentURL(named: name, in: bundle) {
+                return url.deletingLastPathComponent().standardizedFileURL
             }
         }
         return nil
     }
 
+    /// Resolves a file under `WebComponents/` using the same path layout as on disk (`bundleURL/WebComponents/...`).
+    /// Falls back to `Bundle.url(forResource:…)` then flat bundle root for older layouts.
     public static func webComponentURL(named fileName: String, in bundle: Bundle = .main) -> URL? {
-        urlForBundledFileName(fileName, in: bundle)
+        let trimmed = fileName.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        guard !trimmed.isEmpty else { return nil }
+
+        if let dir = webComponentsDirectoryURL(in: bundle) {
+            let url = dir.appendingPathComponent(trimmed)
+            if FileManager.default.fileExists(atPath: url.path) {
+                return url.standardizedFileURL
+            }
+        }
+
+        let base = (trimmed as NSString).deletingPathExtension
+        let ext = (trimmed as NSString).pathExtension
+        if let url = bundle.url(
+            forResource: base,
+            withExtension: ext.isEmpty ? nil : ext,
+            subdirectory: webComponentsSubdirectory
+        ) {
+            return url.standardizedFileURL
+        }
+        if let url = bundle.url(
+            forResource: base,
+            withExtension: ext.isEmpty ? nil : ext,
+            subdirectory: nil
+        ) {
+            return url.standardizedFileURL
+        }
+        return nil
     }
 
     public static func getViewerURL(in bundle: Bundle = .main) -> URL? {

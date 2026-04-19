@@ -38,6 +38,7 @@ public final class WKWebViewRuntime: NSObject {
         }
         config.userContentController.addUserScript(WKBridgeUserScript.nativeHostBridgeScript())
         config.userContentController.add(scriptBridge, name: NativeHostRouterDarwin.nativeHostScriptMessageName)
+        config.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
 
         let wv = WKWebView(frame: .zero, configuration: config)
         self.webView = wv
@@ -52,6 +53,12 @@ public final class WKWebViewRuntime: NSObject {
         webView.uiDelegate = uiProxy
         webView.isOpaque = false
         webView.backgroundColor = .clear
+        
+        #if DEBUG
+        if #available(iOS 16.4, macOS 13.3, macCatalyst 16.4, *) {
+            webView.isInspectable = true
+        }
+        #endif
 
         webView.addObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress), options: .new, context: nil)
     }
@@ -75,6 +82,7 @@ public final class WKWebViewRuntime: NSObject {
     }
 
     /// Resolves the bundled shell URL and loads it with read access to the web-components directory.
+    @MainActor
     public func loadBundledShell(for feature: WebFeature, bundle: Bundle = .main) {
         expectedBridgeFeature = feature.expectedBridgeFeature
         guard let url = Self.resolveShellURL(for: feature, bundle: bundle),
@@ -87,6 +95,7 @@ public final class WKWebViewRuntime: NSObject {
     }
 
     /// Evaluates JavaScript and returns the JSON-string decoded result (Compose parity).
+    @MainActor
     public func evaluateJavaScriptStringResult(_ script: String) async throws -> String {
         try await withCheckedThrowingContinuation { cont in
             webView.evaluateJavaScript(script) { result, error in
