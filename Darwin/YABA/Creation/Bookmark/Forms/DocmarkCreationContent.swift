@@ -192,37 +192,39 @@ struct DocmarkCreationContent: View {
                     }
                 }
 
-                if !isEditing && hasApplicableMetadata {
-                    Button {
-                        Task { await machine.send(.onApplyFromMetadata) }
-                    } label: {
-                        Label {
-                            Text("Bookmark Creation Apply From Metadata Title")
-                        } icon: {
-                            fieldIcon("checkmark-badge-02", mainTint: mainTint)
-                        }
-                    }
-                }
             } header: {
-                Label {
-                    Text("Info")
-                } icon: {
-                    YabaIconView(bundleKey: "information-circle")
-                        .frame(width: 22, height: 22)
+                HStack(spacing: 12) {
+                    Label {
+                        Text("Info")
+                    } icon: {
+                        YabaIconView(bundleKey: "information-circle")
+                            .frame(width: 22, height: 22)
+                    }
+                    Spacer(minLength: 0)
+                    if !isEditing && hasApplicableMetadata {
+                        Button {
+                            Task { await machine.send(.onApplyFromMetadata) }
+                        } label: {
+                            Text("Bookmark Creation Apply From Metadata Title")
+                                .textCase(.none)
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(mainTint)
+                    }
                 }
             }
 
             if hasMetadataRows {
                 Section {
-                    metadataRow("Bookmark Creation Metadata Title Label", value: machine.state.metadataTitle)
-                    metadataRow("Bookmark Creation Metadata Description Label", value: machine.state.metadataDescription)
-                    metadataRow("Bookmark Creation Metadata Author Label", value: machine.state.metadataAuthor)
-                    metadataRow("Bookmark Creation Metadata Date Label", value: machine.state.metadataDate)
+                    metadataRow("Bookmark Creation Metadata Title Label", icon: "text", value: machine.state.metadataTitle, mainTint: mainTint)
+                    metadataRow("Bookmark Creation Metadata Description Label", icon: "paragraph", value: machine.state.metadataDescription, mainTint: mainTint)
+                    metadataRow("Bookmark Creation Metadata Author Label", icon: "user-edit-01", value: machine.state.metadataAuthor, mainTint: mainTint)
+                    metadataRow("Bookmark Creation Metadata Date Label", icon: "calendar-03", value: machine.state.metadataDate, mainTint: mainTint)
                 } header: {
                     Label {
                         Text("Bookmark Creation Metadata Section Title")
                     } icon: {
-                        YabaIconView(bundleKey: "database")
+                        YabaIconView(bundleKey: "database-01")
                             .frame(width: 22, height: 22)
                     }
                 }
@@ -551,13 +553,23 @@ struct DocmarkCreationContent: View {
     }
 
     @ViewBuilder
-    private func metadataRow(_ key: LocalizedStringKey, value: String?) -> some View {
+    private func metadataRow(
+        _ key: LocalizedStringKey,
+        icon: String,
+        value: String?,
+        mainTint: Color
+    ) -> some View {
         if let value, !value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(key)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                Text(value)
+            HStack(alignment: .top, spacing: 12) {
+                fieldIcon(icon, mainTint: mainTint)
+                    .frame(width: 24, height: 24)
+                    .padding(.top, 2)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(key)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Text(value)
+                }
             }
         }
     }

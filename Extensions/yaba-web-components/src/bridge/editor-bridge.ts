@@ -1,27 +1,34 @@
-import type { Editor, JSONContent } from "@tiptap/core"
+import type { Crepe } from "@milkdown/crepe"
+import { editorViewCtx } from "@milkdown/core"
+import type { EditorView } from "@milkdown/prose/view"
+import { Selection, TextSelection } from "@milkdown/prose/state"
 import DOMPurify from "dompurify"
 import showdown from "showdown"
-import { Selection, TextSelection } from "@tiptap/pm/state"
-import type { Node as ProseMirrorNode } from "@tiptap/pm/model"
+import { replaceAll, replaceRange } from "@milkdown/utils"
 import type { Platform, AppearanceMode } from "@/theme"
 import { applyTheme, parseUrlParams } from "@/theme"
 import {
   applyReaderThemeCssVars,
   applyReaderTypographyCssVars,
 } from "@/theme/reader-document-vars"
+import { getSelectionSnapshot, type SelectionSnapshot } from "./selection-extractor"
 import {
-  getSelectionSnapshot,
-  type SelectionSnapshot,
-} from "./selection-extractor"
-import {
-  ANNOTATIONS_META_KEY,
-  selectionOverlapsYabaAnnotationMark,
+  selectionOverlapsAnnotationLink,
   setStoredAnnotations,
+  stripAnnotationLinksForId,
+  syncAnnotationAnchorDom,
   type AnnotationForRendering,
-} from "@/tiptap/extensions/annotation-decorations"
-import { YabaAnnotationMarkName } from "@/tiptap/extensions/yaba-annotation-mark"
-import { setNoteEditorPlaceholderText } from "@/tiptap/editor-extensions"
-import { getActiveFormattingJson } from "./editor-formatting"
+} from "@/milkdown/annotation-links"
+import { setNoteEditorPlaceholderText } from "@/milkdown/note-placeholder"
+import {
+  rewriteAssetPathsInMarkdown,
+  rewriteAssetPathsInReaderHtml,
+  normalizeMarkdownAssetPathsForPersistence,
+  collectUsedInlineAssetSrcsFromMarkdown,
+} from "@/milkdown/markdown-assets"
+import { runEditorDispatch, applyAnnotationLinkToSelection } from "@/milkdown/milkdown-dispatch"
+import type { EditorCommandPayload } from "./editor-command-payload"
+export type { EditorCommandPayload } from "./editor-command-payload"
 import {
   publishEditorHostState,
   resetPublishedEditorHostState,
@@ -32,8 +39,10 @@ import {
   setNoteEditorAutosaveIdleEnabled,
 } from "./shell-host-events"
 import { publishToc, resetPublishedToc, type TocJson } from "./toc-host-events"
-import { exportMarkdownFromEditor, startEditorPdfExportJob } from "./editor-export"
+import { exportMarkdownFromCrepe, startEditorPdfExportJob } from "./editor-export"
+import { getActiveFormattingJson } from "@/milkdown/milkdown-formatting"
 import { postToYabaNativeHost } from "./yaba-native-host"
+import { ANNOTATION_HREF_PREFIX } from "@/milkdown/yaba-href"
 
 export type ReaderTheme = "system" | "dark" | "light" | "sepia"
 export type ReaderFontSize = "small" | "medium" | "large"
@@ -45,90 +54,21 @@ export interface ReaderPreferences {
   lineHeight: ReaderLineHeight
 }
 
-const EMPTY_DOC_JSON = '{"type":"doc","content":[]}'
+const EMPTY_MARKDOWN = ""
 
 /** Set when [setDocumentJson] / [setReaderHtml] runs with options; used to resolve inline image src and normalize saves. */
 let lastAssetsBaseUrl: string | undefined
 
-function rewriteAssetPathsInDocumentJson(json: string, assetsBaseUrl: string): string {
-  if (!json.includes("../assets/")) return json
-  const base = assetsBaseUrl.replace(/\/?$/, "/")
-  return json.replaceAll("../assets/", `${base}assets/`)
-}
+let crepeInstance: Crepe | null = null
 
-/** Same rewrite as document load — [insertImage] must use this or images 404 (relative to editor origin). */
-function resolveImageSrcForEditor(src: string): string {
-  if (!lastAssetsBaseUrl || !src.includes("../assets/")) return src
-  const base = lastAssetsBaseUrl.replace(/\/?$/, "/")
-  return src.replaceAll("../assets/", `${base}assets/`)
-}
-
-/** Persist canonical `../assets/…` paths (matches on-disk JSON and cross-platform loads). */
-function normalizeDocumentJsonAssetPathsForPersistence(json: string): string {
-  if (!lastAssetsBaseUrl || !json.includes("assets/")) return json
-  const base = lastAssetsBaseUrl.replace(/\/?$/, "/")
-  const absolutePrefix = `${base}assets/`
-  if (!json.includes(absolutePrefix)) return json
-  return json.replaceAll(absolutePrefix, "../assets/")
-}
-
-/**
- * Single image `src` → canonical `../assets/<file>` for native asset pruning, or null if not a note inline asset.
- */
-function normalizeImageSrcForPersistence(src: string): string | null {
-  const s = src.trim()
-  if (!s) return null
-  if (s.startsWith("../assets/")) {
-    return s
-  }
-  if (lastAssetsBaseUrl) {
-    const base = lastAssetsBaseUrl.replace(/\/?$/, "/")
-    const absolutePrefix = `${base}assets/`
-    if (s.startsWith(absolutePrefix)) {
-      return `../assets/${s.slice(absolutePrefix.length)}`
-    }
-  }
-  const idx = s.indexOf("/assets/")
-  if (idx >= 0) {
-    const after = s.slice(idx + "/assets/".length).split("?")[0].split("#")[0]
-    if (after && !after.includes("/")) {
-      return `../assets/${after}`
-    }
-  }
-  return null
-}
-
-function collectUsedInlineAssetSrcsFromDocJson(docJson: string): string[] {
-  const out = new Set<string>()
-  const visit = (node: unknown): void => {
-    if (!node || typeof node !== "object") return
-    const n = node as Record<string, unknown>
-    const attrs = n.attrs
-    if (typeof attrs === "object" && attrs) {
-      const src = (attrs as Record<string, unknown>).src
-      if (typeof src === "string") {
-        const c = normalizeImageSrcForPersistence(src)
-        if (c) out.add(c)
-      }
-    }
-    const content = n.content
-    if (Array.isArray(content)) {
-      for (const c of content) visit(c)
-    }
-  }
+function getBridgeView(): EditorView | null {
+  const c = crepeInstance
+  if (!c) return null
   try {
-    const doc = JSON.parse(docJson) as unknown
-    visit(doc)
+    return c.editor.action((ctx) => ctx.get(editorViewCtx))
   } catch {
-    /* ignore */
+    return null
   }
-  return [...out].sort()
-}
-
-function rewriteAssetPathsInReaderHtml(html: string, assetsBaseUrl: string): string {
-  if (!html.includes("../assets/")) return html
-  const base = assetsBaseUrl.replace(/\/?$/, "/")
-  return html.replaceAll("../assets/", `${base}assets/`)
 }
 
 export interface YabaEditorBridge {
@@ -145,112 +85,25 @@ export interface YabaEditorBridge {
   setReaderPreferences: (preferences: Partial<ReaderPreferences>) => void
   setEditable: (isEditable: boolean) => void
   setPlaceholder: (placeholder: string) => void
-  /** TipTap/ProseMirror document as JSON string. */
+  /** Markdown string (legacy name `documentJson`). */
   setDocumentJson: (documentJson: string, options?: { assetsBaseUrl?: string }) => void
-  /** Sanitized reader HTML for the read-only viewer (TipTap parses HTML → document). */
+  /** Sanitized reader HTML → converted to Markdown for the read-only viewer. */
   setReaderHtml: (html: string, options?: { assetsBaseUrl?: string }) => void
   getDocumentJson: () => string
-  /** JSON array string of canonical `../assets/<id>.<ext>` still referenced by the editor (for native pruning). */
   getUsedInlineAssetSrcs: () => string
-  /** JSON string of active marks / undo availability for native toolbars. */
   getActiveFormatting: () => string
-  /** Restores DOM focus; reapplies the last remembered text cursor when possible. */
   focus: () => void
-  /** Blurs the editor and dismisses the keyboard; remembers cursor first for [focus]. */
   unFocus: () => void
   dispatch: (command: EditorCommandPayload) => void
-  /** Apply `yabaAnnotation` mark with attrs `{ id }` to the current non-empty selection (viewer / link PDF readable). */
   applyAnnotationToSelection: (annotationId: string) => boolean
-  /** Remove all `yabaAnnotation` marks with the given id from the document. Returns number of text nodes updated. */
   removeAnnotationFromDocument: (annotationId: string) => number
   onAnnotationTap?: (id: string) => void
   navigateToTocItem: (id: string, extrasJson?: string | null) => void
-  /** Markdown text for Save Copy → `.md` (images embedded as `data:` URLs in the markdown). */
   exportMarkdown: () => string
-  /** Starts html2pdf.js export; native host receives [editorPdfExport] with the same job id. */
   startPdfExportJob: (jobId: string) => void
 }
 
-function removeAnnotationMarksWithId(editor: Editor | null, annotationId: string): number {
-  if (!editor) return 0
-  const { state } = editor
-  const markType = state.schema.marks[YabaAnnotationMarkName]
-  if (!markType) return 0
-  let count = 0
-  const tr = state.tr
-  state.doc.descendants((node, pos) => {
-    if (!node.isText) return
-    const mark = node.marks.find((m) => m.type === markType && m.attrs.id === annotationId)
-    if (mark) {
-      tr.removeMark(pos, pos + node.nodeSize, markType)
-      count += 1
-    }
-  })
-  if (count > 0) {
-    editor.view.dispatch(tr)
-  }
-  return count
-}
-
-export type EditorCommandPayload =
-  | { type: "toggleBold" }
-  | { type: "toggleItalic" }
-  | { type: "toggleUnderline" }
-  | { type: "toggleStrikethrough" }
-  | { type: "toggleSubscript" }
-  | { type: "toggleSuperscript" }
-  | { type: "toggleCode" }
-  | { type: "toggleCodeBlock" }
-  | { type: "toggleQuote" }
-  | { type: "insertHr" }
-  | { type: "toggleBulletedList" }
-  | { type: "toggleNumberedList" }
-  | { type: "toggleTaskList" }
-  | { type: "indent" }
-  | { type: "outdent" }
-  | { type: "undo" }
-  | { type: "redo" }
-  | { type: "insertLink"; text: string; url: string }
-  | { type: "updateLink"; text: string; url: string; pos: number }
-  | { type: "removeLink"; pos: number }
-  | {
-      type: "insertMention"
-      text: string
-      bookmarkId: string
-      bookmarkKindCode: number
-      bookmarkLabel: string
-    }
-  | {
-      type: "updateMention"
-      text: string
-      bookmarkId: string
-      bookmarkKindCode: number
-      bookmarkLabel: string
-      pos: number
-    }
-  | { type: "removeMention"; pos: number }
-  | { type: "insertInlineMath"; latex: string }
-  | { type: "insertBlockMath"; latex: string }
-  | { type: "updateInlineMath"; latex: string; pos: number }
-  | { type: "updateBlockMath"; latex: string; pos: number }
-  | { type: "insertText"; text: string }
-  | { type: "setHeading"; level: number }
-  | { type: "insertTable"; rows: number; cols: number; withHeaderRow?: boolean }
-  | { type: "insertImage"; src: string }
-  | { type: "addRowBefore" }
-  | { type: "addRowAfter" }
-  | { type: "deleteRow" }
-  | { type: "addColumnBefore" }
-  | { type: "addColumnAfter" }
-  | { type: "deleteColumn" }
-  | { type: "setTextHighlight"; colorRole: string }
-  | { type: "unsetTextHighlight" }
-  | { type: "toggleTextHighlight" }
-
-let editorInstance: Editor | null = null
-/** First successful or failed application of document/HTML to the shell (one-shot per page load). */
 let editorShellLoadNotified = false
-/** Debounced ToC publish (matches note autosave idle ~1s). */
 let tocPublishTimer: ReturnType<typeof setTimeout> | null = null
 const TOC_PUBLISH_DEBOUNCE_MS = 1000
 
@@ -271,8 +124,8 @@ function scheduleHeadingTocPublish(): void {
   }, TOC_PUBLISH_DEBOUNCE_MS)
 }
 
-function buildHeadingTocJson(ed: Editor): TocJson | null {
-  const doc = ed.state.doc
+function buildHeadingTocJson(view: EditorView): TocJson | null {
+  const doc = view.state.doc
   const headings: { pos: number; level: number; text: string }[] = []
   doc.descendants((node, pos) => {
     if (node.type.name === "heading") {
@@ -315,18 +168,13 @@ function buildHeadingTocJson(ed: Editor): TocJson | null {
   return { items: root }
 }
 
-/**
- * Same traversal and filters as [buildHeadingTocJson] (`heading` nodes with non-empty trimmed text).
- * Resolves `toc-h-${n}` at navigation time so we do not rely on [extrasJson] `pos`, which drifts after
- * document updates (annotations, marks) — same idea as [scrollToAnnotation] using live identity, not stale coords.
- */
-function findHeadingDocPosForTocItemId(ed: Editor, tocItemId: string): number | null {
+function findHeadingDocPosForTocItemId(view: EditorView, tocItemId: string): number | null {
   const m = /^toc-h-(\d+)$/.exec(tocItemId)
   if (!m) return null
   const targetIndex = parseInt(m[1], 10)
   if (targetIndex < 0 || !Number.isFinite(targetIndex)) return null
   const headingStarts: number[] = []
-  ed.state.doc.descendants((node, pos) => {
+  view.state.doc.descendants((node, pos) => {
     if (node.type.name === "heading") {
       const text = node.textContent.trim()
       if (text.length > 0) {
@@ -346,18 +194,18 @@ function getHeadingIndexFromTocItemId(tocItemId: string): number | null {
   return index
 }
 
-function findHeadingElementForTocItemId(ed: Editor, tocItemId: string): HTMLElement | null {
+function findHeadingElementForTocItemId(view: EditorView, tocItemId: string): HTMLElement | null {
   const headingIndex = getHeadingIndexFromTocItemId(tocItemId)
   if (headingIndex == null) return null
   const headingElements = Array.from(
-    ed.view.dom.querySelectorAll<HTMLElement>("h1, h2, h3, h4, h5, h6")
+    view.dom.querySelectorAll<HTMLElement>("h1, h2, h3, h4, h5, h6")
   ).filter((el) => el.textContent?.trim().length)
   return headingElements[headingIndex] ?? null
 }
 
-function scrollHeadingIntoEditorView(ed: Editor, headingEl: HTMLElement): void {
+function scrollHeadingIntoEditorView(view: EditorView, headingEl: HTMLElement): void {
   const container =
-    (ed.view.dom.closest("[data-yaba-editor-root]") as HTMLElement | null) ??
+    (view.dom.closest("[data-yaba-editor-root]") as HTMLElement | null) ??
     (document.querySelector(".yaba-editor-container") as HTMLElement | null)
 
   if (!container) {
@@ -377,15 +225,15 @@ function scrollHeadingIntoEditorView(ed: Editor, headingEl: HTMLElement): void {
 }
 
 function publishHeadingTocFromEditor(): void {
-  const ed = editorInstance
-  if (!ed) {
+  const view = getBridgeView()
+  if (!view) {
     publishToc(null)
     return
   }
-  const toc = buildHeadingTocJson(ed)
+  const toc = buildHeadingTocJson(view)
   publishToc(toc)
 }
-/** Latest ProseMirror selection (anchor/head) for restoring the caret after [unFocus] / native chrome. */
+
 let lastStoredCursor: { anchor: number; head: number } | null = null
 let platform: Platform = "compose"
 let appearance: AppearanceMode = "auto"
@@ -422,93 +270,77 @@ function ensureSystemColorSchemeListener(): void {
 }
 
 function captureStoredCursorFromEditor(): void {
-  const ed = editorInstance
-  if (!ed) return
-  const { anchor, head } = ed.state.selection
+  const view = getBridgeView()
+  if (!view) return
+  const { anchor, head } = view.state.selection
   lastStoredCursor = { anchor, head }
 }
 
-/** `setContent` often leaves a range selection; collapse to a caret so toggles don't apply to the whole doc. */
-function clearSelectionToCaretAtStart(editor: Editor): void {
-  const pos = Selection.atStart(editor.state.doc).from
-  const selection = TextSelection.create(editor.state.doc, pos)
-  const tr = editor.state.tr.setSelection(selection)
-  editor.view.dispatch(tr)
+function clearSelectionToCaretAtStart(view: EditorView): void {
+  const pos = Selection.atStart(view.state.doc).from
+  const selection = TextSelection.create(view.state.doc, pos)
+  const tr = view.state.tr.setSelection(selection)
+  view.dispatch(tr)
 }
 
-/**
- * After loading/replacing content: normalize to a caret at doc start, remember it, then blur.
- * We prefer an explicit user tap plus placeholder text over auto-focusing the note editor on load.
- */
-function applyInitialFocusStateAfterContent(editor: Editor): void {
-  clearSelectionToCaretAtStart(editor)
-  captureStoredCursorFromEditor()
-  editor.commands.blur()
+function applyInitialFocusStateAfterContent(crepe: Crepe): void {
+  crepe.editor.action((ctx) => {
+    const view = ctx.get(editorViewCtx)
+    clearSelectionToCaretAtStart(view)
+    const { anchor, head } = view.state.selection
+    lastStoredCursor = { anchor, head }
+    view.dom.blur()
+  })
   const container =
-    (editor.view.dom.closest("[data-yaba-editor-root]") as HTMLElement | null) ??
+    (document.querySelector("[data-yaba-editor-root]") as HTMLElement | null) ??
     (document.querySelector(".yaba-editor-container") as HTMLElement | null)
   container?.scrollTo({ top: 0, behavior: "auto" })
 }
 
 function getCanCreateAnnotationForCurrentSelection(): boolean {
-  const snap = getSelectionSnapshot(editorInstance)
-  if (!snap) return false
-  const ed = editorInstance
-  if (!ed) return false
-  const { from, to } = ed.state.selection
+  const view = getBridgeView()
+  const snap = getSelectionSnapshot(view)
+  if (!snap || !view) return false
+  const { from, to } = view.state.selection
   if (from === to) return false
   const page = document.body?.dataset.yabaPage
   if (page === "editor") return true
-  const overlaps = selectionOverlapsYabaAnnotationMark(ed.state.doc, from, to)
-  return !overlaps
+  return !selectionOverlapsAnnotationLink(view.state.doc, from, to)
 }
 
 function publishCurrentEditorState(): void {
-  publishEditorHostState(editorInstance, getCanCreateAnnotationForCurrentSelection)
+  publishEditorHostState(getBridgeView(), getCanCreateAnnotationForCurrentSelection)
 }
 
 function focusEditorRestoringCursor(): void {
-  const ed = editorInstance
-  if (!ed) return
-  try {
-    if (lastStoredCursor) {
-      const size = ed.state.doc.content.size
-      const from = Math.max(0, Math.min(lastStoredCursor.anchor, size))
-      const to = Math.max(0, Math.min(lastStoredCursor.head, size))
-      ed.chain().setTextSelection({ from, to }).focus().run()
-      return
+  const crepe = crepeInstance
+  if (!crepe) return
+  crepe.editor.action((ctx) => {
+    const view = ctx.get(editorViewCtx)
+    try {
+      if (lastStoredCursor) {
+        const size = view.state.doc.content.size
+        const from = Math.max(0, Math.min(lastStoredCursor.anchor, size))
+        const to = Math.max(0, Math.min(lastStoredCursor.head, size))
+        const tr = view.state.tr.setSelection(TextSelection.create(view.state.doc, from, to))
+        view.dispatch(tr)
+      }
+    } catch {
+      /* ignore */
     }
-  } catch {
-    // Invalid range after doc changes — fall through to plain focus.
-  }
-  ed.commands.focus()
+    view.focus()
+  })
 }
 
-function withPreparedEditorSelection(run: (editor: Editor) => void): void {
-  const ed = editorInstance
-  if (!ed) return
+function withPreparedEditorSelection(run: (editor: Crepe) => void): void {
+  const c = crepeInstance
+  if (!c) return
   focusEditorRestoringCursor()
-  run(ed)
+  run(c)
   captureStoredCursorFromEditor()
   publishCurrentEditorState()
 }
 
-function insertInlineMathKeepingCaretAfterNode(ed: Editor, latex: string): void {
-  const inlineMathType = ed.state.schema.nodes.inlineMath
-  if (!inlineMathType) {
-    ed.commands.insertInlineMath({ latex })
-    return
-  }
-
-  const { from, to } = ed.state.selection
-  const mathNode: ProseMirrorNode = inlineMathType.create({ latex })
-  const tr = ed.state.tr.replaceRangeWith(from, to, mathNode)
-  const caretPos = from + mathNode.nodeSize
-  tr.setSelection(TextSelection.create(tr.doc, caretPos))
-  ed.view.dispatch(tr)
-}
-
-/** Clipboard paste normalization converter (input treated as HTML-oriented content). */
 const pasteHtmlConverter = new showdown.Converter({
   tables: true,
   tasklists: true,
@@ -516,83 +348,17 @@ const pasteHtmlConverter = new showdown.Converter({
   ghCodeBlocks: true,
 })
 
-/** DOMPurify on plain text can escape markdown markers (`>` -> `&gt;`); decode before Showdown. */
 function decodeHtmlEntities(value: string): string {
   const textarea = document.createElement("textarea")
   textarea.innerHTML = value
   return textarea.value
 }
 
-/** Minimal markdown-it style helpers for superscript/subscript before Showdown conversion. */
 function applySupSubMarkdownSyntax(value: string): string {
   const withSup = value.replace(/(^|[^\^])\^([^^\n]+)\^/g, "$1<sup>$2</sup>")
   return withSup.replace(/(^|[^~])~([^~\n]+)~(?!~)/g, "$1<sub>$2</sub>")
 }
 
-/**
- * Serialize the current selection to Markdown using the TipTap Markdown extension.
- */
-function getSelectionMarkdownFromEditor(ed: Editor): string {
-  const { from, to } = ed.state.selection
-  if (from === to) return ""
-  try {
-    const slice = ed.state.doc.slice(from, to)
-    const json = slice.content.toJSON() as JSONContent[] | JSONContent | null | undefined
-    const content: JSONContent[] = Array.isArray(json) ? json : json != null ? [json] : []
-    const docJson: JSONContent = { type: "doc", content }
-    const pmDoc = ed.state.schema.nodeFromJSON(docJson)
-
-    const storage = (
-      ed as unknown as {
-        storage?: {
-          markdown?: {
-            serializer?: { serialize?: (doc: ProseMirrorNode) => string }
-          }
-        }
-      }
-    ).storage?.markdown
-    const serializedByStorage = storage?.serializer?.serialize?.(pmDoc)
-    if (serializedByStorage != null && serializedByStorage.trim().length > 0) {
-      return serializedByStorage
-    }
-
-    const mgr = ed.markdown as { serialize?: (doc: JSONContent | ProseMirrorNode) => string } | undefined
-    if (mgr?.serialize) {
-      const serializedByManager = mgr.serialize(pmDoc)
-      if (serializedByManager.trim().length > 0) return serializedByManager
-      const serializedJson = mgr.serialize(docJson)
-      if (serializedJson.trim().length > 0) return serializedJson
-    }
-  } catch {
-    /* fall through */
-  }
-  return ed.state.doc.textBetween(from, to, "\n")
-}
-
-/**
- * Replace selection with pasted text interpreted by Markdown pipeline:
- * DOMPurify(text) -> Showdown(makeHtml) -> DOMPurify(html) -> TipTap insert.
- */
-function insertPastedTextAsHtml(ed: Editor, clipboardText: string): void {
-  const { from, to } = ed.state.selection
-  const trimmed = clipboardText.trim()
-  if (trimmed.length === 0) return
-
-  const sanitizedText = DOMPurify.sanitize(trimmed, { USE_PROFILES: { html: true } })
-  const decodedText = decodeHtmlEntities(sanitizedText)
-  const markdownReadyText = applySupSubMarkdownSyntax(decodedText)
-  let html = pasteHtmlConverter.makeHtml(markdownReadyText)
-  html = DOMPurify.sanitize(html, { USE_PROFILES: { html: true } })
-  if (!html.trim()) {
-    const tr = ed.state.tr.insertText(decodedText, from, to)
-    ed.view.dispatch(tr)
-    return
-  }
-
-  ed.chain().focus().insertContentAt({ from, to }, html).run()
-}
-
-/** Clipboard source for paste: always treat clipboard content as text. */
 function getClipboardTextForPaste(ev: ClipboardEvent): string {
   const plain = ev.clipboardData?.getData("text/plain")
   if (plain != null && plain.trim() !== "") return plain
@@ -612,81 +378,186 @@ function getClipboardTextForPaste(ev: ClipboardEvent): string {
   }
 }
 
-/**
- * Default copy = Markdown on clipboard; default paste = always consume clipboard as text,
- * sanitize text via DOMPurify, normalize with Showdown, then insert sanitized HTML.
- */
-function wireDefaultMarkdownClipboard(ed: Editor): void {
-  const dom = ed.view.dom
+function insertPastedTextAsMarkdown(crepe: Crepe, clipboardText: string): void {
+  const trimmed = clipboardText.trim()
+  if (trimmed.length === 0) return
+
+  const sanitizedText = DOMPurify.sanitize(trimmed, { USE_PROFILES: { html: true } })
+  const decodedText = decodeHtmlEntities(sanitizedText)
+  const markdownReadyText = applySupSubMarkdownSyntax(decodedText)
+  let html = pasteHtmlConverter.makeHtml(markdownReadyText)
+  html = DOMPurify.sanitize(html, { USE_PROFILES: { html: true } })
+  if (!html.trim()) {
+    crepe.editor.action((ctx) => {
+      const view = ctx.get(editorViewCtx)
+      const { from, to } = view.state.selection
+      view.dispatch(view.state.tr.insertText(decodedText, from, to))
+    })
+    return
+  }
+
+  const md = pasteHtmlConverter.makeMarkdown(html).trim()
+  crepe.editor.action((ctx) => {
+    const view = ctx.get(editorViewCtx)
+    const { from, to } = view.state.selection
+    replaceRange(md || decodedText, { from, to })(ctx)
+  })
+}
+
+function getEditorDom(crepe: Crepe): HTMLElement | null {
+  try {
+    return crepe.editor.action((ctx) => ctx.get(editorViewCtx).dom as HTMLElement)
+  } catch {
+    return null
+  }
+}
+
+function wireDefaultMarkdownClipboard(crepe: Crepe): void {
+  const dom = getEditorDom(crepe)
+  if (!dom) return
 
   const onCopy = (event: Event) => {
     const ev = event as ClipboardEvent
-    if (!ed.isEditable) return
-    const { from, to } = ed.state.selection
+    const view = getBridgeView()
+    if (!view || !view.editable) return
+    const { from, to } = view.state.selection
     if (from === to) return
-    const md = getSelectionMarkdownFromEditor(ed)
+    const md = view.state.doc.textBetween(from, to, "\n").trim()
     if (md.length === 0) return
     ev.preventDefault()
     ev.clipboardData?.setData("text/plain", md)
     ev.clipboardData?.setData("text/markdown", md)
   }
 
-  dom.addEventListener("copy", onCopy)
-
   const handlePasteWithMarkdownPipeline = (ev: ClipboardEvent): boolean => {
-    if (!ed.isEditable) return false
+    const view = getBridgeView()
+    if (!view?.editable) return false
     const text = getClipboardTextForPaste(ev)
     if (text.trim() === "") return false
     ev.preventDefault()
-    insertPastedTextAsHtml(ed, text)
+    insertPastedTextAsMarkdown(crepe, text)
     return true
   }
 
-  /**
-   * Prefer ProseMirror `handlePaste` (TipTap-supported override point). Keep `handleDOMEvents.paste`
-   * as a fallback for environments where only DOM paste events fire.
-   */
-  const prevProps = ed.options.editorProps
-  const inheritedHandlePaste = prevProps.handlePaste
-  const inheritedDomPaste = prevProps.handleDOMEvents?.paste
-  ed.setOptions({
-    editorProps: {
-      ...prevProps,
-      handlePaste: (view, event, slice) => {
-        const ev = event as ClipboardEvent
-        if (handlePasteWithMarkdownPipeline(ev)) return true
-        return inheritedHandlePaste?.(view, event, slice) ?? false
-      },
-      handleDOMEvents: {
-        ...prevProps.handleDOMEvents,
-        paste: (view, event) => {
-          const ev = event as ClipboardEvent
-          if (handlePasteWithMarkdownPipeline(ev)) return true
-          return inheritedDomPaste?.(view, event) ?? false
-        },
-      },
+  dom.addEventListener("copy", onCopy)
+  dom.addEventListener(
+    "paste",
+    (ev: ClipboardEvent) => {
+      if (handlePasteWithMarkdownPipeline(ev)) {
+        ev.stopPropagation()
+      }
     },
-  })
+    true
+  )
+}
+
+function wireNativeContentTaps(crepe: Crepe): void {
+  const root = getEditorDom(crepe)
+  if (!root) return
+
+  const onClick = (ev: MouseEvent) => {
+    const target = ev.target as HTMLElement | null
+    if (!target) return
+
+    const ann = target.closest<HTMLAnchorElement>('a[href^="yaba-annotation:"]')
+    if (ann) {
+      const href = ann.getAttribute("href") ?? ""
+      const id = href.replace(new RegExp(`^${ANNOTATION_HREF_PREFIX.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`), "").split(/[?#]/)[0]
+      postToYabaNativeHost({ type: "annotationTap", id })
+      const win = window as Window & { YabaEditorBridge?: YabaEditorBridge }
+      win.YabaEditorBridge?.onAnnotationTap?.(id)
+      ev.preventDefault()
+      return
+    }
+
+    const bm = target.closest<HTMLAnchorElement>('a[href^="bookmark:"]')
+    if (bm) {
+      const href = bm.getAttribute("href") ?? ""
+      const bookmarkId = href.replace(/^bookmark:/, "")
+      const text = bm.textContent ?? ""
+      let pos = 0
+      crepe.editor.action((ctx) => {
+        const view = ctx.get(editorViewCtx)
+        try {
+          pos = view.posAtDOM(bm, 0)
+        } catch {
+          pos = 0
+        }
+      })
+      postToYabaNativeHost({
+        type: "inlineMentionTap",
+        pos,
+        text,
+        bookmarkId,
+        bookmarkKindCode: 0,
+        bookmarkLabel: text,
+      })
+      ev.preventDefault()
+      return
+    }
+
+    const httpLink = target.closest<HTMLAnchorElement>("a[href]")
+    if (httpLink) {
+      const href = httpLink.getAttribute("href") ?? ""
+      if (href.startsWith("yaba-annotation:") || href.startsWith("bookmark:")) return
+      if (!/^https?:\/\//i.test(href) && !href.startsWith("mailto:")) return
+      const text = httpLink.textContent ?? ""
+      let pos = 0
+      crepe.editor.action((ctx) => {
+        const view = ctx.get(editorViewCtx)
+        try {
+          pos = view.posAtDOM(httpLink, 0)
+        } catch {
+          pos = 0
+        }
+      })
+      postToYabaNativeHost({
+        type: "inlineLinkTap",
+        pos,
+        text,
+        url: href,
+      })
+      ev.preventDefault()
+      return
+    }
+
+    const katexEl = target.closest(".katex") as HTMLElement | null
+    if (katexEl) {
+      const annEl = katexEl.querySelector("annotation")
+      const latex = annEl?.textContent?.trim() ?? ""
+      const block = katexEl.closest(".katex-display")
+      let pos = 0
+      crepe.editor.action((ctx) => {
+        const view = ctx.get(editorViewCtx)
+        try {
+          pos = view.posAtDOM(katexEl, 0)
+        } catch {
+          pos = 0
+        }
+      })
+      postToYabaNativeHost({
+        type: "mathTap",
+        kind: block ? "block" : "inline",
+        pos,
+        latex,
+      })
+      ev.preventDefault()
+    }
+  }
+
+  root.addEventListener("click", onClick, true)
 }
 
 function applyWebChromeInsetsToDocument(topChromeInsetPx: number): void {
   const root = document.documentElement
   const total = Math.max(0, Math.round(topChromeInsetPx))
-  /** Holds combined top chrome (Compose); not status-only. */
   root.style.setProperty("--yaba-web-chrome-status-bar", `${total}px`)
-  /**
-   * Combined inset already includes the app bar row; clear CSS default so we do not add 54px twice.
-   */
   root.style.setProperty("--yaba-web-chrome-top-bar", "0px")
-  /**
-   * Compose passes the full top inset. Android WebViews often mirror status via env(safe-area-inset-top).
-   */
   root.style.setProperty("--yaba-web-chrome-safe-area-top-additional", "0px")
 }
 
 function applyReaderPreferences(): void {
   const page = document.body?.dataset.yabaPage
-  /** Read-it-later viewer + note editor: same reader theme + typography pipeline (incl. automatic / system). */
   const useReaderAppearancePipeline = page === "viewer" || page === "editor"
 
   if (useReaderAppearancePipeline) {
@@ -713,66 +584,78 @@ function applyReaderPreferences(): void {
   applyReaderTypographyCssVars(readerPreferences)
 }
 
-export function initEditorBridge(editor: Editor): void {
-  editorInstance = editor
+const readerHtmlToMd = new showdown.Converter({
+  tables: true,
+  tasklists: true,
+  strikethrough: true,
+  ghCodeBlocks: true,
+})
+
+export function initEditorBridge(crepe: Crepe): void {
+  crepeInstance = crepe
   editorShellLoadNotified = false
   clearTocPublishTimer()
   resetPublishedToc()
   setNoteEditorAutosaveIdleEnabled(false)
   resetPublishedEditorHostState()
-  editor.on("selectionUpdate", () => {
-    captureStoredCursorFromEditor()
-    publishCurrentEditorState()
+
+  crepe.on((listener) => {
+    listener.markdownUpdated(() => {
+      publishCurrentEditorState()
+      scheduleNoteAutosaveAfterEditorActivity()
+      scheduleHeadingTocPublish()
+      syncAnnotationAnchorDom(document.querySelector("[data-yaba-editor-root]"))
+    })
+    listener.selectionUpdated(() => {
+      captureStoredCursorFromEditor()
+      publishCurrentEditorState()
+    })
+    listener.focus(() => {
+      publishCurrentEditorState()
+    })
+    listener.blur(() => {
+      publishCurrentEditorState()
+    })
   })
-  editor.on("transaction", () => {
-    publishCurrentEditorState()
-    scheduleNoteAutosaveAfterEditorActivity()
-    scheduleHeadingTocPublish()
-  })
-  editor.on("focus", () => {
-    publishCurrentEditorState()
-  })
-  editor.on("blur", () => {
-    publishCurrentEditorState()
-  })
+
   queueMicrotask(() => {
-    applyInitialFocusStateAfterContent(editor)
+    applyInitialFocusStateAfterContent(crepe)
     publishCurrentEditorState()
   })
+
   const urlParams = parseUrlParams()
   platform = urlParams.platform
   appearance = urlParams.appearance
+
+  wireDefaultMarkdownClipboard(crepe)
+  wireNativeContentTaps(crepe)
+
   const win = window as Window & { YabaEditorBridge?: YabaEditorBridge }
   win.YabaEditorBridge = {
-    isReady: () => !!editorInstance,
-    getSelectionSnapshot: () => getSelectionSnapshot(editorInstance),
+    isReady: () => !!crepeInstance,
+    getSelectionSnapshot: () => getSelectionSnapshot(getBridgeView()),
     getSelectedText: () => {
-      const ed = editorInstance
-      if (!ed) return ""
-      const { from, to } = ed.state.selection
+      const view = getBridgeView()
+      if (!view) return ""
+      const { from, to } = view.state.selection
       if (from === to) return ""
-      return ed.state.doc.textBetween(from, to, "\n").trim()
+      return view.state.doc.textBetween(from, to, "\n").trim()
     },
     getCanCreateAnnotation: () => getCanCreateAnnotationForCurrentSelection(),
     setAnnotations: (annotationsJson: string) => {
       try {
         const annotations: AnnotationForRendering[] =
-          annotationsJson && annotationsJson.trim()
-            ? JSON.parse(annotationsJson)
-            : []
+          annotationsJson && annotationsJson.trim() ? JSON.parse(annotationsJson) : []
         setStoredAnnotations(annotations)
-        if (editorInstance) {
-          const tr = editorInstance.state.tr
-          tr.setMeta(ANNOTATIONS_META_KEY, annotations)
-          editorInstance.view.dispatch(tr)
-        }
       } catch {
         setStoredAnnotations([])
       }
+      syncAnnotationAnchorDom(document.querySelector("[data-yaba-editor-root]"))
+      publishCurrentEditorState()
     },
     scrollToAnnotation: (annotationId: string) => {
       const el = document.querySelector(
-        `.yaba-annotation-decoration[data-annotation-id="${annotationId}"]`
+        `a[href="${ANNOTATION_HREF_PREFIX}${annotationId}"], a[data-annotation-id="${annotationId}"]`
       ) as HTMLElement | null
       el?.scrollIntoView({ behavior: "smooth", block: "center" })
     },
@@ -799,40 +682,37 @@ export function initEditorBridge(editor: Editor): void {
       applyReaderPreferences()
     },
     setEditable: (isEditable: boolean) => {
-      editorInstance?.setEditable(isEditable)
+      crepeInstance?.setReadonly(!isEditable)
     },
     setPlaceholder: (placeholder: string) => {
       setNoteEditorPlaceholderText(placeholder)
-      editorInstance?.view.dispatch(editorInstance.state.tr)
       publishCurrentEditorState()
     },
     setDocumentJson: (documentJson: string, options?: { assetsBaseUrl?: string }) => {
+      const c = crepeInstance
+      if (!c) return
       try {
         setNoteEditorAutosaveIdleEnabled(false)
         if (options?.assetsBaseUrl) {
           lastAssetsBaseUrl = options.assetsBaseUrl
         }
-        let payload = documentJson?.trim() ? documentJson : EMPTY_DOC_JSON
+        let payload = documentJson?.trim() ? documentJson : EMPTY_MARKDOWN
+        if (payload.startsWith('{"type":"doc"')) {
+          payload = EMPTY_MARKDOWN
+        }
         if (options?.assetsBaseUrl) {
-          payload = rewriteAssetPathsInDocumentJson(payload, options.assetsBaseUrl)
+          payload = rewriteAssetPathsInMarkdown(payload, options.assetsBaseUrl)
         }
-        let doc: Record<string, unknown>
-        try {
-          doc = JSON.parse(payload) as Record<string, unknown>
-        } catch {
-          doc = JSON.parse(EMPTY_DOC_JSON) as Record<string, unknown>
-        }
-        editorInstance?.commands.setContent(doc, { emitUpdate: false })
-        if (editorInstance) {
-          applyInitialFocusStateAfterContent(editorInstance)
-          publishCurrentEditorState()
-        }
+        c.editor.action(replaceAll(payload, true))
+        applyInitialFocusStateAfterContent(c)
+        publishCurrentEditorState()
         if (!editorShellLoadNotified) {
           editorShellLoadNotified = true
           publishShellLoad("loaded")
         }
         queueMicrotask(() => {
           publishHeadingTocFromEditor()
+          syncAnnotationAnchorDom(document.querySelector("[data-yaba-editor-root]"))
           if (document.body?.dataset.yabaPage === "editor") {
             setNoteEditorAutosaveIdleEnabled(true)
           }
@@ -845,6 +725,8 @@ export function initEditorBridge(editor: Editor): void {
       }
     },
     setReaderHtml: (html: string, options?: { assetsBaseUrl?: string }) => {
+      const c = crepeInstance
+      if (!c) return
       try {
         if (options?.assetsBaseUrl) {
           lastAssetsBaseUrl = options.assetsBaseUrl
@@ -853,17 +735,18 @@ export function initEditorBridge(editor: Editor): void {
         if (options?.assetsBaseUrl) {
           payload = rewriteAssetPathsInReaderHtml(payload, options.assetsBaseUrl)
         }
-        editorInstance?.commands.setContent(payload, { emitUpdate: false })
-        if (editorInstance) {
-          applyInitialFocusStateAfterContent(editorInstance)
-          publishCurrentEditorState()
-        }
+        const safe = DOMPurify.sanitize(payload, { USE_PROFILES: { html: true } })
+        const md = readerHtmlToMd.makeMarkdown(safe).trim()
+        c.editor.action(replaceAll(md || EMPTY_MARKDOWN, true))
+        applyInitialFocusStateAfterContent(c)
+        publishCurrentEditorState()
         if (!editorShellLoadNotified) {
           editorShellLoadNotified = true
           publishShellLoad("loaded")
         }
         queueMicrotask(() => {
           publishHeadingTocFromEditor()
+          syncAnnotationAnchorDom(document.querySelector("[data-yaba-editor-root]"))
         })
       } catch {
         if (!editorShellLoadNotified) {
@@ -873,238 +756,86 @@ export function initEditorBridge(editor: Editor): void {
       }
     },
     getDocumentJson: () => {
-      const raw = JSON.stringify(editorInstance?.getJSON() ?? JSON.parse(EMPTY_DOC_JSON))
-      return normalizeDocumentJsonAssetPathsForPersistence(raw)
+      const raw = crepeInstance?.getMarkdown() ?? ""
+      return normalizeMarkdownAssetPathsForPersistence(raw, lastAssetsBaseUrl)
     },
     getUsedInlineAssetSrcs: () => {
-      const raw = JSON.stringify(editorInstance?.getJSON() ?? JSON.parse(EMPTY_DOC_JSON))
-      const normalized = normalizeDocumentJsonAssetPathsForPersistence(raw)
-      const list = collectUsedInlineAssetSrcsFromDocJson(normalized)
+      const raw = normalizeMarkdownAssetPathsForPersistence(crepeInstance?.getMarkdown() ?? "", lastAssetsBaseUrl)
+      const list = collectUsedInlineAssetSrcsFromMarkdown(raw, lastAssetsBaseUrl)
       return JSON.stringify(list)
     },
-    getActiveFormatting: () => {
-      return getActiveFormattingJson(editorInstance)
-    },
+    getActiveFormatting: () => getActiveFormattingJson(getBridgeView()),
     focus: () => {
       focusEditorRestoringCursor()
       publishCurrentEditorState()
     },
     unFocus: () => {
       captureStoredCursorFromEditor()
-      editorInstance?.commands.blur()
+      crepeInstance?.editor.action((ctx) => {
+        ctx.get(editorViewCtx).dom.blur()
+      })
       publishCurrentEditorState()
     },
     dispatch: (cmd: EditorCommandPayload) => {
-      withPreparedEditorSelection((ed) => {
-        const chain = ed.chain()
-
-        switch (cmd.type) {
-          case "toggleBold":
-            chain.toggleBold().run()
-            break
-          case "toggleItalic":
-            chain.toggleItalic().run()
-            break
-          case "toggleUnderline":
-            chain.toggleUnderline().run()
-            break
-          case "toggleSubscript":
-            chain.toggleSubscript().run()
-            break
-          case "toggleSuperscript":
-            chain.toggleSuperscript().run()
-            break
-          case "toggleStrikethrough":
-            chain.toggleStrike().run()
-            break
-          case "toggleCode":
-            chain.toggleCode().run()
-            break
-          case "toggleCodeBlock":
-            chain.toggleCodeBlock().run()
-            break
-          case "toggleQuote":
-            chain.toggleBlockquote().run()
-            break
-          case "insertHr":
-            chain.setHorizontalRule().run()
-            break
-          case "toggleBulletedList":
-            chain.toggleBulletList().run()
-            break
-          case "toggleNumberedList":
-            chain.toggleOrderedList().run()
-            break
-          case "toggleTaskList":
-            chain.toggleTaskList().run()
-            break
-          case "indent":
-            chain.sinkListItem("listItem").run()
-            break
-          case "outdent":
-            chain.liftListItem("listItem").run()
-            break
-          case "undo":
-            chain.undo().run()
-            break
-          case "redo":
-            chain.redo().run()
-            break
-          case "insertLink":
-            ed.commands.insertYabaInlineLink({ text: cmd.text, url: cmd.url })
-            break
-          case "updateLink":
-            ed.commands.updateYabaInlineLinkAt({
-              text: cmd.text,
-              url: cmd.url,
-              pos: cmd.pos,
-            })
-            break
-          case "removeLink":
-            ed.commands.removeYabaInlineLinkAt({ pos: cmd.pos })
-            break
-          case "insertMention":
-            ed.commands.insertYabaInlineMention({
-              text: cmd.text,
-              bookmarkId: cmd.bookmarkId,
-              bookmarkKindCode: cmd.bookmarkKindCode,
-              bookmarkLabel: cmd.bookmarkLabel,
-            })
-            break
-          case "updateMention":
-            ed.commands.updateYabaInlineMentionAt({
-              text: cmd.text,
-              bookmarkId: cmd.bookmarkId,
-              bookmarkKindCode: cmd.bookmarkKindCode,
-              bookmarkLabel: cmd.bookmarkLabel,
-              pos: cmd.pos,
-            })
-            break
-          case "removeMention":
-            ed.commands.removeYabaInlineMentionAt({ pos: cmd.pos })
-            break
-          case "insertInlineMath":
-            insertInlineMathKeepingCaretAfterNode(ed, cmd.latex)
-            break
-          case "insertBlockMath":
-            ed.commands.insertBlockMath({ latex: cmd.latex })
-            break
-          case "updateInlineMath":
-            ed.commands.updateInlineMath({ latex: cmd.latex, pos: cmd.pos })
-            break
-          case "updateBlockMath":
-            ed.commands.updateBlockMath({ latex: cmd.latex, pos: cmd.pos })
-            break
-          case "insertTable": {
-            const rows = Math.max(1, Math.min(20, Math.floor(cmd.rows)))
-            const cols = Math.max(1, Math.min(20, Math.floor(cmd.cols)))
-            ed.commands.insertTable({
-              rows,
-              cols,
-              withHeaderRow: cmd.withHeaderRow ?? false,
-            })
-            break
-          }
-          case "insertImage":
-            ed.commands.setImage({ src: resolveImageSrcForEditor(cmd.src) })
-            break
-          case "addRowBefore":
-            ed.commands.addRowBefore()
-            break
-          case "addRowAfter":
-            ed.commands.addRowAfter()
-            break
-          case "deleteRow":
-            ed.commands.deleteRow()
-            break
-          case "addColumnBefore":
-            ed.commands.addColumnBefore()
-            break
-          case "addColumnAfter":
-            ed.commands.addColumnAfter()
-            break
-          case "deleteColumn":
-            ed.commands.deleteColumn()
-            break
-          case "insertText": {
-            const { from, to } = ed.state.selection
-            const tr = ed.state.tr.insertText(cmd.text, from, to)
-            ed.view.dispatch(tr)
-            break
-          }
-          case "setHeading": {
-            const level = Math.min(6, Math.max(1, Math.floor(cmd.level))) as 1 | 2 | 3 | 4 | 5 | 6
-            chain.setHeading({ level }).run()
-            break
-          }
-          case "setTextHighlight": {
-            const role = (cmd.colorRole || "YELLOW").toUpperCase()
-            if (role === "NONE") {
-              ed.chain().unsetHighlight().run()
-            } else {
-              ed.chain().setHighlight({ color: role }).run()
-            }
-            break
-          }
-          case "unsetTextHighlight":
-            ed.chain().unsetHighlight().run()
-            break
-          case "toggleTextHighlight":
-            ed.chain().toggleHighlight().run()
-            break
-        }
+      withPreparedEditorSelection((c) => {
+        const page = document.body?.dataset.yabaPage
+        runEditorDispatch(c.editor, cmd, lastAssetsBaseUrl, page)
       })
     },
     applyAnnotationToSelection: (annotationId: string) => {
-      const ed = editorInstance
-      if (!ed) return false
-      const { from, to } = ed.state.selection
-      if (from === to) return false
-      return ed.chain().focus().setMark(YabaAnnotationMarkName, { id: annotationId }).run()
+      const c = crepeInstance
+      if (!c) return false
+      return applyAnnotationLinkToSelection(c.editor, annotationId)
     },
-    removeAnnotationFromDocument: (annotationId: string) =>
-      removeAnnotationMarksWithId(editorInstance, annotationId),
+    removeAnnotationFromDocument: (annotationId: string) => {
+      const c = crepeInstance
+      if (!c) return 0
+      const before = c.getMarkdown()
+      const after = stripAnnotationLinksForId(before, annotationId)
+      if (after === before) return 0
+      c.editor.action(replaceAll(after, true))
+      return 1
+    },
     navigateToTocItem: (id: string, _extrasJson?: string | null) => {
-      const ed = editorInstance
-      if (!ed) return
-      const nodePos = findHeadingDocPosForTocItemId(ed, id)
+      const view = getBridgeView()
+      if (!view) return
+      const nodePos = findHeadingDocPosForTocItemId(view, id)
       if (nodePos == null) return
       try {
-        const docSize = ed.state.doc.content.size
-        const headingEl = findHeadingElementForTocItemId(ed, id)
+        const docSize = view.state.doc.content.size
+        const headingEl = findHeadingElementForTocItemId(view, id)
         queueMicrotask(() => {
           if (headingEl) {
-            scrollHeadingIntoEditorView(ed, headingEl)
+            scrollHeadingIntoEditorView(view, headingEl)
           }
         })
         const inside = Math.min(nodePos + 1, docSize)
-        const sel = TextSelection.create(ed.state.doc, inside)
-        ed.view.dispatch(ed.state.tr.setSelection(sel))
+        const sel = TextSelection.create(view.state.doc, inside)
+        view.dispatch(view.state.tr.setSelection(sel))
       } catch {
         /* ignore */
       }
     },
     exportMarkdown: () => {
-      const ed = editorInstance
-      if (!ed) return ""
+      const c = crepeInstance
+      if (!c) return ""
       try {
-        return exportMarkdownFromEditor(ed)
+        return exportMarkdownFromCrepe(c, lastAssetsBaseUrl)
       } catch {
         return ""
       }
     },
     startPdfExportJob: (jobId: string) => {
-      const ed = editorInstance
-      if (!ed || !jobId.trim()) return
+      const c = crepeInstance
+      if (!c || !jobId.trim()) return
       try {
-        startEditorPdfExportJob(ed, jobId)
+        startEditorPdfExportJob(c, jobId)
       } catch {
-        /* startEditorPdfExportJob posts errors to the host */
+        /* handled inside */
       }
     },
   }
 
-  wireDefaultMarkdownClipboard(editor)
   applyReaderPreferences()
 
   const page = document.body?.dataset.yabaPage

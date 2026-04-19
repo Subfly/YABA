@@ -16,7 +16,7 @@
 		96D262F72E6CA6C4007F4285 /* YABA_Icon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 96D262F32E6CA6C4007F4285 /* YABA_Icon.icon */; };
 		96D262F82E6CA6C4007F4285 /* YABA_Icon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 96D262F32E6CA6C4007F4285 /* YABA_Icon.icon */; };
 		96D262F92E6CA6C4007F4285 /* YABA_Icon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 96D262F32E6CA6C4007F4285 /* YABA_Icon.icon */; };
-		96DC011E2F953874005760E3 /* WebComponents in Resources */ = {isa = PBXBuildFile; fileRef = 96DC011D2F953873005760E3 /* WebComponents */; };
+		96DC37F22F9554D2005760E3 /* WebComponents in Resources */ = {isa = PBXBuildFile; fileRef = 96DC37F12F9554D2005760E3 /* WebComponents */; };
 		96EA39732E56380700B8411D /* YABAKeyboard.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 96EA396C2E56380700B8411D /* YABAKeyboard.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		96EA39BD2E58EB8F00B8411D /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96EA39BC2E58EB8F00B8411D /* WidgetKit.framework */; };
 		96EA39BF2E58EB8F00B8411D /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96EA39BE2E58EB8F00B8411D /* SwiftUI.framework */; };
@@ -103,7 +103,7 @@
 		96A8DFC22DB2F5A500A47601 /* YABA.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YABA.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		96A8E0AE2DB5CAFF00A47601 /* YABAShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = YABAShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		96D262F32E6CA6C4007F4285 /* YABA_Icon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = YABA_Icon.icon; sourceTree = "<group>"; };
-		96DC011D2F953873005760E3 /* WebComponents */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WebComponents; path = ../../../WebComponents; sourceTree = "<group>"; };
+		96DC37F12F9554D2005760E3 /* WebComponents */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WebComponents; path = "../Extensions/yaba-web-components/WebComponents"; sourceTree = "<group>"; };
 		96EA396C2E56380700B8411D /* YABAKeyboard.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = YABAKeyboard.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		96EA39BB2E58EB8E00B8411D /* YABAWidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = YABAWidgetsExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		96EA39BC2E58EB8F00B8411D /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = /System/Library/Frameworks/WidgetKit.framework; sourceTree = "<absolute>"; };
@@ -365,7 +365,7 @@
 		96A8DFB92DB2F5A500A47601 = {
 			isa = PBXGroup;
 			children = (
-				96DC011D2F953873005760E3 /* WebComponents */,
+				96DC37F12F9554D2005760E3 /* WebComponents */,
 				967B9A0D2DD80CFA00181AA1 /* Frameworks */,
 				96A8DFC32DB2F5A500A47601 /* Products */,
 				96A8DFC42DB2F5A500A47601 /* YABA */,
@@ -615,7 +615,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				96DC011E2F953874005760E3 /* WebComponents in Resources */,
+				96DC37F22F9554D2005760E3 /* WebComponents in Resources */,
 				96D262F62E6CA6C4007F4285 /* YABA_Icon.icon in Resources */,
 				967B9A5B2DD8D68D00181AA1 /* YABAStatusMenuItem.app in Resources */,
 			);

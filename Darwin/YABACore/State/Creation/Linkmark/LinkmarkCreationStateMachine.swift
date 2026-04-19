@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 @MainActor
 public final class LinkmarkCreationStateMachine: YabaBaseObservableState<LinkmarkCreationUIState>, YabaScreenStateMachine {
@@ -55,9 +56,11 @@ public final class LinkmarkCreationStateMachine: YabaBaseObservableState<Linkmar
         case .onClearDescription:
             apply { $0.bookmarkDescription = "" }
         case .onApplyFromMetadata:
-            apply {
-                if let t = $0.metadataTitle, !t.isEmpty { $0.label = t }
-                if let d = $0.metadataDescription, !d.isEmpty { $0.bookmarkDescription = d }
+            withAnimation {
+                apply {
+                    if let t = $0.metadataTitle, !t.isEmpty { $0.label = t }
+                    if let d = $0.metadataDescription, !d.isEmpty { $0.bookmarkDescription = d }
+                }
             }
         case .onRefetch:
             await runLinkFetch()

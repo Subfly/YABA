@@ -43,7 +43,7 @@ body {
 /* Note editor: transparent shell (Compose draws the surface); reader CSS vars color TipTap (same pipeline as viewer). */
 body[data-yaba-page="editor"] {
   background: transparent;
-  /* Avoid stray inherited text color outside the scroll column; content uses --yaba-reader-on-bg in tiptap-styles. */
+  /* Avoid stray inherited text color outside the scroll column; content uses --yaba-reader-on-bg in Crepe/Milkdown styles. */
   color: transparent;
 }
 

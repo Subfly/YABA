@@ -995,7 +995,14 @@
       }
     },
     "Bookmark Creation Apply From Metadata Title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apply from Metadata"
+          }
+        }
+      }
     },
     "Bookmark Creation Clear Document Action" : {
 
@@ -1100,25 +1107,74 @@
       }
     },
     "Bookmark Creation Metadata Audio URL Label" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Audio URL"
+          }
+        }
+      }
     },
     "Bookmark Creation Metadata Author Label" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Author"
+          }
+        }
+      }
     },
     "Bookmark Creation Metadata Date Label" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Creation Date"
+          }
+        }
+      }
     },
     "Bookmark Creation Metadata Description Label" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Description"
+          }
+        }
+      }
     },
     "Bookmark Creation Metadata Section Title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Metadata"
+          }
+        }
+      }
     },
     "Bookmark Creation Metadata Title Label" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Title"
+          }
+        }
+      }
     },
     "Bookmark Creation Metadata Video URL Label" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Video URL"
+          }
+        }
+      }
     },
     "Bookmark Creation Pick Another Document Action" : {
 
@@ -1136,10 +1192,14 @@
 
     },
     "Bookmark Creation Toggle Pinned Title" : {
-
-    },
-    "Bookmark Creation Toggle Private Title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pin Bookmark"
+          }
+        }
+      }
     },
     "Bookmark Description Placeholder" : {
       "comment" : "Placeholder to show when bookmark description is empty",
@@ -2391,9 +2451,6 @@
 
     },
     "Bookmark Item Action Share Label" : {
-
-    },
-    "Bookmark Item Action Toggle Private Label" : {
 
     },
     "Bookmark Item Share Unavailable Message" : {
@@ -34178,45 +34235,6 @@
           }
         }
       }
-    },
-    "Private Bookmark Confirm New Password Field" : {
-
-    },
-    "Private Bookmark Confirm Password Label" : {
-
-    },
-    "Private Bookmark Create Password Title" : {
-
-    },
-    "Private Bookmark Edit Password Title" : {
-
-    },
-    "Private Bookmark Enter Password Section Header" : {
-
-    },
-    "Private Bookmark Enter Password Title" : {
-
-    },
-    "Private Bookmark New Password Field" : {
-
-    },
-    "Private Bookmark Old Password Field" : {
-
-    },
-    "Private Bookmark Password Created Toast" : {
-
-    },
-    "Private Bookmark Password Label" : {
-
-    },
-    "Private Bookmark Password Updated Toast" : {
-
-    },
-    "Private Session Locked Toast" : {
-
-    },
-    "Private Session Unlocked Toast" : {
-
     },
     "Quick Bookmark" : {
       "shouldTranslate" : false

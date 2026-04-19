@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 @MainActor
 public final class DocmarkCreationStateMachine: YabaBaseObservableState<DocmarkCreationUIState>, YabaScreenStateMachine {
@@ -61,9 +62,11 @@ public final class DocmarkCreationStateMachine: YabaBaseObservableState<DocmarkC
         case let .onChangeSummary(s):
             apply { $0.summary = s }
         case .onApplyFromMetadata:
-            apply {
-                if let t = $0.metadataTitle, !t.isEmpty { $0.label = t }
-                if let d = $0.metadataDescription, !d.isEmpty { $0.bookmarkDescription = d }
+            withAnimation {
+                apply {
+                    if let t = $0.metadataTitle, !t.isEmpty { $0.label = t }
+                    if let d = $0.metadataDescription, !d.isEmpty { $0.bookmarkDescription = d }
+                }
             }
         case let .onSelectFolderId(id):
             apply {

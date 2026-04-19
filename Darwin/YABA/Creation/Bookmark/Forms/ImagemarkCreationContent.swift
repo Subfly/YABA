@@ -54,7 +54,6 @@ struct ImagemarkCreationContent: View {
                     formList(
                         mainTint: mainTint,
                         folderForPresentation: folderForPresentation,
-                        privatePinSheet: $privatePinSheet
                     )
                 }
             }

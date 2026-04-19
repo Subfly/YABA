@@ -1,0 +1,152 @@
+/* Crepe/Milkdown shell — YABA theme tokens from global.css / tiptap-styles parity */
+
+.yaba-editor-container .milkdown {
+  font-family: var(--yaba-font-family);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--yaba-on-bg);
+  caret-color: var(--yaba-cursor, var(--yaba-primary));
+  outline: none;
+  min-height: 100%;
+}
+
+body[data-yaba-page="viewer"] .yaba-editor-container .milkdown,
+body[data-yaba-page="editor"] .yaba-editor-container .milkdown {
+  font-size: var(--yaba-reader-font-size, 18px);
+  line-height: var(--yaba-reader-line-height, 1.6);
+  color: var(--yaba-reader-on-bg, var(--yaba-on-bg));
+}
+
+body[data-yaba-page="editor"] .yaba-editor-container .milkdown {
+  background: transparent;
+}
+
+.yaba-editor-container .milkdown .editor {
+  outline: none;
+  min-height: 100%;
+}
+
+/* Hide Crepe top chrome if any leaks */
+.yaba-editor-container .milkdown-top-bar {
+  display: none !important;
+}
+
+.yaba-editor-container .milkdown a {
+  color: var(--yaba-primary);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.yaba-editor-container .milkdown .yaba-inline-rich-item,
+.yaba-editor-container .milkdown a[href^="bookmark:"] {
+  display: inline;
+  color: var(--yaba-primary);
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+  cursor: pointer;
+}
+
+.yaba-editor-container .milkdown a[href^="bookmark:"]::after {
+  content: "";
+  display: inline-block;
+  width: 0.86em;
+  height: 0.86em;
+  margin-left: 0.22em;
+  vertical-align: -0.12em;
+  background-color: currentColor;
+  opacity: 0.75;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+  mask-image: url("../assets/arrow-turn-backward.svg");
+  -webkit-mask-image: url("../assets/arrow-turn-backward.svg");
+}
+
+.yaba-editor-container .milkdown a[href^="http"]::after,
+.yaba-editor-container .milkdown a[href^="https"]::after {
+  content: "";
+  display: inline-block;
+  width: 0.86em;
+  height: 0.86em;
+  margin-left: 0.22em;
+  vertical-align: -0.12em;
+  background-color: currentColor;
+  opacity: 0.75;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+  mask-image: url("../assets/link-square-01.svg");
+  -webkit-mask-image: url("../assets/link-square-01.svg");
+}
+
+/* Annotation links (read-it-later) */
+.yaba-editor-container .milkdown a[href^="yaba-annotation:"] {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  border-radius: 2px;
+}
+
+.yaba-annotation-decoration,
+.yaba-editor-container .milkdown a.yaba-annotation--YELLOW {
+  background: rgba(255, 235, 59, 0.35);
+}
+
+/* Color roles — match tiptap decoration palette */
+.yaba-highlight-yellow,
+.yaba-editor-container .milkdown a.yaba-annotation--YELLOW {
+  background: rgba(255, 235, 59, 0.35) !important;
+}
+.yaba-highlight-blue,
+.yaba-editor-container .milkdown a.yaba-annotation--BLUE {
+  background: rgba(33, 150, 243, 0.28) !important;
+}
+.yaba-highlight-green,
+.yaba-editor-container .milkdown a.yaba-annotation--GREEN {
+  background: rgba(76, 175, 80, 0.28) !important;
+}
+.yaba-highlight-red,
+.yaba-editor-container .milkdown a.yaba-annotation--RED {
+  background: rgba(244, 67, 54, 0.25) !important;
+}
+.yaba-highlight-pink,
+.yaba-editor-container .milkdown a.yaba-annotation--PINK {
+  background: rgba(233, 30, 99, 0.22) !important;
+}
+.yaba-highlight-purple,
+.yaba-editor-container .milkdown a.yaba-annotation--PURPLE {
+  background: rgba(156, 39, 176, 0.22) !important;
+}
+.yaba-highlight-orange,
+.yaba-editor-container .milkdown a.yaba-annotation--ORANGE {
+  background: rgba(255, 152, 0, 0.28) !important;
+}
+.yaba-highlight-cyan,
+.yaba-editor-container .milkdown a.yaba-annotation--CYAN {
+  background: rgba(0, 188, 212, 0.22) !important;
+}
+.yaba-highlight-teal,
+.yaba-editor-container .milkdown a.yaba-annotation--TEAL {
+  background: rgba(0, 150, 136, 0.22) !important;
+}
+.yaba-highlight-mint,
+.yaba-editor-container .milkdown a.yaba-annotation--MINT {
+  background: rgba(0, 200, 170, 0.2) !important;
+}
+.yaba-highlight-indigo,
+.yaba-editor-container .milkdown a.yaba-annotation--INDIGO {
+  background: rgba(63, 81, 181, 0.22) !important;
+}
+.yaba-highlight-brown,
+.yaba-editor-container .milkdown a.yaba-annotation--BROWN {
+  background: rgba(121, 85, 72, 0.25) !important;
+}
+.yaba-highlight-gray,
+.yaba-editor-container .milkdown a.yaba-annotation--GRAY {
+  background: rgba(158, 158, 158, 0.3) !important;
+}
