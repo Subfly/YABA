@@ -379,11 +379,6 @@ private struct BookmarkItemGridContent: View {
                 isAddedToSelection: isAddedToSelection
             )
                 .clipShape(RoundedRectangle(cornerRadius: 8))
-                .overlay(alignment: .topTrailing) {
-                    if !isInSelectionMode {
-                        BookmarkOverflowMenuButton(bookmark: bookmark, itemState: $itemState)
-                    }
-                }
             HStack {
                 Text(bookmark.label)
                     .font(.title3)
@@ -432,12 +427,17 @@ private struct BookmarkItemImage: View {
                             .frame(width: 50, height: 50)
                     }
                 case .grid:
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(height: 128)
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.clear)
                         .frame(maxWidth: .infinity)
-                        .clipped()
+                        .frame(height: 128)
+                        .overlay {
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                .clipped()
+                        }
                 }
             } else {
                 placeholder
@@ -491,6 +491,7 @@ private struct BookmarkItemImage: View {
         case .grid:
             RoundedRectangle(cornerRadius: 8)
                 .fill(folderTint.opacity(0.3))
+                .frame(maxWidth: .infinity)
                 .frame(height: 128)
                 .overlay {
                     YabaIconView(bundleKey: bookmark.kind.getIconName())

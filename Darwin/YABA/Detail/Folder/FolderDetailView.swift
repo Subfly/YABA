@@ -323,38 +323,52 @@ private struct FolderSearchableContent: View {
                 }
             }
         } else {
-            List {
-                if shouldSplitPinned {
-                    if !pinnedBookmarks.isEmpty {
-                        Section {
-                            ForEach(pinnedBookmarks) { bookmark in
+            if contentAppearance == .grid {
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 12) {
+                        if shouldSplitPinned {
+                            pinnedHeader
+                            LazyVGrid(columns: gridColumns, alignment: .leading, spacing: 12) {
+                                ForEach(pinnedBookmarks) { bookmark in
+                                    row(for: bookmark)
+                                }
+                            }
+                        }
+                        LazyVGrid(columns: gridColumns, alignment: .leading, spacing: 12) {
+                            ForEach(unpinnedBookmarks) { bookmark in
                                 row(for: bookmark)
                             }
-                        } header: {
-                            Label {
-                                Text("Pinned Bookmarks")
-                                    .font(.subheadline)
-                                    .fontWeight(.semibold)
-                            } icon: {
-                                YabaIconView(bundleKey: "pin")
-                                    .frame(width: 18, height: 18)
-                            }
-                            .foregroundStyle(.secondary)
                         }
                     }
-                    ForEach(unpinnedBookmarks) { bookmark in
-                        row(for: bookmark)
-                    }
-                } else {
-                    ForEach(unpinnedBookmarks) { bookmark in
-                        row(for: bookmark)
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
+                }
+            } else {
+                List {
+                    if shouldSplitPinned {
+                        if !pinnedBookmarks.isEmpty {
+                            Section {
+                                ForEach(pinnedBookmarks) { bookmark in
+                                    row(for: bookmark)
+                                }
+                            } header: {
+                                pinnedHeader
+                            }
+                        }
+                        ForEach(unpinnedBookmarks) { bookmark in
+                            row(for: bookmark)
+                        }
+                    } else {
+                        ForEach(unpinnedBookmarks) { bookmark in
+                            row(for: bookmark)
+                        }
                     }
                 }
+                .listRowSeparator(.hidden)
+                .listRowSpacing(contentAppearance == .list ? 0 : 8)
+                .scrollContentBackground(.hidden)
+                .listStyle(.sidebar)
             }
-            .listRowSeparator(.hidden)
-            .listRowSpacing(contentAppearance == .list ? 0 : 8)
-            .scrollContentBackground(.hidden)
-            .listStyle(.sidebar)
         }
     }
 
@@ -364,6 +378,22 @@ private struct FolderSearchableContent: View {
 
     private var shouldSplitPinned: Bool {
         !pinnedBookmarks.isEmpty
+    }
+
+    private var gridColumns: [GridItem] {
+        [GridItem(.adaptive(minimum: 160, maximum: 280), spacing: 12, alignment: .top)]
+    }
+
+    private var pinnedHeader: some View {
+        Label {
+            Text("Pinned Bookmarks")
+                .font(.subheadline)
+                .fontWeight(.semibold)
+        } icon: {
+            YabaIconView(bundleKey: "pin")
+                .frame(width: 18, height: 18)
+        }
+        .foregroundStyle(.secondary)
     }
 
     private func row(for bookmark: YabaBookmark) -> some View {

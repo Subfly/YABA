@@ -64,6 +64,22 @@ struct ContentAppearancePicker: View {
                     YabaIconView(bundleKey: ContentAppearance.card.getUIIconName())
                 }
             }
+            Button {
+                withAnimation {
+                    preferredContentAppearance = .grid
+                }
+            } label: {
+                Label {
+                    HStack {
+                        if preferredContentAppearance == .grid {
+                            YabaIconView(bundleKey: "tick-01")
+                        }
+                        Text(ContentAppearance.grid.getUITitle())
+                    }
+                } icon: {
+                    YabaIconView(bundleKey: ContentAppearance.grid.getUIIconName())
+                }
+            }
         } label: {
             HStack {
                 Label {

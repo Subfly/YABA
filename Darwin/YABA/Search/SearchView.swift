@@ -149,24 +149,43 @@ private struct SearchableContent: View {
                 }
             }
         } else {
-            List {
-                ForEach(bookmarks) { bookmark in
-                    BookmarkItemView(
-                        bookmark: bookmark,
-                        isInRecents: false,
-                        isSelected: false,
-                        isInSelectionMode: false,
-                        onNavigationCallback: onNavigationCallback
-                    )
-                    .listRowSeparator(.hidden)
+            if contentAppearance == .grid {
+                ScrollView {
+                    LazyVGrid(columns: gridColumns, alignment: .leading, spacing: 12) {
+                        ForEach(bookmarks) { bookmark in
+                            row(for: bookmark)
+                        }
+                    }
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
                 }
+                .scrollDismissesKeyboard(.immediately)
+            } else {
+                List {
+                    ForEach(bookmarks) { bookmark in
+                        row(for: bookmark)
+                            .listRowSeparator(.hidden)
+                    }
+                }
+                .listRowSpacing(contentAppearance == .list ? 0 : 8)
+                .scrollContentBackground(.hidden)
+                .listStyle(.sidebar)
+                .scrollDismissesKeyboard(.immediately)
             }
-            .listRowSpacing(contentAppearance == .list ? 0 : 8)
-            .scrollContentBackground(.hidden)
-            .listStyle(.sidebar)
-            #if !os(visionOS)
-            .scrollDismissesKeyboard(.immediately)
-            #endif
         }
+    }
+
+    private var gridColumns: [GridItem] {
+        [GridItem(.adaptive(minimum: 160, maximum: 280), spacing: 12, alignment: .top)]
+    }
+
+    private func row(for bookmark: YabaBookmark) -> some View {
+        BookmarkItemView(
+            bookmark: bookmark,
+            isInRecents: false,
+            isSelected: false,
+            isInSelectionMode: false,
+            onNavigationCallback: onNavigationCallback
+        )
     }
 }
