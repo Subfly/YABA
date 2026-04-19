@@ -35,33 +35,18 @@ struct BookmarkItemView: View {
     let onNavigationCallback: (BookmarkModel) -> Void
 
     var body: some View {
-        selectableContent
+        bookmarkInteractiveCore
+            .modifier(
+                BookmarkContextMenuModifier(
+                    bookmark: bookmark,
+                    isInSelectionMode: isInSelectionMode,
+                    itemState: $itemState
+                )
+            )
     }
 
     private var effectiveContentAppearance: ContentAppearance {
         isInRecents ? .list : contentAppearance
-    }
-
-    @ViewBuilder
-    private var selectableContent: some View {
-        HStack(alignment: effectiveContentAppearance == .list ? .center : .top) {
-            if isInSelectionMode {
-                YabaIconView(
-                    bundleKey: isSelected
-                        ? "checkmark-circle-01"
-                        : "circle"
-                )
-                .frame(width: 24, height: 24)
-                .foregroundStyle(bookmark.getFolderColor())
-            }
-            content
-        }
-    }
-
-    @ViewBuilder
-    private var content: some View {
-        bookmarkInteractiveCore
-            .modifier(BookmarkContextMenuModifier(bookmark: bookmark, itemState: $itemState))
     }
 
     private var bookmarkInteractiveCore: some View {
@@ -69,6 +54,8 @@ struct BookmarkItemView: View {
             bookmark: bookmark,
             contentAppearance: effectiveContentAppearance,
             cardSizing: cardSizing,
+            isAddedToSelection: isSelected,
+            isInSelectionMode: isInSelectionMode,
             itemState: $itemState
         )
         .modifier(BookmarkSheetsAndAlertsModifier(
@@ -84,19 +71,25 @@ struct BookmarkItemView: View {
 #if !KEYBOARD_EXTENSION
 private struct BookmarkContextMenuModifier: ViewModifier {
     let bookmark: BookmarkModel
+    let isInSelectionMode: Bool
 
     @Binding
     var itemState: BookmarkItemState
 
     func body(content: Content) -> some View {
-        content.contextMenu {
-            BookmarkOverflowMenuContent(bookmark: bookmark, itemState: $itemState)
+        if isInSelectionMode {
+            content
+        } else {
+            content.contextMenu {
+                BookmarkOverflowMenuContent(bookmark: bookmark, itemState: $itemState)
+            }
         }
     }
 }
 #else
 private struct BookmarkContextMenuModifier: ViewModifier {
     let bookmark: BookmarkModel
+    let isInSelectionMode: Bool
 
     @Binding
     var itemState: BookmarkItemState
@@ -113,6 +106,8 @@ private struct BookmarkItemBody: View {
     let bookmark: BookmarkModel
     let contentAppearance: ContentAppearance
     let cardSizing: CardImageSizing
+    let isAddedToSelection: Bool
+    let isInSelectionMode: Bool
 
     @Binding
     var itemState: BookmarkItemState
@@ -127,16 +122,36 @@ private struct BookmarkItemBody: View {
     private var mainContent: some View {
         switch contentAppearance {
         case .list:
-            BookmarkItemListContent(bookmark: bookmark, itemState: $itemState)
+            BookmarkItemListContent(
+                bookmark: bookmark,
+                isAddedToSelection: isAddedToSelection,
+                isInSelectionMode: isInSelectionMode,
+                itemState: $itemState
+            )
         case .card:
             switch cardSizing {
             case .big:
-                BookmarkItemCardBigContent(bookmark: bookmark, itemState: $itemState)
+                BookmarkItemCardBigContent(
+                    bookmark: bookmark,
+                    isAddedToSelection: isAddedToSelection,
+                    isInSelectionMode: isInSelectionMode,
+                    itemState: $itemState
+                )
             case .small:
-                BookmarkItemCardSmallContent(bookmark: bookmark, itemState: $itemState)
+                BookmarkItemCardSmallContent(
+                    bookmark: bookmark,
+                    isAddedToSelection: isAddedToSelection,
+                    isInSelectionMode: isInSelectionMode,
+                    itemState: $itemState
+                )
             }
         case .grid:
-            BookmarkItemGridContent(bookmark: bookmark, itemState: $itemState)
+            BookmarkItemGridContent(
+                bookmark: bookmark,
+                isAddedToSelection: isAddedToSelection,
+                isInSelectionMode: isInSelectionMode,
+                itemState: $itemState
+            )
         }
     }
 }
@@ -145,6 +160,8 @@ private struct BookmarkItemBody: View {
 
 private struct BookmarkItemListContent: View {
     let bookmark: BookmarkModel
+    let isAddedToSelection: Bool
+    let isInSelectionMode: Bool
 
     @Binding
     var itemState: BookmarkItemState
@@ -154,8 +171,13 @@ private struct BookmarkItemListContent: View {
     }
 
     var body: some View {
-        HStack(alignment: .center) {
-            BookmarkItemImage(bookmark: bookmark, contentAppearance: .list, cardSizing: .small)
+        let row = HStack(alignment: .center) {
+            BookmarkItemImage(
+                bookmark: bookmark,
+                contentAppearance: .list,
+                cardSizing: .small,
+                isAddedToSelection: isAddedToSelection
+            )
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             VStack(alignment: .leading) {
                 Text(bookmark.label)
@@ -176,61 +198,66 @@ private struct BookmarkItemListContent: View {
                     .foregroundStyle(.tertiary)
             }
         }
+        if isInSelectionMode {
+            row
+        } else {
+            row
         #if !KEYBOARD_EXTENSION
-        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-            Button {
-                itemState.shouldShowDeleteAlert = true
-            } label: {
-                VStack {
-                    YabaIconView(bundleKey: "delete-02")
-                    Text(LocalizedStringKey("Delete"))
+            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                Button {
+                    itemState.shouldShowDeleteAlert = true
+                } label: {
+                    VStack {
+                        YabaIconView(bundleKey: "delete-02")
+                        Text(LocalizedStringKey("Delete"))
+                    }
                 }
-            }
-            .tint(.red)
-            Button {
-                itemState.shouldShowEditSheet = true
-            } label: {
-                VStack {
-                    YabaIconView(bundleKey: "edit-02")
-                    Text(LocalizedStringKey("Edit"))
+                .tint(.red)
+                Button {
+                    itemState.shouldShowEditSheet = true
+                } label: {
+                    VStack {
+                        YabaIconView(bundleKey: "edit-02")
+                        Text(LocalizedStringKey("Edit"))
+                    }
                 }
-            }
-            .tint(.orange)
-            Button {
-                AllBookmarksManager.queueToggleBookmarkPinned(bookmarkId: bookmark.bookmarkId)
-            } label: {
-                VStack {
-                    YabaIconView(bundleKey: bookmark.isPinned ? "pin" : "pin-off")
-                    Text(LocalizedStringKey(pinActionLabelKey))
+                .tint(.orange)
+                Button {
+                    AllBookmarksManager.queueToggleBookmarkPinned(bookmarkId: bookmark.bookmarkId)
+                } label: {
+                    VStack {
+                        YabaIconView(bundleKey: bookmark.isPinned ? "pin" : "pin-off")
+                        Text(LocalizedStringKey(pinActionLabelKey))
+                    }
                 }
+                .tint(.yellow)
             }
-            .tint(.yellow)
-        }
-        .swipeActions(edge: .leading, allowsFullSwipe: false) {
-            Button {
-                itemState.shouldShowShareSheet = true
-            } label: {
-                Label {
-                    Text(LocalizedStringKey("Share"))
-                } icon: {
-                    YabaIconView(bundleKey: "share-03")
-                        .scaledToFit()
+            .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                Button {
+                    itemState.shouldShowShareSheet = true
+                } label: {
+                    Label {
+                        Text(LocalizedStringKey("Share"))
+                    } icon: {
+                        YabaIconView(bundleKey: "share-03")
+                            .scaledToFit()
+                    }
                 }
-            }
-            .tint(.indigo)
-            Button {
-                itemState.shouldShowMoveSheet = true
-            } label: {
-                Label {
-                    Text(LocalizedStringKey("Move"))
-                } icon: {
-                    YabaIconView(bundleKey: "arrow-move-up-right")
-                        .scaledToFit()
+                .tint(.indigo)
+                Button {
+                    itemState.shouldShowMoveSheet = true
+                } label: {
+                    Label {
+                        Text(LocalizedStringKey("Move"))
+                    } icon: {
+                        YabaIconView(bundleKey: "arrow-move-up-right")
+                            .scaledToFit()
+                    }
                 }
+                .tint(.teal)
             }
-            .tint(.teal)
-        }
         #endif
+        }
     }
 }
 
@@ -238,13 +265,20 @@ private struct BookmarkItemListContent: View {
 
 private struct BookmarkItemCardBigContent: View {
     let bookmark: BookmarkModel
+    let isAddedToSelection: Bool
+    let isInSelectionMode: Bool
 
     @Binding
     var itemState: BookmarkItemState
 
     var body: some View {
         VStack(alignment: .leading) {
-            BookmarkItemImage(bookmark: bookmark, contentAppearance: .card, cardSizing: .big)
+            BookmarkItemImage(
+                bookmark: bookmark,
+                contentAppearance: .card,
+                cardSizing: .big,
+                isAddedToSelection: isAddedToSelection
+            )
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             HStack {
                 if let data = bookmark.iconDataHolder, let img = UIImage(data: data) {
@@ -268,7 +302,9 @@ private struct BookmarkItemCardBigContent: View {
             HStack {
                 BookmarkTagsRow(bookmark: bookmark)
                 Spacer()
-                BookmarkOverflowMenuButton(bookmark: bookmark, itemState: $itemState)
+                if !isInSelectionMode {
+                    BookmarkOverflowMenuButton(bookmark: bookmark, itemState: $itemState)
+                }
             }
         }
     }
@@ -276,6 +312,8 @@ private struct BookmarkItemCardBigContent: View {
 
 private struct BookmarkItemCardSmallContent: View {
     let bookmark: BookmarkModel
+    let isAddedToSelection: Bool
+    let isInSelectionMode: Bool
 
     @Binding
     var itemState: BookmarkItemState
@@ -283,7 +321,12 @@ private struct BookmarkItemCardSmallContent: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack(alignment: .center) {
-                BookmarkItemImage(bookmark: bookmark, contentAppearance: .card, cardSizing: .small)
+                BookmarkItemImage(
+                    bookmark: bookmark,
+                    contentAppearance: .card,
+                    cardSizing: .small,
+                    isAddedToSelection: isAddedToSelection
+                )
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                 Text(bookmark.label)
                     .font(.title2)
@@ -308,7 +351,9 @@ private struct BookmarkItemCardSmallContent: View {
                             .scaledToFit()
                             .frame(width: 20, height: 20)
                     }
-                    BookmarkOverflowMenuButton(bookmark: bookmark, itemState: $itemState)
+                    if !isInSelectionMode {
+                        BookmarkOverflowMenuButton(bookmark: bookmark, itemState: $itemState)
+                    }
                 }
             }
         }
@@ -319,16 +364,25 @@ private struct BookmarkItemCardSmallContent: View {
 
 private struct BookmarkItemGridContent: View {
     let bookmark: BookmarkModel
+    let isAddedToSelection: Bool
+    let isInSelectionMode: Bool
 
     @Binding
     var itemState: BookmarkItemState
 
     var body: some View {
         VStack(spacing: 0) {
-            BookmarkItemImage(bookmark: bookmark, contentAppearance: .grid, cardSizing: .small)
+            BookmarkItemImage(
+                bookmark: bookmark,
+                contentAppearance: .grid,
+                cardSizing: .small,
+                isAddedToSelection: isAddedToSelection
+            )
                 .clipShape(RoundedRectangle(cornerRadius: 8))
                 .overlay(alignment: .topTrailing) {
-                    BookmarkOverflowMenuButton(bookmark: bookmark, itemState: $itemState)
+                    if !isInSelectionMode {
+                        BookmarkOverflowMenuButton(bookmark: bookmark, itemState: $itemState)
+                    }
                 }
             HStack {
                 Text(bookmark.label)
@@ -349,43 +403,52 @@ private struct BookmarkItemImage: View {
     let bookmark: BookmarkModel
     let contentAppearance: ContentAppearance
     let cardSizing: CardImageSizing
+    let isAddedToSelection: Bool
 
     var body: some View {
-        if let imageData = bookmark.imageDataHolder, let image = UIImage(data: imageData) {
-            switch contentAppearance {
-            case .list:
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 50, height: 50)
-            case .card:
-                switch cardSizing {
-                case .big:
-                    RoundedRectangle(cornerRadius: 8)
-                        .frame(height: 150)
-                        .overlay {
-                            Image(uiImage: image)
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .clipped()
-                        }
-                case .small:
+        Group {
+            if let imageData = bookmark.imageDataHolder, let image = UIImage(data: imageData) {
+                switch contentAppearance {
+                case .list:
                     Image(uiImage: image)
                         .resizable()
                         .scaledToFill()
                         .frame(width: 50, height: 50)
+                case .card:
+                    switch cardSizing {
+                    case .big:
+                        RoundedRectangle(cornerRadius: 8)
+                            .frame(height: 150)
+                            .overlay {
+                                Image(uiImage: image)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .clipped()
+                            }
+                    case .small:
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 50, height: 50)
+                    }
+                case .grid:
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(height: 128)
+                        .frame(maxWidth: .infinity)
+                        .clipped()
                 }
-            case .grid:
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(height: 128)
-                    .frame(maxWidth: .infinity)
-                    .clipped()
+            } else {
+                placeholder
             }
-        } else {
-            placeholder
         }
+        .overlay {
+            if isAddedToSelection {
+                selectionOverlay
+            }
+        }
+        .animation(.smooth, value: isAddedToSelection)
     }
 
     @ViewBuilder
@@ -436,6 +499,17 @@ private struct BookmarkItemImage: View {
                         .frame(width: 48, height: 48)
                 }
         }
+    }
+
+    private var selectionOverlay: some View {
+        let folderTint = bookmark.getFolderColor()
+        return RoundedRectangle(cornerRadius: 8)
+            .fill(folderTint.opacity(0.75))
+            .overlay {
+                YabaIconView(bundleKey: "checkmark-circle-02")
+                    .foregroundStyle(.white)
+                    .frame(width: 30, height: 30)
+            }
     }
 }
 
