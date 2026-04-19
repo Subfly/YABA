@@ -387,7 +387,24 @@ private struct BookmarkItemGridContent: View {
                     .multilineTextAlignment(.leading)
                 Spacer()
             }
-            .padding()
+            .padding(.horizontal)
+            .padding(.top)
+            if let desc = bookmark.bookmarkDescription, !desc.isEmpty {
+                HStack {
+                    Text(desc)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                    Spacer()
+                }
+                .padding(.horizontal)
+                .padding(.top, 4)
+                .padding(.bottom)
+            }
+        }
+        .background {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(.thinMaterial)
         }
     }
 }
@@ -672,6 +689,7 @@ private struct BookmarkOverflowMenuContent: View {
             }
         }
         .tint(.indigo)
+        Divider()
         Button(role: .destructive) {
             itemState.shouldShowDeleteAlert = true
         } label: {
