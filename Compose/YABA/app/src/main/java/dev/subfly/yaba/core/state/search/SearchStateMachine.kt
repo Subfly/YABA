@@ -5,7 +5,6 @@ import dev.subfly.yaba.core.model.utils.BookmarkSearchFilters
 import dev.subfly.yaba.core.model.utils.SortOrderType
 import dev.subfly.yaba.core.model.utils.SortType
 import dev.subfly.yaba.core.preferences.SettingsStores
-import dev.subfly.yaba.core.security.PrivateBookmarkSessionGuard
 import dev.subfly.yaba.core.preferences.UserPreferences
 import dev.subfly.yaba.core.state.base.BaseStateMachine
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,7 +21,6 @@ private data class FilterParams(
     val query: String,
     val folderIds: Set<String>,
     val tagIds: Set<String>,
-    val unlocked: Boolean,
 )
 
 class SearchStateMachine :
@@ -34,8 +32,6 @@ class SearchStateMachine :
     private val queryFlow = MutableStateFlow("")
     private val selectedFolderIdsFlow = MutableStateFlow<Set<String>>(emptySet())
     private val selectedTagIdsFlow = MutableStateFlow<Set<String>>(emptySet())
-    private val sessionUnlockedFlow = PrivateBookmarkSessionGuard.isUnlocked
-
     override fun onEvent(event: SearchEvent) {
         when (event) {
             SearchEvent.OnInit -> onInit()
@@ -60,12 +56,10 @@ class SearchStateMachine :
                 queryFlow,
                 selectedFolderIdsFlow,
                 selectedTagIdsFlow,
-                sessionUnlockedFlow,
-            ) { prefs, query, folderIds, tagIds, unlocked ->
-                FilterParams(prefs, query, folderIds, tagIds, unlocked)
+            ) { prefs, query, folderIds, tagIds ->
+                FilterParams(prefs, query, folderIds, tagIds)
             }.flatMapLatest { params ->
                 updateState { it.copy(isLoading = true, query = params.query) }
-                val excludePrivate = !params.unlocked && params.query.isNotEmpty()
                 AllBookmarksManager.searchBookmarksFlow(
                     query = params.query,
                     filters = BookmarkSearchFilters(
@@ -74,7 +68,6 @@ class SearchStateMachine :
                     ),
                     sortType = params.prefs.preferredBookmarkSorting,
                     sortOrder = params.prefs.preferredBookmarkSortOrder,
-                    excludePrivate = excludePrivate,
                 ).map { bookmarks ->
                     SearchUIState(
                         query = params.query,

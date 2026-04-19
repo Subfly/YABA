@@ -23,7 +23,6 @@ public struct DocmarkCreationUIState: Sendable {
     public var metadataDate: String?
     public var bookmarkAppearance: BookmarkAppearance
     public var cardImageSizing: CardImageSizing
-    public var isPrivate: Bool
     public var isPinned: Bool
     public var isSaving: Bool
     public var lastError: String?
@@ -46,7 +45,6 @@ public struct DocmarkCreationUIState: Sendable {
         metadataDate: String? = nil,
         bookmarkAppearance: BookmarkAppearance = .list,
         cardImageSizing: CardImageSizing = .small,
-        isPrivate: Bool = false,
         isPinned: Bool = false,
         isSaving: Bool = false,
         lastError: String? = nil
@@ -68,7 +66,6 @@ public struct DocmarkCreationUIState: Sendable {
         self.metadataDate = metadataDate
         self.bookmarkAppearance = bookmarkAppearance
         self.cardImageSizing = cardImageSizing
-        self.isPrivate = isPrivate
         self.isPinned = isPinned
         self.isSaving = isSaving
         self.lastError = lastError

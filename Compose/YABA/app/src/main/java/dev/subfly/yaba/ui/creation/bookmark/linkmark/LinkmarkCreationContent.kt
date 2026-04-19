@@ -55,8 +55,6 @@ import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.ResultStoreKeys
-import dev.subfly.yaba.util.rememberPrivateBookmarkCreationToggle
-
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun LinkmarkCreationContent(bookmarkId: String?, initialUrl: String? = null) {
@@ -66,10 +64,6 @@ fun LinkmarkCreationContent(bookmarkId: String?, initialUrl: String? = null) {
 
     val vm = viewModel { LinkmarkCreationVM() }
     val state by vm.state.collectAsStateWithLifecycle()
-
-    val onPrivateToggle = rememberPrivateBookmarkCreationToggle {
-        vm.onEvent(LinkmarkCreationEvent.OnTogglePrivate)
-    }
 
     val linkmarkToastMessages =
             LinkmarkCreationToastMessages(
@@ -249,9 +243,7 @@ fun LinkmarkCreationContent(bookmarkId: String?, initialUrl: String? = null) {
                             )
                         },
                         selectedFolder = state.selectedFolder,
-                        isPrivate = state.isPrivate,
                         isPinned = state.isPinned,
-                        onPrivateToggle = onPrivateToggle,
                         onPinToggle = { vm.onEvent(LinkmarkCreationEvent.OnTogglePinned) },
                         enabled = state.isLoading.not(),
                         labelPlaceholder = R.string.create_bookmark_title_placeholder,

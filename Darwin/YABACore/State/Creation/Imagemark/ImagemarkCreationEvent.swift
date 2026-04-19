@@ -23,7 +23,6 @@ public enum ImagemarkCreationEvent: Sendable {
     case onSelectFolderId(String?)
     case onSelectTagIds([String])
     case onSave
-    case onTogglePrivate
     case onTogglePinned
 
     case create(
@@ -31,7 +30,6 @@ public enum ImagemarkCreationEvent: Sendable {
         folderId: String,
         label: String,
         bookmarkDescription: String?,
-        isPrivate: Bool,
         isPinned: Bool,
         tagIds: [String]
     )

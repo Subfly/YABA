@@ -28,7 +28,6 @@ public enum LinkmarkCreationEvent: Sendable {
     case onConverterSucceeded(WebConverterResult)
     case onConverterFailed(errorMessage: String)
     case onSave
-    case onTogglePrivate
     case onTogglePinned
 
     /// One-shot create/update via direct values (interop).
@@ -37,7 +36,6 @@ public enum LinkmarkCreationEvent: Sendable {
         folderId: String,
         label: String,
         bookmarkDescription: String?,
-        isPrivate: Bool,
         isPinned: Bool,
         tagIds: [String],
         url: String,

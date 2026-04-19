@@ -54,7 +54,6 @@ class LinkmarkCreationStateMachine :
             is LinkmarkCreationEvent.OnSelectFolder -> onSelectFolder(event)
             is LinkmarkCreationEvent.OnSelectTags -> onSelectTags(event)
             is LinkmarkCreationEvent.OnSave -> onSave(event)
-            LinkmarkCreationEvent.OnTogglePrivate -> onTogglePrivate()
             LinkmarkCreationEvent.OnTogglePinned -> onTogglePinned()
             LinkmarkCreationEvent.OnClearLabel -> onClearLabel()
             LinkmarkCreationEvent.OnClearDescription -> onClearDescription()
@@ -104,7 +103,6 @@ class LinkmarkCreationStateMachine :
                             selectedTags = existing.tags,
                             editingLinkmark = existing,
                             lastFetchedUrl = existing.url,
-                            isPrivate = existing.isPrivate,
                             isPinned = existing.isPinned,
                         )
                     }
@@ -356,10 +354,6 @@ class LinkmarkCreationStateMachine :
         }
     }
 
-    private fun onTogglePrivate() {
-        updateState { it.copy(isPrivate = !it.isPrivate) }
-    }
-
     private fun onTogglePinned() {
         updateState { it.copy(isPinned = !it.isPinned) }
     }
@@ -446,7 +440,6 @@ class LinkmarkCreationStateMachine :
                         kind = BookmarkKind.LINK,
                         label = title,
                         description = state.description.ifBlank { null },
-                        isPrivate = state.isPrivate,
                         isPinned = state.isPinned,
                         previewImageBytes = null,
                         previewImageExtension = null,
@@ -487,7 +480,6 @@ class LinkmarkCreationStateMachine :
                         kind = BookmarkKind.LINK,
                         label = title,
                         description = state.description.ifBlank { null },
-                        isPrivate = state.isPrivate,
                         isPinned = state.isPinned,
                         tagIds = state.selectedTags.map { it.id },
                         previewImageBytes = state.imageData,

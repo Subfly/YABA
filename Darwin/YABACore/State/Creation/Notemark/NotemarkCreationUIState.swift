@@ -15,7 +15,6 @@ public struct NotemarkCreationUIState: Sendable {
     public var documentJson: String
     public var bookmarkAppearance: BookmarkAppearance
     public var cardImageSizing: CardImageSizing
-    public var isPrivate: Bool
     public var isPinned: Bool
     public var isSaving: Bool
     public var lastError: String?
@@ -30,7 +29,6 @@ public struct NotemarkCreationUIState: Sendable {
         documentJson: String = "",
         bookmarkAppearance: BookmarkAppearance = .list,
         cardImageSizing: CardImageSizing = .small,
-        isPrivate: Bool = false,
         isPinned: Bool = false,
         isSaving: Bool = false,
         lastError: String? = nil
@@ -44,7 +42,6 @@ public struct NotemarkCreationUIState: Sendable {
         self.documentJson = documentJson
         self.bookmarkAppearance = bookmarkAppearance
         self.cardImageSizing = cardImageSizing
-        self.isPrivate = isPrivate
         self.isPinned = isPinned
         self.isSaving = isSaving
         self.lastError = lastError

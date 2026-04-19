@@ -14,7 +14,6 @@ sealed interface BookmarkUiModel {
     val createdAt: Instant
     val editedAt: Instant
     val viewCount: Long
-    val isPrivate: Boolean
     val isPinned: Boolean
     /** Absolute file path for the bookmark's preview image, if available. */
     val localImagePath: String?

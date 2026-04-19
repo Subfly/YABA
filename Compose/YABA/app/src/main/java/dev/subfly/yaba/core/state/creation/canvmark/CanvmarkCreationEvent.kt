@@ -25,7 +25,5 @@ sealed class CanvmarkCreationEvent {
         val onErrorCallback: () -> Unit,
     ) : CanvmarkCreationEvent()
 
-    data object OnTogglePrivate : CanvmarkCreationEvent()
-
     data object OnTogglePinned : CanvmarkCreationEvent()
 }

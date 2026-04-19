@@ -1,6 +1,6 @@
 # YABA Web Components
 
-WebView-hosted components for YABA: TipTap editor, read-only viewer, and HTML-to-reader-HTML converter. Built with Vite 7, React 19, TipTap 3.20, and TypeScript.
+WebView-hosted components for YABA: **Milkdown Crepe** WYSIWYG editor, read-only viewer, and HTML→**Markdown** converter. Built with Vite 7, React 19, Milkdown 7.20, and TypeScript.
 
 ## Build
 
@@ -15,9 +15,9 @@ Output: `dist/editor.html`, `dist/viewer.html`, `dist/converter.html` plus JS an
 
 | File | Purpose |
 |------|---------|
-| `editor.html` | Full TipTap WYSIWYG editor (no visible toolbar; native buttons only) |
-| `viewer.html` | Read-only TipTap viewer for saved link content |
-| `converter.html` | Hidden utility page: DOMPurify → Readability → sanitized reader HTML |
+| `editor.html` | Crepe/Milkdown WYSIWYG editor (no visible toolbar; native buttons only) |
+| `viewer.html` | Read-only Milkdown viewer for saved link content |
+| `converter.html` | Hidden utility page: DOMPurify → Readability → Showdown Markdown |
 
 ## URL Parameters
 
@@ -52,27 +52,31 @@ viewer.html?platform=darwin&appearance=dark
 | `setAppearance(mode)` | `'auto'` \| `'light'` \| `'dark'` |
 | `setCursorColor(color)` | CSS color string |
 | `setEditable(isEditable)` | Toggle edit/read-only |
-| `setDocumentJson(documentJson, options?)` | Set content from TipTap/ProseMirror JSON string; `options.assetsBaseUrl` resolves `../assets/` paths in the JSON |
-| `getDocumentJson()` | Returns current document as JSON string |
-| `focus()` / `blur()` | Focus/blur editor |
+| `setDocumentJson(markdown, options?)` | Set content from a **Markdown** string (legacy method name); `options.assetsBaseUrl` resolves `../assets/` paths for display |
+| `getDocumentJson()` | Returns current document as **Markdown** string (legacy name) |
+| `setReaderHtml(html, options?)` | One-shot load: HTML is sanitized and converted to Markdown |
+| `focus()` / `unFocus()` | Focus/blur editor |
 | `dispatch(cmd)` | Run command; see below |
 
 ### Commands (`dispatch`)
 
 - `{ type: 'toggleBold' }`, `toggleItalic`, `toggleUnderline`, `toggleStrikethrough`, `toggleCode`
 - `{ type: 'toggleQuote' }`, `{ type: 'insertHr' }`
-- `{ type: 'toggleBulletedList' }`, `{ type: 'toggleNumberedList' }`
+- `{ type: 'toggleBulletedList' }`, `{ type: 'toggleNumberedList' }`, `{ type: 'toggleTaskList' }`
 - `{ type: 'indent' }`, `{ type: 'outdent' }`
 - `{ type: 'undo' }`, `{ type: 'redo' }`
-- `{ type: 'insertLink', url: string }`, `{ type: 'removeLink' }`
+- `insertLink`, `updateLink`, `removeLink`, `insertMention`, … (see `editor-command-payload.ts`)
+- **Subscript / superscript** commands are accepted but intentionally no-op (removed from product surface).
 
 ### `window.YabaConverterBridge` (converter.html)
 
 | Method | Description |
 |--------|-------------|
-| `sanitizeAndConvertHtmlToReaderHtml(input)` | `input: { html: string, baseUrl?: string }` → `{ documentJson: string, assets: [...] }` |
+| `sanitizeAndConvertHtmlToReaderHtml(input)` | `input: { html: string, baseUrl?: string }` → `{ markdown, documentJson, assets, linkMetadata }` |
 
-Uses DOMPurify for sanitization, Mozilla Readability for reader-mode extraction (strips nav/footer/clutter), then rewrites image URLs to `yaba-asset://` placeholders, parses with TipTap, and returns canonical document JSON plus asset descriptors for offline download.
+`documentJson` is deprecated and mirrors `markdown` for older hosts. Prefer `markdown`.
+
+Uses DOMPurify for sanitization, Mozilla Readability for reader-mode extraction (strips nav/footer/clutter), rewrites image URLs to `yaba-asset://` placeholders, converts article HTML to **Markdown** with Showdown, and returns asset descriptors for offline download.
 
 ## Native Integration
 
@@ -85,15 +89,14 @@ Native platforms call the bridge via their WebView evaluation APIs:
 
 Host apps inject `window.YabaNativeHost.postMessage(jsonString)` (Android can also expose `window.YabaAndroidHost` as an alias; see `src/bridge/yaba-native-host.ts`). The web layer emits structured JSON for shell load, ToC, editor/reader metrics, `bridgeReady`, taps (annotation, math, inline link/mention), autosave idle, and converter job completion—**not** via `console.info` or custom URL schemes.
 
-The `converter.html` page is loaded in a hidden WebView when link saving needs extraction. Call `sanitizeAndConvertHtmlToReaderHtml` after the page has loaded; native persists `documentJson` (not HTML).
+The `converter.html` page is loaded in a hidden WebView when link saving needs extraction. Call `sanitizeAndConvertHtmlToReaderHtml` after the page has loaded; native persists **Markdown** (`markdown` field).
 
 ## Features
 
-- **Images**: Inline images in HTML/JSON; `setDocumentJson` accepts `assetsBaseUrl` to resolve `../assets/` paths. Android WebView uses `allowFileAccess` for `file://` image URLs.
-- **Tables, task lists, code**: Native TipTap document model
-- **Code highlighting**: Syntax highlighting via lowlight
-- **Mathematics**: LaTeX math via KaTeX; inline `$...$` and block `$$...$$`; `dispatch({ type: 'insertInlineMath', latex: '...' })` / `{ type: 'insertBlockMath', latex: '...' }`
-- **Subscript / Superscript**: `dispatch({ type: 'toggleSubscript' })` / `{ type: 'toggleSuperscript' }`
+- **Images**: Inline images; `setDocumentJson` accepts `assetsBaseUrl` to resolve `../assets/` paths. Android WebView uses `allowFileAccess` for `file://` image URLs.
+- **Tables, task lists, code**: GFM-oriented Milkdown document model
+- **Mathematics**: LaTeX via Crepe/KaTeX; inline `$...$` and block `$$...$$`; `dispatch({ type: 'insertInlineMath', latex: '...' })` / `{ type: 'insertBlockMath', latex: '...' }`
+- **Reader annotations**: `yaba-annotation:<id>` links in Markdown (viewer); **highlights** in the note editor use separate formatting (not the annotation pipeline).
 
 ## Follow-ups (Not in Scope)
 

@@ -8,7 +8,6 @@ import dev.subfly.yaba.core.icons.IconCategory
 import dev.subfly.yaba.core.model.annotation.ReadableSelectionDraft
 import dev.subfly.yaba.core.model.utils.FolderSelectionMode
 import dev.subfly.yaba.core.model.utils.YabaColor
-import dev.subfly.yaba.util.PrivateBookmarkPasswordReason
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
@@ -39,9 +38,6 @@ val creationNavigationConfig = SavedStateConfiguration {
             subclass(InlineMentionSheetRoute::class, InlineMentionSheetRoute.serializer())
             subclass(InlineMentionActionSheetRoute::class, InlineMentionActionSheetRoute.serializer())
             subclass(BookmarkSelectionRoute::class, BookmarkSelectionRoute.serializer())
-            subclass(BookmarkPasswordCreateRoute::class, BookmarkPasswordCreateRoute.serializer())
-            subclass(BookmarkPasswordEditRoute::class, BookmarkPasswordEditRoute.serializer())
-            subclass(BookmarkPasswordEntryRoute::class, BookmarkPasswordEntryRoute.serializer())
             subclass(EmptyCreationRoute::class, EmptyCreationRoute.serializer())
         }
     }
@@ -194,23 +190,6 @@ data class InlineMentionActionSheetRoute(
 data class BookmarkSelectionRoute(
     val routeId: String = Uuid.generateV4().toString(),
     val selectedBookmarkId: String? = null,
-) : NavKey
-
-@Serializable
-data class BookmarkPasswordCreateRoute(
-    val routeId: String = Uuid.generateV4().toString(),
-) : NavKey
-
-@Serializable
-data class BookmarkPasswordEditRoute(
-    val routeId: String = Uuid.generateV4().toString(),
-) : NavKey
-
-@Serializable
-data class BookmarkPasswordEntryRoute(
-    val routeId: String = Uuid.generateV4().toString(),
-    val bookmarkId: String? = null,
-    val reason: PrivateBookmarkPasswordReason = PrivateBookmarkPasswordReason.UNLOCK_SESSION,
 ) : NavKey
 
 @Serializable

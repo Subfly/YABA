@@ -41,7 +41,6 @@ class DocmarkCreationStateMachine :
             is DocmarkCreationEvent.OnSelectFolder -> onSelectFolder(event)
             is DocmarkCreationEvent.OnSelectTags -> onSelectTags(event)
             is DocmarkCreationEvent.OnSave -> onSave(event)
-            DocmarkCreationEvent.OnTogglePrivate -> onTogglePrivate()
             DocmarkCreationEvent.OnTogglePinned -> onTogglePinned()
             is DocmarkCreationEvent.OnWebInitialContentLoad -> onWebInitialContentLoad(event)
         }
@@ -76,7 +75,6 @@ class DocmarkCreationStateMachine :
                             selectedTags = existing.tags,
                             editingDocmark = existing,
                             docmarkType = existing.docmarkType,
-                            isPrivate = existing.isPrivate,
                             isPinned = existing.isPinned,
                         )
                     }
@@ -318,7 +316,6 @@ class DocmarkCreationStateMachine :
                         kind = BookmarkKind.FILE,
                         label = label,
                         description = state.description.ifBlank { null },
-                        isPrivate = state.isPrivate,
                         isPinned = state.isPinned,
                         tagIds = state.selectedTags.map { it.id },
                     )
@@ -338,7 +335,6 @@ class DocmarkCreationStateMachine :
                         kind = BookmarkKind.FILE,
                         label = label,
                         description = state.description.ifBlank { null },
-                        isPrivate = state.isPrivate,
                         isPinned = state.isPinned,
                         tagIds = state.selectedTags.map { it.id },
                         previewImageBytes = state.previewImageBytes,
@@ -376,10 +372,6 @@ class DocmarkCreationStateMachine :
                 event.onErrorCallback()
             }
         }
-    }
-
-    private fun onTogglePrivate() {
-        updateState { it.copy(isPrivate = !it.isPrivate) }
     }
 
     private fun onTogglePinned() {

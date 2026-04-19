@@ -25,7 +25,6 @@ internal fun BookmarkEntity.toPreviewUiModel(
     createdAt = createdAt.toInstant(),
     editedAt = editedAt.toInstant(),
     viewCount = viewCount,
-    isPrivate = isPrivate,
     isPinned = isPinned,
     localImagePath = localImagePath ?: this.localImagePath,
     localIconPath = localIconPath ?: this.localIconPath,

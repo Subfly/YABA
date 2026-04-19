@@ -6,10 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import dev.subfly.yaba.core.app.App
-import dev.subfly.yaba.core.security.PrivateBookmarkSessionGuard
 import dev.subfly.yaba.core.database.DatabaseProvider
 import dev.subfly.yaba.core.deeplink.DeepLinkManager
 import dev.subfly.yaba.core.deeplink.DeepLinkTarget
@@ -42,14 +39,6 @@ class MainActivity : ComponentActivity() {
         keepSplash = false
 
         handleDeepLink(intent)
-
-        lifecycle.addObserver(
-            LifecycleEventObserver { _, event ->
-                if (event == Lifecycle.Event.ON_STOP) {
-                    PrivateBookmarkSessionGuard.lock()
-                }
-            },
-        )
 
         setContent {
             App()

@@ -15,7 +15,6 @@ data class DocmarkUiModel(
     override val createdAt: Instant,
     override val editedAt: Instant,
     override val viewCount: Long = 0,
-    override val isPrivate: Boolean = false,
     override val isPinned: Boolean = false,
     val summary: String? = null,
     val metadataTitle: String? = null,

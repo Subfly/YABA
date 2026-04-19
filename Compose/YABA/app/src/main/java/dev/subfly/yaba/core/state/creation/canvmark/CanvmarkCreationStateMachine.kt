@@ -28,7 +28,6 @@ class CanvmarkCreationStateMachine :
             is CanvmarkCreationEvent.OnSelectFolder -> onSelectFolder(event)
             is CanvmarkCreationEvent.OnSelectTags -> onSelectTags(event)
             is CanvmarkCreationEvent.OnSave -> onSave(event)
-            CanvmarkCreationEvent.OnTogglePrivate -> onTogglePrivate()
             CanvmarkCreationEvent.OnTogglePinned -> onTogglePinned()
         }
     }
@@ -56,7 +55,6 @@ class CanvmarkCreationStateMachine :
                             selectedFolder = existing.parentFolder,
                             selectedTags = existing.tags,
                             editingCanvmark = existing,
-                            isPrivate = existing.isPrivate,
                             isPinned = existing.isPinned,
                         )
                     }
@@ -153,7 +151,6 @@ class CanvmarkCreationStateMachine :
                         kind = BookmarkKind.CANVAS,
                         label = label,
                         description = state.description.ifBlank { null },
-                        isPrivate = state.isPrivate,
                         isPinned = state.isPinned,
                         tagIds = state.selectedTags.map { it.id },
                     )
@@ -173,7 +170,6 @@ class CanvmarkCreationStateMachine :
                         kind = BookmarkKind.CANVAS,
                         label = label,
                         description = state.description.ifBlank { null },
-                        isPrivate = state.isPrivate,
                         isPinned = state.isPinned,
                         tagIds = state.selectedTags.map { it.id },
                         previewImageBytes = null,
@@ -195,10 +191,6 @@ class CanvmarkCreationStateMachine :
                 event.onErrorCallback()
             }
         }
-    }
-
-    private fun onTogglePrivate() {
-        updateState { it.copy(isPrivate = !it.isPrivate) }
     }
 
     private fun onTogglePinned() {

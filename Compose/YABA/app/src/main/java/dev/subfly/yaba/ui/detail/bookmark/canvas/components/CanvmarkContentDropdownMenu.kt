@@ -38,9 +38,6 @@ import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalDeletionDialogManager
-import dev.subfly.yaba.util.PrivateBookmarkPasswordReason
-import dev.subfly.yaba.util.rememberPrivateBookmarkProtectedAction
-import dev.subfly.yaba.util.rememberPrivateBookmarkToggleAction
 
 private data class CanvmarkDetailMenuAction(
     val key: String,
@@ -66,65 +63,55 @@ internal fun CanvmarkContentDropdownMenu(
     val appStateManager = LocalAppStateManager.current
     val deletionDialogManager = LocalDeletionDialogManager.current
 
-    val bookmark = state.bookmark
-    val runEdit = rememberPrivateBookmarkProtectedAction(
-        model = bookmark,
-        reason = PrivateBookmarkPasswordReason.EDIT_BOOKMARK,
-    ) {
-        val b = state.bookmark ?: return@rememberPrivateBookmarkProtectedAction
-        creationNavigator.add(CanvmarkCreationRoute(bookmarkId = b.id))
-        appStateManager.onShowCreationContent()
+    val runEdit = remember(state.bookmark?.id) {
+        {
+            state.bookmark?.let { b ->
+                creationNavigator.add(CanvmarkCreationRoute(bookmarkId = b.id))
+                appStateManager.onShowCreationContent()
+            }
+        }
     }
-    val runMove = rememberPrivateBookmarkProtectedAction(
-        model = bookmark,
-        reason = PrivateBookmarkPasswordReason.EDIT_BOOKMARK,
-    ) {
-        val b = state.bookmark ?: return@rememberPrivateBookmarkProtectedAction
-        creationNavigator.add(
-            FolderSelectionRoute(
-                mode = FolderSelectionMode.BOOKMARKS_MOVE,
-                contextFolderId = b.folderId,
-                contextBookmarkIds = listOf(b.id),
-            ),
-        )
-        appStateManager.onShowCreationContent()
+    val runMove = remember(state.bookmark?.id, state.bookmark?.folderId) {
+        {
+            state.bookmark?.let { b ->
+                creationNavigator.add(
+                    FolderSelectionRoute(
+                        mode = FolderSelectionMode.BOOKMARKS_MOVE,
+                        contextFolderId = b.folderId,
+                        contextBookmarkIds = listOf(b.id),
+                    ),
+                )
+                appStateManager.onShowCreationContent()
+            }
+        }
     }
-    val runPin = rememberPrivateBookmarkProtectedAction(
-        model = bookmark,
-        reason = PrivateBookmarkPasswordReason.EDIT_BOOKMARK,
-    ) {
-        val b = state.bookmark ?: return@rememberPrivateBookmarkProtectedAction
-        AllBookmarksManager.toggleBookmarkPinned(b.id)
+    val runPin = remember(state.bookmark?.id) {
+        {
+            state.bookmark?.let { b -> AllBookmarksManager.toggleBookmarkPinned(b.id) }
+        }
     }
-    val runRemindMe = rememberPrivateBookmarkProtectedAction(
-        model = bookmark,
-        reason = PrivateBookmarkPasswordReason.EDIT_BOOKMARK,
-    ) {
-        onShowRemindMePicker()
+    val runRemindMe = remember(onShowRemindMePicker) {
+        { onShowRemindMePicker() }
     }
-    val runCancelReminder = rememberPrivateBookmarkProtectedAction(
-        model = bookmark,
-        reason = PrivateBookmarkPasswordReason.EDIT_BOOKMARK,
-    ) {
-        onEvent(CanvmarkDetailEvent.OnCancelReminder)
+    val runCancelReminder = remember(onEvent) {
+        { onEvent(CanvmarkDetailEvent.OnCancelReminder) }
     }
-    val runDelete = rememberPrivateBookmarkProtectedAction(
-        model = bookmark,
-        reason = PrivateBookmarkPasswordReason.DELETE_BOOKMARK,
-    ) {
-        val b = state.bookmark ?: return@rememberPrivateBookmarkProtectedAction
-        deletionDialogManager.send(
-            DeletionState(
-                deletionType = DeletionType.BOOKMARK,
-                bookmarkToBeDeleted = b,
-                onConfirm = {
-                    onEvent(CanvmarkDetailEvent.OnDeleteBookmark)
-                    navigator.removeLastOrNull()
-                },
-            ),
-        )
+    val runDelete = remember(state.bookmark?.id) {
+        {
+            state.bookmark?.let { b ->
+                deletionDialogManager.send(
+                    DeletionState(
+                        deletionType = DeletionType.BOOKMARK,
+                        bookmarkToBeDeleted = b,
+                        onConfirm = {
+                            onEvent(CanvmarkDetailEvent.OnDeleteBookmark)
+                            navigator.removeLastOrNull()
+                        },
+                    ),
+                )
+            }
+        }
     }
-    val onPrivateToggle = rememberPrivateBookmarkToggleAction(bookmark)
 
     val editText = stringResource(R.string.edit)
     val moveText = stringResource(R.string.move)
@@ -135,7 +122,6 @@ internal fun CanvmarkContentDropdownMenu(
     val svgLabel = "SVG"
     val backgroundLabel = "Background"
     val deleteText = stringResource(R.string.delete)
-    val privateActionText = if (bookmark?.isPrivate == true) "Private" else "Not Private"
 
     val hasActiveReminder = state.reminderDateEpochMillis != null
 
@@ -284,33 +270,8 @@ internal fun CanvmarkContentDropdownMenu(
         DropdownMenuGroup(
             shapes = MenuDefaults.groupShape(index = 2, count = 3),
         ) {
-            if (bookmark != null) {
-                DropdownMenuItem(
-                    shapes = MenuDefaults.itemShape(0, 2),
-                    checked = false,
-                    onCheckedChange = {
-                        onDismissRequest()
-                        onPrivateToggle()
-                    },
-                    leadingIcon = {
-                        YabaIcon(
-                            name = if (bookmark.isPrivate) "circle-lock-02" else "circle-unlock-02",
-                            color = Color(YabaColor.RED.iconTintArgb()),
-                        )
-                    },
-                    text = {
-                        Text(
-                            text = privateActionText,
-                            color = Color(YabaColor.RED.iconTintArgb()),
-                        )
-                    },
-                )
-            }
             DropdownMenuItem(
-                shapes = MenuDefaults.itemShape(
-                    if (bookmark != null) 1 else 0,
-                    if (bookmark != null) 2 else 1,
-                ),
+                shapes = MenuDefaults.itemShape(0, 1),
                 checked = false,
                 onCheckedChange = {
                     onDismissRequest()

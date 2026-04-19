@@ -44,7 +44,6 @@ object ImagemarkManager {
             createdAt = Instant.fromEpochMilliseconds(bookmarkMetaData.createdAt),
             editedAt = Instant.fromEpochMilliseconds(bookmarkMetaData.editedAt),
             viewCount = bookmarkMetaData.viewCount,
-            isPrivate = bookmarkMetaData.isPrivate,
             isPinned = bookmarkMetaData.isPinned,
             summary = imageMetaData?.summary,
             localImagePath = localImageAbsolutePath,

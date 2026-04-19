@@ -35,21 +35,11 @@ object CoreConstants {
             const val ICON: String = "pin"
         }
 
-        object Private {
-            // Stable, reserved UUID for the default "Private" Tag.
-            const val ID: String = "31111111-1111-1111-1111-111111111113"
-
-            // Human-readable name, and a safe default icon name;
-            // UI may localize the name as needed.
-            const val NAME: String = "Private Tag Label"
-            const val ICON: String = "circle-lock-02"
-        }
-
         /**
          * Set of reserved tag IDs that are system tags. System tags cannot be truly deleted - they
          * self-heal.
          */
-        val SYSTEM_TAG_IDS: Set<String> = setOf(Pinned.ID, Private.ID)
+        val SYSTEM_TAG_IDS: Set<String> = setOf(Pinned.ID)
 
         /** Checks if a tag ID is a system tag. */
         fun isSystemTag(tagId: String): Boolean = tagId in SYSTEM_TAG_IDS
@@ -203,7 +193,6 @@ object CoreConstants {
         const val SHOW_MENU_BAR_ITEM = "showMenuBarItem" // mac / catalyst only
         const val USE_SIMPLIFIED_SHARE = "useSimplifiedShare" // share extension uses app-group
         const val PREVENT_DELETION_SYNC = "preventDeletionSync"
-        const val PRIVATE_BOOKMARK_PASSWORD_HASH = "privateBookmarkPasswordHash"
     }
 
     /**

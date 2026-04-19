@@ -192,13 +192,11 @@ private struct SelectTagsSelectableQueryList: View {
         let trimmed = trimmedSearch
         let excluded = excludedSortedIds
         let pinnedId = Constants.Tag.Pinned.id
-        let privateId = Constants.Tag.Private.id
 
         _selectableTags = Query(
             filter: #Predicate<TagModel> { tag in
                 !tag.isHidden
                     && tag.tagId != pinnedId
-                    && tag.tagId != privateId
                     && !excluded.contains(tag.tagId)
                     && (trimmed.isEmpty || tag.label.localizedStandardContains(trimmed))
             },

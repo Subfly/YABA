@@ -1,15 +1,9 @@
 package dev.subfly.yaba.ui.home.components
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.ui.res.stringResource
 import dev.subfly.yaba.R
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButton
@@ -33,8 +27,6 @@ import dev.subfly.yaba.core.model.utils.SortType
 internal fun HomeTopBar(
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior,
-    sessionUnlocked: Boolean,
-    onLockPrivateSessionClick: () -> Unit,
     onSearchClicked: () -> Unit,
     onSortingChanged: (SortType) -> Unit,
     onSortOrderChanged: (SortOrderType) -> Unit,
@@ -50,14 +42,6 @@ internal fun HomeTopBar(
             Text(text = stringResource(R.string.yaba))
         },
         actions = {
-            AnimatedVisibility(visible = sessionUnlocked) {
-                IconButton(
-                    onClick = onLockPrivateSessionClick,
-                    shapes = IconButtonDefaults.shapes(),
-                ) {
-                    YabaIcon(name = "circle-unlock-02")
-                }
-            }
             IconButton(
                 onClick = onSearchClicked,
                 shapes = IconButtonDefaults.shapes(),

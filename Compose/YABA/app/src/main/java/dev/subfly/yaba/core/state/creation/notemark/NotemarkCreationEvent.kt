@@ -25,7 +25,5 @@ sealed class NotemarkCreationEvent {
         val onErrorCallback: () -> Unit,
     ) : NotemarkCreationEvent()
 
-    data object OnTogglePrivate : NotemarkCreationEvent()
-
     data object OnTogglePinned : NotemarkCreationEvent()
 }

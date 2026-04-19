@@ -8,7 +8,6 @@ import dev.subfly.yaba.core.model.utils.SortOrderType
 import dev.subfly.yaba.core.model.utils.SortType
 import dev.subfly.yaba.core.preferences.SettingsStores
 import dev.subfly.yaba.core.preferences.UserPreferences
-import dev.subfly.yaba.core.security.PrivateBookmarkSessionGuard
 import dev.subfly.yaba.core.state.base.BaseStateMachine
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -22,7 +21,6 @@ private data class FolderDetailQueryParams(
     val folderId: String,
     val query: String,
     val prefs: UserPreferences,
-    val unlocked: Boolean,
 )
 
 class FolderDetailStateMachine :
@@ -59,10 +57,9 @@ class FolderDetailStateMachine :
                 folderIdFlow,
                 queryFlow,
                 preferencesStore.preferencesFlow,
-                PrivateBookmarkSessionGuard.isUnlocked,
-            ) { folderId, query, prefs, unlocked ->
+            ) { folderId, query, prefs ->
                 if (folderId == null) null
-                else FolderDetailQueryParams(folderId, query, prefs, unlocked)
+                else FolderDetailQueryParams(folderId, query, prefs)
             }.flatMapLatest { params ->
                 if (params == null) {
                     MutableStateFlow(FolderDetailUIState())
@@ -70,17 +67,14 @@ class FolderDetailStateMachine :
                     val folderId = params.folderId
                     val query = params.query
                     val prefs = params.prefs
-                    val unlocked = params.unlocked
                     updateState { it.copy(isLoading = true, query = query) }
 
-                    val excludePrivate = !unlocked && query.isNotEmpty()
                     val folderFlow = FolderManager.observeFolder(folderId)
                     val bookmarksFlow = AllBookmarksManager.searchBookmarksFlow(
                         query = query,
                         filters = BookmarkSearchFilters(folderIds = setOf(folderId)),
                         sortType = prefs.preferredBookmarkSorting,
                         sortOrder = prefs.preferredBookmarkSortOrder,
-                        excludePrivate = excludePrivate,
                     )
 
                     combine(

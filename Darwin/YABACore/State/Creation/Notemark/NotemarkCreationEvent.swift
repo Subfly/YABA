@@ -19,7 +19,6 @@ public enum NotemarkCreationEvent: Sendable {
     case onSelectFolderId(String?)
     case onSelectTagIds([String])
     case onSave
-    case onTogglePrivate
     case onTogglePinned
 
     case createBookmark(
@@ -27,7 +26,6 @@ public enum NotemarkCreationEvent: Sendable {
         folderId: String,
         label: String,
         bookmarkDescription: String?,
-        isPrivate: Bool,
         isPinned: Bool,
         tagIds: [String]
     )

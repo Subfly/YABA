@@ -36,13 +36,6 @@ import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.item.bookmark.BookmarkItemView
 import dev.subfly.yaba.core.components.item.folder.FolderItemView
 import dev.subfly.yaba.core.components.item.tag.TagItemView
-import dev.subfly.yaba.core.navigation.alert.DeletionState
-import dev.subfly.yaba.core.navigation.alert.DeletionType
-import dev.subfly.yaba.core.navigation.creation.DocmarkCreationRoute
-import dev.subfly.yaba.core.navigation.creation.ImagemarkCreationRoute
-import dev.subfly.yaba.core.navigation.creation.LinkmarkCreationRoute
-import dev.subfly.yaba.core.navigation.creation.NotemarkCreationRoute
-import dev.subfly.yaba.core.navigation.creation.CanvmarkCreationRoute
 import dev.subfly.yaba.core.navigation.main.CanvasDetailRoute
 import dev.subfly.yaba.core.navigation.main.DocDetailRoute
 import dev.subfly.yaba.core.navigation.main.FolderDetailRoute
@@ -51,18 +44,12 @@ import dev.subfly.yaba.core.navigation.main.LinkDetailRoute
 import dev.subfly.yaba.core.navigation.main.NoteDetailRoute
 import dev.subfly.yaba.core.navigation.main.SearchRoute
 import dev.subfly.yaba.core.navigation.main.TagDetailRoute
-import dev.subfly.yaba.core.security.PrivateBookmarkSessionGuard
 import dev.subfly.yaba.core.components.layout.YabaContentLayout
 import dev.subfly.yaba.ui.home.components.HomeFab
 import dev.subfly.yaba.ui.home.components.HomeTitleContent
 import dev.subfly.yaba.ui.home.components.HomeTopBar
-import dev.subfly.yaba.util.BookmarkPrivatePasswordEventEffect
-import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalContentNavigator
-import dev.subfly.yaba.util.LocalCreationContentNavigator
-import dev.subfly.yaba.util.LocalDeletionDialogManager
 import dev.subfly.yaba.util.LocalUserPreferences
-import dev.subfly.yaba.util.rememberPrivateBookmarkOpenClick
 import dev.subfly.yaba.util.rememberShareHandler
 import dev.subfly.yaba.core.filesystem.access.YabaFileAccessor
 import dev.subfly.yaba.core.managers.LinkmarkManager
@@ -88,56 +75,6 @@ fun HomeView(modifier: Modifier = Modifier) {
 
     val vm = viewModel { HomeVM() }
     val state by vm.state.collectAsStateWithLifecycle()
-    val creationNavigator = LocalCreationContentNavigator.current
-    val appStateManager = LocalAppStateManager.current
-    val deletionDialogManager = LocalDeletionDialogManager.current
-
-    val sessionUnlocked by PrivateBookmarkSessionGuard.isUnlocked.collectAsStateWithLifecycle()
-
-    BookmarkPrivatePasswordEventEffect(
-        resolveBookmark = { id -> state.recentBookmarks.find { it.id == id } },
-        onOpenBookmark = { model ->
-            navigator.add(
-                when (model.kind) {
-                    BookmarkKind.LINK -> LinkDetailRoute(bookmarkId = model.id)
-                    BookmarkKind.NOTE -> NoteDetailRoute(bookmarkId = model.id)
-                    BookmarkKind.IMAGE -> ImageDetailRoute(bookmarkId = model.id)
-                    BookmarkKind.FILE -> DocDetailRoute(bookmarkId = model.id)
-                    BookmarkKind.CANVAS -> CanvasDetailRoute(bookmarkId = model.id)
-                },
-            )
-        },
-        onEditBookmark = { model ->
-            when (model.kind) {
-                BookmarkKind.LINK -> creationNavigator.add(LinkmarkCreationRoute(bookmarkId = model.id))
-                BookmarkKind.NOTE -> creationNavigator.add(NotemarkCreationRoute(bookmarkId = model.id))
-                BookmarkKind.IMAGE -> creationNavigator.add(ImagemarkCreationRoute(bookmarkId = model.id))
-                BookmarkKind.FILE -> creationNavigator.add(DocmarkCreationRoute(bookmarkId = model.id))
-                BookmarkKind.CANVAS -> creationNavigator.add(CanvmarkCreationRoute(bookmarkId = model.id))
-            }
-            appStateManager.onShowCreationContent()
-        },
-        onShareBookmark = { bookmark ->
-            when (bookmark.kind) {
-                BookmarkKind.LINK -> shareScope.launch {
-                    LinkmarkManager.getBookmarkUrl(bookmark.id)?.let(shareUrl)
-                }
-                BookmarkKind.IMAGE -> shareScope.launch {
-                    YabaFileAccessor.shareImageBookmark(bookmark.id)
-                }
-                else -> {}
-            }
-        },
-        onDeleteBookmark = { bookmark ->
-            deletionDialogManager.send(
-                DeletionState(
-                    deletionType = DeletionType.BOOKMARK,
-                    bookmarkToBeDeleted = bookmark,
-                    onConfirm = { vm.onEvent(HomeEvent.OnDeleteBookmark(bookmark)) },
-                ),
-            )
-        },
-    )
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
@@ -149,8 +86,6 @@ fun HomeView(modifier: Modifier = Modifier) {
             topBar = {
                 HomeTopBar(
                     scrollBehavior = scrollBehavior,
-                    sessionUnlocked = sessionUnlocked,
-                    onLockPrivateSessionClick = { PrivateBookmarkSessionGuard.lock() },
                     onSortingChanged = { newSortType ->
                         vm.onEvent(HomeEvent.OnChangeCollectionSorting(newSortType))
                     },
@@ -231,22 +166,21 @@ fun HomeView(modifier: Modifier = Modifier) {
                                     items = state.recentBookmarks,
                                     key = { _, it -> it.id },
                                 ) { index, bookmarkModel ->
-                                    val openBookmark = rememberPrivateBookmarkOpenClick(bookmarkModel) {
-                                        navigator.add(
-                                            when (bookmarkModel.kind) {
-                                                BookmarkKind.LINK -> LinkDetailRoute(bookmarkId = bookmarkModel.id)
-                                                BookmarkKind.NOTE -> NoteDetailRoute(bookmarkId = bookmarkModel.id)
-                                                BookmarkKind.IMAGE -> ImageDetailRoute(bookmarkId = bookmarkModel.id)
-                                                BookmarkKind.FILE -> DocDetailRoute(bookmarkId = bookmarkModel.id)
-                                                BookmarkKind.CANVAS -> CanvasDetailRoute(bookmarkId = bookmarkModel.id)
-                                            },
-                                        )
-                                    }
                                     BookmarkItemView(
                                         model = bookmarkModel,
                                         appearance = BookmarkAppearance.LIST,
                                         cardImageSizing = state.cardImageSizing,
-                                        onClick = { openBookmark() },
+                                        onClick = {
+                                            navigator.add(
+                                                when (bookmarkModel.kind) {
+                                                    BookmarkKind.LINK -> LinkDetailRoute(bookmarkId = bookmarkModel.id)
+                                                    BookmarkKind.NOTE -> NoteDetailRoute(bookmarkId = bookmarkModel.id)
+                                                    BookmarkKind.IMAGE -> ImageDetailRoute(bookmarkId = bookmarkModel.id)
+                                                    BookmarkKind.FILE -> DocDetailRoute(bookmarkId = bookmarkModel.id)
+                                                    BookmarkKind.CANVAS -> CanvasDetailRoute(bookmarkId = bookmarkModel.id)
+                                                },
+                                            )
+                                        },
                                         onDeleteBookmark = { bookmark ->
                                             vm.onEvent(HomeEvent.OnDeleteBookmark(bookmark))
                                         },

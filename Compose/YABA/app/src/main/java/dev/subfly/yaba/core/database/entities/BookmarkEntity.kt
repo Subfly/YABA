@@ -32,7 +32,6 @@ data class BookmarkEntity(
     val createdAt: Long,
     val editedAt: Long,
     val viewCount: Long = 0,
-    val isPrivate: Boolean = false,
     val isPinned: Boolean = false,
     val localImagePath: String? = null,
     val localIconPath: String? = null,

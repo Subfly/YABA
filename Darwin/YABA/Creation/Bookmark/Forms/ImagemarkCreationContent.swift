@@ -32,9 +32,6 @@ struct ImagemarkCreationContent: View {
     @State
     private var previewContentAppearance: PreviewContentAppearance = .list
 
-    @State
-    private var privatePinSheet: PrivateBookmarkPinRoute?
-
     let preselectedFolderId: String?
     let preselectedTagIds: [String]
     let editingBookmarkId: String?
@@ -78,14 +75,6 @@ struct ImagemarkCreationContent: View {
                 }
             }
         )
-        .sheet(item: $privatePinSheet) { route in
-            switch route {
-            case .create:
-                BookmarkPasswordCreateSheet()
-            case let .entry(bookmarkId, reason):
-                BookmarkPasswordEntrySheet(bookmarkId: bookmarkId, reason: reason)
-            }
-        }
         .task(id: editingBookmarkId) {
             await bootstrap()
             syncPreviewAppearanceFromMachine()
@@ -94,8 +83,7 @@ struct ImagemarkCreationContent: View {
 
     private func formList(
         mainTint: Color,
-        folderForPresentation: FolderModel?,
-        privatePinSheet: Binding<PrivateBookmarkPinRoute?>
+        folderForPresentation: FolderModel?
     ) -> some View {
         List {
             Section {
@@ -165,14 +153,6 @@ struct ImagemarkCreationContent: View {
                 )
                 .lineLimit(2 ... 5)
                 .safeAreaInset(edge: .leading) { fieldIcon("text", mainTint: mainTint) }
-                Toggle(isOn: privateToggleBinding(privatePinSheet: privatePinSheet)) {
-                    Label {
-                        Text("Bookmark Creation Toggle Private Title")
-                    } icon: {
-                        fieldIcon(machine.state.isPrivate ? "circle-lock-02" : "circle-unlock-02", mainTint: mainTint)
-                            .animation(.smooth, value: machine.state.isPrivate)
-                    }
-                }
                 Toggle(isOn: isPinnedBinding) {
                     Label {
                         Text("Bookmark Creation Toggle Pinned Title")
@@ -269,20 +249,6 @@ struct ImagemarkCreationContent: View {
             set: { newValue in
                 Task {
                     await machine.send(.onChangeSummary(newValue))
-                }
-            }
-        )
-    }
-
-    private func privateToggleBinding(privatePinSheet: Binding<PrivateBookmarkPinRoute?>) -> Binding<Bool> {
-        Binding(
-            get: { machine.state.isPrivate },
-            set: { newValue in
-                guard newValue != machine.state.isPrivate else { return }
-                Task {
-                    await PrivateBookmarkCreationPinGate.run(pinSheet: privatePinSheet) {
-                        await machine.send(.onTogglePrivate)
-                    }
                 }
             }
         )

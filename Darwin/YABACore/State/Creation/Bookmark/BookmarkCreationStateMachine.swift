@@ -19,7 +19,6 @@ public final class BookmarkCreationStateMachine: YabaBaseObservableState<Bookmar
             label,
             bookmarkDescription,
             tagIds,
-            isPrivate,
             isPinned
         ):
             apply { $0.isSaving = true; $0.lastError = nil }
@@ -30,7 +29,6 @@ public final class BookmarkCreationStateMachine: YabaBaseObservableState<Bookmar
                 kind: .link,
                 label: label,
                 bookmarkDescription: bookmarkDescription,
-                isPrivate: isPrivate,
                 isPinned: isPinned,
                 tagIds: tagIds
             )

@@ -14,7 +14,6 @@ data class LinkmarkUiModel(
     override val createdAt: Instant,
     override val editedAt: Instant,
     override val viewCount: Long = 0,
-    override val isPrivate: Boolean = false,
     override val isPinned: Boolean = false,
     val url: String,
     val domain: String,

@@ -45,18 +45,15 @@ public final class CanvmarkCreationStateMachine: YabaBaseObservableState<Canvmar
             apply { $0.selectedTagIds = ids }
         case .onSave:
             await persist()
-        case .onTogglePrivate:
-            apply { $0.isPrivate.toggle() }
         case .onTogglePinned:
             apply { $0.isPinned.toggle() }
-        case let .create(bookmarkId, folderId, label, bookmarkDescription, isPrivate, isPinned, tagIds):
+        case let .create(bookmarkId, folderId, label, bookmarkDescription, isPinned, tagIds):
             AllBookmarksManager.queueCreateBookmark(
                 bookmarkId: bookmarkId,
                 folderId: folderId,
                 kind: .canvas,
                 label: label,
                 bookmarkDescription: bookmarkDescription,
-                isPrivate: isPrivate,
                 isPinned: isPinned,
                 tagIds: tagIds
             )
@@ -100,7 +97,6 @@ public final class CanvmarkCreationStateMachine: YabaBaseObservableState<Canvmar
                 kind: .canvas,
                 label: label,
                 bookmarkDescription: state.bookmarkDescription.nilIfEmpty,
-                isPrivate: state.isPrivate,
                 isPinned: state.isPinned,
                 tagIds: state.selectedTagIds
             )
@@ -111,7 +107,6 @@ public final class CanvmarkCreationStateMachine: YabaBaseObservableState<Canvmar
                 kind: .canvas,
                 label: label,
                 bookmarkDescription: state.bookmarkDescription.nilIfEmpty,
-                isPrivate: state.isPrivate,
                 isPinned: state.isPinned,
                 tagIds: state.selectedTagIds
             )

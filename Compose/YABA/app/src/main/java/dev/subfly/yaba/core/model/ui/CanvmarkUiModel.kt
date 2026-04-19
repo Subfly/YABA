@@ -14,7 +14,6 @@ data class CanvmarkUiModel(
     override val createdAt: Instant,
     override val editedAt: Instant,
     override val viewCount: Long = 0,
-    override val isPrivate: Boolean = false,
     override val isPinned: Boolean = false,
     /** Relative path to canonical canvas scene JSON. */
     val sceneRelativePath: String,

@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -37,9 +36,7 @@ fun BookmarkInfoContent(
     onChangeLabel: (String) -> Unit,
     onChangeDescription: (String) -> Unit,
     selectedFolder: FolderUiModel?,
-    isPrivate: Boolean,
     isPinned: Boolean,
-    onPrivateToggle: () -> Unit,
     onPinToggle: () -> Unit,
     enabled: Boolean = true,
     @StringRes labelPlaceholder: Int = R.string.create_bookmark_title_placeholder,
@@ -110,15 +107,6 @@ fun BookmarkInfoContent(
                 shape = RoundedCornerShape(12.dp)
             )
     ) {
-        BookmarkPrivateToggleRow(
-            isPrivate = isPrivate,
-            enabled = enabled,
-            onClick = onPrivateToggle,
-            folderColor = color,
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        HorizontalDivider(color = Color(color.iconTintArgb()))
-        Spacer(modifier = Modifier.height(4.dp))
         BookmarkPinToggleRow(
             isPinned = isPinned,
             enabled = enabled,

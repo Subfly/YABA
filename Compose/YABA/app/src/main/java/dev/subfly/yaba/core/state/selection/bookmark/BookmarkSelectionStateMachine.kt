@@ -1,7 +1,6 @@
 package dev.subfly.yaba.core.state.selection.bookmark
 
 import dev.subfly.yaba.core.managers.AllBookmarksManager
-import dev.subfly.yaba.core.security.PrivateBookmarkSessionGuard
 import dev.subfly.yaba.core.model.utils.SortOrderType
 import dev.subfly.yaba.core.model.utils.SortType
 import dev.subfly.yaba.core.state.base.BaseStateMachine
@@ -9,7 +8,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
 
@@ -20,7 +18,6 @@ class BookmarkSelectionStateMachine :
     private var isInitialized = false
     private var bookmarksJob: Job? = null
     private val queryFlow = MutableStateFlow("")
-    private val sessionUnlockedFlow = PrivateBookmarkSessionGuard.isUnlocked
 
     override fun onEvent(event: BookmarkSelectionEvent) {
         when (event) {
@@ -42,15 +39,13 @@ class BookmarkSelectionStateMachine :
         }
         bookmarksJob?.cancel()
         bookmarksJob = launch {
-            combine(queryFlow, sessionUnlockedFlow) { q, u -> q to u }
-                .flatMapLatest { (query, unlocked) ->
+            queryFlow
+                .flatMapLatest { query ->
                     updateState { state -> state.copy(query = query, isLoading = true) }
-                    val excludePrivate = !unlocked && query.isNotEmpty()
                     AllBookmarksManager.searchBookmarksFlow(
                         query = query,
                         sortType = SortType.EDITED_AT,
                         sortOrder = SortOrderType.DESCENDING,
-                        excludePrivate = excludePrivate,
                     )
                 }
                 .collectLatest { bookmarks ->

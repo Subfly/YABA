@@ -107,7 +107,6 @@ enum V1ToV2Migrator {
                 createdAt: legacy.createdAt,
                 editedAt: legacy.editedAt,
                 viewCount: 0,
-                isPrivate: false,
                 isPinned: false,
                 folder: folder,
                 tags: tagModels

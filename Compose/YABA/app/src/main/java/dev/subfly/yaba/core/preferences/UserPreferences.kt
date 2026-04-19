@@ -41,7 +41,6 @@ data class UserPreferences(
     val announcementsCloudKitDatabaseWipe: Boolean = true,
     val announcementsLegalsUpdate: Boolean = true,
     val announcementsLegalsUpdate2: Boolean = true,
-    val privateBookmarkPasswordHash: String = "",
 )
 
 internal inline fun <reified T : Enum<T>> enumFromOrdinal(

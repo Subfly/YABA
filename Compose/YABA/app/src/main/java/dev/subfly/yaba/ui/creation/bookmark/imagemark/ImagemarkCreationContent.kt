@@ -45,7 +45,6 @@ import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.ResultStoreKeys
 import dev.subfly.yaba.util.SharedImageData
-import dev.subfly.yaba.util.rememberPrivateBookmarkCreationToggle
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
@@ -57,10 +56,6 @@ fun ImagemarkCreationContent(bookmarkId: String?) {
 
     val vm = viewModel { ImagemarkCreationVM() }
     val state by vm.state.collectAsStateWithLifecycle()
-
-    val onPrivateToggle = rememberPrivateBookmarkCreationToggle {
-        vm.onEvent(ImagemarkCreationEvent.OnTogglePrivate)
-    }
 
     LaunchedEffect(bookmarkId) {
         vm.onEvent(
@@ -145,9 +140,7 @@ fun ImagemarkCreationContent(bookmarkId: String?) {
                             vm.onEvent(ImagemarkCreationEvent.OnChangeDescription(it))
                         },
                         selectedFolder = state.selectedFolder,
-                        isPrivate = state.isPrivate,
                         isPinned = state.isPinned,
-                        onPrivateToggle = onPrivateToggle,
                         onPinToggle = { vm.onEvent(ImagemarkCreationEvent.OnTogglePinned) },
                         enabled = state.isLoading.not(),
                         labelPlaceholder = R.string.create_bookmark_title_placeholder,

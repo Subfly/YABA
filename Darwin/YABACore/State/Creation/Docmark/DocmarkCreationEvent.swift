@@ -31,7 +31,6 @@ public enum DocmarkCreationEvent: Sendable {
     case onSelectTagIds([String])
     case onWebInitialContentLoad(resultJson: String?)
     case onSave
-    case onTogglePrivate
     case onTogglePinned
 
     case create(
@@ -39,7 +38,6 @@ public enum DocmarkCreationEvent: Sendable {
         folderId: String,
         label: String,
         bookmarkDescription: String?,
-        isPrivate: Bool,
         isPinned: Bool,
         tagIds: [String]
     )

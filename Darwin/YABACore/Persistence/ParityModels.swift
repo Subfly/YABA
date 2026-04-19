@@ -103,7 +103,6 @@ final class BookmarkModel {
     var createdAt: Date = Date.now
     var editedAt: Date = Date.now
     var viewCount: Int = 0
-    var isPrivate: Bool = false
     var isPinned: Bool = false
 
     var folder: FolderModel?
@@ -146,7 +145,6 @@ final class BookmarkModel {
         createdAt: Date = .now,
         editedAt: Date = .now,
         viewCount: Int = 0,
-        isPrivate: Bool = false,
         isPinned: Bool = false,
         folder: FolderModel? = nil,
         tags: [TagModel] = []
@@ -158,7 +156,6 @@ final class BookmarkModel {
         self.createdAt = createdAt
         self.editedAt = editedAt
         self.viewCount = viewCount
-        self.isPrivate = isPrivate
         self.isPinned = isPinned
         self.folder = folder
         self.tags = tags

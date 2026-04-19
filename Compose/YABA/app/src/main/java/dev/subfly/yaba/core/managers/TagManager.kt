@@ -24,10 +24,9 @@ object TagManager {
     private val tagBookmarkDao get() = DatabaseProvider.tagBookmarkDao
     private val clock = Clock.System
     private const val PINNED_TAG_ID = CoreConstants.Tag.Pinned.ID
-    private const val PRIVATE_TAG_ID = CoreConstants.Tag.Private.ID
 
     /**
-     * @param includeEmptySystemTags When false (default), system tags (Pinned, Private) with zero
+     * @param includeEmptySystemTags When false (default), system tags (e.g. Pinned) with zero
      * bookmarks are omitted from the list. Pass true only if a caller needs the full list
      * regardless of count (rare).
      */
@@ -180,48 +179,6 @@ object TagManager {
             label = CoreConstants.Tag.Pinned.NAME,
             icon = CoreConstants.Tag.Pinned.ICON,
             color = YabaColor.YELLOW,
-            createdAt = now,
-            editedAt = now,
-            bookmarkCount = 0,
-        )
-    }
-
-    suspend fun ensurePrivateTag(): TagUiModel {
-        tagDao.getTagWithBookmarkCount(PRIVATE_TAG_ID)?.let {
-            return it.toUiModel()
-        }
-
-        // Same rationale as [ensurePinnedTag]: avoid nested queue work when callers may already
-        // hold the CoreOperationQueue worker.
-        ensurePrivateTagInternal()
-
-        return tagDao.getTagWithBookmarkCount(PRIVATE_TAG_ID)?.toUiModel()
-            ?: createPrivateTagModel()
-    }
-
-    private suspend fun ensurePrivateTagInternal() {
-        if (tagDao.getById(PRIVATE_TAG_ID) != null) return
-
-        val now = clock.now().toEpochMilliseconds()
-        val entity = TagEntity(
-            id = PRIVATE_TAG_ID,
-            label = CoreConstants.Tag.Private.NAME,
-            icon = CoreConstants.Tag.Private.ICON,
-            color = YabaColor.RED,
-            createdAt = now,
-            editedAt = now,
-            isHidden = false,
-        )
-        tagDao.upsert(entity)
-    }
-
-    private fun createPrivateTagModel(): TagUiModel {
-        val now = clock.now()
-        return TagUiModel(
-            id = PRIVATE_TAG_ID,
-            label = CoreConstants.Tag.Private.NAME,
-            icon = CoreConstants.Tag.Private.ICON,
-            color = YabaColor.RED,
             createdAt = now,
             editedAt = now,
             bookmarkCount = 0,

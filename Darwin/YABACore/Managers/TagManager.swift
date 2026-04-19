@@ -34,27 +34,6 @@ public enum TagManager {
         return tag
     }
 
-    /// Ensures the Private system tag row exists (same threading rules as `ensurePinnedTag`).
-    static func ensurePrivateTag(using context: ModelContext) throws -> TagModel {
-        let id = Constants.Tag.Private.id
-        if let existing = try YabaCorePersistenceHelpers.tag(tagId: id, context: context) {
-            return existing
-        }
-        let now = Date.now
-        let tag = TagModel(
-            tagId: id,
-            label: Constants.Tag.Private.name,
-            icon: Constants.Tag.Private.icon,
-            colorRaw: 3,
-            createdAt: now,
-            editedAt: now,
-            isHidden: false,
-            bookmarks: []
-        )
-        context.insert(tag)
-        return tag
-    }
-
     /// Queued: create a user tag row.
     public static func queueCreateTag(tagId: String = UUID().uuidString, label: String, icon: String, colorRaw: Int) {
         CoreOperationQueue.shared.queue(name: "CreateTag:\(tagId)") { context in

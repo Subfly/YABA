@@ -39,13 +39,7 @@ enum Constants {
             static let icon = "pin"
         }
 
-        enum Private {
-            static let id = "31111111-1111-1111-1111-111111111113"
-            static let name = "Private Tag Label"
-            static let icon = "circle-lock-02"
-        }
-
-        static var systemTagIds: Set<String> { [Pinned.id, Private.id] }
+        static var systemTagIds: Set<String> { [Pinned.id] }
 
         static func isSystemTag(_ tagId: String) -> Bool {
             systemTagIds.contains(tagId)
@@ -72,7 +66,6 @@ enum Constants {
         static let showMenuBarItem = "showMenuBarItem"
         static let useSimplifiedShare = "useSimplifiedShare"
         static let preventDeletionSync = "preventDeletionSync"
-        static let privateBookmarkPasswordHash = "privateBookmarkPasswordHash"
     }
 
     // MARK: - Compose parity — Announcement keys

@@ -2,7 +2,7 @@
 //  AllBookmarksManager.swift
 //  YABACore
 //
-//  Compose `AllBookmarksManager` parity: bookmark CRUD, tags, pin/private system tags.
+//  Compose `AllBookmarksManager` parity: bookmark CRUD, tags, pin system tag.
 //  Reads stay in SwiftUI (`@Query`); this type is for mutations only.
 //
 
@@ -20,7 +20,6 @@ public enum AllBookmarksManager {
         kind: BookmarkKind,
         label: String,
         bookmarkDescription: String? = nil,
-        isPrivate: Bool = false,
         isPinned: Bool = false,
         tagIds: [String] = []
     ) {
@@ -32,7 +31,6 @@ public enum AllBookmarksManager {
                 kind: kind,
                 label: label,
                 bookmarkDescription: bookmarkDescription,
-                isPrivate: isPrivate,
                 isPinned: isPinned,
                 tagIds: tagIds,
                 context: context
@@ -46,7 +44,6 @@ public enum AllBookmarksManager {
         kind: BookmarkKind,
         label: String,
         bookmarkDescription: String?,
-        isPrivate: Bool,
         isPinned: Bool,
         tagIds: [String]?
     ) {
@@ -58,7 +55,6 @@ public enum AllBookmarksManager {
                 kind: kind,
                 label: label,
                 bookmarkDescription: bookmarkDescription,
-                isPrivate: isPrivate,
                 isPinned: isPinned,
                 tagIds: tagIds,
                 context: context
@@ -109,7 +105,7 @@ public enum AllBookmarksManager {
         }
     }
 
-    // MARK: - Pin / private
+    // MARK: - Pin
 
     public static func queueToggleBookmarkPinned(bookmarkId: String) {
         CoreOperationQueue.shared.queue(name: "TogglePin:\(bookmarkId)") { context in
@@ -118,16 +114,6 @@ public enum AllBookmarksManager {
             bookmark.isPinned = newPinned
             bookmark.editedAt = .now
             try syncPinnedSystemTag(for: bookmark, isPinned: newPinned, context: context)
-        }
-    }
-
-    public static func queueToggleBookmarkPrivate(bookmarkId: String) {
-        CoreOperationQueue.shared.queue(name: "TogglePrivate:\(bookmarkId)") { context in
-            guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context) else { return }
-            let newPrivate = !bookmark.isPrivate
-            bookmark.isPrivate = newPrivate
-            bookmark.editedAt = .now
-            try syncPrivateSystemTag(for: bookmark, isPrivate: newPrivate, context: context)
         }
     }
 
@@ -183,7 +169,6 @@ public enum AllBookmarksManager {
         kind: BookmarkKind,
         label: String,
         bookmarkDescription: String?,
-        isPrivate: Bool,
         isPinned: Bool,
         tagIds: [String],
         context: ModelContext
@@ -200,7 +185,6 @@ public enum AllBookmarksManager {
             createdAt: now,
             editedAt: now,
             viewCount: 0,
-            isPrivate: isPrivate,
             isPinned: isPinned,
             folder: folder,
             tags: []
@@ -209,7 +193,6 @@ public enum AllBookmarksManager {
 
         try applyTags(tagIds: tagIds, to: bookmark, context: context)
         try syncPinnedSystemTag(for: bookmark, isPinned: isPinned, context: context)
-        try syncPrivateSystemTag(for: bookmark, isPrivate: isPrivate, context: context)
     }
 
     private static func updateBookmarkMetadataInternal(
@@ -218,7 +201,6 @@ public enum AllBookmarksManager {
         kind: BookmarkKind,
         label: String,
         bookmarkDescription: String?,
-        isPrivate: Bool,
         isPinned: Bool,
         tagIds: [String]?,
         context: ModelContext
@@ -229,7 +211,6 @@ public enum AllBookmarksManager {
         bookmark.kindRaw = kind.rawValue
         bookmark.label = label
         bookmark.bookmarkDescription = bookmarkDescription
-        bookmark.isPrivate = isPrivate
         bookmark.isPinned = isPinned
         bookmark.editedAt = .now
 
@@ -250,7 +231,6 @@ public enum AllBookmarksManager {
             }
         }
         try syncPinnedSystemTag(for: bookmark, isPinned: isPinned, context: context)
-        try syncPrivateSystemTag(for: bookmark, isPrivate: isPrivate, context: context)
     }
 
     private static func moveBookmarksToFolderInternal(
@@ -302,18 +282,6 @@ public enum AllBookmarksManager {
             }
         } else {
             bookmark.tags.removeAll { $0.tagId == pinnedId }
-        }
-    }
-
-    private static func syncPrivateSystemTag(for bookmark: BookmarkModel, isPrivate: Bool, context: ModelContext) throws {
-        let privateId = Constants.Tag.Private.id
-        let privateTag = try TagManager.ensurePrivateTag(using: context)
-        if isPrivate {
-            if !bookmark.tags.contains(where: { $0.tagId == privateId }) {
-                bookmark.tags.append(privateTag)
-            }
-        } else {
-            bookmark.tags.removeAll { $0.tagId == privateId }
         }
     }
 }

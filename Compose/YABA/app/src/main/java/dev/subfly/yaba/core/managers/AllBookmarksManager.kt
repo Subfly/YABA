@@ -60,7 +60,6 @@ object AllBookmarksManager {
         sortType: SortType = SortType.EDITED_AT,
         sortOrder: SortOrderType = SortOrderType.DESCENDING,
         kinds: List<BookmarkKind>? = null,
-        excludePrivate: Boolean = false,
     ): Flow<List<BookmarkUiModel>> {
         val kindSet = kinds?.takeIf { it.isNotEmpty() }
         return bookmarkDao
@@ -74,7 +73,6 @@ object AllBookmarksManager {
                 applyFolderFilter = false,
                 tagIds = emptyList(),
                 applyTagFilter = false,
-                applyExcludePrivateFilter = excludePrivate,
             )
             .map { rows -> rows.map { it.toBookmarkPreviewUiModel() } }
     }
@@ -93,7 +91,6 @@ object AllBookmarksManager {
         filters: BookmarkSearchFilters = BookmarkSearchFilters(),
         sortType: SortType = SortType.EDITED_AT,
         sortOrder: SortOrderType = SortOrderType.DESCENDING,
-        excludePrivate: Boolean = false,
     ): Flow<List<BookmarkUiModel>> {
         val params = filters.toQueryParams()
         return bookmarkDao
@@ -107,7 +104,6 @@ object AllBookmarksManager {
                 applyTagFilter = params.applyTagFilter,
                 sortType = sortType.name,
                 sortOrder = sortOrder.name,
-                applyExcludePrivateFilter = excludePrivate,
             )
             .map { rows -> rows.map { it.toBookmarkPreviewUiModel() } }
     }
@@ -123,7 +119,6 @@ object AllBookmarksManager {
         kind: BookmarkKind,
         label: String,
         description: String? = null,
-        isPrivate: Boolean = false,
         isPinned: Boolean = false,
         tagIds: List<String> = emptyList(),
         previewImageBytes: ByteArray? = null,
@@ -133,7 +128,7 @@ object AllBookmarksManager {
         require(label.isNotBlank()) { "Bookmark label must not be blank." }
         CoreOperationQueue.queue("CreateBookmark:$id") {
             createBookmarkMetadataInternal(
-                id, folderId, kind, label, description, isPrivate, isPinned,
+                id, folderId, kind, label, description, isPinned,
                 tagIds, previewImageBytes, previewImageExtension, previewIconBytes
             )
         }
@@ -145,7 +140,6 @@ object AllBookmarksManager {
         kind: BookmarkKind,
         label: String,
         description: String?,
-        isPrivate: Boolean,
         isPinned: Boolean,
         tagIds: List<String>,
         previewImageBytes: ByteArray?,
@@ -173,7 +167,6 @@ object AllBookmarksManager {
             createdAt = now,
             editedAt = now,
             viewCount = 0,
-            isPrivate = isPrivate,
             isPinned = isPinned,
             localImagePath = preview.localImageRelativePath,
             localIconPath = preview.localIconRelativePath,
@@ -189,7 +182,6 @@ object AllBookmarksManager {
             )
         }
         syncPinnedSystemTagForBookmark(id, isPinned)
-        syncPrivateSystemTagForBookmark(id, isPrivate)
     }
 
     /**
@@ -201,7 +193,6 @@ object AllBookmarksManager {
         kind: BookmarkKind,
         label: String,
         description: String? = null,
-        isPrivate: Boolean = false,
         isPinned: Boolean = false,
         tagIds: List<String>? = null,
         previewImageBytes: ByteArray? = null,
@@ -211,7 +202,7 @@ object AllBookmarksManager {
         require(label.isNotBlank()) { "Bookmark label must not be blank." }
         CoreOperationQueue.queue("UpdateBookmark:$bookmarkId") {
             updateBookmarkMetadataInternal(
-                bookmarkId, folderId, kind, label, description, isPrivate, isPinned,
+                bookmarkId, folderId, kind, label, description, isPinned,
                 tagIds, previewImageBytes, previewImageExtension, previewIconBytes
             )
         }
@@ -243,7 +234,6 @@ object AllBookmarksManager {
         kind: BookmarkKind,
         label: String,
         description: String?,
-        isPrivate: Boolean,
         isPinned: Boolean,
         tagIds: List<String>?,
         previewImageBytes: ByteArray?,
@@ -267,7 +257,6 @@ object AllBookmarksManager {
             label = label,
             description = description,
             editedAt = now,
-            isPrivate = isPrivate,
             isPinned = isPinned,
             localImagePath = preview.localImageRelativePath ?: existing.localImagePath,
             localIconPath = preview.localIconRelativePath ?: existing.localIconPath,
@@ -292,7 +281,6 @@ object AllBookmarksManager {
             }
         }
         syncPinnedSystemTagForBookmark(bookmarkId, isPinned)
-        syncPrivateSystemTagForBookmark(bookmarkId, isPrivate)
     }
 
     /**
@@ -310,49 +298,6 @@ object AllBookmarksManager {
                 ),
             )
             syncPinnedSystemTagForBookmark(bookmarkId, newPinned)
-        }
-    }
-
-    /**
-     * Toggles [BookmarkEntity.isPrivate] and keeps the Private system tag in sync with that flag.
-     */
-    fun toggleBookmarkPrivate(bookmarkId: String) {
-        CoreOperationQueue.queue("TogglePrivate:$bookmarkId") {
-            val existing = bookmarkDao.getById(bookmarkId) ?: return@queue
-            val newPrivate = !existing.isPrivate
-            val now = clock.now().toEpochMilliseconds()
-            bookmarkDao.upsert(
-                existing.copy(
-                    isPrivate = newPrivate,
-                    editedAt = now,
-                ),
-            )
-            syncPrivateSystemTagForBookmark(bookmarkId, newPrivate)
-        }
-    }
-
-    private suspend fun syncPrivateSystemTagForBookmark(bookmarkId: String, isPrivate: Boolean) {
-        val privateTagId = CoreConstants.Tag.Private.ID
-        val existing = bookmarkDao.getById(bookmarkId) ?: return
-        val now = clock.now().toEpochMilliseconds()
-        if (isPrivate) {
-            TagManager.ensurePrivateTag()
-            val hasTag = tagBookmarkDao.getTagIdsForBookmark(bookmarkId).contains(privateTagId)
-            if (!hasTag) {
-                tagBookmarkDao.insert(
-                    TagBookmarkCrossRef(
-                        tagId = privateTagId,
-                        bookmarkId = bookmarkId,
-                    ),
-                )
-                bookmarkDao.upsert(existing.copy(editedAt = now))
-            }
-        } else {
-            val hadTag = tagBookmarkDao.getTagIdsForBookmark(bookmarkId).contains(privateTagId)
-            if (hadTag) {
-                tagBookmarkDao.delete(bookmarkId, privateTagId)
-                bookmarkDao.upsert(existing.copy(editedAt = now))
-            }
         }
     }
 

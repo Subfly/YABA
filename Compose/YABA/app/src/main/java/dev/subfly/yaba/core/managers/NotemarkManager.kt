@@ -50,7 +50,6 @@ object NotemarkManager {
             createdAt = Instant.fromEpochMilliseconds(bookmarkMetaData.createdAt),
             editedAt = Instant.fromEpochMilliseconds(bookmarkMetaData.editedAt),
             viewCount = bookmarkMetaData.viewCount,
-            isPrivate = bookmarkMetaData.isPrivate,
             isPinned = bookmarkMetaData.isPinned,
             documentRelativePath = noteMeta.documentRelativePath,
             readableVersionId = noteMeta.readableVersionId,

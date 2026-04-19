@@ -10,7 +10,6 @@ import dev.subfly.yaba.core.model.ui.TagUiModel
 import dev.subfly.yaba.core.model.utils.SortOrderType
 import dev.subfly.yaba.core.model.utils.SortType
 import dev.subfly.yaba.core.preferences.SettingsStores
-import dev.subfly.yaba.core.security.PrivateBookmarkSessionGuard
 import dev.subfly.yaba.core.state.base.BaseStateMachine
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -72,8 +71,7 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
         dataSubscriptionJob = launch {
             // First, observe preferences to get sorting parameters
             // When sorting changes, flatMapLatest will cancel old subscriptions and create new ones
-            combine(
-                preferencesStore
+            preferencesStore
                     .preferencesFlow
                     .map { prefs ->
                         SortingParams(
@@ -81,15 +79,12 @@ class HomeStateMachine : BaseStateMachine<HomeUIState, HomeEvent>(initialState =
                             prefs.preferredCollectionSortOrder
                         )
                     }
-                    .distinctUntilChanged(),
-                PrivateBookmarkSessionGuard.isUnlocked,
-            ) { sortingParams, unlocked -> sortingParams to unlocked }
-                .flatMapLatest { (sortingParams, unlocked) ->
+                    .distinctUntilChanged()
+                .flatMapLatest { sortingParams ->
                     val recentBookmarksFlow = AllBookmarksManager
                         .observeAllBookmarks(
                             sortType = SortType.EDITED_AT,
                             sortOrder = SortOrderType.DESCENDING,
-                            excludePrivate = !unlocked,
                         )
                         .map { it.take(RECENT_BOOKMARKS_LIMIT) }
 
@@ -241,15 +236,13 @@ private fun sortRootFoldersForHome(rootFolders: List<FolderUiModel>): List<Folde
 }
 
 /**
- * Home UX: system tags — Pinned first, Private last; other tags keep their sort order in between.
+ * Home UX: system tags — Pinned first; other tags keep their sort order after.
  */
 private fun sortTagsForHome(tags: List<TagUiModel>): List<TagUiModel> {
     val pinnedId = CoreConstants.Tag.Pinned.ID
-    val privateId = CoreConstants.Tag.Private.ID
     val pinned = tags.filter { it.id == pinnedId }
-    val privateTags = tags.filter { it.id == privateId }
-    val middle = tags.filter { it.id != pinnedId && it.id != privateId }
-    return pinned + middle + privateTags
+    val rest = tags.filter { it.id != pinnedId }
+    return pinned + rest
 }
 
 private fun buildVisibleFolderRows(

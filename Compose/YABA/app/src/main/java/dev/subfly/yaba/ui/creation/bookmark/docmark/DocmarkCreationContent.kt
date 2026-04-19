@@ -62,7 +62,6 @@ import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.ResultStoreKeys
 import dev.subfly.yaba.util.SharedDocumentData
-import dev.subfly.yaba.util.rememberPrivateBookmarkCreationToggle
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
@@ -74,10 +73,6 @@ fun DocmarkCreationContent(bookmarkId: String?) {
     val resultStore = LocalResultStore.current
     val vm = viewModel { DocmarkCreationVM() }
     val state by vm.state.collectAsStateWithLifecycle()
-
-    val onPrivateToggle = rememberPrivateBookmarkCreationToggle {
-        vm.onEvent(DocmarkCreationEvent.OnTogglePrivate)
-    }
 
     val pdfDataUrl by
             remember(state.documentBytes, state.docmarkType, state.isInEditMode) {
@@ -287,9 +282,7 @@ fun DocmarkCreationContent(bookmarkId: String?) {
                             vm.onEvent(DocmarkCreationEvent.OnChangeDescription(it))
                         },
                         selectedFolder = state.selectedFolder,
-                        isPrivate = state.isPrivate,
                         isPinned = state.isPinned,
-                        onPrivateToggle = onPrivateToggle,
                         onPinToggle = { vm.onEvent(DocmarkCreationEvent.OnTogglePinned) },
                         enabled = state.isLoading.not(),
                         labelPlaceholder = R.string.create_bookmark_title_placeholder,

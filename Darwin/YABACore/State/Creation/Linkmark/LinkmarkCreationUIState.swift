@@ -20,7 +20,6 @@ public struct LinkmarkCreationUIState: Sendable {
     public var metadataDate: String?
     public var videoUrl: String?
     public var audioUrl: String?
-    public var isPrivate: Bool
     public var isPinned: Bool
     public var bookmarkAppearance: BookmarkAppearance
     public var cardImageSizing: CardImageSizing
@@ -51,7 +50,6 @@ public struct LinkmarkCreationUIState: Sendable {
         metadataDate: String? = nil,
         videoUrl: String? = nil,
         audioUrl: String? = nil,
-        isPrivate: Bool = false,
         isPinned: Bool = false,
         bookmarkAppearance: BookmarkAppearance = .list,
         cardImageSizing: CardImageSizing = .small,
@@ -78,7 +76,6 @@ public struct LinkmarkCreationUIState: Sendable {
         self.metadataDate = metadataDate
         self.videoUrl = videoUrl
         self.audioUrl = audioUrl
-        self.isPrivate = isPrivate
         self.isPinned = isPinned
         self.bookmarkAppearance = bookmarkAppearance
         self.cardImageSizing = cardImageSizing

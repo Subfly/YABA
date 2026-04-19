@@ -15,7 +15,6 @@ public enum BookmarkCreationEvent: Sendable {
         label: String,
         bookmarkDescription: String?,
         tagIds: [String],
-        isPrivate: Bool,
         isPinned: Bool
     )
 }

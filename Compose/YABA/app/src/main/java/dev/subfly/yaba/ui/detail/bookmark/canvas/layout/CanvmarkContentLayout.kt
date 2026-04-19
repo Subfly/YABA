@@ -78,9 +78,7 @@ import dev.subfly.yaba.util.InlineActionChoice
 import dev.subfly.yaba.util.InlineLinkSheetResult
 import dev.subfly.yaba.util.InlineMentionSheetResult
 import dev.subfly.yaba.util.InlineSheetAction
-import dev.subfly.yaba.util.PrivateBookmarkPasswordReason
 import dev.subfly.yaba.util.ResultStoreKeys
-import dev.subfly.yaba.util.rememberPrivateBookmarkProtectedAction
 import dev.subfly.yaba.util.rememberUrlLauncher
 import kotlin.time.TimeSource
 import kotlinx.coroutines.NonCancellable
@@ -148,13 +146,10 @@ internal fun CanvmarkContentLayout(
         return null
     }
 
-    val runCanvasExportIfAllowed = rememberPrivateBookmarkProtectedAction(
-        model = state.bookmark,
-        reason = PrivateBookmarkPasswordReason.EDIT_BOOKMARK,
-    ) {
+    fun runCanvasExportIfAllowed() {
         val req =
             pendingCanvasExport.also { pendingCanvasExport = null }
-                ?: return@rememberPrivateBookmarkProtectedAction
+                ?: return
         val (fmt, bg) = req
         scope.launch {
             val bytes = exportCanvasImageWithRetry(fmt, bg) ?: return@launch

@@ -130,10 +130,6 @@ internal constructor(
     suspend fun setAnnouncementsLegalsUpdate2(value: Boolean) =
         update { it.copy(announcementsLegalsUpdate2 = value) }
 
-    /** Stores the 6-digit PIN as plaintext inside the Keystore-encrypted JSON blob. */
-    suspend fun setPrivateBookmarkPasswordHash(value: String) =
-        update { it.copy(privateBookmarkPasswordHash = value) }
-
     @OptIn(ExperimentalUuidApi::class)
     suspend fun ensureDefaults() {
         dataStore.updateData { prefs ->

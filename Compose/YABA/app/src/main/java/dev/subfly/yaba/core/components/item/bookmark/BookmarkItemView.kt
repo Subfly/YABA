@@ -29,11 +29,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.annotation.StringRes
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -41,7 +39,6 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.subfly.yaba.R
-import dev.subfly.yaba.core.common.CoreConstants
 import dev.subfly.yaba.core.components.TagsRowContent
 import dev.subfly.yaba.core.components.YabaIcon
 import dev.subfly.yaba.core.components.YabaImage
@@ -58,12 +55,8 @@ import dev.subfly.yaba.core.navigation.creation.CanvmarkCreationRoute
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalDeletionDialogManager
-import dev.subfly.yaba.util.PrivateBookmarkPasswordReason
-import dev.subfly.yaba.util.rememberPrivateBookmarkProtectedAction
-import dev.subfly.yaba.util.rememberPrivateBookmarkToggleAction
 import dev.subfly.yaba.util.yabaRightClick
 import dev.subfly.yaba.core.managers.AllBookmarksManager
-import dev.subfly.yaba.core.security.PrivateBookmarkSessionGuard
 import dev.subfly.yaba.core.model.ui.BookmarkUiModel
 import dev.subfly.yaba.core.model.utils.BookmarkAppearance
 import dev.subfly.yaba.core.model.utils.BookmarkKind
@@ -72,11 +65,6 @@ import dev.subfly.yaba.core.model.utils.FolderSelectionMode
 import dev.subfly.yaba.core.model.utils.YabaColor
 import dev.subfly.yaba.core.model.utils.uiIconName
 import kotlin.uuid.ExperimentalUuidApi
-
-private val PrivateLockedBlurShape = RoundedCornerShape(2.dp)
-
-private fun privateLockedBlurModifier(show: Boolean): Modifier =
-        if (show) Modifier.clip(PrivateLockedBlurShape).blur(24.dp) else Modifier
 
 /**
  * Entry point for bookmark item rendering.
@@ -114,9 +102,6 @@ fun BookmarkItemView(
     val deletionDialogManager = LocalDeletionDialogManager.current
     val appStateManager = LocalAppStateManager.current
 
-    val sessionUnlocked by PrivateBookmarkSessionGuard.isUnlocked.collectAsStateWithLifecycle()
-    val showPrivateLocked = model.isPrivate && !sessionUnlocked
-
     var isOptionsExpanded by remember { mutableStateOf(false) }
 
     // Get color from parent folder or default to blue
@@ -131,40 +116,32 @@ fun BookmarkItemView(
     val deleteText = stringResource(R.string.delete)
     // TODO: LOCALIZATION
     val pinActionText = if (model.isPinned) "Pin" else "Unpin"
-    // TODO: LOCALIZATION
-    val privateActionText = if (model.isPrivate) "Private" else "Not Private"
 
-    val onPrivateToggle = rememberPrivateBookmarkToggleAction(model)
-    val runEdit = rememberPrivateBookmarkProtectedAction(
-        model = model,
-        reason = PrivateBookmarkPasswordReason.EDIT_BOOKMARK,
-    ) {
-        when (model.kind) {
-            BookmarkKind.LINK -> creationNavigator.add(LinkmarkCreationRoute(bookmarkId = model.id))
-            BookmarkKind.NOTE -> creationNavigator.add(NotemarkCreationRoute(bookmarkId = model.id))
-            BookmarkKind.IMAGE -> creationNavigator.add(ImagemarkCreationRoute(bookmarkId = model.id))
-            BookmarkKind.FILE -> creationNavigator.add(DocmarkCreationRoute(bookmarkId = model.id))
-            BookmarkKind.CANVAS -> creationNavigator.add(CanvmarkCreationRoute(bookmarkId = model.id))
+    val runEdit = remember(model.id, model.kind) {
+        {
+            when (model.kind) {
+                BookmarkKind.LINK -> creationNavigator.add(LinkmarkCreationRoute(bookmarkId = model.id))
+                BookmarkKind.NOTE -> creationNavigator.add(NotemarkCreationRoute(bookmarkId = model.id))
+                BookmarkKind.IMAGE -> creationNavigator.add(ImagemarkCreationRoute(bookmarkId = model.id))
+                BookmarkKind.FILE -> creationNavigator.add(DocmarkCreationRoute(bookmarkId = model.id))
+                BookmarkKind.CANVAS -> creationNavigator.add(CanvmarkCreationRoute(bookmarkId = model.id))
+            }
+            appStateManager.onShowCreationContent()
         }
-        appStateManager.onShowCreationContent()
     }
-    val runShare = rememberPrivateBookmarkProtectedAction(
-        model = model,
-        reason = PrivateBookmarkPasswordReason.SHARE_BOOKMARK,
-    ) {
-        onShareBookmark(model)
+    val runShare = remember(model.id) {
+        { onShareBookmark(model) }
     }
-    val runDelete = rememberPrivateBookmarkProtectedAction(
-        model = model,
-        reason = PrivateBookmarkPasswordReason.DELETE_BOOKMARK,
-    ) {
-        deletionDialogManager.send(
-            DeletionState(
-                deletionType = DeletionType.BOOKMARK,
-                bookmarkToBeDeleted = model,
-                onConfirm = { onDeleteBookmark(model) },
-            ),
-        )
+    val runDelete = remember(model.id) {
+        {
+            deletionDialogManager.send(
+                DeletionState(
+                    deletionType = DeletionType.BOOKMARK,
+                    bookmarkToBeDeleted = model,
+                    onConfirm = { onDeleteBookmark(model) },
+                ),
+            )
+        }
     }
 
     // Create menu actions for this bookmark
@@ -172,18 +149,15 @@ fun BookmarkItemView(
         remember(
             model.id,
             model.isPinned,
-            model.isPrivate,
             editText,
             moveText,
             pinActionText,
-            privateActionText,
             shareText,
             deleteText,
             isInSelectionMode,
             runEdit,
             runShare,
             runDelete,
-            onPrivateToggle,
         ) {
             if (isInSelectionMode) {
                 emptyList()
@@ -227,13 +201,6 @@ fun BookmarkItemView(
                         onClick = runShare,
                     ),
                     BookmarkMenuAction(
-                        key = "private_${model.id}",
-                        icon = if (model.isPrivate) "circle-lock-02" else "circle-unlock-02",
-                        text = privateActionText,
-                        color = YabaColor.RED,
-                        onClick = onPrivateToggle,
-                    ),
-                    BookmarkMenuAction(
                         key = "delete_${model.id}",
                         icon = "delete-02",
                         text = deleteText,
@@ -246,7 +213,7 @@ fun BookmarkItemView(
         }
 
     // Swipe actions (only for list view)
-    val leftSwipeActions = remember(model.id, model.isPrivate, runShare, onPrivateToggle) {
+    val leftSwipeActions = remember(model.id, runShare) {
         listOf(
             BookmarkSwipeAction(
                 key = "SHARE_${model.id}",
@@ -268,12 +235,6 @@ fun BookmarkItemView(
                     )
                     appStateManager.onShowCreationContent()
                 },
-            ),
-            BookmarkSwipeAction(
-                key = "PRIVATE_${model.id}",
-                icon = if (model.isPrivate) "circle-lock-02" else "circle-unlock-02",
-                color = YabaColor.RED,
-                onClick = onPrivateToggle,
             ),
         )
     }
@@ -332,7 +293,6 @@ fun BookmarkItemView(
                     index = index,
                     count = count,
                     containerColor = containerColor,
-                    isPrivatePresentation = showPrivateLocked,
                 )
             }
 
@@ -349,7 +309,6 @@ fun BookmarkItemView(
                             menuActions = menuActions,
                             onClick = onClick,
                             onLongClick = { isOptionsExpanded = true },
-                            isPrivatePresentation = showPrivateLocked,
                         )
                     }
 
@@ -364,7 +323,6 @@ fun BookmarkItemView(
                             menuActions = menuActions,
                             onClick = onClick,
                             onLongClick = { isOptionsExpanded = true },
-                            isPrivatePresentation = showPrivateLocked,
                         )
                     }
                 }
@@ -379,7 +337,6 @@ fun BookmarkItemView(
                     isInSelectionMode = isInSelectionMode,
                     onClick = onClick,
                     onLongClick = { isOptionsExpanded = true },
-                    isPrivatePresentation = showPrivateLocked,
                 )
             }
         }
@@ -403,9 +360,7 @@ private fun ListItemContent(
     index: Int,
     count: Int,
     containerColor: Color,
-    isPrivatePresentation: Boolean,
 ) {
-    val privateBlur = privateLockedBlurModifier(isPrivatePresentation)
     SegmentedListItem(
         modifier = Modifier
             .clip(RoundedCornerShape(12.dp))
@@ -425,7 +380,6 @@ private fun ListItemContent(
         shapes = ListItemDefaults.segmentedShapes(index = index, count = count),
         content = {
             Text(
-                modifier = privateBlur,
                 text = model.label,
                 style = MaterialTheme.typography.bodyLargeEmphasized,
                 maxLines = 1,
@@ -436,7 +390,6 @@ private fun ListItemContent(
             if (!model.description.isNullOrBlank()) {
                 val modelDescription = model.description as String
                 Text(
-                    modifier = privateBlur,
                     text = modelDescription,
                     style = MaterialTheme.typography.bodyMedium,
                     maxLines = 2,
@@ -444,7 +397,6 @@ private fun ListItemContent(
                 )
             } else {
                 Text(
-                    modifier = privateBlur,
                     text = stringResource(R.string.bookmark_detail_no_description_provided),
                     style = MaterialTheme.typography.bodyMedium,
                     fontStyle = FontStyle.Italic,
@@ -460,7 +412,6 @@ private fun ListItemContent(
                 folderColor = folderColor,
                 size = ItemImageSize.SMALL,
                 isAddedToSelection = isAddedToSelection,
-                isPrivatePresentation = isPrivatePresentation,
             )
         },
     )
@@ -482,9 +433,7 @@ private fun CardBigItemContent(
     menuActions: List<BookmarkMenuAction>,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
-    isPrivatePresentation: Boolean,
 ) {
-    val privateBlur = privateLockedBlurModifier(isPrivatePresentation)
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -509,12 +458,10 @@ private fun CardBigItemContent(
                 folderColor = folderColor,
                 size = ItemImageSize.BIG,
                 isAddedToSelection = isAddedToSelection,
-                isPrivatePresentation = isPrivatePresentation,
             )
 
             // Title
             Text(
-                modifier = privateBlur,
                 text = model.label,
                 style = MaterialTheme.typography.bodyLargeEmphasized,
                 maxLines = 2,
@@ -525,7 +472,6 @@ private fun CardBigItemContent(
             if (!model.description.isNullOrBlank()) {
                 val modelDescription = model.description as String
                 Text(
-                    modifier = privateBlur,
                     text = modelDescription,
                     style = MaterialTheme.typography.bodyMedium,
                     maxLines = 3,
@@ -533,7 +479,6 @@ private fun CardBigItemContent(
                 )
             } else {
                 Text(
-                    modifier = privateBlur,
                     text = stringResource(R.string.bookmark_detail_no_description_provided),
                     style = MaterialTheme.typography.bodyMedium,
                     fontStyle = FontStyle.Italic,
@@ -558,14 +503,12 @@ private fun CardBigItemContent(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    if (!model.isPrivate) {
-                        YabaImage(
-                            modifier = Modifier
-                                .size(24.dp)
-                                .clip(RoundedCornerShape(4.dp)),
-                            filePath = iconFilePath,
-                        )
-                    }
+                    YabaImage(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clip(RoundedCornerShape(4.dp)),
+                        filePath = iconFilePath,
+                    )
                     if (menuActions.isNotEmpty()) {
                         CardOptionsButton(
                             menuActions = menuActions,
@@ -594,9 +537,7 @@ private fun CardSmallItemContent(
     menuActions: List<BookmarkMenuAction>,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
-    isPrivatePresentation: Boolean,
 ) {
-    val privateBlur = privateLockedBlurModifier(isPrivatePresentation)
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -624,12 +565,9 @@ private fun CardSmallItemContent(
                     folderColor = folderColor,
                     size = ItemImageSize.SMALL,
                     isAddedToSelection = isAddedToSelection,
-                    isPrivatePresentation = isPrivatePresentation,
                 )
                 Text(
-                    modifier = Modifier
-                        .weight(1f)
-                        .then(privateBlur),
+                    modifier = Modifier.weight(1f),
                     text = model.label,
                     style = MaterialTheme.typography.bodyLargeEmphasized,
                     maxLines = 2,
@@ -641,7 +579,6 @@ private fun CardSmallItemContent(
             if (!model.description.isNullOrBlank()) {
                 val modelDescription = model.description as String
                 Text(
-                    modifier = privateBlur,
                     text = modelDescription,
                     style = MaterialTheme.typography.bodyMedium,
                     maxLines = 3,
@@ -649,7 +586,6 @@ private fun CardSmallItemContent(
                 )
             } else {
                 Text(
-                    modifier = privateBlur,
                     text = stringResource(R.string.bookmark_detail_no_description_provided),
                     style = MaterialTheme.typography.bodyMedium,
                     fontStyle = FontStyle.Italic,
@@ -674,14 +610,12 @@ private fun CardSmallItemContent(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
-                    if (!model.isPrivate) {
-                        YabaImage(
-                            modifier = Modifier
-                                .size(24.dp)
-                                .clip(RoundedCornerShape(8.dp)),
-                            filePath = iconFilePath,
-                        )
-                    }
+                    YabaImage(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clip(RoundedCornerShape(8.dp)),
+                        filePath = iconFilePath,
+                    )
                     if (menuActions.isNotEmpty()) {
                         CardOptionsButton(
                             menuActions = menuActions,
@@ -694,10 +628,6 @@ private fun CardSmallItemContent(
     }
 }
 
-/**
- * Tags area for card layouts: private bookmarks show lock (and pin when pinned) chips only;
- * otherwise [TagsRowContent].
- */
 @Composable
 private fun BookmarkCardTagsRow(
     modifier: Modifier = Modifier,
@@ -705,58 +635,12 @@ private fun BookmarkCardTagsRow(
     @StringRes emptyStateTextRes: Int,
     emptyStateColor: YabaColor,
 ) {
-    if (model.isPrivate) {
-        val pinnedFromTags = model.tags.firstOrNull { it.id == CoreConstants.Tag.Pinned.ID }
-        val pinColor = pinnedFromTags?.color ?: YabaColor.YELLOW
-        val pinIcon = pinnedFromTags?.icon ?: CoreConstants.Tag.Pinned.ICON
-        Row(
-            modifier = modifier,
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start,
-        ) {
-            if (model.isPinned) {
-                Surface(
-                    modifier = Modifier.size(24.dp),
-                    shape = RoundedCornerShape(
-                        topStart = 4.dp,
-                        bottomStart = 4.dp,
-                    ),
-                    color = Color(pinColor.iconTintArgb()).copy(alpha = 0.3F),
-                ) {
-                    YabaIcon(
-                        modifier = Modifier.padding(4.dp),
-                        name = pinIcon,
-                        color = pinColor,
-                    )
-                }
-            }
-            Surface(
-                modifier = Modifier.size(24.dp),
-                shape = if (model.isPinned) {
-                    RoundedCornerShape(
-                        topEnd = 4.dp,
-                        bottomEnd = 4.dp,
-                    )
-                } else {
-                    RoundedCornerShape(4.dp)
-                },
-                color = Color(YabaColor.RED.iconTintArgb()).copy(alpha = 0.3F),
-            ) {
-                YabaIcon(
-                    modifier = Modifier.padding(4.dp),
-                    name = "circle-lock-02",
-                    color = YabaColor.RED,
-                )
-            }
-        }
-    } else {
-        TagsRowContent(
-            modifier = modifier,
-            tags = model.tags,
-            emptyStateTextRes = emptyStateTextRes,
-            emptyStateColor = emptyStateColor,
-        )
-    }
+    TagsRowContent(
+        modifier = modifier,
+        tags = model.tags,
+        emptyStateTextRes = emptyStateTextRes,
+        emptyStateColor = emptyStateColor,
+    )
 }
 
 /**
@@ -774,9 +658,7 @@ private fun GridItemContent(
     isInSelectionMode: Boolean,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
-    isPrivatePresentation: Boolean,
 ) {
-    val privateBlur = privateLockedBlurModifier(isPrivatePresentation)
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -801,12 +683,10 @@ private fun GridItemContent(
                 folderColor = folderColor,
                 size = ItemImageSize.GRID,
                 isAddedToSelection = isAddedToSelection,
-                isPrivatePresentation = isPrivatePresentation,
             )
 
             // Title
             Text(
-                modifier = privateBlur,
                 text = model.label,
                 style = MaterialTheme.typography.bodyLargeEmphasized,
                 maxLines = 2,
@@ -817,7 +697,6 @@ private fun GridItemContent(
             if (!model.description.isNullOrBlank()) {
                 val modelDescription = model.description as String
                 Text(
-                    modifier = privateBlur,
                     text = modelDescription,
                     style = MaterialTheme.typography.bodyMedium,
                     maxLines = 3,
@@ -825,7 +704,6 @@ private fun GridItemContent(
                 )
             } else {
                 Text(
-                    modifier = privateBlur,
                     text = stringResource(R.string.bookmark_detail_no_description_provided),
                     style = MaterialTheme.typography.bodyMedium,
                     fontStyle = FontStyle.Italic,
@@ -858,36 +736,50 @@ private fun BookmarkImageContent(
     folderColor: YabaColor,
     size: ItemImageSize,
     isAddedToSelection: Boolean,
-    isPrivatePresentation: Boolean = false,
 ) {
     val color = Color(folderColor.iconTintArgb())
-    val red = Color(YabaColor.RED.iconTintArgb())
 
     Box(
         modifier = Modifier.wrapContentSize(),
         contentAlignment = Alignment.Center,
     ) {
-        if (isPrivatePresentation) {
-            when (size) {
-                ItemImageSize.SMALL -> {
+        when (size) {
+            ItemImageSize.SMALL -> {
+                if (imageFilePath != null) {
+                    YabaImage(
+                        modifier = modifier
+                            .size(64.dp)
+                            .clip(RoundedCornerShape(12.dp)),
+                        filePath = imageFilePath,
+                    )
+                } else {
                     Surface(
                         modifier = modifier.size(64.dp),
                         shape = RoundedCornerShape(12.dp),
-                        color = red.copy(alpha = 0.3f),
+                        color = color.copy(alpha = 0.3f),
                     ) {
                         YabaIcon(
                             modifier = Modifier.padding(16.dp),
-                            name = "circle-lock-02",
-                            color = YabaColor.RED,
+                            name = bookmarkKind.uiIconName(),
+                            color = folderColor,
                         )
                     }
                 }
+            }
 
-                ItemImageSize.BIG, ItemImageSize.GRID -> {
+            ItemImageSize.BIG, ItemImageSize.GRID -> {
+                if (imageFilePath != null) {
+                    YabaImage(
+                        modifier = modifier
+                            .height(128.dp)
+                            .clip(RoundedCornerShape(12.dp)),
+                        filePath = imageFilePath,
+                    )
+                } else {
                     Surface(
                         modifier = modifier.height(128.dp),
                         shape = RoundedCornerShape(12.dp),
-                        color = red.copy(alpha = 0.3f),
+                        color = color.copy(alpha = 0.3f),
                     ) {
                         Box(
                             modifier = Modifier.fillMaxWidth(),
@@ -895,62 +787,9 @@ private fun BookmarkImageContent(
                         ) {
                             YabaIcon(
                                 modifier = Modifier.size(48.dp),
-                                name = "circle-lock-02",
-                                color = YabaColor.RED,
-                            )
-                        }
-                    }
-                }
-            }
-        } else {
-            when (size) {
-                ItemImageSize.SMALL -> {
-                    if (imageFilePath != null) {
-                        YabaImage(
-                            modifier = modifier
-                                .size(64.dp)
-                                .clip(RoundedCornerShape(12.dp)),
-                            filePath = imageFilePath,
-                        )
-                    } else {
-                        Surface(
-                            modifier = modifier.size(64.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            color = color.copy(alpha = 0.3f),
-                        ) {
-                            YabaIcon(
-                                modifier = Modifier.padding(16.dp),
                                 name = bookmarkKind.uiIconName(),
                                 color = folderColor,
                             )
-                        }
-                    }
-                }
-
-                ItemImageSize.BIG, ItemImageSize.GRID -> {
-                    if (imageFilePath != null) {
-                        YabaImage(
-                            modifier = modifier
-                                .height(128.dp)
-                                .clip(RoundedCornerShape(12.dp)),
-                            filePath = imageFilePath,
-                        )
-                    } else {
-                        Surface(
-                            modifier = modifier.height(128.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            color = color.copy(alpha = 0.3f),
-                        ) {
-                            Box(
-                                modifier = Modifier.fillMaxWidth(),
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                YabaIcon(
-                                    modifier = Modifier.size(48.dp),
-                                    name = bookmarkKind.uiIconName(),
-                                    color = folderColor,
-                                )
-                            }
                         }
                     }
                 }

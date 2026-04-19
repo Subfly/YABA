@@ -30,7 +30,6 @@ import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,24 +39,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.subfly.yaba.core.components.NoContentView
 import dev.subfly.yaba.core.components.YabaIcon
 import dev.subfly.yaba.core.components.item.bookmark.BookmarkItemView
-import dev.subfly.yaba.core.filesystem.access.YabaFileAccessor
-import dev.subfly.yaba.core.managers.LinkmarkManager
-import dev.subfly.yaba.core.model.utils.BookmarkKind
-import dev.subfly.yaba.core.navigation.creation.DocmarkCreationRoute
-import dev.subfly.yaba.core.navigation.creation.ImagemarkCreationRoute
-import dev.subfly.yaba.core.navigation.creation.LinkmarkCreationRoute
-import dev.subfly.yaba.core.navigation.creation.NotemarkCreationRoute
-import dev.subfly.yaba.core.navigation.creation.CanvmarkCreationRoute
-import dev.subfly.yaba.util.BookmarkPrivatePasswordEventEffect
-import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
-import dev.subfly.yaba.util.rememberPrivateBookmarkOpenClick
-import dev.subfly.yaba.util.rememberShareHandler
 import dev.subfly.yaba.util.ResultStoreKeys
 import dev.subfly.yaba.core.model.utils.BookmarkAppearance
 import dev.subfly.yaba.core.state.selection.bookmark.BookmarkSelectionEvent
-import kotlinx.coroutines.launch
 
 @OptIn(
     ExperimentalMaterial3Api::class,
@@ -66,42 +52,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun BookmarkSelectionContent(selectedBookmarkId: String?) {
     val creationNavigator = LocalCreationContentNavigator.current
-    val appStateManager = LocalAppStateManager.current
     val resultStore = LocalResultStore.current
-    val shareUrl = rememberShareHandler()
-    val shareScope = rememberCoroutineScope()
 
     val vm = viewModel { BookmarkSelectionVM() }
     val state by vm.state.collectAsStateWithLifecycle()
-
-    BookmarkPrivatePasswordEventEffect(
-        resolveBookmark = { id -> state.bookmarks.find { it.id == id } },
-        onOpenBookmark = { model ->
-            vm.onEvent(BookmarkSelectionEvent.OnSelectBookmark(model.id))
-        },
-        onEditBookmark = { model ->
-            when (model.kind) {
-                BookmarkKind.LINK -> creationNavigator.add(LinkmarkCreationRoute(bookmarkId = model.id))
-                BookmarkKind.NOTE -> creationNavigator.add(NotemarkCreationRoute(bookmarkId = model.id))
-                BookmarkKind.IMAGE -> creationNavigator.add(ImagemarkCreationRoute(bookmarkId = model.id))
-                BookmarkKind.FILE -> creationNavigator.add(DocmarkCreationRoute(bookmarkId = model.id))
-                BookmarkKind.CANVAS -> creationNavigator.add(CanvmarkCreationRoute(bookmarkId = model.id))
-            }
-            appStateManager.onShowCreationContent()
-        },
-        onShareBookmark = { bookmark ->
-            when (bookmark.kind) {
-                BookmarkKind.LINK -> shareScope.launch {
-                    LinkmarkManager.getBookmarkUrl(bookmark.id)?.let(shareUrl)
-                }
-                BookmarkKind.IMAGE -> shareScope.launch {
-                    YabaFileAccessor.shareImageBookmark(bookmark.id)
-                }
-                else -> {}
-            }
-        },
-        onDeleteBookmark = {},
-    )
 
     LaunchedEffect(selectedBookmarkId) {
         vm.onEvent(BookmarkSelectionEvent.OnInit(selectedBookmarkId = selectedBookmarkId))
@@ -190,15 +144,12 @@ fun BookmarkSelectionContent(selectedBookmarkId: String?) {
                 ) {
                     item { Spacer(modifier = Modifier.height(8.dp)) }
                     items(state.bookmarks, key = { it.id }) { bookmark ->
-                        val openSelect = rememberPrivateBookmarkOpenClick(bookmark) {
-                            vm.onEvent(BookmarkSelectionEvent.OnSelectBookmark(bookmark.id))
-                        }
                         BookmarkItemView(
                             modifier = Modifier.padding(bottom = 8.dp).animateItem(),
                             model = bookmark,
                             appearance = BookmarkAppearance.LIST,
                             isAddedToSelection = bookmark.id == state.selectedBookmarkId,
-                            onClick = { openSelect() },
+                            onClick = { vm.onEvent(BookmarkSelectionEvent.OnSelectBookmark(bookmark.id)) },
                             onDeleteBookmark = {},
                             onShareBookmark = {},
                         )

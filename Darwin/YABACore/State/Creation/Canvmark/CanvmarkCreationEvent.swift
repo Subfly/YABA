@@ -18,7 +18,6 @@ public enum CanvmarkCreationEvent: Sendable {
     case onSelectFolderId(String?)
     case onSelectTagIds([String])
     case onSave
-    case onTogglePrivate
     case onTogglePinned
 
     case create(
@@ -26,7 +25,6 @@ public enum CanvmarkCreationEvent: Sendable {
         folderId: String,
         label: String,
         bookmarkDescription: String?,
-        isPrivate: Bool,
         isPinned: Bool,
         tagIds: [String]
     )

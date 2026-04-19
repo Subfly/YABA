@@ -14,7 +14,6 @@ data class ImagemarkUiModel(
     override val createdAt: Instant,
     override val editedAt: Instant,
     override val viewCount: Long = 0,
-    override val isPrivate: Boolean = false,
     override val isPinned: Boolean = false,
     val summary: String? = null,
     /** Local file path for the bookmark's image. Imagemarks do not use localIconPath. */

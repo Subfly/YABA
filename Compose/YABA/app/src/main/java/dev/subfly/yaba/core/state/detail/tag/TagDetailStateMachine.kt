@@ -7,7 +7,6 @@ import dev.subfly.yaba.core.model.utils.SortOrderType
 import dev.subfly.yaba.core.model.utils.SortType
 import dev.subfly.yaba.core.preferences.SettingsStores
 import dev.subfly.yaba.core.preferences.UserPreferences
-import dev.subfly.yaba.core.security.PrivateBookmarkSessionGuard
 import dev.subfly.yaba.core.state.base.BaseStateMachine
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -21,7 +20,6 @@ private data class TagDetailQueryParams(
     val tagId: String,
     val query: String,
     val prefs: UserPreferences,
-    val unlocked: Boolean,
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -58,10 +56,9 @@ class TagDetailStateMachine :
                 tagIdFlow,
                 queryFlow,
                 preferencesStore.preferencesFlow,
-                PrivateBookmarkSessionGuard.isUnlocked,
-            ) { tagId, query, prefs, unlocked ->
+            ) { tagId, query, prefs ->
                 if (tagId == null) null
-                else TagDetailQueryParams(tagId, query, prefs, unlocked)
+                else TagDetailQueryParams(tagId, query, prefs)
             }.flatMapLatest { params ->
                 if (params == null) {
                     MutableStateFlow(TagDetailUIState())
@@ -69,17 +66,14 @@ class TagDetailStateMachine :
                     val tagId = params.tagId
                     val query = params.query
                     val prefs = params.prefs
-                    val unlocked = params.unlocked
                     updateState { it.copy(isLoading = true, query = query) }
 
-                    val excludePrivate = !unlocked && query.isNotEmpty()
                     val tagFlow = TagManager.observeTag(tagId)
                     val bookmarksFlow = AllBookmarksManager.searchBookmarksFlow(
                         query = query,
                         filters = BookmarkSearchFilters(tagIds = setOf(tagId)),
                         sortType = prefs.preferredBookmarkSorting,
                         sortOrder = prefs.preferredBookmarkSortOrder,
-                        excludePrivate = excludePrivate,
                     )
 
                     combine(

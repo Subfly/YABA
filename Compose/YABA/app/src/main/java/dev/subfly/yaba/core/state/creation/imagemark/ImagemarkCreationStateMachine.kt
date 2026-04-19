@@ -36,13 +36,8 @@ class ImagemarkCreationStateMachine :
             is ImagemarkCreationEvent.OnSelectFolder -> onSelectFolder(event)
             is ImagemarkCreationEvent.OnSelectTags -> onSelectTags(event)
             is ImagemarkCreationEvent.OnSave -> onSave(event)
-            ImagemarkCreationEvent.OnTogglePrivate -> onTogglePrivate()
             ImagemarkCreationEvent.OnTogglePinned -> onTogglePinned()
         }
-    }
-
-    private fun onTogglePrivate() {
-        updateState { it.copy(isPrivate = !it.isPrivate) }
     }
 
     private fun onTogglePinned() {
@@ -75,7 +70,6 @@ class ImagemarkCreationStateMachine :
                             selectedFolder = existing.parentFolder,
                             selectedTags = existing.tags,
                             editingImagemark = existing,
-                            isPrivate = existing.isPrivate,
                             isPinned = existing.isPinned,
                             imageBytes = savedBytes,
                             imageExtension = ext,
@@ -277,7 +271,6 @@ class ImagemarkCreationStateMachine :
                         kind = BookmarkKind.IMAGE,
                         label = state.label,
                         description = state.description.ifBlank { null },
-                        isPrivate = state.isPrivate,
                         isPinned = state.isPinned,
                         tagIds = state.selectedTags.map { it.id },
                         previewImageBytes = null,
@@ -304,7 +297,6 @@ class ImagemarkCreationStateMachine :
                         kind = BookmarkKind.IMAGE,
                         label = state.label,
                         description = state.description.ifBlank { null },
-                        isPrivate = state.isPrivate,
                         isPinned = state.isPinned,
                         tagIds = state.selectedTags.map { it.id },
                         previewImageBytes = imageBytes,

@@ -81,7 +81,6 @@ import dev.subfly.yaba.ui.detail.composables.CollectionDetailSearchTopBar
 import dev.subfly.yaba.ui.detail.composables.collectionDetailAccentColor
 import dev.subfly.yaba.ui.detail.composables.collectionDetailIconButtonColors
 import dev.subfly.yaba.ui.detail.composables.collectionDetailSearchFieldTint
-import dev.subfly.yaba.util.BookmarkPrivatePasswordEventEffect
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalCreationContentNavigator
@@ -89,7 +88,6 @@ import dev.subfly.yaba.util.LocalDeletionDialogManager
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.LocalUserPreferences
 import dev.subfly.yaba.util.ResultStoreKeys
-import dev.subfly.yaba.util.rememberPrivateBookmarkOpenClick
 import dev.subfly.yaba.util.rememberShareHandler
 import dev.subfly.yaba.util.uiTitle
 import dev.subfly.yaba.core.common.CoreConstants
@@ -133,51 +131,6 @@ fun TagDetailView(
     val creationNavigator = LocalCreationContentNavigator.current
     val appStateManager = LocalAppStateManager.current
     val deletionDialogManager = LocalDeletionDialogManager.current
-
-    BookmarkPrivatePasswordEventEffect(
-        resolveBookmark = { id -> state.bookmarks.find { it.id == id } },
-        onOpenBookmark = { model ->
-            navigator.add(
-                when (model.kind) {
-                    BookmarkKind.LINK -> LinkDetailRoute(bookmarkId = model.id)
-                    BookmarkKind.NOTE -> NoteDetailRoute(bookmarkId = model.id)
-                    BookmarkKind.IMAGE -> ImageDetailRoute(bookmarkId = model.id)
-                    BookmarkKind.FILE -> DocDetailRoute(bookmarkId = model.id)
-                    BookmarkKind.CANVAS -> CanvasDetailRoute(bookmarkId = model.id)
-                },
-            )
-        },
-        onEditBookmark = { model ->
-            when (model.kind) {
-                BookmarkKind.LINK -> creationNavigator.add(LinkmarkCreationRoute(bookmarkId = model.id))
-                BookmarkKind.NOTE -> creationNavigator.add(NotemarkCreationRoute(bookmarkId = model.id))
-                BookmarkKind.IMAGE -> creationNavigator.add(ImagemarkCreationRoute(bookmarkId = model.id))
-                BookmarkKind.FILE -> creationNavigator.add(DocmarkCreationRoute(bookmarkId = model.id))
-                BookmarkKind.CANVAS -> creationNavigator.add(CanvmarkCreationRoute(bookmarkId = model.id))
-            }
-            appStateManager.onShowCreationContent()
-        },
-        onShareBookmark = { bookmark ->
-            when (bookmark.kind) {
-                BookmarkKind.LINK -> shareScope.launch {
-                    LinkmarkManager.getBookmarkUrl(bookmark.id)?.let(shareUrl)
-                }
-                BookmarkKind.IMAGE -> shareScope.launch {
-                    YabaFileAccessor.shareImageBookmark(bookmark.id)
-                }
-                else -> {}
-            }
-        },
-        onDeleteBookmark = { bookmark ->
-            deletionDialogManager.send(
-                DeletionState(
-                    deletionType = DeletionType.BOOKMARK,
-                    bookmarkToBeDeleted = bookmark,
-                    onConfirm = { vm.onEvent(TagDetailEvent.OnDeleteBookmark(bookmark = bookmark)) },
-                ),
-            )
-        },
-    )
 
     LaunchedEffect(tagId) {
         vm.onEvent(TagDetailEvent.OnInit(tagId = tagId))
@@ -251,17 +204,6 @@ fun TagDetailView(
                     )
                 },
                 itemContent = { model, _, appearance, cardImageSizing, index, count ->
-                    val openBookmark = rememberPrivateBookmarkOpenClick(model) {
-                        navigator.add(
-                            when (model.kind) {
-                                BookmarkKind.LINK -> LinkDetailRoute(bookmarkId = model.id)
-                                BookmarkKind.NOTE -> NoteDetailRoute(bookmarkId = model.id)
-                                BookmarkKind.IMAGE -> ImageDetailRoute(bookmarkId = model.id)
-                                BookmarkKind.FILE -> DocDetailRoute(bookmarkId = model.id)
-                                BookmarkKind.CANVAS -> CanvasDetailRoute(bookmarkId = model.id)
-                            },
-                        )
-                    }
                     BookmarkItemView(
                         modifier = itemModifier,
                         model = model,
@@ -276,7 +218,15 @@ fun TagDetailView(
                                     )
                                 )
                             } else {
-                                openBookmark()
+                                navigator.add(
+                                    when (model.kind) {
+                                        BookmarkKind.LINK -> LinkDetailRoute(bookmarkId = model.id)
+                                        BookmarkKind.NOTE -> NoteDetailRoute(bookmarkId = model.id)
+                                        BookmarkKind.IMAGE -> ImageDetailRoute(bookmarkId = model.id)
+                                        BookmarkKind.FILE -> DocDetailRoute(bookmarkId = model.id)
+                                        BookmarkKind.CANVAS -> CanvasDetailRoute(bookmarkId = model.id)
+                                    },
+                                )
                             }
                         },
                         onDeleteBookmark = { bookmark ->

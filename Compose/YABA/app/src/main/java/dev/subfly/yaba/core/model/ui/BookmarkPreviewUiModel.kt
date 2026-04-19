@@ -20,7 +20,6 @@ data class BookmarkPreviewUiModel(
     override val createdAt: Instant,
     override val editedAt: Instant,
     override val viewCount: Long = 0,
-    override val isPrivate: Boolean = false,
     override val isPinned: Boolean = false,
     /** Absolute file path for the bookmark's preview image, if available. */
     override val localImagePath: String? = null,

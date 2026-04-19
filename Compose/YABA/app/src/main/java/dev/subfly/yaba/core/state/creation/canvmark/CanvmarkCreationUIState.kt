@@ -19,7 +19,6 @@ data class CanvmarkCreationUIState(
     val bookmarkAppearance: BookmarkAppearance = BookmarkAppearance.LIST,
     val cardImageSizing: CardImageSizing = CardImageSizing.SMALL,
     val editingCanvmark: CanvmarkUiModel? = null,
-    val isPrivate: Boolean = false,
     val isPinned: Boolean = false,
     val uncategorizedFolderCreationRequired: Boolean = false,
 ) {

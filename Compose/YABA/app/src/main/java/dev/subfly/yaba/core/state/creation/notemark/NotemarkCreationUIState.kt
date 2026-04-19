@@ -19,7 +19,6 @@ data class NotemarkCreationUIState(
     val bookmarkAppearance: BookmarkAppearance = BookmarkAppearance.LIST,
     val cardImageSizing: CardImageSizing = CardImageSizing.SMALL,
     val editingNotemark: NotemarkUiModel? = null,
-    val isPrivate: Boolean = false,
     val isPinned: Boolean = false,
     val uncategorizedFolderCreationRequired: Boolean = false,
 ) {

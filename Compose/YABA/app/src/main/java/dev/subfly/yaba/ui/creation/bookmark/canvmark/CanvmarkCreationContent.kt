@@ -39,7 +39,6 @@ import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalCreationContentNavigator
 import dev.subfly.yaba.util.LocalResultStore
 import dev.subfly.yaba.util.ResultStoreKeys
-import dev.subfly.yaba.util.rememberPrivateBookmarkCreationToggle
 
 @Composable
 fun CanvmarkCreationContent(bookmarkId: String?) {
@@ -50,10 +49,6 @@ fun CanvmarkCreationContent(bookmarkId: String?) {
 
     val vm = viewModel { CanvmarkCreationVM() }
     val state by vm.state.collectAsStateWithLifecycle()
-
-    val onPrivateToggle = rememberPrivateBookmarkCreationToggle {
-        vm.onEvent(CanvmarkCreationEvent.OnTogglePrivate)
-    }
 
     LaunchedEffect(bookmarkId) {
         vm.onEvent(
@@ -147,9 +142,7 @@ fun CanvmarkCreationContent(bookmarkId: String?) {
                         vm.onEvent(CanvmarkCreationEvent.OnChangeDescription(it))
                     },
                     selectedFolder = state.selectedFolder,
-                    isPrivate = state.isPrivate,
                     isPinned = state.isPinned,
-                    onPrivateToggle = onPrivateToggle,
                     onPinToggle = { vm.onEvent(CanvmarkCreationEvent.OnTogglePinned) },
                     enabled = true,
                     labelPlaceholder = R.string.create_bookmark_title_placeholder,
