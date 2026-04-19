@@ -9,6 +9,9 @@ import SwiftData
 import SwiftUI
 
 struct SearchView: View {
+    @Environment(\.dismiss)
+    private var dismiss
+
     @AppStorage(Constants.preferredBookmarkSortingKey)
     private var preferredSorting: SortType = .createdAt
 
@@ -39,7 +42,16 @@ struct SearchView: View {
             placement: .navigationBarDrawer(displayMode: .always),
             prompt: "Search Prompt"
         )
+        .navigationBarBackButtonHidden()
         .toolbar {
+            ToolbarItem(placement: .navigation) {
+                Button {
+                    dismiss()
+                } label: {
+                    YabaIconView(bundleKey: "arrow-left-01")
+                }
+                .buttonRepeatBehavior(.enabled)
+            }
             ToolbarItem(placement: .primaryAction) {
                 Menu {
                     ContentAppearancePicker()

@@ -11,6 +11,9 @@ import SwiftUI
 struct TagDetailView: View {
     let tagId: String
 
+    @Environment(\.dismiss)
+    private var dismiss
+
     @AppStorage(Constants.preferredBookmarkSortingKey)
     private var preferredSorting: SortType = .editedAt
 
@@ -78,7 +81,16 @@ struct TagDetailView: View {
             placement: .navigationBarDrawer(displayMode: .always),
             prompt: Text("Search Collection \(tagLabelForSearchPrompt)")
         )
+        .navigationBarBackButtonHidden()
         .toolbar {
+            ToolbarItem(placement: .navigation) {
+                Button {
+                    dismiss()
+                } label: {
+                    YabaIconView(bundleKey: "arrow-left-01")
+                }
+                .buttonRepeatBehavior(.enabled)
+            }
             ToolbarItem(placement: .primaryAction) {
                 Menu {
                     if machine.state.selectionMode {

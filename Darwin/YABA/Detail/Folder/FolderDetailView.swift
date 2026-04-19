@@ -11,6 +11,9 @@ import SwiftUI
 struct FolderDetailView: View {
     let folderId: String
 
+    @Environment(\.dismiss)
+    private var dismiss
+
     @AppStorage(Constants.preferredBookmarkSortingKey)
     private var preferredSorting: SortType = .editedAt
 
@@ -78,7 +81,16 @@ struct FolderDetailView: View {
             placement: .navigationBarDrawer(displayMode: .automatic),
             prompt: Text("Search Collection \(folder?.label ?? "")")
         )
+        .navigationBarBackButtonHidden()
         .toolbar {
+            ToolbarItem(placement: .navigation) {
+                Button {
+                    dismiss()
+                } label: {
+                    YabaIconView(bundleKey: "arrow-left-01")
+                }
+                .buttonRepeatBehavior(.enabled)
+            }
             ToolbarItem(placement: .primaryAction) {
                 Menu {
                     if machine.state.selectionMode {
