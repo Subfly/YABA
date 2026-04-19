@@ -27,7 +27,6 @@ enum BookmarkFlowHydration {
         state.bookmarkDescription = bookmark.bookmarkDescription ?? ""
         state.selectedFolderId = bookmark.folder?.folderId
         state.selectedTagIds = bookmark.tags.map(\.tagId)
-        state.isPrivate = bookmark.isPrivate
         state.isPinned = bookmark.isPinned
 
         if let link = bookmark.linkDetail {
@@ -54,7 +53,6 @@ enum BookmarkFlowHydration {
         state.bookmarkDescription = bookmark.bookmarkDescription ?? ""
         state.selectedFolderId = bookmark.folder?.folderId
         state.selectedTagIds = bookmark.tags.map(\.tagId)
-        state.isPrivate = bookmark.isPrivate
         state.isPinned = bookmark.isPinned
 
         if let body = bookmark.noteDetail?.payload?.documentBody,
@@ -75,7 +73,6 @@ enum BookmarkFlowHydration {
         state.summary = bookmark.imageDetail?.summary ?? ""
         state.selectedFolderId = bookmark.folder?.folderId
         state.selectedTagIds = bookmark.tags.map(\.tagId)
-        state.isPrivate = bookmark.isPrivate
         state.isPinned = bookmark.isPinned
         state.imageData = bookmark.imagePayload?.bytes
         state.uncategorizedFolderCreationRequired = false
@@ -91,7 +88,6 @@ enum BookmarkFlowHydration {
         state.summary = bookmark.docDetail?.summary ?? ""
         state.selectedFolderId = bookmark.folder?.folderId
         state.selectedTagIds = bookmark.tags.map(\.tagId)
-        state.isPrivate = bookmark.isPrivate
         state.isPinned = bookmark.isPinned
         if let raw = bookmark.docDetail?.docmarkTypeRaw {
             state.docmarkType = DocmarkType(rawValue: raw)
@@ -115,7 +111,6 @@ enum BookmarkFlowHydration {
         state.bookmarkDescription = bookmark.bookmarkDescription ?? ""
         state.selectedFolderId = bookmark.folder?.folderId
         state.selectedTagIds = bookmark.tags.map(\.tagId)
-        state.isPrivate = bookmark.isPrivate
         state.isPinned = bookmark.isPinned
         state.sceneData = bookmark.canvasDetail?.payload?.sceneData
         state.uncategorizedFolderCreationRequired = false

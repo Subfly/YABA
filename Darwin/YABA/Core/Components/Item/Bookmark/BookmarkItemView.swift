@@ -9,6 +9,15 @@ import SwiftData
 import SwiftUI
 import UIKit
 
+private func bookmarkItemShareURL(_ bookmark: BookmarkModel) -> URL? {
+    if let urlString = bookmark.linkDetail?.url,
+       let u = URL(string: urlString), !urlString.isEmpty
+    {
+        return u
+    }
+    return nil
+}
+
 struct BookmarkItemView: View {
     @AppStorage(Constants.preferredContentAppearanceKey)
     private var contentAppearance: ContentAppearance = .list
@@ -211,13 +220,7 @@ private struct BookmarkItemListContent: View {
         #if !KEYBOARD_EXTENSION
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
             Button {
-                BookmarkItemPrivateGate.performProtected(
-                    bookmark: bookmark,
-                    reason: .deleteBookmark,
-                    itemState: itemState
-                ) {
-                    itemState.shouldShowDeleteAlert = true
-                }
+                itemState.shouldShowDeleteAlert = true
             } label: {
                 VStack {
                     YabaIconView(bundleKey: "delete-02")
@@ -226,13 +229,7 @@ private struct BookmarkItemListContent: View {
             }
             .tint(.red)
             Button {
-                BookmarkItemPrivateGate.performProtected(
-                    bookmark: bookmark,
-                    reason: .editBookmark,
-                    itemState: itemState
-                ) {
-                    itemState.shouldShowEditSheet = true
-                }
+                itemState.shouldShowEditSheet = true
             } label: {
                 VStack {
                     YabaIconView(bundleKey: "edit-02")
@@ -243,13 +240,7 @@ private struct BookmarkItemListContent: View {
         }
         .swipeActions(edge: .leading, allowsFullSwipe: false) {
             Button {
-                BookmarkItemPrivateGate.performProtected(
-                    bookmark: bookmark,
-                    reason: .shareBookmark,
-                    itemState: itemState
-                ) {
-                    itemState.shouldShowShareSheet = true
-                }
+                itemState.shouldShowShareSheet = true
             } label: {
                 Label {
                     Text("Bookmark Item Action Share Label")
@@ -582,13 +573,7 @@ private struct BookmarkOverflowMenuContent: View {
 
     var body: some View {
         Button {
-            BookmarkItemPrivateGate.performProtected(
-                bookmark: bookmark,
-                reason: .editBookmark,
-                itemState: itemState
-            ) {
-                itemState.shouldShowEditSheet = true
-            }
+            itemState.shouldShowEditSheet = true
         } label: {
             VStack {
                 YabaIconView(bundleKey: "edit-02")
@@ -597,13 +582,7 @@ private struct BookmarkOverflowMenuContent: View {
         }
         .tint(.orange)
         Button {
-            BookmarkItemPrivateGate.performProtected(
-                bookmark: bookmark,
-                reason: .shareBookmark,
-                itemState: itemState
-            ) {
-                itemState.shouldShowShareSheet = true
-            }
+            itemState.shouldShowShareSheet = true
         } label: {
             Label {
                 Text("Bookmark Item Action Share Label")
@@ -613,23 +592,8 @@ private struct BookmarkOverflowMenuContent: View {
             }
         }
         .tint(.indigo)
-        Button {
-            BookmarkItemPrivateGate.performTogglePrivate(bookmark: bookmark, itemState: itemState)
-        } label: {
-            Label {
-                Text("Bookmark Item Action Toggle Private Label")
-            } icon: {
-                YabaIconView(bundleKey: bookmark.isPrivate ? "circle-lock-02" : "circle-unlock-02")
-            }
-        }
         Button(role: .destructive) {
-            BookmarkItemPrivateGate.performProtected(
-                bookmark: bookmark,
-                reason: .deleteBookmark,
-                itemState: itemState
-            ) {
-                itemState.shouldShowDeleteAlert = true
-            }
+            itemState.shouldShowDeleteAlert = true
         } label: {
             VStack {
                 YabaIconView(bundleKey: "delete-02")
@@ -650,16 +614,8 @@ private struct BookmarkSheetsAndAlertsModifier: ViewModifier {
 
     let onNavigationCallback: (BookmarkModel) -> Void
 
-    @Bindable
-    private var privateSession = PrivateBookmarkSessionGuard.shared
-
-    private var blurRadius: CGFloat {
-        bookmark.isPrivate && privateSession.isLocked ? 10 : 0
-    }
-
     func body(content: Content) -> some View {
         content
-            .blur(radius: blurRadius)
             .alert(
                 LocalizedStringKey("Delete Bookmark Title"),
                 isPresented: $itemState.shouldShowDeleteAlert
@@ -683,7 +639,7 @@ private struct BookmarkSheetsAndAlertsModifier: ViewModifier {
             }
             .sheet(isPresented: $itemState.shouldShowShareSheet) {
                 Group {
-                    if let url = BookmarkItemPrivateGate.shareURL(for: bookmark) {
+                    if let url = bookmarkItemShareURL(bookmark) {
                         ShareSheet(bookmarkLink: url)
                     } else {
                         Text("Bookmark Item Share Unavailable Message")
@@ -691,44 +647,11 @@ private struct BookmarkSheetsAndAlertsModifier: ViewModifier {
                     }
                 }
             }
-            .sheet(item: $itemState.privatePinRoute) { route in
-                switch route {
-                case .create:
-                    BookmarkPasswordCreateSheet()
-                case let .entry(bookmarkId, reason):
-                    BookmarkPasswordEntrySheet(
-                        bookmarkId: bookmarkId,
-                        reason: reason,
-                        onNonToggleSuccess: { r in
-                            handleNonTogglePinSuccess(reason: r)
-                        }
-                    )
-                }
-            }
             .onHover { hovered in
                 itemState.isHovered = hovered
             }
             .onTapGesture {
-                BookmarkItemPrivateGate.performOpen(
-                    bookmark: bookmark,
-                    itemState: itemState,
-                    onOpen: onNavigationCallback
-                )
+                onNavigationCallback(bookmark)
             }
-    }
-
-    private func handleNonTogglePinSuccess(reason: PrivateBookmarkPasswordReason) {
-        switch reason {
-        case .openBookmark:
-            onNavigationCallback(bookmark)
-        case .editBookmark:
-            itemState.shouldShowEditSheet = true
-        case .shareBookmark:
-            itemState.shouldShowShareSheet = true
-        case .deleteBookmark:
-            itemState.shouldShowDeleteAlert = true
-        default:
-            break
-        }
     }
 }
