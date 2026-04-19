@@ -36,14 +36,15 @@ struct BookmarkItemView: View {
 
     var body: some View {
         selectableContent
-            .modifier(BookmarkListRowBackgroundModifier(
-                isHovered: itemState.isHovered
-            ))
+    }
+
+    private var effectiveContentAppearance: ContentAppearance {
+        isInRecents ? .list : contentAppearance
     }
 
     @ViewBuilder
     private var selectableContent: some View {
-        HStack(alignment: contentAppearance == .list ? .center : .top) {
+        HStack(alignment: effectiveContentAppearance == .list ? .center : .top) {
             if isInSelectionMode {
                 YabaIconView(
                     bundleKey: isSelected
@@ -59,67 +60,22 @@ struct BookmarkItemView: View {
 
     @ViewBuilder
     private var content: some View {
-        if isInRecents {
-            bookmarkInteractiveCore
-                .padding()
-                .background {
-                    RoundedRectangle(cornerRadius: 24).fill(Color.gray.opacity(0.05))
-                }
-                .padding(.horizontal)
-                .modifier(BookmarkContextMenuModifier(bookmark: bookmark, itemState: $itemState))
-        } else {
-            bookmarkInteractiveCore
-                .modifier(BookmarkContextMenuModifier(bookmark: bookmark, itemState: $itemState))
-        }
+        bookmarkInteractiveCore
+            .modifier(BookmarkContextMenuModifier(bookmark: bookmark, itemState: $itemState))
     }
 
     private var bookmarkInteractiveCore: some View {
         BookmarkItemBody(
             bookmark: bookmark,
-            contentAppearance: contentAppearance,
+            contentAppearance: effectiveContentAppearance,
             cardSizing: cardSizing,
             itemState: $itemState
         )
-        .background {
-            if contentAppearance == .grid {
-                gridCellChrome
-            }
-        }
         .modifier(BookmarkSheetsAndAlertsModifier(
             bookmark: bookmark,
             itemState: $itemState,
             onNavigationCallback: onNavigationCallback
         ))
-    }
-
-    @ViewBuilder
-    private var gridCellChrome: some View {
-        RoundedRectangle(cornerRadius: 12)
-            .fill(gridCellFill)
-    }
-
-    private var gridCellFill: Color {
-        #if targetEnvironment(macCatalyst)
-        Color.gray.opacity(itemState.isHovered ? 0.2 : 0.1)
-        #else
-        Color(UIColor.secondarySystemFill)
-        #endif
-    }
-}
-
-// MARK: - List row background
-
-private struct BookmarkListRowBackgroundModifier: ViewModifier {
-    let isHovered: Bool
-
-    func body(content: Content) -> some View {
-        content
-            .listRowBackground(
-                ItemListRowChrome.listRowBackground(
-                    cornerRadius: 8,
-                    isHovered: isHovered
-                )
-            )
     }
 }
 
@@ -193,6 +149,10 @@ private struct BookmarkItemListContent: View {
     @Binding
     var itemState: BookmarkItemState
 
+    private var pinActionLabelKey: String {
+        bookmark.isPinned ? "Pinned Tag Label" : "Bookmark Creation Toggle Pinned Title"
+    }
+
     var body: some View {
         HStack(alignment: .center) {
             BookmarkItemImage(bookmark: bookmark, contentAppearance: .list, cardSizing: .small)
@@ -223,7 +183,7 @@ private struct BookmarkItemListContent: View {
             } label: {
                 VStack {
                     YabaIconView(bundleKey: "delete-02")
-                    Text("Bookmark Item Action Delete Label")
+                    Text(LocalizedStringKey("Delete"))
                 }
             }
             .tint(.red)
@@ -232,23 +192,43 @@ private struct BookmarkItemListContent: View {
             } label: {
                 VStack {
                     YabaIconView(bundleKey: "edit-02")
-                    Text("Bookmark Item Action Edit Label")
+                    Text(LocalizedStringKey("Edit"))
                 }
             }
             .tint(.orange)
+            Button {
+                AllBookmarksManager.queueToggleBookmarkPinned(bookmarkId: bookmark.bookmarkId)
+            } label: {
+                VStack {
+                    YabaIconView(bundleKey: bookmark.isPinned ? "pin" : "pin-off")
+                    Text(LocalizedStringKey(pinActionLabelKey))
+                }
+            }
+            .tint(.yellow)
         }
         .swipeActions(edge: .leading, allowsFullSwipe: false) {
             Button {
                 itemState.shouldShowShareSheet = true
             } label: {
                 Label {
-                    Text("Bookmark Item Action Share Label")
+                    Text(LocalizedStringKey("Share"))
                 } icon: {
                     YabaIconView(bundleKey: "share-03")
                         .scaledToFit()
                 }
             }
             .tint(.indigo)
+            Button {
+                itemState.shouldShowMoveSheet = true
+            } label: {
+                Label {
+                    Text(LocalizedStringKey("Move"))
+                } icon: {
+                    YabaIconView(bundleKey: "arrow-move-up-right")
+                        .scaledToFit()
+                }
+            }
+            .tint(.teal)
         }
         #endif
     }
@@ -570,21 +550,47 @@ private struct BookmarkOverflowMenuContent: View {
     @Binding
     var itemState: BookmarkItemState
 
+    private var pinActionLabelKey: String {
+        bookmark.isPinned ? "Pinned Tag Label" : "Bookmark Creation Toggle Pinned Title"
+    }
+
     var body: some View {
         Button {
             itemState.shouldShowEditSheet = true
         } label: {
             VStack {
                 YabaIconView(bundleKey: "edit-02")
-                Text("Bookmark Item Action Edit Label")
+                Text(LocalizedStringKey("Edit"))
             }
         }
         .tint(.orange)
         Button {
+            itemState.shouldShowMoveSheet = true
+        } label: {
+            Label {
+                Text(LocalizedStringKey("Move"))
+            } icon: {
+                YabaIconView(bundleKey: "arrow-move-up-right")
+                    .scaledToFit()
+            }
+        }
+        .tint(.teal)
+        Button {
+            AllBookmarksManager.queueToggleBookmarkPinned(bookmarkId: bookmark.bookmarkId)
+        } label: {
+            Label {
+                Text(LocalizedStringKey(pinActionLabelKey))
+            } icon: {
+                YabaIconView(bundleKey: bookmark.isPinned ? "pin" : "pin-off")
+                    .scaledToFit()
+            }
+        }
+        .tint(.yellow)
+        Button {
             itemState.shouldShowShareSheet = true
         } label: {
             Label {
-                Text("Bookmark Item Action Share Label")
+                Text(LocalizedStringKey("Share"))
             } icon: {
                 YabaIconView(bundleKey: "share-03")
                     .scaledToFit()
@@ -596,7 +602,7 @@ private struct BookmarkOverflowMenuContent: View {
         } label: {
             VStack {
                 YabaIconView(bundleKey: "delete-02")
-                Text("Bookmark Item Action Delete Label")
+                Text(LocalizedStringKey("Delete"))
             }
         }
         .tint(.red)
@@ -628,10 +634,26 @@ private struct BookmarkSheetsAndAlertsModifier: ViewModifier {
                     AllBookmarksManager.queueDeleteBookmarks(bookmarkIds: [bookmark.bookmarkId])
                     itemState.shouldShowDeleteAlert = false
                 } label: {
-                    Text("Bookmark Item Action Delete Label")
+                    Text(LocalizedStringKey("Delete"))
                 }
             } message: {
                 Text("Delete Content Message \(bookmark.label)")
+            }
+            .sheet(isPresented: $itemState.shouldShowMoveSheet) {
+                NavigationStack {
+                    SelectFolderContent(
+                        mode: .bookmarksMove,
+                        contextFolderId: bookmark.folder?.folderId,
+                        contextBookmarkIds: [bookmark.bookmarkId],
+                        onPick: { targetFolderId in
+                            guard let targetFolderId else { return }
+                            AllBookmarksManager.queueMoveBookmarksToFolder(
+                                bookmarkIds: [bookmark.bookmarkId],
+                                targetFolderId: targetFolderId
+                            )
+                        }
+                    )
+                }
             }
             .sheet(isPresented: $itemState.shouldShowEditSheet) {
                 BookmarkFlowSheet(context: .edit(bookmarkId: bookmark.bookmarkId))
