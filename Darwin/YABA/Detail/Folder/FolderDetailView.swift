@@ -26,6 +26,9 @@ struct FolderDetailView: View {
     @State
     private var shouldShowDeleteDialog: Bool = false
 
+    @State
+    private var shouldShowMoveBookmarksSheet: Bool = false
+
     @Query
     private var folderResults: [YabaFolder]
 
@@ -95,6 +98,16 @@ struct FolderDetailView: View {
                 Menu {
                     if machine.state.selectionMode {
                         Button {
+                            shouldShowMoveBookmarksSheet = true
+                        } label: {
+                            Label {
+                                Text("Bookmark Selection Move")
+                            } icon: {
+                                YabaIconView(bundleKey: "arrow-move-up-right")
+                            }
+                        }
+                        .disabled(machine.state.selectedBookmarkIds.isEmpty)
+                        Button {
                             shouldShowDeleteDialog = true
                         } label: {
                             Label {
@@ -146,6 +159,27 @@ struct FolderDetailView: View {
         .onChange(of: preferredSortOrder) { _, newValue in
             Task {
                 await machine.send(.onChangeSort(sortType: preferredSorting, sortOrder: newValue))
+            }
+        }
+        .sheet(isPresented: $shouldShowMoveBookmarksSheet) {
+            NavigationStack {
+                SelectFolderContent(
+                    mode: .bookmarksMove,
+                    contextFolderId: folderId,
+                    contextBookmarkIds: Array(machine.state.selectedBookmarkIds),
+                    onPick: { targetFolderId in
+                        guard let targetFolderId else { return }
+                        let ids = Array(machine.state.selectedBookmarkIds)
+                        guard !ids.isEmpty else { return }
+                        AllBookmarksManager.queueMoveBookmarksToFolder(
+                            bookmarkIds: ids,
+                            targetFolderId: targetFolderId
+                        )
+                        Task {
+                            await machine.send(.onToggleSelectionMode)
+                        }
+                    }
+                )
             }
         }
         .alert(
