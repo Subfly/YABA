@@ -208,7 +208,7 @@ struct NotemarkCreationContent: View {
             Label {
                 Text("Preview")
             } icon: {
-                YabaIconView(bundleKey: "note-edit")
+                YabaIconView(bundleKey: "image-03")
                     .scaledToFit()
                     .frame(width: 22, height: 22)
             }

@@ -45,8 +45,6 @@ public final class ImagemarkCreationStateMachine: YabaBaseObservableState<Imagem
             apply { $0.label = s }
         case let .onChangeDescription(s):
             apply { $0.bookmarkDescription = s }
-        case let .onChangeSummary(s):
-            apply { $0.summary = s }
         case let .onSelectFolderId(id):
             apply {
                 $0.selectedFolderId = id
@@ -120,7 +118,7 @@ public final class ImagemarkCreationStateMachine: YabaBaseObservableState<Imagem
                 tagIds: state.selectedTagIds
             )
         }
-        ImagemarkManager.queueCreateOrUpdateImageDetails(bookmarkId: bid, summary: state.summary.nilIfEmpty)
+        ImagemarkManager.queueCreateOrUpdateImageDetails(bookmarkId: bid, summary: nil)
         apply { $0.isSaving = false }
     }
 }

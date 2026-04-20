@@ -81,7 +81,7 @@ struct CanvmarkCreationContent: View {
     ) -> some View {
         List {
             Section {
-                previewContent(fallbackIcon: "pen-tool-02", mainTint: mainTint)
+                previewContent(fallbackIcon: "canvas", mainTint: mainTint)
                     .bookmarkCreationPreviewListRowBackground(appearance: previewContentAppearance)
             } header: {
                 previewHeader(mainTint: mainTint)
@@ -202,7 +202,7 @@ struct CanvmarkCreationContent: View {
             Label {
                 Text("Preview")
             } icon: {
-                YabaIconView(bundleKey: "pen-tool-02")
+                YabaIconView(bundleKey: "image-03")
                     .scaledToFit()
                     .frame(width: 22, height: 22)
             }

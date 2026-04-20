@@ -19,7 +19,6 @@ public enum ImagemarkCreationEvent: Sendable {
     case onClearImage
     case onChangeLabel(String)
     case onChangeDescription(String)
-    case onChangeSummary(String)
     case onSelectFolderId(String?)
     case onSelectTagIds([String])
     case onSave

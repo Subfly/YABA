@@ -30,7 +30,18 @@ struct ImagemarkCreationContent: View {
     private var photoItem: PhotosPickerItem?
 
     @State
+    private var showCameraCapture = false
+
+    @State
     private var previewContentAppearance: PreviewContentAppearance = .list
+
+    private var isCameraAvailable: Bool {
+        #if os(iOS) && !targetEnvironment(macCatalyst)
+        UIImagePickerController.isSourceTypeAvailable(.camera)
+        #else
+        false
+        #endif
+    }
 
     let preselectedFolderId: String?
     let preselectedTagIds: [String]
@@ -53,7 +64,7 @@ struct ImagemarkCreationContent: View {
                     #endif
                     formList(
                         mainTint: mainTint,
-                        folderForPresentation: folderForPresentation,
+                        folderForPresentation: folderForPresentation
                     )
                 }
             }
@@ -78,6 +89,17 @@ struct ImagemarkCreationContent: View {
             await bootstrap()
             syncPreviewAppearanceFromMachine()
         }
+        .fullScreenCover(isPresented: $showCameraCapture) {
+            CameraCapturePicker(
+                onDismiss: { showCameraCapture = false },
+                onCapture: { data in
+                    Task {
+                        await machine.send(.onImageFromShare(data, fileExtension: "jpg"))
+                    }
+                }
+            )
+            .ignoresSafeArea()
+        }
     }
 
     private func formList(
@@ -92,39 +114,53 @@ struct ImagemarkCreationContent: View {
                     mainTint: mainTint
                 )
                 .bookmarkCreationPreviewListRowBackground(appearance: previewContentAppearance)
-
-                PhotosPicker(selection: $photoItem, matching: .images) {
-                    Label {
-                        Text(
-                            machine.state.imageData == nil
-                                ? "Bookmark Creation Pick Image Action"
-                                : "Bookmark Creation Pick Another Image Action"
+                
+                HStack {
+                    PhotosPicker(selection: $photoItem, matching: .images) {
+                        Label {
+                            Text("Gallery")
+                        } icon: {
+                            YabaIconView(bundleKey: "add-circle")
+                                .frame(width: 24, height: 24)
+                        }
+                        .bookmarkCreationActionButtonLabelStyle(
+                            mainTint: mainTint,
+                            isDisabled: isEditing
                         )
-                    } icon: {
-                        YabaIconView(bundleKey: "add-circle")
                     }
-                }
-                .disabled(isEditing)
-                .onChange(of: photoItem) { _, new in
-                    Task {
-                        guard let new else { return }
-                        if let data = try? await new.loadTransferable(type: Data.self) {
-                            await machine.send(.onImageFromShare(data, fileExtension: "jpg"))
+                    .buttonStyle(.plain)
+                    .frame(maxWidth: .infinity)
+                    .disabled(isEditing)
+                    .onChange(of: photoItem) { _, new in
+                        Task {
+                            guard let new else { return }
+                            if let data = try? await new.loadTransferable(type: Data.self) {
+                                await machine.send(.onImageFromShare(data, fileExtension: "jpg"))
+                            }
                         }
                     }
-                }
 
-                if machine.state.imageData != nil, !isEditing {
-                    Button(role: .destructive) {
-                        Task { await machine.send(.onClearImage) }
+                    Button {
+                        showCameraCapture = true
                     } label: {
                         Label {
-                            Text("Bookmark Creation Clear Image Action")
+                            Text("Camera")
                         } icon: {
-                            YabaIconView(bundleKey: "delete-02")
+                            YabaIconView(bundleKey: "camera-01")
+                                .frame(width: 24, height: 24)
                         }
+                        .bookmarkCreationActionButtonLabelStyle(
+                            mainTint: mainTint,
+                            isDisabled: isEditing || !isCameraAvailable
+                        )
                     }
+                    .buttonStyle(.plain)
+                    .frame(maxWidth: .infinity)
+                    .disabled(isEditing || !isCameraAvailable)
                 }
+                .listRowBackground(Color.clear)
+                .listRowSeparator(.hidden)
+                .listRowInsets(EdgeInsets(top: 6, leading: 0, bottom: 6, trailing: 0))
             } header: {
                 previewHeader(mainTint: mainTint)
             }
@@ -144,14 +180,6 @@ struct ImagemarkCreationContent: View {
                 )
                 .lineLimit(3 ... 8)
                 .safeAreaInset(edge: .leading) { fieldIcon("paragraph", mainTint: mainTint) }
-                TextField(
-                    "",
-                    text: summaryBinding,
-                    prompt: Text("Create Bookmark Summary Placeholder"),
-                    axis: .vertical
-                )
-                .lineLimit(2 ... 5)
-                .safeAreaInset(edge: .leading) { fieldIcon("text", mainTint: mainTint) }
                 Toggle(isOn: isPinnedBinding) {
                     Label {
                         Text("Bookmark Creation Toggle Pinned Title")
@@ -237,17 +265,6 @@ struct ImagemarkCreationContent: View {
             set: { newValue in
                 Task {
                     await machine.send(.onChangeDescription(newValue))
-                }
-            }
-        )
-    }
-
-    private var summaryBinding: Binding<String> {
-        Binding(
-            get: { machine.state.summary },
-            set: { newValue in
-                Task {
-                    await machine.send(.onChangeSummary(newValue))
                 }
             }
         )
@@ -493,5 +510,18 @@ struct ImagemarkCreationContent: View {
                 uncategorizedFolderCreationRequired: resolved.uncategorizedFolderCreationRequired
             )
         )
+    }
+}
+
+private extension View {
+    func bookmarkCreationActionButtonLabelStyle(mainTint: Color, isDisabled: Bool) -> some View {
+        self
+            .font(.headline)
+            .frame(maxWidth: .infinity, minHeight: 48)
+            .background {
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .fill(isDisabled ? mainTint.opacity(0.45) : mainTint)
+            }
+            .foregroundStyle(.white)
     }
 }

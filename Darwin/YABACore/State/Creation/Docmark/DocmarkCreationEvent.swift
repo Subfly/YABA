@@ -25,7 +25,6 @@ public enum DocmarkCreationEvent: Sendable {
     case onSetGeneratedPreview(imageData: Data?, fileExtension: String)
     case onChangeLabel(String)
     case onChangeDescription(String)
-    case onChangeSummary(String)
     case onApplyFromMetadata
     case onSelectFolderId(String?)
     case onSelectTagIds([String])

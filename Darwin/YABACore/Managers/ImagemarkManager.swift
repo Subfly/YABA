@@ -28,7 +28,9 @@ public enum ImagemarkManager {
             bookmark.imageDetail = inserted
             row = inserted
         }
-        row.summary = summary?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty
+        if let summary {
+            row.summary = summary.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty
+        }
         bookmark.editedAt = .now
     }
 }

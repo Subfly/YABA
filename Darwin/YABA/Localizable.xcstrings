@@ -1004,12 +1004,6 @@
         }
       }
     },
-    "Bookmark Creation Clear Document Action" : {
-
-    },
-    "Bookmark Creation Clear Image Action" : {
-
-    },
     "Bookmark Creation Link Info Message" : {
       "comment" : "Message to show in footer of link section in bookmark creation sheet to inform user about link cleaning.",
       "extractionState" : "manual",
@@ -1176,20 +1170,15 @@
         }
       }
     },
-    "Bookmark Creation Pick Another Document Action" : {
-
-    },
-    "Bookmark Creation Pick Another Image Action" : {
-
-    },
     "Bookmark Creation Pick Document Action" : {
-
-    },
-    "Bookmark Creation Pick Image Action" : {
-
-    },
-    "Bookmark Creation Source File Label" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pick Document (PDF, EPUB, CSV)"
+          }
+        }
+      }
     },
     "Bookmark Creation Toggle Pinned Title" : {
       "localizations" : {
@@ -4555,6 +4544,9 @@
         }
       }
     },
+    "Camera" : {
+
+    },
     "Cancel" : {
       "comment" : "Cancel",
       "extractionState" : "manual",
@@ -6379,9 +6371,6 @@
           }
         }
       }
-    },
-    "Create Bookmark Summary Placeholder" : {
-
     },
     "Create Bookmark Title" : {
       "comment" : "Title to show while creating a bookmark",
@@ -11567,6 +11556,9 @@
           }
         }
       }
+    },
+    "Gallery" : {
+
     },
     "Generic Unfurl Error Text" : {
       "comment" : "A generic error text to show in toasts",

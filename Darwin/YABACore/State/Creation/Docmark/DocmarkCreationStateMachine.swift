@@ -59,8 +59,6 @@ public final class DocmarkCreationStateMachine: YabaBaseObservableState<DocmarkC
             apply { $0.label = s }
         case let .onChangeDescription(s):
             apply { $0.bookmarkDescription = s }
-        case let .onChangeSummary(s):
-            apply { $0.summary = s }
         case .onApplyFromMetadata:
             withAnimation {
                 apply {
@@ -145,7 +143,7 @@ public final class DocmarkCreationStateMachine: YabaBaseObservableState<DocmarkC
         }
         DocmarkManager.queueCreateOrUpdateDocDetails(
             bookmarkId: bid,
-            summary: state.summary.nilIfEmpty,
+            summary: nil,
             docmarkType: state.docmarkType,
             metadataTitle: state.metadataTitle,
             metadataDescription: state.metadataDescription,

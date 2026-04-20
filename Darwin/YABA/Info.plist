@@ -40,6 +40,8 @@
 	<array>
 		<string>_yaba-sync._tcp.</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>YABA needs camera access to capture photos.</string>
 	<key>NSSupportsAutomaticTermination</key>
 	<true/>
 	<key>UIBackgroundModes</key>

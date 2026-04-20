@@ -83,7 +83,7 @@ struct DocmarkCreationContent: View {
             isPresented: $showFileImporter,
             allowedContentTypes: [
                 .pdf,
-                UTType(importedAs: "org.idpf.epub-container")
+                .epub
             ],
             allowsMultipleSelection: false
         ) { result in
@@ -118,44 +118,28 @@ struct DocmarkCreationContent: View {
                     mainTint: mainTint
                 )
                 .bookmarkCreationPreviewListRowBackground(appearance: previewContentAppearance)
+                
                 Button {
                     Task { await machine.send(.onPickDocument) }
                     showFileImporter = true
                 } label: {
                     Label {
-                        Text(
-                            machine.state.pickedDocumentData == nil
-                                ? "Bookmark Creation Pick Document Action"
-                                : "Bookmark Creation Pick Another Document Action"
-                        )
+                        Text("Bookmark Creation Pick Document Action")
                     } icon: {
-                        YabaIconView(bundleKey: "file-02")
+                        YabaIconView(bundleKey: "add-circle")
+                            .frame(width: 24, height: 24)
                     }
+                    .bookmarkCreationActionButtonLabelStyle(
+                        mainTint: mainTint,
+                        isDisabled: isEditing
+                    )
                 }
+                .buttonStyle(.plain)
+                .frame(maxWidth: .infinity)
                 .disabled(isEditing)
-
-                if let name = machine.state.sourceFileName, !name.isEmpty {
-                    HStack {
-                        fieldIcon("file-02", mainTint: mainTint)
-                        Text("Bookmark Creation Source File Label")
-                            .foregroundStyle(.secondary)
-                        Spacer()
-                        Text(name)
-                            .lineLimit(1)
-                    }
-                }
-
-                if machine.state.pickedDocumentData != nil, !isEditing {
-                    Button(role: .destructive) {
-                        Task { await machine.send(.onClearDocument) }
-                    } label: {
-                        Label {
-                            Text("Bookmark Creation Clear Document Action")
-                        } icon: {
-                            YabaIconView(bundleKey: "delete-02")
-                        }
-                    }
-                }
+                .listRowBackground(Color.clear)
+                .listRowSeparator(.hidden)
+                .listRowInsets(EdgeInsets(top: 6, leading: 0, bottom: 6, trailing: 0))
             } header: {
                 previewHeader(mainTint: mainTint)
             }
@@ -175,14 +159,6 @@ struct DocmarkCreationContent: View {
                 )
                 .lineLimit(3 ... 8)
                 .safeAreaInset(edge: .leading) { fieldIcon("paragraph", mainTint: mainTint) }
-                TextField(
-                    "",
-                    text: summaryBinding,
-                    prompt: Text("Create Bookmark Summary Placeholder"),
-                    axis: .vertical
-                )
-                .lineLimit(2 ... 5)
-                .safeAreaInset(edge: .leading) { fieldIcon("text", mainTint: mainTint) }
                 Toggle(isOn: isPinnedBinding) {
                     Label {
                         Text("Bookmark Creation Toggle Pinned Title")
@@ -296,17 +272,6 @@ struct DocmarkCreationContent: View {
             set: { newValue in
                 Task {
                     await machine.send(.onChangeDescription(newValue))
-                }
-            }
-        )
-    }
-
-    private var summaryBinding: Binding<String> {
-        Binding(
-            get: { machine.state.summary },
-            set: { newValue in
-                Task {
-                    await machine.send(.onChangeSummary(newValue))
                 }
             }
         )
@@ -621,5 +586,18 @@ struct DocmarkCreationContent: View {
                 uncategorizedFolderCreationRequired: resolved.uncategorizedFolderCreationRequired
             )
         )
+    }
+}
+
+private extension View {
+    func bookmarkCreationActionButtonLabelStyle(mainTint: Color, isDisabled: Bool) -> some View {
+        self
+            .font(.headline)
+            .frame(maxWidth: .infinity, minHeight: 48)
+            .background {
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .fill(isDisabled ? mainTint.opacity(0.45) : mainTint)
+            }
+            .foregroundStyle(.white)
     }
 }

@@ -85,7 +85,7 @@ struct LinkmarkCreationContent: View {
             Section {
                 previewContent(
                     imageData: machine.state.previewImageData,
-                    fallbackIcon: "bookmark-02",
+                    fallbackIcon: "link-02",
                     mainTint: mainTint
                 )
                 .bookmarkCreationPreviewListRowBackground(appearance: previewContentAppearance)
@@ -109,17 +109,19 @@ struct LinkmarkCreationContent: View {
                     fieldIcon("link-02", mainTint: mainTint)
                 }
 
-                if let cleaned = machine.state.cleanedUrl, !cleaned.isEmpty {
-                    HStack {
-                        fieldIcon("clean", mainTint: mainTint)
-                        Text(cleaned)
-                            .foregroundStyle(.secondary)
-                    }
-                } else {
-                    HStack {
-                        fieldIcon("clean", mainTint: mainTint)
-                        Text("Create Bookmark Cleaned URL Placeholder")
-                            .foregroundStyle(.tertiary)
+                if !isEditing {
+                    if let cleaned = machine.state.cleanedUrl, !cleaned.isEmpty {
+                        HStack {
+                            fieldIcon("clean", mainTint: mainTint)
+                            Text(cleaned)
+                                .foregroundStyle(.secondary)
+                        }
+                    } else {
+                        HStack {
+                            fieldIcon("clean", mainTint: mainTint)
+                            Text("Create Bookmark Cleaned URL Placeholder")
+                                .foregroundStyle(.tertiary)
+                        }
                     }
                 }
             } header: {
@@ -130,7 +132,9 @@ struct LinkmarkCreationContent: View {
                         .frame(width: 22, height: 22)
                 }
             } footer: {
-                Text("Bookmark Creation Link Info Message")
+                if !isEditing {
+                    Text("Bookmark Creation Link Info Message")
+                }
             }
 
             Section {
