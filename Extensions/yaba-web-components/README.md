@@ -17,7 +17,7 @@ Output: `dist/editor.html`, `dist/viewer.html`, `dist/converter.html` plus JS an
 |------|---------|
 | `editor.html` | Crepe/Milkdown WYSIWYG editor (no visible toolbar; native buttons only) |
 | `viewer.html` | Read-only Milkdown viewer for saved link content |
-| `converter.html` | Hidden utility page: DOMPurify → Readability → Turndown Markdown |
+| `converter.html` | Hidden utility page: DOMPurify → Readability → Showdown Markdown |
 
 ## URL Parameters
 
@@ -72,9 +72,11 @@ viewer.html?platform=darwin&appearance=dark
 
 | Method | Description |
 |--------|-------------|
-| `sanitizeAndConvertHtmlToReaderHtml(input)` | `input: { html: string, baseUrl?: string }` → `{ markdown, assets, linkMetadata }` |
+| `sanitizeAndConvertHtmlToReaderHtml(input)` | `input: { html: string, baseUrl?: string }` → `{ markdown, documentJson, assets, linkMetadata }` |
 
-Uses DOMPurify for sanitization, Mozilla Readability for reader-mode extraction (strips nav/footer/clutter), rewrites image URLs to `yaba-asset://` placeholders, converts article HTML to **Markdown** with Turndown (GFM), and returns asset descriptors for offline download.
+`documentJson` is deprecated and mirrors `markdown` for older hosts. Prefer `markdown`.
+
+Uses DOMPurify for sanitization, Mozilla Readability for reader-mode extraction (strips nav/footer/clutter), rewrites image URLs to `yaba-asset://` placeholders, converts article HTML to **Markdown** with Showdown, and returns asset descriptors for offline download.
 
 ## Native Integration
 
@@ -87,7 +89,7 @@ Native platforms call the bridge via their WebView evaluation APIs:
 
 Host apps inject `window.YabaNativeHost.postMessage(jsonString)` (Android can also expose `window.YabaAndroidHost` as an alias; see `src/bridge/yaba-native-host.ts`). The web layer emits structured JSON for shell load, ToC, editor/reader metrics, `bridgeReady`, taps (annotation, math, inline link/mention), autosave idle, and converter job completion—**not** via `console.info` or custom URL schemes.
 
-The `converter.html` page is loaded in a hidden WebView when link saving needs extraction. Call `sanitizeAndConvertHtmlToReaderHtml` after the page has loaded; native persists **Markdown** (`markdown` field only).
+The `converter.html` page is loaded in a hidden WebView when link saving needs extraction. Call `sanitizeAndConvertHtmlToReaderHtml` after the page has loaded; native persists **Markdown** (`markdown` field).
 
 ## Features
 

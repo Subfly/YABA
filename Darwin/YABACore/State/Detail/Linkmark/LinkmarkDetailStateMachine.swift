@@ -229,7 +229,7 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
 
     private func saveReadableFromConverterOutput(bookmarkId: String, result: WebConverterResult) async {
         let readable = await ConverterResultProcessor.process(
-            markdown: result.markdown,
+            documentJson: result.documentJson,
             assets: result.assets
         )
         await saveReadableBundle(bookmarkId: bookmarkId, converter: result, readable: readable)

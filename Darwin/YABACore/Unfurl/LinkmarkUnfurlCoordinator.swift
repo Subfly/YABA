@@ -32,7 +32,7 @@ public final class LinkmarkUnfurlCoordinator {
             baseUrl: fetch.normalizedUrl
         )
         let readable = await ConverterResultProcessor.process(
-            markdown: conv.markdown,
+            documentJson: conv.documentJson,
             assets: conv.assets
         )
         return (conv, readable)

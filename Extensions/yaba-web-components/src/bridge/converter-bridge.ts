@@ -1,35 +1,12 @@
 import DOMPurify from "dompurify"
 import { Readability } from "@mozilla/readability"
-import TurndownService from "turndown"
-// @ts-expect-error — turndown-plugin-gfm ships CJS without TypeScript types
-import { gfm } from "turndown-plugin-gfm"
+import { Editor } from "@tiptap/core"
 import ePub from "epubjs"
 import { GlobalWorkerOptions, getDocument, PDFDateString } from "pdfjs-dist"
 import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url"
+import { createEditorExtensions } from "../tiptap/editor-extensions"
 import { extractLinkMetadata, type LinkMetadata } from "./link-metadata"
 import { postToYabaNativeHost } from "./yaba-native-host"
-
-/**
- * Converter WebView: HTML → reader Markdown via Readability, DOMPurify, and Turndown.
- * Intentionally independent of Milkdown (editor/viewer use Crepe separately).
- */
-
-const readerTurndown = new TurndownService({
-  headingStyle: "atx",
-  bulletListMarker: "-",
-  codeBlockStyle: "fenced",
-})
-readerTurndown.use(gfm)
-
-/** HTML → GFM-oriented Markdown (shared with editor `setReaderHtml` / paste). */
-export function readerHtmlToMarkdown(html: string): string {
-  const payload = html?.trim() ? html : "<p></p>"
-  try {
-    return readerTurndown.turndown(payload).trim()
-  } catch {
-    return ""
-  }
-}
 
 GlobalWorkerOptions.workerSrc = pdfWorkerUrl
 
@@ -63,8 +40,8 @@ export interface ConverterAsset {
 }
 
 export interface ConverterOutput {
-  /** GFM-oriented Markdown (canonical reader document for link readables). */
-  markdown: string
+  /** TipTap/ProseMirror JSON string (canonical reader document). */
+  documentJson: string
   assets: ConverterAsset[]
   /** web-meta-scraper + tidy-url on Core-fetched HTML (no URL fetch in the bridge; HTML-only scrape). */
   linkMetadata: LinkMetadata
@@ -369,7 +346,7 @@ function isImagePlaceholder(url: string): boolean {
 /**
  * 1) Readability + DOMPurify sanitize
  * 2) Rewrite img src to yaba-asset:// placeholders + collect assets
- * 3) Turndown HTML → GFM-oriented Markdown ([readerHtmlToMarkdown])
+ * 3) TipTap parse → document JSON
  */
 function sanitizeReaderHtmlWithPlaceholders(html: string, baseUrl?: string): { htmlWithPlaceholders: string; assets: ConverterAsset[] } {
   const readerHtml = toReaderModeHtml(html, baseUrl)
@@ -414,12 +391,37 @@ function sanitizeReaderHtmlWithPlaceholders(html: string, baseUrl?: string): { h
   return { htmlWithPlaceholders: wrapper.innerHTML, assets }
 }
 
+const EMPTY_DOC_JSON = '{"type":"doc","content":[]}'
+
+let converterTipTapEditor: Editor | null = null
+
+function getConverterTipTapEditor(): Editor {
+  if (!converterTipTapEditor) {
+    converterTipTapEditor = new Editor({
+      extensions: createEditorExtensions(),
+      editable: false,
+    })
+  }
+  return converterTipTapEditor
+}
+
+function htmlToDocumentJson(html: string): string {
+  const ed = getConverterTipTapEditor()
+  const payload = html?.trim() ? html : "<p></p>"
+  try {
+    ed.commands.setContent(payload, { emitUpdate: false })
+    return JSON.stringify(ed.getJSON())
+  } catch {
+    return EMPTY_DOC_JSON
+  }
+}
+
 async function sanitizeAndConvertWithAssets(html: string, baseUrl?: string): Promise<ConverterOutput> {
   const pageUrl = (baseUrl && baseUrl.trim().length > 0 ? baseUrl.trim() : "https://invalid.invalid") as string
   const { htmlWithPlaceholders, assets } = sanitizeReaderHtmlWithPlaceholders(html, baseUrl)
-  const markdown = readerHtmlToMarkdown(htmlWithPlaceholders)
+  const documentJson = htmlToDocumentJson(htmlWithPlaceholders)
   const linkMetadata = await extractLinkMetadata(html, pageUrl)
-  return { markdown, assets, linkMetadata }
+  return { documentJson, assets, linkMetadata }
 }
 
 function createHtmlConversionJobId(): string {

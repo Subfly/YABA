@@ -223,7 +223,7 @@ struct LinkmarkDetailView: View {
 
             LinkmarkReadableWebView(
                 webDriver: webDriver,
-                markdown: markdownString(for: bm),
+                documentJson: documentJsonString(for: bm),
                 assetsBaseUrl: ReadableViewerAssets.assetsBaseURLForYabaAssetScheme,
                 annotationsJson: annotationsJson(for: bm),
                 readerPreferences: ReaderPreferences(
@@ -342,7 +342,7 @@ struct LinkmarkDetailView: View {
         return sorted.first
     }
 
-    private func markdownString(for bm: YabaBookmark) -> String {
+    private func documentJsonString(for bm: YabaBookmark) -> String {
         guard let data = currentVersion(bm)?.payload?.documentJson,
               let s = String(data: data, encoding: .utf8)
         else {

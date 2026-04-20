@@ -6,11 +6,11 @@ import SwiftUI
 import UIKit
 import WebKit
 
-/// Hosts Milkdown `viewer.html` via `WKWebViewRuntime` and applies `YabaEditorBridge` commands.
+/// Hosts `viewer.html` via `WKWebViewRuntime` and applies `YabaEditorBridge` commands.
 struct LinkmarkReadableWebView: UIViewRepresentable {
     var webDriver: LinkmarkWebDriver
 
-    var markdown: String
+    var documentJson: String
     var assetsBaseUrl: String
     var annotationsJson: String
     var readerPreferences: ReaderPreferences
@@ -91,7 +91,7 @@ struct LinkmarkReadableWebView: UIViewRepresentable {
         private var lastContentOffsetY: CGFloat = 0
         private var kvoToken: NSKeyValueObservation?
         private var lastReloadToken: UUID?
-        private var lastMarkdownApplied: String?
+        private var lastDocumentJsonApplied: String?
         private var handledToc: LinkmarkWebTocNavigation?
         private var handledAnnotationScroll: String?
 
@@ -163,8 +163,8 @@ struct LinkmarkReadableWebView: UIViewRepresentable {
                 ReadableAssetResolver.shared.register(assetId: a.assetId, bytes: a.bytes)
             }
             let tokenChanged = lastReloadToken != p.documentReloadToken
-            let mdChanged = lastMarkdownApplied != p.markdown
-            guard tokenChanged || mdChanged else {
+            let documentChanged = lastDocumentJsonApplied != p.documentJson
+            guard tokenChanged || documentChanged else {
                 let prefs = WebViewerBridgeScripts.setReaderPreferences(p.readerPreferences)
                 _ = try? await runtime.evaluateJavaScriptStringResult(prefs)
                 let chrome = WebViewerBridgeScripts.setWebChromeInsets(topPx: p.topChromeInsetPoints)
@@ -174,8 +174,8 @@ struct LinkmarkReadableWebView: UIViewRepresentable {
                 return
             }
             lastReloadToken = p.documentReloadToken
-            lastMarkdownApplied = p.markdown
-            let script = WebViewerBridgeScripts.setDocumentJson(markdown: p.markdown, assetsBaseUrl: p.assetsBaseUrl)
+            lastDocumentJsonApplied = p.documentJson
+            let script = WebViewerBridgeScripts.setDocumentJson(documentJson: p.documentJson, assetsBaseUrl: p.assetsBaseUrl)
             _ = try? await runtime.evaluateJavaScriptStringResult(script)
             let ann = WebViewerBridgeScripts.setAnnotations(jsonArrayBody: p.annotationsJson)
             _ = try? await runtime.evaluateJavaScriptStringResult(ann)

@@ -1,4 +1,4 @@
-import type { EditorView } from "@milkdown/prose/view"
+import type { Editor } from "@tiptap/core"
 
 export interface SelectionSnapshot {
   selectedText: string
@@ -10,10 +10,10 @@ export interface SelectionSnapshot {
  * Extracts quote context from the editor for highlight creation (no positional anchors).
  * Returns null if there is no valid text selection.
  */
-export function getSelectionSnapshot(view: EditorView | null): SelectionSnapshot | null {
-  if (!view) return null
+export function getSelectionSnapshot(editor: Editor | null): SelectionSnapshot | null {
+  if (!editor) return null
 
-  const { state } = view
+  const { state } = editor
   const { doc, selection } = state
   const { from, to } = selection
 

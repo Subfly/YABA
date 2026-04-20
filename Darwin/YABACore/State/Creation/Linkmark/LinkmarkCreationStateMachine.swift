@@ -141,7 +141,7 @@ public final class LinkmarkCreationStateMachine: YabaBaseObservableState<Linkmar
 
     private func applyConverterResult(_ result: WebConverterResult) async {
         let readable = await ConverterResultProcessor.process(
-            markdown: result.markdown,
+            documentJson: result.documentJson,
             assets: result.assets
         )
         await applyFetchResult(converter: result, readable: readable)

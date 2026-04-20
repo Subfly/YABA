@@ -9,12 +9,12 @@ import Foundation
 
 /// Result of readable content extraction, ready for SwiftData persistence.
 public struct ReadableUnfurl: Sendable {
-    /// GFM-oriented Markdown with `../assets/<id>.<ext>` image paths after asset download.
-    public var markdown: String
+    /// TipTap/ProseMirror document JSON with `../assets/<id>.<ext>` image paths after asset download.
+    public var documentJson: String
     public var assets: [ReadableAssetPayload]
 
-    public init(markdown: String, assets: [ReadableAssetPayload]) {
-        self.markdown = markdown
+    public init(documentJson: String, assets: [ReadableAssetPayload]) {
+        self.documentJson = documentJson
         self.assets = assets
     }
 }

@@ -2,16 +2,16 @@
 //  WebViewerBridgeScripts.swift
 //  YABACore
 //
-//  JavaScript bodies for `window.YabaEditorBridge` in `viewer.html` (Milkdown Crepe).
+//  JavaScript bodies for `window.YabaEditorBridge` in `viewer.html` (TipTap bridge).
 //
 
 import Foundation
 
 /// Scripts evaluated after `bridgeReady` for the readable viewer — aligned with `yaba-web-components` bridge types.
 public enum WebViewerBridgeScripts {
-    /// Markdown for `window.YabaEditorBridge.setDocumentJson` plus optional `assetsBaseUrl` for `../assets/` resolution.
-    public static func setDocumentJson(markdown: String, assetsBaseUrl: String?) -> String {
-        let mdEscaped = WebJsEscaping.escapeForJsSingleQuotedString(markdown)
+    /// TipTap document JSON for `window.YabaEditorBridge.setDocumentJson` plus optional `assetsBaseUrl` for `../assets/` resolution.
+    public static func setDocumentJson(documentJson: String, assetsBaseUrl: String?) -> String {
+        let escaped = WebJsEscaping.escapeForJsSingleQuotedString(documentJson)
         let options: String
         if let assetsBaseUrl {
             let u = WebJsEscaping.escapeForJsSingleQuotedString(assetsBaseUrl)
@@ -24,7 +24,7 @@ public enum WebViewerBridgeScripts {
           try {
             var b = window.YabaEditorBridge;
             if (!b || !b.setDocumentJson) { return "no_bridge"; }
-            b.setDocumentJson('\(mdEscaped)'\(options));
+            b.setDocumentJson('\(escaped)'\(options));
             return "ok";
           } catch(e) { return String(e); }
         })();

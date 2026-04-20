@@ -3,7 +3,7 @@
 //  YABACore
 //
 //  Readable pipeline helpers (Compose `ReadableContentManager`). SwiftData stores readable bodies
-//  in `ReadableVersionPayloadModel.documentJson` (UTF-8 Markdown for links, ProseMirror JSON for notes).
+//  in `ReadableVersionPayloadModel.documentJson` (TipTap/ProseMirror JSON for links and notes).
 //
 
 import Foundation
@@ -77,7 +77,7 @@ public enum ReadableContentManager {
             guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context) else {
                 return
             }
-            let data = Data(unfurl.markdown.utf8)
+            let data = Data(unfurl.documentJson.utf8)
             let payload = ReadableVersionPayloadModel(documentJson: data, readableVersion: nil)
             context.insert(payload)
             let version = ReadableVersionModel(
@@ -107,7 +107,7 @@ public enum ReadableContentManager {
 
     /// Saves link readable content from the bookmark editor without creating a new version row when one already exists.
     /// - If the bookmark has no readable yet, inserts the first version.
-    /// - Otherwise updates the latest readable version’s Markdown and inline assets in place.
+    /// - Otherwise updates the latest readable version’s JSON and inline assets in place.
     public static func queueUpsertLinkReadableUnfurlFromBookmarkEditor(
         bookmarkId: String,
         unfurl: ReadableUnfurl
@@ -116,7 +116,7 @@ public enum ReadableContentManager {
             guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context) else {
                 return
             }
-            let data = Data(unfurl.markdown.utf8)
+            let data = Data(unfurl.documentJson.utf8)
             if bookmark.readableVersions.isEmpty {
                 let rv = UUID().uuidString
                 let payload = ReadableVersionPayloadModel(documentJson: data, readableVersion: nil)

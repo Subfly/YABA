@@ -8,13 +8,13 @@
 import Foundation
 
 public struct HtmlConverterResult: Sendable {
-    public var markdown: String
+    public var documentJson: String
     public var linkMetadataJson: String?
     /// When parsed from `outputJson`, includes asset descriptors for reader image download.
     public var assets: [WebConverterAsset]
 
-    public init(markdown: String, linkMetadataJson: String?, assets: [WebConverterAsset] = []) {
-        self.markdown = markdown
+    public init(documentJson: String, linkMetadataJson: String?, assets: [WebConverterAsset] = []) {
+        self.documentJson = documentJson
         self.linkMetadataJson = linkMetadataJson
         self.assets = assets
     }
@@ -40,7 +40,7 @@ public struct HtmlConverterResult: Sendable {
             meta = WebLinkMetadata(cleanedUrl: "")
         }
         return WebConverterResult(
-            markdown: markdown,
+            documentJson: documentJson,
             assets: assets,
             linkMetadata: meta
         )
@@ -179,7 +179,7 @@ public final class ConverterJobRegistry: @unchecked Sendable {
         else {
             return nil
         }
-        let markdown = json["markdown"] as? String ?? ""
+        let documentJson = (json["documentJson"] as? String) ?? (json["markdown"] as? String) ?? ""
         var linkMetaJson: String?
         if let linkMeta = json["linkMetadata"] {
             if let d = try? JSONSerialization.data(withJSONObject: linkMeta, options: []) {
@@ -198,7 +198,7 @@ public final class ConverterJobRegistry: @unchecked Sendable {
                 }
             }
         }
-        return HtmlConverterResult(markdown: markdown, linkMetadataJson: linkMetaJson, assets: assets)
+        return HtmlConverterResult(documentJson: documentJson, linkMetadataJson: linkMetaJson, assets: assets)
     }
 }
 

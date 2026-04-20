@@ -1,4 +1,4 @@
-import { CrepeEditorView } from "@/milkdown/CrepeEditorView"
+import { TiptapEditorView } from "@/tiptap/TiptapEditorView"
 import { initEditorBridge } from "@/bridge/editor-bridge"
 
 function ViewerApp() {
@@ -15,7 +15,7 @@ function ViewerApp() {
       }}
     >
       <div className="yaba-viewer-editor-slot">
-        <CrepeEditorView editable={false} variant="viewer" onCrepeReady={initEditorBridge} />
+        <TiptapEditorView editable={false} onEditorReady={initEditorBridge} />
       </div>
     </div>
   )

@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { CrepeEditorView } from "@/milkdown/CrepeEditorView"
+import { TiptapEditorView } from "@/tiptap/TiptapEditorView"
 import { initEditorBridge } from "@/bridge/editor-bridge"
 
 function EditorApp() {
@@ -10,10 +10,10 @@ function EditorApp() {
       data-yaba-editor
       style={{ width: "100%", height: "100%", backgroundColor: "transparent" }}
     >
-      <CrepeEditorView
+      <TiptapEditorView
         editable={editable}
         variant="editor"
-        onCrepeReady={initEditorBridge}
+        onEditorReady={initEditorBridge}
         assetsBaseUrl={undefined}
       />
     </div>
