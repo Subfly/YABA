@@ -1,9 +1,11 @@
 import { useEffect, useRef, useCallback } from "react"
-import { Crepe, CrepeFeature } from "@milkdown/crepe"
+import type { Crepe } from "@milkdown/crepe"
 import { Milkdown, MilkdownProvider, useEditor, useInstance } from "@milkdown/react"
-import { getNoteEditorPlaceholderText } from "./note-placeholder"
+import { createCrepeForShell, normalizeInitialMarkdownForCrepe, type CrepeShellVariant } from "./crepe-config"
 import "@milkdown/crepe/theme/frame.css"
 import "./yaba-crepe.css"
+
+export type { CrepeShellVariant }
 
 const IMAGE_NOT_FOUND_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
   <path d="M15.5 8C15.7761 8 16 7.77614 16 7.5C16 7.22386 15.7761 7 15.5 7M15.5 8C15.2239 8 15 7.77614 15 7.5C15 7.22386 15.2239 7 15.5 7M15.5 8V7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -12,8 +14,6 @@ const IMAGE_NOT_FOUND_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 
   <path d="M3 16L7.50036 11.5004M21 16L18.5303 13.5303C18.1908 13.1908 17.7302 13 17.25 13C16.7698 13 16.3092 13.1908 15.9697 13.5303L14.75 14.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`
 
-export type CrepeShellVariant = "viewer" | "editor"
-
 export interface CrepeEditorViewProps {
   editable: boolean
   variant?: CrepeShellVariant
@@ -21,20 +21,6 @@ export interface CrepeEditorViewProps {
   initialMarkdown?: string
   onCrepeReady?: (crepe: Crepe) => void
   assetsBaseUrl?: string
-}
-
-function rewriteAssetPathsInMarkdown(md: string, assetsBaseUrl: string): string {
-  if (!md.includes("../assets/")) return md
-  const base = assetsBaseUrl.replace(/\/?$/, "/")
-  return md.replaceAll("../assets/", `${base}assets/`)
-}
-
-function parseInitialMarkdown(initialMarkdown: string | undefined, assetsBaseUrl: string | undefined): string {
-  let raw = initialMarkdown?.trim() ? initialMarkdown : ""
-  if (assetsBaseUrl && raw.includes("../assets/")) {
-    raw = rewriteAssetPathsInMarkdown(raw, assetsBaseUrl)
-  }
-  return raw
 }
 
 function handleBrokenImage(img: HTMLImageElement) {
@@ -100,31 +86,16 @@ function CrepeInner({
 }: Omit<CrepeEditorViewProps, "assetsBaseUrl">) {
   const crepeRef = useRef<Crepe | null>(null)
   const readyRef = useRef(false)
-  const defaultMd = parseInitialMarkdown(initialMarkdown, undefined)
 
+  // Only recreate Crepe when shell mode changes; content updates go through the native bridge.
   useEditor(
     (root: HTMLElement) => {
-      const ph =
-        variant === "editor"
-          ? getNoteEditorPlaceholderText() || " "
-          : " "
-      const crepe = new Crepe({
+      const crepe = createCrepeForShell({
         root,
-        defaultValue: defaultMd || "",
-        features: {
-          [CrepeFeature.Toolbar]: false,
-          [CrepeFeature.TopBar]: false,
-        },
-        featureConfigs: {
-          [CrepeFeature.Placeholder]: {
-            text: ph,
-            mode: "block",
-          },
-        },
+        variant: variant ?? "viewer",
+        editable,
+        initialMarkdown: initialMarkdown?.trim() ? initialMarkdown : "",
       })
-      if (!editable) {
-        crepe.setReadonly(true)
-      }
       crepeRef.current = crepe
       return crepe
     },
@@ -156,7 +127,7 @@ export function CrepeEditorView({
   onCrepeReady,
   assetsBaseUrl,
 }: CrepeEditorViewProps) {
-  const md = parseInitialMarkdown(initialMarkdown, assetsBaseUrl)
+  const md = normalizeInitialMarkdownForCrepe(initialMarkdown?.trim() ? initialMarkdown : "", assetsBaseUrl)
 
   return (
     <div className="yaba-editor-container" data-yaba-editor-root>

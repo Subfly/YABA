@@ -18,8 +18,10 @@ import {
   wrapInHeadingCommand,
   insertHrCommand,
 } from "@milkdown/kit/preset/commonmark"
-import { toggleStrikethroughCommand, insertTableCommand, deleteSelectedCellsCommand } from "@milkdown/kit/preset/gfm"
 import {
+  toggleStrikethroughCommand,
+  insertTableCommand,
+  deleteSelectedCellsCommand,
   addRowBeforeCommand,
   addRowAfterCommand,
   addColBeforeCommand,
@@ -44,6 +46,25 @@ function run(editor: Editor, fn: (ctx: Ctx) => void): void {
   })
 }
 
+/** Run a Milkdown kit command by key (see ./docs/api/utils.md — `callCommand`). */
+function runCallCommand(editor: Editor, runner: (ctx: Ctx) => boolean | void): void {
+  run(editor, (ctx) => {
+    void runner(ctx)
+  })
+}
+
+function replaceRangeMarkdown(ctx: Ctx, markdown: string): void {
+  const view = ctx.get(editorViewCtx)
+  const { from, to } = view.state.selection
+  replaceRange(markdown, { from, to })(ctx)
+}
+
+function textBetweenSelection(ctx: Ctx, blockSeparator: string): string {
+  const view = ctx.get(editorViewCtx)
+  const { from, to } = view.state.selection
+  return view.state.doc.textBetween(from, to, blockSeparator)
+}
+
 export function runEditorDispatch(
   editor: Editor,
   cmd: EditorCommandPayload,
@@ -52,12 +73,12 @@ export function runEditorDispatch(
 ): void {
   switch (cmd.type) {
     case "toggleBold":
-      run(editor, (ctx) => void callCommand(toggleStrongCommand.key)(ctx))
+      runCallCommand(editor, (ctx) => callCommand(toggleStrongCommand.key)(ctx))
       return
     case "toggleItalic":
-      run(editor, (ctx) => void callCommand(toggleEmphasisCommand.key)(ctx))
+      runCallCommand(editor, (ctx) => callCommand(toggleEmphasisCommand.key)(ctx))
       return
-    case "toggleUnderline": {
+    case "toggleUnderline":
       run(editor, (ctx) => {
         const view = ctx.get(editorViewCtx)
         const { from, to } = view.state.selection
@@ -66,32 +87,31 @@ export function runEditorDispatch(
         replaceRange(`<u>${escapeHtml(text)}</u>`, { from, to })(ctx)
       })
       return
-    }
     case "toggleSubscript":
     case "toggleSuperscript":
       return
     case "toggleStrikethrough":
-      run(editor, (ctx) => void callCommand(toggleStrikethroughCommand.key)(ctx))
+      runCallCommand(editor, (ctx) => callCommand(toggleStrikethroughCommand.key)(ctx))
       return
     case "toggleCode":
-      run(editor, (ctx) => void callCommand(toggleInlineCodeCommand.key)(ctx))
+      runCallCommand(editor, (ctx) => callCommand(toggleInlineCodeCommand.key)(ctx))
       return
     case "toggleCodeBlock":
-      run(editor, (ctx) => void callCommand(createCodeBlockCommand.key)(ctx))
+      runCallCommand(editor, (ctx) => callCommand(createCodeBlockCommand.key)(ctx))
       return
     case "toggleQuote":
-      run(editor, (ctx) => void callCommand(wrapInBlockquoteCommand.key)(ctx))
+      runCallCommand(editor, (ctx) => callCommand(wrapInBlockquoteCommand.key)(ctx))
       return
     case "insertHr":
-      run(editor, (ctx) => void callCommand(insertHrCommand.key)(ctx))
+      runCallCommand(editor, (ctx) => callCommand(insertHrCommand.key)(ctx))
       return
     case "toggleBulletedList":
-      run(editor, (ctx) => void callCommand(wrapInBulletListCommand.key)(ctx))
+      runCallCommand(editor, (ctx) => callCommand(wrapInBulletListCommand.key)(ctx))
       return
     case "toggleNumberedList":
-      run(editor, (ctx) => void callCommand(wrapInOrderedListCommand.key)(ctx))
+      runCallCommand(editor, (ctx) => callCommand(wrapInOrderedListCommand.key)(ctx))
       return
-    case "toggleTaskList": {
+    case "toggleTaskList":
       run(editor, (ctx) => {
         const view = ctx.get(editorViewCtx)
         const { $from } = view.state.selection
@@ -99,136 +119,95 @@ export function runEditorDispatch(
         view.dispatch(view.state.tr.insertText("- [ ] ", start))
       })
       return
-    }
     case "indent":
-      run(editor, (ctx) => void callCommand(sinkListItemCommand.key)(ctx))
+      runCallCommand(editor, (ctx) => callCommand(sinkListItemCommand.key)(ctx))
       return
     case "outdent":
-      run(editor, (ctx) => void callCommand(liftListItemCommand.key)(ctx))
+      runCallCommand(editor, (ctx) => callCommand(liftListItemCommand.key)(ctx))
       return
     case "undo":
-      run(editor, (ctx) => void callCommand(undoCommand.key)(ctx))
+      runCallCommand(editor, (ctx) => callCommand(undoCommand.key)(ctx))
       return
     case "redo":
-      run(editor, (ctx) => void callCommand(redoCommand.key)(ctx))
+      runCallCommand(editor, (ctx) => callCommand(redoCommand.key)(ctx))
       return
-    case "insertLink": {
-      const md = `[${cmd.text}](${cmd.url})`
-      run(editor, (ctx) => {
-        const view = ctx.get(editorViewCtx)
-        const { from, to } = view.state.selection
-        replaceRange(md, { from, to })(ctx)
-      })
+    case "insertLink":
+      run(editor, (ctx) => replaceRangeMarkdown(ctx, `[${cmd.text}](${cmd.url})`))
       return
-    }
-    case "updateLink": {
-      run(editor, (ctx) => void callCommand(updateLinkCommand.key, { href: cmd.url, title: cmd.text })(ctx))
+    case "updateLink":
+      runCallCommand(editor, (ctx) =>
+        callCommand(updateLinkCommand.key, { href: cmd.url, title: cmd.text })(ctx),
+      )
       return
-    }
-    case "removeLink": {
-      run(editor, (ctx) => void callCommand(toggleLinkCommand.key, { href: "" })(ctx))
+    case "removeLink":
+      runCallCommand(editor, (ctx) => callCommand(toggleLinkCommand.key, { href: "" })(ctx))
       return
-    }
-    case "insertMention": {
-      const md = `[${cmd.text}](${BOOKMARK_LINK_PREFIX}${cmd.bookmarkId})`
-      run(editor, (ctx) => {
-        const view = ctx.get(editorViewCtx)
-        const { from, to } = view.state.selection
-        replaceRange(md, { from, to })(ctx)
-      })
+    case "insertMention":
+      run(editor, (ctx) =>
+        replaceRangeMarkdown(ctx, `[${cmd.text}](${BOOKMARK_LINK_PREFIX}${cmd.bookmarkId})`),
+      )
       return
-    }
-    case "updateMention": {
-      const md = `[${cmd.text}](${BOOKMARK_LINK_PREFIX}${cmd.bookmarkId})`
-      run(editor, (ctx) => {
-        const view = ctx.get(editorViewCtx)
-        const { from, to } = view.state.selection
-        replaceRange(md, { from, to })(ctx)
-      })
+    case "updateMention":
+      run(editor, (ctx) =>
+        replaceRangeMarkdown(ctx, `[${cmd.text}](${BOOKMARK_LINK_PREFIX}${cmd.bookmarkId})`),
+      )
       return
-    }
-    case "removeMention": {
-      run(editor, (ctx) => {
-        const view = ctx.get(editorViewCtx)
-        const { from, to } = view.state.selection
-        const text = view.state.doc.textBetween(from, to, "\n")
-        replaceRange(text, { from, to })(ctx)
-      })
+    case "removeMention":
+      run(editor, (ctx) => replaceRangeMarkdown(ctx, textBetweenSelection(ctx, "\n")))
       return
-    }
-    case "insertInlineMath": {
-      const md = `$${cmd.latex}$`
-      run(editor, (ctx) => {
-        const view = ctx.get(editorViewCtx)
-        const { from, to } = view.state.selection
-        replaceRange(md, { from, to })(ctx)
-      })
+    case "insertInlineMath":
+      run(editor, (ctx) => replaceRangeMarkdown(ctx, `$${cmd.latex}$`))
       return
-    }
-    case "insertBlockMath": {
-      const md = `$$\n${cmd.latex}\n$$`
-      run(editor, (ctx) => {
-        const view = ctx.get(editorViewCtx)
-        const { from, to } = view.state.selection
-        replaceRange(md, { from, to })(ctx)
-      })
+    case "insertBlockMath":
+      run(editor, (ctx) => replaceRangeMarkdown(ctx, `$$\n${cmd.latex}\n$$`))
       return
-    }
     case "updateInlineMath":
-    case "updateBlockMath": {
+    case "updateBlockMath":
       run(editor, (ctx) => {
-        const view = ctx.get(editorViewCtx)
-        const { from, to } = view.state.selection
         const isBlock = cmd.type === "updateBlockMath"
-        const md = isBlock ? `$$\n${cmd.latex}\n$$` : `$${cmd.latex}$`
-        replaceRange(md, { from, to })(ctx)
+        replaceRangeMarkdown(ctx, isBlock ? `$$\n${cmd.latex}\n$$` : `$${cmd.latex}$`)
       })
       return
-    }
-    case "insertText": {
+    case "insertText":
       run(editor, (ctx) => {
         const view = ctx.get(editorViewCtx)
         const { from, to } = view.state.selection
         view.dispatch(view.state.tr.insertText(cmd.text, from, to))
       })
       return
-    }
     case "setHeading": {
       const level = Math.min(6, Math.max(1, Math.floor(cmd.level)))
-      run(editor, (ctx) => void callCommand(wrapInHeadingCommand.key, level)(ctx))
+      runCallCommand(editor, (ctx) => callCommand(wrapInHeadingCommand.key, level)(ctx))
       return
     }
     case "insertTable": {
       const rows = Math.max(1, Math.min(20, Math.floor(cmd.rows)))
       const cols = Math.max(1, Math.min(20, Math.floor(cmd.cols)))
-      run(editor, (ctx) => void callCommand(insertTableCommand.key, { row: rows, col: cols })(ctx))
+      runCallCommand(editor, (ctx) =>
+        callCommand(insertTableCommand.key, { row: rows, col: cols })(ctx),
+      )
       return
     }
     case "insertImage": {
       const src = resolveImageSrcForEditor(cmd.src, lastAssetsBaseUrl)
-      const md = `![](${src})`
-      run(editor, (ctx) => {
-        const view = ctx.get(editorViewCtx)
-        const { from, to } = view.state.selection
-        replaceRange(md, { from, to })(ctx)
-      })
+      run(editor, (ctx) => replaceRangeMarkdown(ctx, `![](${src})`))
       return
     }
     case "addRowBefore":
-      run(editor, (ctx) => void callCommand(addRowBeforeCommand.key)(ctx))
+      runCallCommand(editor, (ctx) => callCommand(addRowBeforeCommand.key)(ctx))
       return
     case "addRowAfter":
-      run(editor, (ctx) => void callCommand(addRowAfterCommand.key)(ctx))
+      runCallCommand(editor, (ctx) => callCommand(addRowAfterCommand.key)(ctx))
       return
     case "deleteRow":
     case "deleteColumn":
-      run(editor, (ctx) => void callCommand(deleteSelectedCellsCommand.key)(ctx))
+      runCallCommand(editor, (ctx) => callCommand(deleteSelectedCellsCommand.key)(ctx))
       return
     case "addColumnBefore":
-      run(editor, (ctx) => void callCommand(addColBeforeCommand.key)(ctx))
+      runCallCommand(editor, (ctx) => callCommand(addColBeforeCommand.key)(ctx))
       return
     case "addColumnAfter":
-      run(editor, (ctx) => void callCommand(addColAfterCommand.key)(ctx))
+      runCallCommand(editor, (ctx) => callCommand(addColAfterCommand.key)(ctx))
       return
     case "setTextHighlight": {
       if (page !== "editor") return
@@ -243,7 +222,7 @@ export function runEditorDispatch(
           return
         }
         const md = `<mark data-color-role="${role}" class="yaba-editor-text-highlight yaba-highlight-${role.toLowerCase()}">${escapeHtml(
-          text
+          text,
         )}</mark>`
         replaceRange(md, { from, to })(ctx)
       })
@@ -262,7 +241,7 @@ export function runEditorDispatch(
     }
     case "toggleTextHighlight": {
       if (page !== "editor") return
-      run(editor, (ctx) => void callCommand(toggleStrongCommand.key)(ctx))
+      runCallCommand(editor, (ctx) => callCommand(toggleStrongCommand.key)(ctx))
       return
     }
     default:

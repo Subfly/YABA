@@ -1,11 +1,16 @@
 import DOMPurify from "dompurify"
 import { Readability } from "@mozilla/readability"
-import showdown from "showdown"
+import { createShowdownGfmConverter } from "./showdown-gfm"
 import ePub from "epubjs"
 import { GlobalWorkerOptions, getDocument, PDFDateString } from "pdfjs-dist"
 import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url"
 import { extractLinkMetadata, type LinkMetadata } from "./link-metadata"
 import { postToYabaNativeHost } from "./yaba-native-host"
+
+/**
+ * Converter WebView: HTML → reader Markdown via Readability, DOMPurify, and Showdown.
+ * Intentionally independent of Milkdown (editor/viewer use Crepe separately).
+ */
 
 GlobalWorkerOptions.workerSrc = pdfWorkerUrl
 
@@ -350,7 +355,7 @@ function isImagePlaceholder(url: string): boolean {
 /**
  * 1) Readability + DOMPurify sanitize
  * 2) Rewrite img src to yaba-asset:// placeholders + collect assets
- * 3) TipTap parse → document JSON
+ * 3) Showdown HTML → GFM-oriented Markdown (same options as [createShowdownGfmConverter])
  */
 function sanitizeReaderHtmlWithPlaceholders(html: string, baseUrl?: string): { htmlWithPlaceholders: string; assets: ConverterAsset[] } {
   const readerHtml = toReaderModeHtml(html, baseUrl)
@@ -395,12 +400,7 @@ function sanitizeReaderHtmlWithPlaceholders(html: string, baseUrl?: string): { h
   return { htmlWithPlaceholders: wrapper.innerHTML, assets }
 }
 
-const htmlToMarkdownConverter = new showdown.Converter({
-  tables: true,
-  tasklists: true,
-  strikethrough: true,
-  ghCodeBlocks: true,
-})
+const htmlToMarkdownConverter = createShowdownGfmConverter()
 
 function htmlToMarkdown(html: string): string {
   const payload = html?.trim() ? html : "<p></p>"
