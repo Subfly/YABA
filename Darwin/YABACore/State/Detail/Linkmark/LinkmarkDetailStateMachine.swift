@@ -33,8 +33,10 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
                 readableVersionId: rv,
                 documentJson: data
             )
-        case .onUpdateReadableRequested, .onUpdateLinkMetadataRequested:
-            await refreshLinkFromSource()
+        case .onUpdateReadableRequested:
+            await refreshReadableFromSource()
+        case .onUpdateLinkMetadataRequested:
+            await refreshLinkMetadataOnly()
         case let .onReaderWebInitialContentLoad(resultJson):
             apply { $0.readerWebInitialLoadResultJson = resultJson }
         case let .onConverterSucceeded(result):
@@ -173,7 +175,8 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
         }
     }
 
-    private func refreshLinkFromSource() async {
+    /// Explicit “update readable” from the detail menu: fetch HTML, convert, insert a **new** readable version.
+    private func refreshReadableFromSource() async {
         guard let bid = state.bookmarkId,
               let url = state.linkSourceUrl?.trimmingCharacters(in: .whitespacesAndNewlines),
               !url.isEmpty
@@ -188,20 +191,56 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
         }
     }
 
+    /// Refresh Open Graph / link metadata and preview assets only; does **not** create a new readable version.
+    private func refreshLinkMetadataOnly() async {
+        guard let bid = state.bookmarkId,
+              let url = state.linkSourceUrl?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !url.isEmpty
+        else { return }
+        apply { $0.isUpdatingReadable = true; $0.lastConverterErrorMessage = nil }
+        defer { apply { $0.isUpdatingReadable = false } }
+        do {
+            let (conv, _) = try await LinkmarkUnfurlCoordinator.shared.fetchAndConvert(urlString: url)
+            let meta = conv.linkMetadata
+            if let cleaned = meta.cleanedUrl.nilIfEmpty {
+                LinkmarkManager.queueCreateOrUpdateLinkDetails(
+                    bookmarkId: bid,
+                    url: cleaned,
+                    domain: LinkmarkManager.extractDomain(from: cleaned),
+                    videoUrl: meta.video,
+                    audioUrl: meta.audio,
+                    metadataTitle: meta.title,
+                    metadataDescription: meta.description,
+                    metadataAuthor: meta.author,
+                    metadataDate: meta.date
+                )
+            }
+            let img = await Unfurler.downloadPreviewImageBytes(urlString: meta.image)
+            let logo = await Unfurler.downloadPreviewImageBytes(urlString: meta.logo)
+            AllBookmarksManager.queueSetBookmarkPreviewAssets(
+                bookmarkId: bid,
+                imageBytes: img,
+                iconBytes: logo
+            )
+        } catch {
+            apply { $0.lastConverterErrorMessage = String(describing: error) }
+        }
+    }
+
     private func saveReadableFromConverterOutput(bookmarkId: String, result: WebConverterResult) async {
         let readable = await ConverterResultProcessor.process(
-            documentJson: result.documentJson,
+            markdown: result.markdown,
             assets: result.assets
         )
         await saveReadableBundle(bookmarkId: bookmarkId, converter: result, readable: readable)
     }
 
     private func saveReadableBundle(bookmarkId: String, converter: WebConverterResult, readable: ReadableUnfurl) async {
-        let rv = state.selectedReadableVersionId ?? UUID().uuidString
-        apply { $0.selectedReadableVersionId = rv }
+        let newVersionId = UUID().uuidString
+        apply { $0.selectedReadableVersionId = newVersionId }
         ReadableContentManager.queueSaveLinkReadableUnfurl(
             bookmarkId: bookmarkId,
-            readableVersionId: rv,
+            readableVersionId: newVersionId,
             unfurl: readable
         )
         let meta = converter.linkMetadata

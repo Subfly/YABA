@@ -14,9 +14,7 @@ import { ANNOTATION_HREF_PREFIX } from "@/milkdown/yaba-href"
 import { publishEditorHostState } from "./editor-host-events"
 import { getBridgeView, getLastStoredCursor, setLastStoredCursor } from "./editor-bridge-shared"
 import type { YabaEditorBridge } from "./editor-bridge-types"
-import { createShowdownGfmConverter } from "./showdown-gfm"
-
-const pasteHtmlConverter = createShowdownGfmConverter()
+import { readerHtmlToMarkdown } from "./converter-bridge"
 
 export function decodeHtmlEntities(value: string): string {
   const textarea = document.createElement("textarea")
@@ -29,48 +27,18 @@ export function applySupSubMarkdownSyntax(value: string): string {
   return withSup.replace(/(^|[^~])~([^~\n]+)~(?!~)/g, "$1<sub>$2</sub>")
 }
 
-export function getClipboardTextForPaste(ev: ClipboardEvent): string {
-  const plain = ev.clipboardData?.getData("text/plain")
-  if (plain != null && plain.trim() !== "") return plain
-
-  const html = ev.clipboardData?.getData("text/html")
-  if (html == null || html.trim() === "") return ""
-
-  try {
-    const doc = new DOMParser().parseFromString(html, "text/html")
-    return (doc.body?.textContent ?? "").trim()
-  } catch {
-    return html
-      .replace(/<[^>]+>/g, " ")
-      .replace(/&nbsp;/g, " ")
-      .replace(/\s+/g, " ")
-      .trim()
-  }
-}
-
-export function insertPastedTextAsMarkdown(crepe: Crepe, clipboardText: string): void {
+/** Inserts plain (or lightly HTML-tagged) clipboard text as Markdown via Crepe. */
+export function insertPastedPlainAsMarkdown(crepe: Crepe, clipboardText: string): void {
   const trimmed = clipboardText.trim()
   if (trimmed.length === 0) return
 
   const sanitizedText = DOMPurify.sanitize(trimmed, { USE_PROFILES: { html: true } })
   const decodedText = decodeHtmlEntities(sanitizedText)
   const markdownReadyText = applySupSubMarkdownSyntax(decodedText)
-  let html = pasteHtmlConverter.makeHtml(markdownReadyText)
-  html = DOMPurify.sanitize(html, { USE_PROFILES: { html: true } })
-  if (!html.trim()) {
-    crepe.editor.action((ctx) => {
-      const view = ctx.get(editorViewCtx)
-      const { from, to } = view.state.selection
-      view.dispatch(view.state.tr.insertText(decodedText, from, to))
-    })
-    return
-  }
-
-  const md = pasteHtmlConverter.makeMarkdown(html).trim()
   crepe.editor.action((ctx) => {
     const view = ctx.get(editorViewCtx)
     const { from, to } = view.state.selection
-    replaceRange(md || decodedText, { from, to })(ctx)
+    replaceRange(markdownReadyText || decodedText, { from, to })(ctx)
   })
 }
 
@@ -102,10 +70,22 @@ export function wireDefaultMarkdownClipboard(crepe: Crepe): void {
   const handlePasteWithMarkdownPipeline = (ev: ClipboardEvent): boolean => {
     const view = getBridgeView()
     if (!view?.editable) return false
-    const text = getClipboardTextForPaste(ev)
-    if (text.trim() === "") return false
+    const html = ev.clipboardData?.getData("text/html")
+    const plain = ev.clipboardData?.getData("text/plain") ?? ""
+    if (html && html.trim() !== "") {
+      ev.preventDefault()
+      const safe = DOMPurify.sanitize(html, { USE_PROFILES: { html: true } })
+      const md = readerHtmlToMarkdown(safe).trim()
+      crepe.editor.action((ctx) => {
+        const v = ctx.get(editorViewCtx)
+        const { from, to } = v.state.selection
+        replaceRange(md || plain.trim(), { from, to })(ctx)
+      })
+      return true
+    }
+    if (plain.trim() === "") return false
     ev.preventDefault()
-    insertPastedTextAsMarkdown(crepe, text)
+    insertPastedPlainAsMarkdown(crepe, plain)
     return true
   }
 

@@ -8,9 +8,9 @@
 import Foundation
 
 public enum ConverterResultProcessor {
-    /// Downloads remote assets, rewrites `yaba-asset://` placeholders in JSON to `../assets/<id>.<ext>`.
+    /// Downloads remote assets, rewrites `yaba-asset://` placeholders in Markdown to `../assets/<id>.<ext>`.
     public static func process(
-        documentJson: String,
+        markdown: String,
         assets: [WebConverterAsset]
     ) async -> ReadableUnfurl {
         var readables: [(ReadableAssetPayload, String, String)] = []
@@ -27,12 +27,12 @@ public enum ConverterResultProcessor {
             let payload = ReadableAssetPayload(assetId: assetId, pathExtension: ext, bytes: bytes)
             readables.append((payload, asset.placeholder, relativePath))
         }
-        var resultJson = documentJson
+        var resultMarkdown = markdown
         for (_, placeholder, replacement) in readables {
-            resultJson = resultJson.replacingOccurrences(of: placeholder, with: replacement)
+            resultMarkdown = resultMarkdown.replacingOccurrences(of: placeholder, with: replacement)
         }
         return ReadableUnfurl(
-            documentJson: resultJson,
+            markdown: resultMarkdown,
             assets: readables.map { $0.0 }
         )
     }

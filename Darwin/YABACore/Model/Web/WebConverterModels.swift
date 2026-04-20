@@ -55,18 +55,18 @@ public struct WebLinkMetadata: Sendable, Equatable {
     }
 }
 
-/// Converter bridge result before [ConverterResultProcessor] runs.
+/// Converter bridge result before [ConverterResultProcessor] runs (Markdown body + assets + metadata).
 public struct WebConverterResult: Sendable, Equatable {
-    public var documentJson: String
+    public var markdown: String
     public var assets: [WebConverterAsset]
     public var linkMetadata: WebLinkMetadata
 
     public init(
-        documentJson: String,
+        markdown: String,
         assets: [WebConverterAsset],
         linkMetadata: WebLinkMetadata
     ) {
-        self.documentJson = documentJson
+        self.markdown = markdown
         self.assets = assets
         self.linkMetadata = linkMetadata
     }

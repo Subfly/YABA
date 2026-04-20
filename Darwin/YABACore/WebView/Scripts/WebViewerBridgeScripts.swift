@@ -9,28 +9,13 @@ import Foundation
 
 /// Scripts evaluated after `bridgeReady` for the readable viewer — aligned with `yaba-web-components` bridge types.
 public enum WebViewerBridgeScripts {
-    /// Markdown document (`setDocumentJson` legacy name) plus optional `assetsBaseUrl` for `../assets/` resolution.
+    /// Markdown for `window.YabaEditorBridge.setDocumentJson` plus optional `assetsBaseUrl` for `../assets/` resolution.
     public static func setDocumentJson(markdown: String, assetsBaseUrl: String?) -> String {
-        let mdLiteral: String
-        if let data = try? JSONSerialization.data(withJSONObject: markdown, options: []),
-           let s = String(data: data, encoding: .utf8)
-        {
-            mdLiteral = s
-        } else {
-            mdLiteral = "\"\""
-        }
+        let mdEscaped = WebJsEscaping.escapeForJsSingleQuotedString(markdown)
         let options: String
         if let assetsBaseUrl {
-            if let d = try? JSONSerialization.data(
-                withJSONObject: ["assetsBaseUrl": assetsBaseUrl],
-                options: []
-            ),
-                let o = String(data: d, encoding: .utf8)
-            {
-                options = ", \(o)"
-            } else {
-                options = ", {}"
-            }
+            let u = WebJsEscaping.escapeForJsSingleQuotedString(assetsBaseUrl)
+            options = ", { assetsBaseUrl: '\(u)' }"
         } else {
             options = ""
         }
@@ -39,8 +24,7 @@ public enum WebViewerBridgeScripts {
           try {
             var b = window.YabaEditorBridge;
             if (!b || !b.setDocumentJson) { return "no_bridge"; }
-            var md = JSON.parse(\(mdLiteral));
-            b.setDocumentJson(md\(options));
+            b.setDocumentJson('\(mdEscaped)'\(options));
             return "ok";
           } catch(e) { return String(e); }
         })();
@@ -141,20 +125,13 @@ public enum WebViewerBridgeScripts {
     }
 
     public static func startPdfExportJob(jobId: String) -> String {
-        let idLit: String
-        if let d = try? JSONSerialization.data(withJSONObject: jobId, options: []),
-           let s = String(data: d, encoding: .utf8)
-        {
-            idLit = s
-        } else {
-            idLit = "\"\""
-        }
+        let escaped = WebJsEscaping.escapeForJsSingleQuotedString(jobId)
         return """
         (function(){
           try {
             var b = window.YabaEditorBridge;
             if (!b || !b.startPdfExportJob) { return "no_bridge"; }
-            b.startPdfExportJob(JSON.parse(\(idLit)));
+            b.startPdfExportJob('\(escaped)');
             return "ok";
           } catch(e) { return String(e); }
         })();
@@ -162,20 +139,13 @@ public enum WebViewerBridgeScripts {
     }
 
     public static func scrollToAnnotation(annotationId: String) -> String {
-        let idLit: String
-        if let d = try? JSONSerialization.data(withJSONObject: annotationId, options: []),
-           let s = String(data: d, encoding: .utf8)
-        {
-            idLit = s
-        } else {
-            idLit = "\"\""
-        }
+        let escaped = WebJsEscaping.escapeForJsSingleQuotedString(annotationId)
         return """
         (function(){
           try {
             var b = window.YabaEditorBridge;
             if (!b || !b.scrollToAnnotation) { return "no_bridge"; }
-            b.scrollToAnnotation(JSON.parse(\(idLit)));
+            b.scrollToAnnotation('\(escaped)');
             return "ok";
           } catch(e) { return String(e); }
         })();

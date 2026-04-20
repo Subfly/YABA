@@ -71,13 +71,11 @@ import {
   resetTocPublishScheduling,
   navigateToTocItemInView,
 } from "./editor-bridge-toc"
-import { createShowdownGfmConverter } from "./showdown-gfm"
+import { readerHtmlToMarkdown } from "./converter-bridge"
 
 const EMPTY_MARKDOWN = ""
 
 let editorShellLoadNotified = false
-
-const readerHtmlToMd = createShowdownGfmConverter()
 
 export function initEditorBridge(crepe: Crepe): void {
   setCrepeInstance(crepe)
@@ -172,7 +170,7 @@ export function initEditorBridge(crepe: Crepe): void {
       setNoteEditorPlaceholderText(placeholder)
       publishCurrentEditorState()
     },
-    setDocumentJson: (documentJson: string, options?: { assetsBaseUrl?: string }) => {
+    setDocumentJson: (markdown: string, options?: { assetsBaseUrl?: string }) => {
       const c = crepeInstance
       if (!c) return
       try {
@@ -180,7 +178,7 @@ export function initEditorBridge(crepe: Crepe): void {
         if (options?.assetsBaseUrl) {
           setLastAssetsBaseUrl(options.assetsBaseUrl)
         }
-        let payload = documentJson?.trim() ? documentJson : EMPTY_MARKDOWN
+        let payload = markdown?.trim() ? markdown : EMPTY_MARKDOWN
         if (payload.startsWith('{"type":"doc"')) {
           payload = EMPTY_MARKDOWN
         }
@@ -220,7 +218,7 @@ export function initEditorBridge(crepe: Crepe): void {
           payload = rewriteAssetPathsInReaderHtml(payload, options.assetsBaseUrl)
         }
         const safe = DOMPurify.sanitize(payload, { USE_PROFILES: { html: true } })
-        const md = readerHtmlToMd.makeMarkdown(safe).trim()
+        const md = readerHtmlToMarkdown(safe).trim()
         c.editor.action(replaceAll(md || EMPTY_MARKDOWN, true))
         applyInitialFocusStateAfterContent(c)
         publishCurrentEditorState()

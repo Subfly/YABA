@@ -141,7 +141,7 @@ public final class LinkmarkCreationStateMachine: YabaBaseObservableState<Linkmar
 
     private func applyConverterResult(_ result: WebConverterResult) async {
         let readable = await ConverterResultProcessor.process(
-            documentJson: result.documentJson,
+            markdown: result.markdown,
             assets: result.assets
         )
         await applyFetchResult(converter: result, readable: readable)
@@ -167,32 +167,7 @@ public final class LinkmarkCreationStateMachine: YabaBaseObservableState<Linkmar
             $0.converterError = nil
         }
         ReadableAssetResolver.shared.register(unfurl: readable)
-        if let bid = state.editingBookmarkId {
-            let rv = UUID().uuidString
-            ReadableContentManager.queueSaveLinkReadableUnfurl(
-                bookmarkId: bid,
-                readableVersionId: rv,
-                unfurl: readable
-            )
-            AllBookmarksManager.queueSetBookmarkPreviewAssets(
-                bookmarkId: bid,
-                imageBytes: imageData,
-                iconBytes: logoData
-            )
-            if let cleaned = meta.cleanedUrl.nilIfEmpty {
-                LinkmarkManager.queueCreateOrUpdateLinkDetails(
-                    bookmarkId: bid,
-                    url: cleaned,
-                    domain: LinkmarkManager.extractDomain(from: cleaned),
-                    videoUrl: meta.video,
-                    audioUrl: meta.audio,
-                    metadataTitle: meta.title,
-                    metadataDescription: meta.description,
-                    metadataAuthor: meta.author,
-                    metadataDate: meta.date
-                )
-            }
-        }
+        // Do not persist readable versions on fetch while editing; user saves via Done (upserts latest) or uses detail refresh.
     }
 
     private func persistFromState() async {
@@ -255,9 +230,8 @@ public final class LinkmarkCreationStateMachine: YabaBaseObservableState<Linkmar
                 metadataDate: metadataDate
             )
             if let unfurl = state.pendingReadableUnfurl {
-                ReadableContentManager.queueSaveLinkReadableUnfurl(
+                ReadableContentManager.queueUpsertLinkReadableUnfurlFromBookmarkEditor(
                     bookmarkId: bid,
-                    readableVersionId: UUID().uuidString,
                     unfurl: unfurl
                 )
                 AllBookmarksManager.queueSetBookmarkPreviewAssets(
@@ -289,9 +263,8 @@ public final class LinkmarkCreationStateMachine: YabaBaseObservableState<Linkmar
                 metadataDate: metadataDate
             )
             if let unfurl = state.pendingReadableUnfurl {
-                ReadableContentManager.queueSaveLinkReadableUnfurl(
+                ReadableContentManager.queueUpsertLinkReadableUnfurlFromBookmarkEditor(
                     bookmarkId: bookmarkId,
-                    readableVersionId: UUID().uuidString,
                     unfurl: unfurl
                 )
                 AllBookmarksManager.queueSetBookmarkPreviewAssets(

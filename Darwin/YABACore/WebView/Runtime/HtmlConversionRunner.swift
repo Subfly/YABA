@@ -10,7 +10,7 @@ import Foundation
 public enum HtmlConversionRunner {
     private static let jobTimeoutNs: UInt64 = 120_000_000_000
 
-    /// Runs HTML → reader `documentJson` conversion after the converter shell and `YabaConverterBridge` are ready.
+    /// Runs HTML → reader Markdown conversion after the converter shell and `YabaConverterBridge` are ready.
     @MainActor
     public static func run(
         runtime: WKWebViewRuntime,

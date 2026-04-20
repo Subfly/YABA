@@ -26,8 +26,8 @@ export interface YabaEditorBridge {
   setReaderPreferences: (preferences: Partial<ReaderPreferences>) => void
   setEditable: (isEditable: boolean) => void
   setPlaceholder: (placeholder: string) => void
-  /** Markdown string (legacy name `documentJson`). */
-  setDocumentJson: (documentJson: string, options?: { assetsBaseUrl?: string }) => void
+  /** Markdown string (JS API name kept as `setDocumentJson` for the Crepe host). */
+  setDocumentJson: (markdown: string, options?: { assetsBaseUrl?: string }) => void
   /** Sanitized reader HTML → converted to Markdown for the read-only viewer. */
   setReaderHtml: (html: string, options?: { assetsBaseUrl?: string }) => void
   getDocumentJson: () => string
