@@ -9,6 +9,8 @@ import SwiftData
 import SwiftUI
 
 struct SearchView: View {
+    let onSelectBookmark: (String) -> Void
+
     @Environment(\.dismiss)
     private var dismiss
 
@@ -28,7 +30,11 @@ struct SearchView: View {
                 searchQuery: machine.state.query,
                 preferredSorting: preferredSorting,
                 preferredOrder: preferredSortOrder,
-                onNavigationCallback: { _ in }
+                onNavigationCallback: { bookmark in
+                    if bookmark.kind == .link {
+                        onSelectBookmark(bookmark.bookmarkId)
+                    }
+                }
             )
         }
         .navigationTitle("Search Title")

@@ -192,6 +192,34 @@ public final class WKWebViewRuntime: NSObject {
     }
 }
 
+// MARK: - Readable viewer shell
+
+public extension WKWebViewRuntime {
+    /// Loads `viewer.html` with platform/appearance query params (`yaba-web-components` / Milkdown Crepe).
+    @MainActor
+    func loadBundledViewerShell(
+        platform: WebPlatform = .darwin,
+        appearance: WebAppearance = .auto,
+        cursor: String? = nil,
+        bundle: Bundle = .main
+    ) {
+        expectedBridgeFeature = "viewer"
+        guard let fileURL = BundleReader.viewerURLWithQuery(
+            platform: platform,
+            appearance: appearance,
+            cursor: cursor,
+            bundle: bundle
+        ),
+            let readAccess = BundleReader.webComponentsBaseURL(in: bundle)
+        else {
+            onHostEvent?(.loadState(.idle))
+            return
+        }
+        onHostEvent?(.loadState(.loading(progressFraction: 0)))
+        webView.loadFileURL(fileURL, allowingReadAccessTo: readAccess)
+    }
+}
+
 // MARK: - Navigation
 
 private final class NavigationProxy: NSObject, WKNavigationDelegate {

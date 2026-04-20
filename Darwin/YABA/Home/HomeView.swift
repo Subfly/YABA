@@ -18,6 +18,8 @@ struct HomeView: View {
     let onSelectFolder: (String) -> Void
     /// Opens tag bookmark list in the detail column.
     let onSelectTag: (String) -> Void
+    /// Opens link bookmark detail when a bookmark row is tapped (e.g. recents).
+    let onSelectBookmark: (String) -> Void
 
     @State
     private var homeState: HomeState = .init()
@@ -32,7 +34,8 @@ struct HomeView: View {
             #endif
             SequentialView(
                 onSelectFolder: onSelectFolder,
-                onSelectTag: onSelectTag
+                onSelectTag: onSelectTag,
+                onSelectBookmark: onSelectBookmark
             )
                 .scrollContentBackground(.hidden)
                 #if targetEnvironment(macCatalyst)
@@ -171,6 +174,7 @@ struct HomeView: View {
 private struct SequentialView: View {
     let onSelectFolder: (String) -> Void
     let onSelectTag: (String) -> Void
+    let onSelectBookmark: (String) -> Void
 
     @AppStorage(Constants.showRecentsKey)
     private var showRecents: Bool = true
@@ -179,7 +183,7 @@ private struct SequentialView: View {
         List {
             //TODO HomeAnnouncementsView()
             if showRecents && UIDevice.current.userInterfaceIdiom == .phone {
-                HomeRecentsView()
+                HomeRecentsView(onSelectBookmark: onSelectBookmark)
             }
             HomeCollectionView(collectionType: .folder, onSelectFolder: onSelectFolder)
             HomeCollectionView(collectionType: .tag, onSelectTag: onSelectTag)

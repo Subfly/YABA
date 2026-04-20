@@ -9,10 +9,13 @@ import SwiftData
 import SwiftUI
 
 struct HomeRecentsView: View {
+    let onSelectBookmark: (String) -> Void
+
     @Query
     private var bookmarks: [YabaBookmark]
 
-    init() {
+    init(onSelectBookmark: @escaping (String) -> Void) {
+        self.onSelectBookmark = onSelectBookmark
         var descriptor = FetchDescriptor<YabaBookmark>(
             sortBy: [SortDescriptor(\.editedAt, order: .reverse)]
         )
@@ -29,7 +32,11 @@ struct HomeRecentsView: View {
                         isInRecents: true,
                         isSelected: false,
                         isInSelectionMode: false,
-                        onNavigationCallback: { _ in }
+                        onNavigationCallback: { b in
+                            if b.kind == .link {
+                                onSelectBookmark(b.bookmarkId)
+                            }
+                        }
                     )
                 }
             } header: {

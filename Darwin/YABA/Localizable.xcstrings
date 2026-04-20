@@ -1286,6 +1286,9 @@
         }
       }
     },
+    "Bookmark Detail Cancel Reminder Action" : {
+
+    },
     "Bookmark Detail Created At Title" : {
       "comment" : "Title to show in the info section of bookmark detail for creation time",
       "extractionState" : "manual",
@@ -1477,6 +1480,15 @@
           }
         }
       }
+    },
+    "Bookmark Detail Export Format Markdown Title" : {
+
+    },
+    "Bookmark Detail Export Format PDF Title" : {
+
+    },
+    "Bookmark Detail Export Menu Title" : {
+
     },
     "Bookmark Detail Image Error Description" : {
       "comment" : "Detail to show when bookmark image can not be accessed in detail",
@@ -1763,6 +1775,15 @@
         }
       }
     },
+    "Bookmark Detail Markdown Export Failed Message" : {
+
+    },
+    "Bookmark Detail Metadata Title Label" : {
+
+    },
+    "Bookmark Detail No Annotations Title" : {
+
+    },
     "Bookmark Detail No Description Provided" : {
       "comment" : "Description placeholder in bookmark detail",
       "localizations" : {
@@ -1857,6 +1878,9 @@
           }
         }
       }
+    },
+    "Bookmark Detail No Table Of Contents Title" : {
+
     },
     "Bookmark Detail No Tags Added Description" : {
       "comment" : "Description to show when no tags added in bookmark detail view",
@@ -2050,6 +2074,12 @@
         }
       }
     },
+    "Bookmark Detail No Versions Title" : {
+
+    },
+    "Bookmark Detail Open Link Action" : {
+
+    },
     "Bookmark Detail Open Link Tip Message" : {
       "comment" : "Message of the tip to show when user opened the bookmark detail for the first time",
       "extractionState" : "manual",
@@ -2242,6 +2272,12 @@
         }
       }
     },
+    "Bookmark Detail PDF Write Failed Message" : {
+
+    },
+    "Bookmark Detail Pin Action" : {
+
+    },
     "Bookmark Detail Remind Me Title" : {
       "comment" : "Title to show in bookmark detail view for reminder that set up",
       "extractionState" : "manual",
@@ -2338,6 +2374,21 @@
         }
       }
     },
+    "Bookmark Detail Sheet Navigation Title" : {
+
+    },
+    "Bookmark Detail Sheet Tab Annotations Title" : {
+
+    },
+    "Bookmark Detail Sheet Tab Contents Title" : {
+
+    },
+    "Bookmark Detail Sheet Tab Info Title" : {
+
+    },
+    "Bookmark Detail Sheet Tab Versions Title" : {
+
+    },
     "Bookmark Detail Title" : {
       "comment" : "Title to show in bookmark detail view",
       "localizations" : {
@@ -2432,6 +2483,18 @@
           }
         }
       }
+    },
+    "Bookmark Detail Unpin Action" : {
+
+    },
+    "Bookmark Detail Update Menu Title" : {
+
+    },
+    "Bookmark Detail Update Readable Version Action" : {
+
+    },
+    "Bookmark Detail URL Label" : {
+
     },
     "Bookmark Item Share Unavailable Message" : {
 
@@ -34760,6 +34823,33 @@
           }
         }
       }
+    },
+    "Reader Preference Font Size Large Title" : {
+
+    },
+    "Reader Preference Font Size Medium Title" : {
+
+    },
+    "Reader Preference Font Size Small Title" : {
+
+    },
+    "Reader Preference Line Height Normal Title" : {
+
+    },
+    "Reader Preference Line Height Relaxed Title" : {
+
+    },
+    "Reader Preference Theme Dark Title" : {
+
+    },
+    "Reader Preference Theme Light Title" : {
+
+    },
+    "Reader Preference Theme Sepia Title" : {
+
+    },
+    "Reader Preference Theme System Title" : {
+
     },
     "Refresh" : {
       "comment" : "Label to show for refresh related functions",

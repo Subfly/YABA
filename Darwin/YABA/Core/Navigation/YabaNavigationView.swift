@@ -53,19 +53,25 @@ struct YabaNavigationView: View {
         HomeView(
             onOpenSearch: { detailRouter.openSearch() },
             onSelectFolder: { detailRouter.openFolder(id: $0) },
-            onSelectTag: { detailRouter.openTag(id: $0) }
+            onSelectTag: { detailRouter.openTag(id: $0) },
+            onSelectBookmark: { detailRouter.openBookmark(id: $0) }
         )
     }
 
     @ViewBuilder
     private func destinationView(for destination: DetailDestination) -> some View {
+        let onOpenBookmark: (String) -> Void = { id in
+            detailRouter.openBookmark(id: id)
+        }
         switch destination {
         case .search:
-            SearchView()
+            SearchView(onSelectBookmark: onOpenBookmark)
         case let .folder(id):
-            FolderDetailView(folderId: id)
+            FolderDetailView(folderId: id, onSelectBookmark: onOpenBookmark)
         case let .tag(id):
-            TagDetailView(tagId: id)
+            TagDetailView(tagId: id, onSelectBookmark: onOpenBookmark)
+        case let .bookmark(id):
+            LinkmarkDetailView(bookmarkId: id)
         }
     }
 }

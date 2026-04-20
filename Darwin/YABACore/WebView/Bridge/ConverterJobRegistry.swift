@@ -226,7 +226,9 @@ public final class EditorPdfExportJobRegistry: @unchecked Sendable {
         guard let completion else { return }
         switch status {
         case "done":
-            let b64 = root["base64"] as? String ?? ""
+            let b64 = (root["pdfBase64"] as? String)
+                ?? (root["base64"] as? String)
+                ?? ""
             completion(.success(b64))
         case "error":
             let err = root["error"] as? String ?? "PDF export failed"

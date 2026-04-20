@@ -11,6 +11,7 @@ enum DetailDestination: Hashable, Sendable {
     case search
     case folder(String)
     case tag(String)
+    case bookmark(String)
 }
 
 @MainActor
@@ -28,5 +29,9 @@ final class DetailColumnRouter {
 
     func openTag(id: String) {
         navigationPath.append(DetailDestination.tag(id))
+    }
+
+    func openBookmark(id: String) {
+        navigationPath.append(DetailDestination.bookmark(id))
     }
 }

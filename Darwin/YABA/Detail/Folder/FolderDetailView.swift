@@ -10,6 +10,7 @@ import SwiftUI
 
 struct FolderDetailView: View {
     let folderId: String
+    let onSelectBookmark: (String) -> Void
 
     @Environment(\.dismiss)
     private var dismiss
@@ -32,8 +33,9 @@ struct FolderDetailView: View {
     @Query
     private var folderResults: [YabaFolder]
 
-    init(folderId: String) {
+    init(folderId: String, onSelectBookmark: @escaping (String) -> Void) {
         self.folderId = folderId
+        self.onSelectBookmark = onSelectBookmark
         var descriptor = FetchDescriptor<YabaFolder>(
             predicate: #Predicate<YabaFolder> { $0.folderId == folderId }
         )
@@ -53,9 +55,12 @@ struct FolderDetailView: View {
                     selectedBookmarkIds: machine.state.selectedBookmarkIds,
                     isInSelectionMode: machine.state.selectionMode,
                     onNavigationCallback: { bookmark in
-                        guard machine.state.selectionMode else { return }
-                        Task {
-                            await machine.send(.onToggleBookmarkSelection(bookmarkId: bookmark.bookmarkId))
+                        if machine.state.selectionMode {
+                            Task {
+                                await machine.send(.onToggleBookmarkSelection(bookmarkId: bookmark.bookmarkId))
+                            }
+                        } else if bookmark.kind == .link {
+                            onSelectBookmark(bookmark.bookmarkId)
                         }
                     }
                 )

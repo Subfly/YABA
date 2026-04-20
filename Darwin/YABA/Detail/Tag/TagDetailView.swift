@@ -10,6 +10,7 @@ import SwiftUI
 
 struct TagDetailView: View {
     let tagId: String
+    let onSelectBookmark: (String) -> Void
 
     @Environment(\.dismiss)
     private var dismiss
@@ -29,8 +30,9 @@ struct TagDetailView: View {
     @Query
     private var tagResults: [YabaTag]
 
-    init(tagId: String) {
+    init(tagId: String, onSelectBookmark: @escaping (String) -> Void) {
         self.tagId = tagId
+        self.onSelectBookmark = onSelectBookmark
         var descriptor = FetchDescriptor<YabaTag>(
             predicate: #Predicate<YabaTag> { $0.tagId == tagId }
         )
@@ -50,9 +52,12 @@ struct TagDetailView: View {
                     selectedBookmarkIds: machine.state.selectedBookmarkIds,
                     isInSelectionMode: machine.state.selectionMode,
                     onNavigationCallback: { bookmark in
-                        guard machine.state.selectionMode else { return }
-                        Task {
-                            await machine.send(.onToggleBookmarkSelection(bookmarkId: bookmark.bookmarkId))
+                        if machine.state.selectionMode {
+                            Task {
+                                await machine.send(.onToggleBookmarkSelection(bookmarkId: bookmark.bookmarkId))
+                            }
+                        } else if bookmark.kind == .link {
+                            onSelectBookmark(bookmark.bookmarkId)
                         }
                     }
                 )

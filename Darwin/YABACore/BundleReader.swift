@@ -119,6 +119,26 @@ public enum BundleReader {
         webComponentURL(named: "viewer.html", in: bundle)
     }
 
+    /// `viewer.html` with theme URL params consumed by `yaba-web-components` (`parseUrlParams`).
+    public static func viewerURLWithQuery(
+        platform: WebPlatform = .darwin,
+        appearance: WebAppearance = .auto,
+        cursor: String? = nil,
+        bundle: Bundle = .main
+    ) -> URL? {
+        guard let base = getViewerURL(in: bundle) else { return nil }
+        guard var components = URLComponents(url: base, resolvingAgainstBaseURL: false) else { return base }
+        var items: [URLQueryItem] = [
+            URLQueryItem(name: "platform", value: platform.rawValue),
+            URLQueryItem(name: "appearance", value: appearance.rawValue)
+        ]
+        if let cursor, !cursor.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            items.append(URLQueryItem(name: "cursor", value: cursor))
+        }
+        components.queryItems = items
+        return components.url
+    }
+
     public static func getEditorURL(in bundle: Bundle = .main) -> URL? {
         webComponentURL(named: "editor.html", in: bundle)
     }
