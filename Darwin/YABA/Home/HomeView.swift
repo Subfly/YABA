@@ -183,6 +183,6 @@ private struct SequentialView: View {
             }
             HomeCollectionView(collectionType: .folder, onSelectFolder: onSelectFolder)
             HomeCollectionView(collectionType: .tag, onSelectTag: onSelectTag)
-        }
+        }.contentMargins(.bottom, 100)
     }
 }

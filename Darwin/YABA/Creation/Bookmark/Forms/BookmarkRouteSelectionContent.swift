@@ -13,17 +13,17 @@ struct BookmarkRouteSelectionContent: View {
 
     private struct RowSpec: Identifiable {
         let id: BookmarkKind
-        let title: String
+        let title: LocalizedStringKey
         let iconKey: String
         let color: YabaColor
     }
 
     private static let rows: [RowSpec] = [
-        RowSpec(id: .link, title: "New Link", iconKey: "link-02", color: .blue),
-        RowSpec(id: .note, title: "New Note", iconKey: "note-edit", color: .yellow),
-        RowSpec(id: .image, title: "New Image", iconKey: "image-03", color: .green),
-        RowSpec(id: .file, title: "New Document", iconKey: "doc-02", color: .red),
-        RowSpec(id: .canvas, title: "New Canvas", iconKey: "canvas", color: .orange)
+        RowSpec(id: .link, title: "Bookmark Route Selection New Link", iconKey: "link-02", color: .blue),
+        RowSpec(id: .image, title: "Bookmark Route Selection New Image", iconKey: "image-03", color: .green),
+        RowSpec(id: .file, title: "Bookmark Route Selection New Document", iconKey: "doc-02", color: .red),
+        RowSpec(id: .note, title: "Bookmark Route Selection New Note", iconKey: "note-edit", color: .yellow),
+        RowSpec(id: .canvas, title: "Bookmark Route Selection New Canvas", iconKey: "canvas", color: .orange)
     ]
 
     var body: some View {

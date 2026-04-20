@@ -2720,6 +2720,56 @@
         }
       }
     },
+    "Bookmark Route Selection New Canvas" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New Canvas"
+          }
+        }
+      }
+    },
+    "Bookmark Route Selection New Document" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New Document"
+          }
+        }
+      }
+    },
+    "Bookmark Route Selection New Image" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New Image"
+          }
+        }
+      }
+    },
+    "Bookmark Route Selection New Link" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New Link"
+          }
+        }
+      }
+    },
+    "Bookmark Route Selection New Note" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New Note"
+          }
+        }
+      }
+    },
     "Bookmark Selection Cancel" : {
       "comment" : "Bookmark selection action cancel label in collection detail",
       "extractionState" : "manual",
