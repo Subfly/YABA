@@ -10,6 +10,7 @@
 
 # Web components build artifacts
 Extensions/yaba-web-components/dist/
+Extensions/yaba-web-components/WebComponents/
 Compose/YABA/app/src/main/assets/files/web-components/
 Darwin/YABACore/Assets/WebComponents/
 

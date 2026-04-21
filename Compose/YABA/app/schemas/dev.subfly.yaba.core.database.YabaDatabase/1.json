@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "fc4531f6545496b70e60144b85dcf791",
+    "identityHash": "189b5f8deb78f23dd45ae1edbe80e175",
     "entities": [
       {
         "tableName": "bookmarks",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `folderId` TEXT NOT NULL, `kind` INTEGER NOT NULL, `label` TEXT NOT NULL, `description` TEXT, `createdAt` INTEGER NOT NULL, `editedAt` INTEGER NOT NULL, `viewCount` INTEGER NOT NULL, `isPrivate` INTEGER NOT NULL, `isPinned` INTEGER NOT NULL, `localImagePath` TEXT, `localIconPath` TEXT, PRIMARY KEY(`id`), FOREIGN KEY(`folderId`) REFERENCES `folders`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `folderId` TEXT NOT NULL, `kind` INTEGER NOT NULL, `label` TEXT NOT NULL, `description` TEXT, `createdAt` INTEGER NOT NULL, `editedAt` INTEGER NOT NULL, `viewCount` INTEGER NOT NULL, `isPinned` INTEGER NOT NULL, `localImagePath` TEXT, `localIconPath` TEXT, PRIMARY KEY(`id`), FOREIGN KEY(`folderId`) REFERENCES `folders`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -52,12 +52,6 @@
           {
             "fieldPath": "viewCount",
             "columnName": "viewCount",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "isPrivate",
-            "columnName": "isPrivate",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -901,7 +895,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fc4531f6545496b70e60144b85dcf791')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '189b5f8deb78f23dd45ae1edbe80e175')"
     ]
   }
 }

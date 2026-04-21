@@ -3,6 +3,7 @@ node_modules/
 
 # Build output
 dist/
+WebComponents/
 .vite/
 
 # Copied from @excalidraw/excalidraw/dist/prod/fonts (see vite.config.ts)
