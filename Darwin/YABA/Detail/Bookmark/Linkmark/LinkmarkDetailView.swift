@@ -72,6 +72,9 @@ struct LinkmarkDetailView: View {
     @State
     private var showActivitySheet = false
 
+    @State
+    private var annotationSheetMode: AnnotationCreationSheetMode?
+
     init(
         bookmarkId: String,
         onOpenFolder: @escaping (String) -> Void = { _ in },
@@ -148,8 +151,24 @@ struct LinkmarkDetailView: View {
                     onTocItemTap: { item in
                         showDetailSheet = false
                         Task { await machine.send(.onNavigateToTocItem(id: item.id, extrasJson: item.extrasJson)) }
+                    },
+                    onScrollToAnnotation: { annotationId in
+                        showDetailSheet = false
+                        Task { await machine.send(.onScrollToAnnotation(annotationId: annotationId)) }
+                    },
+                    onEditAnnotation: { annotationId in
+                        presentAnnotationSheetAfterClosingDetail(annotationId: annotationId)
+                    },
+                    onDeleteAnnotation: { annotationId in
+                        showDetailSheet = false
+                        Task { await handleAnnotationDelete(annotationId: annotationId) }
                     }
                 )
+            }
+        }
+        .sheet(item: $annotationSheetMode) { mode in
+            AnnotationCreationSheet(mode: mode) { outcome in
+                Task { await handleAnnotationSheetOutcome(outcome) }
             }
         }
         .sheet(isPresented: $showEditSheet) {
@@ -263,6 +282,9 @@ struct LinkmarkDetailView: View {
                             tocNavigate: pendingWebToc,
                             scrollToAnnotationId: machine.state.scrollToAnnotationId,
                             onHostEvent: handleHostEvent(_:),
+                            onAnnotationTap: { annotationId in
+                                openAnnotationEditor(annotationId: annotationId)
+                            },
                             onScrollDirection: { dir in
                                 switch dir {
                                 case .down: readerChromeVisible = false
@@ -294,7 +316,7 @@ struct LinkmarkDetailView: View {
                                 onSelectFontSize: { f in Task { await machine.send(.onSetReaderFontSize(f)) } },
                                 onSelectLineHeight: { lh in Task { await machine.send(.onSetReaderLineHeight(lh)) } },
                                 onStickyNote: {
-                                    // Annotation creation flow deferred.
+                                    openAnnotationCreator()
                                 }
                             )
                             .padding(.bottom, 24 + layoutGeo.safeAreaInsets.bottom)
@@ -396,36 +418,7 @@ struct LinkmarkDetailView: View {
     private func annotationsJson(for bm: YabaBookmark) -> String {
         guard let v = currentVersion(bm) else { return "[]" }
         let ann = bm.annotations.filter { $0.readableVersion?.readableVersionId == v.readableVersionId }
-        let payload: [[String: String]] = ann.map {
-            [
-                "id": $0.annotationId,
-                "colorRole": annotationColorToken(YabaColor.from(colorCode: $0.colorRoleRaw)),
-            ]
-        }
-        guard let data = try? JSONSerialization.data(withJSONObject: payload),
-              let s = String(data: data, encoding: .utf8)
-        else {
-            return "[]"
-        }
-        return s
-    }
-
-    private func annotationColorToken(_ y: YabaColor) -> String {
-        switch y {
-        case .none, .yellow: return "YELLOW"
-        case .blue: return "BLUE"
-        case .brown: return "BROWN"
-        case .cyan: return "CYAN"
-        case .gray: return "GRAY"
-        case .green: return "GREEN"
-        case .indigo: return "INDIGO"
-        case .mint: return "MINT"
-        case .orange: return "ORANGE"
-        case .pink: return "PINK"
-        case .purple: return "PURPLE"
-        case .red: return "RED"
-        case .teal: return "TEAL"
-        }
+        return AnnotationRenderingPayloadBuilder.readableJSON(from: ann)
     }
 
     private func handleHostEvent(_ event: WebHostEvent) {
@@ -438,6 +431,114 @@ struct LinkmarkDetailView: View {
                 Task { await machine.send(e) }
             }
         }
+    }
+
+    private func openAnnotationCreator() {
+        guard let bm = bookmark else { return }
+        guard let versionId = currentVersion(bm)?.readableVersionId else { return }
+        Task { @MainActor in
+            // WebKit selection and host metrics can be one frame apart; retry briefly before showing an error.
+            var draft: ReadableSelectionDraft?
+            for _ in 0 ..< 5 {
+                draft = await webDriver.getSelectionDraft(
+                    bookmarkId: bm.bookmarkId,
+                    readableVersionId: versionId
+                )
+                if draft != nil { break }
+                try? await Task.sleep(nanoseconds: 80_000_000)
+            }
+            if let draft {
+                annotationSheetMode = .create(draft)
+            } else {
+                CoreToastManager.shared.show(
+                    message: LocalizedStringKey("Annotation Selection Required Message"),
+                    iconType: .error,
+                    duration: .short
+                )
+            }
+        }
+    }
+
+    private func openAnnotationEditor(annotationId: String) {
+        guard let ann = bookmark?.annotations.first(where: { $0.annotationId == annotationId }) else { return }
+        annotationSheetMode = .edit(ann)
+    }
+
+    private func presentAnnotationSheetAfterClosingDetail(annotationId: String) {
+        guard let ann = bookmark?.annotations.first(where: { $0.annotationId == annotationId }) else { return }
+        showDetailSheet = false
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 200_000_000)
+            annotationSheetMode = .edit(ann)
+        }
+    }
+
+    private func handleAnnotationSheetOutcome(_ outcome: AnnotationCreationSheetOutcome) async {
+        switch outcome {
+        case .cancelled, .persisted:
+            break
+        case let .readableCreateRequested(annotationId, request):
+            await commitReadableCreate(annotationId: annotationId, request: request)
+        case let .readableDeleteRequested(annotationId, readableVersionId):
+            await commitReadableDelete(annotationId: annotationId, readableVersionId: readableVersionId)
+        }
+    }
+
+    private func handleAnnotationDelete(annotationId: String) async {
+        guard let annotation = bookmark?.annotations.first(where: { $0.annotationId == annotationId }) else { return }
+        if annotation.type == .readable, let readableVersionId = annotation.readableVersion?.readableVersionId {
+            await commitReadableDelete(annotationId: annotationId, readableVersionId: readableVersionId)
+            return
+        }
+        await machine.send(.onDeleteAnnotation(annotationId: annotationId))
+    }
+
+    private func commitReadableCreate(annotationId: String, request: AnnotationReadableCreateRequest) async {
+        let didApply = await webDriver.applyAnnotationToSelection(annotationId: annotationId)
+        guard didApply else {
+            CoreToastManager.shared.show(
+                message: LocalizedStringKey("Annotation Apply Failed Message"),
+                iconType: .error,
+                duration: .short
+            )
+            return
+        }
+        let documentJson = await webDriver.getDocumentJson()
+        guard !documentJson.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            CoreToastManager.shared.show(
+                message: LocalizedStringKey("Annotation Sync Failed Message"),
+                iconType: .error,
+                duration: .short
+            )
+            return
+        }
+        await machine.send(
+            .onAnnotationReadableCreateCommitted(
+                request: request,
+                annotationId: annotationId,
+                documentJson: documentJson
+            )
+        )
+    }
+
+    private func commitReadableDelete(annotationId: String, readableVersionId: String) async {
+        _ = await webDriver.removeAnnotationFromDocument(annotationId: annotationId)
+        let documentJson = await webDriver.getDocumentJson()
+        guard !documentJson.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            CoreToastManager.shared.show(
+                message: LocalizedStringKey("Annotation Sync Failed Message"),
+                iconType: .error,
+                duration: .short
+            )
+            return
+        }
+        await machine.send(
+            .onAnnotationReadableDeleteCommitted(
+                annotationId: annotationId,
+                readableVersionId: readableVersionId,
+                documentJson: documentJson
+            )
+        )
     }
 
     @ViewBuilder

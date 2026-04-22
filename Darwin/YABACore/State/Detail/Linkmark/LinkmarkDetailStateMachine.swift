@@ -102,8 +102,32 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
             )
         case let .onDeleteAnnotation(annotationId):
             AnnotationManager.queueDeleteAnnotation(annotationId: annotationId)
-        case .onAnnotationReadableCreateCommitted, .onAnnotationReadableDeleteCommitted:
-            break
+        case let .onAnnotationReadableCreateCommitted(request, annotationId, documentJson):
+            guard let bid = state.bookmarkId else { return }
+            let versionId = request.selectionDraft.readableVersionId
+            ReadableContentManager.queueSyncNotemarkReadableMirror(
+                bookmarkId: bid,
+                versionId: versionId,
+                documentJson: documentJson
+            )
+            AnnotationManager.queueInsertAnnotation(
+                bookmarkId: bid,
+                readableVersionId: versionId,
+                type: .readable,
+                annotationId: annotationId,
+                colorRoleRaw: request.colorRole.rawValue,
+                note: request.note?.nilIfEmpty,
+                quoteText: request.selectionDraft.quoteText,
+                extrasJson: nil
+            )
+        case let .onAnnotationReadableDeleteCommitted(annotationId, readableVersionId, documentJson):
+            guard let bid = state.bookmarkId else { return }
+            ReadableContentManager.queueSyncNotemarkReadableMirror(
+                bookmarkId: bid,
+                versionId: readableVersionId,
+                documentJson: documentJson
+            )
+            AnnotationManager.queueDeleteAnnotation(annotationId: annotationId)
         case let .onScrollToAnnotation(annotationId):
             apply { $0.scrollToAnnotationId = annotationId }
         case .onClearScrollToAnnotation:

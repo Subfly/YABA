@@ -52,6 +52,9 @@ struct LinkmarkDetailInfoSheet: View {
     let onSelectVersion: (String) -> Void
     let onDeleteVersion: (String) -> Void
     let onTocItemTap: (TocItem) -> Void
+    let onScrollToAnnotation: (String) -> Void
+    let onEditAnnotation: (String) -> Void
+    let onDeleteAnnotation: (String) -> Void
 
     @State
     private var versionPendingDeletion: PendingVersionDeletion?
@@ -314,7 +317,18 @@ struct LinkmarkDetailInfoSheet: View {
                 )
             } else {
                 List(items, id: \.annotationId) { a in
-                    AnnotationPreviewItemView(annotation: a)
+                    AnnotationItemView(
+                        annotation: a,
+                        onPress: {
+                            onScrollToAnnotation(a.annotationId)
+                        },
+                        onEdit: {
+                            onEditAnnotation(a.annotationId)
+                        },
+                        onDelete: {
+                            onDeleteAnnotation(a.annotationId)
+                        }
+                    )
                         .padding(.vertical, 2)
                         .listRowBackground(
                             RoundedRectangle(cornerRadius: 12)

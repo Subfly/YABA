@@ -205,4 +205,76 @@ public enum WebViewerBridgeScripts {
         })();
         """
     }
+
+    /// Returns selection snapshot JSON (`{ selectedText, prefixText?, suffixText? }`) or empty string.
+    public static func getSelectionSnapshot() -> String {
+        """
+        (function(){
+          try {
+            var b = window.YabaEditorBridge;
+            if (!b || !b.getSelectionSnapshot) { return ""; }
+            var snapshot = b.getSelectionSnapshot();
+            if (!snapshot) { return ""; }
+            return JSON.stringify(snapshot);
+          } catch(e) { return ""; }
+        })();
+        """
+    }
+
+    /// Plain selected text in the editor (read-only reader); use when `getSelectionSnapshot` JSON is unavailable.
+    public static func getSelectedText() -> String {
+        """
+        (function(){
+          try {
+            var b = window.YabaEditorBridge;
+            if (!b || !b.getSelectedText) { return ""; }
+            var t = b.getSelectedText();
+            return (t && typeof t === "string") ? t : "";
+          } catch(e) { return ""; }
+        })();
+        """
+    }
+
+    /// Returns "1" when current selection can create annotation, otherwise "0".
+    public static func getCanCreateAnnotation() -> String {
+        """
+        (function(){
+          try {
+            var b = window.YabaEditorBridge;
+            if (!b || !b.getCanCreateAnnotation) { return "0"; }
+            return b.getCanCreateAnnotation() ? "1" : "0";
+          } catch(e) { return "0"; }
+        })();
+        """
+    }
+
+    /// Returns "1" if annotation mark was applied to current selection, otherwise "0".
+    public static func applyAnnotationToSelection(annotationId: String) -> String {
+        let escaped = WebJsEscaping.escapeForJsSingleQuotedString(annotationId)
+        return """
+        (function(){
+          try {
+            var b = window.YabaEditorBridge;
+            if (!b || !b.applyAnnotationToSelection) { return "0"; }
+            return b.applyAnnotationToSelection('\(escaped)') ? "1" : "0";
+          } catch(e) { return "0"; }
+        })();
+        """
+    }
+
+    /// Returns number of removed annotation marks as string.
+    public static func removeAnnotationFromDocument(annotationId: String) -> String {
+        let escaped = WebJsEscaping.escapeForJsSingleQuotedString(annotationId)
+        return """
+        (function(){
+          try {
+            var b = window.YabaEditorBridge;
+            if (!b || !b.removeAnnotationFromDocument) { return "0"; }
+            var removed = b.removeAnnotationFromDocument('\(escaped)');
+            if (typeof removed !== 'number' || !isFinite(removed)) { return "0"; }
+            return String(Math.max(0, Math.floor(removed)));
+          } catch(e) { return "0"; }
+        })();
+        """
+    }
 }

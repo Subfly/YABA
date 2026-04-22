@@ -22,6 +22,7 @@ struct LinkmarkReadableWebView: UIViewRepresentable {
     var tocNavigate: LinkmarkWebTocNavigation?
     var scrollToAnnotationId: String?
     var onHostEvent: (WebHostEvent) -> Void
+    var onAnnotationTap: (String) -> Void
     var onScrollDirection: (ScrollAxisDirection) -> Void
     var onBridgeReady: () -> Void
     var onTocNavigationConsumed: () -> Void
@@ -51,6 +52,9 @@ struct LinkmarkReadableWebView: UIViewRepresentable {
         coordinator.runtime.onHostEvent = { [weak coordinator] ev in
             coordinator?.handleHostEventForReadiness(ev)
             coordinator?.parentSnapshot.onHostEvent(ev)
+        }
+        coordinator.runtime.onAnnotationTap = { [weak coordinator] annotationId in
+            coordinator?.parentSnapshot.onAnnotationTap(annotationId)
         }
         coordinator.runtime.onBridgeReady = { [weak coordinator] in
             guard let coordinator else { return }

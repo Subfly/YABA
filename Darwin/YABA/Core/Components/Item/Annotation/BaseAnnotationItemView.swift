@@ -49,7 +49,7 @@ struct BaseAnnotationItemView: View {
                             .lineLimit(2)
                     }
                 } else {
-                    Text("TODO")
+                    Text("Annotation Quote Empty Message")
                         .font(.body)
                         .foregroundStyle(.secondary)
                 }

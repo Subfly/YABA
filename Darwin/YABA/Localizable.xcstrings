@@ -226,6 +226,42 @@
         }
       }
     },
+    "Annotation Apply Failed Message" : {
+
+    },
+    "Annotation Color Section Title" : {
+
+    },
+    "Annotation Creation Title" : {
+
+    },
+    "Annotation Delete Confirmation Message" : {
+
+    },
+    "Annotation Delete Confirmation Title" : {
+
+    },
+    "Annotation Edit Title" : {
+
+    },
+    "Annotation Note Placeholder" : {
+
+    },
+    "Annotation Note Section Title" : {
+
+    },
+    "Annotation Quote Empty Message" : {
+
+    },
+    "Annotation Quote Section Title" : {
+
+    },
+    "Annotation Selection Required Message" : {
+
+    },
+    "Annotation Sync Failed Message" : {
+
+    },
     "Announcement CloudKit Deletion Title" : {
       "comment" : "One time title for announcement that indicates Cloud Kit Database Deletion",
       "extractionState" : "manual",

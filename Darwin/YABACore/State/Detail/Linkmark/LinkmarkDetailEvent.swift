@@ -36,8 +36,16 @@ public enum LinkmarkDetailEvent: Sendable {
     )
     case onUpdateAnnotation(annotationId: String, colorRole: YabaColor, note: String?)
     case onDeleteAnnotation(annotationId: String)
-    case onAnnotationReadableCreateCommitted(annotationId: String, documentJson: String)
-    case onAnnotationReadableDeleteCommitted(annotationId: String, documentJson: String)
+    case onAnnotationReadableCreateCommitted(
+        request: AnnotationReadableCreateRequest,
+        annotationId: String,
+        documentJson: String
+    )
+    case onAnnotationReadableDeleteCommitted(
+        annotationId: String,
+        readableVersionId: String,
+        documentJson: String
+    )
     case onScrollToAnnotation(annotationId: String)
     case onClearScrollToAnnotation
     case onTocChanged(tocJson: String?)

@@ -19,6 +19,7 @@ public final class AnnotationCreationStateMachine: YabaBaseObservableState<Annot
                 $0.readableVersionId = draft.readableVersionId
                 $0.quoteText = draft.quoteText
                 $0.extrasJson = draft.extrasJson
+                $0.annotationType = draft.annotationType
                 $0.annotationId = nil
             }
         case let .onInitWithAnnotation(bookmarkId, annotationId):

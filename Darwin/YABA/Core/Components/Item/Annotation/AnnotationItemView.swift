@@ -10,9 +10,9 @@ import SwiftUI
 struct AnnotationItemView: View {
     let annotation: AnnotationModel
     let onPress: () -> Void
+    let onEdit: () -> Void
+    let onDelete: () -> Void
 
-    @State
-    private var shouldShowEditSheet = false
     @State
     private var shouldShowDeleteAlert = false
 
@@ -23,30 +23,27 @@ struct AnnotationItemView: View {
                 Button {
                     shouldShowDeleteAlert = true
                 } label: {
-                    Text("TODO")
+                    Text("Delete")
                 }
                 .tint(.red)
                 Button {
-                    shouldShowEditSheet = true
+                    onEdit()
                 } label: {
-                    Text("TODO")
+                    Text("Edit")
                 }
                 .tint(.orange)
             }
             #endif
-            .sheet(isPresented: $shouldShowEditSheet) {
-                // TODO: Annotation editor
-                EmptyView()
-            }
-            .alert("TODO", isPresented: $shouldShowDeleteAlert) {
-                Button("TODO", role: .cancel) {
+            .alert("Annotation Delete Confirmation Title", isPresented: $shouldShowDeleteAlert) {
+                Button("Cancel", role: .cancel) {
                     shouldShowDeleteAlert = false
                 }
-                Button("TODO", role: .destructive) {
+                Button("Delete", role: .destructive) {
+                    onDelete()
                     shouldShowDeleteAlert = false
                 }
             } message: {
-                Text("TODO")
+                Text("Annotation Delete Confirmation Message")
             }
     }
 }
