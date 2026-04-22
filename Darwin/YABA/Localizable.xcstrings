@@ -1287,7 +1287,14 @@
       }
     },
     "Bookmark Detail Cancel Reminder Action" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel Reminder"
+          }
+        }
+      }
     },
     "Bookmark Detail Created At Title" : {
       "comment" : "Title to show in the info section of bookmark detail for creation time",
@@ -1482,13 +1489,34 @@
       }
     },
     "Bookmark Detail Export Format Markdown Title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Markdown"
+          }
+        }
+      }
     },
     "Bookmark Detail Export Format PDF Title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PDF"
+          }
+        }
+      }
     },
     "Bookmark Detail Export Menu Title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export"
+          }
+        }
+      }
     },
     "Bookmark Detail Image Error Description" : {
       "comment" : "Detail to show when bookmark image can not be accessed in detail",
@@ -1776,13 +1804,27 @@
       }
     },
     "Bookmark Detail Markdown Export Failed Message" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to export to markdown…"
+          }
+        }
+      }
     },
     "Bookmark Detail Metadata Title Label" : {
 
     },
     "Bookmark Detail No Annotations Title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No annotations created yet…"
+          }
+        }
+      }
     },
     "Bookmark Detail No Description Provided" : {
       "comment" : "Description placeholder in bookmark detail",
@@ -1880,7 +1922,14 @@
       }
     },
     "Bookmark Detail No Table Of Contents Title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No ToC content found…"
+          }
+        }
+      }
     },
     "Bookmark Detail No Tags Added Description" : {
       "comment" : "Description to show when no tags added in bookmark detail view",
@@ -2075,10 +2124,24 @@
       }
     },
     "Bookmark Detail No Versions Title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No readable versions available. You can always save a new readable version from the options, under “Update”."
+          }
+        }
+      }
     },
     "Bookmark Detail Open Link Action" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open"
+          }
+        }
+      }
     },
     "Bookmark Detail Open Link Tip Message" : {
       "comment" : "Message of the tip to show when user opened the bookmark detail for the first time",
@@ -2276,7 +2339,14 @@
 
     },
     "Bookmark Detail Pin Action" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pin"
+          }
+        }
+      }
     },
     "Bookmark Detail Remind Me Title" : {
       "comment" : "Title to show in bookmark detail view for reminder that set up",
@@ -2375,19 +2445,54 @@
       }
     },
     "Bookmark Detail Sheet Navigation Title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Details"
+          }
+        }
+      }
     },
     "Bookmark Detail Sheet Tab Annotations Title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Annotations"
+          }
+        }
+      }
     },
     "Bookmark Detail Sheet Tab Contents Title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contents"
+          }
+        }
+      }
     },
     "Bookmark Detail Sheet Tab Info Title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Info"
+          }
+        }
+      }
     },
     "Bookmark Detail Sheet Tab Versions Title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versions"
+          }
+        }
+      }
     },
     "Bookmark Detail Title" : {
       "comment" : "Title to show in bookmark detail view",
@@ -2485,13 +2590,34 @@
       }
     },
     "Bookmark Detail Unpin Action" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pinned"
+          }
+        }
+      }
     },
     "Bookmark Detail Update Menu Title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Update"
+          }
+        }
+      }
     },
     "Bookmark Detail Update Readable Version Action" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Readable"
+          }
+        }
+      }
     },
     "Bookmark Detail URL Label" : {
 
@@ -34825,31 +34951,94 @@
       }
     },
     "Reader Preference Font Size Large Title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Large"
+          }
+        }
+      }
     },
     "Reader Preference Font Size Medium Title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Medium"
+          }
+        }
+      }
     },
     "Reader Preference Font Size Small Title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Small"
+          }
+        }
+      }
     },
     "Reader Preference Line Height Normal Title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Normal"
+          }
+        }
+      }
     },
     "Reader Preference Line Height Relaxed Title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relaxed"
+          }
+        }
+      }
     },
     "Reader Preference Theme Dark Title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dark"
+          }
+        }
+      }
     },
     "Reader Preference Theme Light Title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Light"
+          }
+        }
+      }
     },
     "Reader Preference Theme Sepia Title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sepia"
+          }
+        }
+      }
     },
     "Reader Preference Theme System Title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "System"
+          }
+        }
+      }
     },
     "Refresh" : {
       "comment" : "Label to show for refresh related functions",

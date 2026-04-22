@@ -285,7 +285,6 @@ struct LinkmarkDetailView: View {
                 } label: {
                     homeToolbarIcon("arrow-left-01")
                 }
-                .buttonStyle(.plain)
             }
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
@@ -293,7 +292,6 @@ struct LinkmarkDetailView: View {
                 } label: {
                     homeToolbarIcon("information-circle")
                 }
-                .buttonStyle(.plain)
             }
             if #available(iOS 26, *) {
                 ToolbarSpacer(.fixed, placement: .topBarTrailing)
@@ -302,6 +300,7 @@ struct LinkmarkDetailView: View {
                 overflowMenu(for: bm)
             }
         }
+        .tint(folderTint)
         .background {
             GeometryReader { proxy in
                 Color.clear
@@ -418,77 +417,112 @@ struct LinkmarkDetailView: View {
                 Button {
                     UIApplication.shared.open(u)
                 } label: {
-                    overflowItemLabel("Bookmark Detail Open Link Action", icon: "link-02")
+                    overflowMenuItemLabel("Bookmark Detail Open Link Action", icon: "link-04")
                 }
+                .tint(YabaColor.green.getUIColor())
             }
             Button {
                 showEditSheet = true
             } label: {
-                overflowItemLabel("Edit", icon: "edit-02")
+                overflowMenuItemLabel("Edit", icon: "edit-02")
             }
+            .tint(YabaColor.orange.getUIColor())
             Button {
                 showMoveSheet = true
             } label: {
-                overflowItemLabel("Move", icon: "folder-01")
+                overflowMenuItemLabel("Move", icon: "arrow-move-up-right")
             }
+            .tint(YabaColor.teal.getUIColor())
             Button {
                 AllBookmarksManager.queueToggleBookmarkPinned(bookmarkId: bm.bookmarkId)
             } label: {
-                overflowItemLabel(
+                overflowMenuItemLabel(
                     bm.isPinned ? "Bookmark Detail Unpin Action" : "Bookmark Detail Pin Action",
-                    icon: bm.isPinned ? "pin-off" : "pin"
+                    icon: bm.isPinned ? "pin" : "pin-off"
                 )
             }
-            Menu("Bookmark Detail Export Menu Title") {
+            .tint(YabaColor.yellow.getUIColor())
+            Menu {
                 Button {
                     Task { @MainActor in
                         let md = await webDriver.exportMarkdown()
                         exportMarkdownShare(markdown: md)
                     }
                 } label: {
-                    overflowItemLabel("Bookmark Detail Export Format Markdown Title", icon: "text")
+                    overflowMenuItemLabel(
+                        "Bookmark Detail Export Format Markdown Title",
+                        icon: "document-attachment"
+                    )
                 }
+                .tint(YabaColor.gray.getUIColor())
                 Button {
                     startPdfExport()
                 } label: {
-                    overflowItemLabel("Bookmark Detail Export Format PDF Title", icon: "paragraph")
+                    overflowMenuItemLabel(
+                        "Bookmark Detail Export Format PDF Title",
+                        icon: "pdf-02"
+                    )
                 }
+                .tint(YabaColor.red.getUIColor())
+            } label: {
+                overflowMenuItemLabel("Bookmark Detail Export Menu Title", icon: "download-01")
             }
-            Menu("Bookmark Detail Update Menu Title") {
+            .tint(YabaColor.blue.getUIColor())
+            Menu {
                 Button {
                     Task { await machine.send(.onUpdateLinkMetadataRequested) }
                 } label: {
-                    overflowItemLabel("Bookmark Creation Metadata Section Title", icon: "database-01")
+                    overflowMenuItemLabel(
+                        "Bookmark Creation Metadata Section Title",
+                        icon: "database-01"
+                    )
                 }
+                .tint(YabaColor.mint.getUIColor())
                 Button {
                     Task { await machine.send(.onUpdateReadableRequested) }
                 } label: {
-                    overflowItemLabel("Bookmark Detail Update Readable Version Action", icon: "refresh")
+                    overflowMenuItemLabel(
+                        "Bookmark Detail Update Readable Version Action",
+                        icon: "book-open-01"
+                    )
                 }
+                .tint(YabaColor.mint.getUIColor())
+            } label: {
+                overflowMenuItemLabel("Bookmark Detail Update Menu Title", icon: "arrow-reload-horizontal")
             }
-            if machine.state.reminderDate != nil {
-                Button(role: .destructive) {
-                    Task { await machine.send(.onCancelReminder) }
-                } label: {
-                    overflowItemLabel("Bookmark Detail Cancel Reminder Action", icon: "notification-01")
-                }
-            } else {
+            .tint(YabaColor.mint.getUIColor())
+            if machine.state.reminderDate == nil {
                 Button {
                     showReminderSheet = true
                 } label: {
-                    overflowItemLabel("Remind Me", icon: "notification-01")
+                    overflowMenuItemLabel("Remind Me", icon: "notification-01")
                 }
+                .tint(YabaColor.yellow.getUIColor())
             }
             Button {
                 showShareURLSheet = true
             } label: {
-                overflowItemLabel("Share", icon: "share-03")
+                overflowMenuItemLabel("Share", icon: "share-03")
             }
-            Button(role: .destructive) {
+            .tint(YabaColor.indigo.getUIColor())
+            Divider()
+            if machine.state.reminderDate != nil {
+                Button {
+                    Task { await machine.send(.onCancelReminder) }
+                } label: {
+                    overflowMenuItemLabel(
+                        "Bookmark Detail Cancel Reminder Action",
+                        icon: "notification-off-03"
+                    )
+                }
+                .tint(YabaColor.red.getUIColor())
+            }
+            Button {
                 showDeleteAlert = true
             } label: {
-                overflowItemLabel("Delete", icon: "delete-02")
+                overflowMenuItemLabel("Delete", icon: "delete-02")
             }
+            .tint(YabaColor.red.getUIColor())
         } label: {
             homeToolbarIcon("more-horizontal-circle-02")
         }
@@ -501,8 +535,9 @@ struct LinkmarkDetailView: View {
             .frame(width: 22, height: 22)
     }
 
+    /// Plain label; color the row with `.tint(...)` on the `Button` or `Menu` (same pattern as `FolderDetailView` overflow actions).
     @ViewBuilder
-    private func overflowItemLabel(_ key: LocalizedStringKey, icon: String) -> some View {
+    private func overflowMenuItemLabel(_ key: LocalizedStringKey, icon: String) -> some View {
         Label {
             Text(key)
         } icon: {

@@ -19,7 +19,32 @@ struct LinkmarkReaderFloatingToolbar: View {
     let onStickyNote: () -> Void
 
     var body: some View {
-        HStack(spacing: 10) {
+        Group {
+            if #available(iOS 26, *) {
+                GlassEffectContainer(spacing: 30) {
+                    toolbarMenus(padLabels: true)
+                }
+                .glassEffect(.regular.tint(folderAccent.opacity(0.2)).interactive())
+                .animation(.smooth, value: canAnnotate)
+            } else {
+                toolbarMenus(padLabels: false)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+                    .background {
+                        Capsule()
+                            .fill(.ultraThinMaterial)
+                    }
+            }
+        }
+        .shadow(radius: 6)
+        .opacity(isVisible ? 1 : 0)
+        .offset(y: isVisible ? 0 : 24)
+        .animation(.smooth, value: isVisible)
+    }
+
+    @ViewBuilder
+    private func toolbarMenus(padLabels: Bool) -> some View {
+        HStack(spacing: padLabels ? 0 : 10) {
             Menu {
                 ForEach(ReaderTheme.allCases, id: \.self) { t in
                     Button {
@@ -34,7 +59,7 @@ struct LinkmarkReaderFloatingToolbar: View {
                     }
                 }
             } label: {
-                toolbarGlyph("colors")
+                menuLabelIcon("colors", padLabels: padLabels)
             }
             Menu {
                 ForEach(ReaderFontSize.allCases, id: \.self) { f in
@@ -50,7 +75,7 @@ struct LinkmarkReaderFloatingToolbar: View {
                     }
                 }
             } label: {
-                toolbarGlyph("text-square")
+                menuLabelIcon("text-square", padLabels: padLabels)
             }
             Menu {
                 ForEach(ReaderLineHeight.allCases, id: \.self) { lh in
@@ -66,44 +91,30 @@ struct LinkmarkReaderFloatingToolbar: View {
                     }
                 }
             } label: {
-                toolbarGlyph("cursor-text")
+                menuLabelIcon("cursor-text", padLabels: padLabels)
             }
             if canAnnotate {
                 Button(action: onStickyNote) {
-                    toolbarGlyph("sticky-note-03")
+                    menuLabelIcon("sticky-note-03", padLabels: padLabels)
                 }
                 .buttonStyle(.plain)
             }
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
-        .background(floatingToolbarBackground)
-        .shadow(radius: 6)
-        .opacity(isVisible ? 1 : 0)
-        .offset(y: isVisible ? 0 : 24)
-        .animation(.smooth, value: isVisible)
     }
 
     @ViewBuilder
-    private var floatingToolbarBackground: some View {
-        if #available(iOS 26, *) {
-            Capsule()
-                .fill(Color.clear)
-                .glassEffect(.regular.tint(folderAccent.opacity(0.35)).interactive(), in: Capsule())
+    private func menuLabelIcon(_ icon: String, padLabels: Bool) -> some View {
+        if padLabels {
+            toolbarGlyph(icon)
+                .padding()
         } else {
-            Capsule()
-                .fill(.ultraThinMaterial)
+            toolbarGlyph(icon)
         }
     }
 
     private func toolbarGlyph(_ icon: String) -> some View {
-        ZStack {
-            Circle()
-                .fill(folderAccent.opacity(0.55))
-            YabaIconView(bundleKey: icon)
-                .foregroundStyle(.white)
-                .frame(width: 22, height: 22)
-        }
-        .frame(width: 44, height: 44)
+        YabaIconView(bundleKey: icon)
+            .foregroundStyle(.white)
+            .frame(width: 22, height: 22)
     }
 }
