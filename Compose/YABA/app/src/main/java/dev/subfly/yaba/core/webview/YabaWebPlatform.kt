@@ -4,7 +4,7 @@ package dev.subfly.yaba.core.webview
  * Host UI platform passed to the web reader/editor for theming.
  */
 enum class YabaWebPlatform {
-    Compose,
+    Android,
 }
 
 /**

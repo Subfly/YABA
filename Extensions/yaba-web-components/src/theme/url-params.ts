@@ -1,4 +1,4 @@
-export type Platform = "compose" | "darwin"
+export type Platform = "android" | "darwin"
 export type AppearanceMode = "auto" | "light" | "dark"
 
 export interface ThemeParams {
@@ -13,8 +13,13 @@ export function parseUrlParams(): ThemeParams {
   )
 
   const platformRaw = params.get("platform")?.toLowerCase()
+  // Legacy: `platform=compose` in older shipped shells → treat as android.
   const platform: Platform =
-    platformRaw === "compose" || platformRaw === "darwin" ? platformRaw : "compose"
+    platformRaw === "android" || platformRaw === "compose"
+      ? "android"
+      : platformRaw === "darwin"
+        ? "darwin"
+        : "android"
 
   const appearanceRaw = params.get("appearance")?.toLowerCase()
   const appearance: AppearanceMode =

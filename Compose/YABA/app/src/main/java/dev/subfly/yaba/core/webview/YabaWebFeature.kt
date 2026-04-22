@@ -18,7 +18,7 @@ sealed class YabaWebFeature {
         val initialDocumentJson: String,
         val assetsBaseUrl: String?,
         val placeholderText: String? = null,
-        val platform: YabaWebPlatform = YabaWebPlatform.Compose,
+        val platform: YabaWebPlatform = YabaWebPlatform.Android,
         val appearance: YabaWebAppearance = YabaWebAppearance.Auto,
         val readerPreferences: ReaderPreferences = ReaderPreferences(),
         /**
@@ -31,7 +31,7 @@ sealed class YabaWebFeature {
 
     data class Canvas(
         val initialSceneJson: String,
-        val platform: YabaWebPlatform = YabaWebPlatform.Compose,
+        val platform: YabaWebPlatform = YabaWebPlatform.Android,
         val appearance: YabaWebAppearance = YabaWebAppearance.Auto,
         /**
          * Increments only when bootstrapping the canvas from disk. Hosts apply [initialSceneJson]

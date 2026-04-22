@@ -454,7 +454,7 @@ internal fun CanvmarkContentLayout(
                                 baseUrl = WebComponentUris.getCanvasUri(),
                                 feature = YabaWebFeature.Canvas(
                                     initialSceneJson = state.initialSceneJson.orEmpty(),
-                                    platform = YabaWebPlatform.Compose,
+                                    platform = YabaWebPlatform.Android,
                                     appearance = webAppearance,
                                     sceneLoadGeneration = state.canvasContentLoadGeneration,
                                 ),

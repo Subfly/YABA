@@ -2,7 +2,7 @@
 //  WebFeature.swift
 //  YABACore
 //
-//  Which bundled shell to load and what data drives it — parity with Compose `WebFeature`.
+//  Which bundled shell to load and what data drives it — parity with the Android app `WebFeature`.
 //
 
 import Foundation
@@ -62,7 +62,7 @@ public enum WebFeature: Sendable {
         annotationsJson: String
     )
 
-    /// Bridge `feature` string expected in `bridgeReady` messages (matches Compose hosts).
+    /// Bridge `feature` string expected in `bridgeReady` messages (matches Android / host WebViews).
     public var expectedBridgeFeature: String {
         switch self {
         case .readableViewer: return "viewer"

@@ -115,7 +115,7 @@ internal fun DocmarkContentLayout(
             DocmarkType.PDF ->
                 YabaWebFeature.PdfViewer(
                     pdfUrl = documentPath,
-                    platform = YabaWebPlatform.Compose,
+                    platform = YabaWebPlatform.Android,
                     appearance = appearance,
                     annotations = state.annotations,
                 )
@@ -124,7 +124,7 @@ internal fun DocmarkContentLayout(
                 YabaWebFeature.EpubViewer(
                     epubUrl = documentPath,
                     readerPreferences = state.readerPreferences,
-                    platform = YabaWebPlatform.Compose,
+                    platform = YabaWebPlatform.Android,
                     appearance = appearance,
                     annotations = state.annotations,
                 )

@@ -28,6 +28,23 @@ public final class WKWebViewRuntime: NSObject {
     private let navProxy = NavigationProxy()
     private let uiProxy = UIDelegateProxy()
 
+    /// Compose parity: `WebViewClient.onPageFinished` and web `bridgeReady` must both be true before treating the shell as ready.
+    private var pageLoadFinishedForCycle = false
+    private var webPostedBridgeReadyForCycle = false
+    private var emittedCombinedBridgeReadyForCycle = false
+
+    /// Parity with Android `YabaWebBridgeScripts.EDITOR_BRIDGE_READY` / `waitForBridgeReady` when `postMessage` is delayed or not delivered to `WKUserContentController`.
+    private static let editorBridgeIsReadyJavaScript =
+        """
+        (function() {
+            try {
+                return !!(window.YabaEditorBridge && window.YabaEditorBridge.isReady && window.YabaEditorBridge.isReady());
+            } catch (e) {
+                return false;
+            }
+        })();
+        """
+
     public init(configuration: WebRuntimeConfiguration = WebRuntimeConfiguration()) {
         self.configuration = configuration
         let config = WKWebViewConfiguration()
@@ -90,6 +107,7 @@ public final class WKWebViewRuntime: NSObject {
             onHostEvent?(.loadState(.idle))
             return
         }
+        resetBridgeReadinessCycle()
         onHostEvent?(.loadState(.loading(progressFraction: 0)))
         webView.loadFileURL(url, allowingReadAccessTo: readAccess)
     }
@@ -133,8 +151,7 @@ public final class WKWebViewRuntime: NSObject {
         let handler = NativeHostRouterDarwin.createMessageHandler(
             expectedBridgeFeature: expectedBridgeFeature,
             onBridgeReady: { [weak self] in
-                self?.onBridgeReady?()
-                self?.onHostEvent?(.loadState(.bridgeReady))
+                self?.markWebPostedBridgeReadyFromWeb()
             },
             onHostEvent: { [weak self] event in
                 self?.onHostEvent?(event)
@@ -155,6 +172,63 @@ public final class WKWebViewRuntime: NSObject {
         handler(json)
     }
 
+    @MainActor
+    fileprivate func resetBridgeReadinessCycle() {
+        pageLoadFinishedForCycle = false
+        webPostedBridgeReadyForCycle = false
+        emittedCombinedBridgeReadyForCycle = false
+    }
+
+    /// Web posted `bridgeReady` for `expectedBridgeFeature`; emit app-level ready only after `WKNavigationDelegate` page load finished.
+    fileprivate func markWebPostedBridgeReadyFromWeb() {
+        webPostedBridgeReadyForCycle = true
+        emitCombinedBridgeReadyIfNeeded()
+    }
+
+    fileprivate func markPageLoadFinishedForBridgeReadiness() {
+        pageLoadFinishedForCycle = true
+        emitCombinedBridgeReadyIfNeeded()
+        startEditorBridgeReadinessProbingIfNeeded()
+    }
+
+    /// If the web layer never posts `bridgeReady` to `window.webkit.messageHandlers` (but TipTap is up), mark ready from JS, same as Android polling.
+    fileprivate func startEditorBridgeReadinessProbingIfNeeded() {
+        guard !emittedCombinedBridgeReadyForCycle else { return }
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            for _ in 0 ..< 50 {
+                if self.emittedCombinedBridgeReadyForCycle { return }
+                if await self.checkEditorBridgeReadyViaJavaScript() {
+                    self.markWebPostedBridgeReadyFromWeb()
+                    return
+                }
+                try? await Task.sleep(nanoseconds: 50_000_000)
+            }
+        }
+    }
+
+    @MainActor
+    fileprivate func checkEditorBridgeReadyViaJavaScript() async -> Bool {
+        await withCheckedContinuation { (cont: CheckedContinuation<Bool, Never>) in
+            self.webView.evaluateJavaScript(Self.editorBridgeIsReadyJavaScript) { result, _ in
+                if let b = result as? Bool {
+                    cont.resume(returning: b)
+                } else if let n = result as? NSNumber {
+                    cont.resume(returning: n.boolValue)
+                } else {
+                    cont.resume(returning: false)
+                }
+            }
+        }
+    }
+
+    fileprivate func emitCombinedBridgeReadyIfNeeded() {
+        guard pageLoadFinishedForCycle, webPostedBridgeReadyForCycle, !emittedCombinedBridgeReadyForCycle else { return }
+        emittedCombinedBridgeReadyForCycle = true
+        onBridgeReady?()
+        onHostEvent?(.loadState(.bridgeReady))
+    }
+
     fileprivate func shouldAllow(navigationAction: WKNavigationAction) -> WKNavigationActionPolicy {
         guard let url = navigationAction.request.url else { return .cancel }
         let scheme = url.scheme?.lowercased() ?? ""
@@ -163,6 +237,9 @@ public final class WKWebViewRuntime: NSObject {
         case "about", "blob", "data", "javascript":
             return .allow
         case "file":
+            return .allow
+        case "yaba-asset":
+            // Readable inline assets (`ReadableViewerAssets`) are served by `WKURLSchemeHandler`.
             return .allow
         case "http", "https":
             if configuration.allowsRemoteNavigation || configuration.allowsRemoteHTTP {
@@ -215,6 +292,7 @@ public extension WKWebViewRuntime {
             onHostEvent?(.loadState(.idle))
             return
         }
+        resetBridgeReadinessCycle()
         onHostEvent?(.loadState(.loading(progressFraction: 0)))
         webView.loadFileURL(fileURL, allowingReadAccessTo: readAccess)
     }
@@ -226,6 +304,12 @@ private final class NavigationProxy: NSObject, WKNavigationDelegate {
     weak var owner: WKWebViewRuntime?
 
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+        // Do NOT call `resetBridgeReadinessCycle` here. It is already invoked in `loadBundledShell` /
+        // `loadBundledViewerShell` before `loadFileURL`, and in `didFail` / `webViewWebContentProcessDidTerminate`.
+        //
+        // `didStartProvisionalNavigation` is delivered asynchronously. If it runs *after* the page has
+        // already posted `bridgeReady` but *before* `didFinish`, resetting would clear
+        // `webPostedBridgeReadyForCycle` and the combined `onBridgeReady` would never fire.
         DispatchQueue.main.async { [weak self] in
             self?.owner?.onHostEvent?(.loadState(.loading(progressFraction: nil)))
         }
@@ -233,12 +317,26 @@ private final class NavigationProxy: NSObject, WKNavigationDelegate {
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         DispatchQueue.main.async { [weak self] in
-            self?.owner?.onHostEvent?(.loadState(.pageFinished))
+            guard let owner = self?.owner else { return }
+            owner.onHostEvent?(.loadState(.pageFinished))
+            owner.markPageLoadFinishedForBridgeReadiness()
         }
     }
 
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         DispatchQueue.main.async { [weak self] in
+            self?.owner?.resetBridgeReadinessCycle()
+            self?.owner?.onHostEvent?(.loadState(.idle))
+        }
+    }
+
+    func webView(
+        _ webView: WKWebView,
+        didFailProvisionalNavigation navigation: WKNavigation!,
+        withError error: Error
+    ) {
+        DispatchQueue.main.async { [weak self] in
+            self?.owner?.resetBridgeReadinessCycle()
             self?.owner?.onHostEvent?(.loadState(.idle))
         }
     }
@@ -255,6 +353,7 @@ private final class NavigationProxy: NSObject, WKNavigationDelegate {
 
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
         DispatchQueue.main.async { [weak self] in
+            self?.owner?.resetBridgeReadinessCycle()
             self?.owner?.onHostEvent?(.loadState(.rendererCrashed))
         }
     }

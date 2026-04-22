@@ -35,7 +35,7 @@ interface YabaPdfBridge {
 }
 
 let isReady = false
-let currentPlatform: Platform = "compose"
+let currentPlatform: Platform = "android"
 let currentAppearance: AppearanceMode = "auto"
 let currentPdfUrl: string | null = null
 let currentHighlights: PdfHighlightForRendering[] = []

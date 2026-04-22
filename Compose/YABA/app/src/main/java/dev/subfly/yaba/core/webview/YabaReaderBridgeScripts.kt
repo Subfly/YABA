@@ -29,7 +29,7 @@ fun ReaderLineHeight.toJsReaderLineHeightLiteral(): String =
 
 fun YabaWebPlatform.toJsPlatformLiteral(): String =
     when (this) {
-        YabaWebPlatform.Compose -> "compose"
+        YabaWebPlatform.Android -> "android"
     }
 
 fun YabaWebAppearance.toJsAppearanceLiteral(): String =

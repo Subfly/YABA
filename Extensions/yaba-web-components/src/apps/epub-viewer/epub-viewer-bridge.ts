@@ -134,7 +134,7 @@ interface EpubNavItem {
 
 /** True after [initEpubViewerBridge] installed `window.YabaEpubBridge` (matches PDF viewer — host must see ready before calling setEpubUrl). */
 let shellReady = false
-let currentPlatform: Platform = "compose"
+let currentPlatform: Platform = "android"
 let currentAppearance: AppearanceMode = "auto"
 let book: Book | null = null
 let rendition: Rendition | null = null

@@ -349,15 +349,18 @@ function getHeadingIndexFromTocItemId(tocItemId: string): number | null {
 function findHeadingElementForTocItemId(ed: Editor, tocItemId: string): HTMLElement | null {
   const headingIndex = getHeadingIndexFromTocItemId(tocItemId)
   if (headingIndex == null) return null
+  const viewDom = getEditorViewDomSafe(ed)
+  if (!viewDom) return null
   const headingElements = Array.from(
-    ed.view.dom.querySelectorAll<HTMLElement>("h1, h2, h3, h4, h5, h6")
+    viewDom.querySelectorAll<HTMLElement>("h1, h2, h3, h4, h5, h6")
   ).filter((el) => el.textContent?.trim().length)
   return headingElements[headingIndex] ?? null
 }
 
 function scrollHeadingIntoEditorView(ed: Editor, headingEl: HTMLElement): void {
+  const viewDom = getEditorViewDomSafe(ed)
   const container =
-    (ed.view.dom.closest("[data-yaba-editor-root]") as HTMLElement | null) ??
+    (viewDom?.closest("[data-yaba-editor-root]") as HTMLElement | null) ??
     (document.querySelector(".yaba-editor-container") as HTMLElement | null)
 
   if (!container) {
@@ -387,7 +390,7 @@ function publishHeadingTocFromEditor(): void {
 }
 /** Latest ProseMirror selection (anchor/head) for restoring the caret after [unFocus] / native chrome. */
 let lastStoredCursor: { anchor: number; head: number } | null = null
-let platform: Platform = "compose"
+let platform: Platform = "android"
 let appearance: AppearanceMode = "auto"
 let cursorColor: string | null = null
 let readerPreferences: ReaderPreferences = {
@@ -439,15 +442,19 @@ function clearSelectionToCaretAtStart(editor: Editor): void {
 /**
  * After loading/replacing content: normalize to a caret at doc start, remember it, then blur.
  * We prefer an explicit user tap plus placeholder text over auto-focusing the note editor on load.
+ * On iOS, `onEditorReady` can run before the ProseMirror view mounts — defer any `view.dom` use.
  */
-function applyInitialFocusStateAfterContent(editor: Editor): void {
-  clearSelectionToCaretAtStart(editor)
-  captureStoredCursorFromEditor()
-  editor.commands.blur()
-  const container =
-    (editor.view.dom.closest("[data-yaba-editor-root]") as HTMLElement | null) ??
-    (document.querySelector(".yaba-editor-container") as HTMLElement | null)
-  container?.scrollTo({ top: 0, behavior: "auto" })
+function applyInitialFocusStateAfterContent(editor: Editor, onApplied?: () => void): void {
+  whenEditorViewDomReady(editor, () => {
+    clearSelectionToCaretAtStart(editor)
+    captureStoredCursorFromEditor()
+    editor.commands.blur()
+    const container =
+      (editor.view.dom.closest("[data-yaba-editor-root]") as HTMLElement | null) ??
+      (document.querySelector(".yaba-editor-container") as HTMLElement | null)
+    container?.scrollTo({ top: 0, behavior: "auto" })
+    onApplied?.()
+  })
 }
 
 function getCanCreateAnnotationForCurrentSelection(): boolean {
@@ -613,12 +620,51 @@ function getClipboardTextForPaste(ev: ClipboardEvent): string {
 }
 
 /**
+ * iOS `WKWebView` can run `onEditorReady` in React's `useEffect` before the ProseMirror
+ * `EditorView` is attached; accessing `ed.view.dom` then throws (TipTap proxy). Android often
+ * wins the race. Wait until the real DOM is available, then wire clipboard listeners.
+ */
+function whenEditorViewDomReady(
+  ed: Editor,
+  run: (dom: HTMLElement) => void,
+  maxFrames: number = 120,
+): void {
+  let frames = 0
+  const tick = () => {
+    frames += 1
+    try {
+      run(ed.view.dom)
+    } catch {
+      if (frames < maxFrames) {
+        requestAnimationFrame(tick)
+      } else {
+        // eslint-disable-next-line no-console
+        console.error(
+          "[YABA editor-bridge] Editor view DOM not available after",
+          maxFrames,
+          "frames; skipped clipboard wiring.",
+        )
+      }
+    }
+  }
+  queueMicrotask(tick)
+}
+
+/** Best-effort read of [ed.view.dom]; TipTap throws if the ProseMirror view is not mounted yet. */
+function getEditorViewDomSafe(ed: Editor): HTMLElement | null {
+  try {
+    return ed.view.dom
+  } catch {
+    return null
+  }
+}
+
+/**
  * Default copy = Markdown on clipboard; default paste = always consume clipboard as text,
  * sanitize text via DOMPurify, normalize with Showdown, then insert sanitized HTML.
  */
 function wireDefaultMarkdownClipboard(ed: Editor): void {
-  const dom = ed.view.dom
-
+  whenEditorViewDomReady(ed, (dom) => {
   const onCopy = (event: Event) => {
     const ev = event as ClipboardEvent
     if (!ed.isEditable) return
@@ -666,6 +712,7 @@ function wireDefaultMarkdownClipboard(ed: Editor): void {
         },
       },
     },
+  })
   })
 }
 
@@ -736,8 +783,9 @@ export function initEditorBridge(editor: Editor): void {
     publishCurrentEditorState()
   })
   queueMicrotask(() => {
-    applyInitialFocusStateAfterContent(editor)
-    publishCurrentEditorState()
+    applyInitialFocusStateAfterContent(editor, () => {
+      publishCurrentEditorState()
+    })
   })
   const urlParams = parseUrlParams()
   platform = urlParams.platform
@@ -824,8 +872,9 @@ export function initEditorBridge(editor: Editor): void {
         }
         editorInstance?.commands.setContent(doc, { emitUpdate: false })
         if (editorInstance) {
-          applyInitialFocusStateAfterContent(editorInstance)
-          publishCurrentEditorState()
+          applyInitialFocusStateAfterContent(editorInstance, () => {
+            publishCurrentEditorState()
+          })
         }
         if (!editorShellLoadNotified) {
           editorShellLoadNotified = true
@@ -855,8 +904,9 @@ export function initEditorBridge(editor: Editor): void {
         }
         editorInstance?.commands.setContent(payload, { emitUpdate: false })
         if (editorInstance) {
-          applyInitialFocusStateAfterContent(editorInstance)
-          publishCurrentEditorState()
+          applyInitialFocusStateAfterContent(editorInstance, () => {
+            publishCurrentEditorState()
+          })
         }
         if (!editorShellLoadNotified) {
           editorShellLoadNotified = true

@@ -46,8 +46,10 @@ struct LinkmarkReadableWebView: UIViewRepresentable {
         let coordinator = context.coordinator
         let wv = coordinator.runtime.webView
         webDriver.runtime = coordinator.runtime
+        
         coordinator.attachScrollLogging()
         coordinator.runtime.onHostEvent = { [weak coordinator] ev in
+            coordinator?.handleHostEventForReadiness(ev)
             coordinator?.parentSnapshot.onHostEvent(ev)
         }
         coordinator.runtime.onBridgeReady = { [weak coordinator] in
@@ -61,6 +63,7 @@ struct LinkmarkReadableWebView: UIViewRepresentable {
             appearance: Self.webAppearance(for: colorScheme),
             bundle: .main
         )
+        
         return wv
     }
 
@@ -98,6 +101,21 @@ struct LinkmarkReadableWebView: UIViewRepresentable {
         init(parentSnapshot: LinkmarkReadableWebView, runtime: WKWebViewRuntime) {
             self.parentSnapshot = parentSnapshot
             self.runtime = runtime
+        }
+
+        /// Resets when the load fails or the renderer dies — not on every `.loading` (that can be delivered
+        /// out of order or after a successful `bridgeReady`, and would clear `isBridgeReady` incorrectly).
+        func handleHostEventForReadiness(_ event: WebHostEvent) {
+            if case .loadState(let state) = event {
+                switch state {
+                case .idle, .rendererCrashed:
+                    isBridgeReady = false
+                    lastReloadToken = nil
+                    lastDocumentJsonApplied = nil
+                case .loading, .pageFinished, .bridgeReady:
+                    break
+                }
+            }
         }
 
         func attachScrollLogging() {
@@ -143,7 +161,7 @@ struct LinkmarkReadableWebView: UIViewRepresentable {
                 handledToc = toc
                 Task { @MainActor in
                     let s = WebViewerBridgeScripts.navigateToTocItem(id: toc.id, extrasJson: toc.extrasJson)
-                    _ = try? await self.runtime.evaluateJavaScriptStringResult(s)
+                    await self.evalBridgeScript("navigateToTocItem", s)
                     self.parentSnapshot.onTocNavigationConsumed()
                 }
             }
@@ -151,7 +169,7 @@ struct LinkmarkReadableWebView: UIViewRepresentable {
                 handledAnnotationScroll = aid
                 Task { @MainActor in
                     let s = WebViewerBridgeScripts.scrollToAnnotation(annotationId: aid)
-                    _ = try? await self.runtime.evaluateJavaScriptStringResult(s)
+                    await self.evalBridgeScript("scrollToAnnotation", s)
                     self.parentSnapshot.onScrollToAnnotationConsumed()
                 }
             }
@@ -165,24 +183,39 @@ struct LinkmarkReadableWebView: UIViewRepresentable {
             let tokenChanged = lastReloadToken != p.documentReloadToken
             let documentChanged = lastDocumentJsonApplied != p.documentJson
             guard tokenChanged || documentChanged else {
-                let prefs = WebViewerBridgeScripts.setReaderPreferences(p.readerPreferences)
-                _ = try? await runtime.evaluateJavaScriptStringResult(prefs)
-                let chrome = WebViewerBridgeScripts.setWebChromeInsets(topPx: p.topChromeInsetPoints)
-                _ = try? await runtime.evaluateJavaScriptStringResult(chrome)
-                let ann = WebViewerBridgeScripts.setAnnotations(jsonArrayBody: p.annotationsJson)
-                _ = try? await runtime.evaluateJavaScriptStringResult(ann)
+                await evalBridgeScript("setReaderPreferences", WebViewerBridgeScripts.setReaderPreferences(p.readerPreferences))
+                await evalBridgeScript("setWebChromeInsets", WebViewerBridgeScripts.setWebChromeInsets(topPx: p.topChromeInsetPoints))
+                await evalBridgeScript("setAnnotations", WebViewerBridgeScripts.setAnnotations(jsonArrayBody: p.annotationsJson))
+                await evalBridgeScript("installEditorAnnotationTapHandler", WebViewerBridgeScripts.installEditorAnnotationTapHandler())
                 return
             }
             lastReloadToken = p.documentReloadToken
             lastDocumentJsonApplied = p.documentJson
-            let script = WebViewerBridgeScripts.setDocumentJson(documentJson: p.documentJson, assetsBaseUrl: p.assetsBaseUrl)
-            _ = try? await runtime.evaluateJavaScriptStringResult(script)
-            let ann = WebViewerBridgeScripts.setAnnotations(jsonArrayBody: p.annotationsJson)
-            _ = try? await runtime.evaluateJavaScriptStringResult(ann)
-            let prefs = WebViewerBridgeScripts.setReaderPreferences(p.readerPreferences)
-            _ = try? await runtime.evaluateJavaScriptStringResult(prefs)
-            let chrome = WebViewerBridgeScripts.setWebChromeInsets(topPx: p.topChromeInsetPoints)
-            _ = try? await runtime.evaluateJavaScriptStringResult(chrome)
+            // Order matches Compose `YabaReadableViewerFeatureHost` (document → read-only → tap wiring → layers → chrome).
+            await evalBridgeScript("setDocumentJson", WebViewerBridgeScripts.setDocumentJson(documentJson: p.documentJson, assetsBaseUrl: p.assetsBaseUrl))
+            await evalBridgeScript("setEditable(false)", WebViewerBridgeScripts.setEditable(false))
+            await evalBridgeScript("installEditorAnnotationTapHandler", WebViewerBridgeScripts.installEditorAnnotationTapHandler())
+            await evalBridgeScript("setAnnotations", WebViewerBridgeScripts.setAnnotations(jsonArrayBody: p.annotationsJson))
+            await evalBridgeScript("setReaderPreferences", WebViewerBridgeScripts.setReaderPreferences(p.readerPreferences))
+            await evalBridgeScript("setWebChromeInsets", WebViewerBridgeScripts.setWebChromeInsets(topPx: p.topChromeInsetPoints))
+        }
+
+        private func evalBridgeScript(_ label: String, _ script: String) async {
+            do {
+                let r = try await runtime.evaluateJavaScriptStringResult(script)
+                #if DEBUG
+                if r != "ok", r != "no_bridge" {
+                    print("[LinkmarkReadableWebView] \(label): \(r)")
+                }
+                if r == "no_bridge" {
+                    print("[LinkmarkReadableWebView] \(label): YabaEditorBridge not ready (no_bridge)")
+                }
+                #endif
+            } catch {
+                #if DEBUG
+                print("[LinkmarkReadableWebView] \(label) error: \(error.localizedDescription)")
+                #endif
+            }
         }
     }
 }

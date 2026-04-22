@@ -31,6 +31,40 @@ public enum WebViewerBridgeScripts {
         """
     }
 
+    /// Parity with Android `YabaEditorBridgeScripts.setEditableScript` (read-only viewer).
+    public static func setEditable(_ editable: Bool) -> String {
+        let lit = editable ? "true" : "false"
+        return """
+        (function(){
+          try {
+            var b = window.YabaEditorBridge;
+            if (!b || !b.setEditable) { return "no_bridge"; }
+            b.setEditable(\(lit));
+            return "ok";
+          } catch(e) { return String(e); }
+        })();
+        """
+    }
+
+    /// Parity with Android `YabaEditorBridgeScripts.installAnnotationTapScript` (posts via the native host transport).
+    public static func installEditorAnnotationTapHandler() -> String {
+        """
+        (function(){
+          try {
+            if (window.YabaEditorBridge) {
+              window.YabaEditorBridge.onAnnotationTap = function(id) {
+                var host = window.YabaNativeHost || window.YabaAndroidHost;
+                if (id && host && host.postMessage) {
+                  host.postMessage(JSON.stringify({type:'annotationTap',id:id}));
+                }
+              };
+            }
+            return "ok";
+          } catch(e) { return String(e); }
+        })();
+        """
+    }
+
     public static func setReaderPreferences(_ prefs: ReaderPreferences) -> String {
         let obj: [String: String] = [
             "theme": prefs.theme.rawValue,

@@ -307,7 +307,7 @@ internal fun LinkmarkContentLayout(
                                 initialDocumentJson = state.readableDocumentJson ?: "",
                                 assetsBaseUrl = state.assetsBaseUrl,
                                 readerPreferences = state.readerPreferences,
-                                platform = YabaWebPlatform.Compose,
+                                platform = YabaWebPlatform.Android,
                                 appearance = appearance,
                                 annotations = state.annotations,
                             ),

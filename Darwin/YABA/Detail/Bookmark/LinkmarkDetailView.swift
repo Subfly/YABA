@@ -211,6 +211,7 @@ struct LinkmarkDetailView: View {
                 Text("Delete Content Message \(bm.label)")
             }
         }
+        .ignoresSafeArea()
     }
 
     private var bookmark: YabaBookmark? { bookmarks.first }
@@ -219,8 +220,6 @@ struct LinkmarkDetailView: View {
     private func mainContent(for bm: YabaBookmark) -> some View {
         let folderTint = folderColor(for: bm)
         ZStack(alignment: .top) {
-            AnimatedGradient(color: folderTint)
-
             LinkmarkReadableWebView(
                 webDriver: webDriver,
                 documentJson: documentJsonString(for: bm),

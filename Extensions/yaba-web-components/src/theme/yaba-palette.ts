@@ -1,9 +1,9 @@
 /**
- * Compose Material tokens from YABA Compose theme.
- * Source: Compose/YABA/composeApp/src/commonMain/kotlin/.../theme/Color.kt
+ * YABA app Material / shared surface tokens (Android host and web shell parity on iOS).
+ * Source: Android `Color.kt` in the YABA app module.
  */
 
-export interface ComposePalette {
+export interface YabaColorTokens {
   background: string
   onBackground: string
   surface: string
@@ -17,7 +17,7 @@ export interface ComposePalette {
   onPrimaryContainer: string
 }
 
-export const composeLight: ComposePalette = {
+export const yabaLight: YabaColorTokens = {
   background: "#FAF8FF",
   onBackground: "#1A1B21",
   surface: "#FAF8FF",
@@ -31,7 +31,7 @@ export const composeLight: ComposePalette = {
   onPrimaryContainer: "#2F4578",
 }
 
-export const composeDark: ComposePalette = {
+export const yabaDark: YabaColorTokens = {
   background: "#121318",
   onBackground: "#E2E2E9",
   surface: "#121318",

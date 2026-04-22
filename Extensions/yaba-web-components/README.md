@@ -48,7 +48,7 @@ viewer.html?platform=darwin&appearance=dark
 | Method | Description |
 |--------|-------------|
 | `isReady()` | Returns `true` when editor is mounted |
-| `setPlatform(platform)` | `'compose'` \| `'darwin'` |
+| `setPlatform(platform)` | `'android'` \| `'darwin'` (legacy: `'compose'` is accepted as android) |
 | `setAppearance(mode)` | `'auto'` \| `'light'` \| `'dark'` |
 | `setCursorColor(color)` | CSS color string |
 | `setEditable(isEditable)` | Toggle edit/read-only |

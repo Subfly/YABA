@@ -466,7 +466,7 @@ internal fun NotemarkContentLayout(
                                     initialDocumentJson = state.initialDocumentJson.orEmpty(),
                                     assetsBaseUrl = state.assetsBaseUrl,
                                     placeholderText = notePlaceholderText,
-                                    platform = YabaWebPlatform.Compose,
+                                    platform = YabaWebPlatform.Android,
                                     appearance = webAppearance,
                                     readerPreferences = ReaderPreferences(),
                                     documentLoadGeneration = state.editorContentLoadGeneration,
