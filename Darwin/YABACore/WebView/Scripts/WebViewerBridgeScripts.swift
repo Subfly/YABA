@@ -46,6 +46,26 @@ public enum WebViewerBridgeScripts {
         """
     }
 
+    /// Locks the document viewport so the page cannot be pinch-zoomed (parity with Android WebView zoom disabled).
+    /// Injects or updates the viewport meta tag; evaluate after the reader shell / document is loaded.
+    public static func disableViewportZoom() -> String {
+        """
+        (function(){
+          try {
+            var meta = document.querySelector('meta[name="viewport"]');
+            if (!meta) {
+              meta = document.createElement('meta');
+              meta.setAttribute('name', 'viewport');
+              var head = document.getElementsByTagName('head')[0];
+              if (head) { head.appendChild(meta); }
+            }
+            meta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+            return "ok";
+          } catch(e) { return String(e); }
+        })();
+        """
+    }
+
     /// Parity with Android `YabaEditorBridgeScripts.installAnnotationTapScript` (posts via the native host transport).
     public static func installEditorAnnotationTapHandler() -> String {
         """

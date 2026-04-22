@@ -257,6 +257,7 @@ struct LinkmarkReadableWebView: UIViewRepresentable {
                 await evalBridgeScript("setWebChromeInsets", WebViewerBridgeScripts.setWebChromeInsets(topPx: p.topChromeInsetPoints))
                 await evalBridgeScript("setAnnotations", WebViewerBridgeScripts.setAnnotations(jsonArrayBody: p.annotationsJson))
                 await evalBridgeScript("installEditorAnnotationTapHandler", WebViewerBridgeScripts.installEditorAnnotationTapHandler())
+                await evalBridgeScript("disableViewportZoom", WebViewerBridgeScripts.disableViewportZoom())
                 return
             }
             beginIgnoringScrollDirectionForProgrammaticScroll(duration: 0.45)
@@ -269,6 +270,7 @@ struct LinkmarkReadableWebView: UIViewRepresentable {
             await evalBridgeScript("setAnnotations", WebViewerBridgeScripts.setAnnotations(jsonArrayBody: p.annotationsJson))
             await evalBridgeScript("setReaderPreferences", WebViewerBridgeScripts.setReaderPreferences(p.readerPreferences))
             await evalBridgeScript("setWebChromeInsets", WebViewerBridgeScripts.setWebChromeInsets(topPx: p.topChromeInsetPoints))
+            await evalBridgeScript("disableViewportZoom", WebViewerBridgeScripts.disableViewportZoom())
         }
 
         private func evalBridgeScript(_ label: String, _ script: String) async {
