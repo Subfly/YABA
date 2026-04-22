@@ -4,6 +4,7 @@
 
 import SwiftData
 import SwiftUI
+import UIKit
 
 enum LinkmarkDetailSheetTab: String, CaseIterable, Identifiable, Hashable {
     case info
@@ -35,16 +36,25 @@ enum LinkmarkDetailSheetTab: String, CaseIterable, Identifiable, Hashable {
 struct LinkmarkDetailInfoSheet: View {
     @Environment(\.dismiss)
     private var dismiss
+    @Environment(\.openURL)
+    private var openURL
 
     let bookmark: YabaBookmark
     let toc: Toc?
     let folderAccent: Color
+    let reminderDate: Date?
+    let onDeleteReminder: () -> Void
+    let onOpenFolder: (String) -> Void
+    let onOpenTag: (String) -> Void
     @Binding var selectedTab: LinkmarkDetailSheetTab
     let sortedVersions: [ReadableVersionModel]
     let selectedVersionId: String?
     let onSelectVersion: (String) -> Void
     let onDeleteVersion: (String) -> Void
     let onTocItemTap: (TocItem) -> Void
+
+    @State
+    private var versionPendingDeletion: PendingVersionDeletion?
 
     var body: some View {
         NavigationStack {
@@ -60,6 +70,7 @@ struct LinkmarkDetailInfoSheet: View {
                 content
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
+            .tint(folderAccent)
             .navigationTitle("Bookmark Detail Sheet Navigation Title")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -67,6 +78,31 @@ struct LinkmarkDetailInfoSheet: View {
                     Button("Done") {
                         dismiss()
                     }
+                }
+            }
+            .alert(
+                "Bookmark Detail Delete Readable Version Title",
+                isPresented: Binding(
+                    get: { versionPendingDeletion != nil },
+                    set: { if !$0 { versionPendingDeletion = nil } }
+                )
+            ) {
+                Button(role: .cancel) {
+                    versionPendingDeletion = nil
+                } label: {
+                    Text("Cancel")
+                }
+                Button(role: .destructive) {
+                    if let pending = versionPendingDeletion {
+                        onDeleteVersion(pending.id)
+                    }
+                    versionPendingDeletion = nil
+                } label: {
+                    Text("Delete")
+                }
+            } message: {
+                if let pending = versionPendingDeletion {
+                    Text("Delete Content Message \(pending.label)")
                 }
             }
         }
@@ -89,19 +125,83 @@ struct LinkmarkDetailInfoSheet: View {
     private var linkInfoScroll: some View {
         List {
             Section {
-                Text(bookmark.label)
-                    .font(.headline)
-                if let desc = bookmark.bookmarkDescription, !desc.isEmpty {
-                    Text(desc)
-                        .foregroundStyle(.secondary)
+                if let imageData = bookmark.imageDataHolder,
+                   let image = UIImage(data: imageData)
+                {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(height: 180)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .contentShape(RoundedRectangle(cornerRadius: 12))
+                        .onTapGesture {
+                            if let urlString = bookmark.linkDetail?.url,
+                               let url = URL(string: urlString)
+                            {
+                                openURL(url)
+                            }
+                        }
+                        .listRowInsets(EdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0))
+                        .listRowBackground(Color.clear)
+                } else {
+                    emptyCardContent(icon: "image-not-found-01", title: "Bookmark Detail Image Error Title")
+                        .listRowBackground(Color.clear)
                 }
             } header: {
-                Label {
-                    Text("Info")
-                } icon: {
-                    YabaIconView(bundleKey: "information-circle")
-                        .frame(width: 22, height: 22)
+                sectionHeader("Bookmark Detail Image Header Title", icon: "image-03")
+            } footer: {
+                if let url = bookmark.linkDetail?.url, !url.isEmpty {
+                    HStack(alignment: .center, spacing: 10) {
+                        YabaIconView(bundleKey: "link-02")
+                            .frame(width: 18, height: 18)
+                            .foregroundStyle(folderAccent)
+                        Text(url)
+                            .lineLimit(2)
+                    }
                 }
+            }
+
+            Section {
+                infoTextRow(icon: "text", value: bookmark.label)
+                infoTextRow(
+                    icon: "paragraph",
+                    value: bookmark.bookmarkDescription?.trimmingCharacters(in: .whitespacesAndNewlines),
+                    emptyPlaceholder: "Bookmark Detail No Description Provided"
+                )
+                infoMetadataRow(
+                    icon: "clock-01",
+                    title: "Bookmark Detail Created At Title",
+                    value: bookmark.createdAt.formatted(date: .abbreviated, time: .shortened)
+                )
+                if bookmark.createdAt != bookmark.editedAt {
+                    infoMetadataRow(
+                        icon: "edit-02",
+                        title: "Bookmark Detail Edited At Title",
+                        value: bookmark.editedAt.formatted(date: .abbreviated, time: .shortened)
+                    )
+                }
+                if let reminderDate {
+                    infoMetadataRow(
+                        icon: "notification-01",
+                        title: "Bookmark Detail Remind Me Title",
+                        value: reminderDate.formatted(date: .abbreviated, time: .shortened)
+                    )
+                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                        Button(role: .destructive) {
+                            onDeleteReminder()
+                        } label: {
+                            VStack(spacing: 2) {
+                                YabaIconView(bundleKey: "delete-02")
+                                    .frame(width: 22, height: 22)
+                                Text("Delete")
+                                    .font(.caption2)
+                            }
+                        }
+                        .tint(.red)
+                    }
+                }
+            } header: {
+                sectionHeader("Info", icon: "information-circle")
             }
 
             Section {
@@ -109,38 +209,51 @@ struct LinkmarkDetailInfoSheet: View {
                 metadataRow("Bookmark Detail Metadata Title Label", icon: "text", value: bookmark.linkDetail?.metadataTitle)
                 metadataRow("Bookmark Creation Metadata Description Label", icon: "paragraph", value: bookmark.linkDetail?.metadataDescription)
             } header: {
-                Label {
-                    Text("Bookmark Creation Metadata Section Title")
-                } icon: {
-                    YabaIconView(bundleKey: "database-01")
-                        .frame(width: 22, height: 22)
-                }
+                sectionHeader("Bookmark Creation Metadata Section Title", icon: "database-01")
             }
 
             if let folder = bookmark.folder {
                 Section {
-                    HStack(alignment: .center, spacing: 12) {
-                        YabaIconView(bundleKey: "folder-01")
-                            .frame(width: 22, height: 22)
-                            .foregroundStyle(folderAccent)
-                        Text(folder.label)
-                    }
+                    PresentableFolderItemView(
+                        model: folder,
+                        nullModelPresentableColor: .blue,
+                        onPressed: {
+                            onOpenFolder(folder.folderId)
+                        }
+                    )
                 } header: {
-                    Text("Folder")
+                    sectionHeader("Folder", icon: "folder-01")
                 }
             }
 
-            if !bookmark.tags.isEmpty {
-                Section {
-                    HStack(alignment: .center, spacing: 12) {
-                        YabaIconView(bundleKey: "tag-01")
-                            .frame(width: 22, height: 22)
-                            .foregroundStyle(folderAccent)
-                        Text(bookmark.tags.map(\.label).joined(separator: ", "))
+            Section {
+                if bookmark.tags.isEmpty {
+                    ContentUnavailableView {
+                        Label {
+                            Text("Bookmark Detail No Tags Added Title")
+                        } icon: {
+                            YabaIconView(bundleKey: "tags")
+                                .scaledToFit()
+                                .frame(width: 52, height: 52)
+                                .foregroundStyle(folderAccent)
+                        }
+                    } description: {
+                        Text("Bookmark Detail No Tags Added Description")
                     }
-                } header: {
-                    Text("Tags Title")
+                } else {
+                    ForEach(bookmark.tags) { tag in
+                        PresentableTagItemView(
+                            model: tag,
+                            nullModelPresentableColor: .blue,
+                            onPressed: {
+                                onOpenTag(tag.tagId)
+                            },
+                            onNavigateToEdit: {}
+                        )
+                    }
                 }
+            } header: {
+                sectionHeader("Tags Title", icon: "tag-01")
             }
         }
         .listStyle(.sidebar)
@@ -150,35 +263,34 @@ struct LinkmarkDetailInfoSheet: View {
     private var versionsList: some View {
         Group {
             if sortedVersions.isEmpty {
-                ContentUnavailableView("Bookmark Detail No Versions Title", systemImage: "clock")
+                emptyStateContent(
+                    icon: resolvedIcon("clock-add", fallback: "clock-02"),
+                    title: "Bookmark Detail No Versions Title",
+                    message: "Bookmark Detail No Versions Message"
+                )
             } else {
                 List {
                     ForEach(sortedVersions, id: \.readableVersionId) { v in
                         Button {
                             onSelectVersion(v.readableVersionId)
                         } label: {
-                            HStack {
-                                VStack(alignment: .leading) {
-                                    Text(v.createdAt.formatted())
-                                    Text(v.readableVersionId)
-                                        .font(.caption2)
-                                        .foregroundStyle(.tertiary)
-                                }
-                                Spacer()
-                                if v.readableVersionId == selectedVersionId
-                                    || (selectedVersionId == nil && v.readableVersionId == sortedVersions.first?.readableVersionId)
-                                {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .foregroundStyle(folderAccent)
-                                }
-                            }
+                            versionRow(v)
                         }
-                        .swipeActions(edge: .trailing) {
+                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                             Button(role: .destructive) {
-                                onDeleteVersion(v.readableVersionId)
+                                versionPendingDeletion = PendingVersionDeletion(
+                                    id: v.readableVersionId,
+                                    label: v.createdAt.formatted(date: .abbreviated, time: .shortened)
+                                )
                             } label: {
-                                Label("Delete", systemImage: "trash")
+                                VStack(spacing: 2) {
+                                    YabaIconView(bundleKey: "delete-02")
+                                        .frame(width: 22, height: 22)
+                                    Text("Delete")
+                                        .font(.caption2)
+                                }
                             }
+                            .tint(.red)
                         }
                     }
                 }
@@ -195,16 +307,19 @@ struct LinkmarkDetailInfoSheet: View {
         }
         return Group {
             if items.isEmpty {
-                ContentUnavailableView("Bookmark Detail No Annotations Title", systemImage: "note.text")
+                emptyStateContent(
+                    icon: "sticky-note-03",
+                    title: "Bookmark Detail No Annotations Title",
+                    message: "Bookmark Detail No Annotations Message"
+                )
             } else {
                 List(items, id: \.annotationId) { a in
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(a.quoteText ?? a.note ?? "")
-                            .lineLimit(4)
-                        Text(a.annotationId)
-                            .font(.caption2)
-                            .foregroundStyle(.tertiary)
-                    }
+                    AnnotationPreviewItemView(annotation: a)
+                        .padding(.vertical, 2)
+                        .listRowBackground(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(.thinMaterial.opacity(0.65))
+                        )
                 }
             }
         }
@@ -212,33 +327,33 @@ struct LinkmarkDetailInfoSheet: View {
 
     private var tocList: some View {
         Group {
-            let rows = Self.flattenToc(toc?.items ?? [])
-            if rows.isEmpty {
-                ContentUnavailableView("Bookmark Detail No Table Of Contents Title", systemImage: "list.bullet")
+            let tocItems = toc?.items ?? []
+            if tocItems.isEmpty {
+                emptyStateContent(
+                    icon: "left-to-right-list-triangle",
+                    title: "Bookmark Detail No Table Of Contents Title",
+                    message: "Bookmark Detail No Table Of Contents Message"
+                )
             } else {
                 List {
-                    ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
+                    OutlineGroup(tocItems, id: \.id, children: \.outlineChildren) { item in
                         Button {
-                            onTocItemTap(row.item)
+                            onTocItemTap(item)
                         } label: {
-                            Text(row.item.title)
-                                .padding(.leading, CGFloat(row.level) * 12)
+                            HStack(spacing: 10) {
+                                YabaIconView(bundleKey: tocHeadingIcon(level: item.level))
+                                    .frame(width: 24, height: 24)
+                                    .foregroundStyle(folderAccent)
+                                Text(item.title)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
                         }
+                        .buttonStyle(.plain)
                     }
                 }
+                .listStyle(.sidebar)
             }
         }
-    }
-
-    private static func flattenToc(_ items: [TocItem], level: Int = 0) -> [(item: TocItem, level: Int)] {
-        var out: [(item: TocItem, level: Int)] = []
-        for item in items {
-            out.append((item, level))
-            if !item.children.isEmpty {
-                out.append(contentsOf: flattenToc(item.children, level: level + 1))
-            }
-        }
-        return out
     }
 
     @ViewBuilder
@@ -258,5 +373,157 @@ struct LinkmarkDetailInfoSheet: View {
                 }
             }
         }
+    }
+
+    private func infoTextRow(
+        icon: String,
+        value: String?,
+        emptyPlaceholder: LocalizedStringKey? = nil
+    ) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            YabaIconView(bundleKey: icon)
+                .frame(width: 22, height: 22)
+                .foregroundStyle(folderAccent)
+                .padding(.top, 1)
+
+            if let value = value?.trimmingCharacters(in: .whitespacesAndNewlines), !value.isEmpty {
+                Text(value)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .multilineTextAlignment(.leading)
+            } else if let emptyPlaceholder {
+                Text(emptyPlaceholder)
+                    .foregroundStyle(.secondary)
+                    .italic()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .multilineTextAlignment(.leading)
+            }
+        }
+    }
+
+    private func infoMetadataRow(icon: String, title: LocalizedStringKey, value: String) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            HStack(alignment: .center, spacing: 10) {
+                YabaIconView(bundleKey: icon)
+                    .frame(width: 22, height: 22)
+                    .foregroundStyle(folderAccent)
+                Text(title)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer(minLength: 8)
+            Text(value)
+                .font(.footnote.weight(.semibold))
+        }
+    }
+
+    private func sectionHeader(_ title: LocalizedStringKey, icon: String) -> some View {
+        Label {
+            Text(title)
+        } icon: {
+            YabaIconView(bundleKey: icon)
+                .frame(width: 20, height: 20)
+                .foregroundStyle(folderAccent)
+        }
+    }
+
+    private func emptyStateContent(
+        icon: String,
+        title: LocalizedStringKey,
+        message: LocalizedStringKey
+    ) -> some View {
+        ContentUnavailableView {
+            Label {
+                Text(title)
+            } icon: {
+                YabaIconView(bundleKey: icon)
+                    .scaledToFit()
+                    .frame(width: 52, height: 52)
+                    .foregroundStyle(folderAccent)
+            }
+        } description: {
+            Text(message)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private func emptyCardContent(icon: String, title: LocalizedStringKey) -> some View {
+        ContentUnavailableView {
+            Label {
+                Text(title)
+            } icon: {
+                YabaIconView(bundleKey: icon)
+                    .scaledToFit()
+                    .frame(width: 52, height: 52)
+                    .foregroundStyle(folderAccent)
+            }
+        } description: {
+            EmptyView()
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 16)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(.thinMaterial.opacity(0.5))
+        )
+    }
+
+    private func versionRow(_ version: ReadableVersionModel) -> some View {
+        let isSelected = version.readableVersionId == selectedVersionId
+            || (selectedVersionId == nil && version.readableVersionId == sortedVersions.first?.readableVersionId)
+        let annotationCount = bookmark.annotations.filter {
+            $0.readableVersion?.readableVersionId == version.readableVersionId
+        }.count
+
+        return HStack(spacing: 12) {
+            YabaIconView(bundleKey: isSelected ? "checkmark-circle-02" : "clock-02")
+                .frame(width: 22, height: 22)
+                .foregroundStyle(isSelected ? folderAccent : .secondary)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(version.createdAt.formatted(date: .abbreviated, time: .shortened))
+                Text(annotationsLabel(for: annotationCount))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer(minLength: 0)
+        }
+        .contentShape(Rectangle())
+    }
+
+    private func annotationsLabel(for count: Int) -> String {
+        switch count {
+        case 0:
+            return String(localized: "Bookmark Detail Version Item Annotation Count Zero")
+        case 1:
+            return String(localized: "Bookmark Detail Version Item Annotation Count One")
+        default:
+            let format = String(localized: "Bookmark Detail Version Item Annotation Count Many %lld")
+            return String.localizedStringWithFormat(format, Int64(count))
+        }
+    }
+
+    private func tocHeadingIcon(level: Int) -> String {
+        switch level {
+        case 1: "heading-01"
+        case 2: "heading-02"
+        case 3: "heading-03"
+        case 4: "heading-04"
+        case 5: "heading-05"
+        default: "heading-06"
+        }
+    }
+
+    private func resolvedIcon(_ preferred: String, fallback: String) -> String {
+        UIImage(named: preferred) == nil ? fallback : preferred
+    }
+}
+
+private struct PendingVersionDeletion {
+    let id: String
+    let label: String
+}
+
+private extension TocItem {
+    var outlineChildren: [TocItem]? {
+        children.isEmpty ? nil : children
     }
 }

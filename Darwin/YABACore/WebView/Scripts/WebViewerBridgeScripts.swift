@@ -158,7 +158,7 @@ public enum WebViewerBridgeScripts {
     }
 
     private static func javaScriptStringLiteral(_ s: String) -> String {
-        guard let data = try? JSONSerialization.data(withJSONObject: s, options: []),
+        guard let data = try? JSONEncoder().encode(s),
               let out = String(data: data, encoding: .utf8)
         else {
             return "\"\""

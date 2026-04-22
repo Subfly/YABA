@@ -1826,6 +1826,16 @@
         }
       }
     },
+    "Bookmark Detail No Annotations Message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Annotations you create in the reader will appear here."
+          }
+        }
+      }
+    },
     "Bookmark Detail No Description Provided" : {
       "comment" : "Description placeholder in bookmark detail",
       "localizations" : {
@@ -1927,6 +1937,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No ToC content found…"
+          }
+        }
+      }
+    },
+    "Bookmark Detail No Table Of Contents Message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "No headings are available in this readable content."
           }
         }
       }
@@ -2129,6 +2149,56 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No readable versions available. You can always save a new readable version from the options, under “Update”."
+          }
+        }
+      }
+    },
+    "Bookmark Detail No Versions Message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Create a readable version from the update menu to see it listed here."
+          }
+        }
+      }
+    },
+    "Bookmark Detail Delete Readable Version Title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Delete readable version?"
+          }
+        }
+      }
+    },
+    "Bookmark Detail Version Item Annotation Count Many %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%lld annotations"
+          }
+        }
+      }
+    },
+    "Bookmark Detail Version Item Annotation Count One" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "1 annotation"
+          }
+        }
+      }
+    },
+    "Bookmark Detail Version Item Annotation Count Zero" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "No annotations"
           }
         }
       }

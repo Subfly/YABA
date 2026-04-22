@@ -9,6 +9,8 @@ import UIKit
 /// SwiftData-driven link bookmark detail + Milkdown readable host.
 struct LinkmarkDetailView: View {
     let bookmarkId: String
+    let onOpenFolder: (String) -> Void
+    let onOpenTag: (String) -> Void
 
     @Environment(\.dismiss)
     private var dismiss
@@ -70,8 +72,14 @@ struct LinkmarkDetailView: View {
     @State
     private var showActivitySheet = false
 
-    init(bookmarkId: String) {
+    init(
+        bookmarkId: String,
+        onOpenFolder: @escaping (String) -> Void = { _ in },
+        onOpenTag: @escaping (String) -> Void = { _ in }
+    ) {
         self.bookmarkId = bookmarkId
+        self.onOpenFolder = onOpenFolder
+        self.onOpenTag = onOpenTag
         var d = FetchDescriptor<YabaBookmark>(
             predicate: #Predicate<YabaBookmark> { $0.bookmarkId == bookmarkId }
         )
@@ -115,6 +123,18 @@ struct LinkmarkDetailView: View {
                     bookmark: bm,
                     toc: decodedToc,
                     folderAccent: folderColor(for: bm),
+                    reminderDate: machine.state.reminderDate,
+                    onDeleteReminder: {
+                        Task { await machine.send(.onCancelReminder) }
+                    },
+                    onOpenFolder: { folderId in
+                        showDetailSheet = false
+                        onOpenFolder(folderId)
+                    },
+                    onOpenTag: { tagId in
+                        showDetailSheet = false
+                        onOpenTag(tagId)
+                    },
                     selectedTab: $sheetTab,
                     sortedVersions: sortedVersions(bm),
                     selectedVersionId: machine.state.selectedReadableVersionId,
@@ -217,66 +237,74 @@ struct LinkmarkDetailView: View {
 
     @ViewBuilder
     private func mainContent(for bm: YabaBookmark) -> some View {
+        let versions = sortedVersions(bm)
         let folderTint = folderColor(for: bm)
-        GeometryReader { layoutGeo in
-            ZStack(alignment: .top) {
-                LinkmarkReadableWebView(
-                    webDriver: webDriver,
-                    documentJson: documentJsonString(for: bm),
-                    assetsBaseUrl: ReadableViewerAssets.assetsBaseURLForYabaAssetScheme,
-                    annotationsJson: annotationsJson(for: bm),
-                    readerPreferences: ReaderPreferences(
-                        theme: machine.state.readerTheme,
-                        fontSize: machine.state.readerFontSize,
-                        lineHeight: machine.state.readerLineHeight
-                    ),
-                    topChromeInsetPoints: measuredTopInset,
-                    colorScheme: colorScheme,
-                    documentReloadToken: documentReloadToken,
-                    inlineAssets: inlineAssetTuples(for: bm),
-                    tocNavigate: pendingWebToc,
-                    scrollToAnnotationId: machine.state.scrollToAnnotationId,
-                    onHostEvent: handleHostEvent(_:),
-                    onScrollDirection: { dir in
-                        switch dir {
-                        case .down: readerChromeVisible = false
-                        case .up: readerChromeVisible = true
-                        }
-                    },
-                    onBridgeReady: {},
-                    onTocNavigationConsumed: {
-                        pendingWebToc = nil
-                        Task { await machine.send(.onClearTocNavigation) }
-                    },
-                    onScrollToAnnotationConsumed: {
-                        Task { await machine.send(.onClearScrollToAnnotation) }
-                    }
-                )
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .ignoresSafeArea()
+        Group {
+            if versions.isEmpty {
+                LinkmarkNoReadableVersionView(accent: folderTint)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                GeometryReader { layoutGeo in
+                    ZStack(alignment: .top) {
+                        LinkmarkReadableWebView(
+                            webDriver: webDriver,
+                            documentJson: documentJsonString(for: bm),
+                            assetsBaseUrl: ReadableViewerAssets.assetsBaseURLForYabaAssetScheme,
+                            annotationsJson: annotationsJson(for: bm),
+                            readerPreferences: ReaderPreferences(
+                                theme: machine.state.readerTheme,
+                                fontSize: machine.state.readerFontSize,
+                                lineHeight: machine.state.readerLineHeight
+                            ),
+                            topChromeInsetPoints: measuredTopInset,
+                            colorScheme: colorScheme,
+                            documentReloadToken: documentReloadToken,
+                            inlineAssets: inlineAssetTuples(for: bm),
+                            tocNavigate: pendingWebToc,
+                            scrollToAnnotationId: machine.state.scrollToAnnotationId,
+                            onHostEvent: handleHostEvent(_:),
+                            onScrollDirection: { dir in
+                                switch dir {
+                                case .down: readerChromeVisible = false
+                                case .up: readerChromeVisible = true
+                                }
+                            },
+                            onBridgeReady: {},
+                            onTocNavigationConsumed: {
+                                pendingWebToc = nil
+                                Task { await machine.send(.onClearTocNavigation) }
+                            },
+                            onScrollToAnnotationConsumed: {
+                                Task { await machine.send(.onClearScrollToAnnotation) }
+                            }
+                        )
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .ignoresSafeArea()
 
-                VStack {
-                    Spacer()
-                    LinkmarkReaderFloatingToolbar(
-                        folderAccent: folderTint,
-                        isVisible: readerChromeVisible || readerCanAnnotate,
-                        canAnnotate: readerCanAnnotate,
-                        readerTheme: machine.state.readerTheme,
-                        readerFontSize: machine.state.readerFontSize,
-                        readerLineHeight: machine.state.readerLineHeight,
-                        onSelectTheme: { r in Task { await machine.send(.onSetReaderTheme(r)) } },
-                        onSelectFontSize: { f in Task { await machine.send(.onSetReaderFontSize(f)) } },
-                        onSelectLineHeight: { lh in Task { await machine.send(.onSetReaderLineHeight(lh)) } },
-                        onStickyNote: {
-                            // Annotation creation flow deferred.
+                        VStack {
+                            Spacer()
+                            LinkmarkReaderFloatingToolbar(
+                                folderAccent: folderTint,
+                                isVisible: readerChromeVisible || readerCanAnnotate,
+                                canAnnotate: readerCanAnnotate,
+                                readerTheme: machine.state.readerTheme,
+                                readerFontSize: machine.state.readerFontSize,
+                                readerLineHeight: machine.state.readerLineHeight,
+                                onSelectTheme: { r in Task { await machine.send(.onSetReaderTheme(r)) } },
+                                onSelectFontSize: { f in Task { await machine.send(.onSetReaderFontSize(f)) } },
+                                onSelectLineHeight: { lh in Task { await machine.send(.onSetReaderLineHeight(lh)) } },
+                                onStickyNote: {
+                                    // Annotation creation flow deferred.
+                                }
+                            )
+                            .padding(.bottom, 24 + layoutGeo.safeAreaInsets.bottom)
                         }
-                    )
-                    .padding(.bottom, 24 + layoutGeo.safeAreaInsets.bottom)
+                    }
+                    .frame(width: layoutGeo.size.width, height: layoutGeo.size.height)
                 }
+                .ignoresSafeArea()
             }
-            .frame(width: layoutGeo.size.width, height: layoutGeo.size.height)
         }
-        .ignoresSafeArea()
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
@@ -302,13 +330,15 @@ struct LinkmarkDetailView: View {
         }
         .tint(folderTint)
         .background {
-            GeometryReader { proxy in
-                Color.clear
-                    .onAppear { updateReaderTopInset(proxy) }
-                    .onChange(of: proxy.size.height) { _, _ in updateReaderTopInset(proxy) }
-                    .onChange(of: proxy.size.width) { _, _ in updateReaderTopInset(proxy) }
+            if !versions.isEmpty {
+                GeometryReader { proxy in
+                    Color.clear
+                        .onAppear { updateReaderTopInset(proxy) }
+                        .onChange(of: proxy.size.height) { _, _ in updateReaderTopInset(proxy) }
+                        .onChange(of: proxy.size.width) { _, _ in updateReaderTopInset(proxy) }
+                }
+                .ignoresSafeArea()
             }
-            .ignoresSafeArea()
         }
     }
 
@@ -608,4 +638,30 @@ private struct ActivityItemsShareSheet: UIViewControllerRepresentable {
     }
 
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+}
+
+/// Same CUV pattern as legacy `ReaderNotAvailableView` in archived `ReaderView.swift` (that file is `#if false`, so the type is not in the build).
+private struct LinkmarkNoReadableVersionView: View {
+    let accent: Color
+
+    var body: some View {
+        ContentUnavailableView {
+            Label {
+                Text("Reader Not Available Title")
+                    .padding(.bottom)
+            } icon: {
+                YabaIconView(bundleKey: "cancel-square")
+                    .scaledToFit()
+                    .frame(width: 52, height: 52)
+                    .foregroundStyle(accent)
+                    .padding(.top)
+            }
+        } description: {
+            Text("Reader Not Available Description")
+                .padding(
+                    .horizontal,
+                    UIDevice.current.userInterfaceIdiom == .pad ? 52 : 0
+                )
+        }
+    }
 }
