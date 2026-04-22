@@ -640,7 +640,7 @@ private struct ActivityItemsShareSheet: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
 
-/// Same CUV pattern as legacy `ReaderNotAvailableView` in archived `ReaderView.swift` (that file is `#if false`, so the type is not in the build).
+/// Same CUV pattern as the old reader-not-available empty state (legacy `ReaderView` was removed during the Darwin rebuild).
 private struct LinkmarkNoReadableVersionView: View {
     let accent: Color
 
