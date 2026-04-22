@@ -2,6 +2,7 @@
 //  Created by Ali Taha on 20.04.2026.
 //
 
+import QuartzCore
 import SwiftUI
 import UIKit
 import WebKit
@@ -47,7 +48,6 @@ struct LinkmarkReadableWebView: UIViewRepresentable {
         let wv = coordinator.runtime.webView
         webDriver.runtime = coordinator.runtime
         
-        coordinator.attachScrollLogging()
         coordinator.runtime.onHostEvent = { [weak coordinator] ev in
             coordinator?.handleHostEventForReadiness(ev)
             coordinator?.parentSnapshot.onHostEvent(ev)
@@ -55,6 +55,7 @@ struct LinkmarkReadableWebView: UIViewRepresentable {
         coordinator.runtime.onBridgeReady = { [weak coordinator] in
             guard let coordinator else { return }
             coordinator.isBridgeReady = true
+            coordinator.attachScrollDirectionPanIfNeeded()
             coordinator.parentSnapshot.onBridgeReady()
             coordinator.queueApply()
         }
@@ -63,7 +64,13 @@ struct LinkmarkReadableWebView: UIViewRepresentable {
             appearance: Self.webAppearance(for: colorScheme),
             bundle: .main
         )
-        
+
+        // Full-bleed: avoid UIKit adding safe-area insets; CSS / `setWebChromeInsets` controls padding.
+        wv.scrollView.contentInsetAdjustmentBehavior = .never
+        wv.scrollView.automaticallyAdjustsScrollIndicatorInsets = false
+        // Reader scrolls inside the page (`.yaba-editor-container`), not `WKWebView.scrollView` — use a pan, like Android.
+        coordinator.attachScrollDirectionPanIfNeeded()
+
         return wv
     }
 
@@ -87,20 +94,48 @@ struct LinkmarkReadableWebView: UIViewRepresentable {
     }
 
     @MainActor
-    final class Coordinator: NSObject {
+    final class Coordinator: NSObject, UIGestureRecognizerDelegate {
         var parentSnapshot: LinkmarkReadableWebView
         let runtime: WKWebViewRuntime
         var isBridgeReady = false
-        private var lastContentOffsetY: CGFloat = 0
-        private var kvoToken: NSKeyValueObservation?
+        private var linkmarkScrollDirectionPan: UIPanGestureRecognizer?
+        private var lastPanTranslationY: CGFloat?
+        private var directionAccumulation: CGFloat = 0
+        private var ignoreScrollDirectionUntil: CFTimeInterval = 0
         private var lastReloadToken: UUID?
         private var lastDocumentJsonApplied: String?
         private var handledToc: LinkmarkWebTocNavigation?
         private var handledAnnotationScroll: String?
 
+        private static let directionDeltaThreshold: CGFloat = 8
+
         init(parentSnapshot: LinkmarkReadableWebView, runtime: WKWebViewRuntime) {
             self.parentSnapshot = parentSnapshot
             self.runtime = runtime
+        }
+
+        /// Reader content scrolls in an inner `overflow: auto` column; the outer `scrollView` does not `scrollViewDidScroll` — pan on the scroll view (same idea as Android touch on the web view).
+        func attachScrollDirectionPanIfNeeded() {
+            let wv = runtime.webView
+            let sv = wv.scrollView
+            if let p = linkmarkScrollDirectionPan, sv.gestureRecognizers?.contains(p) == true { return }
+            if let p = linkmarkScrollDirectionPan { p.view?.removeGestureRecognizer(p) }
+            let pan = UIPanGestureRecognizer(target: self, action: #selector(handleLinkmarkScrollPan(_:)))
+            pan.cancelsTouchesInView = false
+            pan.delegate = self
+            sv.addGestureRecognizer(pan)
+            linkmarkScrollDirectionPan = pan
+        }
+
+        private func beginIgnoringScrollDirectionForProgrammaticScroll(duration: CFTimeInterval) {
+            ignoreScrollDirectionUntil = CACurrentMediaTime() + duration
+            directionAccumulation = 0
+            lastPanTranslationY = nil
+        }
+
+        private func resetUserScrollDirectionState() {
+            directionAccumulation = 0
+            lastPanTranslationY = nil
         }
 
         /// Resets when the load fails or the renderer dies — not on every `.loading` (that can be delivered
@@ -112,33 +147,66 @@ struct LinkmarkReadableWebView: UIViewRepresentable {
                     isBridgeReady = false
                     lastReloadToken = nil
                     lastDocumentJsonApplied = nil
+                    resetUserScrollDirectionState()
                 case .loading, .pageFinished, .bridgeReady:
                     break
                 }
             }
         }
 
-        func attachScrollLogging() {
-            let sv = runtime.webView.scrollView
-            kvoToken = sv.observe(\.contentOffset, options: [.new]) { [weak self] scrollView, _ in
-                guard let self else { return }
-                let y = scrollView.contentOffset.y
-                let delta = y - self.lastContentOffsetY
-                if abs(delta) < 6 {
-                    return
+        @objc
+        private func handleLinkmarkScrollPan(_ gr: UIPanGestureRecognizer) {
+            guard let v = gr.view else { return }
+            if CACurrentMediaTime() < ignoreScrollDirectionUntil {
+                if gr.state == .ended || gr.state == .cancelled { resetUserScrollDirectionState() }
+                return
+            }
+            let t = gr.translation(in: v).y
+            switch gr.state {
+            case .began:
+                lastPanTranslationY = t
+                directionAccumulation = 0
+            case .changed:
+                if lastPanTranslationY == nil { lastPanTranslationY = t; return }
+                let oldT = lastPanTranslationY!
+                lastPanTranslationY = t
+                let step = t - oldT
+                if step == 0 { return }
+                // Map pan to the same “content scroll” sense as the old `contentOffset` path: read forward (finger up) → .down.
+                let logical = -step
+                if directionAccumulation != 0, (logical > 0) != (directionAccumulation > 0) {
+                    directionAccumulation = 0
                 }
-                if delta > 0 {
-                    self.parentSnapshot.onScrollDirection(.down)
+                directionAccumulation += logical
+                guard abs(directionAccumulation) >= Self.directionDeltaThreshold else { return }
+                if directionAccumulation > 0 {
+                    parentSnapshot.onScrollDirection(.down)
                 } else {
-                    self.parentSnapshot.onScrollDirection(.up)
+                    parentSnapshot.onScrollDirection(.up)
                 }
-                self.lastContentOffsetY = y
+                directionAccumulation = 0
+            case .ended, .cancelled, .failed:
+                lastPanTranslationY = nil
+                directionAccumulation = 0
+            default:
+                break
             }
         }
 
+        // MARK: UIGestureRecognizerDelegate
+
+        func gestureRecognizer(
+            _ gestureRecognizer: UIGestureRecognizer,
+            shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
+        ) -> Bool {
+            true
+        }
+
         func detach() {
-            kvoToken?.invalidate()
-            kvoToken = nil
+            if let pan = linkmarkScrollDirectionPan {
+                pan.view?.removeGestureRecognizer(pan)
+                linkmarkScrollDirectionPan = nil
+            }
         }
 
         func queueApply() {
@@ -159,6 +227,7 @@ struct LinkmarkReadableWebView: UIViewRepresentable {
             let toc = parentSnapshot.tocNavigate
             if let toc, toc != handledToc {
                 handledToc = toc
+                beginIgnoringScrollDirectionForProgrammaticScroll(duration: 0.6)
                 Task { @MainActor in
                     let s = WebViewerBridgeScripts.navigateToTocItem(id: toc.id, extrasJson: toc.extrasJson)
                     await self.evalBridgeScript("navigateToTocItem", s)
@@ -167,6 +236,7 @@ struct LinkmarkReadableWebView: UIViewRepresentable {
             }
             if let aid = parentSnapshot.scrollToAnnotationId, aid != handledAnnotationScroll {
                 handledAnnotationScroll = aid
+                beginIgnoringScrollDirectionForProgrammaticScroll(duration: 0.6)
                 Task { @MainActor in
                     let s = WebViewerBridgeScripts.scrollToAnnotation(annotationId: aid)
                     await self.evalBridgeScript("scrollToAnnotation", s)
@@ -189,6 +259,7 @@ struct LinkmarkReadableWebView: UIViewRepresentable {
                 await evalBridgeScript("installEditorAnnotationTapHandler", WebViewerBridgeScripts.installEditorAnnotationTapHandler())
                 return
             }
+            beginIgnoringScrollDirectionForProgrammaticScroll(duration: 0.45)
             lastReloadToken = p.documentReloadToken
             lastDocumentJsonApplied = p.documentJson
             // Order matches Compose `YabaReadableViewerFeatureHost` (document → read-only → tap wiring → layers → chrome).

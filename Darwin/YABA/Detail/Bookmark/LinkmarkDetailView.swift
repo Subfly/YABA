@@ -211,7 +211,6 @@ struct LinkmarkDetailView: View {
                 Text("Delete Content Message \(bm.label)")
             }
         }
-        .ignoresSafeArea()
     }
 
     private var bookmark: YabaBookmark? { bookmarks.first }
@@ -219,77 +218,87 @@ struct LinkmarkDetailView: View {
     @ViewBuilder
     private func mainContent(for bm: YabaBookmark) -> some View {
         let folderTint = folderColor(for: bm)
-        ZStack(alignment: .top) {
-            LinkmarkReadableWebView(
-                webDriver: webDriver,
-                documentJson: documentJsonString(for: bm),
-                assetsBaseUrl: ReadableViewerAssets.assetsBaseURLForYabaAssetScheme,
-                annotationsJson: annotationsJson(for: bm),
-                readerPreferences: ReaderPreferences(
-                    theme: machine.state.readerTheme,
-                    fontSize: machine.state.readerFontSize,
-                    lineHeight: machine.state.readerLineHeight
-                ),
-                topChromeInsetPoints: measuredTopInset,
-                colorScheme: colorScheme,
-                documentReloadToken: documentReloadToken,
-                inlineAssets: inlineAssetTuples(for: bm),
-                tocNavigate: pendingWebToc,
-                scrollToAnnotationId: machine.state.scrollToAnnotationId,
-                onHostEvent: handleHostEvent(_:),
-                onScrollDirection: { dir in
-                    switch dir {
-                    case .down: readerChromeVisible = false
-                    case .up: readerChromeVisible = true
-                    }
-                },
-                onBridgeReady: {},
-                onTocNavigationConsumed: {
-                    pendingWebToc = nil
-                    Task { await machine.send(.onClearTocNavigation) }
-                },
-                onScrollToAnnotationConsumed: {
-                    Task { await machine.send(.onClearScrollToAnnotation) }
-                }
-            )
-            .ignoresSafeArea()
-
-            VStack {
-                Spacer()
-                LinkmarkReaderFloatingToolbar(
-                    folderAccent: folderTint,
-                    isVisible: readerChromeVisible || readerCanAnnotate,
-                    canAnnotate: readerCanAnnotate,
-                    readerTheme: machine.state.readerTheme,
-                    readerFontSize: machine.state.readerFontSize,
-                    readerLineHeight: machine.state.readerLineHeight,
-                    onSelectTheme: { r in Task { await machine.send(.onSetReaderTheme(r)) } },
-                    onSelectFontSize: { f in Task { await machine.send(.onSetReaderFontSize(f)) } },
-                    onSelectLineHeight: { lh in Task { await machine.send(.onSetReaderLineHeight(lh)) } },
-                    onStickyNote: {
-                        // Annotation creation flow deferred.
+        GeometryReader { layoutGeo in
+            ZStack(alignment: .top) {
+                LinkmarkReadableWebView(
+                    webDriver: webDriver,
+                    documentJson: documentJsonString(for: bm),
+                    assetsBaseUrl: ReadableViewerAssets.assetsBaseURLForYabaAssetScheme,
+                    annotationsJson: annotationsJson(for: bm),
+                    readerPreferences: ReaderPreferences(
+                        theme: machine.state.readerTheme,
+                        fontSize: machine.state.readerFontSize,
+                        lineHeight: machine.state.readerLineHeight
+                    ),
+                    topChromeInsetPoints: measuredTopInset,
+                    colorScheme: colorScheme,
+                    documentReloadToken: documentReloadToken,
+                    inlineAssets: inlineAssetTuples(for: bm),
+                    tocNavigate: pendingWebToc,
+                    scrollToAnnotationId: machine.state.scrollToAnnotationId,
+                    onHostEvent: handleHostEvent(_:),
+                    onScrollDirection: { dir in
+                        switch dir {
+                        case .down: readerChromeVisible = false
+                        case .up: readerChromeVisible = true
+                        }
+                    },
+                    onBridgeReady: {},
+                    onTocNavigationConsumed: {
+                        pendingWebToc = nil
+                        Task { await machine.send(.onClearTocNavigation) }
+                    },
+                    onScrollToAnnotationConsumed: {
+                        Task { await machine.send(.onClearScrollToAnnotation) }
                     }
                 )
-                .padding(.bottom, 24)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .ignoresSafeArea()
+
+                VStack {
+                    Spacer()
+                    LinkmarkReaderFloatingToolbar(
+                        folderAccent: folderTint,
+                        isVisible: readerChromeVisible || readerCanAnnotate,
+                        canAnnotate: readerCanAnnotate,
+                        readerTheme: machine.state.readerTheme,
+                        readerFontSize: machine.state.readerFontSize,
+                        readerLineHeight: machine.state.readerLineHeight,
+                        onSelectTheme: { r in Task { await machine.send(.onSetReaderTheme(r)) } },
+                        onSelectFontSize: { f in Task { await machine.send(.onSetReaderFontSize(f)) } },
+                        onSelectLineHeight: { lh in Task { await machine.send(.onSetReaderLineHeight(lh)) } },
+                        onStickyNote: {
+                            // Annotation creation flow deferred.
+                        }
+                    )
+                    .padding(.bottom, 24 + layoutGeo.safeAreaInsets.bottom)
+                }
             }
+            .frame(width: layoutGeo.size.width, height: layoutGeo.size.height)
         }
+        .ignoresSafeArea()
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
                     dismiss()
                 } label: {
-                    YabaIconView(bundleKey: "arrow-left-01")
+                    homeToolbarIcon("arrow-left-01")
                 }
                 .buttonStyle(.plain)
             }
-            ToolbarItemGroup(placement: .topBarTrailing) {
+            ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     showDetailSheet = true
                 } label: {
-                    YabaIconView(bundleKey: "information-circle")
+                    homeToolbarIcon("information-circle")
                 }
                 .buttonStyle(.plain)
+            }
+            if #available(iOS 26, *) {
+                ToolbarSpacer(.fixed, placement: .topBarTrailing)
+            }
+            ToolbarItem(placement: .topBarTrailing) {
                 overflowMenu(for: bm)
             }
         }
@@ -481,10 +490,15 @@ struct LinkmarkDetailView: View {
                 overflowItemLabel("Delete", icon: "delete-02")
             }
         } label: {
-            YabaIconView(bundleKey: "more-horizontal-circle-02")
-                .foregroundStyle(.white)
-                .frame(width: 44, height: 44)
+            homeToolbarIcon("more-horizontal-circle-02")
         }
+    }
+
+    /// Same template size as `HomeCollectionView` section headers and `LinkmarkReaderFloatingToolbar` glyphs (22×22).
+    @ViewBuilder
+    private func homeToolbarIcon(_ bundleKey: String) -> some View {
+        YabaIconView(bundleKey: bundleKey)
+            .frame(width: 22, height: 22)
     }
 
     @ViewBuilder
