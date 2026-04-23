@@ -257,7 +257,15 @@ struct LinkmarkReadableWebView: UIViewRepresentable {
             let tokenChanged = lastReloadToken != p.documentReloadToken
             let documentChanged = lastDocumentJsonApplied != p.documentJson
             guard tokenChanged || documentChanged else {
-                await evalBridgeScript("setReaderPreferences", WebViewerBridgeScripts.setReaderPreferences(p.readerPreferences))
+                let appearance = LinkmarkReadableWebView.webAppearance(for: p.colorScheme)
+                await evalBridgeScript(
+                    "applyReaderHostPreferences",
+                    WebViewerBridgeScripts.applyReaderHostPreferences(
+                        platform: .darwin,
+                        appearance: appearance,
+                        prefs: p.readerPreferences
+                    )
+                )
                 await evalBridgeScript("setWebChromeInsets", WebViewerBridgeScripts.setWebChromeInsets(topPx: p.topChromeInsetPoints))
                 await evalBridgeScript("setAnnotations", WebViewerBridgeScripts.setAnnotations(jsonArrayBody: p.annotationsJson))
                 await evalBridgeScript("installEditorAnnotationTapHandler", WebViewerBridgeScripts.installEditorAnnotationTapHandler())
@@ -272,7 +280,15 @@ struct LinkmarkReadableWebView: UIViewRepresentable {
             await evalBridgeScript("setEditable(false)", WebViewerBridgeScripts.setEditable(false))
             await evalBridgeScript("installEditorAnnotationTapHandler", WebViewerBridgeScripts.installEditorAnnotationTapHandler())
             await evalBridgeScript("setAnnotations", WebViewerBridgeScripts.setAnnotations(jsonArrayBody: p.annotationsJson))
-            await evalBridgeScript("setReaderPreferences", WebViewerBridgeScripts.setReaderPreferences(p.readerPreferences))
+            let appearance = LinkmarkReadableWebView.webAppearance(for: p.colorScheme)
+            await evalBridgeScript(
+                "applyReaderHostPreferences",
+                WebViewerBridgeScripts.applyReaderHostPreferences(
+                    platform: .darwin,
+                    appearance: appearance,
+                    prefs: p.readerPreferences
+                )
+            )
             await evalBridgeScript("setWebChromeInsets", WebViewerBridgeScripts.setWebChromeInsets(topPx: p.topChromeInsetPoints))
             await evalBridgeScript("disableViewportZoom", WebViewerBridgeScripts.disableViewportZoom())
         }

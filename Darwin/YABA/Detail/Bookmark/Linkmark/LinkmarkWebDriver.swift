@@ -48,10 +48,39 @@ final class LinkmarkWebDriver {
         return (try? await runtime.evaluateJavaScriptStringResult(WebReaderBridgeFacades.getDocumentJsonScript)) ?? ""
     }
 
+    func setAnnotations(jsonArrayBody: String) async {
+        guard let runtime else { return }
+        let script = WebViewerBridgeScripts.setAnnotations(jsonArrayBody: jsonArrayBody)
+        _ = try? await runtime.evaluateJavaScriptStringResult(script)
+    }
+
     func exportMarkdown() async -> String {
         guard let runtime else { return "" }
+        // Match Android behavior: unfocus first, then retry briefly while bridge settles.
+        let unfocusScript =
+            """
+            (function(){
+              try {
+                var b = window.YabaEditorBridge;
+                if (b && b.unFocus) { b.unFocus(); return "ok"; }
+                var active = document.activeElement;
+                if (active && active.blur) { active.blur(); }
+                return "ok";
+              } catch(e) { return ""; }
+            })();
+            """
+        _ = try? await runtime.evaluateJavaScriptStringResult(unfocusScript)
         let script = WebViewerBridgeScripts.exportMarkdown()
-        return (try? await runtime.evaluateJavaScriptStringResult(script)) ?? ""
+        for attempt in 0 ..< 4 {
+            let markdown = (try? await runtime.evaluateJavaScriptStringResult(script)) ?? ""
+            if !markdown.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                return markdown
+            }
+            if attempt < 3 {
+                try? await Task.sleep(nanoseconds: 120_000_000)
+            }
+        }
+        return ""
     }
 
     func startPdfExportJob(jobId: String) async {

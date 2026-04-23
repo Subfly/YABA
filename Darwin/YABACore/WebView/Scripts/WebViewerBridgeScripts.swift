@@ -108,6 +108,38 @@ public enum WebViewerBridgeScripts {
         """
     }
 
+    /// Parity with Android `YabaReaderBridgeScripts.applyReaderPreferencesScript` (platform → appearance → reader prefs).
+    public static func applyReaderHostPreferences(
+        platform: WebPlatform,
+        appearance: WebAppearance,
+        prefs: ReaderPreferences
+    ) -> String {
+        let obj: [String: String] = [
+            "theme": prefs.theme.rawValue,
+            "fontSize": prefs.fontSize.rawValue,
+            "lineHeight": prefs.lineHeight.rawValue,
+        ]
+        guard let data = try? JSONSerialization.data(withJSONObject: obj, options: []),
+              let json = String(data: data, encoding: .utf8)
+        else {
+            return #"(() => "bad_json")()"#
+        }
+        let platformLit = WebJsEscaping.escapeForJsSingleQuotedString(platform.rawValue)
+        let appearanceLit = WebJsEscaping.escapeForJsSingleQuotedString(appearance.rawValue)
+        return """
+        (function(){
+          try {
+            var b = window.YabaEditorBridge;
+            if (!b) { return "no_bridge"; }
+            if (b.setPlatform) { b.setPlatform('\(platformLit)'); }
+            if (b.setAppearance) { b.setAppearance('\(appearanceLit)'); }
+            if (b.setReaderPreferences) { b.setReaderPreferences(\(json)); }
+            return "ok";
+          } catch(e) { return String(e); }
+        })();
+        """
+    }
+
     /// `AnnotationForRendering[]` JSON: `[{"id":"…","colorRole":"…"}]`.
     public static func setAnnotations(jsonArrayBody: String) -> String {
         let json = jsonArrayBody.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "[]" : jsonArrayBody

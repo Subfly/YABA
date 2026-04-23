@@ -24,7 +24,7 @@ struct LinkmarkReaderFloatingToolbar: View {
                 GlassEffectContainer(spacing: 30) {
                     toolbarMenus(padLabels: true)
                 }
-                .glassEffect(.regular.tint(folderAccent.opacity(0.2)).interactive())
+                .glassEffect(.regular.interactive())
                 .animation(.smooth, value: canAnnotate)
             } else {
                 toolbarMenus(padLabels: false)
@@ -59,7 +59,7 @@ struct LinkmarkReaderFloatingToolbar: View {
                     }
                 }
             } label: {
-                menuLabelIcon("colors", padLabels: padLabels)
+                menuLabelIcon("colors", padLabels: padLabels, color: folderAccent)
             }
             Menu {
                 ForEach(ReaderFontSize.allCases, id: \.self) { f in
@@ -75,7 +75,7 @@ struct LinkmarkReaderFloatingToolbar: View {
                     }
                 }
             } label: {
-                menuLabelIcon("text-square", padLabels: padLabels)
+                menuLabelIcon("text-square", padLabels: padLabels, color: folderAccent)
             }
             Menu {
                 ForEach(ReaderLineHeight.allCases, id: \.self) { lh in
@@ -91,11 +91,11 @@ struct LinkmarkReaderFloatingToolbar: View {
                     }
                 }
             } label: {
-                menuLabelIcon("cursor-text", padLabels: padLabels)
+                menuLabelIcon("cursor-text", padLabels: padLabels, color: folderAccent)
             }
             if canAnnotate {
                 Button(action: onStickyNote) {
-                    menuLabelIcon("sticky-note-03", padLabels: padLabels)
+                    menuLabelIcon("sticky-note-03", padLabels: padLabels, color: folderAccent)
                 }
                 .buttonStyle(.plain)
             }
@@ -103,18 +103,21 @@ struct LinkmarkReaderFloatingToolbar: View {
     }
 
     @ViewBuilder
-    private func menuLabelIcon(_ icon: String, padLabels: Bool) -> some View {
+    private func menuLabelIcon(
+        _ icon: String,
+        padLabels: Bool,
+        color: Color
+    ) -> some View {
         if padLabels {
-            toolbarGlyph(icon)
-                .padding()
+            toolbarGlyph(icon, color: color).padding()
         } else {
-            toolbarGlyph(icon)
+            toolbarGlyph(icon, color: color)
         }
     }
 
-    private func toolbarGlyph(_ icon: String) -> some View {
+    private func toolbarGlyph(_ icon: String, color: Color) -> some View {
         YabaIconView(bundleKey: icon)
-            .foregroundStyle(.white)
+            .foregroundStyle(color)
             .frame(width: 22, height: 22)
     }
 }

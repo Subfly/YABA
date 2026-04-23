@@ -73,6 +73,12 @@ struct LinkmarkDetailView: View {
     private var showActivitySheet = false
 
     @State
+    private var markdownExportRequest: MarkdownExportRequest?
+
+    @State
+    private var showMarkdownExportDirectoryPicker = false
+
+    @State
     private var annotationSheetMode: AnnotationCreationSheetMode?
 
     init(
@@ -168,7 +174,7 @@ struct LinkmarkDetailView: View {
         }
         .sheet(item: $annotationSheetMode) { mode in
             AnnotationCreationSheet(mode: mode) { outcome in
-                Task { await handleAnnotationSheetOutcome(outcome) }
+                Task { await handleAnnotationSheetOutcome(outcome, mode: mode) }
             }
         }
         .sheet(isPresented: $showEditSheet) {
@@ -203,6 +209,13 @@ struct LinkmarkDetailView: View {
         }
         .sheet(isPresented: $showActivitySheet) {
             ActivityItemsShareSheet(items: activityItems)
+        }
+        .sheet(isPresented: $showMarkdownExportDirectoryPicker) {
+            MarkdownExportDirectoryPicker { url in
+                Task { @MainActor in
+                    finalizeMarkdownExport(selectedDirectory: url)
+                }
+            }
         }
         .sheet(isPresented: $showReminderSheet) {
             NavigationStack {
@@ -473,10 +486,17 @@ struct LinkmarkDetailView: View {
         }
     }
 
-    private func handleAnnotationSheetOutcome(_ outcome: AnnotationCreationSheetOutcome) async {
+    private func handleAnnotationSheetOutcome(
+        _ outcome: AnnotationCreationSheetOutcome,
+        mode: AnnotationCreationSheetMode
+    ) async {
         switch outcome {
-        case .cancelled, .persisted:
+        case .cancelled:
             break
+        case .persisted:
+            if case let .edit(annotation) = mode, annotation.type == .readable, let bm = bookmark {
+                await webDriver.setAnnotations(jsonArrayBody: annotationsJson(for: bm))
+            }
         case let .readableCreateRequested(annotationId, request):
             await commitReadableCreate(annotationId: annotationId, request: request)
         case let .readableDeleteRequested(annotationId, readableVersionId):
@@ -577,7 +597,7 @@ struct LinkmarkDetailView: View {
                 Button {
                     Task { @MainActor in
                         let md = await webDriver.exportMarkdown()
-                        exportMarkdownShare(markdown: md)
+                        startMarkdownExport(markdown: md, bookmark: bm)
                     }
                 } label: {
                     overflowMenuItemLabel(
@@ -678,13 +698,34 @@ struct LinkmarkDetailView: View {
         }
     }
 
-    private func exportMarkdownShare(markdown: String) {
-        let tmp = FileManager.default.temporaryDirectory.appendingPathComponent("YABA-export.md")
-        do {
-            try markdown.data(using: .utf8)?.write(to: tmp)
-            activityItems = [tmp]
-            showActivitySheet = true
-        } catch {
+    private func startMarkdownExport(markdown: String, bookmark: YabaBookmark?) {
+        guard let bookmark else { return }
+        let trimmed = markdown.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
+            CoreToastManager.shared.show(
+                message: LocalizedStringKey("Bookmark Detail Markdown Export Failed Message"),
+                iconType: .error,
+                duration: .short
+            )
+            return
+        }
+        let inlineSources: [MarkdownExportInlineSource] = (currentVersion(bookmark)?.inlineAssets ?? []).compactMap { item in
+            guard let bytes = item.bytes, !bytes.isEmpty else { return nil }
+            return MarkdownExportInlineSource(assetId: item.assetId, pathExtension: item.pathExtension, bytes: bytes)
+        }
+        markdownExportRequest = MarkdownExportRequest(
+            markdown: trimmed + "\n",
+            baseFolderName: MarkdownExportSupport.sanitizeBaseFolderName(bookmark.label),
+            assets: MarkdownExportSupport.exportAssets(from: inlineSources)
+        )
+        showMarkdownExportDirectoryPicker = true
+    }
+
+    private func finalizeMarkdownExport(selectedDirectory: URL?) {
+        defer { markdownExportRequest = nil }
+        guard let selectedDirectory, let request = markdownExportRequest else { return }
+        let didWrite = MarkdownExportSupport.writeBundle(request, into: selectedDirectory)
+        if !didWrite {
             CoreToastManager.shared.show(
                 message: LocalizedStringKey("Bookmark Detail Markdown Export Failed Message"),
                 iconType: .error,
