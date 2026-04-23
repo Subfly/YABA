@@ -752,13 +752,8 @@ private struct BookmarkSheetsAndAlertsModifier: ViewModifier {
                 BookmarkFlowSheet(context: .edit(bookmarkId: bookmark.bookmarkId))
             }
             .sheet(isPresented: $itemState.shouldShowShareSheet) {
-                Group {
-                    if let url = bookmarkItemShareURL(bookmark) {
-                        ShareSheet(bookmarkLink: url)
-                    } else {
-                        Text("Bookmark Item Share Unavailable Message")
-                            .padding()
-                    }
+                if let url = bookmarkItemShareURL(bookmark) {
+                    ShareSheet(bookmarkLink: url)
                 }
             }
             .onHover { hovered in

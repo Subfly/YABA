@@ -227,25 +227,74 @@
       }
     },
     "Annotation Apply Failed Message" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Successfully created annotation."
+          }
+        }
+      }
     },
     "Annotation Delete Confirmation Message" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Are you sure you want to delete this annotation? This operation can not be undone!"
+          }
+        }
+      }
     },
     "Annotation Delete Confirmation Title" : {
-
-    },
-    "Annotation Quote Empty Message" : {
-
-    },
-    "Annotation Selection Required Message" : {
-
-    },
-    "Annotation Sync Failed Message" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete Annotation"
+          }
+        }
+      }
     },
     "Annotation Note Placeholder" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Write your note here…"
+          }
+        }
+      }
+    },
+    "Annotation Quote Empty Message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No quote selected…"
+          }
+        }
+      }
+    },
+    "Annotation Selection Required Message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You should select a portion of text in order to create annotations!"
+          }
+        }
+      }
+    },
+    "Annotation Sync Failed Message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Annotation could not be created!"
+          }
+        }
+      }
     },
     "Announcement CloudKit Deletion Title" : {
       "comment" : "One time title for announcement that indicates Cloud Kit Database Deletion",
@@ -1417,8 +1466,8 @@
       "localizations" : {
         "en" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "Delete readable version?"
+            "state" : "translated",
+            "value" : "Delete Readable Version"
           }
         }
       }
@@ -1545,102 +1594,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Export"
-          }
-        }
-      }
-    },
-    "Bookmark Detail Image Error Description" : {
-      "comment" : "Detail to show when bookmark image can not be accessed in detail",
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Das Bild des Bookmarks kann gerade nicht abgerufen werden, vielleicht wurde es entfernt oder blockiert?\n\nOder du hast versucht, etwas zu speichern, das privat ist oder eine Anmeldung erfordert.\n\nDu kannst den Link aber weiterhin öffnen, indem du hier klickst."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The image of the bookmark can not be fetched currently, maybe it is removed or blocked? \n\nOr maybe you have tried to save something that is private or requires some login process.\n\nAnyway, you can still open it by clicking here"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La imagen del marcador no se puede recuperar en este momento, ¿quizás ha sido eliminada o bloqueada?\n\nO tal vez has intentado guardar algo que es privado o requiere iniciar sesión.\n\nDe todos modos, aún puedes abrirlo haciendo clic aquí"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "L’image du signet ne peut pas être récupérée actuellement, peut-être a-t-elle été supprimée ou bloquée ?\n\nOu peut-être avez-vous essayé d’enregistrer quelque chose de privé ou nécessitant une connexion.\n\nQuoi qu’il en soit, vous pouvez toujours l’ouvrir en cliquant ici"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "बुकमार्क की छवि अभी प्राप्त नहीं की जा सकती, शायद इसे हटा दिया गया है या ब्लॉक कर दिया गया है? \n\nया शायद आपने कुछ ऐसा सेव करने की कोशिश की है जो प्राइवेट है या जिसके लिए लॉगिन प्रक्रिया की आवश्यकता होती है।\n\nफिर भी, आप इसे यहाँ क्लिक करके खोल सकते हैं"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "L'immagine del segnalibro non può essere recuperata al momento, forse è stata rimossa o bloccata?\n\nOppure hai provato a salvare qualcosa di privato o che richiede l'accesso.\n\nComunque, puoi aprirlo comunque cliccando qui"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ブックマークの画像を現在取得できません。削除された可能性やブロックされているかもしれません。\n\nまたは、ログインが必要なプライベートな内容を保存しようとした可能性があります。\n\nそれでも、ここをクリックすると開くことができます。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "즐겨찾기 이미지에 현재 접근할 수 없습니다. 이미지가 제거되었거나 차단되었을 수 있습니다.\n\n또는 로그인 과정이 필요하거나 비공개 콘텐츠를 저장하려고 시도한 것일 수도 있습니다.\n\n어쨌든 여기를 클릭하여 열 수 있습니다."
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bildet til bokmerket kan ikke hentes for øyeblikket, det kan være fjernet eller blokkert?\n\nEller kanskje har du prøvd å lagre noe som er privat eller krever innlogging.\n\nUansett kan du fortsatt åpne det ved å klikke her"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "De afbeelding van de bladwijzer kan momenteel niet worden opgehaald, misschien is deze verwijderd of geblokkeerd?\n\nOf misschien heb je geprobeerd iets op te slaan dat privé is of waarvoor een inlogprocedure nodig is.\n\nHoe dan ook, je kunt het nog steeds openen door hier te klikken"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A imagem do favorito não pode ser recuperada no momento, talvez tenha sido removida ou bloqueada?\n\nOu talvez você tenha tentado salvar algo privado ou que exige algum processo de login.\n\nDe qualquer forma, você ainda pode abri-lo clicando aqui"
-          }
-        },
-        "sk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Obrázok záložky sa momentálne nedá načítať, možno bol odstránený alebo zablokovaný?\n\nAlebo si sa možno pokúsil uložiť niečo súkromné alebo vyžadujúce prihlásenie.\n\nKaždopádne, môžeš ho stále otvoriť kliknutím sem."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bilden för bokmärket kan för närvarande inte hämtas, kanske har den tagits bort eller blockerats?\n\nEller så har du försökt spara något som är privat eller kräver inloggning.\n\nHur som helst kan du fortfarande öppna den genom att klicka här."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Yer işareti görüntüsüne şu anda erişilemiyor, belki kaldırılmış veya engellenmiş olabilir.\n\nYa da gizli bir şeyi veya oturum açma gerektiren bir şeyi kaydetmeye çalışmış olabilirsin.\n\nHer neyse, buraya tıklayarak hâlâ açabilirsin"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "无法获取书签图片，可能已被移除或屏蔽？\n\n或者你尝试保存的是私密内容，或者需要登录。\n\n不过，你仍然可以点击这里打开它。"
           }
         }
       }
@@ -1846,14 +1799,21 @@
       }
     },
     "Bookmark Detail Metadata Title Label" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Title"
+          }
+        }
+      }
     },
     "Bookmark Detail No Annotations Message" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "Annotations you create in the reader will appear here."
+            "state" : "translated",
+            "value" : "No annotations found. Create your first annotation by selecting a text, and then clicking on the “create annotation” button in the reader."
           }
         }
       }
@@ -1967,8 +1927,8 @@
       "localizations" : {
         "en" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "No headings are available in this readable content."
+            "state" : "translated",
+            "value" : "ToC does not available for this readable content."
           }
         }
       }
@@ -2179,8 +2139,8 @@
       "localizations" : {
         "en" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "Create a readable version from the update menu to see it listed here."
+            "state" : "translated",
+            "value" : "No readable versions available. You can always save a new readable version from the options, under “Update”."
           }
         }
       }
@@ -2190,7 +2150,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No readable versions available. You can always save a new readable version from the options, under “Update”."
+            "value" : "Readable versions not found…"
           }
         }
       }
@@ -2398,7 +2358,14 @@
       }
     },
     "Bookmark Detail PDF Write Failed Message" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to export to PDF!"
+          }
+        }
+      }
     },
     "Bookmark Detail Pin Action" : {
       "localizations" : {
@@ -2556,102 +2523,6 @@
         }
       }
     },
-    "Bookmark Detail Title" : {
-      "comment" : "Title to show in bookmark detail view",
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lesezeichen-Details"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bookmark Detail"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Detalle del marcador"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Détail du signet"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "बुकमार्क विवरण"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dettaglio Segnalibro"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ブックマークの詳細"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "즐겨찾기 상세"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bokmerke-detaljer"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Details bladwijzer"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Detalhes do Favorito"
-          }
-        },
-        "sk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Detail záložky"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bokmärkesdetalj"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Yer İşareti Detayı"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "书签详情"
-          }
-        }
-      }
-    },
     "Bookmark Detail Unpin Action" : {
       "localizations" : {
         "en" : {
@@ -2683,7 +2554,14 @@
       }
     },
     "Bookmark Detail URL Label" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL"
+          }
+        }
+      }
     },
     "Bookmark Detail Version Item Annotation Count Many %lld" : {
       "localizations" : {
@@ -2714,9 +2592,6 @@
           }
         }
       }
-    },
-    "Bookmark Item Share Unavailable Message" : {
-
     },
     "Bookmark List Configuration Description" : {
       "localizations" : {
@@ -4877,7 +4752,14 @@
       }
     },
     "Camera" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Camera"
+          }
+        }
+      }
     },
     "Cancel" : {
       "comment" : "Cancel",
@@ -5648,6 +5530,16 @@
         }
       }
     },
+    "Color" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Color"
+          }
+        }
+      }
+    },
     "Copy To Clipboard Success Message" : {
       "comment" : "Message to show in toast when user copied something",
       "extractionState" : "manual",
@@ -5745,7 +5637,14 @@
       }
     },
     "Create Annotation" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create Annotation"
+          }
+        }
+      }
     },
     "Create Bookmark" : {
       "comment" : "Label to show for creating bookmarks in plus menu",
@@ -9780,8 +9679,25 @@
         }
       }
     },
-    "Delete Annotation" : {
-
+    "Delete Annotation Message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Are you sure you want to delete this annotation? This operation could not be undone!"
+          }
+        }
+      }
+    },
+    "Delete Annotation Title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete Annotation"
+          }
+        }
+      }
     },
     "Delete Bookmark Title" : {
       "comment" : "Title to show in dialog when a bookmark is deleting",
@@ -9975,7 +9891,14 @@
       }
     },
     "Delete Folder Title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete Folder"
+          }
+        }
+      }
     },
     "Delete Tag Title" : {
       "comment" : "Title to show in dialog when a tag is deleting",
@@ -10072,9 +9995,6 @@
           }
         }
       }
-    },
-    "Delete this annotation from content?" : {
-
     },
     "Device Type Computer" : {
       "comment" : "Title of device type Computer",
@@ -10651,7 +10571,14 @@
       }
     },
     "Edit Annotation" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit Annotation"
+          }
+        }
+      }
     },
     "Edit Bookmark Title" : {
       "comment" : "Title to show when editing a bookmark",
@@ -11902,7 +11829,14 @@
       }
     },
     "Gallery" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gallery"
+          }
+        }
+      }
     },
     "Generic Unfurl Error Text" : {
       "comment" : "A generic error text to show in toasts",
@@ -28129,7 +28063,14 @@
       }
     },
     "Note" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Note"
+          }
+        }
+      }
     },
     "Notification Message 1 %@" : {
       "comment" : "Random message for notification",

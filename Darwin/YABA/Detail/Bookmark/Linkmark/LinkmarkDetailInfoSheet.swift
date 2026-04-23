@@ -493,7 +493,7 @@ struct LinkmarkDetailInfoSheet: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(version.createdAt.formatted(date: .abbreviated, time: .shortened))
                     .foregroundStyle(.primary)
-                Text(annotationsLabel(for: annotationCount))
+                Text(LocalizedStringKey(annotationsLabel(for: annotationCount)))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -505,12 +505,11 @@ struct LinkmarkDetailInfoSheet: View {
     private func annotationsLabel(for count: Int) -> String {
         switch count {
         case 0:
-            return String(localized: "Bookmark Detail Version Item Annotation Count Zero")
+            return "Bookmark Detail Version Item Annotation Count Zero"
         case 1:
-            return String(localized: "Bookmark Detail Version Item Annotation Count One")
+            return "Bookmark Detail Version Item Annotation Count One"
         default:
-            let format = String(localized: "Bookmark Detail Version Item Annotation Count Many %lld")
-            return String.localizedStringWithFormat(format, Int64(count))
+            return "Bookmark Detail Version Item Annotation Count Many \(count)"
         }
     }
 

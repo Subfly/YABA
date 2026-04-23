@@ -97,7 +97,7 @@ struct AnnotationCreationSheet: View {
                     }
                     .buttonStyle(.plain)
                 } header: {
-                    sectionHeader("Select Color Title", icon: "paint-board")
+                    sectionHeader("Color", icon: "paint-board")
                 }
 
                 if isEditing {
@@ -158,7 +158,7 @@ struct AnnotationCreationSheet: View {
                 )
             }
             .alert(
-                "Delete Annotation",
+                "Delete Annotation Title",
                 isPresented: $shouldShowDeleteConfirmation
             ) {
                 Button("Cancel", role: .cancel) {}
@@ -168,7 +168,7 @@ struct AnnotationCreationSheet: View {
                     }
                 }
             } message: {
-                Text("Delete this annotation from content?")
+                Text("Delete Annotation Message")
             }
         }
         .presentationDetents(Set(sheetPresentationDetents))
