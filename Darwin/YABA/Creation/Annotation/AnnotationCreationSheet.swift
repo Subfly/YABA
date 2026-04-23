@@ -50,18 +50,14 @@ struct AnnotationCreationSheet: View {
 
     var body: some View {
         NavigationStack {
-            Form {
-                Section("Annotation Quote Section Title") {
-                    Text(machine.state.quoteText?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty
-                        ?? String(localized: "Annotation Quote Empty Message"))
-                        .foregroundStyle(
-                            machine.state.quoteText?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty == nil
-                                ? .secondary
-                                : .primary
-                        )
+            List {
+                Section {
+                    previewRow
+                } header: {
+                    sectionHeader("Preview", icon: "image-03")
                 }
 
-                Section("Annotation Note Section Title") {
+                Section {
                     TextField(
                         "",
                         text: Binding(
@@ -70,43 +66,68 @@ struct AnnotationCreationSheet: View {
                                 Task { await machine.send(.onChangeNote(newValue)) }
                             }
                         ),
-                        prompt: Text("Annotation Note Placeholder")
+                        prompt: Text("Annotation Note Placeholder"),
+                        axis: .vertical
                     )
+                    .lineLimit(2 ... 5)
+                }
+                header: {
+                    sectionHeader("Note", icon: "sticky-note-03")
                 }
 
-                Section("Annotation Color Section Title") {
+                Section {
                     Button {
                         shouldShowColorPicker = true
                     } label: {
                         HStack(spacing: 10) {
+                            Text(machine.state.colorRole.getUIText())
+                                .foregroundStyle(.primary)
+                            Spacer(minLength: 0)
                             Circle()
                                 .fill(machine.state.colorRole.getUIColor())
-                                .frame(width: 18, height: 18)
-                            Text(machine.state.colorRole.getUIText())
-                            Spacer(minLength: 0)
+                                .overlay {
+                                    Circle()
+                                        .strokeBorder(.white.opacity(0.9), lineWidth: 2)
+                                }
+                                .frame(width: 28, height: 28)
                             YabaIconView(bundleKey: "arrow-right-01")
                                 .frame(width: 16, height: 16)
                                 .foregroundStyle(.secondary)
                         }
                     }
+                    .buttonStyle(.plain)
+                } header: {
+                    sectionHeader("Select Color Title", icon: "paint-board")
                 }
 
                 if isEditing {
                     Section {
-                        Button(role: .destructive) {
+                        Button {
                             shouldShowDeleteConfirmation = true
                         } label: {
-                            Label("Delete", systemImage: "trash")
+                            Label {
+                                Text("Delete")
+                            } icon: {
+                                YabaIconView(bundleKey: "delete-02")
+                                    .frame(width: 22, height: 22)
+                            }
+                            .font(.headline)
+                            .frame(maxWidth: .infinity, minHeight: 48)
+                            .background {
+                                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                    .fill(YabaColor.red.getUIColor())
+                            }
+                            .foregroundStyle(.white)
                         }
+                        .buttonStyle(.plain)
+                        .listRowBackground(Color.clear)
                     }
                 }
             }
+            .listStyle(.sidebar)
+            .scrollContentBackground(.hidden)
             .navigationTitle(
-                Text(
-                    isEditing
-                        ? LocalizedStringKey("Annotation Edit Title")
-                        : LocalizedStringKey("Annotation Creation Title")
-                )
+                isEditing ? "Edit Annotation" : "Create Annotation"
             )
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -137,7 +158,7 @@ struct AnnotationCreationSheet: View {
                 )
             }
             .alert(
-                "Annotation Delete Confirmation Title",
+                "Delete Annotation",
                 isPresented: $shouldShowDeleteConfirmation
             ) {
                 Button("Cancel", role: .cancel) {}
@@ -147,13 +168,20 @@ struct AnnotationCreationSheet: View {
                     }
                 }
             } message: {
-                Text("Annotation Delete Confirmation Message")
+                Text("Delete this annotation from content?")
             }
         }
-        .presentationDetents([.medium, .large])
+        .presentationDetents(Set(sheetPresentationDetents))
         #if !targetEnvironment(macCatalyst)
         .presentationDragIndicator(.visible)
         #endif
+    }
+
+    private var sheetPresentationDetents: [PresentationDetent] {
+        switch mode {
+        case .create: return [.medium]
+        case .edit: return [.fraction(0.6)]
+        }
     }
 
     private var isEditing: Bool {
@@ -164,6 +192,39 @@ struct AnnotationCreationSheet: View {
     private var canSave: Bool {
         if isEditing { return true }
         return machine.state.quoteText?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
+    }
+    
+    private var previewRow: some View {
+        ZStack(alignment: .topLeading) {
+            RoundedRectangle(cornerRadius: 2)
+                .fill(machine.state.colorRole.getUIColor())
+                .frame(maxWidth: 4, maxHeight: .infinity, alignment: .top)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(machine.state.quoteText?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty
+                    ?? String(localized: "Annotation Quote Empty Message"))
+                    .font(.body.weight(.medium))
+                    .lineLimit(2)
+                if let note = machine.state.note.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty {
+                    Text(note)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(3)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.leading, 16)
+            .animation(.smooth, value: machine.state.note)
+        }
+        .fixedSize(horizontal: false, vertical: true)
+    }
+    
+    private func sectionHeader(_ title: LocalizedStringKey, icon: String) -> some View {
+        Label {
+            Text(title)
+        } icon: {
+            YabaIconView(bundleKey: icon)
+                .frame(width: 22, height: 22)
+        }
     }
 
     private func handleSave() async {
@@ -230,7 +291,7 @@ struct AnnotationCreationSheet: View {
                 readableVersionId: draft.readableVersionId,
                 annotationId: nil,
                 annotationType: draft.annotationType,
-                colorRole: .none,
+                colorRole: .yellow,
                 note: "",
                 quoteText: draft.quoteText,
                 extrasJson: draft.extrasJson,

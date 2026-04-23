@@ -229,37 +229,22 @@
     "Annotation Apply Failed Message" : {
 
     },
-    "Annotation Color Section Title" : {
-
-    },
-    "Annotation Creation Title" : {
-
-    },
     "Annotation Delete Confirmation Message" : {
 
     },
     "Annotation Delete Confirmation Title" : {
 
     },
-    "Annotation Edit Title" : {
-
-    },
-    "Annotation Note Placeholder" : {
-
-    },
-    "Annotation Note Section Title" : {
-
-    },
     "Annotation Quote Empty Message" : {
-
-    },
-    "Annotation Quote Section Title" : {
 
     },
     "Annotation Selection Required Message" : {
 
     },
     "Annotation Sync Failed Message" : {
+
+    },
+    "Annotation Note Placeholder" : {
 
     },
     "Announcement CloudKit Deletion Title" : {
@@ -5759,6 +5744,9 @@
         }
       }
     },
+    "Create Annotation" : {
+
+    },
     "Create Bookmark" : {
       "comment" : "Label to show for creating bookmarks in plus menu",
       "extractionState" : "manual",
@@ -9792,6 +9780,9 @@
         }
       }
     },
+    "Delete Annotation" : {
+
+    },
     "Delete Bookmark Title" : {
       "comment" : "Title to show in dialog when a bookmark is deleting",
       "extractionState" : "manual",
@@ -10081,6 +10072,9 @@
           }
         }
       }
+    },
+    "Delete this annotation from content?" : {
+
     },
     "Device Type Computer" : {
       "comment" : "Title of device type Computer",
@@ -10655,6 +10649,9 @@
           }
         }
       }
+    },
+    "Edit Annotation" : {
+
     },
     "Edit Bookmark Title" : {
       "comment" : "Title to show when editing a bookmark",
@@ -28130,6 +28127,9 @@
           }
         }
       }
+    },
+    "Note" : {
+
     },
     "Notification Message 1 %@" : {
       "comment" : "Random message for notification",

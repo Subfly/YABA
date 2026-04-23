@@ -14,6 +14,9 @@ struct BaseAnnotationItemView: View {
 
     let interactive: Bool
     let onTap: () -> Void
+    
+    @State
+    private var textBlockHeight: CGFloat = 0
 
     init(annotation: AnnotationModel, interactive: Bool, onTap: @escaping () -> Void) {
         self.interactive = interactive
@@ -36,17 +39,17 @@ struct BaseAnnotationItemView: View {
             RoundedRectangle(cornerRadius: 2)
                 .fill(accentColor.getUIColor())
                 .frame(width: 4)
-                .frame(minHeight: 48)
+                .frame(height: max(18, textBlockHeight))
             VStack(alignment: .leading, spacing: 4) {
                 if !quotePreview.isEmpty {
                     Text(quotePreview)
-                        .font(.body)
-                        .lineLimit(3)
+                        .font(.body.weight(.medium))
+                        .lineLimit(2)
                     if let note, !note.isEmpty {
                         Text(note)
                             .font(.caption)
                             .foregroundStyle(.secondary)
-                            .lineLimit(2)
+                            .lineLimit(3)
                     }
                 } else {
                     Text("Annotation Quote Empty Message")
@@ -54,10 +57,20 @@ struct BaseAnnotationItemView: View {
                         .foregroundStyle(.secondary)
                 }
             }
+            .background {
+                GeometryReader { proxy in
+                    Color.clear
+                        .onAppear {
+                            textBlockHeight = proxy.size.height
+                        }
+                        .onChange(of: proxy.size.height) { _, newHeight in
+                            textBlockHeight = newHeight
+                        }
+                }
+            }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(.vertical, 8)
-        .padding(.horizontal, 4)
+        .padding(.vertical, 4)
         .contentShape(Rectangle())
         .onTapGesture {
             if interactive {

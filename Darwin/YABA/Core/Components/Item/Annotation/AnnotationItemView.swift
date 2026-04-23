@@ -23,15 +23,15 @@ struct AnnotationItemView: View {
                 Button {
                     shouldShowDeleteAlert = true
                 } label: {
-                    Text("Delete")
+                    swipeLabel(iconKey: "delete-02", titleKey: "Delete")
                 }
-                .tint(.red)
+                .tint(YabaColor.red.getUIColor())
                 Button {
                     onEdit()
                 } label: {
-                    Text("Edit")
+                    swipeLabel(iconKey: "edit-02", titleKey: "Edit")
                 }
-                .tint(.orange)
+                .tint(YabaColor.orange.getUIColor())
             }
             #endif
             .alert("Annotation Delete Confirmation Title", isPresented: $shouldShowDeleteAlert) {
@@ -45,5 +45,16 @@ struct AnnotationItemView: View {
             } message: {
                 Text("Annotation Delete Confirmation Message")
             }
+    }
+    
+    @ViewBuilder
+    private func swipeLabel(iconKey: String, titleKey: String) -> some View {
+        VStack(spacing: 2) {
+            YabaIconView(bundleKey: iconKey)
+                .scaledToFit()
+                .frame(width: 22, height: 22)
+            Text(LocalizedStringKey(titleKey))
+                .font(.caption2)
+        }
     }
 }

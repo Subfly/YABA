@@ -110,13 +110,15 @@ public enum WebViewerBridgeScripts {
 
     /// `AnnotationForRendering[]` JSON: `[{"id":"…","colorRole":"…"}]`.
     public static func setAnnotations(jsonArrayBody: String) -> String {
-        let literal = jsonArrayBody.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "[]" : jsonArrayBody
+        let json = jsonArrayBody.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "[]" : jsonArrayBody
+        let escaped = WebJsEscaping.escapeForJsSingleQuotedString(json)
         return """
         (function(){
           try {
             var b = window.YabaEditorBridge;
             if (!b || !b.setAnnotations) { return "no_bridge"; }
-            b.setAnnotations(\(literal));
+            var parsed = JSON.parse('\(escaped)');
+            b.setAnnotations(JSON.stringify(parsed));
             return "ok";
           } catch(e) { return String(e); }
         })();

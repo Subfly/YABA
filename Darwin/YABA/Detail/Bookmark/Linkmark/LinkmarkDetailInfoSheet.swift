@@ -279,6 +279,7 @@ struct LinkmarkDetailInfoSheet: View {
                         } label: {
                             versionRow(v)
                         }
+                        .buttonStyle(.plain)
                         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                             Button(role: .destructive) {
                                 versionPendingDeletion = PendingVersionDeletion(
@@ -297,6 +298,7 @@ struct LinkmarkDetailInfoSheet: View {
                         }
                     }
                 }
+                .listStyle(.sidebar)
             }
         }
     }
@@ -329,12 +331,8 @@ struct LinkmarkDetailInfoSheet: View {
                             onDeleteAnnotation(a.annotationId)
                         }
                     )
-                        .padding(.vertical, 2)
-                        .listRowBackground(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(.thinMaterial.opacity(0.65))
-                        )
                 }
+                .listStyle(.sidebar)
             }
         }
     }
@@ -494,6 +492,7 @@ struct LinkmarkDetailInfoSheet: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(version.createdAt.formatted(date: .abbreviated, time: .shortened))
+                    .foregroundStyle(.primary)
                 Text(annotationsLabel(for: annotationCount))
                     .font(.caption)
                     .foregroundStyle(.secondary)
