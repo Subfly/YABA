@@ -48,6 +48,32 @@ public enum DocmarkManager {
         }
     }
 
+    /// Persists original PDF/EPUB bytes on the doc bookmark payload
+    public static func queueUpsertDocBookmarkPayloadBytes(bookmarkId: String, documentBytes: Data) {
+        CoreOperationQueue.shared.queue(name: "UpsertDocBookmarkPayload:\(bookmarkId)") { context in
+            guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context) else {
+                return
+            }
+            let row: DocBookmarkModel
+            if let existing = bookmark.docDetail {
+                row = existing
+            } else {
+                let inserted = DocBookmarkModel(bookmark: bookmark)
+                context.insert(inserted)
+                bookmark.docDetail = inserted
+                row = inserted
+            }
+            if let payload = row.payload {
+                payload.bytes = documentBytes
+            } else {
+                let payload = DocBookmarkPayloadModel(bytes: documentBytes, docBookmark: row)
+                context.insert(payload)
+                row.payload = payload
+            }
+            bookmark.editedAt = .now
+        }
+    }
+
     private static func upsertDocDetails(
         bookmarkId: String,
         summary: String?,

@@ -68,4 +68,47 @@ public enum WebBridgeScripts {
         let jobIdEscaped = WebJsEscaping.escapeForJsSingleQuotedString(jobId)
         return "(function(){ try { window.YabaConverterBridge.deleteHtmlConversionJob('\(jobIdEscaped)'); } catch(e){} })();"
     }
+
+    // MARK: - PDF / EPUB extraction
+
+    public static func startPdfExtractionScript(resolvedPdfUrl: String, renderScale: Float) -> String {
+        let pdfUrlEscaped = WebJsEscaping.escapeForJsSingleQuotedString(resolvedPdfUrl)
+        return """
+        (function() {
+            try {
+                return window.YabaConverterBridge.startPdfExtraction({
+                    pdfUrl: '\(pdfUrlEscaped)',
+                    renderScale: \(renderScale)
+                });
+            } catch (e) {
+                return "";
+            }
+        })();
+        """
+    }
+
+    public static func deletePdfExtractionJobScript(jobId: String) -> String {
+        let jobIdEscaped = WebJsEscaping.escapeForJsSingleQuotedString(jobId)
+        return "(function(){ try { window.YabaConverterBridge.deletePdfExtractionJob('\(jobIdEscaped)'); } catch(e){} })();"
+    }
+
+    public static func startEpubExtractionScript(resolvedEpubUrl: String) -> String {
+        let epubUrlEscaped = WebJsEscaping.escapeForJsSingleQuotedString(resolvedEpubUrl)
+        return """
+        (function() {
+            try {
+                return window.YabaConverterBridge.startEpubExtraction({
+                    epubUrl: '\(epubUrlEscaped)'
+                });
+            } catch (e) {
+                return "";
+            }
+        })();
+        """
+    }
+
+    public static func deleteEpubExtractionJobScript(jobId: String) -> String {
+        let jobIdEscaped = WebJsEscaping.escapeForJsSingleQuotedString(jobId)
+        return "(function(){ try { window.YabaConverterBridge.deleteEpubExtractionJob('\(jobIdEscaped)'); } catch(e){} })();"
+    }
 }

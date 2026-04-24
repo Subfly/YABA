@@ -17,6 +17,7 @@ public struct DocmarkCreationUIState: Sendable {
     public var pickedDocumentData: Data?
     public var sourceFileName: String?
     public var previewImageData: Data?
+    public var isLoading: Bool
     public var metadataTitle: String?
     public var metadataDescription: String?
     public var metadataAuthor: String?
@@ -35,10 +36,11 @@ public struct DocmarkCreationUIState: Sendable {
         selectedFolderId: String? = nil,
         uncategorizedFolderCreationRequired: Bool = false,
         selectedTagIds: [String] = [],
-        docmarkType: DocmarkType? = .pdf,
+        docmarkType: DocmarkType? = nil,
         pickedDocumentData: Data? = nil,
         sourceFileName: String? = nil,
         previewImageData: Data? = nil,
+        isLoading: Bool = false,
         metadataTitle: String? = nil,
         metadataDescription: String? = nil,
         metadataAuthor: String? = nil,
@@ -60,6 +62,7 @@ public struct DocmarkCreationUIState: Sendable {
         self.pickedDocumentData = pickedDocumentData
         self.sourceFileName = sourceFileName
         self.previewImageData = previewImageData
+        self.isLoading = isLoading
         self.metadataTitle = metadataTitle
         self.metadataDescription = metadataDescription
         self.metadataAuthor = metadataAuthor
@@ -69,5 +72,12 @@ public struct DocmarkCreationUIState: Sendable {
         self.isPinned = isPinned
         self.isSaving = isSaving
         self.lastError = lastError
+    }
+
+    public var canSave: Bool {
+        selectedFolderId != nil
+            && !(selectedFolderId?.isEmpty ?? true)
+            && (editingBookmarkId != nil || pickedDocumentData != nil)
+            && !isLoading
     }
 }

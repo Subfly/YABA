@@ -31,12 +31,27 @@ public final class DocmarkCreationStateMachine: YabaBaseObservableState<DocmarkC
             apply {
                 $0.pickedDocumentData = nil
                 $0.sourceFileName = nil
+                $0.docmarkType = nil
+                $0.metadataTitle = nil
+                $0.metadataDescription = nil
+                $0.metadataAuthor = nil
+                $0.metadataDate = nil
+                $0.previewImageData = nil
+                $0.isLoading = false
+                $0.lastError = nil
             }
         case let .onDocumentFromShare(data, name, type):
             apply {
                 $0.pickedDocumentData = data
                 $0.sourceFileName = name
                 $0.docmarkType = type
+                $0.metadataTitle = nil
+                $0.metadataDescription = nil
+                $0.metadataAuthor = nil
+                $0.metadataDate = nil
+                $0.previewImageData = nil
+                $0.isLoading = true
+                $0.lastError = nil
             }
         case .onCyclePreviewAppearance:
             apply {
@@ -73,8 +88,17 @@ public final class DocmarkCreationStateMachine: YabaBaseObservableState<DocmarkC
             }
         case let .onSelectTagIds(ids):
             apply { $0.selectedTagIds = ids }
-        case .onWebInitialContentLoad(_):
-            break
+        case let .onWebInitialContentLoad(result):
+            apply {
+                $0.isLoading = false
+                if result == .error {
+                    $0.lastError = "Preview extraction failed"
+                } else {
+                    $0.lastError = nil
+                }
+            }
+        case .onDocumentExtractionFinished:
+            apply { $0.isLoading = false }
         case .onSave:
             await persist()
         case .onTogglePinned:
@@ -95,10 +119,17 @@ public final class DocmarkCreationStateMachine: YabaBaseObservableState<DocmarkC
 
     private func persist() async {
         let folderId = state.selectedFolderId
-        let label = state.label.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedLabel = state.label.trimmingCharacters(in: .whitespacesAndNewlines)
+        let label = trimmedLabel.isEmpty ? "Document" : trimmedLabel
         guard let folderId, !folderId.isEmpty else {
             apply { $0.lastError = "Folder required" }
             return
+        }
+        if state.editingBookmarkId == nil {
+            guard state.pickedDocumentData != nil, state.docmarkType != nil else {
+                apply { $0.lastError = "No document selected" }
+                return
+            }
         }
         if state.uncategorizedFolderCreationRequired {
             do {
@@ -114,12 +145,9 @@ public final class DocmarkCreationStateMachine: YabaBaseObservableState<DocmarkC
                 return
             }
         }
-        guard !label.isEmpty else {
-            apply { $0.lastError = "Label required" }
-            return
-        }
         apply { $0.lastError = nil; $0.isSaving = true }
         let bid = state.editingBookmarkId ?? UUID().uuidString
+        let summary = state.summary.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty
         if state.editingBookmarkId != nil {
             AllBookmarksManager.queueUpdateBookmarkMetadata(
                 bookmarkId: bid,
@@ -140,16 +168,24 @@ public final class DocmarkCreationStateMachine: YabaBaseObservableState<DocmarkC
                 isPinned: state.isPinned,
                 tagIds: state.selectedTagIds
             )
+            AllBookmarksManager.queueSetBookmarkPreviewAssets(
+                bookmarkId: bid,
+                imageBytes: state.previewImageData,
+                iconBytes: nil
+            )
         }
         DocmarkManager.queueCreateOrUpdateDocDetails(
             bookmarkId: bid,
-            summary: nil,
-            docmarkType: state.docmarkType,
+            summary: summary,
+            docmarkType: state.editingBookmarkId != nil ? nil : state.docmarkType,
             metadataTitle: state.metadataTitle,
             metadataDescription: state.metadataDescription,
             metadataAuthor: state.metadataAuthor,
             metadataDate: state.metadataDate
         )
+        if state.editingBookmarkId == nil, let docBytes = state.pickedDocumentData {
+            DocmarkManager.queueUpsertDocBookmarkPayloadBytes(bookmarkId: bid, documentBytes: docBytes)
+        }
         apply { $0.isSaving = false }
     }
 }

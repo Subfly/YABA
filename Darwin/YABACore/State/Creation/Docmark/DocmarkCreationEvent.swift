@@ -28,7 +28,8 @@ public enum DocmarkCreationEvent: Sendable {
     case onApplyFromMetadata
     case onSelectFolderId(String?)
     case onSelectTagIds([String])
-    case onWebInitialContentLoad(resultJson: String?)
+    case onWebInitialContentLoad(WebShellLoadResult)
+    case onDocumentExtractionFinished
     case onSave
     case onTogglePinned
 

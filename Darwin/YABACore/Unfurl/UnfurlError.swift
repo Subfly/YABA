@@ -12,4 +12,12 @@ public enum UnfurlError: Error, Sendable {
     case htmlConversionStartFailed
     case htmlConversionParseFailed
     case htmlConversionTimedOut
+
+    case pdfExtractionStartFailed
+    case pdfExtractionParseFailed
+    case pdfExtractionTimedOut
+
+    case epubExtractionStartFailed
+    case epubExtractionParseFailed
+    case epubExtractionTimedOut
 }
