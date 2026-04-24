@@ -16,6 +16,13 @@ public final class LinkmarkUnfurlCoordinator {
 
     private init() {}
 
+    /// Releases the hidden converter web runtime to avoid retaining off-screen WKWebViews.
+    public func releaseConverterRuntime() {
+        converterRuntime?.onHostEvent = nil
+        converterRuntime?.webView.stopLoading()
+        converterRuntime = nil
+    }
+
     /// Fetches raw HTML, runs the web converter, then downloads reader assets and rewrites JSON.
     public func fetchAndConvert(urlString: String) async throws -> (
         converter: WebConverterResult,

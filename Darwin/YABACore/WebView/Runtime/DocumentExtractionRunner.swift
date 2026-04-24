@@ -13,7 +13,7 @@ public enum DocumentExtractionRunner {
     @MainActor
     public static func runPdfExtraction(
         runtime: WKWebViewRuntime,
-        pdfDataUrl: String,
+        pdfUrl: String,
         renderScale: Float = 1.2
     ) async throws -> WebPdfConverterResult {
         guard await HtmlConversionRunner.waitForConverterBridge(runtime: runtime, maxAttempts: 600) else {
@@ -21,7 +21,7 @@ public enum DocumentExtractionRunner {
         }
         return try await withThrowingTaskGroup(of: WebPdfConverterResult.self) { group in
             group.addTask { @MainActor in
-                try await runPdfExtractionInner(runtime: runtime, pdfDataUrl: pdfDataUrl, renderScale: renderScale)
+                try await runPdfExtractionInner(runtime: runtime, pdfUrl: pdfUrl, renderScale: renderScale)
             }
             group.addTask {
                 try await Task.sleep(nanoseconds: jobTimeoutNs)
@@ -36,7 +36,7 @@ public enum DocumentExtractionRunner {
     @MainActor
     private static func runPdfExtractionInner(
         runtime: WKWebViewRuntime,
-        pdfDataUrl: String,
+        pdfUrl: String,
         renderScale: Float
     ) async throws -> WebPdfConverterResult {
         let cleanup = ExtractionJobIdBox()
@@ -44,7 +44,7 @@ public enum DocumentExtractionRunner {
             Task { @MainActor in
                 do {
                     let script = WebBridgeScripts.startPdfExtractionScript(
-                        resolvedPdfUrl: pdfDataUrl,
+                        resolvedPdfUrl: pdfUrl,
                         renderScale: renderScale
                     )
                     let raw = try await runtime.evaluateJavaScriptStringResult(script)

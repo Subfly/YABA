@@ -97,6 +97,9 @@ struct DocmarkCreationContent: View {
         .task(id: docExtractionGeneration) {
             await runDocumentExtractionIfNeeded()
         }
+        .onDisappear {
+            teardownConverterRuntime()
+        }
         .fileImporter(
             isPresented: $showFileImporter,
             allowedContentTypes: [
@@ -568,6 +571,38 @@ struct DocmarkCreationContent: View {
         converterRuntime = rt
     }
 
+    private func teardownConverterRuntime() {
+        converterRuntime?.onHostEvent = nil
+        converterRuntime?.webView.stopLoading()
+        converterRuntime = nil
+    }
+
+    private func writeTemporaryDocumentURL(data: Data, fileExtension: String) throws -> URL {
+        let tempUrl = FileManager.default.temporaryDirectory
+            .appendingPathComponent("yaba-docmark-\(UUID().uuidString)")
+            .appendingPathExtension(fileExtension)
+        try data.write(to: tempUrl, options: .atomic)
+        return tempUrl
+    }
+
+    private func extractPdfWithFallback(runtime: WKWebViewRuntime, data: Data) async throws -> WebPdfConverterResult {
+        // iOS `evaluateJavaScript` can choke on very large inline data URLs; fallback to file URL.
+        do {
+            let pdfDataUrl = YabaDataUrlCodec.applicationPdfDataUrl(documentBytes: data)
+            return try await DocumentExtractionRunner.runPdfExtraction(
+                runtime: runtime,
+                pdfUrl: pdfDataUrl
+            )
+        } catch {
+            let tempUrl = try writeTemporaryDocumentURL(data: data, fileExtension: "pdf")
+            defer { try? FileManager.default.removeItem(at: tempUrl) }
+            return try await DocumentExtractionRunner.runPdfExtraction(
+                runtime: runtime,
+                pdfUrl: tempUrl.absoluteString
+            )
+        }
+    }
+
     private func runDocumentExtractionIfNeeded() async {
         guard docExtractionGeneration > 0, !isEditing else { return }
         guard let rt = converterRuntime,
@@ -580,11 +615,7 @@ struct DocmarkCreationContent: View {
         do {
             switch type {
             case .pdf:
-                let pdfUrl = YabaDataUrlCodec.applicationPdfDataUrl(documentBytes: data)
-                let extracted = try await DocumentExtractionRunner.runPdfExtraction(
-                    runtime: rt,
-                    pdfDataUrl: pdfUrl
-                )
+                let extracted = try await extractPdfWithFallback(runtime: rt, data: data)
                 let preview = YabaDataUrlCodec.decodeBase64DataUrl(extracted.firstPagePngDataUrl)
                 await machine.send(
                     .onDocumentMetadataExtracted(
@@ -649,6 +680,10 @@ private struct HiddenDocmarkConverterWebView: UIViewRepresentable {
     }
 
     func updateUIView(_ webView: WKWebView, context: Context) {}
+
+    static func dismantleUIView(_ uiView: WKWebView, coordinator: ()) {
+        uiView.stopLoading()
+    }
 }
 
 private extension View {
