@@ -267,6 +267,7 @@ public final class WKWebViewRuntime: NSObject {
             return BundleReader.getEpubViewerURL(in: bundle)
         }
     }
+
 }
 
 // MARK: - Readable viewer shell

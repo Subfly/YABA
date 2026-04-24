@@ -577,32 +577,6 @@ struct DocmarkCreationContent: View {
         converterRuntime = nil
     }
 
-    private func writeTemporaryDocumentURL(data: Data, fileExtension: String) throws -> URL {
-        let tempUrl = FileManager.default.temporaryDirectory
-            .appendingPathComponent("yaba-docmark-\(UUID().uuidString)")
-            .appendingPathExtension(fileExtension)
-        try data.write(to: tempUrl, options: .atomic)
-        return tempUrl
-    }
-
-    private func extractPdfWithFallback(runtime: WKWebViewRuntime, data: Data) async throws -> WebPdfConverterResult {
-        // iOS `evaluateJavaScript` can choke on very large inline data URLs; fallback to file URL.
-        do {
-            let pdfDataUrl = YabaDataUrlCodec.applicationPdfDataUrl(documentBytes: data)
-            return try await DocumentExtractionRunner.runPdfExtraction(
-                runtime: runtime,
-                pdfUrl: pdfDataUrl
-            )
-        } catch {
-            let tempUrl = try writeTemporaryDocumentURL(data: data, fileExtension: "pdf")
-            defer { try? FileManager.default.removeItem(at: tempUrl) }
-            return try await DocumentExtractionRunner.runPdfExtraction(
-                runtime: runtime,
-                pdfUrl: tempUrl.absoluteString
-            )
-        }
-    }
-
     private func runDocumentExtractionIfNeeded() async {
         guard docExtractionGeneration > 0, !isEditing else { return }
         guard let rt = converterRuntime,
@@ -615,7 +589,11 @@ struct DocmarkCreationContent: View {
         do {
             switch type {
             case .pdf:
-                let extracted = try await extractPdfWithFallback(runtime: rt, data: data)
+                let pdfUrl = YabaDataUrlCodec.applicationPdfDataUrl(documentBytes: data)
+                let extracted = try await DocumentExtractionRunner.runPdfExtraction(
+                    runtime: rt,
+                    pdfUrl: pdfUrl
+                )
                 let preview = YabaDataUrlCodec.decodeBase64DataUrl(extracted.firstPagePngDataUrl)
                 await machine.send(
                     .onDocumentMetadataExtracted(
