@@ -18,7 +18,7 @@ struct HomeView: View {
     let onSelectFolder: (String) -> Void
     /// Opens tag bookmark list in the detail column.
     let onSelectTag: (String) -> Void
-    /// Opens link bookmark detail when a bookmark row is tapped (e.g. recents).
+    /// Opens bookmark detail when a supported row is tapped (e.g. link or image recents).
     let onSelectBookmark: (String) -> Void
 
     @State

@@ -768,20 +768,6 @@ struct LinkmarkDetailView: View {
     }
 }
 
-// MARK: - Share sheet for arbitrary items
-
-private struct ActivityItemsShareSheet: UIViewControllerRepresentable {
-    let items: [Any]
-
-    func makeUIViewController(context: Context) -> UIActivityViewController {
-        let vc = UIActivityViewController(activityItems: items, applicationActivities: nil)
-        vc.modalPresentationStyle = .formSheet
-        return vc
-    }
-
-    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
-}
-
 /// Same CUV pattern as the old reader-not-available empty state (legacy `ReaderView` was removed during the Darwin rebuild).
 private struct LinkmarkNoReadableVersionView: View {
     let accent: Color

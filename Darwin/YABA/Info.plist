@@ -42,6 +42,8 @@
 	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>YABA needs camera access to capture photos.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>YABA saves images to your photo library when you choose Save Copy.</string>
 	<key>NSSupportsAutomaticTermination</key>
 	<true/>
 	<key>UIBackgroundModes</key>

@@ -33,7 +33,7 @@ struct HomeRecentsView: View {
                         isSelected: false,
                         isInSelectionMode: false,
                         onNavigationCallback: { b in
-                            if b.kind == .link {
+                            if b.kind == .link || b.kind == .image {
                                 onSelectBookmark(b.bookmarkId)
                             }
                         }

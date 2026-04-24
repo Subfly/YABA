@@ -71,7 +71,7 @@ struct YabaNavigationView: View {
         case let .tag(id):
             TagDetailView(tagId: id, onSelectBookmark: onOpenBookmark)
         case let .bookmark(id):
-            LinkmarkDetailView(
+            BookmarkDetailRouterView(
                 bookmarkId: id,
                 onOpenFolder: { folderId in
                     detailRouter.openFolder(id: folderId)

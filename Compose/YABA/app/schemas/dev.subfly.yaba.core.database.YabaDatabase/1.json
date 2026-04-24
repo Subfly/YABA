@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "189b5f8deb78f23dd45ae1edbe80e175",
+    "identityHash": "2c8776365b12979fd7d2d0081b55c2f5",
     "entities": [
       {
         "tableName": "bookmarks",
@@ -470,7 +470,7 @@
       },
       {
         "tableName": "image_bookmarks",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`bookmarkId` TEXT NOT NULL, `summary` TEXT, PRIMARY KEY(`bookmarkId`), FOREIGN KEY(`bookmarkId`) REFERENCES `bookmarks`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`bookmarkId` TEXT NOT NULL, `summary` TEXT, `originalImageRelativePath` TEXT, PRIMARY KEY(`bookmarkId`), FOREIGN KEY(`bookmarkId`) REFERENCES `bookmarks`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "bookmarkId",
@@ -481,6 +481,11 @@
           {
             "fieldPath": "summary",
             "columnName": "summary",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "originalImageRelativePath",
+            "columnName": "originalImageRelativePath",
             "affinity": "TEXT"
           }
         ],
@@ -895,7 +900,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '189b5f8deb78f23dd45ae1edbe80e175')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2c8776365b12979fd7d2d0081b55c2f5')"
     ]
   }
 }

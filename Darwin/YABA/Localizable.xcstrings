@@ -2473,6 +2473,26 @@
         }
       }
     },
+    "Bookmark Detail Save Copy Label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save a Copy"
+          }
+        }
+      }
+    },
+    "Bookmark Detail Saved to Photos Message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Successfully saved a copy to Photos."
+          }
+        }
+      }
+    },
     "Bookmark Detail Sheet Navigation Title" : {
       "localizations" : {
         "en" : {

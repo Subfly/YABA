@@ -31,7 +31,7 @@ struct SearchView: View {
                 preferredSorting: preferredSorting,
                 preferredOrder: preferredSortOrder,
                 onNavigationCallback: { bookmark in
-                    if bookmark.kind == .link {
+                    if bookmark.kind == .link || bookmark.kind == .image {
                         onSelectBookmark(bookmark.bookmarkId)
                     }
                 }
