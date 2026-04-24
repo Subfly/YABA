@@ -1,6 +1,8 @@
 package dev.subfly.yaba.core.unfurl
 
 import dev.subfly.yaba.core.common.IdGenerator
+import dev.subfly.yaba.core.images.ImageCompression
+import dev.subfly.yaba.core.preferences.SettingsStores
 import dev.subfly.yaba.core.webview.WebConverterAsset
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -20,13 +22,29 @@ object ConverterResultProcessor {
         assets: List<WebConverterAsset>,
     ): ReadableUnfurl {
         val client = UnfurlHttpClient.client
+        val compressionP = SettingsStores.userPreferences.get().imageCompressionPercent.coerceIn(0, 50)
         val readables = assets.mapNotNull { asset ->
             runCatching {
                 val response: HttpResponse = client.get(asset.url)
                 if (response.status.value in 200..299) {
-                    val bytes = response.body<ByteArray>()
+                    var bytes = response.body<ByteArray>()
                     if (bytes.size in 1024..(5 * 1024 * 1024)) {
-                        val ext = inferImageExtension(bytes, asset.url)
+                        val extHint = inferImageExtension(bytes, asset.url)
+                        val compressed =
+                            ImageCompression.compressForStorage(
+                                input = bytes,
+                                sourceExtension = extHint,
+                                compressionPercent = compressionP,
+                            )
+                        if (compressed != null) {
+                            bytes = compressed.bytes
+                        }
+                        val ext =
+                            if (compressed != null) {
+                                mapAssetExtensionForPath(compressed.extension)
+                            } else {
+                                extHint
+                            }
                         val assetId = IdGenerator.newId()
                         val relativePath = "../assets/$assetId.$ext"
                         ReadableAsset(assetId = assetId, extension = ext, bytes = bytes) to
@@ -46,6 +64,14 @@ object ConverterResultProcessor {
             documentJson = resultJson,
             assets = readables.map { it.first },
         )
+    }
+
+    private fun mapAssetExtensionForPath(outExt: String): String {
+        val e = outExt.lowercase().removePrefix(".")
+        return when (e) {
+            "jpg" -> "jpeg"
+            else -> e
+        }
     }
 
     private fun inferImageExtension(bytes: ByteArray, url: String): String {

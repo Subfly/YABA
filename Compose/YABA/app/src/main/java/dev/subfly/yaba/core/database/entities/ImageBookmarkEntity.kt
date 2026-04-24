@@ -22,4 +22,6 @@ import androidx.room3.PrimaryKey
 data class ImageBookmarkEntity(
     @PrimaryKey val bookmarkId: String,
     val summary: String? = null,
+    /** Relative path under app bookmark root; full-res image for share/detail (not the compressed card preview). */
+    val originalImageRelativePath: String? = null,
 )

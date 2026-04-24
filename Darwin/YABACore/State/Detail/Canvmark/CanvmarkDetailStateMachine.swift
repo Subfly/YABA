@@ -26,6 +26,8 @@ public final class CanvmarkDetailStateMachine: YabaBaseObservableState<CanvmarkD
             apply { $0.webInitialContentLoadResultJson = resultJson }
         case .onPickImageFromGallery, .onCaptureImageFromCamera,
              .onConsumedPendingImageInsert:
+            // When native pickers are implemented (parity with Compose canvmark detail), compress
+            // `Data` with `YabaImageCompression.compressDataPreservingFormat(_:)` before sending to the canvas.
             break
         case let .onCanvasMetricsChanged(metricsJson):
             apply { $0.metricsJson = metricsJson }

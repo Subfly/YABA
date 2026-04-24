@@ -21,10 +21,11 @@ public enum ConverterResultProcessor {
             guard let bytes = try? await UnfurlHttpClient.getBytes(url: url) else { continue }
             let size = bytes.count
             guard size >= 1024, size <= 5 * 1024 * 1024 else { continue }
-            let ext = inferImageExtension(bytes: bytes, url: asset.url)
+            let outBytes = YabaImageCompression.compressDataPreservingFormat(bytes)
+            let ext = inferImageExtension(bytes: outBytes, url: asset.url)
             let assetId = UUID().uuidString
             let relativePath = "../assets/\(assetId).\(ext)"
-            let payload = ReadableAssetPayload(assetId: assetId, pathExtension: ext, bytes: bytes)
+            let payload = ReadableAssetPayload(assetId: assetId, pathExtension: ext, bytes: outBytes)
             readables.append((payload, asset.placeholder, relativePath))
         }
         var resultDocumentJson = documentJson

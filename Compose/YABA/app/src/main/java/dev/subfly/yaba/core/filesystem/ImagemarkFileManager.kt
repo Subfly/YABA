@@ -7,23 +7,38 @@ import kotlinx.coroutines.withContext
 /**
  * File manager for Imagemark assets.
  *
- * Stores a single image file per bookmark under `bookmarks/<bookmarkId>/image.<ext>`.
- * Imagemarks do not use localIconPath; the main image is the primary asset.
+ * - **Preview** (`image.<ext>`): compressed, used for cards/lists.
+ * - **Original** (`image_original.<ext>`): full resolution for image bookmarks only; used for share/detail.
  */
 object ImagemarkFileManager {
     private const val DEFAULT_IMAGE_EXTENSION = "jpeg"
     private val IMAGE_EXTENSIONS = listOf("jpeg", "jpg", "png", "webp", "gif")
 
+    /** Saves the compressed preview; removes prior preview files only. */
     suspend fun saveImageBytes(
         bookmarkId: String,
         bytes: ByteArray,
         extension: String = DEFAULT_IMAGE_EXTENSION,
     ): YabaFile {
-        purgeImages(bookmarkId)
-        val targetPath = CoreConstants.FileSystem.Imagemark.imagePath(
-            bookmarkId,
-            sanitizeExtension(extension, DEFAULT_IMAGE_EXTENSION),
+        purgePreviewImages(bookmarkId)
+        val ext = sanitizeExtension(extension, DEFAULT_IMAGE_EXTENSION)
+        val targetPath = CoreConstants.FileSystem.Imagemark.imagePath(bookmarkId, ext)
+        BookmarkFileManager.writeBytes(
+            relativePath = targetPath,
+            bytes = bytes,
         )
+        return BookmarkFileManager.resolve(targetPath)
+    }
+
+    /** Full-resolution copy for image bookmarks; removes prior original files only. */
+    suspend fun saveOriginalImageBytes(
+        bookmarkId: String,
+        bytes: ByteArray,
+        extension: String = DEFAULT_IMAGE_EXTENSION,
+    ): YabaFile {
+        purgeOriginalImages(bookmarkId)
+        val ext = sanitizeExtension(extension, DEFAULT_IMAGE_EXTENSION)
+        val targetPath = CoreConstants.FileSystem.Imagemark.imageOriginalPath(bookmarkId, ext)
         BookmarkFileManager.writeBytes(
             relativePath = targetPath,
             bytes = bytes,
@@ -35,7 +50,7 @@ object ImagemarkFileManager {
         bookmarkId: String,
         source: YabaFile,
     ): YabaFile {
-        purgeImages(bookmarkId)
+        purgePreviewImages(bookmarkId)
         val targetPath = CoreConstants.FileSystem.Imagemark.imagePath(
             bookmarkId,
             sanitizeExtension(source.extension, DEFAULT_IMAGE_EXTENSION),
@@ -48,14 +63,40 @@ object ImagemarkFileManager {
         return BookmarkFileManager.resolve(targetPath)
     }
 
+    /** The compressed preview on disk, if any. */
     suspend fun getImageFile(bookmarkId: String): YabaFile? =
-        findExistingImage(bookmarkId)
+        findExistingPreviewImage(bookmarkId)
 
-    suspend fun readImageBytes(bookmarkId: String): ByteArray? {
-        return getImageFile(bookmarkId)?.let { file ->
-            withContext(Dispatchers.IO) {
-                file.readBytes()
+    /** File used for share/export: original when present, else legacy single preview file. */
+    suspend fun getShareableImageFile(
+        bookmarkId: String,
+        originalRelativePath: String?,
+    ): YabaFile? {
+        if (originalRelativePath != null) {
+            BookmarkFileManager.find(originalRelativePath)?.let { return it }
+        }
+        return findExistingOriginalImage(bookmarkId) ?: findExistingPreviewImage(bookmarkId)
+    }
+
+    /**
+     * Full-resolution bytes for edit UI / hydration (prefers on-disk original, then legacy single file).
+     */
+    suspend fun readImageBytes(
+        bookmarkId: String,
+        originalRelativePath: String?,
+    ): ByteArray? {
+        val fromRel = originalRelativePath?.let { rel ->
+            BookmarkFileManager.find(rel)?.let { f ->
+                withContext(Dispatchers.IO) { f.readBytes() }
             }
+        }
+        if (fromRel != null) return fromRel
+        val original = findExistingOriginalImage(bookmarkId)
+        if (original != null) {
+            return withContext(Dispatchers.IO) { original.readBytes() }
+        }
+        return getImageFile(bookmarkId)?.let { file ->
+            withContext(Dispatchers.IO) { file.readBytes() }
         }
     }
 
@@ -67,7 +108,24 @@ object ImagemarkFileManager {
         return null
     }
 
-    private suspend fun findExistingImage(bookmarkId: String): YabaFile? {
+    /**
+     * Relative path for full-resolution display: DB hint, else `image_original`, else legacy `image`.
+     */
+    suspend fun getDetailImageRelativePath(
+        bookmarkId: String,
+        originalFromEntity: String?,
+    ): String? {
+        if (originalFromEntity != null && BookmarkFileManager.find(originalFromEntity) != null) {
+            return originalFromEntity
+        }
+        IMAGE_EXTENSIONS.forEach { ext ->
+            val path = CoreConstants.FileSystem.Imagemark.imageOriginalPath(bookmarkId, ext)
+            if (BookmarkFileManager.find(path) != null) return path
+        }
+        return getImageRelativePath(bookmarkId)
+    }
+
+    private suspend fun findExistingPreviewImage(bookmarkId: String): YabaFile? {
         IMAGE_EXTENSIONS.forEach { ext ->
             val path = CoreConstants.FileSystem.Imagemark.imagePath(bookmarkId, ext)
             val file = BookmarkFileManager.find(path)
@@ -76,9 +134,25 @@ object ImagemarkFileManager {
         return null
     }
 
-    private suspend fun purgeImages(bookmarkId: String) {
+    private suspend fun findExistingOriginalImage(bookmarkId: String): YabaFile? {
+        IMAGE_EXTENSIONS.forEach { ext ->
+            val path = CoreConstants.FileSystem.Imagemark.imageOriginalPath(bookmarkId, ext)
+            val file = BookmarkFileManager.find(path)
+            if (file != null) return file
+        }
+        return null
+    }
+
+    private suspend fun purgePreviewImages(bookmarkId: String) {
         IMAGE_EXTENSIONS.forEach { ext ->
             val path = CoreConstants.FileSystem.Imagemark.imagePath(bookmarkId, ext)
+            BookmarkFileManager.deleteRelativePath(relativePath = path)
+        }
+    }
+
+    private suspend fun purgeOriginalImages(bookmarkId: String) {
+        IMAGE_EXTENSIONS.forEach { ext ->
+            val path = CoreConstants.FileSystem.Imagemark.imageOriginalPath(bookmarkId, ext)
             BookmarkFileManager.deleteRelativePath(relativePath = path)
         }
     }

@@ -54,19 +54,30 @@ object ImagemarkManager {
     }
 
     suspend fun resolveImageAbsolutePath(bookmarkId: String): String? {
-        val relativePath = ImagemarkFileManager.getImageRelativePath(bookmarkId)
-            ?: return null
+        val entity = imageBookmarkDao.getByBookmarkId(bookmarkId)
+        val relativePath = ImagemarkFileManager.getDetailImageRelativePath(
+            bookmarkId = bookmarkId,
+            originalFromEntity = entity?.originalImageRelativePath,
+        ) ?: return null
         return BookmarkFileManager.getAbsolutePath(relativePath)
+    }
+
+    suspend fun readImageBytesForEditing(bookmarkId: String): ByteArray? {
+        val entity = imageBookmarkDao.getByBookmarkId(bookmarkId)
+        return ImagemarkFileManager.readImageBytes(bookmarkId, entity?.originalImageRelativePath)
     }
 
     fun createOrUpdateImageDetails(
         bookmarkId: String,
         summary: String? = null,
+        originalImageRelativePath: String? = null,
     ) {
         CoreOperationQueue.queue("CreateOrUpdateImageDetails:$bookmarkId") {
+            val existing = imageBookmarkDao.getByBookmarkId(bookmarkId)
             val entity = ImageBookmarkEntity(
                 bookmarkId = bookmarkId,
-                summary = summary?.takeIf { it.isNotBlank() },
+                summary = summary?.takeIf { it.isNotBlank() } ?: existing?.summary,
+                originalImageRelativePath = originalImageRelativePath ?: existing?.originalImageRelativePath,
             )
             imageBookmarkDao.upsert(entity)
         }

@@ -4,6 +4,7 @@ import dev.subfly.yaba.core.common.CoreConstants
 import dev.subfly.yaba.core.common.IdGenerator
 import dev.subfly.yaba.core.database.DatabaseProvider
 import dev.subfly.yaba.core.database.entities.BookmarkEntity
+import dev.subfly.yaba.core.database.entities.ImageBookmarkEntity
 import dev.subfly.yaba.core.database.entities.TagBookmarkCrossRef
 import dev.subfly.yaba.core.database.mappers.toPreviewUiModel
 import dev.subfly.yaba.core.database.mappers.toUiModel
@@ -11,6 +12,8 @@ import dev.subfly.yaba.core.database.models.BookmarkWithRelations
 import dev.subfly.yaba.core.filesystem.BookmarkFileManager
 import dev.subfly.yaba.core.filesystem.ImagemarkFileManager
 import dev.subfly.yaba.core.filesystem.LinkmarkFileManager
+import dev.subfly.yaba.core.images.ImageCompression
+import dev.subfly.yaba.core.preferences.SettingsStores
 import dev.subfly.yaba.core.model.ui.BookmarkPreviewUiModel
 import dev.subfly.yaba.core.model.ui.BookmarkUiModel
 import dev.subfly.yaba.core.model.utils.BookmarkKind
@@ -26,6 +29,7 @@ import kotlin.time.Clock
 private data class SavedPreviewAssets(
     val localImageRelativePath: String?,
     val localIconRelativePath: String?,
+    val imagemarkOriginalRelativePath: String? = null,
 )
 
 private data class BookmarkQueryParams(
@@ -173,6 +177,17 @@ object AllBookmarksManager {
         )
         bookmarkDao.upsert(entity)
 
+        if (kind == BookmarkKind.IMAGE && preview.imagemarkOriginalRelativePath != null) {
+            val existing = imageBookmarkDao.getByBookmarkId(id)
+            imageBookmarkDao.upsert(
+                ImageBookmarkEntity(
+                    bookmarkId = id,
+                    summary = existing?.summary,
+                    originalImageRelativePath = preview.imagemarkOriginalRelativePath,
+                ),
+            )
+        }
+
         tagIds.forEach { tagId ->
             tagBookmarkDao.insert(
                 TagBookmarkCrossRef(
@@ -262,6 +277,17 @@ object AllBookmarksManager {
             localIconPath = preview.localIconRelativePath ?: existing.localIconPath,
         )
         bookmarkDao.upsert(updated)
+
+        if (kind == BookmarkKind.IMAGE && preview.imagemarkOriginalRelativePath != null) {
+            val imgExisting = imageBookmarkDao.getByBookmarkId(bookmarkId)
+            imageBookmarkDao.upsert(
+                ImageBookmarkEntity(
+                    bookmarkId = bookmarkId,
+                    summary = imgExisting?.summary,
+                    originalImageRelativePath = preview.imagemarkOriginalRelativePath,
+                ),
+            )
+        }
 
         if (tagIds != null) {
             val currentTagIds = tagBookmarkDao.getTagIdsForBookmark(bookmarkId).toSet()
@@ -450,6 +476,9 @@ object AllBookmarksManager {
         )
     }
 
+    private suspend fun imageCompressionPercent(): Int =
+        SettingsStores.userPreferences.get().imageCompressionPercent.coerceIn(0, 50)
+
     private suspend fun savePreviewAssets(
         bookmarkId: String,
         kind: BookmarkKind,
@@ -457,28 +486,48 @@ object AllBookmarksManager {
         imageExtension: String?,
         iconBytes: ByteArray?,
     ): SavedPreviewAssets {
+        val compressionP = imageCompressionPercent()
+
+        if (imageBytes != null && kind == BookmarkKind.IMAGE) {
+            val ext = sanitizeExtension(imageExtension)
+            ImagemarkFileManager.saveOriginalImageBytes(bookmarkId, imageBytes, ext)
+            val originalRel = CoreConstants.FileSystem.Imagemark.imageOriginalPath(bookmarkId, ext)
+            val out = ImageCompression.compressForStorage(imageBytes, ext, compressionP)
+            val toWrite = out?.bytes ?: imageBytes
+            val outExt = out?.extension ?: ext
+            ImagemarkFileManager.saveImageBytes(bookmarkId, toWrite, outExt)
+            val previewRel = CoreConstants.FileSystem.Imagemark.imagePath(bookmarkId, outExt)
+            return SavedPreviewAssets(
+                localImageRelativePath = previewRel,
+                localIconRelativePath = null,
+                imagemarkOriginalRelativePath = originalRel,
+            )
+        }
+
         val imageRelativePath = imageBytes?.let { bytes ->
             when (kind) {
                 BookmarkKind.LINK -> {
                     val ext = sanitizeExtension(imageExtension)
-                    LinkmarkFileManager.saveLinkImageBytes(bookmarkId, bytes, ext)
-                    CoreConstants.FileSystem.Linkmark.linkImagePath(bookmarkId, ext)
-                }
-
-                BookmarkKind.IMAGE -> {
-                    val ext = sanitizeExtension(imageExtension)
-                    ImagemarkFileManager.saveImageBytes(bookmarkId, bytes, ext)
-                    CoreConstants.FileSystem.Imagemark.imagePath(bookmarkId, ext)
+                    val out =
+                        ImageCompression.compressForStorage(bytes, ext, compressionP)
+                    val toWrite = out?.bytes ?: bytes
+                    val outExt = out?.extension ?: ext
+                    LinkmarkFileManager.saveLinkImageBytes(bookmarkId, toWrite, outExt)
+                    CoreConstants.FileSystem.Linkmark.linkImagePath(bookmarkId, outExt)
                 }
 
                 else -> {
                     val ext = sanitizeExtension(imageExtension)
+                    val out =
+                        ImageCompression.compressForStorage(bytes, ext, compressionP)
+                    val toWrite = out?.bytes ?: bytes
+                    val outExt = out?.extension ?: ext
                     val kindDir = kind.name.lowercase()
                     val relativePath = CoreConstants.FileSystem.join(
                         CoreConstants.FileSystem.bookmarkFolderPath(bookmarkId, kindDir),
-                        "preview_image.$ext",
+                        "preview_image.$outExt",
                     )
-                    BookmarkFileManager.writeBytes(relativePath, bytes)
+                    BookmarkFileManager.writeBytes(relativePath, toWrite)
                     relativePath
                 }
             }
@@ -487,20 +536,29 @@ object AllBookmarksManager {
         val iconRelativePath = iconBytes?.let { bytes ->
             when (kind) {
                 BookmarkKind.LINK -> {
-                    LinkmarkFileManager.saveDomainIconBytes(bookmarkId, bytes)
-                    CoreConstants.FileSystem.Linkmark.domainIconPath(bookmarkId, "png")
+                    val out =
+                        ImageCompression.compressForStorage(bytes, "png", compressionP)
+                    val toWrite = out?.bytes ?: bytes
+                    LinkmarkFileManager.saveDomainIconBytes(bookmarkId, toWrite)
+                    CoreConstants.FileSystem.Linkmark.domainIconPath(
+                        bookmarkId,
+                        "png",
+                    )
                 }
 
                 BookmarkKind.IMAGE -> null
 
                 else -> {
-                    val ext = "png"
+                    val out =
+                        ImageCompression.compressForStorage(bytes, "png", compressionP)
+                    val toWrite = out?.bytes ?: bytes
+                    val outExt = out?.extension ?: "png"
                     val kindDir = kind.name.lowercase()
                     val relativePath = CoreConstants.FileSystem.join(
                         CoreConstants.FileSystem.bookmarkFolderPath(bookmarkId, kindDir),
-                        "preview_icon.$ext",
+                        "preview_icon.$outExt",
                     )
-                    BookmarkFileManager.writeBytes(relativePath, bytes)
+                    BookmarkFileManager.writeBytes(relativePath, toWrite)
                     relativePath
                 }
             }
@@ -509,6 +567,7 @@ object AllBookmarksManager {
         return SavedPreviewAssets(
             localImageRelativePath = imageRelativePath,
             localIconRelativePath = iconRelativePath,
+            imagemarkOriginalRelativePath = null,
         )
     }
 

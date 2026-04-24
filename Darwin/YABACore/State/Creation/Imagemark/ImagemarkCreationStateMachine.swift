@@ -66,7 +66,7 @@ public final class ImagemarkCreationStateMachine: YabaBaseObservableState<Imagem
                 isPinned: isPinned,
                 tagIds: tagIds
             )
-            ImagemarkManager.queueCreateOrUpdateImageDetails(bookmarkId: bookmarkId, summary: nil)
+            ImagemarkManager.queueCreateOrUpdateImageDetails(bookmarkId: bookmarkId, summary: nil, originalImageData: nil)
         }
     }
 
@@ -118,7 +118,25 @@ public final class ImagemarkCreationStateMachine: YabaBaseObservableState<Imagem
                 tagIds: state.selectedTagIds
             )
         }
-        ImagemarkManager.queueCreateOrUpdateImageDetails(bookmarkId: bid, summary: nil)
+        if let data = state.imageData {
+            // [AllBookmarksManager.queueSetBookmarkPreviewAssets] recompresses for the card payload.
+            AllBookmarksManager.queueSetBookmarkPreviewAssets(
+                bookmarkId: bid,
+                imageBytes: data,
+                iconBytes: nil
+            )
+            ImagemarkManager.queueCreateOrUpdateImageDetails(
+                bookmarkId: bid,
+                summary: nil,
+                originalImageData: data
+            )
+        } else {
+            ImagemarkManager.queueCreateOrUpdateImageDetails(
+                bookmarkId: bid,
+                summary: nil,
+                originalImageData: nil
+            )
+        }
         apply { $0.isSaving = false }
     }
 }

@@ -66,6 +66,8 @@ enum Constants {
         static let showMenuBarItem = "showMenuBarItem"
         static let useSimplifiedShare = "useSimplifiedShare"
         static let preventDeletionSync = "preventDeletionSync"
+        /// 0...50: extra compression; effective UI quality = 100 - this (50...100). Default 25 => 75% quality.
+        static let imageCompressionPercent = "imageCompressionPercent"
     }
 
     // MARK: - Compose parity — Announcement keys
@@ -143,6 +145,7 @@ enum Constants {
     static let showMenuBarItem = SettingsKeys.showMenuBarItem
     static let useSimplifiedShare = SettingsKeys.useSimplifiedShare
     static let preventDeletionSyncKey = SettingsKeys.preventDeletionSync
+    static let imageCompressionPercentKey = SettingsKeys.imageCompressionPercent
 
     static let toastAnimationDuration: UInt64 = 150_000_000
     static let port: Int = 7484

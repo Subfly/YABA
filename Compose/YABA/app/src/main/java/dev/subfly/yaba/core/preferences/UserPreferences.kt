@@ -32,6 +32,7 @@ data class UserPreferences(
     val showMenuBarItem: Boolean = true,
     val useSimplifiedShare: Boolean = false,
     val preventDeletionSync: Boolean = false,
+    val imageCompressionPercent: Int = 25,
     val announcementsYaba1_2Update: Boolean = true,
     val announcementsYaba1_3Update: Boolean = true,
     val announcementsYaba1_4Update: Boolean = true,

@@ -403,7 +403,11 @@ object YabaFileAccessor {
     // region Share
 
     suspend fun shareImageBookmark(bookmarkId: String) {
-        val file = ImagemarkFileManager.getImageFile(bookmarkId) ?: return
+        val originalRel = DatabaseProvider.imageBookmarkDao.getByBookmarkId(bookmarkId)?.originalImageRelativePath
+        val file = ImagemarkFileManager.getShareableImageFile(
+            bookmarkId = bookmarkId,
+            originalRelativePath = originalRel,
+        ) ?: return
         shareFileInternal(file)
     }
 
@@ -412,7 +416,11 @@ object YabaFileAccessor {
         suggestedName: String,
         extension: String,
     ): Boolean {
-        val file = ImagemarkFileManager.getImageFile(bookmarkId) ?: return false
+        val originalRel = DatabaseProvider.imageBookmarkDao.getByBookmarkId(bookmarkId)?.originalImageRelativePath
+        val file = ImagemarkFileManager.getShareableImageFile(
+            bookmarkId = bookmarkId,
+            originalRelativePath = originalRel,
+        ) ?: return false
         return saveFileCopy(file, suggestedName, extension)
     }
 

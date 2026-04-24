@@ -6,9 +6,11 @@ import dev.subfly.yaba.core.database.mappers.toUiModel
 import dev.subfly.yaba.core.database.models.BookmarkWithRelations
 import dev.subfly.yaba.core.filesystem.BookmarkFileManager
 import dev.subfly.yaba.core.filesystem.access.YabaFileAccessor
+import dev.subfly.yaba.core.images.ImageCompression
 import dev.subfly.yaba.core.managers.AllBookmarksManager
 import dev.subfly.yaba.core.managers.CanvmarkManager
 import dev.subfly.yaba.core.notifications.NotificationManager
+import dev.subfly.yaba.core.preferences.SettingsStores
 import dev.subfly.yaba.core.model.ui.BookmarkPreviewUiModel
 import dev.subfly.yaba.core.state.base.BaseStateMachine
 import dev.subfly.yaba.core.webview.WebShellLoadResult
@@ -188,8 +190,16 @@ class CanvmarkDetailStateMachine :
         launch {
             try {
                 val file = YabaFileAccessor.pickSingleImage() ?: return@launch
-                val bytes = withContext(Dispatchers.IO) { file.readBytes() }
-                val ext = file.name.substringAfterLast('.', "").ifBlank { "png" }
+                var bytes = withContext(Dispatchers.IO) { file.readBytes() }
+                var ext = file.name.substringAfterLast('.', "").ifBlank { "png" }
+                val p = SettingsStores.userPreferences.get().imageCompressionPercent.coerceIn(0, 50)
+                withContext(Dispatchers.Default) {
+                    val out = ImageCompression.compressForStorage(bytes, ext, p)
+                    if (out != null) {
+                        bytes = out.bytes
+                        ext = out.extension
+                    }
+                }
                 updateState {
                     it.copy(
                         pendingImageDataUrl =
@@ -206,8 +216,16 @@ class CanvmarkDetailStateMachine :
         launch {
             try {
                 val file = YabaFileAccessor.capturePhoto() ?: return@launch
-                val bytes = withContext(Dispatchers.IO) { file.readBytes() }
-                val ext = file.name.substringAfterLast('.', "").ifBlank { "jpeg" }
+                var bytes = withContext(Dispatchers.IO) { file.readBytes() }
+                var ext = file.name.substringAfterLast('.', "").ifBlank { "jpeg" }
+                val p = SettingsStores.userPreferences.get().imageCompressionPercent.coerceIn(0, 50)
+                withContext(Dispatchers.Default) {
+                    val out = ImageCompression.compressForStorage(bytes, ext, p)
+                    if (out != null) {
+                        bytes = out.bytes
+                        ext = out.extension
+                    }
+                }
                 updateState {
                     it.copy(
                         pendingImageDataUrl =

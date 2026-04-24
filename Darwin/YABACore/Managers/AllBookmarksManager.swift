@@ -76,19 +76,21 @@ public enum AllBookmarksManager {
                 return
             }
             if let imageBytes {
+                let toStore = YabaImageCompression.compressDataPreservingFormat(imageBytes)
                 if let existing = bookmark.imagePayload {
-                    existing.bytes = imageBytes
+                    existing.bytes = toStore
                 } else {
-                    let p = BookmarkImagePayloadModel(bytes: imageBytes, bookmark: bookmark)
+                    let p = BookmarkImagePayloadModel(bytes: toStore, bookmark: bookmark)
                     context.insert(p)
                     bookmark.imagePayload = p
                 }
             }
             if let iconBytes {
+                let toStore = YabaImageCompression.compressDataPreservingFormat(iconBytes)
                 if let existing = bookmark.iconPayload {
-                    existing.bytes = iconBytes
+                    existing.bytes = toStore
                 } else {
-                    let p = BookmarkIconPayloadModel(bytes: iconBytes, bookmark: bookmark)
+                    let p = BookmarkIconPayloadModel(bytes: toStore, bookmark: bookmark)
                     context.insert(p)
                     bookmark.iconPayload = p
                 }

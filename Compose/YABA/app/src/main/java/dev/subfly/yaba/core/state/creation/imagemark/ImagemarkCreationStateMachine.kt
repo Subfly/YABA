@@ -1,7 +1,6 @@
 package dev.subfly.yaba.core.state.creation.imagemark
 
 import dev.subfly.yaba.core.common.IdGenerator
-import dev.subfly.yaba.core.filesystem.ImagemarkFileManager
 import dev.subfly.yaba.core.managers.AllBookmarksManager
 import dev.subfly.yaba.core.managers.FolderManager
 import dev.subfly.yaba.core.managers.ImagemarkManager
@@ -60,7 +59,7 @@ class ImagemarkCreationStateMachine :
             event.imagemarkIdString?.let { imagemarkId ->
                 val existing = ImagemarkManager.getImagemarkDetail(imagemarkId)
                 if (existing != null) {
-                    val savedBytes = ImagemarkFileManager.readImageBytes(imagemarkId)
+                    val savedBytes = ImagemarkManager.readImageBytesForEditing(imagemarkId)
                     val ext = existing.localImagePath?.substringAfterLast('.') ?: "jpeg"
                     updateState {
                         it.copy(

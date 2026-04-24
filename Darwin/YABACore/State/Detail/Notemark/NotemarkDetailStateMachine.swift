@@ -34,6 +34,9 @@ public final class NotemarkDetailStateMachine: YabaBaseObservableState<NotemarkD
                 CoreToastManager.shared.showNotificationPermissionDeniedToast()
             }
         case .onPickImageFromGallery, .onCaptureImageFromCamera:
+            // When gallery/camera bridges are implemented (parity with Compose notemark detail),
+            // pass selected image `Data` through `YabaImageCompression.compressDataPreservingFormat(_:)`
+            // before any editor insert / `NotemarkManager.queueSaveNoteDocumentData` handoff.
             break
         case let .onWebInitialContentLoad(resultJson):
             apply { $0.webInitialContentLoadResultJson = resultJson }

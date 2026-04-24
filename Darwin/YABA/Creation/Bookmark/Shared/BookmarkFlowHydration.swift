@@ -74,7 +74,7 @@ enum BookmarkFlowHydration {
         state.selectedFolderId = bookmark.folder?.folderId
         state.selectedTagIds = bookmark.tags.map(\.tagId)
         state.isPinned = bookmark.isPinned
-        state.imageData = bookmark.imagePayload?.bytes
+        state.imageData = bookmark.imageDetail?.originalImageData ?? bookmark.imagePayload?.bytes
         state.uncategorizedFolderCreationRequired = false
         return state
     }

@@ -248,10 +248,14 @@ final class LinkBookmarkModel {
 final class ImageBookmarkModel {
     var summary: String?
 
+    @Attribute(.externalStorage)
+    var originalImageData: Data?
+
     var bookmark: BookmarkModel?
 
-    init(summary: String? = nil, bookmark: BookmarkModel? = nil) {
+    init(summary: String? = nil, originalImageData: Data? = nil, bookmark: BookmarkModel? = nil) {
         self.summary = summary
+        self.originalImageData = originalImageData
         self.bookmark = bookmark
     }
 }

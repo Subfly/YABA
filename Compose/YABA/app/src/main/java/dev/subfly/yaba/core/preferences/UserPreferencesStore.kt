@@ -130,6 +130,11 @@ internal constructor(
     suspend fun setAnnouncementsLegalsUpdate2(value: Boolean) =
         update { it.copy(announcementsLegalsUpdate2 = value) }
 
+    suspend fun setImageCompressionPercent(value: Int) {
+        val v = value.coerceIn(0, 50)
+        update { it.copy(imageCompressionPercent = v) }
+    }
+
     @OptIn(ExperimentalUuidApi::class)
     suspend fun ensureDefaults() {
         dataStore.updateData { prefs ->

@@ -6,6 +6,8 @@ import dev.subfly.yaba.core.database.DatabaseProvider
 import dev.subfly.yaba.core.database.entities.NoteBookmarkEntity
 import dev.subfly.yaba.core.database.mappers.toUiModel
 import dev.subfly.yaba.core.filesystem.BookmarkFileManager
+import dev.subfly.yaba.core.images.ImageCompression
+import dev.subfly.yaba.core.preferences.SettingsStores
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import dev.subfly.yaba.core.filesystem.EMPTY_EDITOR_DOCUMENT_JSON
@@ -88,9 +90,17 @@ object NotemarkManager {
     ): String {
         val assetId = IdGenerator.newId()
         val ext = sanitizeInlineImageExtension(extension)
-        val relativePath = CoreConstants.FileSystem.Linkmark.assetPath(bookmarkId, assetId, ext)
-        BookmarkFileManager.writeBytes(relativePath, bytes)
-        return "../assets/$assetId.$ext"
+        val compressionP = SettingsStores.userPreferences.get().imageCompressionPercent.coerceIn(0, 50)
+        val compressed = ImageCompression.compressForStorage(
+            input = bytes,
+            sourceExtension = ext,
+            compressionPercent = compressionP,
+        )
+        val toWrite = compressed?.bytes ?: bytes
+        val outExt = compressed?.extension?.let { sanitizeInlineImageExtension(it) } ?: ext
+        val relativePath = CoreConstants.FileSystem.Linkmark.assetPath(bookmarkId, assetId, outExt)
+        BookmarkFileManager.writeBytes(relativePath, toWrite)
+        return "../assets/$assetId.$outExt"
     }
 
     fun sanitizeInlineImageExtension(raw: String?): String {

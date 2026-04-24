@@ -101,6 +101,8 @@ object CoreConstants {
 
         object Imagemark {
             const val IMAGE_BASENAME = "image"
+            /** Full-resolution copy for image bookmarks (not compressed). */
+            const val IMAGE_ORIGINAL_BASENAME = "image_original"
 
             fun imagePath(
                 bookmarkId: String,
@@ -109,6 +111,15 @@ object CoreConstants {
                 join(
                     bookmarkFolder(bookmarkId),
                     "$IMAGE_BASENAME.$extension",
+                )
+
+            fun imageOriginalPath(
+                bookmarkId: String,
+                extension: String = "jpeg",
+            ): String =
+                join(
+                    bookmarkFolder(bookmarkId),
+                    "$IMAGE_ORIGINAL_BASENAME.$extension",
                 )
         }
 
@@ -193,6 +204,8 @@ object CoreConstants {
         const val SHOW_MENU_BAR_ITEM = "showMenuBarItem" // mac / catalyst only
         const val USE_SIMPLIFIED_SHARE = "useSimplifiedShare" // share extension uses app-group
         const val PREVENT_DELETION_SYNC = "preventDeletionSync"
+        /** 0..50: extra compression; effective UI quality = 100 - this (50..100). Default 25 => 75% quality. */
+        const val IMAGE_COMPRESSION_PERCENT = "imageCompressionPercent"
     }
 
     /**
