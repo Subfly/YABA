@@ -125,7 +125,7 @@ function createSharedBaseExtensions(): Extensions {
   ]
 }
 
-/** Read-only HTML viewer + HTML→reader converter: persisted `yabaAnnotation` marks + decorations. */
+/** Read-only rich text (legacy name "viewer" for extensions): persisted `yabaAnnotation` marks + decorations. */
 export function createViewerRichTextExtensions(): Extensions {
   return [...createSharedBaseExtensions(), YabaAnnotationMark, AnnotationDecorationsExtension]
 }
@@ -162,7 +162,7 @@ export function createNoteEditorExtensions(): Extensions {
   ]
 }
 
-/** @deprecated alias — use [createViewerRichTextExtensions] for viewer/converter shells. */
+/** @deprecated alias — use [createViewerRichTextExtensions] for read-only TipTap shells. */
 export function createEditorExtensions(): Extensions {
   return createViewerRichTextExtensions()
 }

@@ -1,6 +1,6 @@
 # YABA Web Components
 
-WebView-hosted components for YABA: **Milkdown Crepe** WYSIWYG editor, read-only viewer, and HTML→**Markdown** converter. Built with Vite 7, React 19, Milkdown 7.20, and TypeScript.
+WebView-hosted bundles for YABA: **TipTap** note editor, **read-it-later** (static HTML reader with selection + annotations), **reader-converter** (Mozilla Readability → readable HTML), **Excalidraw** canvas, and **EPUB.js** reader. Built with Vite 7, React 19 (editor/canvas), and TypeScript.
 
 ## Build
 
@@ -9,95 +9,70 @@ npm install
 npm run build
 ```
 
-Output: `dist/editor.html`, `dist/viewer.html`, `dist/converter.html` plus JS and CSS assets. Run `npm run dev` for local development.
+Output: `dist/editor.html`, `dist/read-it-later.html`, `dist/reader-converter.html`, `dist/canvas.html`, `dist/epub-viewer.html` plus JS/CSS assets. Run `npm run dev` for local development.
 
 ## Entrypoints
 
 | File | Purpose |
 |------|---------|
-| `editor.html` | Crepe/Milkdown WYSIWYG editor (no visible toolbar; native buttons only) |
-| `viewer.html` | Read-only Milkdown viewer for saved link content |
-| `converter.html` | Hidden utility page: DOMPurify → Readability → Showdown Markdown |
+| `editor.html` | TipTap WYSIWYG note editor |
+| `read-it-later.html` | Saved link reader: injects HTML into the DOM; selection + annotation bridge (no TipTap) |
+| `reader-converter.html` | Hidden page: `Readability` extracts readable HTML from an HTML string |
+| `canvas.html` | Excalidraw canvas |
+| `epub-viewer.html` | EPUB reader (epub.js) |
 
-## URL Parameters
+## URL parameters
 
-Loaded by the native WebView. All apply to `editor.html` and `viewer.html` unless noted.
+Loaded by the native WebView. These apply to shells that read the shared theme helpers (`editor.html`, `read-it-later.html`, `epub-viewer.html`, etc.).
 
 | Param | Required | Values | Description |
 |-------|----------|--------|-------------|
-| `platform` | Yes | `compose` \| `darwin` | Determines theme palette and font stack |
-| `appearance` | No | `light` \| `dark` | Override; otherwise uses `prefers-color-scheme` |
-| `cursor` | No | CSS color (hex/rgb/hsl) | Cursor/caret color (e.g. folder color) |
-
-### Platform Themes
-
-- **compose**: Material 3 palette from YABA Compose app; Quicksand font (bundled)
-- **darwin**: CSS system colors (`color-scheme`); system/SF font stack
+| `platform` | Yes | `compose` \| `darwin` | Theme palette and font stack (`compose` is treated as Android) |
+| `appearance` | No | `light` \| `dark` | Override; otherwise `prefers-color-scheme` when `auto` |
+| `cursor` | No | CSS color | Caret / cursor color (e.g. folder color) |
 
 ### Example
 
 ```
 editor.html?platform=compose&cursor=%23FF7C75
-viewer.html?platform=darwin&appearance=dark
+read-it-later.html?platform=darwin&appearance=dark
 ```
 
-## JS Bridge API (v1)
+## JS bridge API (native → WebView)
 
-### `window.YabaEditorBridge` (editor.html, viewer.html)
+Hosts call these via `evaluateJavascript` / `evaluateJavaScript` on the loaded page.
 
-| Method | Description |
-|--------|-------------|
-| `isReady()` | Returns `true` when editor is mounted |
-| `setPlatform(platform)` | `'android'` \| `'darwin'` (legacy: `'compose'` is accepted as android) |
-| `setAppearance(mode)` | `'auto'` \| `'light'` \| `'dark'` |
-| `setCursorColor(color)` | CSS color string |
-| `setEditable(isEditable)` | Toggle edit/read-only |
-| `setDocumentJson(markdown, options?)` | Set content from a **Markdown** string (legacy method name); `options.assetsBaseUrl` resolves `../assets/` paths for display |
-| `getDocumentJson()` | Returns current document as **Markdown** string (legacy name) |
-| `setReaderHtml(html, options?)` | One-shot load: HTML is sanitized and converted to Markdown |
-| `focus()` / `unFocus()` | Focus/blur editor |
-| `dispatch(cmd)` | Run command; see below |
+### `window.YabaEditorBridge` (`editor.html`)
 
-### Commands (`dispatch`)
+Same command surface as before: ProseMirror JSON, formatting, mentions, math, note autosave idle, optional PDF export (`html2pdf.js`), etc. See `src/bridge/editor-bridge.ts`.
 
-- `{ type: 'toggleBold' }`, `toggleItalic`, `toggleUnderline`, `toggleStrikethrough`, `toggleCode`
-- `{ type: 'toggleQuote' }`, `{ type: 'insertHr' }`
-- `{ type: 'toggleBulletedList' }`, `{ type: 'toggleNumberedList' }`, `{ type: 'toggleTaskList' }`
-- `{ type: 'indent' }`, `{ type: 'outdent' }`
-- `{ type: 'undo' }`, `{ type: 'redo' }`
-- `insertLink`, `updateLink`, `removeLink`, `insertMention`, … (see `editor-command-payload.ts`)
-- **Subscript / superscript** commands are accepted but intentionally no-op (removed from product surface).
+### `window.YabaReadItLaterBridge` (`read-it-later.html`)
 
-### `window.YabaConverterBridge` (converter.html)
+Passive HTML surface: `setHtml` / `setReaderHtml` load article HTML; `setAnnotations` applies highlight colors to `span.yaba-annotation-mark` regions; selection and `applyAnnotationToSelection` / `removeAnnotationFromDocument` operate on the live DOM. Typing mirrors the old read-only viewer subset of `YabaEditorBridge` where native still expects the same method names.
+
+### `window.YabaReaderConverterBridge` (`reader-converter.html`)
 
 | Method | Description |
 |--------|-------------|
-| `sanitizeAndConvertHtmlToReaderHtml(input)` | `input: { html: string, baseUrl?: string }` → `{ markdown, documentJson, assets, linkMetadata }` |
+| `convertHtmlToReadableHtml(input)` | `input: { html: string, baseUrl?: string }` → `Promise<{ readableHtml: string, title: string \| null }>` |
 
-`documentJson` is deprecated and mirrors `markdown` for older hosts. Prefer `markdown`.
+No DOMPurify, metadata scraping, PDF/EPUB extraction jobs, or TipTap JSON in this bundle.
 
-Uses DOMPurify for sanitization, Mozilla Readability for reader-mode extraction (strips nav/footer/clutter), rewrites image URLs to `yaba-asset://` placeholders, converts article HTML to **Markdown** with Showdown, and returns asset descriptors for offline download.
+### `window.YabaEpubBridge` (`epub-viewer.html`)
 
-## Native Integration
+Unchanged EPUB reader bridge. See `src/apps/epub-viewer/epub-viewer-bridge.ts`.
 
-Native platforms call the bridge via their WebView evaluation APIs:
+## Web → native (`window.YabaNativeHost.postMessage`)
 
-- **Android**: `webView.evaluateJavascript("window.YabaEditorBridge?.getDocumentJson()", callback)`
-- **iOS**: `webView.evaluateJavaScript("window.YabaEditorBridge?.getDocumentJson()", completionHandler)`
+Structured JSON envelopes are defined in `src/bridge/contracts/native-host.ts`, including `bridgeReady` (`feature`: `editor` \| `read-it-later` \| `reader-converter` \| `epub` \| `canvas`), `shellLoad`, `toc`, `readerMetrics`, and EPUB/Canvas-specific payloads.
 
-### Web → native events (Android)
+**Images in read-it-later:** `http`/`https` and `data:` image URLs are not loaded; inline assets should use `../assets/…` with `assetsBaseUrl` like the editor, or `file:` paths from the host.
 
-Host apps inject `window.YabaNativeHost.postMessage(jsonString)` (Android can also expose `window.YabaAndroidHost` as an alias; see `src/bridge/yaba-native-host.ts`). The web layer emits structured JSON for shell load, ToC, editor/reader metrics, `bridgeReady`, taps (annotation, math, inline link/mention), autosave idle, and converter job completion—**not** via `console.info` or custom URL schemes.
+## Features (editor)
 
-The `converter.html` page is loaded in a hidden WebView when link saving needs extraction. Call `sanitizeAndConvertHtmlToReaderHtml` after the page has loaded; native persists **Markdown** (`markdown` field).
+- Rich text, tables, task lists, code (lowlight), math (KaTeX)
+- Exports: Markdown and PDF (editor only; `html2pdf.js`)
 
-## Features
+## Follow-ups
 
-- **Images**: Inline images; `setDocumentJson` accepts `assetsBaseUrl` to resolve `../assets/` paths. Android WebView uses `allowFileAccess` for `file://` image URLs.
-- **Tables, task lists, code**: GFM-oriented Milkdown document model
-- **Mathematics**: LaTeX via Crepe/KaTeX; inline `$...$` and block `$$...$$`; `dispatch({ type: 'insertInlineMath', latex: '...' })` / `{ type: 'insertBlockMath', latex: '...' }`
-- **Reader annotations**: `yaba-annotation:<id>` links in Markdown (viewer); **highlights** in the note editor use separate formatting (not the annotation pipeline).
-
-## Follow-ups (Not in Scope)
-
-- Native WebView wrappers and asset packaging
+- Native app URL constants and script strings that still reference `viewer.html` / `converter.html` / `pdf-viewer.html` must be updated in a platform ticket to match the new `read-it-later.html` and `reader-converter.html` entrypoints and bridge global names.

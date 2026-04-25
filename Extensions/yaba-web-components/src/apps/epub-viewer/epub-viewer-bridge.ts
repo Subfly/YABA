@@ -20,7 +20,7 @@ interface EpubHighlightInput {
 
 /**
  * epub.js 0.3.x draws highlights as SVG marks; [iframe View#highlight] merges these attrs over defaults
- * (`fill: yellow`, `fill-opacity: 0.3`). Match PDF viewer + TipTap annotation palette (pdf-viewer.css).
+ * (`fill: yellow`, `fill-opacity: 0.3`). Match TipTap annotation palette (epub-viewer.css).
  */
 const EPUB_HIGHLIGHT_DEFAULT_CLASS = "epubjs-hl"
 
@@ -238,7 +238,7 @@ function syncReaderVarsFromHostToIframeDoc(doc: Document): void {
 
   if (mergedReaderPrefs.theme === "system") {
     /**
-     * Read-it-later [viewer.html] is one document: --yaba-reader-bg stays transparent and Compose shows through.
+     * Read-it-later [read-it-later.html] is one document: --yaba-reader-bg stays transparent and Compose shows through.
      * EPUB spine documents live in iframes; transparency does not reveal the host surface, so the canvas stays
      * effectively light and resolved --yaba-on-bg (e.g. dark mode) reads as pale text on white. Map system theme
      * to the same resolved shell palette as [applyTheme] (--yaba-bg / --yaba-on-bg) for correct contrast.

@@ -13,7 +13,6 @@
 }
 
 /* Read-it-later viewer + note editor: reader typography and on-background text (automatic mode follows --yaba-reader-on-bg). */
-body[data-yaba-page="viewer"] .yaba-editor-container,
 body[data-yaba-page="editor"] .yaba-editor-container {
 	font-size: var(--yaba-reader-font-size, 18px);
 	line-height: var(--yaba-reader-line-height, 1.6);
@@ -218,7 +217,7 @@ body[data-yaba-page="editor"] .yaba-editor-container {
 }
 
 /* Viewer + note editor: fenced code — single lines + horizontal scroll */
-body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror pre,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror pre,
 body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror pre {
 	overflow-x: auto;
 	overflow-y: hidden;
@@ -228,7 +227,7 @@ body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror pre {
 	-webkit-overflow-scrolling: touch;
 }
 
-body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror pre code,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror pre code,
 body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror pre code {
 	display: block;
 	min-width: max-content;
@@ -241,7 +240,7 @@ body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror pre code {
 }
 
 /* Syntax highlighting (lowlight/hljs) — viewer + editor */
-body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror pre code.hljs,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror pre code.hljs,
 body[data-yaba-page="editor"]
 	.yaba-editor-container
 	.ProseMirror
@@ -250,20 +249,20 @@ body[data-yaba-page="editor"]
 	color: var(--yaba-reader-on-bg, var(--yaba-on-bg));
 }
 
-body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-comment,
-body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-quote,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-comment,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-quote,
 body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-comment,
 body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-quote {
 	color: var(--yaba-on-surface-variant);
 	font-style: italic;
 }
 
-body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-keyword,
-body[data-yaba-page="viewer"]
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-keyword,
+body[data-yaba-page="editor"]
 	.yaba-editor-container
 	.ProseMirror
 	.hljs-selector-tag,
-body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-subst,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-subst,
 body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-keyword,
 body[data-yaba-page="editor"]
 	.yaba-editor-container
@@ -273,10 +272,10 @@ body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-subst {
 	color: #c678dd;
 }
 
-body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-string,
-body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-doctag,
-body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-regexp,
-body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-attr,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-string,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-doctag,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-regexp,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-attr,
 body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-string,
 body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-doctag,
 body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-regexp,
@@ -284,13 +283,13 @@ body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-attr {
 	color: #98c379;
 }
 
-body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-number,
-body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-literal,
-body[data-yaba-page="viewer"]
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-number,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-literal,
+body[data-yaba-page="editor"]
 	.yaba-editor-container
 	.ProseMirror
 	.hljs-variable,
-body[data-yaba-page="viewer"]
+body[data-yaba-page="editor"]
 	.yaba-editor-container
 	.ProseMirror
 	.hljs-template-variable,
@@ -307,21 +306,21 @@ body[data-yaba-page="editor"]
 	color: #d19a66;
 }
 
-body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-title,
-body[data-yaba-page="viewer"]
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-title,
+body[data-yaba-page="editor"]
 	.yaba-editor-container
 	.ProseMirror
 	.hljs-title.class_,
-body[data-yaba-page="viewer"]
+body[data-yaba-page="editor"]
 	.yaba-editor-container
 	.ProseMirror
 	.hljs-title.function_,
-body[data-yaba-page="viewer"]
+body[data-yaba-page="editor"]
 	.yaba-editor-container
 	.ProseMirror
 	.hljs-function
 	.hljs-title,
-body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-section,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-section,
 body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-title,
 body[data-yaba-page="editor"]
 	.yaba-editor-container
@@ -343,12 +342,12 @@ body[data-yaba-page="editor"]
 	color: #61afef;
 }
 
-body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-type,
-body[data-yaba-page="viewer"]
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-type,
+body[data-yaba-page="editor"]
 	.yaba-editor-container
 	.ProseMirror
 	.hljs-built_in,
-body[data-yaba-page="viewer"]
+body[data-yaba-page="editor"]
 	.yaba-editor-container
 	.ProseMirror
 	.hljs-class
@@ -366,9 +365,9 @@ body[data-yaba-page="editor"]
 	color: #e5c07b;
 }
 
-body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-tag,
-body[data-yaba-page="viewer"] .yaba-editor-container .ProseMirror .hljs-name,
-body[data-yaba-page="viewer"]
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-tag,
+body[data-yaba-page="editor"] .yaba-editor-container .ProseMirror .hljs-name,
+body[data-yaba-page="editor"]
 	.yaba-editor-container
 	.ProseMirror
 	.hljs-attribute,

@@ -263,7 +263,7 @@ function clearTocPublishTimer(): void {
 
 function scheduleHeadingTocPublish(): void {
   const page = typeof document !== "undefined" ? document.body?.dataset.yabaPage : undefined
-  if (page !== "editor" && page !== "viewer") return
+  if (page !== "editor") return
   clearTocPublishTimer()
   tocPublishTimer = setTimeout(() => {
     tocPublishTimer = null
@@ -733,8 +733,8 @@ function applyWebChromeInsetsToDocument(topChromeInsetPx: number): void {
 
 function applyReaderPreferences(): void {
   const page = document.body?.dataset.yabaPage
-  /** Read-it-later viewer + note editor: same reader theme + typography pipeline (incl. automatic / system). */
-  const useReaderAppearancePipeline = page === "viewer" || page === "editor"
+  /** Note editor: same reader theme + typography pipeline (incl. automatic / system). */
+  const useReaderAppearancePipeline = page === "editor"
 
   if (useReaderAppearancePipeline) {
     if (readerPreferences.theme === "system") {
@@ -1160,7 +1160,5 @@ export function initEditorBridge(editor: Editor): void {
   const page = document.body?.dataset.yabaPage
   if (page === "editor") {
     postToYabaNativeHost({ type: "bridgeReady", feature: "editor" })
-  } else if (page === "viewer") {
-    postToYabaNativeHost({ type: "bridgeReady", feature: "viewer" })
   }
 }

@@ -52,19 +52,13 @@ body[data-yaba-page="editor"] [data-yaba-editor] {
   background: transparent;
 }
 
-body[data-yaba-page="viewer"] {
+body[data-yaba-page="read-it-later"] {
   background: var(--yaba-reader-bg, transparent);
   color: var(--yaba-reader-on-bg, var(--yaba-on-bg));
 }
 
-/* PDF viewer: always transparent chrome so the host (e.g. Compose) provides the surface; avoids a light flash before theme JS runs. */
-body[data-yaba-page="pdf-viewer"] {
-  background: transparent;
-  color: var(--yaba-on-bg);
-}
-
 /*
- * EPUB viewer shell: same outer rules as read-it-later viewer (viewer.html).
+ * EPUB viewer shell: same outer rules as read-it-later (read-it-later.html).
  * Host page stays transparent for system theme so Compose shows through; EPUB spine iframes get solid shell
  * colors in epub-viewer-bridge (iframes cannot composite the host surface like a single-document viewer).
  */
@@ -91,7 +85,7 @@ body[data-yaba-page="canvas"] [data-yaba-canvas] {
   height: 100%;
 }
 
-/* Reserve space under transparent Compose chrome + system bars (viewer / PDF WebViews). */
+/* Reserve space under transparent Compose chrome + system bars (read-it-later / EPUB WebViews). */
 .yaba-web-chrome-spacer {
   flex-shrink: 0;
   width: 100%;
@@ -115,8 +109,8 @@ body[data-yaba-page="canvas"] [data-yaba-canvas] {
   height: calc(18px + env(safe-area-inset-bottom, 0px));
 }
 
-/* Read-it-later / TipTap: keep scrolling bounded to the editor slot in full-screen viewer. */
-body[data-yaba-page="viewer"] [data-yaba-viewer] {
+/* Read-it-later: keep scrolling bounded to the content slot in full-screen shell. */
+body[data-yaba-page="read-it-later"] [data-yaba-viewer] {
   overflow: hidden;
 }
 
@@ -129,7 +123,7 @@ body[data-yaba-page="viewer"] [data-yaba-viewer] {
   overflow: hidden;
 }
 
-body[data-yaba-page="viewer"] .yaba-viewer-editor-slot > .yaba-editor-container {
+body[data-yaba-page="read-it-later"] .yaba-viewer-editor-slot > #yaba-read-it-later-content {
   flex: 1;
   min-height: 0;
   width: 100%;

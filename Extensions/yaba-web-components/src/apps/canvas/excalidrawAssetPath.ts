@@ -1,12 +1,11 @@
 /**
- * Excalidraw resolves font files as `./fonts/...` against `window.EXCALIDRAW_ASSET_PATH`,
- * then falls back to `https://esm.sh/@excalidraw/excalidraw@…/dist/prod/` (blocked by YABA CSP).
+ * Excalidraw resolves font files as `./fonts/<Family>/...` against `window.EXCALIDRAW_ASSET_PATH`,
+ * then falls back to the esm.sh bundle (blocked by YABA CSP).
  * This module must load before any `@excalidraw/excalidraw` import.
  *
- * `import.meta.env.BASE_URL` is `./` — combined with the page URL so assets work under
- * `…/web-components/canvas.html`, not only at origin root.
+ * Use the same directory as `canvas.html` (e.g. `…/WebComponents/`) so fonts live in `./fonts/`
+ * next to the page — no separate `excalidraw-assets/` copy of `dist/prod/fonts` is required.
  */
 if (typeof window !== "undefined") {
-  const base = new URL(import.meta.env.BASE_URL, window.location.href)
-  window.EXCALIDRAW_ASSET_PATH = new URL("excalidraw-assets/", base).href
+  window.EXCALIDRAW_ASSET_PATH = new URL(".", window.location.href).href
 }

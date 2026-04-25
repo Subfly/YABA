@@ -1,7 +1,7 @@
 import type { EditorFormattingState } from "../editor-formatting"
 import type { TocJson } from "../toc-host-events"
 
-export type YabaNativeHostFeature = "editor" | "viewer" | "pdf" | "epub" | "converter" | "canvas"
+export type YabaNativeHostFeature = "editor" | "read-it-later" | "epub" | "reader-converter" | "canvas"
 
 /** Single envelope for all web -> native host events. */
 export type YabaNativeHostPayload =

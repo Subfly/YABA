@@ -1,0 +1,135 @@
+/* Read-it-later: static HTML (no ProseMirror). Typography mirrors TipTap reader shell. */
+#yaba-read-it-later-content {
+  width: 100%;
+  min-height: 100%;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  outline: none;
+  font-family: var(--yaba-font-family);
+  font-size: var(--yaba-reader-font-size, 18px);
+  line-height: var(--yaba-reader-line-height, 1.6);
+  color: var(--yaba-reader-on-bg, var(--yaba-on-bg));
+  padding: 1rem;
+  padding-top: calc(
+    var(--yaba-web-chrome-status-bar, 0px) + var(--yaba-web-chrome-top-bar, 54px) +
+      var(--yaba-web-chrome-safe-area-top-additional, env(safe-area-inset-top, 0px)) + 1rem
+  );
+  padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px) + 1rem);
+}
+
+#yaba-read-it-later-content img {
+  max-width: 100%;
+  height: auto;
+}
+
+#yaba-read-it-later-content p {
+  margin: 0 0 0.75em;
+}
+
+#yaba-read-it-later-content h1 {
+  font-size: 2em;
+  margin: 0.67em 0 0.5em;
+  font-weight: 700;
+}
+
+#yaba-read-it-later-content h2 {
+  font-size: 1.5em;
+  margin: 0.75em 0 0.5em;
+  font-weight: 600;
+}
+
+#yaba-read-it-later-content h3 {
+  font-size: 1.25em;
+  margin: 0.83em 0 0.5em;
+  font-weight: 600;
+}
+
+#yaba-read-it-later-content h4,
+#yaba-read-it-later-content h5,
+#yaba-read-it-later-content h6 {
+  font-size: 1em;
+  margin: 1em 0 0.5em;
+  font-weight: 600;
+}
+
+#yaba-read-it-later-content ul,
+#yaba-read-it-later-content ol {
+  margin: 0.5em 0;
+  padding-left: 1.5em;
+}
+
+#yaba-read-it-later-content pre {
+  overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.9em;
+  padding: 0.5em 0.75em;
+  border-radius: 8px;
+  background: var(--yaba-surface-variant, color-mix(in srgb, var(--yaba-on-bg) 8%, transparent));
+}
+
+#yaba-read-it-later-content blockquote {
+  border-left: 3px solid var(--yaba-outline, currentColor);
+  margin: 0.75em 0;
+  padding-left: 0.75em;
+  opacity: 0.9;
+}
+
+#yaba-read-it-later-content a {
+  color: var(--yaba-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Annotation highlights — same tokens as TipTap reader (.yaba-editor-container .ProseMirror) */
+#yaba-read-it-later-content ::selection {
+  background: var(--yaba-primary-container);
+  color: var(--yaba-on-primary-container);
+}
+
+#yaba-read-it-later-content .yaba-highlight,
+#yaba-read-it-later-content .yaba-annotation-decoration,
+#yaba-read-it-later-content mark.yaba-editor-text-highlight {
+  border-radius: 2px;
+  cursor: pointer;
+  color: inherit;
+}
+
+#yaba-read-it-later-content .yaba-highlight-yellow {
+  background: rgba(255, 235, 59, 0.45);
+}
+#yaba-read-it-later-content .yaba-highlight-blue {
+  background: rgba(33, 150, 243, 0.35);
+}
+#yaba-read-it-later-content .yaba-highlight-green {
+  background: rgba(76, 175, 80, 0.35);
+}
+#yaba-read-it-later-content .yaba-highlight-pink {
+  background: rgba(233, 30, 99, 0.35);
+}
+#yaba-read-it-later-content .yaba-highlight-purple {
+  background: rgba(156, 39, 176, 0.35);
+}
+#yaba-read-it-later-content .yaba-highlight-orange {
+  background: rgba(255, 152, 0, 0.45);
+}
+#yaba-read-it-later-content .yaba-highlight-red {
+  background: rgba(244, 67, 54, 0.35);
+}
+#yaba-read-it-later-content .yaba-highlight-teal {
+  background: rgba(0, 150, 136, 0.35);
+}
+#yaba-read-it-later-content .yaba-highlight-cyan {
+  background: rgba(0, 188, 212, 0.35);
+}
+#yaba-read-it-later-content .yaba-highlight-mint {
+  background: rgba(129, 199, 132, 0.4);
+}
+#yaba-read-it-later-content .yaba-highlight-indigo {
+  background: rgba(63, 81, 181, 0.35);
+}
+#yaba-read-it-later-content .yaba-highlight-brown {
+  background: rgba(121, 85, 72, 0.35);
+}
+#yaba-read-it-later-content .yaba-highlight-gray {
+  background: rgba(158, 158, 158, 0.4);
+}

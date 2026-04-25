@@ -1,10 +1,7 @@
 import type { Editor } from "@tiptap/core"
 
-export interface SelectionSnapshot {
-  selectedText: string
-  prefixText?: string
-  suffixText?: string
-}
+import type { SelectionSnapshot } from "./selection-snapshot"
+export type { SelectionSnapshot } from "./selection-snapshot"
 
 /**
  * Extracts quote context from the editor for highlight creation (no positional anchors).
