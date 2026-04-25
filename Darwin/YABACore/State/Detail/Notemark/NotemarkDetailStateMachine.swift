@@ -23,7 +23,7 @@ public final class NotemarkDetailStateMachine: YabaBaseObservableState<NotemarkD
             guard let bid = state.bookmarkId else { return }
             NotemarkManager.queueSaveNoteDocumentData(bookmarkId: bid, documentBody: Data(documentJson.utf8))
             let versionId = UUID().uuidString
-            ReadableContentManager.queueSyncNotemarkReadableMirror(bookmarkId: bid, versionId: versionId, documentJson: documentJson)
+            ReadableContentManager.queueSyncNotemarkReadableMirror(bookmarkId: bid, versionId: versionId, html: documentJson)
             NotemarkManager.queueCreateOrUpdateNoteDetails(bookmarkId: bid, readableVersionId: versionId)
         case let .onDeleteBookmark(bookmarkId):
             AllBookmarksManager.queueDeleteBookmarks(bookmarkIds: [bookmarkId])
@@ -83,7 +83,7 @@ public final class NotemarkDetailStateMachine: YabaBaseObservableState<NotemarkD
             ReadableContentManager.queueSyncNotemarkReadableMirror(
                 bookmarkId: bookmarkId,
                 versionId: versionId,
-                documentJson: json
+                html: json
             )
         }
     }

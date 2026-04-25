@@ -8,6 +8,7 @@ import Foundation
 public enum UnfurlError: Error, Sendable {
     case cannotCreateURL(String)
     case unableToFetchHtml
+    case htmlSanitizationFailed(String)
     case converterBridgeNotReady
     case htmlConversionStartFailed
     case htmlConversionParseFailed

@@ -19,8 +19,6 @@ public enum ConverterResultProcessor {
                   url.scheme == "http" || url.scheme == "https"
             else { continue }
             guard let bytes = try? await UnfurlHttpClient.getBytes(url: url) else { continue }
-            let size = bytes.count
-            guard size >= 1024, size <= 5 * 1024 * 1024 else { continue }
             let outBytes = YabaImageCompression.compressDataPreservingFormat(bytes)
             let ext = inferImageExtension(bytes: outBytes, url: asset.url)
             let assetId = UUID().uuidString
@@ -28,12 +26,12 @@ public enum ConverterResultProcessor {
             let payload = ReadableAssetPayload(assetId: assetId, pathExtension: ext, bytes: outBytes)
             readables.append((payload, asset.placeholder, relativePath))
         }
-        var resultDocumentJson = documentJson
+        var resultBody = documentJson
         for (_, placeholder, replacement) in readables {
-            resultDocumentJson = resultDocumentJson.replacingOccurrences(of: placeholder, with: replacement)
+            resultBody = resultBody.replacingOccurrences(of: placeholder, with: replacement)
         }
         return ReadableUnfurl(
-            documentJson: resultDocumentJson,
+            html: resultBody,
             assets: readables.map { $0.0 }
         )
     }

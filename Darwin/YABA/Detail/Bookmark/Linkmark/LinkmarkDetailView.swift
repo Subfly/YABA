@@ -280,7 +280,7 @@ struct LinkmarkDetailView: View {
                     ZStack(alignment: .top) {
                         LinkmarkReadableWebView(
                             webDriver: webDriver,
-                            documentJson: documentJsonString(for: bm),
+                            documentJson: readableBodyString(for: bm),
                             assetsBaseUrl: ReadableViewerAssets.assetsBaseURLForYabaAssetScheme,
                             annotationsJson: annotationsJson(for: bm),
                             readerPreferences: ReaderPreferences(
@@ -414,8 +414,8 @@ struct LinkmarkDetailView: View {
         return sorted.first
     }
 
-    private func documentJsonString(for bm: YabaBookmark) -> String {
-        guard let data = currentVersion(bm)?.payload?.documentJson,
+    private func readableBodyString(for bm: YabaBookmark) -> String {
+        guard let data = currentVersion(bm)?.payload?.html,
               let s = String(data: data, encoding: .utf8)
         else {
             return ""
@@ -536,7 +536,7 @@ struct LinkmarkDetailView: View {
             .onAnnotationReadableCreateCommitted(
                 request: request,
                 annotationId: annotationId,
-                documentJson: documentJson
+                html: documentJson
             )
         )
     }
@@ -556,7 +556,7 @@ struct LinkmarkDetailView: View {
             .onAnnotationReadableDeleteCommitted(
                 annotationId: annotationId,
                 readableVersionId: readableVersionId,
-                documentJson: documentJson
+                html: documentJson
             )
         )
     }

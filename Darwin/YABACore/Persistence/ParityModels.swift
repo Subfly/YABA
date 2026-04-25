@@ -428,7 +428,7 @@ final class ReadableVersionModel {
     }
 }
 
-/// Inline images for a readable version (reader JSON references `../assets/<assetId>.<ext>`); bytes stored for iCloud sync.
+/// Inline images for a readable version (HTML or JSON body references `../assets/<assetId>.<ext>`); bytes stored for iCloud sync.
 @Model
 final class ReadableInlineAssetModel {
     var assetId: String = UUID().uuidString
@@ -457,17 +457,17 @@ final class ReadableVersionPayloadModel {
     var readableVersionPayloadId: String = UUID().uuidString
 
     @Attribute(.externalStorage)
-    var documentJson: Data?
+    var html: Data?
 
     var readableVersion: ReadableVersionModel?
 
     init(
         readableVersionPayloadId: String = UUID().uuidString,
-        documentJson: Data? = nil,
+        html: Data? = nil,
         readableVersion: ReadableVersionModel? = nil
     ) {
         self.readableVersionPayloadId = readableVersionPayloadId
-        self.documentJson = documentJson
+        self.html = html
         self.readableVersion = readableVersion
     }
 }

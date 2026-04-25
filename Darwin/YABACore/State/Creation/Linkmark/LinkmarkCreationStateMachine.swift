@@ -130,8 +130,8 @@ public final class LinkmarkCreationStateMachine: YabaBaseObservableState<Linkmar
         apply { $0.isFetchingLinkContent = true; $0.converterError = nil }
         defer { apply { $0.isFetchingLinkContent = false } }
         do {
-            let (conv, readable) = try await LinkmarkUnfurlCoordinator.shared.fetchAndConvert(urlString: trimmed)
-            await applyFetchResult(converter: conv, readable: readable)
+            let pack = try await Unfurler.unfurl(trimmed)
+            await applyNativeUnfurlResult(pack)
         } catch {
             apply {
                 $0.converterError = String(describing: error)
@@ -144,25 +144,39 @@ public final class LinkmarkCreationStateMachine: YabaBaseObservableState<Linkmar
             documentJson: result.documentJson,
             assets: result.assets
         )
-        await applyFetchResult(converter: result, readable: readable)
+        let meta = LinkMetadataResult(webLink: result.linkMetadata)
+        let imageData = await Unfurler.downloadPreviewImageBytes(urlString: result.linkMetadata.image)
+        let logoData = await Unfurler.downloadPreviewImageBytes(urlString: result.linkMetadata.logo)
+        await applyFetchResult(metadata: meta, readable: readable, previewImage: imageData, previewIcon: logoData)
     }
 
-    private func applyFetchResult(converter: WebConverterResult, readable: ReadableUnfurl) async {
-        let imageData = await Unfurler.downloadPreviewImageBytes(urlString: converter.linkMetadata.image)
-        let logoData = await Unfurler.downloadPreviewImageBytes(urlString: converter.linkMetadata.logo)
-        let meta = converter.linkMetadata
+    private func applyNativeUnfurlResult(_ pack: LinkUnfurlResult) async {
+        await applyFetchResult(
+            metadata: pack.metadata,
+            readable: pack.readable,
+            previewImage: pack.previewImageData,
+            previewIcon: pack.previewIconData
+        )
+    }
+
+    private func applyFetchResult(
+        metadata: LinkMetadataResult,
+        readable: ReadableUnfurl,
+        previewImage: Data?,
+        previewIcon: Data?
+    ) async {
         let urlTrim = state.url.trimmingCharacters(in: .whitespacesAndNewlines)
         apply {
             $0.lastFetchedUrl = urlTrim
-            $0.cleanedUrl = meta.cleanedUrl.nilIfEmpty
-            $0.metadataTitle = meta.title
-            $0.metadataDescription = meta.description
-            $0.metadataAuthor = meta.author
-            $0.metadataDate = meta.date
-            $0.videoUrl = meta.video
-            $0.audioUrl = meta.audio
-            $0.previewImageData = imageData
-            $0.previewIconData = logoData
+            $0.cleanedUrl = metadata.cleanedUrl.nilIfEmpty
+            $0.metadataTitle = metadata.title
+            $0.metadataDescription = metadata.description
+            $0.metadataAuthor = metadata.author
+            $0.metadataDate = metadata.date
+            $0.videoUrl = metadata.video
+            $0.audioUrl = metadata.audio
+            $0.previewImageData = previewImage
+            $0.previewIconData = previewIcon
             $0.pendingReadableUnfurl = readable
             $0.converterError = nil
         }

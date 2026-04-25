@@ -116,7 +116,7 @@ public final class NotemarkCreationStateMachine: YabaBaseObservableState<Notemar
         }
         let data = Data(state.documentJson.utf8)
         NotemarkManager.queueSaveNoteDocumentData(bookmarkId: bid, documentBody: data)
-        ReadableContentManager.queueSyncNotemarkReadableMirror(bookmarkId: bid, versionId: versionId, documentJson: state.documentJson)
+            ReadableContentManager.queueSyncNotemarkReadableMirror(bookmarkId: bid, versionId: versionId, html: state.documentJson)
         NotemarkManager.queueCreateOrUpdateNoteDetails(bookmarkId: bid, readableVersionId: versionId)
         apply { $0.isSaving = false }
     }

@@ -9,12 +9,11 @@ import Foundation
 
 /// Result of readable content extraction, ready for SwiftData persistence.
 public struct ReadableUnfurl: Sendable {
-    /// TipTap/ProseMirror document JSON with `../assets/<id>.<ext>` image paths after asset download.
-    public var documentJson: String
+    public var html: String
     public var assets: [ReadableAssetPayload]
 
-    public init(documentJson: String, assets: [ReadableAssetPayload]) {
-        self.documentJson = documentJson
+    public init(html: String, assets: [ReadableAssetPayload]) {
+        self.html = html
         self.assets = assets
     }
 }

@@ -75,9 +75,6 @@ struct LinkmarkCreationContent: View {
             await bootstrap()
             syncPreviewAppearanceFromMachine()
         }
-        .onDisappear {
-            LinkmarkUnfurlCoordinator.shared.releaseConverterRuntime()
-        }
     }
 
     private func formList(

@@ -12,7 +12,7 @@ public enum LinkmarkDetailEvent: Sendable {
     case onInit(bookmarkId: String)
     /// Call when the UI has resolved the link URL (needed for refresh).
     case onLinkSourceUrl(String)
-    case onSaveReadableContent(documentJson: Data)
+    case onSaveReadableContent(html: Data)
     case onUpdateReadableRequested
     case onUpdateLinkMetadataRequested
     case onConverterSucceeded(WebConverterResult)
@@ -39,12 +39,12 @@ public enum LinkmarkDetailEvent: Sendable {
     case onAnnotationReadableCreateCommitted(
         request: AnnotationReadableCreateRequest,
         annotationId: String,
-        documentJson: String
+        html: String
     )
     case onAnnotationReadableDeleteCommitted(
         annotationId: String,
         readableVersionId: String,
-        documentJson: String
+        html: String
     )
     case onScrollToAnnotation(annotationId: String)
     case onClearScrollToAnnotation

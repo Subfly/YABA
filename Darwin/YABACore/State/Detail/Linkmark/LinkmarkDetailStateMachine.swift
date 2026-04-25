@@ -31,7 +31,7 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
             ReadableVersionManager.queueInsertReadableVersion(
                 bookmarkId: bid,
                 readableVersionId: rv,
-                documentJson: data
+                html: data
             )
         case .onUpdateReadableRequested:
             await refreshReadableFromSource()
@@ -102,13 +102,13 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
             )
         case let .onDeleteAnnotation(annotationId):
             AnnotationManager.queueDeleteAnnotation(annotationId: annotationId)
-        case let .onAnnotationReadableCreateCommitted(request, annotationId, documentJson):
+        case let .onAnnotationReadableCreateCommitted(request, annotationId, html):
             guard let bid = state.bookmarkId else { return }
             let versionId = request.selectionDraft.readableVersionId
             ReadableContentManager.queueSyncNotemarkReadableMirror(
                 bookmarkId: bid,
                 versionId: versionId,
-                documentJson: documentJson
+                html: html
             )
             AnnotationManager.queueInsertAnnotation(
                 bookmarkId: bid,
@@ -120,12 +120,12 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
                 quoteText: request.selectionDraft.quoteText,
                 extrasJson: nil
             )
-        case let .onAnnotationReadableDeleteCommitted(annotationId, readableVersionId, documentJson):
+        case let .onAnnotationReadableDeleteCommitted(annotationId, readableVersionId, html):
             guard let bid = state.bookmarkId else { return }
             ReadableContentManager.queueSyncNotemarkReadableMirror(
                 bookmarkId: bid,
                 versionId: readableVersionId,
-                documentJson: documentJson
+                html: html
             )
             AnnotationManager.queueDeleteAnnotation(annotationId: annotationId)
         case let .onScrollToAnnotation(annotationId):
@@ -208,8 +208,8 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
         apply { $0.isUpdatingReadable = true; $0.lastConverterErrorMessage = nil }
         defer { apply { $0.isUpdatingReadable = false } }
         do {
-            let (conv, readable) = try await LinkmarkUnfurlCoordinator.shared.fetchAndConvert(urlString: url)
-            await saveReadableBundle(bookmarkId: bid, converter: conv, readable: readable)
+            let pack = try await Unfurler.unfurl(url)
+            await saveReadableBundle(bookmarkId: bid, metadata: pack.metadata, readable: pack.readable)
         } catch {
             apply { $0.lastConverterErrorMessage = String(describing: error) }
         }
@@ -224,8 +224,8 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
         apply { $0.isUpdatingReadable = true; $0.lastConverterErrorMessage = nil }
         defer { apply { $0.isUpdatingReadable = false } }
         do {
-            let (conv, _) = try await LinkmarkUnfurlCoordinator.shared.fetchAndConvert(urlString: url)
-            let meta = conv.linkMetadata
+            let refresh = try await Unfurler.fetchMetadataAndPreviews(url)
+            let meta = refresh.metadata
             if let cleaned = meta.cleanedUrl.nilIfEmpty {
                 LinkmarkManager.queueCreateOrUpdateLinkDetails(
                     bookmarkId: bid,
@@ -239,12 +239,10 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
                     metadataDate: meta.date
                 )
             }
-            let img = await Unfurler.downloadPreviewImageBytes(urlString: meta.image)
-            let logo = await Unfurler.downloadPreviewImageBytes(urlString: meta.logo)
             AllBookmarksManager.queueSetBookmarkPreviewAssets(
                 bookmarkId: bid,
-                imageBytes: img,
-                iconBytes: logo
+                imageBytes: refresh.previewImageData,
+                iconBytes: refresh.previewIconData
             )
         } catch {
             apply { $0.lastConverterErrorMessage = String(describing: error) }
@@ -256,10 +254,10 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
             documentJson: result.documentJson,
             assets: result.assets
         )
-        await saveReadableBundle(bookmarkId: bookmarkId, converter: result, readable: readable)
+        await saveReadableBundle(bookmarkId: bookmarkId, metadata: LinkMetadataResult(webLink: result.linkMetadata), readable: readable)
     }
 
-    private func saveReadableBundle(bookmarkId: String, converter: WebConverterResult, readable: ReadableUnfurl) async {
+    private func saveReadableBundle(bookmarkId: String, metadata: LinkMetadataResult, readable: ReadableUnfurl) async {
         let newVersionId = UUID().uuidString
         apply { $0.selectedReadableVersionId = newVersionId }
         ReadableContentManager.queueSaveLinkReadableUnfurl(
@@ -267,7 +265,7 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
             readableVersionId: newVersionId,
             unfurl: readable
         )
-        let meta = converter.linkMetadata
+        let meta = metadata
         if let cleaned = meta.cleanedUrl.nilIfEmpty {
             LinkmarkManager.queueCreateOrUpdateLinkDetails(
                 bookmarkId: bookmarkId,

@@ -71,3 +71,20 @@ public struct WebConverterResult: Sendable, Equatable {
         self.linkMetadata = linkMetadata
     }
 }
+
+extension LinkMetadataResult {
+    /// Bridge parity with `WebLinkMetadata` from the legacy converter.
+    public init(webLink m: WebLinkMetadata) {
+        self.init(
+            cleanedUrl: m.cleanedUrl,
+            title: m.title,
+            description: m.description,
+            author: m.author,
+            date: m.date,
+            audio: m.audio,
+            video: m.video,
+            image: m.image,
+            logo: m.logo
+        )
+    }
+}

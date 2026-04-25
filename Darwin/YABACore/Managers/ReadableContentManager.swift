@@ -3,7 +3,7 @@
 //  YABACore
 //
 //  Readable pipeline helpers (Compose `ReadableContentManager`). SwiftData stores readable bodies
-//  in `ReadableVersionPayloadModel.documentJson` (TipTap/ProseMirror JSON for links and notes).
+//  in `ReadableVersionPayloadModel.html` (sanitized HTML for linkmarks; notemark/editor JSON until migrated).
 //
 
 import Foundation
@@ -20,7 +20,7 @@ public enum ReadableContentManager {
             if !bookmark.readableVersions.isEmpty { return }
             let json = #"{"type":"doc","content":[]}"#
             let data = Data(json.utf8)
-            let payload = ReadableVersionPayloadModel(documentJson: data, readableVersion: nil)
+            let payload = ReadableVersionPayloadModel(html: data, readableVersion: nil)
             context.insert(payload)
             let version = ReadableVersionModel(
                 readableVersionId: UUID().uuidString,
@@ -37,17 +37,17 @@ public enum ReadableContentManager {
     }
 
     /// Persists notemark editor JSON into payload + ensures a readable version row exists for anchoring.
-    public static func queueSyncNotemarkReadableMirror(bookmarkId: String, versionId: String, documentJson: String) {
+    public static func queueSyncNotemarkReadableMirror(bookmarkId: String, versionId: String, html: String) {
         CoreOperationQueue.shared.queue(name: "SyncNotemarkReadable:\(bookmarkId)") { context in
             guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context) else {
                 return
             }
-            let data = Data(documentJson.utf8)
+            let data = Data(html.utf8)
             if let existing = bookmark.readableVersions.first(where: { $0.readableVersionId == versionId }) {
-                existing.payload?.documentJson = data
+                existing.payload?.html = data
                 existing.createdAt = .now
             } else {
-                let payload = ReadableVersionPayloadModel(documentJson: data, readableVersion: nil)
+                let payload = ReadableVersionPayloadModel(html: data, readableVersion: nil)
                 context.insert(payload)
                 let version = ReadableVersionModel(
                     readableVersionId: versionId,
@@ -77,8 +77,8 @@ public enum ReadableContentManager {
             guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context) else {
                 return
             }
-            let data = Data(unfurl.documentJson.utf8)
-            let payload = ReadableVersionPayloadModel(documentJson: data, readableVersion: nil)
+            let data = Data(unfurl.html.utf8)
+            let payload = ReadableVersionPayloadModel(html: data, readableVersion: nil)
             context.insert(payload)
             let version = ReadableVersionModel(
                 readableVersionId: readableVersionId,
@@ -107,7 +107,7 @@ public enum ReadableContentManager {
 
     /// Saves link readable content from the bookmark editor without creating a new version row when one already exists.
     /// - If the bookmark has no readable yet, inserts the first version.
-    /// - Otherwise updates the latest readable version’s JSON and inline assets in place.
+    /// - Otherwise updates the latest readable version’s body and inline assets in place.
     public static func queueUpsertLinkReadableUnfurlFromBookmarkEditor(
         bookmarkId: String,
         unfurl: ReadableUnfurl
@@ -116,10 +116,10 @@ public enum ReadableContentManager {
             guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context) else {
                 return
             }
-            let data = Data(unfurl.documentJson.utf8)
+            let data = Data(unfurl.html.utf8)
             if bookmark.readableVersions.isEmpty {
                 let rv = UUID().uuidString
-                let payload = ReadableVersionPayloadModel(documentJson: data, readableVersion: nil)
+                let payload = ReadableVersionPayloadModel(html: data, readableVersion: nil)
                 context.insert(payload)
                 let version = ReadableVersionModel(
                     readableVersionId: rv,
@@ -143,9 +143,9 @@ public enum ReadableContentManager {
                 }
             } else if let version = bookmark.readableVersions.max(by: { $0.createdAt < $1.createdAt }) {
                 if let payload = version.payload {
-                    payload.documentJson = data
+                    payload.html = data
                 } else {
-                    let payload = ReadableVersionPayloadModel(documentJson: data, readableVersion: nil)
+                    let payload = ReadableVersionPayloadModel(html: data, readableVersion: nil)
                     context.insert(payload)
                     version.payload = payload
                     payload.readableVersion = version

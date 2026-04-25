@@ -13,13 +13,13 @@ public enum ReadableVersionManager {
         bookmarkId: String,
         readableVersionId: String = UUID().uuidString,
         relativePathHint: String? = nil,
-        documentJson: Data? = nil
+        html: Data? = nil
     ) {
         CoreOperationQueue.shared.queue(name: "InsertReadableVersion:\(bookmarkId)") { context in
             guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context) else {
                 return
             }
-            let payload = ReadableVersionPayloadModel(documentJson: documentJson, readableVersion: nil)
+            let payload = ReadableVersionPayloadModel(html: html, readableVersion: nil)
             context.insert(payload)
             let version = ReadableVersionModel(
                 readableVersionId: readableVersionId,
