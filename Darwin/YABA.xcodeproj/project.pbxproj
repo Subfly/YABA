@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		967B9A5B2DD8D68D00181AA1 /* YABAStatusMenuItem.app in Resources */ = {isa = PBXBuildFile; fileRef = 967B9A4B2DD8D3EF00181AA1 /* YABAStatusMenuItem.app */; platformFilter = maccatalyst; };
-		967B9A5F2DD8D6E400181AA1 /* YABAStatusMenuItem.app in Copy Menu Item */ = {isa = PBXBuildFile; fileRef = 967B9A4B2DD8D3EF00181AA1 /* YABAStatusMenuItem.app */; platformFilter = maccatalyst; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		967B9A5B2DD8D68D00181AA1 /* YABAStatusMenuItem.app in Resources */ = {isa = PBXBuildFile; fileRef = 967B9A4B2DD8D3EF00181AA1 /* YABAStatusMenuItem.app */; platformFilters = (macos, ); };
+		967B9A5F2DD8D6E400181AA1 /* YABAStatusMenuItem.app in Copy Menu Item */ = {isa = PBXBuildFile; fileRef = 967B9A4B2DD8D3EF00181AA1 /* YABAStatusMenuItem.app */; platformFilters = (macos, ); settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		96A8E0B82DB5CAFF00A47601 /* YABAShare.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 96A8E0AE2DB5CAFF00A47601 /* YABAShare.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		96D262F42E6CA6C4007F4285 /* YABA_Icon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 96D262F32E6CA6C4007F4285 /* YABA_Icon.icon */; };
 		96D262F52E6CA6C4007F4285 /* YABA_Icon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 96D262F32E6CA6C4007F4285 /* YABA_Icon.icon */; };
@@ -29,11 +29,11 @@
 		96DCA2612F9D7002005760E3 /* EPUBKit in Frameworks */ = {isa = PBXBuildFile; productRef = 96DCA2492F9D6FE1005760E3 /* EPUBKit */; };
 		96DCA2622F9D7002005760E3 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 96DCA2462F9D6FD6005760E3 /* SwiftSoup */; };
 		96DCA2632F9D7002005760E3 /* EPUBKit in Frameworks */ = {isa = PBXBuildFile; productRef = 96DCA2492F9D6FE1005760E3 /* EPUBKit */; };
-		96EA39732E56380700B8411D /* YABAKeyboard.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 96EA396C2E56380700B8411D /* YABAKeyboard.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		96EA39732E56380700B8411D /* YABAKeyboard.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 96EA396C2E56380700B8411D /* YABAKeyboard.appex */; platformFilters = (ios, xros, ); settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		96EA39BD2E58EB8F00B8411D /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96EA39BC2E58EB8F00B8411D /* WidgetKit.framework */; };
 		96EA39BF2E58EB8F00B8411D /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96EA39BE2E58EB8F00B8411D /* SwiftUI.framework */; };
-		96EA39CD2E58EB9000B8411D /* YABAWidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 96EA39BB2E58EB8E00B8411D /* YABAWidgetsExtension.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		96EB67222DD945A6009EB9EC /* YABAShareMac.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 96EB67132DD94580009EB9EC /* YABAShareMac.appex */; platformFilter = maccatalyst; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		96EA39CD2E58EB9000B8411D /* YABAWidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 96EA39BB2E58EB8E00B8411D /* YABAWidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		96EB67222DD945A6009EB9EC /* YABAShareMac.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 96EB67132DD94580009EB9EC /* YABAShareMac.appex */; platformFilters = (macos, ); settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -123,6 +123,637 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		967242C12F9EB9F70087D617 /* Exceptions for "YABAMobile" folder in "YABAShare" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Core/Components/Item/Annotation/AnnotationItemView.swift,
+				Core/Components/Item/Annotation/AnnotationPreviewItemView.swift,
+				Core/Components/Item/Annotation/BaseAnnotationItemView.swift,
+				Core/Components/Item/Bookmark/BookmarkItemState.swift,
+				Core/Components/Item/Bookmark/BookmarkItemView.swift,
+				Core/Components/Item/Collection/CollectionItemOverflowMenu.swift,
+				Core/Components/Item/Collection/CollectionItemState.swift,
+				Core/Components/Item/Collection/FolderItemView.swift,
+				Core/Components/Item/Collection/PresentableFolderItemView.swift,
+				Core/Components/Item/Collection/PresentableTagItemView.swift,
+				Core/Components/Item/Collection/TagItemView.swift,
+				Core/Components/Item/Shared/ItemListRowChrome.swift,
+				Core/Components/MacSpecific/MacOSHoverableToolbarIcon.swift,
+				Core/Components/Media/CameraCapturePicker.swift,
+				Core/Components/Selection/SelectFolderContent.swift,
+				Core/Components/Selection/SelectTagsContent.swift,
+				Core/Components/Settings/ContentAppearancePicker.swift,
+				Core/Components/Settings/FABLocationPicker.swift,
+				Core/Components/Settings/LanguagePicker.swift,
+				Core/Components/Settings/SortingPicker.swift,
+				Core/Components/Settings/ThemePicker.swift,
+				Core/Components/Share/ActivityItemsShareSheet.swift,
+				Core/Components/Toast/CoreToastOverlayView.swift,
+				Core/Components/ZoomablePannableView.swift,
+				Core/Navigation/BookmarkDetailRouterView.swift,
+				Core/Navigation/DeepLinkManager.swift,
+				Core/Navigation/DetailColumnPlaceholderView.swift,
+				Core/Navigation/DetailColumnRouter.swift,
+				Core/Navigation/NavigationDestination.swift,
+				Core/Navigation/YabaNavigationView.swift,
+				Core/Sync/Model/ConnectedDevice.swift,
+				Core/Sync/Model/DeviceType.swift,
+				Core/Sync/Model/NetworkSyncError.swift,
+				Core/Sync/Model/SyncConflict.swift,
+				Core/Sync/Model/SyncMergeResult.swift,
+				Core/Sync/Model/SyncModels.swift,
+				Core/Sync/Network/NetworkSyncManager.swift,
+				Core/Sync/Network/NetworkSyncService.swift,
+				Core/Util/StatusMenuHelper.swift,
+				Creation/Annotation/AnnotationCreationSheet.swift,
+				Creation/Bookmark/Flow/BookmarkCreationRouting.swift,
+				Creation/Bookmark/Flow/BookmarkEditContainer.swift,
+				Creation/Bookmark/Flow/BookmarkFlowContext.swift,
+				Creation/Bookmark/Flow/BookmarkFlowSheet.swift,
+				Creation/Bookmark/Flow/BookmarkKindCreationSheet.swift,
+				Creation/Bookmark/Forms/BookmarkKindForm.swift,
+				Creation/Bookmark/Forms/BookmarkRouteSelectionContent.swift,
+				Creation/Bookmark/Forms/CanvmarkCreationContent.swift,
+				Creation/Bookmark/Forms/DocmarkCreationContent.swift,
+				Creation/Bookmark/Forms/ImagemarkCreationContent.swift,
+				Creation/Bookmark/Forms/LinkmarkCreationContent.swift,
+				Creation/Bookmark/Forms/NotemarkCreationContent.swift,
+				Creation/Bookmark/Shared/BookmarkCreationFolderVisuals.swift,
+				Creation/Bookmark/Shared/BookmarkCreationPreviewListRowBackground.swift,
+				Creation/Bookmark/Shared/BookmarkFlowHydration.swift,
+				Creation/Bookmark/Shared/BookmarkFolderTagSheetModifier.swift,
+				Creation/Bookmark/Shared/BookmarkFormFolderTagRows.swift,
+				Creation/Folder/FolderCreationContent.swift,
+				Creation/Tag/TagCreationContent.swift,
+				Detail/Bookmark/Imagemark/ImagemarkDetailInfoSheet.swift,
+				Detail/Bookmark/Imagemark/ImagemarkDetailView.swift,
+				Detail/Bookmark/Linkmark/LinkmarkDetailInfoSheet.swift,
+				Detail/Bookmark/Linkmark/LinkmarkDetailView.swift,
+				Detail/Bookmark/Linkmark/LinkmarkReadableWebView.swift,
+				Detail/Bookmark/Linkmark/LinkmarkToolbar.swift,
+				Detail/Bookmark/Linkmark/LinkmarkWebDriver.swift,
+				Detail/Folder/FolderDetailView.swift,
+				Detail/Tag/TagDetailView.swift,
+				Home/Components/HomeAnnouncementsView.swift,
+				Home/Components/HomeCollectionView.swift,
+				Home/Components/HomeCreateContentFAB.swift,
+				Home/Components/HomeRecentsView.swift,
+				Home/HomeState.swift,
+				Home/HomeView.swift,
+				Onboarding/NameDeviceView.swift,
+				Onboarding/OnboardingState.swift,
+				Onboarding/OnboardingView.swift,
+				Onboarding/Pages/DonePage.swift,
+				Onboarding/Pages/GenerationPage.swift,
+				Onboarding/Pages/HowToPage.swift,
+				Onboarding/Pages/PromisesPage.swift,
+				Onboarding/Pages/PurposePage.swift,
+				Onboarding/Pages/WelcomePage.swift,
+				Search/SearchView.swift,
+				Settings/EventsLogView.swift,
+				Settings/HowTo/HowToGuideView.swift,
+				Settings/HowTo/HowToKeyboard.swift,
+				Settings/HowTo/HowToReminders.swift,
+				Settings/HowTo/HowToShare.swift,
+				Settings/HowTo/HowToSync.swift,
+				Settings/HowTo/HowToTips.swift,
+				Settings/HowTo/HowToWidgets.swift,
+				Settings/PreviousAnnouncementsView.swift,
+				Settings/SettingsState.swift,
+				Settings/SettingsView.swift,
+				Sync/SyncState.swift,
+				Sync/SyncView.swift,
+			);
+			target = 96A8E0AD2DB5CAFF00A47601 /* YABAShare */;
+		};
+		967242C22F9EB9F70087D617 /* Exceptions for "YABAMobile" folder in "YABAShareMac" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Core/Components/ColorPicker/YabaColorPicker.swift,
+				Core/Components/Gradient/AnimatedGradient.swift,
+				Core/Components/Icon/YabaIconView.swift,
+				Core/Components/IconPicker/IconPickerView.swift,
+				Core/Components/Item/Annotation/AnnotationItemView.swift,
+				Core/Components/Item/Annotation/AnnotationPreviewItemView.swift,
+				Core/Components/Item/Annotation/BaseAnnotationItemView.swift,
+				Core/Components/Item/AnnouncementView.swift,
+				Core/Components/Item/Bookmark/BookmarkItemState.swift,
+				Core/Components/Item/Bookmark/BookmarkItemView.swift,
+				Core/Components/Item/Collection/CollectionItemOverflowMenu.swift,
+				Core/Components/Item/Collection/CollectionItemState.swift,
+				Core/Components/Item/Collection/FolderItemView.swift,
+				Core/Components/Item/Collection/PresentableFolderItemView.swift,
+				Core/Components/Item/Collection/PresentableTagItemView.swift,
+				Core/Components/Item/Collection/TagItemView.swift,
+				Core/Components/Item/Shared/ItemListRowChrome.swift,
+				Core/Components/MacSpecific/MacOSHoverableToolbarIcon.swift,
+				Core/Components/Media/CameraCapturePicker.swift,
+				Core/Components/Selection/SelectFolderContent.swift,
+				Core/Components/Selection/SelectTagsContent.swift,
+				Core/Components/Settings/ContentAppearancePicker.swift,
+				Core/Components/Settings/FABLocationPicker.swift,
+				Core/Components/Settings/LanguagePicker.swift,
+				Core/Components/Settings/SortingPicker.swift,
+				Core/Components/Settings/ThemePicker.swift,
+				Core/Components/Share/ActivityItemsShareSheet.swift,
+				Core/Components/Share/ShareSheet.swift,
+				Core/Components/Toast/CoreToastOverlayView.swift,
+				Core/Components/ZoomablePannableView.swift,
+				Core/Navigation/BookmarkDetailRouterView.swift,
+				Core/Navigation/DeepLinkManager.swift,
+				Core/Navigation/DetailColumnPlaceholderView.swift,
+				Core/Navigation/DetailColumnRouter.swift,
+				Core/Navigation/NavigationDestination.swift,
+				Core/Navigation/YabaNavigationView.swift,
+				Core/Sync/Model/ConnectedDevice.swift,
+				Core/Sync/Model/DeviceType.swift,
+				Core/Sync/Model/NetworkSyncError.swift,
+				Core/Sync/Model/SyncConflict.swift,
+				Core/Sync/Model/SyncMergeResult.swift,
+				Core/Sync/Model/SyncModels.swift,
+				Core/Sync/Network/NetworkSyncManager.swift,
+				Core/Sync/Network/NetworkSyncService.swift,
+				Core/Util/InverseLabelStyle.swift,
+				Core/Util/StatusMenuHelper.swift,
+				"Core/Util/UINavigationController+Extension.swift",
+				Creation/Annotation/AnnotationCreationSheet.swift,
+				Creation/Bookmark/Flow/BookmarkCreationRouting.swift,
+				Creation/Bookmark/Flow/BookmarkEditContainer.swift,
+				Creation/Bookmark/Flow/BookmarkFlowContext.swift,
+				Creation/Bookmark/Flow/BookmarkFlowSheet.swift,
+				Creation/Bookmark/Flow/BookmarkKindCreationSheet.swift,
+				Creation/Bookmark/Forms/BookmarkKindForm.swift,
+				Creation/Bookmark/Forms/BookmarkRouteSelectionContent.swift,
+				Creation/Bookmark/Forms/CanvmarkCreationContent.swift,
+				Creation/Bookmark/Forms/DocmarkCreationContent.swift,
+				Creation/Bookmark/Forms/ImagemarkCreationContent.swift,
+				Creation/Bookmark/Forms/LinkmarkCreationContent.swift,
+				Creation/Bookmark/Forms/NotemarkCreationContent.swift,
+				Creation/Bookmark/Shared/BookmarkCreationFolderVisuals.swift,
+				Creation/Bookmark/Shared/BookmarkCreationPreviewListRowBackground.swift,
+				Creation/Bookmark/Shared/BookmarkFlowHydration.swift,
+				Creation/Bookmark/Shared/BookmarkFolderTagSheetModifier.swift,
+				Creation/Bookmark/Shared/BookmarkFormFolderTagRows.swift,
+				Creation/Folder/FolderCreationContent.swift,
+				Creation/Tag/TagCreationContent.swift,
+				Detail/Bookmark/Imagemark/ImagemarkDetailInfoSheet.swift,
+				Detail/Bookmark/Imagemark/ImagemarkDetailView.swift,
+				Detail/Bookmark/Linkmark/LinkmarkDetailInfoSheet.swift,
+				Detail/Bookmark/Linkmark/LinkmarkDetailView.swift,
+				Detail/Bookmark/Linkmark/LinkmarkReadableWebView.swift,
+				Detail/Bookmark/Linkmark/LinkmarkToolbar.swift,
+				Detail/Bookmark/Linkmark/LinkmarkWebDriver.swift,
+				Detail/Folder/FolderDetailView.swift,
+				Detail/Tag/TagDetailView.swift,
+				Home/Components/HomeAnnouncementsView.swift,
+				Home/Components/HomeCollectionView.swift,
+				Home/Components/HomeCreateContentFAB.swift,
+				Home/Components/HomeRecentsView.swift,
+				Home/HomeState.swift,
+				Home/HomeView.swift,
+				Onboarding/NameDeviceView.swift,
+				Onboarding/OnboardingState.swift,
+				Onboarding/OnboardingView.swift,
+				Onboarding/Pages/DonePage.swift,
+				Onboarding/Pages/GenerationPage.swift,
+				Onboarding/Pages/HowToPage.swift,
+				Onboarding/Pages/PromisesPage.swift,
+				Onboarding/Pages/PurposePage.swift,
+				Onboarding/Pages/WelcomePage.swift,
+				Search/SearchView.swift,
+				Settings/EventsLogView.swift,
+				Settings/HowTo/HowToGuideView.swift,
+				Settings/HowTo/HowToKeyboard.swift,
+				Settings/HowTo/HowToReminders.swift,
+				Settings/HowTo/HowToShare.swift,
+				Settings/HowTo/HowToSync.swift,
+				Settings/HowTo/HowToTips.swift,
+				Settings/HowTo/HowToWidgets.swift,
+				Settings/PreviousAnnouncementsView.swift,
+				Settings/SettingsState.swift,
+				Settings/SettingsView.swift,
+				Sync/SyncState.swift,
+				Sync/SyncView.swift,
+			);
+			target = 96EB67122DD94580009EB9EC /* YABAShareMac */;
+		};
+		967242C32F9EB9F70087D617 /* Exceptions for "YABAMobile" folder in "YABAStatusMenuItem" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Core/Components/ColorPicker/YabaColorPicker.swift,
+				Core/Components/Gradient/AnimatedGradient.swift,
+				Core/Components/Icon/YabaIconView.swift,
+				Core/Components/IconPicker/IconPickerView.swift,
+				Core/Components/Item/Annotation/AnnotationItemView.swift,
+				Core/Components/Item/Annotation/AnnotationPreviewItemView.swift,
+				Core/Components/Item/Annotation/BaseAnnotationItemView.swift,
+				Core/Components/Item/AnnouncementView.swift,
+				Core/Components/Item/Bookmark/BookmarkItemState.swift,
+				Core/Components/Item/Bookmark/BookmarkItemView.swift,
+				Core/Components/Item/Collection/CollectionItemOverflowMenu.swift,
+				Core/Components/Item/Collection/CollectionItemState.swift,
+				Core/Components/Item/Collection/FolderItemView.swift,
+				Core/Components/Item/Collection/PresentableFolderItemView.swift,
+				Core/Components/Item/Collection/PresentableTagItemView.swift,
+				Core/Components/Item/Collection/TagItemView.swift,
+				Core/Components/Item/Shared/ItemListRowChrome.swift,
+				Core/Components/MacSpecific/MacOSHoverableToolbarIcon.swift,
+				Core/Components/Media/CameraCapturePicker.swift,
+				Core/Components/Selection/SelectFolderContent.swift,
+				Core/Components/Selection/SelectTagsContent.swift,
+				Core/Components/Settings/ContentAppearancePicker.swift,
+				Core/Components/Settings/FABLocationPicker.swift,
+				Core/Components/Settings/LanguagePicker.swift,
+				Core/Components/Settings/SortingPicker.swift,
+				Core/Components/Settings/ThemePicker.swift,
+				Core/Components/Share/ActivityItemsShareSheet.swift,
+				Core/Components/Share/ShareSheet.swift,
+				Core/Components/Toast/CoreToastOverlayView.swift,
+				Core/Components/ZoomablePannableView.swift,
+				Core/Navigation/BookmarkDetailRouterView.swift,
+				Core/Navigation/DeepLinkManager.swift,
+				Core/Navigation/DetailColumnPlaceholderView.swift,
+				Core/Navigation/DetailColumnRouter.swift,
+				Core/Navigation/NavigationDestination.swift,
+				Core/Navigation/YabaNavigationView.swift,
+				Core/Sync/Model/ConnectedDevice.swift,
+				Core/Sync/Model/DeviceType.swift,
+				Core/Sync/Model/NetworkSyncError.swift,
+				Core/Sync/Model/SyncConflict.swift,
+				Core/Sync/Model/SyncMergeResult.swift,
+				Core/Sync/Model/SyncModels.swift,
+				Core/Sync/Network/NetworkSyncManager.swift,
+				Core/Sync/Network/NetworkSyncService.swift,
+				Core/Util/StatusMenuHelper.swift,
+				"Core/Util/UINavigationController+Extension.swift",
+				Creation/Annotation/AnnotationCreationSheet.swift,
+				Creation/Bookmark/Flow/BookmarkCreationRouting.swift,
+				Creation/Bookmark/Flow/BookmarkEditContainer.swift,
+				Creation/Bookmark/Flow/BookmarkFlowContext.swift,
+				Creation/Bookmark/Flow/BookmarkFlowSheet.swift,
+				Creation/Bookmark/Flow/BookmarkKindCreationSheet.swift,
+				Creation/Bookmark/Forms/BookmarkKindForm.swift,
+				Creation/Bookmark/Forms/BookmarkRouteSelectionContent.swift,
+				Creation/Bookmark/Forms/CanvmarkCreationContent.swift,
+				Creation/Bookmark/Forms/DocmarkCreationContent.swift,
+				Creation/Bookmark/Forms/ImagemarkCreationContent.swift,
+				Creation/Bookmark/Forms/LinkmarkCreationContent.swift,
+				Creation/Bookmark/Forms/NotemarkCreationContent.swift,
+				Creation/Bookmark/Shared/BookmarkCreationFolderVisuals.swift,
+				Creation/Bookmark/Shared/BookmarkCreationPreviewListRowBackground.swift,
+				Creation/Bookmark/Shared/BookmarkFlowHydration.swift,
+				Creation/Bookmark/Shared/BookmarkFolderTagSheetModifier.swift,
+				Creation/Bookmark/Shared/BookmarkFormFolderTagRows.swift,
+				Creation/Folder/FolderCreationContent.swift,
+				Creation/Tag/TagCreationContent.swift,
+				Detail/Bookmark/Imagemark/ImagemarkDetailInfoSheet.swift,
+				Detail/Bookmark/Imagemark/ImagemarkDetailView.swift,
+				Detail/Bookmark/Linkmark/LinkmarkDetailInfoSheet.swift,
+				Detail/Bookmark/Linkmark/LinkmarkDetailView.swift,
+				Detail/Bookmark/Linkmark/LinkmarkReadableWebView.swift,
+				Detail/Bookmark/Linkmark/LinkmarkToolbar.swift,
+				Detail/Bookmark/Linkmark/LinkmarkWebDriver.swift,
+				Detail/Folder/FolderDetailView.swift,
+				Detail/Tag/TagDetailView.swift,
+				Home/Components/HomeAnnouncementsView.swift,
+				Home/Components/HomeCollectionView.swift,
+				Home/Components/HomeCreateContentFAB.swift,
+				Home/Components/HomeRecentsView.swift,
+				Home/HomeState.swift,
+				Home/HomeView.swift,
+				Onboarding/NameDeviceView.swift,
+				Onboarding/OnboardingState.swift,
+				Onboarding/OnboardingView.swift,
+				Onboarding/Pages/DonePage.swift,
+				Onboarding/Pages/GenerationPage.swift,
+				Onboarding/Pages/HowToPage.swift,
+				Onboarding/Pages/PromisesPage.swift,
+				Onboarding/Pages/PurposePage.swift,
+				Onboarding/Pages/WelcomePage.swift,
+				Search/SearchView.swift,
+				Settings/EventsLogView.swift,
+				Settings/HowTo/HowToGuideView.swift,
+				Settings/HowTo/HowToKeyboard.swift,
+				Settings/HowTo/HowToReminders.swift,
+				Settings/HowTo/HowToShare.swift,
+				Settings/HowTo/HowToSync.swift,
+				Settings/HowTo/HowToTips.swift,
+				Settings/HowTo/HowToWidgets.swift,
+				Settings/PreviousAnnouncementsView.swift,
+				Settings/SettingsState.swift,
+				Settings/SettingsView.swift,
+				Sync/SyncState.swift,
+				Sync/SyncView.swift,
+			);
+			target = 967B9A4A2DD8D3EF00181AA1 /* YABAStatusMenuItem */;
+		};
+		967242C42F9EB9F70087D617 /* Exceptions for "YABAMobile" folder in "YABAKeyboard" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Core/Components/Item/Annotation/AnnotationItemView.swift,
+				Core/Components/Item/Annotation/AnnotationPreviewItemView.swift,
+				Core/Components/Item/Annotation/BaseAnnotationItemView.swift,
+				Core/Components/Item/AnnouncementView.swift,
+				Core/Components/Item/Bookmark/BookmarkItemState.swift,
+				Core/Components/Item/Bookmark/BookmarkItemView.swift,
+				Core/Components/Item/Collection/CollectionItemOverflowMenu.swift,
+				Core/Components/Item/Collection/CollectionItemState.swift,
+				Core/Components/Item/Collection/FolderItemView.swift,
+				Core/Components/Item/Collection/PresentableFolderItemView.swift,
+				Core/Components/Item/Collection/PresentableTagItemView.swift,
+				Core/Components/Item/Collection/TagItemView.swift,
+				Core/Components/Item/Shared/ItemListRowChrome.swift,
+				Core/Components/MacSpecific/MacOSHoverableToolbarIcon.swift,
+				Core/Components/Media/CameraCapturePicker.swift,
+				Core/Components/Selection/SelectFolderContent.swift,
+				Core/Components/Selection/SelectTagsContent.swift,
+				Core/Components/Settings/FABLocationPicker.swift,
+				Core/Components/Settings/LanguagePicker.swift,
+				Core/Components/Settings/ThemePicker.swift,
+				Core/Components/Share/ActivityItemsShareSheet.swift,
+				Core/Components/Toast/CoreToastOverlayView.swift,
+				Core/Components/ZoomablePannableView.swift,
+				Core/Navigation/BookmarkDetailRouterView.swift,
+				Core/Navigation/DetailColumnPlaceholderView.swift,
+				Core/Navigation/DetailColumnRouter.swift,
+				Core/Navigation/YabaNavigationView.swift,
+				Core/Sync/Model/ConnectedDevice.swift,
+				Core/Sync/Model/DeviceType.swift,
+				Core/Sync/Model/NetworkSyncError.swift,
+				Core/Sync/Model/SyncConflict.swift,
+				Core/Sync/Model/SyncMergeResult.swift,
+				Core/Sync/Model/SyncModels.swift,
+				Core/Sync/Network/NetworkSyncManager.swift,
+				Core/Sync/Network/NetworkSyncService.swift,
+				Core/Util/AnnouncementSeverity.swift,
+				Core/Util/CreationType.swift,
+				Core/Util/StatusMenuHelper.swift,
+				"Core/Util/UINavigationController+Extension.swift",
+				Creation/Annotation/AnnotationCreationSheet.swift,
+				Creation/Bookmark/Flow/BookmarkCreationRouting.swift,
+				Creation/Bookmark/Flow/BookmarkEditContainer.swift,
+				Creation/Bookmark/Flow/BookmarkFlowContext.swift,
+				Creation/Bookmark/Flow/BookmarkFlowSheet.swift,
+				Creation/Bookmark/Flow/BookmarkKindCreationSheet.swift,
+				Creation/Bookmark/Forms/BookmarkKindForm.swift,
+				Creation/Bookmark/Forms/BookmarkRouteSelectionContent.swift,
+				Creation/Bookmark/Forms/CanvmarkCreationContent.swift,
+				Creation/Bookmark/Forms/DocmarkCreationContent.swift,
+				Creation/Bookmark/Forms/ImagemarkCreationContent.swift,
+				Creation/Bookmark/Forms/LinkmarkCreationContent.swift,
+				Creation/Bookmark/Forms/NotemarkCreationContent.swift,
+				Creation/Bookmark/Shared/BookmarkCreationFolderVisuals.swift,
+				Creation/Bookmark/Shared/BookmarkCreationPreviewListRowBackground.swift,
+				Creation/Bookmark/Shared/BookmarkFlowHydration.swift,
+				Creation/Bookmark/Shared/BookmarkFolderTagSheetModifier.swift,
+				Creation/Bookmark/Shared/BookmarkFormFolderTagRows.swift,
+				Creation/Folder/FolderCreationContent.swift,
+				Creation/Tag/TagCreationContent.swift,
+				Detail/Bookmark/Imagemark/ImagemarkDetailInfoSheet.swift,
+				Detail/Bookmark/Imagemark/ImagemarkDetailView.swift,
+				Detail/Bookmark/Linkmark/LinkmarkDetailInfoSheet.swift,
+				Detail/Bookmark/Linkmark/LinkmarkDetailView.swift,
+				Detail/Bookmark/Linkmark/LinkmarkReadableWebView.swift,
+				Detail/Bookmark/Linkmark/LinkmarkToolbar.swift,
+				Detail/Bookmark/Linkmark/LinkmarkWebDriver.swift,
+				Detail/Folder/FolderDetailView.swift,
+				Detail/Tag/TagDetailView.swift,
+				Home/Components/HomeAnnouncementsView.swift,
+				Home/Components/HomeCollectionView.swift,
+				Home/Components/HomeCreateContentFAB.swift,
+				Home/Components/HomeRecentsView.swift,
+				Home/HomeState.swift,
+				Home/HomeView.swift,
+				Onboarding/NameDeviceView.swift,
+				Onboarding/OnboardingState.swift,
+				Onboarding/OnboardingView.swift,
+				Onboarding/Pages/DonePage.swift,
+				Onboarding/Pages/GenerationPage.swift,
+				Onboarding/Pages/HowToPage.swift,
+				Onboarding/Pages/PromisesPage.swift,
+				Onboarding/Pages/PurposePage.swift,
+				Onboarding/Pages/WelcomePage.swift,
+				Search/SearchView.swift,
+				Settings/EventsLogView.swift,
+				Settings/HowTo/HowToGuideView.swift,
+				Settings/HowTo/HowToKeyboard.swift,
+				Settings/HowTo/HowToReminders.swift,
+				Settings/HowTo/HowToShare.swift,
+				Settings/HowTo/HowToSync.swift,
+				Settings/HowTo/HowToTips.swift,
+				Settings/HowTo/HowToWidgets.swift,
+				Settings/PreviousAnnouncementsView.swift,
+				Settings/SettingsState.swift,
+				Settings/SettingsView.swift,
+				Sync/SyncState.swift,
+				Sync/SyncView.swift,
+			);
+			target = 96EA396B2E56380700B8411D /* YABAKeyboard */;
+		};
+		967242C52F9EB9F70087D617 /* Exceptions for "YABAMobile" folder in "YABAWidgetsExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Core/Components/ColorPicker/YabaColorPicker.swift,
+				Core/Components/IconPicker/IconPickerView.swift,
+				Core/Components/Item/Annotation/AnnotationItemView.swift,
+				Core/Components/Item/Annotation/AnnotationPreviewItemView.swift,
+				Core/Components/Item/Annotation/BaseAnnotationItemView.swift,
+				Core/Components/Item/AnnouncementView.swift,
+				Core/Components/Item/Bookmark/BookmarkItemState.swift,
+				Core/Components/Item/Bookmark/BookmarkItemView.swift,
+				Core/Components/Item/Collection/CollectionItemOverflowMenu.swift,
+				Core/Components/Item/Collection/CollectionItemState.swift,
+				Core/Components/Item/Collection/FolderItemView.swift,
+				Core/Components/Item/Collection/PresentableFolderItemView.swift,
+				Core/Components/Item/Collection/PresentableTagItemView.swift,
+				Core/Components/Item/Collection/TagItemView.swift,
+				Core/Components/Item/Shared/ItemListRowChrome.swift,
+				Core/Components/MacSpecific/MacOSHoverableToolbarIcon.swift,
+				Core/Components/Media/CameraCapturePicker.swift,
+				Core/Components/Selection/SelectFolderContent.swift,
+				Core/Components/Selection/SelectTagsContent.swift,
+				Core/Components/Settings/ContentAppearancePicker.swift,
+				Core/Components/Settings/FABLocationPicker.swift,
+				Core/Components/Settings/LanguagePicker.swift,
+				Core/Components/Settings/SortingPicker.swift,
+				Core/Components/Settings/ThemePicker.swift,
+				Core/Components/Share/ActivityItemsShareSheet.swift,
+				Core/Components/Share/ShareSheet.swift,
+				Core/Components/Toast/CoreToastOverlayView.swift,
+				Core/Components/ZoomablePannableView.swift,
+				Core/Navigation/BookmarkDetailRouterView.swift,
+				Core/Navigation/DeepLinkManager.swift,
+				Core/Navigation/DetailColumnPlaceholderView.swift,
+				Core/Navigation/DetailColumnRouter.swift,
+				Core/Navigation/NavigationDestination.swift,
+				Core/Navigation/YabaNavigationView.swift,
+				Core/Sync/Model/ConnectedDevice.swift,
+				Core/Sync/Model/DeviceType.swift,
+				Core/Sync/Model/NetworkSyncError.swift,
+				Core/Sync/Model/SyncConflict.swift,
+				Core/Sync/Model/SyncMergeResult.swift,
+				Core/Sync/Model/SyncModels.swift,
+				Core/Sync/Network/NetworkSyncManager.swift,
+				Core/Sync/Network/NetworkSyncService.swift,
+				Core/Util/AnnouncementSeverity.swift,
+				Core/Util/CreationType.swift,
+				Core/Util/InverseLabelStyle.swift,
+				Core/Util/PreviewContentAppearance.swift,
+				Core/Util/StatusMenuHelper.swift,
+				"Core/Util/UINavigationController+Extension.swift",
+				Creation/Annotation/AnnotationCreationSheet.swift,
+				Creation/Bookmark/Flow/BookmarkCreationRouting.swift,
+				Creation/Bookmark/Flow/BookmarkEditContainer.swift,
+				Creation/Bookmark/Flow/BookmarkFlowContext.swift,
+				Creation/Bookmark/Flow/BookmarkFlowSheet.swift,
+				Creation/Bookmark/Flow/BookmarkKindCreationSheet.swift,
+				Creation/Bookmark/Forms/BookmarkKindForm.swift,
+				Creation/Bookmark/Forms/BookmarkRouteSelectionContent.swift,
+				Creation/Bookmark/Forms/CanvmarkCreationContent.swift,
+				Creation/Bookmark/Forms/DocmarkCreationContent.swift,
+				Creation/Bookmark/Forms/ImagemarkCreationContent.swift,
+				Creation/Bookmark/Forms/LinkmarkCreationContent.swift,
+				Creation/Bookmark/Forms/NotemarkCreationContent.swift,
+				Creation/Bookmark/Shared/BookmarkCreationFolderVisuals.swift,
+				Creation/Bookmark/Shared/BookmarkCreationPreviewListRowBackground.swift,
+				Creation/Bookmark/Shared/BookmarkFlowHydration.swift,
+				Creation/Bookmark/Shared/BookmarkFolderTagSheetModifier.swift,
+				Creation/Bookmark/Shared/BookmarkFormFolderTagRows.swift,
+				Creation/Folder/FolderCreationContent.swift,
+				Creation/Tag/TagCreationContent.swift,
+				Detail/Bookmark/Imagemark/ImagemarkDetailInfoSheet.swift,
+				Detail/Bookmark/Imagemark/ImagemarkDetailView.swift,
+				Detail/Bookmark/Linkmark/LinkmarkDetailInfoSheet.swift,
+				Detail/Bookmark/Linkmark/LinkmarkDetailView.swift,
+				Detail/Bookmark/Linkmark/LinkmarkReadableWebView.swift,
+				Detail/Bookmark/Linkmark/LinkmarkToolbar.swift,
+				Detail/Bookmark/Linkmark/LinkmarkWebDriver.swift,
+				Detail/Folder/FolderDetailView.swift,
+				Detail/Tag/TagDetailView.swift,
+				Home/Components/HomeAnnouncementsView.swift,
+				Home/Components/HomeCollectionView.swift,
+				Home/Components/HomeCreateContentFAB.swift,
+				Home/Components/HomeRecentsView.swift,
+				Home/HomeState.swift,
+				Home/HomeView.swift,
+				Onboarding/NameDeviceView.swift,
+				Onboarding/OnboardingState.swift,
+				Onboarding/OnboardingView.swift,
+				Onboarding/Pages/DonePage.swift,
+				Onboarding/Pages/GenerationPage.swift,
+				Onboarding/Pages/HowToPage.swift,
+				Onboarding/Pages/PromisesPage.swift,
+				Onboarding/Pages/PurposePage.swift,
+				Onboarding/Pages/WelcomePage.swift,
+				Search/SearchView.swift,
+				Settings/EventsLogView.swift,
+				Settings/HowTo/HowToGuideView.swift,
+				Settings/HowTo/HowToKeyboard.swift,
+				Settings/HowTo/HowToReminders.swift,
+				Settings/HowTo/HowToShare.swift,
+				Settings/HowTo/HowToSync.swift,
+				Settings/HowTo/HowToTips.swift,
+				Settings/HowTo/HowToWidgets.swift,
+				Settings/PreviousAnnouncementsView.swift,
+				Settings/SettingsState.swift,
+				Settings/SettingsView.swift,
+				Sync/SyncState.swift,
+				Sync/SyncView.swift,
+			);
+			target = 96EA39BA2E58EB8E00B8411D /* YABAWidgetsExtension */;
+		};
+		967242C62F9EBA510087D617 /* Exceptions for "YABAMobile" folder in "YABA" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			platformFiltersByRelativePath = {
+				Core/Components/ColorPicker/YabaColorPicker.swift = (ios, );
+				Core/Components/Gradient/AnimatedGradient.swift = (ios, );
+				Core/Components/Icon/YabaIconView.swift = (ios, );
+				Core/Components/IconPicker/IconPickerView.swift = (ios, );
+				Core/Components/Item/Annotation/AnnotationItemView.swift = (ios, );
+				Core/Components/Item/Annotation/AnnotationPreviewItemView.swift = (ios, );
+				Core/Components/Item/Annotation/BaseAnnotationItemView.swift = (ios, );
+				Core/Components/Item/AnnouncementView.swift = (ios, );
+				Core/Components/Item/Bookmark/BookmarkItemState.swift = (ios, );
+				Core/Components/Item/Bookmark/BookmarkItemView.swift = (ios, );
+				Core/Components/Item/Collection/CollectionItemOverflowMenu.swift = (ios, );
+				Core/Components/Item/Collection/CollectionItemState.swift = (ios, );
+				Core/Components/Item/Collection/FolderItemView.swift = (ios, );
+				Core/Components/Item/Collection/PresentableFolderItemView.swift = (ios, );
+				Core/Components/Item/Collection/PresentableTagItemView.swift = (ios, );
+				Core/Components/Item/Collection/TagItemView.swift = (ios, );
+				Core/Components/Item/Shared/ItemListRowChrome.swift = (ios, );
+				Core/Components/MacSpecific/MacOSHoverableToolbarIcon.swift = (ios, );
+				Core/Components/Media/CameraCapturePicker.swift = (ios, );
+				Core/Components/Selection/SelectFolderContent.swift = (ios, );
+				Core/Components/Selection/SelectTagsContent.swift = (ios, );
+				Core/Components/Settings/ContentAppearancePicker.swift = (ios, );
+				Core/Components/Settings/FABLocationPicker.swift = (ios, );
+				Core/Components/Settings/LanguagePicker.swift = (ios, );
+				Core/Components/Settings/SortingPicker.swift = (ios, );
+				Core/Components/Settings/ThemePicker.swift = (ios, );
+				Core/Components/Share/ActivityItemsShareSheet.swift = (ios, );
+				Core/Components/Share/ShareSheet.swift = (ios, );
+				Core/Components/Toast/CoreToastOverlayView.swift = (ios, );
+				Core/Components/ZoomablePannableView.swift = (ios, );
+				Core/Navigation/BookmarkDetailRouterView.swift = (ios, );
+				Core/Navigation/DeepLinkManager.swift = (ios, );
+				Core/Navigation/DetailColumnPlaceholderView.swift = (ios, );
+				Core/Navigation/DetailColumnRouter.swift = (ios, );
+				Core/Navigation/NavigationDestination.swift = (ios, );
+				Core/Navigation/YabaNavigationView.swift = (ios, );
+				Core/Sync/Model/ConnectedDevice.swift = (ios, );
+				Core/Sync/Model/DeviceType.swift = (ios, );
+				Core/Sync/Model/NetworkSyncError.swift = (ios, );
+				Core/Sync/Model/SyncConflict.swift = (ios, );
+				Core/Sync/Model/SyncMergeResult.swift = (ios, );
+				Core/Sync/Model/SyncModels.swift = (ios, );
+				Core/Sync/Network/NetworkSyncManager.swift = (ios, );
+				Core/Sync/Network/NetworkSyncService.swift = (ios, );
+				Core/Util/AnnouncementSeverity.swift = (ios, );
+				Core/Util/CreationType.swift = (ios, );
+				Core/Util/InverseLabelStyle.swift = (ios, );
+				Core/Util/PreviewContentAppearance.swift = (ios, );
+				Core/Util/StatusMenuHelper.swift = (ios, );
+				"Core/Util/UINavigationController+Extension.swift" = (ios, );
+				Creation/Annotation/AnnotationCreationSheet.swift = (ios, );
+				Creation/Bookmark/Flow/BookmarkCreationRouting.swift = (ios, );
+				Creation/Bookmark/Flow/BookmarkEditContainer.swift = (ios, );
+				Creation/Bookmark/Flow/BookmarkFlowContext.swift = (ios, );
+				Creation/Bookmark/Flow/BookmarkFlowSheet.swift = (ios, );
+				Creation/Bookmark/Flow/BookmarkKindCreationSheet.swift = (ios, );
+				Creation/Bookmark/Forms/BookmarkKindForm.swift = (ios, );
+				Creation/Bookmark/Forms/BookmarkRouteSelectionContent.swift = (ios, );
+				Creation/Bookmark/Forms/CanvmarkCreationContent.swift = (ios, );
+				Creation/Bookmark/Forms/DocmarkCreationContent.swift = (ios, );
+				Creation/Bookmark/Forms/ImagemarkCreationContent.swift = (ios, );
+				Creation/Bookmark/Forms/LinkmarkCreationContent.swift = (ios, );
+				Creation/Bookmark/Forms/NotemarkCreationContent.swift = (ios, );
+				Creation/Bookmark/Shared/BookmarkCreationFolderVisuals.swift = (ios, );
+				Creation/Bookmark/Shared/BookmarkCreationPreviewListRowBackground.swift = (ios, );
+				Creation/Bookmark/Shared/BookmarkFlowHydration.swift = (ios, );
+				Creation/Bookmark/Shared/BookmarkFolderTagSheetModifier.swift = (ios, );
+				Creation/Bookmark/Shared/BookmarkFormFolderTagRows.swift = (ios, );
+				Creation/Folder/FolderCreationContent.swift = (ios, );
+				Creation/Tag/TagCreationContent.swift = (ios, );
+				Detail/Bookmark/Imagemark/ImagemarkDetailInfoSheet.swift = (ios, );
+				Detail/Bookmark/Imagemark/ImagemarkDetailView.swift = (ios, );
+				Detail/Bookmark/Linkmark/LinkmarkDetailInfoSheet.swift = (ios, );
+				Detail/Bookmark/Linkmark/LinkmarkDetailView.swift = (ios, );
+				Detail/Bookmark/Linkmark/LinkmarkReadableWebView.swift = (ios, );
+				Detail/Bookmark/Linkmark/LinkmarkToolbar.swift = (ios, );
+				Detail/Bookmark/Linkmark/LinkmarkWebDriver.swift = (ios, );
+				Detail/Folder/FolderDetailView.swift = (ios, );
+				Detail/Tag/TagDetailView.swift = (ios, );
+				Home/Components/HomeAnnouncementsView.swift = (ios, );
+				Home/Components/HomeCollectionView.swift = (ios, );
+				Home/Components/HomeCreateContentFAB.swift = (ios, );
+				Home/Components/HomeRecentsView.swift = (ios, );
+				Home/HomeState.swift = (ios, );
+				Home/HomeView.swift = (ios, );
+				Search/SearchView.swift = (ios, );
+			};
+			target = 96A8DFC12DB2F5A500A47601 /* YABA */;
+		};
 		96A8E0BC2DB5CAFF00A47601 /* Exceptions for "YABAShare" folder in "YABAShare" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -134,17 +765,6 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Assets.xcassets,
-				Core/Components/ColorPicker/YabaColorPicker.swift,
-				Core/Components/Gradient/AnimatedGradient.swift,
-				Core/Components/Icon/YabaIconView.swift,
-				Core/Components/IconPicker/IconPickerView.swift,
-				Core/Components/Item/AnnouncementView.swift,
-				Core/Components/Share/ShareSheet.swift,
-				Core/Util/AnnouncementSeverity.swift,
-				Core/Util/CreationType.swift,
-				Core/Util/InverseLabelStyle.swift,
-				Core/Util/PreviewContentAppearance.swift,
-				"Core/Util/UINavigationController+Extension.swift",
 				Credits.rtf,
 				LaunchScreen.storyboard,
 				Localizable.xcstrings,
@@ -165,17 +785,6 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Assets.xcassets,
-				Core/Components/ColorPicker/YabaColorPicker.swift,
-				Core/Components/Gradient/AnimatedGradient.swift,
-				Core/Components/Icon/YabaIconView.swift,
-				Core/Components/IconPicker/IconPickerView.swift,
-				Core/Components/Settings/ContentAppearancePicker.swift,
-				Core/Components/Settings/SortingPicker.swift,
-				Core/Components/Share/ShareSheet.swift,
-				Core/Navigation/DeepLinkManager.swift,
-				Core/Navigation/NavigationDestination.swift,
-				Core/Util/InverseLabelStyle.swift,
-				Core/Util/PreviewContentAppearance.swift,
 				LaunchScreen.storyboard,
 				Localizable.xcstrings,
 			);
@@ -191,10 +800,8 @@
 		96EA39D52E58ED9600B8411D /* Exceptions for "YABA" folder in "YABAWidgetsExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				App/AppDelegate.swift,
 				Assets.xcassets,
-				Core/App/AppDelegate.swift,
-				Core/Components/Gradient/AnimatedGradient.swift,
-				Core/Components/Icon/YabaIconView.swift,
 				LaunchScreen.storyboard,
 				Localizable.xcstrings,
 			);
@@ -224,10 +831,6 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Assets.xcassets,
-				Core/Util/AnnouncementSeverity.swift,
-				Core/Util/CreationType.swift,
-				Core/Util/InverseLabelStyle.swift,
-				Core/Util/PreviewContentAppearance.swift,
 				Credits.rtf,
 				Localizable.xcstrings,
 			);
@@ -244,9 +847,6 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Assets.xcassets,
-				Core/Util/AnnouncementSeverity.swift,
-				Core/Util/CreationType.swift,
-				Core/Util/PreviewContentAppearance.swift,
 				Credits.rtf,
 				Localizable.xcstrings,
 			);
@@ -255,6 +855,24 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		967242BF2F9EB9CD0087D617 /* YABAMobile */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				967242C62F9EBA510087D617 /* Exceptions for "YABAMobile" folder in "YABA" target */,
+				967242C12F9EB9F70087D617 /* Exceptions for "YABAMobile" folder in "YABAShare" target */,
+				967242C22F9EB9F70087D617 /* Exceptions for "YABAMobile" folder in "YABAShareMac" target */,
+				967242C32F9EB9F70087D617 /* Exceptions for "YABAMobile" folder in "YABAStatusMenuItem" target */,
+				967242C42F9EB9F70087D617 /* Exceptions for "YABAMobile" folder in "YABAKeyboard" target */,
+				967242C52F9EB9F70087D617 /* Exceptions for "YABAMobile" folder in "YABAWidgetsExtension" target */,
+			);
+			path = YABAMobile;
+			sourceTree = "<group>";
+		};
+		967242C02F9EB9D70087D617 /* YABAMac */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = YABAMac;
+			sourceTree = "<group>";
+		};
 		967B9A4C2DD8D3EF00181AA1 /* YABAStatusMenuItem */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = YABAStatusMenuItem;
@@ -385,17 +1003,19 @@
 		96A8DFB92DB2F5A500A47601 = {
 			isa = PBXGroup;
 			children = (
-				96DC37F12F9554D2005760E3 /* WebComponents */,
 				967B9A0D2DD80CFA00181AA1 /* Frameworks */,
 				96A8DFC32DB2F5A500A47601 /* Products */,
+				96DC37F12F9554D2005760E3 /* WebComponents */,
 				96A8DFC42DB2F5A500A47601 /* YABA */,
 				96D262F32E6CA6C4007F4285 /* YABA_Icon.icon */,
+				96DC5EE92F892665005760E3 /* YABACore */,
 				96EA396D2E56380700B8411D /* YABAKeyboard */,
+				967242C02F9EB9D70087D617 /* YABAMac */,
+				967242BF2F9EB9CD0087D617 /* YABAMobile */,
 				96A8E0AF2DB5CAFF00A47601 /* YABAShare */,
 				96EB67142DD94580009EB9EC /* YABAShareMac */,
 				967B9A4C2DD8D3EF00181AA1 /* YABAStatusMenuItem */,
 				96EA39C02E58EB8F00B8411D /* YABAWidgets */,
-				96DC5EE92F892665005760E3 /* YABACore */,
 			);
 			sourceTree = "<group>";
 		};
@@ -429,6 +1049,8 @@
 				96275B422DDBF342002D3541 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
+				967242BF2F9EB9CD0087D617 /* YABAMobile */,
+				967242C02F9EB9D70087D617 /* YABAMac */,
 				967B9A4C2DD8D3EF00181AA1 /* YABAStatusMenuItem */,
 				96DC5EE92F892665005760E3 /* YABACore */,
 			);
@@ -461,6 +1083,8 @@
 				96EA39CC2E58EB9000B8411D /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
+				967242BF2F9EB9CD0087D617 /* YABAMobile */,
+				967242C02F9EB9D70087D617 /* YABAMac */,
 				96A8DFC42DB2F5A500A47601 /* YABA */,
 				96DC5EE92F892665005760E3 /* YABACore */,
 			);
@@ -486,6 +1110,8 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				967242BF2F9EB9CD0087D617 /* YABAMobile */,
+				967242C02F9EB9D70087D617 /* YABAMac */,
 				96A8E0AF2DB5CAFF00A47601 /* YABAShare */,
 				96DC5EE92F892665005760E3 /* YABACore */,
 			);
@@ -511,6 +1137,8 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				967242BF2F9EB9CD0087D617 /* YABAMobile */,
+				967242C02F9EB9D70087D617 /* YABAMac */,
 				96DC5EE92F892665005760E3 /* YABACore */,
 				96EA396D2E56380700B8411D /* YABAKeyboard */,
 			);
@@ -536,6 +1164,8 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				967242BF2F9EB9CD0087D617 /* YABAMobile */,
+				967242C02F9EB9D70087D617 /* YABAMac */,
 				96DC5EE92F892665005760E3 /* YABACore */,
 				96EA39C02E58EB8F00B8411D /* YABAWidgets */,
 			);
@@ -561,6 +1191,8 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				967242BF2F9EB9CD0087D617 /* YABAMobile */,
+				967242C02F9EB9D70087D617 /* YABAMac */,
 				96DC5EE92F892665005760E3 /* YABACore */,
 				96EB67142DD94580009EB9EC /* YABAShareMac */,
 			);
@@ -742,7 +1374,9 @@
 		};
 		967B9A5D2DD8D68D00181AA1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			platformFilter = maccatalyst;
+			platformFilters = (
+				macos,
+			);
 			target = 967B9A4A2DD8D3EF00181AA1 /* YABAStatusMenuItem */;
 			targetProxy = 967B9A5C2DD8D68D00181AA1 /* PBXContainerItemProxy */;
 		};
@@ -754,19 +1388,23 @@
 		};
 		96EA39722E56380700B8411D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			platformFilter = ios;
+			platformFilters = (
+				ios,
+				xros,
+			);
 			target = 96EA396B2E56380700B8411D /* YABAKeyboard */;
 			targetProxy = 96EA39712E56380700B8411D /* PBXContainerItemProxy */;
 		};
 		96EA39CC2E58EB9000B8411D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			platformFilter = ios;
 			target = 96EA39BA2E58EB8E00B8411D /* YABAWidgetsExtension */;
 			targetProxy = 96EA39CB2E58EB9000B8411D /* PBXContainerItemProxy */;
 		};
 		96EB67242DD945A6009EB9EC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			platformFilter = maccatalyst;
+			platformFilters = (
+				macos,
+			);
 			target = 96EB67122DD94580009EB9EC /* YABAShareMac */;
 			targetProxy = 96EB67232DD945A6009EB9EC /* PBXContainerItemProxy */;
 		};
@@ -970,6 +1608,8 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_CAMERA = YES;
+				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = YES;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = YABA/Info.plist;
@@ -999,8 +1639,8 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator";
-				SUPPORTS_MACCATALYST = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_MODULES_AUTOLINK = YES;
@@ -1055,8 +1695,8 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator";
-				SUPPORTS_MACCATALYST = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_MODULES_AUTOLINK = YES;

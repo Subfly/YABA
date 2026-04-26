@@ -33,7 +33,6 @@ struct YABAApp: App {
                 // .environment(\.networkSyncManager, networkSyncManager)
                 .preferredColorScheme(preferredTheme.getScheme())
                 .onAppear {
-                    setupForMacCatalyst()
                     try? Tips.configure()
                     WidgetCenter.shared.reloadAllTimelines()
                 }
@@ -46,34 +45,5 @@ struct YABAApp: App {
                     }
                 }
         }
-        #if targetEnvironment(macCatalyst)
-        // Maybe one day I'll add some...
-        .commands {
-            CommandGroup(replacing: .newItem) { }
-            CommandGroup(replacing: .undoRedo) { }
-            CommandGroup(replacing: .pasteboard) { }
-            CommandGroup(replacing: .importExport) { }
-            CommandGroup(replacing: .newItem) { }
-            CommandGroup(replacing: .pasteboard) { }
-            CommandGroup(replacing: .printItem) { }
-            CommandGroup(replacing: .saveItem) { }
-            CommandGroup(replacing: .systemServices) { }
-            CommandGroup(replacing: .textEditing) { }
-        }
-        .commands {
-            CommandGroup(replacing: .textFormatting) { }
-            CommandGroup(replacing: .toolbar) { }
-            CommandGroup(replacing: .undoRedo) { }
-        }
-        #endif
-    }
-    
-    func setupForMacCatalyst() {
-        #if targetEnvironment(macCatalyst)
-        (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.titlebar?.titleVisibility = .hidden
-        UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.forEach { windowScene in
-            windowScene.sizeRestrictions?.minimumSize = CGSize(width: 1600, height: 960)
-        }
-        #endif
     }
 }
