@@ -1463,6 +1463,7 @@
       }
     },
     "Bookmark Detail Delete Readable Version Title" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2136,6 +2137,7 @@
       }
     },
     "Bookmark Detail No Versions Message" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2146,6 +2148,7 @@
       }
     },
     "Bookmark Detail No Versions Title" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2534,6 +2537,7 @@
       }
     },
     "Bookmark Detail Sheet Tab Versions Title" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2554,6 +2558,7 @@
       }
     },
     "Bookmark Detail Update Menu Title" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2564,6 +2569,7 @@
       }
     },
     "Bookmark Detail Update Readable Version Action" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2579,36 +2585,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "URL"
-          }
-        }
-      }
-    },
-    "Bookmark Detail Version Item Annotation Count Many %lld" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%lld annotations"
-          }
-        }
-      }
-    },
-    "Bookmark Detail Version Item Annotation Count One" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "1 annotation"
-          }
-        }
-      }
-    },
-    "Bookmark Detail Version Item Annotation Count Zero" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "No annotations"
           }
         }
       }

@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		967B9A5B2DD8D68D00181AA1 /* YABAStatusMenuItem.app in Resources */ = {isa = PBXBuildFile; fileRef = 967B9A4B2DD8D3EF00181AA1 /* YABAStatusMenuItem.app */; platformFilters = (macos, ); };
-		967B9A5F2DD8D6E400181AA1 /* YABAStatusMenuItem.app in Copy Menu Item */ = {isa = PBXBuildFile; fileRef = 967B9A4B2DD8D3EF00181AA1 /* YABAStatusMenuItem.app */; platformFilters = (macos, ); settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		967B9A5B2DD8D68D00181AA1 /* YABAStatusMenuItem.app in Resources */ = {isa = PBXBuildFile; fileRef = 967B9A4B2DD8D3EF00181AA1 /* YABAStatusMenuItem.app */; platformFilter = maccatalyst; };
+		967B9A5F2DD8D6E400181AA1 /* YABAStatusMenuItem.app in Copy Menu Item */ = {isa = PBXBuildFile; fileRef = 967B9A4B2DD8D3EF00181AA1 /* YABAStatusMenuItem.app */; platformFilter = maccatalyst; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		96A8E0B82DB5CAFF00A47601 /* YABAShare.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 96A8E0AE2DB5CAFF00A47601 /* YABAShare.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		96D262F42E6CA6C4007F4285 /* YABA_Icon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 96D262F32E6CA6C4007F4285 /* YABA_Icon.icon */; };
 		96D262F52E6CA6C4007F4285 /* YABA_Icon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 96D262F32E6CA6C4007F4285 /* YABA_Icon.icon */; };
@@ -19,7 +19,6 @@
 		96DC37F22F9554D2005760E3 /* WebComponents in Resources */ = {isa = PBXBuildFile; fileRef = 96DC37F12F9554D2005760E3 /* WebComponents */; };
 		96DCA2472F9D6FD6005760E3 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 96DCA2462F9D6FD6005760E3 /* SwiftSoup */; };
 		96DCA24A2F9D6FE1005760E3 /* EPUBKit in Frameworks */ = {isa = PBXBuildFile; productRef = 96DCA2492F9D6FE1005760E3 /* EPUBKit */; };
-		96DCA24D2F9D6FF1005760E3 /* Markdown in Frameworks */ = {isa = PBXBuildFile; productRef = 96DCA24C2F9D6FF1005760E3 /* Markdown */; };
 		96DCA25A2F9D7002005760E3 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 96DCA2462F9D6FD6005760E3 /* SwiftSoup */; };
 		96DCA25B2F9D7002005760E3 /* EPUBKit in Frameworks */ = {isa = PBXBuildFile; productRef = 96DCA2492F9D6FE1005760E3 /* EPUBKit */; };
 		96DCA25C2F9D7002005760E3 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 96DCA2462F9D6FD6005760E3 /* SwiftSoup */; };
@@ -30,16 +29,11 @@
 		96DCA2612F9D7002005760E3 /* EPUBKit in Frameworks */ = {isa = PBXBuildFile; productRef = 96DCA2492F9D6FE1005760E3 /* EPUBKit */; };
 		96DCA2622F9D7002005760E3 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 96DCA2462F9D6FD6005760E3 /* SwiftSoup */; };
 		96DCA2632F9D7002005760E3 /* EPUBKit in Frameworks */ = {isa = PBXBuildFile; productRef = 96DCA2492F9D6FE1005760E3 /* EPUBKit */; };
-		96DCA2642F9D7002005760E3 /* Markdown in Frameworks */ = {isa = PBXBuildFile; productRef = 96DCA24C2F9D6FF1005760E3 /* Markdown */; };
-		96DCA2652F9D7002005760E3 /* Markdown in Frameworks */ = {isa = PBXBuildFile; productRef = 96DCA24C2F9D6FF1005760E3 /* Markdown */; };
-		96DCA2662F9D7002005760E3 /* Markdown in Frameworks */ = {isa = PBXBuildFile; productRef = 96DCA24C2F9D6FF1005760E3 /* Markdown */; };
-		96DCA2672F9D7002005760E3 /* Markdown in Frameworks */ = {isa = PBXBuildFile; productRef = 96DCA24C2F9D6FF1005760E3 /* Markdown */; };
-		96DCA2682F9D7002005760E3 /* Markdown in Frameworks */ = {isa = PBXBuildFile; productRef = 96DCA24C2F9D6FF1005760E3 /* Markdown */; };
 		96EA39732E56380700B8411D /* YABAKeyboard.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 96EA396C2E56380700B8411D /* YABAKeyboard.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		96EA39BD2E58EB8F00B8411D /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96EA39BC2E58EB8F00B8411D /* WidgetKit.framework */; };
 		96EA39BF2E58EB8F00B8411D /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96EA39BE2E58EB8F00B8411D /* SwiftUI.framework */; };
-		96EA39CD2E58EB9000B8411D /* YABAWidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 96EA39BB2E58EB8E00B8411D /* YABAWidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		96EB67222DD945A6009EB9EC /* YABAShareMac.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 96EB67132DD94580009EB9EC /* YABAShareMac.appex */; platformFilters = (macos, ); settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		96EA39CD2E58EB9000B8411D /* YABAWidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 96EA39BB2E58EB8E00B8411D /* YABAWidgetsExtension.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		96EB67222DD945A6009EB9EC /* YABAShareMac.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 96EB67132DD94580009EB9EC /* YABAShareMac.appex */; platformFilter = maccatalyst; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -116,7 +110,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		967922FD2F7AB4CA00149EB1 /* YABACore.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = YABACore.xcframework; path = ../Core/YABACore/build/XCFrameworks/release/YABACore.xcframework; sourceTree = "<group>"; };
 		967B9A4B2DD8D3EF00181AA1 /* YABAStatusMenuItem.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YABAStatusMenuItem.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		96A8DFC22DB2F5A500A47601 /* YABA.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YABA.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		96A8E0AE2DB5CAFF00A47601 /* YABAShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = YABAShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -325,7 +318,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				96DCA2642F9D7002005760E3 /* Markdown in Frameworks */,
 				96DCA25A2F9D7002005760E3 /* SwiftSoup in Frameworks */,
 				96DCA25B2F9D7002005760E3 /* EPUBKit in Frameworks */,
 			);
@@ -335,7 +327,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				96DCA24D2F9D6FF1005760E3 /* Markdown in Frameworks */,
 				96DCA2472F9D6FD6005760E3 /* SwiftSoup in Frameworks */,
 				96DCA24A2F9D6FE1005760E3 /* EPUBKit in Frameworks */,
 			);
@@ -345,7 +336,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				96DCA2652F9D7002005760E3 /* Markdown in Frameworks */,
 				96DCA25C2F9D7002005760E3 /* SwiftSoup in Frameworks */,
 				96DCA25D2F9D7002005760E3 /* EPUBKit in Frameworks */,
 			);
@@ -355,7 +345,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				96DCA2662F9D7002005760E3 /* Markdown in Frameworks */,
 				96DCA25E2F9D7002005760E3 /* SwiftSoup in Frameworks */,
 				96DCA25F2F9D7002005760E3 /* EPUBKit in Frameworks */,
 			);
@@ -365,7 +354,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				96DCA2672F9D7002005760E3 /* Markdown in Frameworks */,
 				96DCA2602F9D7002005760E3 /* SwiftSoup in Frameworks */,
 				96DCA2612F9D7002005760E3 /* EPUBKit in Frameworks */,
 				96EA39BF2E58EB8F00B8411D /* SwiftUI.framework in Frameworks */,
@@ -377,7 +365,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				96DCA2682F9D7002005760E3 /* Markdown in Frameworks */,
 				96DCA2622F9D7002005760E3 /* SwiftSoup in Frameworks */,
 				96DCA2632F9D7002005760E3 /* EPUBKit in Frameworks */,
 			);
@@ -391,7 +378,6 @@
 			children = (
 				96EA39BE2E58EB8F00B8411D /* SwiftUI.framework */,
 				96EA39BC2E58EB8F00B8411D /* WidgetKit.framework */,
-				967922FD2F7AB4CA00149EB1 /* YABACore.xcframework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -450,7 +436,6 @@
 			packageProductDependencies = (
 				96DCA2462F9D6FD6005760E3 /* SwiftSoup */,
 				96DCA2492F9D6FE1005760E3 /* EPUBKit */,
-				96DCA24C2F9D6FF1005760E3 /* Markdown */,
 			);
 			productName = YABAStatusMenuItem;
 			productReference = 967B9A4B2DD8D3EF00181AA1 /* YABAStatusMenuItem.app */;
@@ -483,7 +468,6 @@
 			packageProductDependencies = (
 				96DCA2462F9D6FD6005760E3 /* SwiftSoup */,
 				96DCA2492F9D6FE1005760E3 /* EPUBKit */,
-				96DCA24C2F9D6FF1005760E3 /* Markdown */,
 			);
 			productName = YABA;
 			productReference = 96A8DFC22DB2F5A500A47601 /* YABA.app */;
@@ -509,7 +493,6 @@
 			packageProductDependencies = (
 				96DCA2462F9D6FD6005760E3 /* SwiftSoup */,
 				96DCA2492F9D6FE1005760E3 /* EPUBKit */,
-				96DCA24C2F9D6FF1005760E3 /* Markdown */,
 			);
 			productName = YABAShare;
 			productReference = 96A8E0AE2DB5CAFF00A47601 /* YABAShare.appex */;
@@ -535,7 +518,6 @@
 			packageProductDependencies = (
 				96DCA2462F9D6FD6005760E3 /* SwiftSoup */,
 				96DCA2492F9D6FE1005760E3 /* EPUBKit */,
-				96DCA24C2F9D6FF1005760E3 /* Markdown */,
 			);
 			productName = YABAKeyboard;
 			productReference = 96EA396C2E56380700B8411D /* YABAKeyboard.appex */;
@@ -561,7 +543,6 @@
 			packageProductDependencies = (
 				96DCA2462F9D6FD6005760E3 /* SwiftSoup */,
 				96DCA2492F9D6FE1005760E3 /* EPUBKit */,
-				96DCA24C2F9D6FF1005760E3 /* Markdown */,
 			);
 			productName = YABAWidgetsExtension;
 			productReference = 96EA39BB2E58EB8E00B8411D /* YABAWidgetsExtension.appex */;
@@ -587,7 +568,6 @@
 			packageProductDependencies = (
 				96DCA2462F9D6FD6005760E3 /* SwiftSoup */,
 				96DCA2492F9D6FE1005760E3 /* EPUBKit */,
-				96DCA24C2F9D6FF1005760E3 /* Markdown */,
 			);
 			productName = YABAShareMac;
 			productReference = 96EB67132DD94580009EB9EC /* YABAShareMac.appex */;
@@ -640,7 +620,6 @@
 			packageReferences = (
 				96DCA2452F9D6FD6005760E3 /* XCRemoteSwiftPackageReference "SwiftSoup" */,
 				96DCA2482F9D6FE1005760E3 /* XCRemoteSwiftPackageReference "EPUBKit" */,
-				96DCA24B2F9D6FF1005760E3 /* XCRemoteSwiftPackageReference "swift-markdown" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 96A8DFC32DB2F5A500A47601 /* Products */;
@@ -763,9 +742,7 @@
 		};
 		967B9A5D2DD8D68D00181AA1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			platformFilters = (
-				macos,
-			);
+			platformFilter = maccatalyst;
 			target = 967B9A4A2DD8D3EF00181AA1 /* YABAStatusMenuItem */;
 			targetProxy = 967B9A5C2DD8D68D00181AA1 /* PBXContainerItemProxy */;
 		};
@@ -783,14 +760,13 @@
 		};
 		96EA39CC2E58EB9000B8411D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
+			platformFilter = ios;
 			target = 96EA39BA2E58EB8E00B8411D /* YABAWidgetsExtension */;
 			targetProxy = 96EA39CB2E58EB9000B8411D /* PBXContainerItemProxy */;
 		};
 		96EB67242DD945A6009EB9EC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			platformFilters = (
-				macos,
-			);
+			platformFilter = maccatalyst;
 			target = 96EB67122DD94580009EB9EC /* YABAShareMac */;
 			targetProxy = 96EB67232DD945A6009EB9EC /* PBXContainerItemProxy */;
 		};
@@ -994,7 +970,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
-				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../Core/YABACore/build/XCFrameworks/release/YABACore.xcframework";
+				FRAMEWORK_SEARCH_PATHS = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = YABA/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = YABA;
@@ -1023,8 +999,8 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
-				SUPPORTS_MACCATALYST = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator";
+				SUPPORTS_MACCATALYST = YES;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_MODULES_AUTOLINK = YES;
@@ -1050,7 +1026,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
-				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../Core/YABACore/build/XCFrameworks/release/YABACore.xcframework";
+				FRAMEWORK_SEARCH_PATHS = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = YABA/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = YABA;
@@ -1079,8 +1055,8 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
-				SUPPORTS_MACCATALYST = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator";
+				SUPPORTS_MACCATALYST = YES;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_MODULES_AUTOLINK = YES;
@@ -1455,14 +1431,6 @@
 				minimumVersion = 0.5.0;
 			};
 		};
-		96DCA24B2F9D6FF1005760E3 /* XCRemoteSwiftPackageReference "swift-markdown" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/swiftlang/swift-markdown";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.7.3;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1475,11 +1443,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 96DCA2482F9D6FE1005760E3 /* XCRemoteSwiftPackageReference "EPUBKit" */;
 			productName = EPUBKit;
-		};
-		96DCA24C2F9D6FF1005760E3 /* Markdown */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 96DCA24B2F9D6FF1005760E3 /* XCRemoteSwiftPackageReference "swift-markdown" */;
-			productName = Markdown;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

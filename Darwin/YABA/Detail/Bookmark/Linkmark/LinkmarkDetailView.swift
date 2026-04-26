@@ -658,7 +658,7 @@ struct LinkmarkDetailView: View {
             )
             return
         }
-        let inlineSources: [MarkdownExportInlineSource] = (bookmark?.linkDetail?.inlineAssets ?? []).compactMap { item in
+        let inlineSources: [MarkdownExportInlineSource] = (bookmark.linkDetail?.inlineAssets ?? []).compactMap { item in
             guard let bytes = item.bytes, !bytes.isEmpty else { return nil }
             return MarkdownExportInlineSource(assetId: item.assetId, pathExtension: item.pathExtension, bytes: bytes)
         }

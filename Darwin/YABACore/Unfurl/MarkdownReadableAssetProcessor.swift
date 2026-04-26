@@ -7,67 +7,10 @@
 //
 
 import Foundation
-import Markdown
 
 public enum MarkdownReadableAssetProcessor {
     public static func process(markdown: String, baseURL: String) async -> ReadableUnfurl {
-        let trimmed = markdown.trimmingCharacters(in: .whitespacesAndNewlines)
-        if trimmed.isEmpty {
-            return ReadableUnfurl(markdown: "", assets: [])
-        }
-        let document = Document(parsing: trimmed)
-        var collector = ImageURLCollector(baseURL: baseURL)
-        collector.visitDocument(document)
-        var absoluteToYaba: [String: String] = [:]
-        var assets: [ReadableAssetPayload] = []
-        for absolute in collector.orderedAbsolutes {
-            guard absoluteToYaba[absolute] == nil else { continue }
-            guard let remote = URL(string: absolute),
-                  let scheme = remote.scheme?.lowercased(), scheme == "http" || scheme == "https"
-            else { continue }
-            guard let bytes = try? await UnfurlHttpClient.getBytes(url: remote) else { continue }
-            let out = YabaImageCompression.compressDataPreservingFormat(bytes)
-            let ext = inferImageExtension(bytes: out, url: absolute)
-            let assetId = UUID().uuidString
-            let yaba = "yaba-asset://\(assetId)"
-            absoluteToYaba[absolute] = yaba
-            assets.append(ReadableAssetPayload(assetId: assetId, pathExtension: ext, bytes: out))
-        }
-        var rewriter = ImageDestinationRewriter(baseURL: baseURL, absoluteToYaba: absoluteToYaba)
-        guard let rewritten = rewriter.visitDocument(document) as? Document else {
-            return ReadableUnfurl(markdown: trimmed, assets: assets)
-        }
-        let out = rewritten.format()
-        return ReadableUnfurl(markdown: out, assets: assets)
-    }
-
-    fileprivate struct ImageURLCollector: MarkupWalker {
-        let baseURL: String
-        fileprivate(set) var orderedAbsolutes: [String] = []
-        fileprivate var seen = Set<String>()
-
-        mutating func visitImage(_ image: Image) {
-            let raw = (image.source ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-            if !raw.isEmpty,
-               let abs = HTMLImageURLExtractor.resolveForDownload(raw: raw, baseURL: baseURL),
-               seen.insert(abs).inserted {
-                orderedAbsolutes.append(abs)
-            }
-        }
-    }
-
-    fileprivate struct ImageDestinationRewriter: MarkupRewriter {
-        let baseURL: String
-        let absoluteToYaba: [String: String]
-
-        mutating func visitImage(_ image: Image) -> Markup? {
-            let raw = (image.source ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-            if raw.isEmpty { return image }
-            guard let abs = HTMLImageURLExtractor.resolveForDownload(raw: raw, baseURL: baseURL),
-                  let yaba = absoluteToYaba[abs]
-            else { return image }
-            return Image(source: yaba, title: image.title ?? "")
-        }
+        return ReadableUnfurl(markdown: "", assets: [])
     }
 
     private static func inferImageExtension(bytes: Data, url: String) -> String {
