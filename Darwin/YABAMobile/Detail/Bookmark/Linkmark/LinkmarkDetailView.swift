@@ -25,9 +25,6 @@ struct LinkmarkDetailView: View {
     private var machine = LinkmarkDetailStateMachine()
 
     @State
-    private var webDriver = LinkmarkWebDriver()
-
-    @State
     private var showDetailSheet = false
 
     @State
@@ -41,9 +38,6 @@ struct LinkmarkDetailView: View {
 
     @State
     private var documentReloadToken = UUID()
-
-    @State
-    private var pendingWebToc: LinkmarkWebTocNavigation?
 
     @State
     private var measuredTopInset: CGFloat = 108
@@ -119,18 +113,10 @@ struct LinkmarkDetailView: View {
             guard let newUrl else { return }
             Task { await machine.send(.onLinkSourceUrl(newUrl)) }
         }
-        .onChange(of: machine.state.pendingTocNavigationId) { _, newId in
-            guard let newId else { return }
-            pendingWebToc = LinkmarkWebTocNavigation(
-                id: newId,
-                extrasJson: machine.state.pendingTocNavigationExtrasJson
-            )
-        }
         .sheet(isPresented: $showDetailSheet) {
             if let bm = bookmark {
                 LinkmarkDetailInfoSheet(
                     bookmark: bm,
-                    toc: decodedToc,
                     folderAccent: folderColor(for: bm),
                     reminderDate: machine.state.reminderDate,
                     onDeleteReminder: {
@@ -145,10 +131,6 @@ struct LinkmarkDetailView: View {
                         onOpenTag(tagId)
                     },
                     selectedTab: $sheetTab,
-                    onTocItemTap: { item in
-                        showDetailSheet = false
-                        Task { await machine.send(.onNavigateToTocItem(id: item.id, extrasJson: item.extrasJson)) }
-                    },
                     onScrollToAnnotation: { annotationId in
                         showDetailSheet = false
                         Task { await machine.send(.onScrollToAnnotation(annotationId: annotationId)) }
@@ -158,14 +140,12 @@ struct LinkmarkDetailView: View {
                     },
                     onDeleteAnnotation: { annotationId in
                         showDetailSheet = false
-                        Task { await handleAnnotationDelete(annotationId: annotationId) }
                     }
                 )
             }
         }
         .sheet(item: $annotationSheetMode) { mode in
             AnnotationCreationSheet(mode: mode) { outcome in
-                Task { await handleAnnotationSheetOutcome(outcome, mode: mode) }
             }
         }
         .sheet(isPresented: $showEditSheet) {
@@ -269,44 +249,8 @@ struct LinkmarkDetailView: View {
             } else {
                 GeometryReader { layoutGeo in
                     ZStack(alignment: .top) {
-                        LinkmarkReadableWebView(
-                            webDriver: webDriver,
-                            documentJson: readableBodyString(for: bm),
-                            assetsBaseUrl: ReadableViewerAssets.assetsBaseURLForYabaAssetScheme,
-                            annotationsJson: annotationsJson(for: bm),
-                            readerPreferences: ReaderPreferences(
-                                theme: machine.state.readerTheme,
-                                fontSize: machine.state.readerFontSize,
-                                lineHeight: machine.state.readerLineHeight
-                            ),
-                            topChromeInsetPoints: measuredTopInset,
-                            colorScheme: colorScheme,
-                            documentReloadToken: documentReloadToken,
-                            inlineAssets: inlineAssetTuples(for: bm),
-                            tocNavigate: pendingWebToc,
-                            scrollToAnnotationId: machine.state.scrollToAnnotationId,
-                            onHostEvent: handleHostEvent(_:),
-                            onAnnotationTap: { annotationId in
-                                openAnnotationEditor(annotationId: annotationId)
-                            },
-                            onScrollDirection: { dir in
-                                switch dir {
-                                case .down: readerChromeVisible = false
-                                case .up: readerChromeVisible = true
-                                }
-                            },
-                            onBridgeReady: {},
-                            onTocNavigationConsumed: {
-                                pendingWebToc = nil
-                                Task { await machine.send(.onClearTocNavigation) }
-                            },
-                            onScrollToAnnotationConsumed: {
-                                Task { await machine.send(.onClearScrollToAnnotation) }
-                            }
-                        )
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .ignoresSafeArea()
-
+                        EmptyView()
+                        
                         VStack {
                             Spacer()
                             LinkmarkReaderFloatingToolbar(
@@ -382,11 +326,6 @@ struct LinkmarkDetailView: View {
         measuredTopInset = windowTop + navigationBarHeight + 12
     }
 
-    private var decodedToc: Toc? {
-        guard let j = machine.state.tocJson, let d = j.data(using: .utf8) else { return nil }
-        return try? JSONDecoder().decode(Toc.self, from: d)
-    }
-
     private func folderColor(for bm: YabaBookmark) -> Color {
         bm.folder?.color.getUIColor() ?? .accentColor
     }
@@ -410,18 +349,6 @@ struct LinkmarkDetailView: View {
         return AnnotationRenderingPayloadBuilder.readableJSON(from: ann)
     }
 
-    private func handleHostEvent(_ event: WebHostEvent) {
-        switch event {
-        case let .readerMetrics(m):
-            readerCanAnnotate = m.canCreateAnnotation
-        default:
-            let mapped = WebHostLinkmarkIntegration.linkmarkEvents(from: event)
-            for e in mapped {
-                Task { await machine.send(e) }
-            }
-        }
-    }
-
     private func openAnnotationCreator() {
         guard let bm = bookmark else { return }
         guard linkHasReadableContent(bm) else { return }
@@ -429,7 +356,7 @@ struct LinkmarkDetailView: View {
             // WebKit selection and host metrics can be one frame apart; retry briefly before showing an error.
             var draft: ReadableSelectionDraft?
             for _ in 0 ..< 5 {
-                draft = await webDriver.getSelectionDraft(bookmarkId: bm.bookmarkId)
+                
                 if draft != nil { break }
                 try? await Task.sleep(nanoseconds: 80_000_000)
             }
@@ -457,80 +384,6 @@ struct LinkmarkDetailView: View {
             try? await Task.sleep(nanoseconds: 200_000_000)
             annotationSheetMode = .edit(ann)
         }
-    }
-
-    private func handleAnnotationSheetOutcome(
-        _ outcome: AnnotationCreationSheetOutcome,
-        mode: AnnotationCreationSheetMode
-    ) async {
-        switch outcome {
-        case .cancelled:
-            break
-        case .persisted:
-            if case let .edit(annotation) = mode, annotation.type == .readable, let bm = bookmark {
-                await webDriver.setAnnotations(jsonArrayBody: annotationsJson(for: bm))
-            }
-        case let .readableCreateRequested(annotationId, request):
-            await commitReadableCreate(annotationId: annotationId, request: request)
-        case let .readableDeleteRequested(annotationId):
-            await commitReadableDelete(annotationId: annotationId)
-        }
-    }
-
-    private func handleAnnotationDelete(annotationId: String) async {
-        guard let annotation = bookmark?.annotations.first(where: { $0.annotationId == annotationId }) else { return }
-        if annotation.type == .readable {
-            await commitReadableDelete(annotationId: annotationId)
-            return
-        }
-        await machine.send(.onDeleteAnnotation(annotationId: annotationId))
-    }
-
-    private func commitReadableCreate(annotationId: String, request: AnnotationReadableCreateRequest) async {
-        let didApply = await webDriver.applyAnnotationToSelection(annotationId: annotationId)
-        guard didApply else {
-            CoreToastManager.shared.show(
-                message: LocalizedStringKey("Annotation Apply Failed Message"),
-                iconType: .error,
-                duration: .short
-            )
-            return
-        }
-        let documentJson = await webDriver.getDocumentJson()
-        guard !documentJson.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            CoreToastManager.shared.show(
-                message: LocalizedStringKey("Annotation Sync Failed Message"),
-                iconType: .error,
-                duration: .short
-            )
-            return
-        }
-        await machine.send(
-            .onAnnotationReadableCreateCommitted(
-                request: request,
-                annotationId: annotationId,
-                html: documentJson
-            )
-        )
-    }
-
-    private func commitReadableDelete(annotationId: String) async {
-        _ = await webDriver.removeAnnotationFromDocument(annotationId: annotationId)
-        let documentJson = await webDriver.getDocumentJson()
-        guard !documentJson.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            CoreToastManager.shared.show(
-                message: LocalizedStringKey("Annotation Sync Failed Message"),
-                iconType: .error,
-                duration: .short
-            )
-            return
-        }
-        await machine.send(
-            .onAnnotationReadableDeleteCommitted(
-                annotationId: annotationId,
-                html: documentJson
-            )
-        )
     }
 
     @ViewBuilder
@@ -568,8 +421,7 @@ struct LinkmarkDetailView: View {
             Menu {
                 Button {
                     Task { @MainActor in
-                        let md = await webDriver.exportMarkdown()
-                        startMarkdownExport(markdown: md, bookmark: bm)
+                        startMarkdownExport(markdown: "", bookmark: bm)
                     }
                 } label: {
                     overflowMenuItemLabel(
@@ -579,7 +431,7 @@ struct LinkmarkDetailView: View {
                 }
                 .tint(YabaColor.gray.getUIColor())
                 Button {
-                    startPdfExport()
+                    
                 } label: {
                     overflowMenuItemLabel(
                         "Bookmark Detail Export Format PDF Title",
@@ -680,39 +532,6 @@ struct LinkmarkDetailView: View {
                 iconType: .error,
                 duration: .short
             )
-        }
-    }
-
-    private func startPdfExport() {
-        let jobId = UUID().uuidString
-        EditorPdfExportJobRegistry.shared.register(jobId: jobId) { result in
-            Task { @MainActor in
-                switch result {
-                case let .success(b64):
-                    guard let data = Data(base64Encoded: b64) else { return }
-                    let tmp = FileManager.default.temporaryDirectory.appendingPathComponent("YABA-export.pdf")
-                    do {
-                        try data.write(to: tmp)
-                        activityItems = [tmp]
-                        showActivitySheet = true
-                    } catch {
-                        CoreToastManager.shared.show(
-                            message: LocalizedStringKey("Bookmark Detail PDF Write Failed Message"),
-                            iconType: .error,
-                            duration: .short
-                        )
-                    }
-                case let .failure(err):
-                    CoreToastManager.shared.show(
-                        message: LocalizedStringKey(stringLiteral: err.localizedDescription),
-                        iconType: .error,
-                        duration: .short
-                    )
-                }
-            }
-        }
-        Task {
-            await webDriver.startPdfExportJob(jobId: jobId)
         }
     }
 }

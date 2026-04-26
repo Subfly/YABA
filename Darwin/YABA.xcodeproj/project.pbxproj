@@ -189,9 +189,7 @@
 				Detail/Bookmark/Imagemark/ImagemarkDetailView.swift,
 				Detail/Bookmark/Linkmark/LinkmarkDetailInfoSheet.swift,
 				Detail/Bookmark/Linkmark/LinkmarkDetailView.swift,
-				Detail/Bookmark/Linkmark/LinkmarkReadableWebView.swift,
 				Detail/Bookmark/Linkmark/LinkmarkToolbar.swift,
-				Detail/Bookmark/Linkmark/LinkmarkWebDriver.swift,
 				Detail/Folder/FolderDetailView.swift,
 				Detail/Tag/TagDetailView.swift,
 				Home/Components/HomeAnnouncementsView.swift,
@@ -300,9 +298,7 @@
 				Detail/Bookmark/Imagemark/ImagemarkDetailView.swift,
 				Detail/Bookmark/Linkmark/LinkmarkDetailInfoSheet.swift,
 				Detail/Bookmark/Linkmark/LinkmarkDetailView.swift,
-				Detail/Bookmark/Linkmark/LinkmarkReadableWebView.swift,
 				Detail/Bookmark/Linkmark/LinkmarkToolbar.swift,
-				Detail/Bookmark/Linkmark/LinkmarkWebDriver.swift,
 				Detail/Folder/FolderDetailView.swift,
 				Detail/Tag/TagDetailView.swift,
 				Home/Components/HomeAnnouncementsView.swift,
@@ -410,9 +406,7 @@
 				Detail/Bookmark/Imagemark/ImagemarkDetailView.swift,
 				Detail/Bookmark/Linkmark/LinkmarkDetailInfoSheet.swift,
 				Detail/Bookmark/Linkmark/LinkmarkDetailView.swift,
-				Detail/Bookmark/Linkmark/LinkmarkReadableWebView.swift,
 				Detail/Bookmark/Linkmark/LinkmarkToolbar.swift,
-				Detail/Bookmark/Linkmark/LinkmarkWebDriver.swift,
 				Detail/Folder/FolderDetailView.swift,
 				Detail/Tag/TagDetailView.swift,
 				Home/Components/HomeAnnouncementsView.swift,
@@ -513,9 +507,7 @@
 				Detail/Bookmark/Imagemark/ImagemarkDetailView.swift,
 				Detail/Bookmark/Linkmark/LinkmarkDetailInfoSheet.swift,
 				Detail/Bookmark/Linkmark/LinkmarkDetailView.swift,
-				Detail/Bookmark/Linkmark/LinkmarkReadableWebView.swift,
 				Detail/Bookmark/Linkmark/LinkmarkToolbar.swift,
-				Detail/Bookmark/Linkmark/LinkmarkWebDriver.swift,
 				Detail/Folder/FolderDetailView.swift,
 				Detail/Tag/TagDetailView.swift,
 				Home/Components/HomeAnnouncementsView.swift,
@@ -625,9 +617,7 @@
 				Detail/Bookmark/Imagemark/ImagemarkDetailView.swift,
 				Detail/Bookmark/Linkmark/LinkmarkDetailInfoSheet.swift,
 				Detail/Bookmark/Linkmark/LinkmarkDetailView.swift,
-				Detail/Bookmark/Linkmark/LinkmarkReadableWebView.swift,
 				Detail/Bookmark/Linkmark/LinkmarkToolbar.swift,
-				Detail/Bookmark/Linkmark/LinkmarkWebDriver.swift,
 				Detail/Folder/FolderDetailView.swift,
 				Detail/Tag/TagDetailView.swift,
 				Home/Components/HomeAnnouncementsView.swift,
@@ -739,9 +729,7 @@
 				Detail/Bookmark/Imagemark/ImagemarkDetailView.swift = (ios, );
 				Detail/Bookmark/Linkmark/LinkmarkDetailInfoSheet.swift = (ios, );
 				Detail/Bookmark/Linkmark/LinkmarkDetailView.swift = (ios, );
-				Detail/Bookmark/Linkmark/LinkmarkReadableWebView.swift = (ios, );
 				Detail/Bookmark/Linkmark/LinkmarkToolbar.swift = (ios, );
-				Detail/Bookmark/Linkmark/LinkmarkWebDriver.swift = (ios, );
 				Detail/Folder/FolderDetailView.swift = (ios, );
 				Detail/Tag/TagDetailView.swift = (ios, );
 				Home/Components/HomeAnnouncementsView.swift = (ios, );

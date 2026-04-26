@@ -37,14 +37,12 @@ struct LinkmarkDetailInfoSheet: View {
     private var openURL
 
     let bookmark: YabaBookmark
-    let toc: Toc?
     let folderAccent: Color
     let reminderDate: Date?
     let onDeleteReminder: () -> Void
     let onOpenFolder: (String) -> Void
     let onOpenTag: (String) -> Void
     @Binding var selectedTab: LinkmarkDetailSheetTab
-    let onTocItemTap: (TocItem) -> Void
     let onScrollToAnnotation: (String) -> Void
     let onEditAnnotation: (String) -> Void
     let onDeleteAnnotation: (String) -> Void
@@ -84,7 +82,7 @@ struct LinkmarkDetailInfoSheet: View {
         case .annotations:
             annotationsList
         case .contents:
-            tocList
+            EmptyView()
         }
     }
 
@@ -255,36 +253,33 @@ struct LinkmarkDetailInfoSheet: View {
         }
     }
 
+    /**
     private var tocList: some View {
-        Group {
-            let tocItems = toc?.items ?? []
-            if tocItems.isEmpty {
-                emptyStateContent(
-                    icon: "left-to-right-list-triangle",
-                    title: "Bookmark Detail No Table Of Contents Title",
-                    message: "Bookmark Detail No Table Of Contents Message"
-                )
-            } else {
-                List {
-                    OutlineGroup(tocItems, id: \.id, children: \.outlineChildren) { item in
-                        Button {
-                            onTocItemTap(item)
-                        } label: {
-                            HStack(spacing: 10) {
-                                YabaIconView(bundleKey: tocHeadingIcon(level: item.level))
-                                    .frame(width: 24, height: 24)
-                                    .foregroundStyle(folderAccent)
-                                Text(item.title)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                            }
+        if [].isEmpty {
+            emptyStateContent(
+                icon: "left-to-right-list-triangle",
+                title: "Bookmark Detail No Table Of Contents Title",
+                message: "Bookmark Detail No Table Of Contents Message"
+            )
+        } else {
+            List {
+                OutlineGroup([], id: \.id, children: \.outlineChildren) { item in
+                    Button {
+                    } label: {
+                        HStack(spacing: 10) {
+                            YabaIconView(bundleKey: tocHeadingIcon(level: item.level))
+                                .frame(width: 24, height: 24)
+                                .foregroundStyle(folderAccent)
+                            Text(item.title)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                         }
-                        .buttonStyle(.plain)
                     }
+                    .buttonStyle(.plain)
                 }
-                .listStyle(.sidebar)
             }
+            .listStyle(.sidebar)
         }
-    }
+    }*/
 
     @ViewBuilder
     private func metadataRow(_ key: LocalizedStringKey, icon: String, value: String?) -> some View {
@@ -405,11 +400,5 @@ struct LinkmarkDetailInfoSheet: View {
         case 5: "heading-05"
         default: "heading-06"
         }
-    }
-}
-
-private extension TocItem {
-    var outlineChildren: [TocItem]? {
-        children.isEmpty ? nil : children
     }
 }

@@ -227,6 +227,7 @@
       }
     },
     "Annotation Apply Failed Message" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -287,6 +288,7 @@
       }
     },
     "Annotation Sync Failed Message" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1925,6 +1927,7 @@
       }
     },
     "Bookmark Detail No Table Of Contents Message" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1935,6 +1938,7 @@
       }
     },
     "Bookmark Detail No Table Of Contents Title" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2361,6 +2365,7 @@
       }
     },
     "Bookmark Detail PDF Write Failed Message" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

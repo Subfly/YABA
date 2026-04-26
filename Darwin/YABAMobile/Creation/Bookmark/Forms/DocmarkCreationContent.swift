@@ -33,9 +33,6 @@ struct DocmarkCreationContent: View {
     @State
     private var previewContentAppearance: PreviewContentAppearance = .list
 
-    @State
-    private var converterRuntime: WKWebViewRuntime?
-
     /// Bumps when a new document is picked so converter extraction re-runs.
     @State
     private var docExtractionGeneration: Int = 0
@@ -63,13 +60,6 @@ struct DocmarkCreationContent: View {
                         mainTint: mainTint,
                         folderForPresentation: folderForPresentation
                     )
-                    if let rt = converterRuntime {
-                        HiddenDocmarkConverterWebView(runtime: rt)
-                            .frame(width: 1, height: 1)
-                            .opacity(0.001)
-                            .allowsHitTesting(false)
-                            .accessibilityHidden(true)
-                    }
                 }
             }
             .id("\(machine.state.selectedFolderId ?? "")-\(machine.state.uncategorizedFolderCreationRequired)")
@@ -90,15 +80,8 @@ struct DocmarkCreationContent: View {
             }
         )
         .task(id: editingBookmarkId) {
-            ensureConverterRuntimeIfNeeded()
             await bootstrap()
             syncPreviewAppearanceFromMachine()
-        }
-        .task(id: docExtractionGeneration) {
-            await runDocumentExtractionIfNeeded()
-        }
-        .onDisappear {
-            teardownConverterRuntime()
         }
         .fileImporter(
             isPresented: $showFileImporter,
@@ -117,7 +100,6 @@ struct DocmarkCreationContent: View {
                 guard let data = try? Data(contentsOf: url) else { return }
                 let isPdf = url.pathExtension.lowercased() == "pdf"
                 let type: DocmarkType = isPdf ? .pdf : .epub
-                ensureConverterRuntimeIfNeeded()
                 await machine.send(
                     .onDocumentFromShare(data, sourceFileName: url.lastPathComponent, docmarkType: type)
                 )
@@ -557,76 +539,6 @@ struct DocmarkCreationContent: View {
         }
     }
 
-    private func ensureConverterRuntimeIfNeeded() {
-        guard converterRuntime == nil else { return }
-        let rt = WKWebViewRuntime(configuration: WebRuntimeConfiguration())
-        rt.onHostEvent = { event in
-            if case .initialContentLoad(let shellResult) = event {
-                Task { @MainActor in
-                    await machine.send(.onWebInitialContentLoad(shellResult))
-                }
-            }
-        }
-        rt.loadBundledShell(for: .htmlConverter(inputHtml: nil, baseUrl: nil))
-        converterRuntime = rt
-    }
-
-    private func teardownConverterRuntime() {
-        converterRuntime?.onHostEvent = nil
-        converterRuntime?.webView.stopLoading()
-        converterRuntime = nil
-    }
-
-    private func runDocumentExtractionIfNeeded() async {
-        guard docExtractionGeneration > 0, !isEditing else { return }
-        guard let rt = converterRuntime,
-              let data = machine.state.pickedDocumentData,
-              let type = machine.state.docmarkType
-        else {
-            await machine.send(.onDocumentExtractionFinished)
-            return
-        }
-        do {
-            switch type {
-            case .pdf:
-                let pdfUrl = YabaDataUrlCodec.applicationPdfDataUrl(documentBytes: data)
-                let extracted = try await DocumentExtractionRunner.runPdfExtraction(
-                    runtime: rt,
-                    pdfUrl: pdfUrl
-                )
-                let preview = YabaDataUrlCodec.decodeBase64DataUrl(extracted.firstPagePngDataUrl)
-                await machine.send(
-                    .onDocumentMetadataExtracted(
-                        metadataTitle: extracted.title,
-                        metadataDescription: extracted.subject,
-                        metadataAuthor: extracted.author,
-                        metadataDate: extracted.creationDate
-                    )
-                )
-                await machine.send(.onSetGeneratedPreview(imageData: preview, fileExtension: "png"))
-            case .epub:
-                let epubUrl = YabaDataUrlCodec.applicationEpubZipDataUrl(documentBytes: data)
-                let extracted = try await DocumentExtractionRunner.runEpubExtraction(
-                    runtime: rt,
-                    epubDataUrl: epubUrl
-                )
-                let preview = YabaDataUrlCodec.decodeBase64DataUrl(extracted.coverPngDataUrl)
-                await machine.send(
-                    .onDocumentMetadataExtracted(
-                        metadataTitle: extracted.title,
-                        metadataDescription: extracted.description,
-                        metadataAuthor: extracted.author,
-                        metadataDate: extracted.pubdate
-                    )
-                )
-                await machine.send(.onSetGeneratedPreview(imageData: preview, fileExtension: "png"))
-            }
-        } catch {
-            // Non-fatal: Compose ignores PdfConverterFailure / EpubConverterFailure for creation UX.
-        }
-        await machine.send(.onDocumentExtractionFinished)
-    }
-
     private func bootstrap() async {
         if let bid = editingBookmarkId,
            let bookmark = BookmarkFlowHydration.fetchBookmark(bookmarkId: bid, modelContext: modelContext)
@@ -646,21 +558,6 @@ struct DocmarkCreationContent: View {
                 uncategorizedFolderCreationRequired: resolved.uncategorizedFolderCreationRequired
             )
         )
-    }
-}
-
-/// Hosts `converter.html` off-screen so `DocumentExtractionRunner` can run PDF/EPUB extraction jobs.
-private struct HiddenDocmarkConverterWebView: UIViewRepresentable {
-    let runtime: WKWebViewRuntime
-
-    func makeUIView(context: Context) -> WKWebView {
-        runtime.webView
-    }
-
-    func updateUIView(_ webView: WKWebView, context: Context) {}
-
-    static func dismantleUIView(_ uiView: WKWebView, coordinator: ()) {
-        uiView.stopLoading()
     }
 }
 

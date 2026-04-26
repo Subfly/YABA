@@ -115,51 +115,7 @@ public enum BundleReader {
         }
         return nil
     }
-
-    public static func getViewerURL(in bundle: Bundle = .main) -> URL? {
-        webComponentURL(named: "viewer.html", in: bundle)
-    }
-
-    /// `viewer.html` with theme URL params consumed by `yaba-web-components` (`parseUrlParams`).
-    public static func viewerURLWithQuery(
-        platform: WebPlatform = .darwin,
-        appearance: WebAppearance = .auto,
-        cursor: String? = nil,
-        bundle: Bundle = .main
-    ) -> URL? {
-        guard let base = getViewerURL(in: bundle) else { return nil }
-        guard var components = URLComponents(url: base, resolvingAgainstBaseURL: false) else { return base }
-        var items: [URLQueryItem] = [
-            URLQueryItem(name: "platform", value: platform.rawValue),
-            URLQueryItem(name: "appearance", value: appearance.rawValue)
-        ]
-        if let cursor, !cursor.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            items.append(URLQueryItem(name: "cursor", value: cursor))
-        }
-        components.queryItems = items
-        return components.url
-    }
-
-    public static func getEditorURL(in bundle: Bundle = .main) -> URL? {
-        webComponentURL(named: "editor.html", in: bundle)
-    }
-
-    public static func getCanvasURL(in bundle: Bundle = .main) -> URL? {
-        webComponentURL(named: "canvas.html", in: bundle)
-    }
-
-    public static func getConverterURL(in bundle: Bundle = .main) -> URL? {
-        webComponentURL(named: "converter.html", in: bundle)
-    }
-
-    public static func getPdfViewerURL(in bundle: Bundle = .main) -> URL? {
-        webComponentURL(named: "pdf-viewer.html", in: bundle)
-    }
-
-    public static func getEpubViewerURL(in bundle: Bundle = .main) -> URL? {
-        webComponentURL(named: "epub-viewer.html", in: bundle)
-    }
-
+    
     /// Minified unified + rehype + remark script for [HTMLToMarkdownProcessor] (`html-to-markdown.bundle.min.js`).
     public static func htmlToMarkdownBundleURL(in bundle: Bundle = .main) -> URL? {
         webComponentURL(named: "html-to-markdown.bundle.min.js", in: bundle)

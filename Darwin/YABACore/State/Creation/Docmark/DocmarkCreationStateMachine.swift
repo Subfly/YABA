@@ -88,15 +88,6 @@ public final class DocmarkCreationStateMachine: YabaBaseObservableState<DocmarkC
             }
         case let .onSelectTagIds(ids):
             apply { $0.selectedTagIds = ids }
-        case let .onWebInitialContentLoad(result):
-            apply {
-                $0.isLoading = false
-                if result == .error {
-                    $0.lastError = "Preview extraction failed"
-                } else {
-                    $0.lastError = nil
-                }
-            }
         case .onDocumentExtractionFinished:
             apply { $0.isLoading = false }
         case .onSave:
