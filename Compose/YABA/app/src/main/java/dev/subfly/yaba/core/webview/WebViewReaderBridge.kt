@@ -9,7 +9,7 @@ import dev.subfly.yaba.core.model.ui.AnnotationUiModel
 interface WebViewReaderBridge {
     suspend fun getSelectionSnapshot(
         bookmarkId: String,
-        readableVersionId: String,
+        contentId: String,
     ): ReadableSelectionDraft?
 
     suspend fun getCanCreateAnnotation(): Boolean

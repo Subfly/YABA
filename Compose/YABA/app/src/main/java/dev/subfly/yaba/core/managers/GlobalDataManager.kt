@@ -15,7 +15,6 @@ object GlobalDataManager {
     private val linkBookmarkDao get() = DatabaseProvider.linkBookmarkDao
     private val tagBookmarkDao get() = DatabaseProvider.tagBookmarkDao
     private val annotationDao get() = DatabaseProvider.annotationDao
-    private val readableVersionDao get() = DatabaseProvider.readableVersionDao
 
     /**
      * Wipes all local data and bookmark folders.
@@ -31,7 +30,6 @@ object GlobalDataManager {
 
         tagBookmarkDao.deleteAll()
         annotationDao.deleteAll()
-        readableVersionDao.deleteAll()
         linkBookmarkDao.deleteAll()
         bookmarkDao.deleteAll()
         tagDao.deleteAll()

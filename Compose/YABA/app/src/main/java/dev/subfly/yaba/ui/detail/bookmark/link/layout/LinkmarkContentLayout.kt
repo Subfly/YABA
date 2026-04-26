@@ -51,12 +51,12 @@ import dev.subfly.yaba.util.ResultStoreKeys
 import dev.subfly.yaba.util.rememberUrlLauncher
 import dev.subfly.yaba.core.common.IdGenerator
 import dev.subfly.yaba.core.model.annotation.AnnotationReadableCreateRequest
+import dev.subfly.yaba.core.model.annotation.AnnotationSourceContext
 import dev.subfly.yaba.core.state.detail.DetailWebShellPhase
 import dev.subfly.yaba.core.state.detail.linkmark.LinkmarkDetailEvent
 import dev.subfly.yaba.core.state.detail.linkmark.detailWebShellPhase
 import dev.subfly.yaba.core.state.detail.linkmark.LinkmarkDetailUIState
 import dev.subfly.yaba.core.webview.WebComponentUris
-import dev.subfly.yaba.core.webview.WebConverterInput
 import dev.subfly.yaba.core.webview.WebViewReaderBridge
 import dev.subfly.yaba.core.webview.YabaWebAppearance
 import dev.subfly.yaba.core.webview.YabaWebFeature
@@ -95,7 +95,6 @@ internal fun LinkmarkContentLayout(
 
     val webShellPhase = remember(
         state.isLoading,
-        state.isUpdatingReadable,
         state.readableDocumentJson,
         state.readerWebContentLoadFailed,
     ) { state.detailWebShellPhase() }
@@ -148,14 +147,6 @@ internal fun LinkmarkContentLayout(
     }
     val menuIconButtonColors = bookmarkDetailIconButtonColors(folderAccent)
 
-    val converterInput by remember(state.converterHtml) {
-        derivedStateOf {
-            state.converterHtml?.let { html ->
-                WebConverterInput(html = html, baseUrl = state.converterBaseUrl)
-            }
-        }
-    }
-
     LaunchedEffect(appState.showCreationContent) {
         val show = appState.showCreationContent
         if (previousShowCreationContent && show.not()) {
@@ -198,29 +189,6 @@ internal fun LinkmarkContentLayout(
         }
         previousShowCreationContent = show
     }
-
-    YabaWebView(
-        modifier = Modifier.size(0.dp),
-        baseUrl = WebComponentUris.getConverterUri(),
-        feature = YabaWebFeature.HtmlConverter(input = converterInput),
-        onHostEvent = { ev ->
-            when (ev) {
-                is YabaWebHostEvent.HtmlConverterSuccess ->
-                    onEvent(
-                        LinkmarkDetailEvent.OnConverterSucceeded(
-                            documentJson = ev.result.documentJson,
-                            assets = ev.result.assets,
-                            linkMetadata = ev.result.linkMetadata,
-                        ),
-                    )
-
-                is YabaWebHostEvent.HtmlConverterFailure ->
-                    onEvent(LinkmarkDetailEvent.OnConverterFailed(error = ev.error))
-
-                else -> Unit
-            }
-        },
-    )
 
     Box(
         modifier = modifier
@@ -281,11 +249,11 @@ internal fun LinkmarkContentLayout(
                                 val bridge = readerBridge ?: return@LinkmarkReaderFloatingToolbar
                                 val bookmarkId =
                                     state.bookmark?.id ?: return@LinkmarkReaderFloatingToolbar
-                                val versionId = state.selectedReadableVersionId
-                                    ?: state.readableVersions.firstOrNull()?.versionId
-                                    ?: return@LinkmarkReaderFloatingToolbar
                                 scope.launch {
-                                    val draft = bridge.getSelectionSnapshot(bookmarkId, versionId)
+                                    val draft = bridge.getSelectionSnapshot(
+                                        bookmarkId,
+                                        AnnotationSourceContext.DEFAULT_READABLE_CONTENT_ID
+                                    )
                                     creationNavigator.add(
                                         AnnotationCreationRoute(
                                             bookmarkId = bookmarkId,

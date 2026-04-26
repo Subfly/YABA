@@ -16,7 +16,6 @@ object AnnotationManager {
     fun createAnnotation(
         annotationId: String,
         bookmarkId: String,
-        readableVersionId: String,
         type: AnnotationType,
         colorRole: YabaColor = YabaColor.NONE,
         note: String? = null,
@@ -29,7 +28,6 @@ object AnnotationManager {
             val entity = AnnotationEntity(
                 id = annotationId,
                 bookmarkId = bookmarkId,
-                readableVersionId = readableVersionId,
                 type = type,
                 colorRole = colorRole,
                 note = note,
@@ -70,12 +68,6 @@ object AnnotationManager {
 
     suspend fun getAnnotationsForBookmark(bookmarkId: String): List<AnnotationEntity> =
         annotationDao.getByBookmarkId(bookmarkId)
-
-    suspend fun getAnnotationsForVersion(
-        bookmarkId: String,
-        readableVersionId: String,
-    ): List<AnnotationEntity> =
-        annotationDao.getByBookmarkId(bookmarkId, readableVersionId = readableVersionId)
 
     suspend fun getAnnotation(bookmarkId: String, annotationId: String): AnnotationEntity? =
         annotationDao.getById(annotationId)

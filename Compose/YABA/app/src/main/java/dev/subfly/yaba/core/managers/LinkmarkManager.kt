@@ -62,7 +62,8 @@ object LinkmarkManager {
             localIconPath = localIconAbsolutePath,
             parentFolder = folder,
             tags = tags,
-            readableVersions = emptyList(),
+            readableBodyRelativePath = linkMetaData.readableBodyRelativePath,
+            readableAssetRelativePaths = linkMetaData.readableAssetRelativePaths,
         )
     }
 
@@ -94,6 +95,8 @@ object LinkmarkManager {
                 metadataDescription = metadataDescription ?: previous?.metadataDescription,
                 metadataAuthor = metadataAuthor ?: previous?.metadataAuthor,
                 metadataDate = metadataDate ?: previous?.metadataDate,
+                readableBodyRelativePath = previous?.readableBodyRelativePath,
+                readableAssetRelativePaths = previous?.readableAssetRelativePaths ?: emptyList(),
             )
             linkBookmarkDao.upsert(entity)
         }

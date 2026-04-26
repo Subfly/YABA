@@ -28,10 +28,4 @@ data class NoteBookmarkEntity(
     @PrimaryKey val bookmarkId: String,
     /** Canonical note body on disk (document JSON, e.g. `bookmarks/<id>/note/body.json`). */
     val documentRelativePath: String,
-    /**
-     * Stable [ReadableVersionEntity.id] used for highlight anchors.
-     * TODO: FIX PATH
-     * The mirrored document lives at [CoreConstants.FileSystem.Linkmark.readableVersionJsonPath].
-     */
-    val readableVersionId: String,
 )

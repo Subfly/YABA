@@ -17,8 +17,6 @@ data class NotemarkUiModel(
     override val isPinned: Boolean = false,
     /** Relative path to canonical note body (document JSON, e.g. `bookmarks/<id>/note/body.json`). */
     val documentRelativePath: String,
-    /** Readable version id used for highlight anchors. */
-    val readableVersionId: String,
     override val localImagePath: String? = null,
     override val localIconPath: String? = null,
     override val parentFolder: FolderUiModel?,

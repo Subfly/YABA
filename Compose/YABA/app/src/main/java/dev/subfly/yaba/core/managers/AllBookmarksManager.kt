@@ -54,7 +54,6 @@ object AllBookmarksManager {
     private val noteBookmarkDao get() = DatabaseProvider.noteBookmarkDao
     private val canvasBookmarkDao get() = DatabaseProvider.canvasBookmarkDao
     private val annotationDao get() = DatabaseProvider.annotationDao
-    private val readableVersionDao get() = DatabaseProvider.readableVersionDao
     private val bookmarkFileManager get() = BookmarkFileManager
     private val clock = Clock.System
 
@@ -417,7 +416,6 @@ object AllBookmarksManager {
         noteBookmarkDao.deleteById(bookmarkId)
         canvasBookmarkDao.deleteById(bookmarkId)
         annotationDao.deleteByBookmarkId(bookmarkId)
-        readableVersionDao.deleteByBookmarkId(bookmarkId)
         bookmarkDao.deleteByIds(listOf(bookmarkId))
     }
 

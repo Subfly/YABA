@@ -135,9 +135,6 @@ internal fun LinkmarkContentDropdownMenu(
     val moveText = stringResource(R.string.move)
     val remindMeText = stringResource(R.string.remind_me)
     val cancelReminderText = "Cancel Reminder" // TODO: LOCALIZATION
-    val updateSectionTitle = "Update" // TODO: LOCALIZATION
-    val metadataLabel = "Metadata" // TODO: LOCALIZATION
-    val versionLabel = "Version" // TODO: LOCALIZATION
     val shareText = stringResource(R.string.share)
     val deleteText = stringResource(R.string.delete)
     // TODO: LOCALIZATION
@@ -165,16 +162,14 @@ internal fun LinkmarkContentDropdownMenu(
         )
     }
 
-    var isUpdateSubmenuExpanded by remember { mutableStateOf(false) }
     var isSaveCopyExpanded by remember { mutableStateOf(false) }
     LaunchedEffect(expanded) {
         if (!expanded) {
-            isUpdateSubmenuExpanded = false
             isSaveCopyExpanded = false
         }
     }
 
-    val primaryRowCount = primaryActions.size + 2
+    val primaryRowCount = primaryActions.size + 1
 
     val secondaryActions = remember(hasActiveReminder, remindMeText, cancelReminderText, shareText) {
         buildList {
@@ -231,19 +226,6 @@ internal fun LinkmarkContentDropdownMenu(
                 onExportPdf = { runExportPdf() },
             )
 
-            LinkmarkUpdateSubmenuSection(
-                itemIndex = primaryActions.size + 1,
-                siblingCount = primaryRowCount,
-                title = updateSectionTitle,
-                metadataLabel = metadataLabel,
-                versionLabel = versionLabel,
-                accentColor = Color(YabaColor.MINT.iconTintArgb()),
-                isExpanded = isUpdateSubmenuExpanded,
-                onToggleExpand = { isUpdateSubmenuExpanded = !isUpdateSubmenuExpanded },
-                onDismissSubmenu = { isUpdateSubmenuExpanded = false },
-                onDismissRootMenu = onDismissRequest,
-                onEvent = onEvent,
-            )
         }
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -388,80 +370,3 @@ private fun LinkmarkSaveCopySubmenuSection(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-private fun LinkmarkUpdateSubmenuSection(
-    itemIndex: Int,
-    siblingCount: Int,
-    title: String,
-    metadataLabel: String,
-    versionLabel: String,
-    accentColor: Color,
-    isExpanded: Boolean,
-    onToggleExpand: () -> Unit,
-    onDismissSubmenu: () -> Unit,
-    onDismissRootMenu: () -> Unit,
-    onEvent: (LinkmarkDetailEvent) -> Unit,
-) {
-    Box {
-        DropdownMenuItem(
-            shapes = MenuDefaults.itemShape(itemIndex, siblingCount),
-            checked = false,
-            onCheckedChange = { _ -> onToggleExpand() },
-            leadingIcon = {
-                YabaIcon(
-                    name = "arrow-reload-horizontal",
-                    color = accentColor,
-                )
-            },
-            trailingIcon = {
-                val expandedRotation by animateFloatAsState(
-                    targetValue = if (isExpanded) 90F else 0F,
-                )
-                YabaIcon(
-                    modifier = Modifier.rotate(expandedRotation),
-                    name = "arrow-right-01",
-                )
-            },
-            text = { Text(text = title) },
-        )
-        DropdownMenuPopup(
-            expanded = isExpanded,
-            onDismissRequest = onDismissSubmenu,
-        ) {
-            DropdownMenuGroup(
-                shapes = MenuDefaults.groupShape(
-                    index = 0,
-                    count = 1,
-                ),
-            ) {
-                DropdownMenuItem(
-                    shapes = MenuDefaults.itemShape(0, 2),
-                    checked = false,
-                    onCheckedChange = { _ ->
-                        onDismissSubmenu()
-                        onDismissRootMenu()
-                        onEvent(LinkmarkDetailEvent.OnUpdateLinkMetadataRequested)
-                    },
-                    leadingIcon = {
-                        YabaIcon(name = "database-01", color = accentColor)
-                    },
-                    text = { Text(text = metadataLabel) },
-                )
-                DropdownMenuItem(
-                    shapes = MenuDefaults.itemShape(1, 2),
-                    checked = false,
-                    onCheckedChange = { _ ->
-                        onDismissSubmenu()
-                        onDismissRootMenu()
-                        onEvent(LinkmarkDetailEvent.OnUpdateReadableRequested)
-                    },
-                    leadingIcon = {
-                        YabaIcon(name = "book-open-01", color = accentColor)
-                    },
-                    text = { Text(text = versionLabel) },
-                )
-            }
-        }
-    }
-}

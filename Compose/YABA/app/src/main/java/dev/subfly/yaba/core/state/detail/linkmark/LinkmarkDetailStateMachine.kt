@@ -1,5 +1,7 @@
 package dev.subfly.yaba.core.state.detail.linkmark
 
+import dev.subfly.yaba.core.common.CoreConstants
+import dev.subfly.yaba.core.common.computeTriggerMillisFromDatePicker
 import dev.subfly.yaba.core.database.DatabaseProvider
 import dev.subfly.yaba.core.database.entities.LinkBookmarkEntity
 import dev.subfly.yaba.core.database.mappers.toPreviewUiModel
@@ -7,25 +9,18 @@ import dev.subfly.yaba.core.database.mappers.toUiModel
 import dev.subfly.yaba.core.database.models.BookmarkWithRelations
 import dev.subfly.yaba.core.filesystem.BookmarkFileManager
 import dev.subfly.yaba.core.filesystem.access.YabaFileAccessor
-import dev.subfly.yaba.core.common.CoreConstants
-import dev.subfly.yaba.core.common.computeTriggerMillisFromDatePicker
 import dev.subfly.yaba.core.managers.AllBookmarksManager
 import dev.subfly.yaba.core.managers.AnnotationManager
-import dev.subfly.yaba.core.managers.LinkmarkManager
-import dev.subfly.yaba.core.model.annotation.AnnotationType
 import dev.subfly.yaba.core.managers.ReadableContentManager
-import dev.subfly.yaba.core.notifications.NotificationManager
-import dev.subfly.yaba.core.unfurl.ConverterResultProcessor
+import dev.subfly.yaba.core.model.annotation.AnnotationType
 import dev.subfly.yaba.core.model.ui.BookmarkPreviewUiModel
-import dev.subfly.yaba.core.model.ui.ReadableVersionUiModel
 import dev.subfly.yaba.core.model.utils.ReaderFontSize
 import dev.subfly.yaba.core.model.utils.ReaderLineHeight
 import dev.subfly.yaba.core.model.utils.ReaderTheme
+import dev.subfly.yaba.core.notifications.NotificationManager
 import dev.subfly.yaba.core.state.base.BaseStateMachine
 import dev.subfly.yaba.core.webview.Toc
 import dev.subfly.yaba.core.webview.WebShellLoadResult
-import dev.subfly.yaba.core.webview.normalizeBridgeOptionalString
-import dev.subfly.yaba.core.unfurl.Unfurler
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,18 +32,6 @@ import kotlinx.coroutines.flow.map
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
-private enum class LinkmarkRefreshPurpose {
-    Version,
-    Metadata,
-}
-
-private data class LinkmarkDetailCombine(
-    val bookmark: BookmarkPreviewUiModel?,
-    val linkDetails: LinkBookmarkEntity?,
-    val readableVersions: List<ReadableVersionUiModel>,
-    val selectedReadableVersionId: String?,
-)
-
 @OptIn(ExperimentalCoroutinesApi::class)
 class LinkmarkDetailStateMachine :
     BaseStateMachine<LinkmarkDetailUIState, LinkmarkDetailEvent>(
@@ -56,22 +39,13 @@ class LinkmarkDetailStateMachine :
     ) {
     private var isInitialized = false
     private var initialReaderLoadSettled = false
-    private var pendingRefreshPurpose: LinkmarkRefreshPurpose? = null
     private var dataSubscriptionJob: Job? = null
     private val bookmarkIdFlow = MutableStateFlow<String?>(null)
-    private val selectedReadableVersionIdFlow = MutableStateFlow<String?>(null)
 
     override fun onEvent(event: LinkmarkDetailEvent) {
         when (event) {
             is LinkmarkDetailEvent.OnInit -> onInit(event.bookmarkId)
-            is LinkmarkDetailEvent.OnSaveReadableContent -> onSaveReadableContent(event)
-            LinkmarkDetailEvent.OnUpdateReadableRequested -> onUpdateReadableRequested()
-            LinkmarkDetailEvent.OnUpdateLinkMetadataRequested -> onUpdateLinkMetadataRequested()
-            is LinkmarkDetailEvent.OnConverterSucceeded -> onConverterSucceeded(event)
-            is LinkmarkDetailEvent.OnConverterFailed -> onConverterFailed(event)
             is LinkmarkDetailEvent.OnReaderWebInitialContentLoad -> onReaderWebInitialContentLoad(event)
-            is LinkmarkDetailEvent.OnSelectReadableVersion -> onSelectReadableVersion(event.versionId)
-            is LinkmarkDetailEvent.OnDeleteReadableVersion -> onDeleteReadableVersion(event.versionId)
             LinkmarkDetailEvent.OnDeleteBookmark -> onDeleteBookmark()
             LinkmarkDetailEvent.OnToggleReaderTheme -> onToggleReaderTheme()
             LinkmarkDetailEvent.OnToggleReaderFontSize -> onToggleReaderFontSize()
@@ -120,30 +94,17 @@ class LinkmarkDetailStateMachine :
                     updateState { it.copy(isLoading = true) }
 
                     val bookmarkFlow = DatabaseProvider.bookmarkDao.observeByIdWithRelations(id)
-                        .map { bookmarkWithRelations ->
-                            bookmarkWithRelations?.toBookmarkPreviewUiModel()
-                        }
+                        .map { bwr -> bwr?.toBookmarkPreviewUiModel() }
                     val linkDetailsFlow = DatabaseProvider.linkBookmarkDao.observeByBookmarkId(id)
-                    val readableVersionsFlow = ReadableContentManager.observeReadableVersions(id)
+                    val readableFlow = ReadableContentManager.observeLinkReadable(id)
 
                     combine(
                         bookmarkFlow,
                         linkDetailsFlow,
-                        readableVersionsFlow,
-                        selectedReadableVersionIdFlow,
-                    ) { bookmark, linkDetails, readableVersions, selectedId ->
-                        LinkmarkDetailCombine(
-                            bookmark = bookmark,
-                            linkDetails = linkDetails,
-                            readableVersions = readableVersions,
-                            selectedReadableVersionId = selectedId,
-                        )
-                    }.flatMapLatest { combined ->
+                        readableFlow,
+                    ) { bookmark, linkDetails, readableView ->
                         flow {
-                            val selectedVersion = combined.readableVersions.find {
-                                it.versionId == combined.selectedReadableVersionId
-                            } ?: combined.readableVersions.firstOrNull()
-                            val documentJson = selectedVersion?.body
+                            val documentJson = readableView?.body
                             val assetsBaseUrl = if (documentJson != null) {
                                 val folderPath =
                                     BookmarkFileManager.getAbsolutePath(
@@ -152,30 +113,29 @@ class LinkmarkDetailStateMachine :
                                 val base =
                                     if (folderPath.startsWith("file://")) folderPath else "file://$folderPath"
                                 base.trimEnd('/') + "/"
-                            } else null
+                            } else {
+                                null
+                            }
                             emit(
                                 currentState().copy(
-                                    bookmark = combined.bookmark,
-                                    linkDetails = combined.linkDetails?.toUiModel(),
-                                    readableVersions = combined.readableVersions,
-                                    selectedReadableVersionId = combined.selectedReadableVersionId,
+                                    bookmark = bookmark,
+                                    linkDetails = linkDetails?.toUiModel(),
                                     readableDocumentJson = documentJson,
                                     assetsBaseUrl = assetsBaseUrl,
-                                    annotations = selectedVersion?.annotations ?: emptyList(),
+                                    annotations = readableView?.annotations ?: emptyList(),
                                     isLoading =
                                         documentJson.isNullOrBlank().not() &&
-                                            initialReaderLoadSettled.not(),
+                                        initialReaderLoadSettled.not(),
                                     readerWebContentLoadFailed = false,
                                 ),
                             )
                         }
-                    }
+                    }.flatMapLatest { it }
                 }
             }.collectLatest { newState ->
                 updateState { current ->
                     val sameReadableBody =
                         current.readableDocumentJson == newState.readableDocumentJson
-                    // Avoid resetting [isLoading] to true when DB re-emits after shell load settled.
                     if (sameReadableBody && !current.isLoading) {
                         newState.copy(
                             isLoading = false,
@@ -189,101 +149,6 @@ class LinkmarkDetailStateMachine :
         }
     }
 
-    private fun onSaveReadableContent(event: LinkmarkDetailEvent.OnSaveReadableContent) {
-        val bookmarkId = bookmarkIdFlow.value ?: return
-        launch { ReadableContentManager.saveReadableContent(bookmarkId, event.readable) }
-    }
-
-    private fun onUpdateReadableRequested() {
-        startWebRefresh(LinkmarkRefreshPurpose.Version)
-    }
-
-    private fun onUpdateLinkMetadataRequested() {
-        startWebRefresh(LinkmarkRefreshPurpose.Metadata)
-    }
-
-    private fun startWebRefresh(purpose: LinkmarkRefreshPurpose) {
-        val linkUrl = currentState().linkDetails?.url ?: return
-        pendingRefreshPurpose = purpose
-        launch {
-            updateState { it.copy(isUpdatingReadable = true, converterError = null) }
-            runCatching { Unfurler.unfurl(linkUrl) }
-                .getOrNull()
-                ?.let { preview ->
-                    updateState {
-                        it.copy(
-                            converterHtml = preview.rawHtml,
-                            converterBaseUrl = preview.url,
-                            isUpdatingReadable = false,
-                        )
-                    }
-                }
-                ?: run {
-                    pendingRefreshPurpose = null
-                    updateState {
-                        it.copy(
-                            isUpdatingReadable = false,
-                            converterError = "Unable to fetch link content",
-                        )
-                    }
-                }
-        }
-    }
-
-    private fun onConverterSucceeded(event: LinkmarkDetailEvent.OnConverterSucceeded) {
-        val bookmarkId = bookmarkIdFlow.value ?: return
-        val purpose = pendingRefreshPurpose ?: return
-        pendingRefreshPurpose = null
-        val meta = event.linkMetadata
-        launch {
-            when (purpose) {
-                LinkmarkRefreshPurpose.Version -> {
-                    val readable = ConverterResultProcessor.process(
-                        documentJson = event.documentJson,
-                        assets = event.assets,
-                    )
-                    val versionId = ReadableContentManager.saveReadableContentInternal(bookmarkId, readable)
-                    selectedReadableVersionIdFlow.value = versionId
-                    AllBookmarksManager.touchBookmarkEditedAt(bookmarkId)
-                }
-                LinkmarkRefreshPurpose.Metadata -> {
-                    LinkmarkManager.createOrUpdateLinkDetails(
-                        bookmarkId = bookmarkId,
-                        url = meta.cleanedUrl,
-                        domain = null,
-                        videoUrl = meta.video.normalizeBridgeOptionalString(),
-                        audioUrl = meta.audio.normalizeBridgeOptionalString(),
-                        metadataTitle = meta.title.normalizeBridgeOptionalString(),
-                        metadataDescription = meta.description.normalizeBridgeOptionalString(),
-                        metadataAuthor = meta.author.normalizeBridgeOptionalString(),
-                        metadataDate = meta.date.normalizeBridgeOptionalString(),
-                    )
-                    AllBookmarksManager.touchBookmarkEditedAt(bookmarkId)
-                }
-            }
-            updateState {
-                it.copy(
-                    converterHtml = null,
-                    converterBaseUrl = null,
-                    converterError = null,
-                    isUpdatingReadable = false,
-                )
-            }
-        }
-    }
-
-    private fun onConverterFailed(event: LinkmarkDetailEvent.OnConverterFailed) {
-        pendingRefreshPurpose = null
-        updateState {
-            it.copy(
-                converterHtml = null,
-                converterBaseUrl = null,
-                converterError = event.error.message ?: "Conversion failed",
-                isUpdatingReadable = false,
-            )
-        }
-    }
-
     private fun onReaderWebInitialContentLoad(event: LinkmarkDetailEvent.OnReaderWebInitialContentLoad) {
         initialReaderLoadSettled = true
         updateState {
@@ -291,18 +156,6 @@ class LinkmarkDetailStateMachine :
                 isLoading = false,
                 readerWebContentLoadFailed = event.result == WebShellLoadResult.Error,
             )
-        }
-    }
-
-    private fun onSelectReadableVersion(versionId: String) {
-        selectedReadableVersionIdFlow.value = versionId
-    }
-
-    private fun onDeleteReadableVersion(versionId: String) {
-        ReadableContentManager.deleteVersion(versionId)
-        val currentSelected = selectedReadableVersionIdFlow.value
-        if (currentSelected == versionId) {
-            selectedReadableVersionIdFlow.value = null
         }
     }
 
@@ -385,7 +238,6 @@ class LinkmarkDetailStateMachine :
         AnnotationManager.createAnnotation(
             annotationId = event.annotationId,
             bookmarkId = bookmarkId,
-            readableVersionId = event.readableVersionId,
             type = AnnotationType.READABLE,
             colorRole = event.colorRole,
             note = event.note,
@@ -416,15 +268,13 @@ class LinkmarkDetailStateMachine :
         val req = event.request
         if (req.selectionDraft.bookmarkId != activeBookmarkId) return
         launch {
-            ReadableContentManager.syncNotemarkReadableMirror(
+            ReadableContentManager.syncReadableDocumentMirror(
                 bookmarkId = req.selectionDraft.bookmarkId,
-                versionId = req.selectionDraft.readableVersionId,
                 documentJson = event.documentJson,
             )
             AnnotationManager.createAnnotation(
                 annotationId = event.annotationId,
                 bookmarkId = req.selectionDraft.bookmarkId,
-                readableVersionId = req.selectionDraft.readableVersionId,
                 type = AnnotationType.READABLE,
                 colorRole = req.colorRole,
                 note = req.note,
@@ -439,13 +289,8 @@ class LinkmarkDetailStateMachine :
     ) {
         val bookmarkId = bookmarkIdFlow.value ?: return
         launch {
-            val state = currentState()
-            val versionId = state.selectedReadableVersionId
-                ?: state.readableVersions.firstOrNull()?.versionId
-                ?: return@launch
-            ReadableContentManager.syncNotemarkReadableMirror(
+            ReadableContentManager.syncReadableDocumentMirror(
                 bookmarkId = bookmarkId,
-                versionId = versionId,
                 documentJson = event.documentJson,
             )
             AnnotationManager.deleteAnnotation(bookmarkId, event.annotationId)
@@ -503,9 +348,7 @@ class LinkmarkDetailStateMachine :
 
     private fun onCancelReminder() {
         val bookmarkId = bookmarkIdFlow.value ?: return
-        launch {
-            NotificationManager.cancelReminder(bookmarkId)
-        }
+        launch { NotificationManager.cancelReminder(bookmarkId) }
         updateState { it.copy(reminderDateEpochMillis = null) }
     }
 
@@ -513,19 +356,14 @@ class LinkmarkDetailStateMachine :
         launch {
             if (event.markdown.isBlank()) return@launch
             val bookmarkId = bookmarkIdFlow.value ?: return@launch
-
             val label = currentState().bookmark?.label.orEmpty()
             val base = sanitizeExportBaseName(label)
-
-            try {
+            runCatching {
                 YabaFileAccessor.exportNotemarkMarkdownBundle(
                     markdown = event.markdown,
                     bookmarkId = bookmarkId,
                     suggestedMarkdownBaseName = base,
                 )
-                /* Show Success Toast */
-            } catch (_: Exception) {
-                /* Show Error Toast */
             }
         }
     }
@@ -537,19 +375,14 @@ class LinkmarkDetailStateMachine :
             val payload = sanitizePdfBase64Payload(event.pdfBase64) ?: return@launch
             val bytes = runCatching { Base64.decode(payload) }.getOrNull() ?: return@launch
             if (bytes.isEmpty()) return@launch
-
             val label = currentState().bookmark?.label.orEmpty()
             val base = sanitizeExportBaseName(label)
-
-            try {
+            runCatching {
                 YabaFileAccessor.saveFileCopy(
                     bytes = bytes,
                     suggestedName = base,
                     extension = "pdf",
                 )
-                /* Show Success Toast */
-            } catch (_: Exception) {
-                /* Show Error Toast */
             }
         }
     }
@@ -557,9 +390,6 @@ class LinkmarkDetailStateMachine :
     private fun sanitizeExportBaseName(label: String): String =
         label.ifBlank { "note" }.replace(Regex("[^a-zA-Z0-9_-]"), "_")
 
-    /**
-     * Strips data-URL prefix; rejects JSON (e.g. markdown sent to the PDF path by mistake).
-     */
     private fun sanitizePdfBase64Payload(pdfBase64: String): String? {
         var t = pdfBase64.trim()
         if (t.isEmpty()) return null
@@ -576,26 +406,21 @@ class LinkmarkDetailStateMachine :
     override fun clear() {
         isInitialized = false
         initialReaderLoadSettled = false
-        pendingRefreshPurpose = null
         dataSubscriptionJob?.cancel()
         dataSubscriptionJob = null
         bookmarkIdFlow.value = null
-        selectedReadableVersionIdFlow.value = null
         super.clear()
     }
 
-    private suspend fun BookmarkWithRelations.toBookmarkPreviewUiModel(): BookmarkPreviewUiModel {
+    private fun BookmarkWithRelations.toBookmarkPreviewUiModel(): BookmarkPreviewUiModel {
         val folderUi = folder.toUiModel()
         val tagsUi = tags.map { it.toUiModel() }
-
-        val localImageAbsolutePath = bookmark.localImagePath?.let { relativePath ->
-            BookmarkFileManager.getAbsolutePath(relativePath)
+        val localImageAbsolutePath = bookmark.localImagePath?.let { path ->
+            BookmarkFileManager.getAbsolutePath(path)
         }
-
-        val localIconAbsolutePath = bookmark.localIconPath?.let { relativePath ->
-            BookmarkFileManager.getAbsolutePath(relativePath)
+        val localIconAbsolutePath = bookmark.localIconPath?.let { path ->
+            BookmarkFileManager.getAbsolutePath(path)
         }
-
         return bookmark.toPreviewUiModel(
             folder = folderUi,
             tags = tagsUi,

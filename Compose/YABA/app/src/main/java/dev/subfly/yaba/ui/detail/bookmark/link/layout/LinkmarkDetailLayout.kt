@@ -35,7 +35,6 @@ import dev.subfly.yaba.ui.detail.bookmark.components.flattenTocForLazyItems
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailActionsContent
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailImageSectionContent
 import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailInfoSectionContent
-import dev.subfly.yaba.ui.detail.bookmark.link.components.LinkmarkDetailVersionItemContent
 import dev.subfly.yaba.ui.detail.bookmark.link.models.DetailPage
 import dev.subfly.yaba.ui.detail.composables.BookmarkDetailFolderSectionContent
 import dev.subfly.yaba.ui.detail.composables.BookmarkDetailReminderSectionContent
@@ -181,51 +180,6 @@ internal fun LinkmarkDetailLayout(
                             Text(text = stringResource(R.string.bookmark_detail_no_tags_added_description))
                         },
                     )
-                }
-
-                DetailPage.VERSIONS -> {
-                    if (state.readableVersions.isEmpty()) {
-                        item(key = "NO_VERSIONS") {
-                            Surface(
-                                modifier = Modifier
-                                    .animateItem()
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 12.dp),
-                                shape = RoundedCornerShape(12.dp),
-                                color = MaterialTheme.colorScheme.surface,
-                            ) {
-                                // TODO: LOCALIZATIONS
-                                NoContentView(
-                                    modifier = Modifier.padding(12.dp).padding(vertical = 24.dp),
-                                    iconName = "displeased",
-                                    labelRes = R.string.bookmark_detail_no_tags_added_title,
-                                    message = { Text(text = stringResource(R.string.bookmark_detail_no_tags_added_description)) },
-                                )
-                            }
-                        }
-                    } else {
-                        itemsIndexed(
-                            items = state.readableVersions,
-                            key = { _, version -> version.versionId },
-                        ) { index, version ->
-                            LinkmarkDetailVersionItemContent(
-                                modifier = Modifier
-                                    .animateItem()
-                                    .padding(vertical = 4.dp),
-                                version = version,
-                                mainColor = mainColor,
-                                index = index,
-                                count = state.readableVersions.size,
-                                isSelected = if (state.selectedReadableVersionId != null) {
-                                    version.versionId == state.selectedReadableVersionId
-                                } else {
-                                    index == 0
-                                },
-                                onClick = { onEvent(LinkmarkDetailEvent.OnSelectReadableVersion(version.versionId)) },
-                                onDelete = { onEvent(LinkmarkDetailEvent.OnDeleteReadableVersion(version.versionId)) },
-                            )
-                        }
-                    }
                 }
 
                 DetailPage.ANNOTATIONS -> {

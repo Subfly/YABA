@@ -145,7 +145,6 @@ class AnnotationCreationStateMachine :
                     AnnotationManager.createAnnotation(
                         annotationId = annotationId,
                         bookmarkId = draft.bookmarkId,
-                        readableVersionId = draft.readableVersionId,
                         type = typeForDb,
                         colorRole = state.selectedColor,
                         note = state.note.ifBlank { null },

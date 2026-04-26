@@ -20,7 +20,6 @@ data class DocmarkDetailUIState(
     val docmarkType: DocmarkType = DocmarkType.PDF,
     val documentAbsolutePath: String? = null,
     val readerPreferences: ReaderPreferences = ReaderPreferences(),
-    val selectedReadableVersionId: String? = null,
     val annotations: List<AnnotationUiModel> = emptyList(),
     val isLoading: Boolean = false,
     val webContentLoadFailed: Boolean = false,

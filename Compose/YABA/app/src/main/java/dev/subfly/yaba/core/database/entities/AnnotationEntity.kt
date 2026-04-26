@@ -22,24 +22,15 @@ import dev.subfly.yaba.core.model.utils.YabaColor
             childColumns = ["bookmarkId"],
             onDelete = ForeignKey.CASCADE,
         ),
-        ForeignKey(
-            entity = ReadableVersionEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["readableVersionId"],
-            onDelete = ForeignKey.CASCADE,
-        ),
     ],
     indices = [
         Index(value = ["bookmarkId"]),
-        Index(value = ["readableVersionId"]),
-        Index(value = ["bookmarkId", "readableVersionId"]),
         Index(value = ["editedAt"]),
     ],
 )
 data class AnnotationEntity(
     @PrimaryKey val id: String,
     val bookmarkId: String,
-    val readableVersionId: String,
     val type: AnnotationType,
     val colorRole: YabaColor,
     val note: String?,

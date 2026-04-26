@@ -5,26 +5,12 @@ import dev.subfly.yaba.core.model.utils.ReaderFontSize
 import dev.subfly.yaba.core.model.utils.ReaderLineHeight
 import dev.subfly.yaba.core.model.utils.ReaderTheme
 import dev.subfly.yaba.core.model.utils.YabaColor
-import dev.subfly.yaba.core.unfurl.ReadableUnfurl
-import dev.subfly.yaba.core.webview.WebConverterAsset
-import dev.subfly.yaba.core.webview.WebLinkMetadata
 import dev.subfly.yaba.core.webview.Toc
 import dev.subfly.yaba.core.webview.WebShellLoadResult
 
 sealed interface LinkmarkDetailEvent {
     data class OnInit(val bookmarkId: String) : LinkmarkDetailEvent
-    data class OnSaveReadableContent(val readable: ReadableUnfurl) : LinkmarkDetailEvent
-    data object OnUpdateReadableRequested : LinkmarkDetailEvent
-    data object OnUpdateLinkMetadataRequested : LinkmarkDetailEvent
-    data class OnConverterSucceeded(
-        val documentJson: String,
-        val assets: List<WebConverterAsset>,
-        val linkMetadata: WebLinkMetadata,
-    ) : LinkmarkDetailEvent
-    data class OnConverterFailed(val error: Throwable) : LinkmarkDetailEvent
     data class OnReaderWebInitialContentLoad(val result: WebShellLoadResult) : LinkmarkDetailEvent
-    data class OnSelectReadableVersion(val versionId: String) : LinkmarkDetailEvent
-    data class OnDeleteReadableVersion(val versionId: String) : LinkmarkDetailEvent
     data object OnDeleteBookmark : LinkmarkDetailEvent
     data object OnToggleReaderTheme : LinkmarkDetailEvent
     data object OnToggleReaderFontSize : LinkmarkDetailEvent
@@ -34,7 +20,6 @@ sealed interface LinkmarkDetailEvent {
     data class OnSetReaderLineHeight(val lineHeight: ReaderLineHeight) : LinkmarkDetailEvent
     data class OnCreateAnnotation(
         val annotationId: String,
-        val readableVersionId: String,
         val colorRole: YabaColor = YabaColor.NONE,
         val note: String? = null,
         val quoteText: String? = null,

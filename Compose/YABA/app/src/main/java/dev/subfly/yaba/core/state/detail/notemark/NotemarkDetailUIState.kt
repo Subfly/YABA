@@ -9,8 +9,6 @@ import dev.subfly.yaba.core.webview.Toc
 @Immutable
 data class NotemarkDetailUIState(
     val bookmark: BookmarkPreviewUiModel? = null,
-    /** Stable readable layer id for notemark readable mirror (if any). */
-    val readableVersionId: String? = null,
     /** Base URL for resolving relative assets in the editor (`file://.../bookmarks/<id>/`). */
     val assetsBaseUrl: String? = null,
     /**

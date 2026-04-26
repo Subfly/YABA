@@ -1,7 +1,6 @@
 package dev.subfly.yaba.core.managers
 
 import dev.subfly.yaba.core.common.CoreConstants
-import dev.subfly.yaba.core.common.IdGenerator
 import dev.subfly.yaba.core.database.DatabaseProvider
 import dev.subfly.yaba.core.database.entities.NoteBookmarkEntity
 import dev.subfly.yaba.core.database.mappers.toUiModel
@@ -17,6 +16,7 @@ import dev.subfly.yaba.core.model.utils.BookmarkKind
 import dev.subfly.yaba.core.queue.CoreOperationQueue
 import kotlin.time.Instant
 import kotlinx.coroutines.flow.Flow
+import dev.subfly.yaba.core.common.IdGenerator
 
 object NotemarkManager {
     private val bookmarkDao
@@ -54,7 +54,6 @@ object NotemarkManager {
             viewCount = bookmarkMetaData.viewCount,
             isPinned = bookmarkMetaData.isPinned,
             documentRelativePath = noteMeta.documentRelativePath,
-            readableVersionId = noteMeta.readableVersionId,
             localImagePath = localImageAbsolutePath,
             localIconPath = localIconAbsolutePath,
             parentFolder = folder,
@@ -137,11 +136,9 @@ object NotemarkManager {
         documentJson: String,
         touchEditedAt: Boolean,
     ) {
-        val note = noteBookmarkDao.getByBookmarkId(bookmarkId) ?: return
         NotemarkFileManager.writeDocumentBody(bookmarkId, documentJson)
-        ReadableContentManager.syncNotemarkReadableMirror(
+        ReadableContentManager.syncReadableDocumentMirror(
             bookmarkId = bookmarkId,
-            versionId = note.readableVersionId,
             documentJson = documentJson,
         )
         if (touchEditedAt) {
@@ -174,19 +171,17 @@ object NotemarkManager {
     }
 
     /**
-     * Creates empty body file, readable mirror row, and note subtype row. Call after bookmark
+     * Creates empty body file, readable mirror, and note subtype row. Call after bookmark
      * metadata exists.
      */
     fun createOrUpdateNoteDetails(
         bookmarkId: String,
         documentRelativePath: String = NotemarkFileManager.documentBodyRelativePath(bookmarkId),
-        readableVersionId: String? = null,
     ) {
         CoreOperationQueue.queue("CreateOrUpdateNoteDetails:$bookmarkId") {
             createOrUpdateNoteDetailsInternal(
                 bookmarkId = bookmarkId,
                 documentRelativePath = documentRelativePath,
-                readableVersionId = readableVersionId,
             )
         }
     }
@@ -194,24 +189,17 @@ object NotemarkManager {
     private suspend fun createOrUpdateNoteDetailsInternal(
         bookmarkId: String,
         documentRelativePath: String,
-        readableVersionId: String?,
     ) {
         NotemarkFileManager.ensureEmptyDocumentBody(bookmarkId)
         val body = NotemarkFileManager.readDocumentBody(bookmarkId).orEmpty()
-        val resolvedVersionId =
-            readableVersionId
-                ?: noteBookmarkDao.getByBookmarkId(bookmarkId)?.readableVersionId
-                ?: IdGenerator.newId()
-        ReadableContentManager.syncNotemarkReadableMirror(
+        ReadableContentManager.syncReadableDocumentMirror(
             bookmarkId = bookmarkId,
-            versionId = resolvedVersionId,
             documentJson = body.ifBlank { EMPTY_EDITOR_DOCUMENT_JSON },
         )
         noteBookmarkDao.upsert(
             NoteBookmarkEntity(
                 bookmarkId = bookmarkId,
                 documentRelativePath = documentRelativePath,
-                readableVersionId = resolvedVersionId,
             ),
         )
     }

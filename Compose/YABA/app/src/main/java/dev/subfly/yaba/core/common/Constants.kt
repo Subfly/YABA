@@ -64,6 +64,8 @@ object CoreConstants {
             const val HTML_EXPORTS_DIR = "html_exports"
             const val READABLE_DIR = "readable"
             const val ASSETS_DIR = "assets"
+            /** Single readable document (TipTap JSON) for link and notemark mirror. */
+            const val READABLE_CURRENT_DOCUMENT = "current.json"
 
             fun linkImagePath(
                 bookmarkId: String,
@@ -87,11 +89,11 @@ object CoreConstants {
                 join(bookmarkFolder(bookmarkId), READABLE_DIR)
 
             /**
-             * Path for readable document JSON (linkmarks + notemark mirror):
-             * readable/<versionId>.json
+             * Canonical readable document for a bookmark (one current snapshot).
+             * `readable/<versionId>.json` legacy layout removed.
              */
-            fun readableVersionPath(bookmarkId: String, versionId: String): String =
-                join(readableDir(bookmarkId), "$versionId.json")
+            fun readableCurrentDocumentPath(bookmarkId: String): String =
+                join(readableDir(bookmarkId), READABLE_CURRENT_DOCUMENT)
 
             fun assetsDir(bookmarkId: String): String = join(bookmarkFolder(bookmarkId), ASSETS_DIR)
 

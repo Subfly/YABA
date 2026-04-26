@@ -29,18 +29,8 @@ data class LinkmarkUiModel(
     override val localIconPath: String? = null,
     override val parentFolder: FolderUiModel?,
     override val tags: List<TagUiModel> = emptyList(),
-    /** Readable versions ordered by createdAt DESC (newest first) for "Time Machine" */
-    val readableVersions: List<ReadableVersionUiModel> = emptyList(),
-) : BookmarkUiModel {
-    /** The latest readable version, or null if no versions exist */
-    val latestVersion: ReadableVersionUiModel?
-        get() = readableVersions.firstOrNull()
-
-    /** Total number of readable versions */
-    val versionCount: Int
-        get() = readableVersions.size
-
-    /** Total number of annotations across all versions */
-    val totalAnnotationCount: Int
-        get() = readableVersions.sumOf { it.annotations.size }
-}
+    /** Relative path to the current readable document JSON, if any. */
+    val readableBodyRelativePath: String? = null,
+    /** Asset paths (relative) for the current readable. */
+    val readableAssetRelativePaths: List<String> = emptyList(),
+) : BookmarkUiModel

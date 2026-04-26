@@ -11,29 +11,40 @@ import kotlinx.serialization.Serializable
 data class AnnotationSourceContext(
     val bookmarkId: String,
     val type: AnnotationType,
-    /** For READABLE: readableVersionId. For PDF: same id space as stored on the entity. */
+    /** For READABLE: stable id for the current document snapshot. For PDF/EPUB: same id space as before. */
     val contentId: String,
 ) {
     companion object {
-        fun readable(bookmarkId: String, readableVersionId: String): AnnotationSourceContext =
+        const val DEFAULT_READABLE_CONTENT_ID: String = "current"
+
+        fun readable(
+            bookmarkId: String,
+            contentId: String = DEFAULT_READABLE_CONTENT_ID,
+        ): AnnotationSourceContext =
             AnnotationSourceContext(
                 bookmarkId = bookmarkId,
                 type = AnnotationType.READABLE,
-                contentId = readableVersionId,
+                contentId = contentId,
             )
 
-        fun pdf(bookmarkId: String, readableVersionId: String): AnnotationSourceContext =
+        fun pdf(
+            bookmarkId: String,
+            contentId: String = DEFAULT_READABLE_CONTENT_ID,
+        ): AnnotationSourceContext =
             AnnotationSourceContext(
                 bookmarkId = bookmarkId,
                 type = AnnotationType.PDF,
-                contentId = readableVersionId,
+                contentId = contentId,
             )
 
-        fun epub(bookmarkId: String, readableVersionId: String): AnnotationSourceContext =
+        fun epub(
+            bookmarkId: String,
+            contentId: String = DEFAULT_READABLE_CONTENT_ID,
+        ): AnnotationSourceContext =
             AnnotationSourceContext(
                 bookmarkId = bookmarkId,
                 type = AnnotationType.EPUB,
-                contentId = readableVersionId,
+                contentId = contentId,
             )
     }
 }

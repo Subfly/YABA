@@ -1,121 +1,66 @@
+@file:OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+
 package dev.subfly.yaba.core.managers
 
 import dev.subfly.yaba.core.common.CoreConstants
-import dev.subfly.yaba.core.common.IdGenerator
 import dev.subfly.yaba.core.database.DatabaseProvider
 import dev.subfly.yaba.core.database.entities.AnnotationEntity
-import dev.subfly.yaba.core.database.entities.ReadableVersionEntity
 import dev.subfly.yaba.core.filesystem.access.FileAccessProvider
 import dev.subfly.yaba.core.model.ui.AnnotationUiModel
-import dev.subfly.yaba.core.model.ui.ReadableVersionUiModel
 import dev.subfly.yaba.core.queue.CoreOperationQueue
 import dev.subfly.yaba.core.unfurl.ReadableAsset
 import dev.subfly.yaba.core.unfurl.ReadableUnfurl
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
-import kotlin.time.Clock
 
 /**
- * Filesystem-first manager for immutable readable content.
- *
- * File layout:
- * - /bookmarks/<id>/readable/<versionId>.json (link readable + notemark readable mirror; rich-text document JSON)
- * - /bookmarks/<id>/assets/<assetId>.<ext>
- *
- * Uses [FileAccessProvider] / [dev.subfly.yaba.core.filesystem.YabaFile] for I/O (no FileKit).
+ * Filesystem + Room manager for a single current readable per link bookmark, and
+ * [readable/current.json] mirroring for notemarks and docmark placeholders.
  */
 object ReadableContentManager {
-    private val readableVersionDao get() = DatabaseProvider.readableVersionDao
+    private val linkBookmarkDao get() = DatabaseProvider.linkBookmarkDao
     private val annotationDao get() = DatabaseProvider.annotationDao
     private val accessProvider = FileAccessProvider
 
     fun saveReadableContent(bookmarkId: String, readable: ReadableUnfurl) {
         CoreOperationQueue.queue("SaveReadable:$bookmarkId") {
-            saveReadableContentInternal(bookmarkId, readable)
+            upsertLinkReadableInternal(bookmarkId, readable)
         }
     }
 
-    /**
-     * PDF annotations still persist an [AnnotationEntity.readableVersionId] FK to [ReadableVersionEntity].
-     * Docmarks that never received a readable snapshot therefore have no version row and the UI cannot
-     * resolve a version id for annotation selection drafts (see [AnnotationEntity.readableVersionId]).
-     * Creates a single minimal document JSON placeholder version when the bookmark has none yet.
-     */
-    fun ensureDocmarkAnnotationReadableVersionIfNeeded(bookmarkId: String) {
-        CoreOperationQueue.queue("EnsureDocmarkReadable:$bookmarkId") {
-            val existing = readableVersionDao.getByBookmarkId(bookmarkId)
-            if (existing.isNotEmpty()) return@queue
-            saveReadableContentInternal(
-                bookmarkId = bookmarkId,
-                readable = ReadableUnfurl(
-                    documentJson = """{"type":"doc","content":[]}""",
-                    assets = emptyList(),
-                ),
-            )
+    /** Suspending save used from creation and tests. */
+    suspend fun saveReadableContentAwait(bookmarkId: String, readable: ReadableUnfurl) {
+        CoreOperationQueue.queueAndAwait("SaveReadable:$bookmarkId") {
+            upsertLinkReadableInternal(bookmarkId, readable)
         }
     }
 
-    /**
-     * Writes or overwrites readable version JSON at `/readable/<versionId>.json` (notemark mirror,
-     * linkmarks after embedding `yabaAnnotation` marks, etc.).
-     */
-    suspend fun syncNotemarkReadableMirror(
-        bookmarkId: String,
-        versionId: String,
-        documentJson: String,
-    ) {
-        val relativePath = CoreConstants.FileSystem.Linkmark.readableVersionPath(bookmarkId, versionId)
-        val file = accessProvider.resolveRelativePath(relativePath, ensureParentExists = true)
+    private suspend fun upsertLinkReadableInternal(bookmarkId: String, readable: ReadableUnfurl) {
+        val assetRelPaths = saveAssets(bookmarkId, readable.assets)
+        val bodyRel = CoreConstants.FileSystem.Linkmark.readableCurrentDocumentPath(bookmarkId)
+        val file = accessProvider.resolveRelativePath(bodyRel, ensureParentExists = true)
         withContext(Dispatchers.IO) {
-            file.write(documentJson.encodeToByteArray())
+            file.write(readable.documentJson.encodeToByteArray())
         }
-
-        val existing = readableVersionDao.getById(versionId)
-        val createdAt = existing?.createdAt ?: Clock.System.now().toEpochMilliseconds()
-
-        readableVersionDao.upsert(
-            ReadableVersionEntity(
-                id = versionId,
-                bookmarkId = bookmarkId,
-                createdAt = createdAt,
-                relativePath = relativePath,
+        val existing = linkBookmarkDao.getByBookmarkId(bookmarkId)
+            ?: error("link_bookmarks row missing for $bookmarkId")
+        linkBookmarkDao.upsert(
+            existing.copy(
+                readableBodyRelativePath = bodyRel,
+                readableAssetRelativePaths = assetRelPaths,
             ),
         )
-    }
-
-    internal suspend fun saveReadableContentInternal(bookmarkId: String, readable: ReadableUnfurl): String {
-        val versionId = IdGenerator.newId()
-        val createdAt = Clock.System.now().toEpochMilliseconds()
-
-        saveAssets(bookmarkId, readable.assets)
-        saveJsonVersion(bookmarkId, versionId, readable.documentJson)
-        updateRoomIndex(bookmarkId, versionId, createdAt)
-        return versionId
-    }
-
-    private suspend fun saveJsonVersion(
-        bookmarkId: String,
-        versionId: String,
-        documentJson: String,
-    ) {
-        val relativePath = CoreConstants.FileSystem.Linkmark.readableVersionPath(bookmarkId, versionId)
-        val file = accessProvider.resolveRelativePath(relativePath, ensureParentExists = true)
-        if (file.exists()) return
-        withContext(Dispatchers.IO) {
-            file.write(documentJson.encodeToByteArray())
-        }
     }
 
     private suspend fun saveAssets(
         bookmarkId: String,
         assets: List<ReadableAsset>,
-    ) {
+    ): List<String> {
+        val out = ArrayList<String>(assets.size)
         for (asset in assets) {
             val relativePath = CoreConstants.FileSystem.Linkmark.assetPath(
                 bookmarkId,
@@ -128,69 +73,80 @@ object ReadableContentManager {
                     file.write(asset.bytes)
                 }
             }
+            out.add(relativePath)
+        }
+        return out
+    }
+
+    /**
+     * Docmarks: ensure `readable/current.json` exists for annotation UI when only PDF is present.
+     */
+    fun ensureDocmarkReadablePlaceholderIfNeeded(bookmarkId: String) {
+        CoreOperationQueue.queue("EnsureDocmarkReadable:$bookmarkId") {
+            ensureDocmarkReadablePlaceholderInternal(bookmarkId)
         }
     }
 
-    private suspend fun updateRoomIndex(
+    private suspend fun ensureDocmarkReadablePlaceholderInternal(bookmarkId: String) {
+        val rel = CoreConstants.FileSystem.Linkmark.readableCurrentDocumentPath(bookmarkId)
+        val file = accessProvider.resolveRelativePath(rel, ensureParentExists = true)
+        if (file.exists()) return
+        val json = """{"type":"doc","content":[]}"""
+        withContext(Dispatchers.IO) {
+            file.write(json.encodeToByteArray())
+        }
+    }
+
+    /**
+     * Writes notemark/editor JSON to the same canonical readable path (highlight mirror).
+     */
+    suspend fun syncReadableDocumentMirror(
         bookmarkId: String,
-        versionId: String,
-        createdAt: Long,
+        documentJson: String,
     ) {
-        val relativePath = CoreConstants.FileSystem.Linkmark.readableVersionPath(bookmarkId, versionId)
-        val versionEntity = ReadableVersionEntity(
-            id = versionId,
-            bookmarkId = bookmarkId,
-            createdAt = createdAt,
-            relativePath = relativePath,
-        )
-        readableVersionDao.upsert(versionEntity)
+        val rel = CoreConstants.FileSystem.Linkmark.readableCurrentDocumentPath(bookmarkId)
+        val file = accessProvider.resolveRelativePath(rel, ensureParentExists = true)
+        withContext(Dispatchers.IO) {
+            file.write(documentJson.encodeToByteArray())
+        }
+    }
+
+    /**
+     * Observes the current readable for a **link** bookmark: link row + file body + all annotations.
+     */
+    fun observeLinkReadable(
+        bookmarkId: String,
+    ): Flow<LinkmarkReadableView?> {
+        return combine(
+            linkBookmarkDao.observeByBookmarkId(bookmarkId),
+            annotationDao.observeByBookmarkId(bookmarkId),
+        ) { link, anns -> Pair(link, anns) }
+            .flatMapLatest { (link, anns) ->
+                flow {
+                    if (link == null) {
+                        emit(null)
+                        return@flow
+                    }
+                    val rel = link.readableBodyRelativePath
+                    if (rel == null) {
+                        emit(null)
+                        return@flow
+                    }
+                    val body = readVersionByPath(rel)
+                    val annsUi = anns.map { it.toAnnotationUiModel() }
+                    emit(
+                        LinkmarkReadableView(
+                            body = body,
+                            assetRelativePaths = link.readableAssetRelativePaths,
+                            annotations = annsUi,
+                        ),
+                    )
+                }
+            }
     }
 
     suspend fun readVersionByPath(relativePath: String): String? =
         accessProvider.readText(relativePath)
-
-    fun deleteVersion(versionId: String) {
-        CoreOperationQueue.queue("DeleteReadableVersion:$versionId") {
-            deleteVersionInternal(versionId)
-        }
-    }
-
-    internal suspend fun deleteVersionInternal(versionId: String) {
-        val entity = readableVersionDao.getById(versionId) ?: return
-        accessProvider.delete(entity.relativePath)
-        readableVersionDao.deleteById(versionId)
-    }
-
-    fun observeReadableVersions(bookmarkId: String): Flow<List<ReadableVersionUiModel>> {
-        val versionsFlow = readableVersionDao.observeByBookmarkId(bookmarkId)
-        val annotationsFlow = annotationDao.observeByBookmarkId(bookmarkId)
-        return combine(versionsFlow, annotationsFlow) { versions, _ ->
-            versions
-        }.map { versions ->
-            coroutineScope {
-                versions.map { versionEntity ->
-                    async { buildReadableVersionUiModel(bookmarkId, versionEntity) }
-                }.awaitAll()
-            }
-        }
-    }
-
-    private suspend fun buildReadableVersionUiModel(
-        bookmarkId: String,
-        versionEntity: ReadableVersionEntity,
-    ): ReadableVersionUiModel {
-        val bodyContent = readVersionByPath(versionEntity.relativePath)
-        val annotations = annotationDao.getByBookmarkId(bookmarkId, readableVersionId = versionEntity.id)
-
-        val annotationsUi = annotations.map { it.toAnnotationUiModel() }
-
-        return ReadableVersionUiModel(
-            versionId = versionEntity.id,
-            createdAt = versionEntity.createdAt,
-            body = bodyContent,
-            annotations = annotationsUi,
-        )
-    }
 
     private fun AnnotationEntity.toAnnotationUiModel(): AnnotationUiModel =
         AnnotationUiModel(
@@ -204,3 +160,13 @@ object ReadableContentManager {
             editedAt = editedAt,
         )
 }
+
+/**
+ * TODO: REMOVE
+ * In-memory view for the link reader (one payload + annotations for that bookmark).
+ */
+data class LinkmarkReadableView(
+    val body: String?,
+    val assetRelativePaths: List<String>,
+    val annotations: List<AnnotationUiModel>,
+)

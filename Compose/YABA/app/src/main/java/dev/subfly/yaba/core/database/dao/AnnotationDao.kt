@@ -27,25 +27,17 @@ interface AnnotationDao {
         """
         SELECT * FROM annotations 
         WHERE bookmarkId = :bookmarkId 
-        AND (:readableVersionId IS NULL OR readableVersionId = :readableVersionId)
         ORDER BY createdAt ASC
         """,
     )
-    suspend fun getByBookmarkId(
-        bookmarkId: String,
-        readableVersionId: String? = null,
-    ): List<AnnotationEntity>
+    suspend fun getByBookmarkId(bookmarkId: String): List<AnnotationEntity>
 
     @Query(
         """
         SELECT * FROM annotations 
         WHERE bookmarkId = :bookmarkId 
-        AND (:readableVersionId IS NULL OR readableVersionId = :readableVersionId)
         ORDER BY createdAt ASC
         """,
     )
-    fun observeByBookmarkId(
-        bookmarkId: String,
-        readableVersionId: String? = null,
-    ): Flow<List<AnnotationEntity>>
+    fun observeByBookmarkId(bookmarkId: String): Flow<List<AnnotationEntity>>
 }

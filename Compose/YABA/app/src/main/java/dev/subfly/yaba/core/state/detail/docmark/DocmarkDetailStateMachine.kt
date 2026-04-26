@@ -1,6 +1,7 @@
 package dev.subfly.yaba.core.state.detail.docmark
 
 import dev.subfly.yaba.core.database.DatabaseProvider
+import dev.subfly.yaba.core.database.entities.AnnotationEntity
 import dev.subfly.yaba.core.database.mappers.toPreviewUiModel
 import dev.subfly.yaba.core.database.mappers.toUiModel
 import dev.subfly.yaba.core.database.models.BookmarkWithRelations
@@ -10,6 +11,7 @@ import dev.subfly.yaba.core.managers.AllBookmarksManager
 import dev.subfly.yaba.core.managers.DocmarkManager
 import dev.subfly.yaba.core.managers.AnnotationManager
 import dev.subfly.yaba.core.managers.ReadableContentManager
+import dev.subfly.yaba.core.model.ui.AnnotationUiModel
 import dev.subfly.yaba.core.model.ui.BookmarkPreviewUiModel
 import dev.subfly.yaba.core.model.utils.DocmarkType
 import dev.subfly.yaba.core.model.utils.ReaderFontSize
@@ -23,11 +25,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DocmarkDetailStateMachine : BaseStateMachine<DocmarkDetailUIState, DocmarkDetailEvent>(
@@ -35,7 +34,6 @@ class DocmarkDetailStateMachine : BaseStateMachine<DocmarkDetailUIState, Docmark
 ) {
     private var isInitialized = false
     private val bookmarkIdFlow = MutableStateFlow<String?>(null)
-    private val selectedReadableVersionIdFlow = MutableStateFlow<String?>(null)
 
     override fun onEvent(event: DocmarkDetailEvent) {
         when (event) {
@@ -73,28 +71,11 @@ class DocmarkDetailStateMachine : BaseStateMachine<DocmarkDetailUIState, Docmark
             updateState { it.copy(reminderDateEpochMillis = reminderDate) }
         }
 
-        /**
-         * New docmarks may have no readable rows after creation-time readable save was removed.
-         * Annotation creation still needs a [ReadableVersionEntity] id; ensure a minimal placeholder once.
-         */
         launch {
-            bookmarkIdFlow.flatMapLatest { id ->
-                if (id == null) {
-                    emptyFlow()
-                } else {
-                    ReadableContentManager.observeReadableVersions(id)
-                        .map { it.size }
-                        .distinctUntilChanged()
-                        .map { size -> Pair(id, size) }
-                }
-            }.collect { (id, size) ->
-                if (size == 0) {
-                    val docType = DatabaseProvider.docBookmarkDao.getByBookmarkId(id)?.type ?: DocmarkType.PDF
-                    val docPath = DocmarkManager.resolveDocumentAbsolutePath(id, docType)
-                    if (docPath.isNullOrBlank().not()) {
-                        ReadableContentManager.ensureDocmarkAnnotationReadableVersionIfNeeded(id)
-                    }
-                }
+            val docType = DatabaseProvider.docBookmarkDao.getByBookmarkId(bookmarkId)?.type ?: DocmarkType.PDF
+            val docPath = DocmarkManager.resolveDocumentAbsolutePath(bookmarkId, docType)
+            if (docPath.isNullOrBlank().not()) {
+                ReadableContentManager.ensureDocmarkReadablePlaceholderIfNeeded(bookmarkId)
             }
         }
 
@@ -106,18 +87,16 @@ class DocmarkDetailStateMachine : BaseStateMachine<DocmarkDetailUIState, Docmark
                     updateState { it.copy(isLoading = true) }
                     val bookmarkFlow = DatabaseProvider.bookmarkDao.observeByIdWithRelations(id)
                     val docFlow = DatabaseProvider.docBookmarkDao.observeByBookmarkId(id)
-                    val readableVersionsFlow = ReadableContentManager.observeReadableVersions(id)
+                    val annotationsFlow = DatabaseProvider.annotationDao.observeByBookmarkId(id)
                     combine(
                         bookmarkFlow,
                         docFlow,
-                        readableVersionsFlow,
-                        selectedReadableVersionIdFlow,
-                    ) { bookmark, doc, readableVersions, selectedReadableVersionId ->
+                        annotationsFlow,
+                    ) { bookmark, doc, anns ->
                         flow {
-                            val selectedVersion = readableVersions.find { it.versionId == selectedReadableVersionId }
-                                ?: readableVersions.firstOrNull()
                             val docmarkType = doc?.type ?: DocmarkType.PDF
                             val documentPath = DocmarkManager.resolveDocumentAbsolutePath(id, docmarkType)
+                            val annsUi = anns.map { it.toAnnotationUiModel() }
                             emit(
                                 currentState().copy(
                                     bookmark = bookmark?.toBookmarkPreviewUiModel(),
@@ -128,8 +107,7 @@ class DocmarkDetailStateMachine : BaseStateMachine<DocmarkDetailUIState, Docmark
                                     metadataDate = doc?.metadataDate,
                                     docmarkType = docmarkType,
                                     documentAbsolutePath = documentPath,
-                                    selectedReadableVersionId = selectedVersion?.versionId,
-                                    annotations = selectedVersion?.annotations ?: emptyList(),
+                                    annotations = annsUi,
                                     isLoading = documentPath.isNullOrBlank().not(),
                                     webContentLoadFailed = false,
                                 ),
@@ -139,11 +117,8 @@ class DocmarkDetailStateMachine : BaseStateMachine<DocmarkDetailUIState, Docmark
                 }
             }.collectLatest { newState ->
                 updateState { current ->
-                    val sameReaderTarget =
-                        current.documentAbsolutePath == newState.documentAbsolutePath &&
-                            current.selectedReadableVersionId == newState.selectedReadableVersionId
-                    val preserveShell =
-                        sameReaderTarget && !current.isLoading
+                    val sameReaderTarget = current.documentAbsolutePath == newState.documentAbsolutePath
+                    val preserveShell = sameReaderTarget && !current.isLoading
                     current.copy(
                         bookmark = newState.bookmark,
                         summary = newState.summary,
@@ -153,7 +128,6 @@ class DocmarkDetailStateMachine : BaseStateMachine<DocmarkDetailUIState, Docmark
                         metadataDate = newState.metadataDate,
                         docmarkType = newState.docmarkType,
                         documentAbsolutePath = newState.documentAbsolutePath,
-                        selectedReadableVersionId = newState.selectedReadableVersionId,
                         annotations = newState.annotations,
                         isLoading = if (preserveShell) false else newState.isLoading,
                         webContentLoadFailed =
@@ -324,9 +298,20 @@ class DocmarkDetailStateMachine : BaseStateMachine<DocmarkDetailUIState, Docmark
     override fun clear() {
         isInitialized = false
         bookmarkIdFlow.value = null
-        selectedReadableVersionIdFlow.value = null
         super.clear()
     }
+
+    private fun AnnotationEntity.toAnnotationUiModel(): AnnotationUiModel =
+        AnnotationUiModel(
+            id = id,
+            type = type,
+            colorRole = colorRole,
+            note = note,
+            quoteText = quoteText,
+            extrasJson = extrasJson,
+            createdAt = createdAt,
+            editedAt = editedAt,
+        )
 
     private suspend fun BookmarkWithRelations.toBookmarkPreviewUiModel(): BookmarkPreviewUiModel {
         val folderUi = folder.toUiModel()

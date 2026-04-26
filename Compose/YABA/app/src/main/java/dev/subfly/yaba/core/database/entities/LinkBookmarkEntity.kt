@@ -29,4 +29,6 @@ data class LinkBookmarkEntity(
     val metadataDescription: String? = null,
     val metadataAuthor: String? = null,
     val metadataDate: String? = null,
+    val readableBodyRelativePath: String? = null,
+    val readableAssetRelativePaths: List<String> = emptyList(),
 )

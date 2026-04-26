@@ -8,7 +8,6 @@ import dev.subfly.yaba.core.filesystem.BookmarkFileManager
 import dev.subfly.yaba.core.filesystem.access.YabaFileAccessor
 import dev.subfly.yaba.core.managers.AllBookmarksManager
 import dev.subfly.yaba.core.managers.NotemarkManager
-import dev.subfly.yaba.core.managers.ReadableContentManager
 import dev.subfly.yaba.core.model.ui.BookmarkPreviewUiModel
 import dev.subfly.yaba.core.notifications.NotificationManager
 import dev.subfly.yaba.core.state.base.BaseStateMachine
@@ -83,14 +82,11 @@ class NotemarkDetailStateMachine :
                         val bookmarkFlow =
                             DatabaseProvider.bookmarkDao.observeByIdWithRelations(id)
                         val noteFlow = DatabaseProvider.noteBookmarkDao.observeByBookmarkId(id)
-                        val readableVersionsFlow =
-                            ReadableContentManager.observeReadableVersions(id)
 
                         combine(
                             bookmarkFlow,
                             noteFlow,
-                            readableVersionsFlow,
-                        ) { bookmark, note, versions ->
+                        ) { bookmark, note ->
                             flow {
                                 val bookmarkModel =
                                     if (bookmark != null) {
@@ -98,7 +94,6 @@ class NotemarkDetailStateMachine :
                                     } else {
                                         null
                                     }
-                                val vid = note?.readableVersionId
                                 val assetsBaseUrl = NotemarkManager.resolveNoteAssetsBaseUrl(id)
 
                                 if (note != null && !didBootstrapEditor) {
@@ -111,7 +106,6 @@ class NotemarkDetailStateMachine :
                                         currentState()
                                             .copy(
                                                 bookmark = bookmarkModel,
-                                                readableVersionId = vid,
                                                 assetsBaseUrl = assetsBaseUrl,
                                                 initialDocumentJson = docJson,
                                                 editorContentLoadGeneration = loadGeneration,
@@ -124,7 +118,6 @@ class NotemarkDetailStateMachine :
                                         currentState()
                                             .copy(
                                                 bookmark = bookmarkModel,
-                                                readableVersionId = vid,
                                                 assetsBaseUrl = assetsBaseUrl,
                                                 isLoading = false,
                                                 webContentLoadFailed = false,

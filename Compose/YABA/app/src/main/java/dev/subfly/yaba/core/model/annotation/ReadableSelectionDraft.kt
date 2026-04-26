@@ -18,5 +18,5 @@ data class ReadableSelectionDraft(
     val epubAnchor: EpubAnnotationExtras? = null,
 ) {
     val bookmarkId: String get() = sourceContext.bookmarkId
-    val readableVersionId: String get() = sourceContext.contentId
+    val contentId: String get() = sourceContext.contentId
 }
