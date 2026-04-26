@@ -7,7 +7,6 @@ import Foundation
 
 public struct AnnotationCreationUIState: Sendable {
     public var bookmarkId: String
-    public var readableVersionId: String?
     public var annotationId: String?
     public var annotationType: AnnotationType
     public var colorRole: YabaColor
@@ -18,17 +17,15 @@ public struct AnnotationCreationUIState: Sendable {
 
     public init(
         bookmarkId: String = "",
-        readableVersionId: String? = nil,
         annotationId: String? = nil,
         annotationType: AnnotationType = .readable,
-        colorRole: YabaColor = .none,
+        colorRole: YabaColor = .yellow,
         note: String = "",
         quoteText: String? = nil,
         extrasJson: String? = nil,
         lastError: String? = nil
     ) {
         self.bookmarkId = bookmarkId
-        self.readableVersionId = readableVersionId
         self.annotationId = annotationId
         self.annotationType = annotationType
         self.colorRole = colorRole
@@ -37,6 +34,4 @@ public struct AnnotationCreationUIState: Sendable {
         self.extrasJson = extrasJson
         self.lastError = lastError
     }
-
-    public var isEditing: Bool { annotationId != nil }
 }

@@ -13,11 +13,7 @@ public enum LinkmarkDetailEvent: Sendable {
     /// Call when the UI has resolved the link URL (needed for refresh).
     case onLinkSourceUrl(String)
     case onSaveReadableContent(html: Data)
-    case onUpdateReadableRequested
-    case onUpdateLinkMetadataRequested
     case onReaderWebInitialContentLoad(resultJson: String?)
-    case onSelectReadableVersion(versionId: String)
-    case onDeleteReadableVersion(versionId: String)
     case onDeleteBookmark(bookmarkId: String)
     case onToggleReaderTheme
     case onToggleReaderFontSize
@@ -27,7 +23,6 @@ public enum LinkmarkDetailEvent: Sendable {
     case onSetReaderLineHeight(ReaderLineHeight)
     case onCreateAnnotation(
         annotationId: String,
-        readableVersionId: String,
         colorRole: YabaColor,
         note: String?,
         quoteText: String?
@@ -41,7 +36,6 @@ public enum LinkmarkDetailEvent: Sendable {
     )
     case onAnnotationReadableDeleteCommitted(
         annotationId: String,
-        readableVersionId: String,
         html: String
     )
     case onScrollToAnnotation(annotationId: String)

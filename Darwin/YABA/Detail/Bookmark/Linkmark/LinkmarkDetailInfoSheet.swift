@@ -8,7 +8,6 @@ import UIKit
 
 enum LinkmarkDetailSheetTab: String, CaseIterable, Identifiable, Hashable {
     case info
-    case versions
     case annotations
     case contents
 
@@ -17,7 +16,6 @@ enum LinkmarkDetailSheetTab: String, CaseIterable, Identifiable, Hashable {
     var icon: String {
         switch self {
         case .info: return "information-circle"
-        case .versions: return "clock-02"
         case .annotations: return "sticky-note-03"
         case .contents: return "align-box-middle-center"
         }
@@ -26,7 +24,6 @@ enum LinkmarkDetailSheetTab: String, CaseIterable, Identifiable, Hashable {
     var title: LocalizedStringKey {
         switch self {
         case .info: return "Bookmark Detail Sheet Tab Info Title"
-        case .versions: return "Bookmark Detail Sheet Tab Versions Title"
         case .annotations: return "Bookmark Detail Sheet Tab Annotations Title"
         case .contents: return "Bookmark Detail Sheet Tab Contents Title"
         }
@@ -47,17 +44,10 @@ struct LinkmarkDetailInfoSheet: View {
     let onOpenFolder: (String) -> Void
     let onOpenTag: (String) -> Void
     @Binding var selectedTab: LinkmarkDetailSheetTab
-    let sortedVersions: [ReadableVersionModel]
-    let selectedVersionId: String?
-    let onSelectVersion: (String) -> Void
-    let onDeleteVersion: (String) -> Void
     let onTocItemTap: (TocItem) -> Void
     let onScrollToAnnotation: (String) -> Void
     let onEditAnnotation: (String) -> Void
     let onDeleteAnnotation: (String) -> Void
-
-    @State
-    private var versionPendingDeletion: PendingVersionDeletion?
 
     var body: some View {
         NavigationStack {
@@ -83,31 +73,6 @@ struct LinkmarkDetailInfoSheet: View {
                     }
                 }
             }
-            .alert(
-                "Bookmark Detail Delete Readable Version Title",
-                isPresented: Binding(
-                    get: { versionPendingDeletion != nil },
-                    set: { if !$0 { versionPendingDeletion = nil } }
-                )
-            ) {
-                Button(role: .cancel) {
-                    versionPendingDeletion = nil
-                } label: {
-                    Text("Cancel")
-                }
-                Button(role: .destructive) {
-                    if let pending = versionPendingDeletion {
-                        onDeleteVersion(pending.id)
-                    }
-                    versionPendingDeletion = nil
-                } label: {
-                    Text("Delete")
-                }
-            } message: {
-                if let pending = versionPendingDeletion {
-                    Text("Delete Content Message \(pending.label)")
-                }
-            }
         }
     }
 
@@ -116,8 +81,6 @@ struct LinkmarkDetailInfoSheet: View {
         switch selectedTab {
         case .info:
             linkInfoScroll
-        case .versions:
-            versionsList
         case .annotations:
             annotationsList
         case .contents:
@@ -263,53 +226,8 @@ struct LinkmarkDetailInfoSheet: View {
         .scrollContentBackground(.hidden)
     }
 
-    private var versionsList: some View {
-        Group {
-            if sortedVersions.isEmpty {
-                emptyStateContent(
-                    icon: resolvedIcon("clock-add", fallback: "clock-02"),
-                    title: "Bookmark Detail No Versions Title",
-                    message: "Bookmark Detail No Versions Message"
-                )
-            } else {
-                List {
-                    ForEach(sortedVersions, id: \.readableVersionId) { v in
-                        Button {
-                            onSelectVersion(v.readableVersionId)
-                        } label: {
-                            versionRow(v)
-                        }
-                        .buttonStyle(.plain)
-                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                            Button(role: .destructive) {
-                                versionPendingDeletion = PendingVersionDeletion(
-                                    id: v.readableVersionId,
-                                    label: v.createdAt.formatted(date: .abbreviated, time: .shortened)
-                                )
-                            } label: {
-                                VStack(spacing: 2) {
-                                    YabaIconView(bundleKey: "delete-02")
-                                        .frame(width: 22, height: 22)
-                                    Text("Delete")
-                                        .font(.caption2)
-                                }
-                            }
-                            .tint(.red)
-                        }
-                    }
-                }
-                .listStyle(.sidebar)
-            }
-        }
-    }
-
     private var annotationsList: some View {
-        let versionId = selectedVersionId
-            ?? sortedVersions.first?.readableVersionId
-        let items = bookmark.annotations.filter { ann in
-            guard let versionId else { return true }
-            return ann.readableVersion?.readableVersionId == versionId
-        }
+        let items = bookmark.annotations.filter { $0.type == .readable }
         return Group {
             if items.isEmpty {
                 emptyStateContent(
@@ -478,41 +396,6 @@ struct LinkmarkDetailInfoSheet: View {
         )
     }
 
-    private func versionRow(_ version: ReadableVersionModel) -> some View {
-        let isSelected = version.readableVersionId == selectedVersionId
-            || (selectedVersionId == nil && version.readableVersionId == sortedVersions.first?.readableVersionId)
-        let annotationCount = bookmark.annotations.filter {
-            $0.readableVersion?.readableVersionId == version.readableVersionId
-        }.count
-
-        return HStack(spacing: 12) {
-            YabaIconView(bundleKey: isSelected ? "checkmark-circle-02" : "clock-02")
-                .frame(width: 22, height: 22)
-                .foregroundStyle(isSelected ? folderAccent : .secondary)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(version.createdAt.formatted(date: .abbreviated, time: .shortened))
-                    .foregroundStyle(.primary)
-                Text(LocalizedStringKey(annotationsLabel(for: annotationCount)))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-            Spacer(minLength: 0)
-        }
-        .contentShape(Rectangle())
-    }
-
-    private func annotationsLabel(for count: Int) -> String {
-        switch count {
-        case 0:
-            return "Bookmark Detail Version Item Annotation Count Zero"
-        case 1:
-            return "Bookmark Detail Version Item Annotation Count One"
-        default:
-            return "Bookmark Detail Version Item Annotation Count Many \(count)"
-        }
-    }
-
     private func tocHeadingIcon(level: Int) -> String {
         switch level {
         case 1: "heading-01"
@@ -523,15 +406,6 @@ struct LinkmarkDetailInfoSheet: View {
         default: "heading-06"
         }
     }
-
-    private func resolvedIcon(_ preferred: String, fallback: String) -> String {
-        UIImage(named: preferred) == nil ? fallback : preferred
-    }
-}
-
-private struct PendingVersionDeletion {
-    let id: String
-    let label: String
 }
 
 private extension TocItem {

@@ -23,5 +23,5 @@ public enum NotemarkDetailEvent: Sendable {
     case onExportPdfReady(base64: String)
 
     case saveDocument(bookmarkId: String, data: Data)
-    case ensureReadableMirror(bookmarkId: String, versionId: String, json: String)
+    case ensureReadableMirror(bookmarkId: String, json: String)
 }

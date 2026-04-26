@@ -67,7 +67,6 @@ internal fun RichTextWebViewReaderBridge(
 ): WebViewReaderBridge = object : WebViewReaderBridge {
     override suspend fun getSelectionSnapshot(
         bookmarkId: String,
-        contentId: String,
     ): ReadableSelectionDraft? {
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EDITOR_BRIDGE_READY)) return null
         val raw = evaluateJs(webView, YabaEditorBridgeScripts.getSelectionSnapshotScript())
@@ -80,7 +79,7 @@ internal fun RichTextWebViewReaderBridge(
             val suffixText = json.optString("suffixText").takeIf { it.isNotBlank() }
             if (selectedText.isBlank()) return@runCatching null
             ReadableSelectionDraft(
-                sourceContext = AnnotationSourceContext.readable(bookmarkId, contentId),
+                sourceContext = AnnotationSourceContext.readable(bookmarkId),
                 quote = AnnotationQuoteSnapshot(
                     selectedText = selectedText,
                     prefixText = prefixText,
@@ -198,8 +197,7 @@ internal fun RichTextWebViewEditorBridge(
 
         override suspend fun getSelectionSnapshot(
             bookmarkId: String,
-            contentId: String,
-        ): ReadableSelectionDraft? = reader.getSelectionSnapshot(bookmarkId, contentId)
+        ): ReadableSelectionDraft? = reader.getSelectionSnapshot(bookmarkId)
 
         override suspend fun getCanCreateAnnotation(): Boolean = reader.getCanCreateAnnotation()
 
@@ -389,7 +387,6 @@ internal fun PdfWebViewReaderBridge(
 ): WebViewReaderBridge = object : WebViewReaderBridge {
     override suspend fun getSelectionSnapshot(
         bookmarkId: String,
-        contentId: String,
     ): ReadableSelectionDraft? {
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.PDF_BRIDGE_READY)) return null
         val raw = evaluateJs(webView, YabaPdfReaderBridgeScripts.getSelectionSnapshotScript())
@@ -406,7 +403,7 @@ internal fun PdfWebViewReaderBridge(
             val suffixText = json.optString("suffixText").takeIf { it.isNotBlank() }
             if (startSectionKey.isBlank() || endSectionKey.isBlank() || selectedText.isBlank()) return@runCatching null
             ReadableSelectionDraft(
-                sourceContext = AnnotationSourceContext.pdf(bookmarkId, contentId),
+                sourceContext = AnnotationSourceContext.pdf(bookmarkId),
                 quote = AnnotationQuoteSnapshot(
                     selectedText = selectedText,
                     prefixText = prefixText,
@@ -475,7 +472,6 @@ internal fun EpubWebViewReaderBridge(
 ): WebViewReaderBridge = object : WebViewReaderBridge {
     override suspend fun getSelectionSnapshot(
         bookmarkId: String,
-        contentId: String,
     ): ReadableSelectionDraft? {
         if (!waitForBridgeReady(webView, YabaWebBridgeScripts.EPUB_BRIDGE_READY)) return null
         val raw = evaluateJs(webView, YabaEpubReaderBridgeScripts.getSelectionSnapshotScript())
@@ -489,7 +485,7 @@ internal fun EpubWebViewReaderBridge(
             val suffixText = json.optString("suffixText").takeIf { it.isNotBlank() }
             if (cfiRange.isBlank() || selectedText.isBlank()) return@runCatching null
             ReadableSelectionDraft(
-                sourceContext = AnnotationSourceContext.epub(bookmarkId, contentId),
+                sourceContext = AnnotationSourceContext.epub(bookmarkId),
                 quote = AnnotationQuoteSnapshot(
                     selectedText = selectedText,
                     prefixText = prefixText,

@@ -92,7 +92,6 @@ public final class NotemarkCreationStateMachine: YabaBaseObservableState<Notemar
         }
         apply { $0.lastError = nil; $0.isSaving = true }
         let bid = state.editingBookmarkId ?? UUID().uuidString
-        let versionId = UUID().uuidString
         if state.editingBookmarkId != nil {
             AllBookmarksManager.queueUpdateBookmarkMetadata(
                 bookmarkId: bid,
@@ -116,8 +115,8 @@ public final class NotemarkCreationStateMachine: YabaBaseObservableState<Notemar
         }
         let data = Data(state.documentJson.utf8)
         NotemarkManager.queueSaveNoteDocumentData(bookmarkId: bid, documentBody: data)
-            ReadableContentManager.queueSyncNotemarkReadableMirror(bookmarkId: bid, versionId: versionId, html: state.documentJson)
-        NotemarkManager.queueCreateOrUpdateNoteDetails(bookmarkId: bid, readableVersionId: versionId)
+        ReadableContentManager.queueSyncNotemarkReadableMirror(bookmarkId: bid, html: state.documentJson)
+        NotemarkManager.queueCreateOrUpdateNoteDetails(bookmarkId: bid)
         apply { $0.isSaving = false }
     }
 }

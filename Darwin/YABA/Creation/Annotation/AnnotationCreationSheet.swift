@@ -12,7 +12,7 @@ enum AnnotationCreationSheetMode: Identifiable {
     var id: String {
         switch self {
         case let .create(draft):
-            return "create:\(draft.bookmarkId):\(draft.readableVersionId)"
+            return "create:\(draft.bookmarkId)"
         case let .edit(annotation):
             return "edit:\(annotation.annotationId)"
         }
@@ -23,7 +23,7 @@ enum AnnotationCreationSheetOutcome {
     case cancelled
     case persisted
     case readableCreateRequested(annotationId: String, request: AnnotationReadableCreateRequest)
-    case readableDeleteRequested(annotationId: String, readableVersionId: String)
+    case readableDeleteRequested(annotationId: String)
 }
 
 struct AnnotationCreationSheet: View {
@@ -235,7 +235,6 @@ struct AnnotationCreationSheet: View {
                 let request = AnnotationReadableCreateRequest(
                     selectionDraft: ReadableSelectionDraft(
                         bookmarkId: machine.state.bookmarkId,
-                        readableVersionId: machine.state.readableVersionId ?? originalDraft.readableVersionId,
                         quoteText: machine.state.quoteText,
                         extrasJson: machine.state.extrasJson,
                         annotationType: machine.state.annotationType
@@ -262,17 +261,9 @@ struct AnnotationCreationSheet: View {
             dismiss()
         case let .edit(annotation):
             if annotation.type == .readable {
-                let versionId = annotation.readableVersion?.readableVersionId ?? machine.state.readableVersionId ?? ""
-                guard !versionId.isEmpty else {
-                    await machine.send(.onDelete)
-                    onFinish(.persisted)
-                    dismiss()
-                    return
-                }
                 onFinish(
                     .readableDeleteRequested(
-                        annotationId: annotation.annotationId,
-                        readableVersionId: versionId
+                        annotationId: annotation.annotationId
                     )
                 )
             } else {
@@ -288,7 +279,6 @@ struct AnnotationCreationSheet: View {
         case let .create(draft):
             return AnnotationCreationUIState(
                 bookmarkId: draft.bookmarkId,
-                readableVersionId: draft.readableVersionId,
                 annotationId: nil,
                 annotationType: draft.annotationType,
                 colorRole: .yellow,
@@ -300,7 +290,6 @@ struct AnnotationCreationSheet: View {
         case let .edit(annotation):
             return AnnotationCreationUIState(
                 bookmarkId: annotation.bookmark?.bookmarkId ?? "",
-                readableVersionId: annotation.readableVersion?.readableVersionId,
                 annotationId: annotation.annotationId,
                 annotationType: annotation.type,
                 colorRole: annotation.colorRole,

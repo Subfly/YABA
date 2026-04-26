@@ -43,7 +43,6 @@ import dev.subfly.yaba.ui.detail.bookmark.util.bookmarkDetailIconButtonColors
 import dev.subfly.yaba.util.LocalAppStateManager
 import dev.subfly.yaba.util.LocalContentNavigator
 import dev.subfly.yaba.util.LocalCreationContentNavigator
-import dev.subfly.yaba.core.model.annotation.AnnotationSourceContext
 import dev.subfly.yaba.core.model.utils.DocmarkType
 import dev.subfly.yaba.core.state.detail.DetailWebShellPhase
 import dev.subfly.yaba.core.state.detail.docmark.DocmarkDetailEvent
@@ -210,10 +209,7 @@ internal fun DocmarkContentLayout(
                                 val resolvedBookmarkId =
                                     bookmarkId ?: return@DocmarkReaderFloatingToolbar
                                 scope.launch {
-                                    val draft = bridge.getSelectionSnapshot(
-                                        resolvedBookmarkId,
-                                        AnnotationSourceContext.DEFAULT_READABLE_CONTENT_ID
-                                    )
+                                    val draft = bridge.getSelectionSnapshot(resolvedBookmarkId)
                                     creationNavigator.add(
                                         AnnotationCreationRoute(
                                             bookmarkId = resolvedBookmarkId,

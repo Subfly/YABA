@@ -7,10 +7,7 @@ import dev.subfly.yaba.core.model.ui.AnnotationUiModel
  * Imperative bridge for reader WebViews (HTML reader shell or PDF): selection, annotations, paging.
  */
 interface WebViewReaderBridge {
-    suspend fun getSelectionSnapshot(
-        bookmarkId: String,
-        contentId: String,
-    ): ReadableSelectionDraft?
+    suspend fun getSelectionSnapshot(bookmarkId: String): ReadableSelectionDraft?
 
     suspend fun getCanCreateAnnotation(): Boolean
 

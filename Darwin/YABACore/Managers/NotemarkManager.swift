@@ -25,16 +25,9 @@ public enum NotemarkManager {
         }
     }
 
-    public static func queueCreateOrUpdateNoteDetails(
-        bookmarkId: String,
-        readableVersionId: String? = nil
-    ) {
+    public static func queueCreateOrUpdateNoteDetails(bookmarkId: String) {
         CoreOperationQueue.shared.queue(name: "CreateOrUpdateNoteDetails:\(bookmarkId)") { context in
-            try createOrUpdateNoteDetailsInternal(
-                bookmarkId: bookmarkId,
-                readableVersionId: readableVersionId,
-                context: context
-            )
+            try createOrUpdateNoteDetailsInternal(bookmarkId: bookmarkId, context: context)
         }
     }
 
@@ -57,15 +50,12 @@ public enum NotemarkManager {
 
     private static func createOrUpdateNoteDetailsInternal(
         bookmarkId: String,
-        readableVersionId: String?,
         context: ModelContext
     ) throws {
         guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context) else {
             return
         }
         let note = try ensureNoteDetail(bookmark: bookmark, context: context)
-        let versionId = readableVersionId ?? (note.readableVersionId.isEmpty ? UUID().uuidString : note.readableVersionId)
-        note.readableVersionId = versionId
         _ = try ensureNotePayload(noteDetail: note, context: context)
         bookmark.editedAt = .now
     }
@@ -74,7 +64,7 @@ public enum NotemarkManager {
         if let note = bookmark.noteDetail {
             return note
         }
-        let note = NoteBookmarkModel(readableVersionId: UUID().uuidString, bookmark: bookmark)
+        let note = NoteBookmarkModel(bookmark: bookmark)
         context.insert(note)
         bookmark.noteDetail = note
         return note
@@ -90,4 +80,3 @@ public enum NotemarkManager {
         return payload
     }
 }
-

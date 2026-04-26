@@ -145,15 +145,6 @@ struct LinkmarkDetailView: View {
                         onOpenTag(tagId)
                     },
                     selectedTab: $sheetTab,
-                    sortedVersions: sortedVersions(bm),
-                    selectedVersionId: machine.state.selectedReadableVersionId,
-                    onSelectVersion: { id in
-                        Task { await machine.send(.onSelectReadableVersion(versionId: id)) }
-                        documentReloadToken = UUID()
-                    },
-                    onDeleteVersion: { id in
-                        Task { await machine.send(.onDeleteReadableVersion(versionId: id)) }
-                    },
                     onTocItemTap: { item in
                         showDetailSheet = false
                         Task { await machine.send(.onNavigateToTocItem(id: item.id, extrasJson: item.extrasJson)) }
@@ -269,10 +260,10 @@ struct LinkmarkDetailView: View {
 
     @ViewBuilder
     private func mainContent(for bm: YabaBookmark) -> some View {
-        let versions = sortedVersions(bm)
+        let hasReadable = linkHasReadableContent(bm)
         let folderTint = folderColor(for: bm)
         Group {
-            if versions.isEmpty {
+            if !hasReadable {
                 LinkmarkNoReadableVersionView(accent: folderTint)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
@@ -365,7 +356,7 @@ struct LinkmarkDetailView: View {
         }
         .tint(folderTint)
         .background {
-            if !versions.isEmpty {
+            if hasReadable {
                 GeometryReader { proxy in
                     Color.clear
                         .onAppear { updateReaderTopInset(proxy) }
@@ -400,37 +391,22 @@ struct LinkmarkDetailView: View {
         bm.folder?.color.getUIColor() ?? .accentColor
     }
 
-    private func sortedVersions(_ bm: YabaBookmark) -> [ReadableVersionModel] {
-        bm.readableVersions.sorted { $0.createdAt > $1.createdAt }
-    }
-
-    private func currentVersion(_ bm: YabaBookmark) -> ReadableVersionModel? {
-        let sorted = sortedVersions(bm)
-        guard !sorted.isEmpty else { return nil }
-        let sel = machine.state.selectedReadableVersionId
-        if let sel, let v = sorted.first(where: { $0.readableVersionId == sel }) {
-            return v
-        }
-        return sorted.first
+    private func linkHasReadableContent(_ bm: YabaBookmark) -> Bool {
+        let md = bm.linkDetail?.markdown ?? ""
+        return !md.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
     private func readableBodyString(for bm: YabaBookmark) -> String {
-        guard let data = currentVersion(bm)?.payload?.markdown,
-              let s = String(data: data, encoding: .utf8)
-        else {
-            return ""
-        }
-        return s
+        bm.linkDetail?.markdown ?? ""
     }
 
     private func inlineAssetTuples(for bm: YabaBookmark) -> [(assetId: String, bytes: Data)] {
-        guard let v = currentVersion(bm) else { return [] }
-        return v.inlineAssets.map { ($0.assetId, $0.bytes ?? Data()) }
+        guard let link = bm.linkDetail else { return [] }
+        return link.inlineAssets.map { ($0.assetId, $0.bytes ?? Data()) }
     }
 
     private func annotationsJson(for bm: YabaBookmark) -> String {
-        guard let v = currentVersion(bm) else { return "[]" }
-        let ann = bm.annotations.filter { $0.readableVersion?.readableVersionId == v.readableVersionId }
+        let ann = bm.annotations.filter { $0.type == .readable }
         return AnnotationRenderingPayloadBuilder.readableJSON(from: ann)
     }
 
@@ -448,15 +424,12 @@ struct LinkmarkDetailView: View {
 
     private func openAnnotationCreator() {
         guard let bm = bookmark else { return }
-        guard let versionId = currentVersion(bm)?.readableVersionId else { return }
+        guard linkHasReadableContent(bm) else { return }
         Task { @MainActor in
             // WebKit selection and host metrics can be one frame apart; retry briefly before showing an error.
             var draft: ReadableSelectionDraft?
             for _ in 0 ..< 5 {
-                draft = await webDriver.getSelectionDraft(
-                    bookmarkId: bm.bookmarkId,
-                    readableVersionId: versionId
-                )
+                draft = await webDriver.getSelectionDraft(bookmarkId: bm.bookmarkId)
                 if draft != nil { break }
                 try? await Task.sleep(nanoseconds: 80_000_000)
             }
@@ -499,15 +472,15 @@ struct LinkmarkDetailView: View {
             }
         case let .readableCreateRequested(annotationId, request):
             await commitReadableCreate(annotationId: annotationId, request: request)
-        case let .readableDeleteRequested(annotationId, readableVersionId):
-            await commitReadableDelete(annotationId: annotationId, readableVersionId: readableVersionId)
+        case let .readableDeleteRequested(annotationId):
+            await commitReadableDelete(annotationId: annotationId)
         }
     }
 
     private func handleAnnotationDelete(annotationId: String) async {
         guard let annotation = bookmark?.annotations.first(where: { $0.annotationId == annotationId }) else { return }
-        if annotation.type == .readable, let readableVersionId = annotation.readableVersion?.readableVersionId {
-            await commitReadableDelete(annotationId: annotationId, readableVersionId: readableVersionId)
+        if annotation.type == .readable {
+            await commitReadableDelete(annotationId: annotationId)
             return
         }
         await machine.send(.onDeleteAnnotation(annotationId: annotationId))
@@ -541,7 +514,7 @@ struct LinkmarkDetailView: View {
         )
     }
 
-    private func commitReadableDelete(annotationId: String, readableVersionId: String) async {
+    private func commitReadableDelete(annotationId: String) async {
         _ = await webDriver.removeAnnotationFromDocument(annotationId: annotationId)
         let documentJson = await webDriver.getDocumentJson()
         guard !documentJson.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
@@ -555,7 +528,6 @@ struct LinkmarkDetailView: View {
         await machine.send(
             .onAnnotationReadableDeleteCommitted(
                 annotationId: annotationId,
-                readableVersionId: readableVersionId,
                 html: documentJson
             )
         )
@@ -619,29 +591,6 @@ struct LinkmarkDetailView: View {
                 overflowMenuItemLabel("Bookmark Detail Export Menu Title", icon: "download-01")
             }
             .tint(YabaColor.blue.getUIColor())
-            Menu {
-                Button {
-                    Task { await machine.send(.onUpdateLinkMetadataRequested) }
-                } label: {
-                    overflowMenuItemLabel(
-                        "Bookmark Creation Metadata Section Title",
-                        icon: "database-01"
-                    )
-                }
-                .tint(YabaColor.mint.getUIColor())
-                Button {
-                    Task { await machine.send(.onUpdateReadableRequested) }
-                } label: {
-                    overflowMenuItemLabel(
-                        "Bookmark Detail Update Readable Version Action",
-                        icon: "book-open-01"
-                    )
-                }
-                .tint(YabaColor.mint.getUIColor())
-            } label: {
-                overflowMenuItemLabel("Bookmark Detail Update Menu Title", icon: "arrow-reload-horizontal")
-            }
-            .tint(YabaColor.mint.getUIColor())
             if machine.state.reminderDate == nil {
                 Button {
                     showReminderSheet = true
@@ -709,7 +658,7 @@ struct LinkmarkDetailView: View {
             )
             return
         }
-        let inlineSources: [MarkdownExportInlineSource] = (currentVersion(bookmark)?.inlineAssets ?? []).compactMap { item in
+        let inlineSources: [MarkdownExportInlineSource] = (bookmark?.linkDetail?.inlineAssets ?? []).compactMap { item in
             guard let bytes = item.bytes, !bytes.isEmpty else { return nil }
             return MarkdownExportInlineSource(assetId: item.assetId, pathExtension: item.pathExtension, bytes: bytes)
         }

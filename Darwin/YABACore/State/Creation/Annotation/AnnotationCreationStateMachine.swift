@@ -16,7 +16,6 @@ public final class AnnotationCreationStateMachine: YabaBaseObservableState<Annot
         case let .onInitWithSelection(draft):
             apply {
                 $0.bookmarkId = draft.bookmarkId
-                $0.readableVersionId = draft.readableVersionId
                 $0.quoteText = draft.quoteText
                 $0.extrasJson = draft.extrasJson
                 $0.annotationType = draft.annotationType
@@ -46,7 +45,6 @@ public final class AnnotationCreationStateMachine: YabaBaseObservableState<Annot
             } else {
                 AnnotationManager.queueInsertAnnotation(
                     bookmarkId: bid,
-                    readableVersionId: state.readableVersionId,
                     type: state.annotationType,
                     colorRoleRaw: colorRaw,
                     note: state.note.nilIfEmpty,
@@ -58,10 +56,9 @@ public final class AnnotationCreationStateMachine: YabaBaseObservableState<Annot
             if let aid = state.annotationId {
                 AnnotationManager.queueDeleteAnnotation(annotationId: aid)
             }
-        case let .create(bookmarkId, rv, type, note, quote):
+        case let .create(bookmarkId, type, note, quote):
             AnnotationManager.queueInsertAnnotation(
                 bookmarkId: bookmarkId,
-                readableVersionId: rv,
                 type: type,
                 note: note,
                 quoteText: quote

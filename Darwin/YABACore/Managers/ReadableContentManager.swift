@@ -2,172 +2,123 @@
 //  ReadableContentManager.swift
 //  YABACore
 //
-//  Readable pipeline helpers (Compose `ReadableContentManager`). SwiftData stores readable bodies
-//  in `ReadableVersionPayloadModel.markdown` (link readable Markdown; notemark/editor JSON until migrated).
+//  Readable pipeline helpers (Compose `ReadableContentManager` parity). One readable payload
+//  per link on `LinkBookmarkModel`; notemark body lives in `NoteBookmarkPayloadModel`.
 //
 
 import Foundation
 import SwiftData
 
 public enum ReadableContentManager {
-    /// When a docmark has no readable rows yet, inserts a minimal JSON placeholder version so
-    /// annotations can attach (Compose `ensureDocmarkAnnotationReadableVersionIfNeeded`).
-    public static func queueEnsureDocmarkReadableVersionIfNeeded(bookmarkId: String) {
-        CoreOperationQueue.shared.queue(name: "EnsureDocmarkReadable:\(bookmarkId)") { context in
-            guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context) else {
-                return
-            }
-            if !bookmark.readableVersions.isEmpty { return }
-            let json = #"{"type":"doc","content":[]}"#
-            let data = Data(json.utf8)
-            let payload = ReadableVersionPayloadModel(markdown: data, readableVersion: nil)
-            context.insert(payload)
-            let version = ReadableVersionModel(
-                readableVersionId: UUID().uuidString,
-                createdAt: .now,
-                relativePathHint: nil,
-                payload: payload,
-                bookmark: bookmark
-            )
-            context.insert(version)
-            payload.readableVersion = version
-            bookmark.readableVersions.append(version)
-            bookmark.editedAt = .now
-        }
-    }
-
-    /// Persists notemark editor JSON into payload + ensures a readable version row exists for anchoring.
-    public static func queueSyncNotemarkReadableMirror(bookmarkId: String, versionId: String, html: String) {
+    /// Persists the notemark editor JSON; body is stored only on the note payload (no separate readable version).
+    public static func queueSyncNotemarkReadableMirror(bookmarkId: String, html: String) {
         CoreOperationQueue.shared.queue(name: "SyncNotemarkReadable:\(bookmarkId)") { context in
             guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context) else {
                 return
             }
             let data = Data(html.utf8)
-            if let existing = bookmark.readableVersions.first(where: { $0.readableVersionId == versionId }) {
-                existing.payload?.markdown = data
-                existing.createdAt = .now
+            guard let note = bookmark.noteDetail else { return }
+            if let payload = note.payload {
+                payload.documentBody = data
             } else {
-                let payload = ReadableVersionPayloadModel(markdown: data, readableVersion: nil)
+                let payload = NoteBookmarkPayloadModel(documentBody: data, noteBookmark: note)
                 context.insert(payload)
-                let version = ReadableVersionModel(
-                    readableVersionId: versionId,
-                    createdAt: .now,
-                    relativePathHint: nil,
-                    payload: payload,
-                    bookmark: bookmark
-                )
-                context.insert(version)
-                payload.readableVersion = version
-                bookmark.readableVersions.append(version)
-            }
-            if let note = bookmark.noteDetail {
-                note.readableVersionId = versionId
+                note.payload = payload
             }
             bookmark.editedAt = .now
         }
     }
 
-    /// Inserts a **new** link readable version (e.g. first save or explicit “update readable” from detail).
+    /// Replaces the link bookmark readable with an unfurl (body + inline assets).
     public static func queueSaveLinkReadableUnfurl(
         bookmarkId: String,
-        readableVersionId: String,
         unfurl: ReadableUnfurl
     ) {
-        CoreOperationQueue.shared.queue(name: "SaveLinkReadable:\(bookmarkId):\(readableVersionId)") { context in
-            guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context) else {
+        CoreOperationQueue.shared.queue(name: "SaveLinkReadableUnfurl:\(bookmarkId)") { context in
+            guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context),
+                  let link = bookmark.linkDetail
+            else {
                 return
             }
-            let data = Data(unfurl.markdown.utf8)
-            let payload = ReadableVersionPayloadModel(markdown: data, readableVersion: nil)
-            context.insert(payload)
-            let version = ReadableVersionModel(
-                readableVersionId: readableVersionId,
-                createdAt: .now,
-                relativePathHint: nil,
-                payload: payload,
-                bookmark: bookmark
-            )
-            context.insert(version)
-            payload.readableVersion = version
-            bookmark.readableVersions.append(version)
-            for a in unfurl.assets {
-                let row = ReadableInlineAssetModel(
-                    assetId: a.assetId,
-                    pathExtension: a.pathExtension,
-                    bytes: a.bytes,
-                    readableVersion: version
-                )
-                context.insert(row)
-                version.inlineAssets.append(row)
-            }
+            applyUnfurl(unfurl, to: link, context: context)
             bookmark.editedAt = .now
             ReadableAssetResolver.shared.register(unfurl: unfurl)
         }
     }
 
-    /// Saves link readable content from the bookmark editor without creating a new version row when one already exists.
-    /// - If the bookmark has no readable yet, inserts the first version.
-    /// - Otherwise updates the latest readable version’s body and inline assets in place.
+    /// Inserts or updates the single link readable (bookmark editor) in place.
     public static func queueUpsertLinkReadableUnfurlFromBookmarkEditor(
         bookmarkId: String,
         unfurl: ReadableUnfurl
     ) {
         CoreOperationQueue.shared.queue(name: "UpsertLinkReadableEditor:\(bookmarkId)") { context in
+            guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context),
+                  let link = bookmark.linkDetail
+            else {
+                return
+            }
+            applyUnfurl(unfurl, to: link, context: context)
+            bookmark.editedAt = .now
+            ReadableAssetResolver.shared.register(unfurl: unfurl)
+        }
+    }
+
+    /// Persists `Data` as the link readable body (e.g. ad-hoc saves) without changing inline assets.
+    public static func queueSetLinkReadableDocumentData(bookmarkId: String, data: Data?) {
+        CoreOperationQueue.shared.queue(name: "SetLinkReadableData:\(bookmarkId)") { context in
+            guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context),
+                  let link = bookmark.linkDetail
+            else {
+                return
+            }
+            if let data {
+                link.markdown = String(data: data, encoding: .utf8) ?? ""
+            } else {
+                link.markdown = ""
+            }
+            bookmark.editedAt = .now
+        }
+    }
+
+    /// After a WebView edit (annotations), writes the current JSON back to SwiftData.
+    public static func queueUpdateReadableBodyFromWebEditor(bookmarkId: String, html: String) {
+        CoreOperationQueue.shared.queue(name: "ReadableFromWeb:\(bookmarkId)") { context in
             guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context) else {
                 return
             }
-            let data = Data(unfurl.markdown.utf8)
-            if bookmark.readableVersions.isEmpty {
-                let rv = UUID().uuidString
-                let payload = ReadableVersionPayloadModel(markdown: data, readableVersion: nil)
-                context.insert(payload)
-                let version = ReadableVersionModel(
-                    readableVersionId: rv,
-                    createdAt: .now,
-                    relativePathHint: nil,
-                    payload: payload,
-                    bookmark: bookmark
-                )
-                context.insert(version)
-                payload.readableVersion = version
-                bookmark.readableVersions.append(version)
-                for a in unfurl.assets {
-                    let row = ReadableInlineAssetModel(
-                        assetId: a.assetId,
-                        pathExtension: a.pathExtension,
-                        bytes: a.bytes,
-                        readableVersion: version
-                    )
-                    context.insert(row)
-                    version.inlineAssets.append(row)
-                }
-            } else if let version = bookmark.readableVersions.max(by: { $0.createdAt < $1.createdAt }) {
-                if let payload = version.payload {
-                    payload.markdown = data
+            if let link = bookmark.linkDetail {
+                link.markdown = html
+            } else if let note = bookmark.noteDetail {
+                let data = Data(html.utf8)
+                if let payload = note.payload {
+                    payload.documentBody = data
                 } else {
-                    let payload = ReadableVersionPayloadModel(markdown: data, readableVersion: nil)
+                    let payload = NoteBookmarkPayloadModel(documentBody: data, noteBookmark: note)
                     context.insert(payload)
-                    version.payload = payload
-                    payload.readableVersion = version
-                }
-                version.createdAt = .now
-                for row in version.inlineAssets {
-                    context.delete(row)
-                }
-                version.inlineAssets.removeAll()
-                for a in unfurl.assets {
-                    let row = ReadableInlineAssetModel(
-                        assetId: a.assetId,
-                        pathExtension: a.pathExtension,
-                        bytes: a.bytes,
-                        readableVersion: version
-                    )
-                    context.insert(row)
-                    version.inlineAssets.append(row)
+                    note.payload = payload
                 }
             }
             bookmark.editedAt = .now
-            ReadableAssetResolver.shared.register(unfurl: unfurl)
+        }
+    }
+
+    // MARK: - Private
+
+    private static func applyUnfurl(_ unfurl: ReadableUnfurl, to link: LinkBookmarkModel, context: ModelContext) {
+        link.markdown = unfurl.markdown
+        for row in link.inlineAssets {
+            context.delete(row)
+        }
+        link.inlineAssets.removeAll()
+        for a in unfurl.assets {
+            let row = InlineAssetModel(
+                assetId: a.assetId,
+                pathExtension: a.pathExtension,
+                bytes: a.bytes,
+                linkBookmark: link
+            )
+            context.insert(row)
+            link.inlineAssets.append(row)
         }
     }
 }

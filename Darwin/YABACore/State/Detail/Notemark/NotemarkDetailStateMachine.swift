@@ -21,10 +21,10 @@ public final class NotemarkDetailStateMachine: YabaBaseObservableState<NotemarkD
             }
         case let .onSave(documentJson, _):
             guard let bid = state.bookmarkId else { return }
-            NotemarkManager.queueSaveNoteDocumentData(bookmarkId: bid, documentBody: Data(documentJson.utf8))
-            let versionId = UUID().uuidString
-            ReadableContentManager.queueSyncNotemarkReadableMirror(bookmarkId: bid, versionId: versionId, html: documentJson)
-            NotemarkManager.queueCreateOrUpdateNoteDetails(bookmarkId: bid, readableVersionId: versionId)
+            let data = Data(documentJson.utf8)
+            NotemarkManager.queueSaveNoteDocumentData(bookmarkId: bid, documentBody: data)
+            ReadableContentManager.queueSyncNotemarkReadableMirror(bookmarkId: bid, html: documentJson)
+            NotemarkManager.queueCreateOrUpdateNoteDetails(bookmarkId: bid)
         case let .onDeleteBookmark(bookmarkId):
             AllBookmarksManager.queueDeleteBookmarks(bookmarkIds: [bookmarkId])
         case .onRequestNotificationPermission:
@@ -79,10 +79,9 @@ public final class NotemarkDetailStateMachine: YabaBaseObservableState<NotemarkD
             apply { $0.lastExportPdfBase64 = b64 }
         case let .saveDocument(bookmarkId, data):
             NotemarkManager.queueSaveNoteDocumentData(bookmarkId: bookmarkId, documentBody: data)
-        case let .ensureReadableMirror(bookmarkId, versionId, json):
+        case let .ensureReadableMirror(bookmarkId, json):
             ReadableContentManager.queueSyncNotemarkReadableMirror(
                 bookmarkId: bookmarkId,
-                versionId: versionId,
                 html: json
             )
         }

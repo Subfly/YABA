@@ -19,7 +19,6 @@ public enum AnnotationCreationEvent: Sendable {
     /// Direct insert (legacy one-shot).
     case create(
         bookmarkId: String,
-        readableVersionId: String?,
         type: AnnotationType,
         note: String?,
         quote: String?

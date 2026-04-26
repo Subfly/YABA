@@ -9,13 +9,12 @@ import Foundation
 final class LinkmarkWebDriver {
     weak var runtime: WKWebViewRuntime?
 
-    func getSelectionDraft(bookmarkId: String, readableVersionId: String) async -> ReadableSelectionDraft? {
+    func getSelectionDraft(bookmarkId: String) async -> ReadableSelectionDraft? {
         // Do not require `getCanCreateAnnotation` here: reader metrics and this check can disagree,
         // and the snapshot/selectedText path is authoritative for opening the sheet.
         guard let quote = await getSelectionQuoteSnapshot() else { return nil }
         return ReadableSelectionDraft(
             bookmarkId: bookmarkId,
-            readableVersionId: readableVersionId,
             quoteText: quote.selectedText,
             extrasJson: nil,
             annotationType: .readable

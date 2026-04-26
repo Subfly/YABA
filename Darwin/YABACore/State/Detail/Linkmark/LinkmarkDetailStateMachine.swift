@@ -26,24 +26,10 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
             apply { $0.linkSourceUrl = url }
         case let .onSaveReadableContent(data):
             guard let bid = state.bookmarkId else { return }
-            let rv = state.selectedReadableVersionId ?? UUID().uuidString
-            apply { $0.selectedReadableVersionId = rv }
-            ReadableVersionManager.queueInsertReadableVersion(
-                bookmarkId: bid,
-                readableVersionId: rv,
-                markdown: data
-            )
-        case .onUpdateReadableRequested:
-            await refreshReadableFromSource()
-        case .onUpdateLinkMetadataRequested:
-            await refreshLinkMetadataOnly()
+            ReadableContentManager.queueSetLinkReadableDocumentData(bookmarkId: bid, data: data)
         case let .onReaderWebInitialContentLoad(resultJson):
             apply { $0.readerWebInitialLoadResultJson = resultJson }
-        case let .onSelectReadableVersion(versionId):
-            apply { $0.selectedReadableVersionId = versionId }
-        case let .onDeleteReadableVersion(versionId):
-            ReadableVersionManager.queueDeleteReadableVersion(readableVersionId: versionId)
-        case let .onDeleteBookmark(bookmarkId):
+        case .onDeleteBookmark(let bookmarkId):
             AllBookmarksManager.queueDeleteBookmarks(bookmarkIds: [bookmarkId])
         case .onToggleReaderTheme:
             apply {
@@ -72,11 +58,10 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
             apply { $0.readerFontSize = s }
         case let .onSetReaderLineHeight(l):
             apply { $0.readerLineHeight = l }
-        case let .onCreateAnnotation(annotationId, readableVersionId, colorRole, note, quoteText):
+        case let .onCreateAnnotation(annotationId, colorRole, note, quoteText):
             guard let bid = state.bookmarkId else { return }
             AnnotationManager.queueInsertAnnotation(
                 bookmarkId: bid,
-                readableVersionId: readableVersionId,
                 type: .readable,
                 annotationId: annotationId,
                 colorRoleRaw: colorRole.rawValue,
@@ -94,15 +79,9 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
             AnnotationManager.queueDeleteAnnotation(annotationId: annotationId)
         case let .onAnnotationReadableCreateCommitted(request, annotationId, html):
             guard let bid = state.bookmarkId else { return }
-            let versionId = request.selectionDraft.readableVersionId
-            ReadableContentManager.queueSyncNotemarkReadableMirror(
-                bookmarkId: bid,
-                versionId: versionId,
-                html: html
-            )
+            ReadableContentManager.queueUpdateReadableBodyFromWebEditor(bookmarkId: bid, html: html)
             AnnotationManager.queueInsertAnnotation(
                 bookmarkId: bid,
-                readableVersionId: versionId,
                 type: .readable,
                 annotationId: annotationId,
                 colorRoleRaw: request.colorRole.rawValue,
@@ -110,13 +89,9 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
                 quoteText: request.selectionDraft.quoteText,
                 extrasJson: nil
             )
-        case let .onAnnotationReadableDeleteCommitted(annotationId, readableVersionId, html):
+        case let .onAnnotationReadableDeleteCommitted(annotationId, html):
             guard let bid = state.bookmarkId else { return }
-            ReadableContentManager.queueSyncNotemarkReadableMirror(
-                bookmarkId: bid,
-                versionId: readableVersionId,
-                html: html
-            )
+            ReadableContentManager.queueUpdateReadableBodyFromWebEditor(bookmarkId: bid, html: html)
             AnnotationManager.queueDeleteAnnotation(annotationId: annotationId)
         case let .onScrollToAnnotation(annotationId):
             apply { $0.scrollToAnnotationId = annotationId }
@@ -187,86 +162,5 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
                 metadataDate: metadataDate
             )
         }
-    }
-
-    /// Explicit “update readable” from the detail menu: fetch HTML, convert, insert a **new** readable version.
-    private func refreshReadableFromSource() async {
-        guard let bid = state.bookmarkId,
-              let url = state.linkSourceUrl?.trimmingCharacters(in: .whitespacesAndNewlines),
-              !url.isEmpty
-        else { return }
-        apply { $0.isUpdatingReadable = true; $0.lastConverterErrorMessage = nil }
-        defer { apply { $0.isUpdatingReadable = false } }
-        do {
-            let pack = try await Unfurler.unfurl(url)
-            await saveReadableBundle(bookmarkId: bid, metadata: pack.metadata, readable: pack.readable)
-        } catch {
-            apply { $0.lastConverterErrorMessage = String(describing: error) }
-        }
-    }
-
-    /// Refresh Open Graph / link metadata and preview assets only; does **not** create a new readable version.
-    private func refreshLinkMetadataOnly() async {
-        guard let bid = state.bookmarkId,
-              let url = state.linkSourceUrl?.trimmingCharacters(in: .whitespacesAndNewlines),
-              !url.isEmpty
-        else { return }
-        apply { $0.isUpdatingReadable = true; $0.lastConverterErrorMessage = nil }
-        defer { apply { $0.isUpdatingReadable = false } }
-        do {
-            let refresh = try await Unfurler.fetchMetadataAndPreviews(url)
-            let meta = refresh.metadata
-            if let cleaned = meta.cleanedUrl.nilIfEmpty {
-                LinkmarkManager.queueCreateOrUpdateLinkDetails(
-                    bookmarkId: bid,
-                    url: cleaned,
-                    domain: LinkmarkManager.extractDomain(from: cleaned),
-                    videoUrl: meta.video,
-                    audioUrl: meta.audio,
-                    metadataTitle: meta.title,
-                    metadataDescription: meta.description,
-                    metadataAuthor: meta.author,
-                    metadataDate: meta.date
-                )
-            }
-            AllBookmarksManager.queueSetBookmarkPreviewAssets(
-                bookmarkId: bid,
-                imageBytes: refresh.previewImageData,
-                iconBytes: refresh.previewIconData
-            )
-        } catch {
-            apply { $0.lastConverterErrorMessage = String(describing: error) }
-        }
-    }
-
-    private func saveReadableBundle(bookmarkId: String, metadata: LinkMetadataResult, readable: ReadableUnfurl) async {
-        let newVersionId = UUID().uuidString
-        apply { $0.selectedReadableVersionId = newVersionId }
-        ReadableContentManager.queueSaveLinkReadableUnfurl(
-            bookmarkId: bookmarkId,
-            readableVersionId: newVersionId,
-            unfurl: readable
-        )
-        let meta = metadata
-        if let cleaned = meta.cleanedUrl.nilIfEmpty {
-            LinkmarkManager.queueCreateOrUpdateLinkDetails(
-                bookmarkId: bookmarkId,
-                url: cleaned,
-                domain: LinkmarkManager.extractDomain(from: cleaned),
-                videoUrl: meta.video,
-                audioUrl: meta.audio,
-                metadataTitle: meta.title,
-                metadataDescription: meta.description,
-                metadataAuthor: meta.author,
-                metadataDate: meta.date
-            )
-        }
-        let img = await Unfurler.downloadPreviewImageBytes(urlString: meta.image)
-        let logo = await Unfurler.downloadPreviewImageBytes(urlString: meta.logo)
-        AllBookmarksManager.queueSetBookmarkPreviewAssets(
-            bookmarkId: bookmarkId,
-            imageBytes: img,
-            iconBytes: logo
-        )
     }
 }

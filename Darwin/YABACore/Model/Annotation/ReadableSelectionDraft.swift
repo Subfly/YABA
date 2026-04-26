@@ -9,7 +9,6 @@ import Foundation
 
 public struct ReadableSelectionDraft: Sendable, Equatable {
     public var bookmarkId: String
-    public var readableVersionId: String
     public var quoteText: String?
     /// Optional JSON for anchors (PDF offsets, EPUB CFI, etc.).
     public var extrasJson: String?
@@ -18,13 +17,11 @@ public struct ReadableSelectionDraft: Sendable, Equatable {
 
     public init(
         bookmarkId: String,
-        readableVersionId: String,
         quoteText: String? = nil,
         extrasJson: String? = nil,
         annotationType: AnnotationType = .readable
     ) {
         self.bookmarkId = bookmarkId
-        self.readableVersionId = readableVersionId
         self.quoteText = quoteText
         self.extrasJson = extrasJson
         self.annotationType = annotationType
@@ -33,11 +30,11 @@ public struct ReadableSelectionDraft: Sendable, Equatable {
     public var sourceContext: AnnotationSourceContext {
         switch annotationType {
         case .readable:
-            return .readable(bookmarkId: bookmarkId, readableVersionId: readableVersionId)
+            return .readable(bookmarkId: bookmarkId)
         case .pdf:
-            return .pdf(bookmarkId: bookmarkId, readableVersionId: readableVersionId)
+            return .pdf(bookmarkId: bookmarkId)
         case .epub:
-            return .epub(bookmarkId: bookmarkId, readableVersionId: readableVersionId)
+            return .epub(bookmarkId: bookmarkId)
         }
     }
 

@@ -131,9 +131,6 @@ final class BookmarkModel {
     @Relationship(deleteRule: .cascade, inverse: \CanvasBookmarkModel.bookmark)
     var canvasDetail: CanvasBookmarkModel?
 
-    @Relationship(deleteRule: .cascade, inverse: \ReadableVersionModel.bookmark)
-    var readableVersions: [ReadableVersionModel] = []
-
     @Relationship(deleteRule: .cascade, inverse: \AnnotationModel.bookmark)
     var annotations: [AnnotationModel] = []
 
@@ -216,6 +213,10 @@ final class LinkBookmarkModel {
     var metadataDescription: String?
     var metadataAuthor: String?
     var metadataDate: String?
+    var markdown: String = ""
+
+    @Relationship(deleteRule: .cascade, inverse: \InlineAssetModel.linkBookmark)
+    var inlineAssets: [InlineAssetModel] = []
 
     var bookmark: BookmarkModel?
 
@@ -228,6 +229,7 @@ final class LinkBookmarkModel {
         metadataDescription: String? = nil,
         metadataAuthor: String? = nil,
         metadataDate: String? = nil,
+        markdown: String = "",
         bookmark: BookmarkModel? = nil
     ) {
         self.url = url
@@ -238,6 +240,7 @@ final class LinkBookmarkModel {
         self.metadataDescription = metadataDescription
         self.metadataAuthor = metadataAuthor
         self.metadataDate = metadataDate
+        self.markdown = markdown
         self.bookmark = bookmark
     }
 }
@@ -321,19 +324,15 @@ final class DocBookmarkPayloadModel {
 
 @Model
 final class NoteBookmarkModel {
-    var readableVersionId: String = ""
-
     @Relationship(deleteRule: .cascade, inverse: \NoteBookmarkPayloadModel.noteBookmark)
     var payload: NoteBookmarkPayloadModel?
 
     var bookmark: BookmarkModel?
 
     init(
-        readableVersionId: String = "",
         payload: NoteBookmarkPayloadModel? = nil,
         bookmark: BookmarkModel? = nil
     ) {
-        self.readableVersionId = readableVersionId
         self.payload = payload
         self.bookmark = bookmark
     }
@@ -394,81 +393,28 @@ final class CanvasBookmarkPayloadModel {
     }
 }
 
-// MARK: - Readable version
+// MARK: - Inline assets (e.g. readable images; JSON references `../assets/<assetId>.<ext>`)
 
 @Model
-final class ReadableVersionModel {
-    var readableVersionId: String = UUID().uuidString
-    var createdAt: Date = Date.now
-    var relativePathHint: String?
-
-    @Relationship(deleteRule: .cascade, inverse: \ReadableVersionPayloadModel.readableVersion)
-    var payload: ReadableVersionPayloadModel?
-
-    var bookmark: BookmarkModel?
-
-    @Relationship(deleteRule: .cascade, inverse: \AnnotationModel.readableVersion)
-    var annotations: [AnnotationModel] = []
-
-    @Relationship(deleteRule: .cascade, inverse: \ReadableInlineAssetModel.readableVersion)
-    var inlineAssets: [ReadableInlineAssetModel] = []
-
-    init(
-        readableVersionId: String = UUID().uuidString,
-        createdAt: Date = .now,
-        relativePathHint: String? = nil,
-        payload: ReadableVersionPayloadModel? = nil,
-        bookmark: BookmarkModel? = nil
-    ) {
-        self.readableVersionId = readableVersionId
-        self.createdAt = createdAt
-        self.relativePathHint = relativePathHint
-        self.payload = payload
-        self.bookmark = bookmark
-    }
-}
-
-/// Inline images for a readable version (HTML or JSON body references `../assets/<assetId>.<ext>`); bytes stored for iCloud sync.
-@Model
-final class ReadableInlineAssetModel {
+final class InlineAssetModel {
     var assetId: String = UUID().uuidString
     var pathExtension: String = "jpg"
 
     @Attribute(.externalStorage)
     var bytes: Data?
 
-    var readableVersion: ReadableVersionModel?
+    var linkBookmark: LinkBookmarkModel?
 
     init(
         assetId: String = UUID().uuidString,
         pathExtension: String = "jpg",
         bytes: Data? = nil,
-        readableVersion: ReadableVersionModel? = nil
+        linkBookmark: LinkBookmarkModel? = nil
     ) {
         self.assetId = assetId
         self.pathExtension = pathExtension
         self.bytes = bytes
-        self.readableVersion = readableVersion
-    }
-}
-
-@Model
-final class ReadableVersionPayloadModel {
-    var readableVersionPayloadId: String = UUID().uuidString
-
-    @Attribute(.externalStorage)
-    var markdown: Data?
-
-    var readableVersion: ReadableVersionModel?
-
-    init(
-        readableVersionPayloadId: String = UUID().uuidString,
-        markdown: Data? = nil,
-        readableVersion: ReadableVersionModel? = nil
-    ) {
-        self.readableVersionPayloadId = readableVersionPayloadId
-        self.markdown = markdown
-        self.readableVersion = readableVersion
+        self.linkBookmark = linkBookmark
     }
 }
 
@@ -487,8 +433,6 @@ final class AnnotationModel {
 
     var bookmark: BookmarkModel?
 
-    var readableVersion: ReadableVersionModel?
-
     init(
         annotationId: String = UUID().uuidString,
         typeRaw: String = AnnotationType.readable.rawValue,
@@ -498,8 +442,7 @@ final class AnnotationModel {
         extrasJson: String? = nil,
         createdAt: Date = .now,
         editedAt: Date = .now,
-        bookmark: BookmarkModel? = nil,
-        readableVersion: ReadableVersionModel? = nil
+        bookmark: BookmarkModel? = nil
     ) {
         self.annotationId = annotationId
         self.typeRaw = typeRaw
@@ -510,7 +453,6 @@ final class AnnotationModel {
         self.createdAt = createdAt
         self.editedAt = editedAt
         self.bookmark = bookmark
-        self.readableVersion = readableVersion
     }
 }
 

@@ -11,7 +11,6 @@ import SwiftData
 public enum AnnotationManager {
     public static func queueInsertAnnotation(
         bookmarkId: String,
-        readableVersionId: String?,
         type: AnnotationType,
         annotationId: String = UUID().uuidString,
         colorRoleRaw: Int = 0,
@@ -23,13 +22,6 @@ public enum AnnotationManager {
             guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context) else {
                 return
             }
-            var readable: ReadableVersionModel?
-            if let readableVersionId {
-                let p = #Predicate<ReadableVersionModel> { $0.readableVersionId == readableVersionId }
-                var d = FetchDescriptor(predicate: p)
-                d.fetchLimit = 1
-                readable = try context.fetch(d).first
-            }
             let model = AnnotationModel(
                 annotationId: annotationId,
                 typeRaw: type.rawValue,
@@ -39,8 +31,7 @@ public enum AnnotationManager {
                 extrasJson: extrasJson,
                 createdAt: .now,
                 editedAt: .now,
-                bookmark: bookmark,
-                readableVersion: readable
+                bookmark: bookmark
             )
             context.insert(model)
             bookmark.editedAt = .now

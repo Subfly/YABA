@@ -51,7 +51,6 @@ import dev.subfly.yaba.util.ResultStoreKeys
 import dev.subfly.yaba.util.rememberUrlLauncher
 import dev.subfly.yaba.core.common.IdGenerator
 import dev.subfly.yaba.core.model.annotation.AnnotationReadableCreateRequest
-import dev.subfly.yaba.core.model.annotation.AnnotationSourceContext
 import dev.subfly.yaba.core.state.detail.DetailWebShellPhase
 import dev.subfly.yaba.core.state.detail.linkmark.LinkmarkDetailEvent
 import dev.subfly.yaba.core.state.detail.linkmark.detailWebShellPhase
@@ -250,10 +249,7 @@ internal fun LinkmarkContentLayout(
                                 val bookmarkId =
                                     state.bookmark?.id ?: return@LinkmarkReaderFloatingToolbar
                                 scope.launch {
-                                    val draft = bridge.getSelectionSnapshot(
-                                        bookmarkId,
-                                        AnnotationSourceContext.DEFAULT_READABLE_CONTENT_ID
-                                    )
+                                    val draft = bridge.getSelectionSnapshot(bookmarkId)
                                     creationNavigator.add(
                                         AnnotationCreationRoute(
                                             bookmarkId = bookmarkId,
