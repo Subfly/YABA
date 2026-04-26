@@ -10,8 +10,6 @@ import Foundation
 public enum WebHostEvent: Sendable {
     case loadState(WebLoadState)
     case readerMetrics(ReaderMetricsEvent)
-    case htmlConverterSuccess(WebConverterResult)
-    case htmlConverterFailure(message: String)
     case pdfConverterSuccess(payloadJson: String)
     case pdfConverterFailure(message: String)
     case epubConverterSuccess(payloadJson: String)

@@ -22,10 +22,6 @@ public enum WebHostLinkmarkIntegration {
                 json = nil
             }
             return [.onTocChanged(tocJson: json)]
-        case let .htmlConverterSuccess(result):
-            return [.onConverterSucceeded(result)]
-        case let .htmlConverterFailure(message):
-            return [.onConverterFailed(errorMessage: message)]
         case .readerMetrics:
             return []
         default:

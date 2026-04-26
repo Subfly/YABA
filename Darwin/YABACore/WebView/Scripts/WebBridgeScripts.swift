@@ -44,31 +44,6 @@ public enum WebBridgeScripts {
     (function(){ try { return !!(window.YabaCanvasBridge && window.YabaCanvasBridge.isReady); } catch(e){ return false; } })();
     """
 
-    /// Starts async HTML → reader document conversion; returns `jobId` string when successful.
-    public static func sanitizeAndConvertHtmlToReaderHtmlScript(html: String, baseUrl: String?, jobId: String) -> String {
-        let htmlEscaped = WebJsEscaping.escapeForJsSingleQuotedString(html)
-        let baseUrlLiteral = baseUrl.map { "'\(WebJsEscaping.escapeForJsSingleQuotedString($0))'" } ?? "null"
-        let jobIdEscaped = WebJsEscaping.escapeForJsSingleQuotedString(jobId)
-        return """
-        (function() {
-            try {
-                return window.YabaConverterBridge.startHtmlConversion({
-                    html: '\(htmlEscaped)',
-                    baseUrl: \(baseUrlLiteral),
-                    jobId: '\(jobIdEscaped)'
-                });
-            } catch (e) {
-                return "";
-            }
-        })();
-        """
-    }
-
-    public static func deleteHtmlConversionJobScript(jobId: String) -> String {
-        let jobIdEscaped = WebJsEscaping.escapeForJsSingleQuotedString(jobId)
-        return "(function(){ try { window.YabaConverterBridge.deleteHtmlConversionJob('\(jobIdEscaped)'); } catch(e){} })();"
-    }
-
     // MARK: - PDF / EPUB extraction
 
     public static func startPdfExtractionScript(resolvedPdfUrl: String, renderScale: Float) -> String {

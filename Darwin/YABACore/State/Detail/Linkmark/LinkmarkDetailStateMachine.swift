@@ -31,7 +31,7 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
             ReadableVersionManager.queueInsertReadableVersion(
                 bookmarkId: bid,
                 readableVersionId: rv,
-                html: data
+                markdown: data
             )
         case .onUpdateReadableRequested:
             await refreshReadableFromSource()
@@ -39,16 +39,6 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
             await refreshLinkMetadataOnly()
         case let .onReaderWebInitialContentLoad(resultJson):
             apply { $0.readerWebInitialLoadResultJson = resultJson }
-        case let .onConverterSucceeded(result):
-            guard let bid = state.bookmarkId else { return }
-            await saveReadableFromConverterOutput(bookmarkId: bid, result: result)
-        case let .onConverterFailed(errorMessage):
-            apply { $0.lastConverterErrorMessage = errorMessage }
-            CoreToastManager.shared.show(
-                message: LocalizedStringKey(stringLiteral: errorMessage),
-                iconType: .error,
-                duration: .short
-            )
         case let .onSelectReadableVersion(versionId):
             apply { $0.selectedReadableVersionId = versionId }
         case let .onDeleteReadableVersion(versionId):
@@ -247,14 +237,6 @@ public final class LinkmarkDetailStateMachine: YabaBaseObservableState<LinkmarkD
         } catch {
             apply { $0.lastConverterErrorMessage = String(describing: error) }
         }
-    }
-
-    private func saveReadableFromConverterOutput(bookmarkId: String, result: WebConverterResult) async {
-        let readable = await ConverterResultProcessor.process(
-            documentJson: result.documentJson,
-            assets: result.assets
-        )
-        await saveReadableBundle(bookmarkId: bookmarkId, metadata: LinkMetadataResult(webLink: result.linkMetadata), readable: readable)
     }
 
     private func saveReadableBundle(bookmarkId: String, metadata: LinkMetadataResult, readable: ReadableUnfurl) async {

@@ -25,8 +25,6 @@ public enum LinkmarkCreationEvent: Sendable {
     case onClearDescription
     case onApplyFromMetadata
     case onRefetch
-    case onConverterSucceeded(WebConverterResult)
-    case onConverterFailed(errorMessage: String)
     case onSave
     case onTogglePinned
 

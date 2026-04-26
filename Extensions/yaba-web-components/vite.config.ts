@@ -37,7 +37,6 @@ export default defineConfig({
         editor: resolve(__dirname, "editor.html"),
         canvas: resolve(__dirname, "canvas.html"),
         "read-it-later": resolve(__dirname, "read-it-later.html"),
-        "reader-converter": resolve(__dirname, "reader-converter.html"),
         "epub-viewer": resolve(__dirname, "epub-viewer.html"),
       },
       output: {

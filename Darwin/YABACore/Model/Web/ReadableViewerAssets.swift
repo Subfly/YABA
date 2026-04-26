@@ -9,6 +9,6 @@
 import Foundation
 
 public enum ReadableViewerAssets {
-    /// Pass as `assetsBaseUrl` when loading reader JSON that uses `../assets/...` paths from [ConverterResultProcessor].
+    /// Pass as `assetsBaseUrl` when loading reader content that references `../assets/...` or `yaba-asset:` URLs.
     public static let assetsBaseURLForYabaAssetScheme = "yaba-asset://resolved"
 }

@@ -68,6 +68,7 @@ public enum BundleReader {
             return dir
         }
         let entryNames = [
+            "read-it-later.html",
             "viewer.html",
             "editor.html",
             "canvas.html",
@@ -157,5 +158,10 @@ public enum BundleReader {
 
     public static func getEpubViewerURL(in bundle: Bundle = .main) -> URL? {
         webComponentURL(named: "epub-viewer.html", in: bundle)
+    }
+
+    /// Minified unified + rehype + remark script for [HTMLToMarkdownProcessor] (`html-to-markdown.bundle.min.js`).
+    public static func htmlToMarkdownBundleURL(in bundle: Bundle = .main) -> URL? {
+        webComponentURL(named: "html-to-markdown.bundle.min.js", in: bundle)
     }
 }

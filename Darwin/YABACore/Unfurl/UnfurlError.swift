@@ -9,6 +9,7 @@ public enum UnfurlError: Error, Sendable {
     case cannotCreateURL(String)
     case unableToFetchHtml
     case htmlSanitizationFailed(String)
+    case htmlToMarkdownFailed(String)
     case converterBridgeNotReady
     case htmlConversionStartFailed
     case htmlConversionParseFailed

@@ -15,8 +15,6 @@ public enum LinkmarkDetailEvent: Sendable {
     case onSaveReadableContent(html: Data)
     case onUpdateReadableRequested
     case onUpdateLinkMetadataRequested
-    case onConverterSucceeded(WebConverterResult)
-    case onConverterFailed(errorMessage: String)
     case onReaderWebInitialContentLoad(resultJson: String?)
     case onSelectReadableVersion(versionId: String)
     case onDeleteReadableVersion(versionId: String)

@@ -30,6 +30,11 @@
 		96DCA2612F9D7002005760E3 /* EPUBKit in Frameworks */ = {isa = PBXBuildFile; productRef = 96DCA2492F9D6FE1005760E3 /* EPUBKit */; };
 		96DCA2622F9D7002005760E3 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 96DCA2462F9D6FD6005760E3 /* SwiftSoup */; };
 		96DCA2632F9D7002005760E3 /* EPUBKit in Frameworks */ = {isa = PBXBuildFile; productRef = 96DCA2492F9D6FE1005760E3 /* EPUBKit */; };
+		96DCA2642F9D7002005760E3 /* Markdown in Frameworks */ = {isa = PBXBuildFile; productRef = 96DCA24C2F9D6FF1005760E3 /* Markdown */; };
+		96DCA2652F9D7002005760E3 /* Markdown in Frameworks */ = {isa = PBXBuildFile; productRef = 96DCA24C2F9D6FF1005760E3 /* Markdown */; };
+		96DCA2662F9D7002005760E3 /* Markdown in Frameworks */ = {isa = PBXBuildFile; productRef = 96DCA24C2F9D6FF1005760E3 /* Markdown */; };
+		96DCA2672F9D7002005760E3 /* Markdown in Frameworks */ = {isa = PBXBuildFile; productRef = 96DCA24C2F9D6FF1005760E3 /* Markdown */; };
+		96DCA2682F9D7002005760E3 /* Markdown in Frameworks */ = {isa = PBXBuildFile; productRef = 96DCA24C2F9D6FF1005760E3 /* Markdown */; };
 		96EA39732E56380700B8411D /* YABAKeyboard.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 96EA396C2E56380700B8411D /* YABAKeyboard.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		96EA39BD2E58EB8F00B8411D /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96EA39BC2E58EB8F00B8411D /* WidgetKit.framework */; };
 		96EA39BF2E58EB8F00B8411D /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96EA39BE2E58EB8F00B8411D /* SwiftUI.framework */; };
@@ -320,6 +325,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				96DCA2642F9D7002005760E3 /* Markdown in Frameworks */,
 				96DCA25A2F9D7002005760E3 /* SwiftSoup in Frameworks */,
 				96DCA25B2F9D7002005760E3 /* EPUBKit in Frameworks */,
 			);
@@ -339,6 +345,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				96DCA2652F9D7002005760E3 /* Markdown in Frameworks */,
 				96DCA25C2F9D7002005760E3 /* SwiftSoup in Frameworks */,
 				96DCA25D2F9D7002005760E3 /* EPUBKit in Frameworks */,
 			);
@@ -348,6 +355,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				96DCA2662F9D7002005760E3 /* Markdown in Frameworks */,
 				96DCA25E2F9D7002005760E3 /* SwiftSoup in Frameworks */,
 				96DCA25F2F9D7002005760E3 /* EPUBKit in Frameworks */,
 			);
@@ -357,6 +365,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				96DCA2672F9D7002005760E3 /* Markdown in Frameworks */,
 				96DCA2602F9D7002005760E3 /* SwiftSoup in Frameworks */,
 				96DCA2612F9D7002005760E3 /* EPUBKit in Frameworks */,
 				96EA39BF2E58EB8F00B8411D /* SwiftUI.framework in Frameworks */,
@@ -368,6 +377,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				96DCA2682F9D7002005760E3 /* Markdown in Frameworks */,
 				96DCA2622F9D7002005760E3 /* SwiftSoup in Frameworks */,
 				96DCA2632F9D7002005760E3 /* EPUBKit in Frameworks */,
 			);
@@ -440,6 +450,7 @@
 			packageProductDependencies = (
 				96DCA2462F9D6FD6005760E3 /* SwiftSoup */,
 				96DCA2492F9D6FE1005760E3 /* EPUBKit */,
+				96DCA24C2F9D6FF1005760E3 /* Markdown */,
 			);
 			productName = YABAStatusMenuItem;
 			productReference = 967B9A4B2DD8D3EF00181AA1 /* YABAStatusMenuItem.app */;
@@ -498,6 +509,7 @@
 			packageProductDependencies = (
 				96DCA2462F9D6FD6005760E3 /* SwiftSoup */,
 				96DCA2492F9D6FE1005760E3 /* EPUBKit */,
+				96DCA24C2F9D6FF1005760E3 /* Markdown */,
 			);
 			productName = YABAShare;
 			productReference = 96A8E0AE2DB5CAFF00A47601 /* YABAShare.appex */;
@@ -523,6 +535,7 @@
 			packageProductDependencies = (
 				96DCA2462F9D6FD6005760E3 /* SwiftSoup */,
 				96DCA2492F9D6FE1005760E3 /* EPUBKit */,
+				96DCA24C2F9D6FF1005760E3 /* Markdown */,
 			);
 			productName = YABAKeyboard;
 			productReference = 96EA396C2E56380700B8411D /* YABAKeyboard.appex */;
@@ -548,6 +561,7 @@
 			packageProductDependencies = (
 				96DCA2462F9D6FD6005760E3 /* SwiftSoup */,
 				96DCA2492F9D6FE1005760E3 /* EPUBKit */,
+				96DCA24C2F9D6FF1005760E3 /* Markdown */,
 			);
 			productName = YABAWidgetsExtension;
 			productReference = 96EA39BB2E58EB8E00B8411D /* YABAWidgetsExtension.appex */;
@@ -573,6 +587,7 @@
 			packageProductDependencies = (
 				96DCA2462F9D6FD6005760E3 /* SwiftSoup */,
 				96DCA2492F9D6FE1005760E3 /* EPUBKit */,
+				96DCA24C2F9D6FF1005760E3 /* Markdown */,
 			);
 			productName = YABAShareMac;
 			productReference = 96EB67132DD94580009EB9EC /* YABAShareMac.appex */;

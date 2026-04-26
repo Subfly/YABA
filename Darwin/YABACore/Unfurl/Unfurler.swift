@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// Native link unfurl: sanitized HTML readable + metadata + preview bytes.
+/// Native link unfurl: HTML → Markdown (Turndown via JSC) + inline image assets + metadata + preview bytes.
 public struct LinkUnfurlResult: Sendable {
     public var metadata: LinkMetadataResult
     public var readable: ReadableUnfurl
@@ -52,18 +52,18 @@ public struct RawHtmlFetch: Sendable {
 }
 
 public enum Unfurler {
-    /// Fetch → metadata (raw HTML) → purify → inline image download/rewrite → preview image/icon bytes.
+    /// Fetch → metadata (raw HTML) → HTML→Markdown → markdown image download/rewrite → preview image/icon bytes.
     public static func unfurl(_ urlString: String) async throws -> LinkUnfurlResult {
         let fetch = try await fetchRawHtml(urlString)
         let meta = try LinkMetadataExtractor.extract(html: fetch.html, pageUrl: fetch.normalizedUrl)
-        let cleanedHtml: String
-        do {
-            cleanedHtml = try HTMLCleaner.clean(fetch.html, baseUri: fetch.normalizedUrl)
-        } catch {
-            throw UnfurlError.htmlSanitizationFailed(String(describing: error))
-        }
         let baseForAssets = meta.cleanedUrl.nilIfEmpty ?? fetch.normalizedUrl
-        let readable = await HTMLReadableAssetProcessor.process(html: cleanedHtml, baseURL: baseForAssets)
+        let markdown: String
+        do {
+            markdown = try HTMLToMarkdownProcessor.convert(html: fetch.html)
+        } catch {
+            throw UnfurlError.htmlToMarkdownFailed(String(describing: error))
+        }
+        let readable = await MarkdownReadableAssetProcessor.process(markdown: markdown, baseURL: baseForAssets)
         let previewImageData = await downloadPreviewImageBytes(urlString: meta.image)
         let previewIconData = await downloadPreviewImageBytes(urlString: meta.logo)
         return LinkUnfurlResult(

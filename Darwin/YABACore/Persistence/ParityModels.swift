@@ -457,17 +457,17 @@ final class ReadableVersionPayloadModel {
     var readableVersionPayloadId: String = UUID().uuidString
 
     @Attribute(.externalStorage)
-    var html: Data?
+    var markdown: Data?
 
     var readableVersion: ReadableVersionModel?
 
     init(
         readableVersionPayloadId: String = UUID().uuidString,
-        html: Data? = nil,
+        markdown: Data? = nil,
         readableVersion: ReadableVersionModel? = nil
     ) {
         self.readableVersionPayloadId = readableVersionPayloadId
-        self.html = html
+        self.markdown = markdown
         self.readableVersion = readableVersion
     }
 }

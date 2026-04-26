@@ -3,7 +3,7 @@
 //  YABACore
 //
 //  Readable pipeline helpers (Compose `ReadableContentManager`). SwiftData stores readable bodies
-//  in `ReadableVersionPayloadModel.html` (sanitized HTML for linkmarks; notemark/editor JSON until migrated).
+//  in `ReadableVersionPayloadModel.markdown` (link readable Markdown; notemark/editor JSON until migrated).
 //
 
 import Foundation
@@ -20,7 +20,7 @@ public enum ReadableContentManager {
             if !bookmark.readableVersions.isEmpty { return }
             let json = #"{"type":"doc","content":[]}"#
             let data = Data(json.utf8)
-            let payload = ReadableVersionPayloadModel(html: data, readableVersion: nil)
+            let payload = ReadableVersionPayloadModel(markdown: data, readableVersion: nil)
             context.insert(payload)
             let version = ReadableVersionModel(
                 readableVersionId: UUID().uuidString,
@@ -44,10 +44,10 @@ public enum ReadableContentManager {
             }
             let data = Data(html.utf8)
             if let existing = bookmark.readableVersions.first(where: { $0.readableVersionId == versionId }) {
-                existing.payload?.html = data
+                existing.payload?.markdown = data
                 existing.createdAt = .now
             } else {
-                let payload = ReadableVersionPayloadModel(html: data, readableVersion: nil)
+                let payload = ReadableVersionPayloadModel(markdown: data, readableVersion: nil)
                 context.insert(payload)
                 let version = ReadableVersionModel(
                     readableVersionId: versionId,
@@ -77,8 +77,8 @@ public enum ReadableContentManager {
             guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context) else {
                 return
             }
-            let data = Data(unfurl.html.utf8)
-            let payload = ReadableVersionPayloadModel(html: data, readableVersion: nil)
+            let data = Data(unfurl.markdown.utf8)
+            let payload = ReadableVersionPayloadModel(markdown: data, readableVersion: nil)
             context.insert(payload)
             let version = ReadableVersionModel(
                 readableVersionId: readableVersionId,
@@ -116,10 +116,10 @@ public enum ReadableContentManager {
             guard let bookmark = try YabaCorePersistenceHelpers.bookmark(bookmarkId: bookmarkId, context: context) else {
                 return
             }
-            let data = Data(unfurl.html.utf8)
+            let data = Data(unfurl.markdown.utf8)
             if bookmark.readableVersions.isEmpty {
                 let rv = UUID().uuidString
-                let payload = ReadableVersionPayloadModel(html: data, readableVersion: nil)
+                let payload = ReadableVersionPayloadModel(markdown: data, readableVersion: nil)
                 context.insert(payload)
                 let version = ReadableVersionModel(
                     readableVersionId: rv,
@@ -143,9 +143,9 @@ public enum ReadableContentManager {
                 }
             } else if let version = bookmark.readableVersions.max(by: { $0.createdAt < $1.createdAt }) {
                 if let payload = version.payload {
-                    payload.html = data
+                    payload.markdown = data
                 } else {
-                    let payload = ReadableVersionPayloadModel(html: data, readableVersion: nil)
+                    let payload = ReadableVersionPayloadModel(markdown: data, readableVersion: nil)
                     context.insert(payload)
                     version.payload = payload
                     payload.readableVersion = version

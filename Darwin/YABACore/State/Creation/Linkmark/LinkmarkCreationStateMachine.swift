@@ -64,10 +64,6 @@ public final class LinkmarkCreationStateMachine: YabaBaseObservableState<Linkmar
             }
         case .onRefetch:
             await runLinkFetch()
-        case let .onConverterSucceeded(result):
-            await applyConverterResult(result)
-        case let .onConverterFailed(err):
-            apply { $0.converterError = err }
         case .onSave:
             await persistFromState()
         case .onTogglePinned:
@@ -137,17 +133,6 @@ public final class LinkmarkCreationStateMachine: YabaBaseObservableState<Linkmar
                 $0.converterError = String(describing: error)
             }
         }
-    }
-
-    private func applyConverterResult(_ result: WebConverterResult) async {
-        let readable = await ConverterResultProcessor.process(
-            documentJson: result.documentJson,
-            assets: result.assets
-        )
-        let meta = LinkMetadataResult(webLink: result.linkMetadata)
-        let imageData = await Unfurler.downloadPreviewImageBytes(urlString: result.linkMetadata.image)
-        let logoData = await Unfurler.downloadPreviewImageBytes(urlString: result.linkMetadata.logo)
-        await applyFetchResult(metadata: meta, readable: readable, previewImage: imageData, previewIcon: logoData)
     }
 
     private func applyNativeUnfurlResult(_ pack: LinkUnfurlResult) async {

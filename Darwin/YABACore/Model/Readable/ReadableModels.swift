@@ -9,11 +9,11 @@ import Foundation
 
 /// Result of readable content extraction, ready for SwiftData persistence.
 public struct ReadableUnfurl: Sendable {
-    public var html: String
+    public var markdown: String
     public var assets: [ReadableAssetPayload]
 
-    public init(html: String, assets: [ReadableAssetPayload]) {
-        self.html = html
+    public init(markdown: String, assets: [ReadableAssetPayload]) {
+        self.markdown = markdown
         self.assets = assets
     }
 }

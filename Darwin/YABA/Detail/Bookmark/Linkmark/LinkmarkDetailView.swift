@@ -415,7 +415,7 @@ struct LinkmarkDetailView: View {
     }
 
     private func readableBodyString(for bm: YabaBookmark) -> String {
-        guard let data = currentVersion(bm)?.payload?.html,
+        guard let data = currentVersion(bm)?.payload?.markdown,
               let s = String(data: data, encoding: .utf8)
         else {
             return ""
