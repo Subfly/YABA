@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		967242EE2F9ECF410087D617 /* MarkdownParser.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 967242ED2F9ECF410087D617 /* MarkdownParser.xcframework */; };
+		967242EF2F9ECF410087D617 /* MarkdownParser.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 967242ED2F9ECF410087D617 /* MarkdownParser.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		967B9A5B2DD8D68D00181AA1 /* YABAStatusMenuItem.app in Resources */ = {isa = PBXBuildFile; fileRef = 967B9A4B2DD8D3EF00181AA1 /* YABAStatusMenuItem.app */; platformFilters = (macos, ); };
 		967B9A5F2DD8D6E400181AA1 /* YABAStatusMenuItem.app in Copy Menu Item */ = {isa = PBXBuildFile; fileRef = 967B9A4B2DD8D3EF00181AA1 /* YABAStatusMenuItem.app */; platformFilters = (macos, ); settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		96A8E0B82DB5CAFF00A47601 /* YABAShare.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 96A8E0AE2DB5CAFF00A47601 /* YABAShare.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -82,6 +84,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		967242F02F9ECF410087D617 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				967242EF2F9ECF410087D617 /* MarkdownParser.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		967B9A5E2DD8D6D000181AA1 /* Copy Menu Item */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -110,6 +123,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		967242ED2F9ECF410087D617 /* MarkdownParser.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = MarkdownParser.xcframework; path = "../Markdown/markdown-parser/build/XCFrameworks/release/MarkdownParser.xcframework"; sourceTree = "<group>"; };
 		967B9A4B2DD8D3EF00181AA1 /* YABAStatusMenuItem.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YABAStatusMenuItem.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		96A8DFC22DB2F5A500A47601 /* YABA.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YABA.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		96A8E0AE2DB5CAFF00A47601 /* YABAShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = YABAShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1002,6 +1016,7 @@
 			files = (
 				96DCA2472F9D6FD6005760E3 /* SwiftSoup in Frameworks */,
 				96DCA24A2F9D6FE1005760E3 /* EPUBKit in Frameworks */,
+				967242EE2F9ECF410087D617 /* MarkdownParser.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1049,6 +1064,7 @@
 		967B9A0D2DD80CFA00181AA1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				967242ED2F9ECF410087D617 /* MarkdownParser.xcframework */,
 				96EA39BE2E58EB8F00B8411D /* SwiftUI.framework */,
 				96EA39BC2E58EB8F00B8411D /* WidgetKit.framework */,
 			);
@@ -1127,6 +1143,7 @@
 				96A8DFC02DB2F5A500A47601 /* Resources */,
 				96A8E0BD2DB5CAFF00A47601 /* Embed Foundation Extensions */,
 				967B9A5E2DD8D6D000181AA1 /* Copy Menu Item */,
+				967242F02F9ECF410087D617 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1665,7 +1682,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_RESOURCE_ACCESS_CAMERA = YES;
 				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = YES;
-				FRAMEWORK_SEARCH_PATHS = "";
+				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../Markdown/markdown-parser/build/XCFrameworks/release/MarkdownParser.xcframework";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = YABA/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = YABA;
@@ -1694,14 +1711,14 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_MODULES_AUTOLINK = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				XROS_DEPLOYMENT_TARGET = 2.0;
 			};
 			name = Debug;
@@ -1721,7 +1738,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
-				FRAMEWORK_SEARCH_PATHS = "";
+				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../Markdown/markdown-parser/build/XCFrameworks/release/MarkdownParser.xcframework";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = YABA/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = YABA;
@@ -1750,14 +1767,14 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_MODULES_AUTOLINK = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				XROS_DEPLOYMENT_TARGET = 2.0;
 			};
 			name = Release;

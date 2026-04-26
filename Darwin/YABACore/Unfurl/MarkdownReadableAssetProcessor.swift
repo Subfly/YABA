@@ -7,9 +7,14 @@
 //
 
 import Foundation
+import MarkdownParser
 
 public enum MarkdownReadableAssetProcessor {
     public static func process(markdown: String, baseURL: String) async -> ReadableUnfurl {
+        let document = MarkdownParser.Companion().parseToDocument(
+            input: markdown,
+            flavour: ExtendedFlavour()
+        )
         return ReadableUnfurl(markdown: "", assets: [])
     }
 
