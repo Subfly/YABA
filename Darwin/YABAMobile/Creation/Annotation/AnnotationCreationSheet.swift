@@ -172,9 +172,7 @@ struct AnnotationCreationSheet: View {
             }
         }
         .presentationDetents(Set(sheetPresentationDetents))
-        #if !targetEnvironment(macCatalyst)
         .presentationDragIndicator(.visible)
-        #endif
     }
 
     private var sheetPresentationDetents: [PresentationDetent] {

@@ -21,13 +21,9 @@ struct NameDeviceView: View {
             ZStack {
                 AnimatedGradient(collectionColor: .accentColor)
                 VStack {
-                    #if targetEnvironment(macCatalyst)
-                    Spacer()
-                    #else
                     if UIDevice.current.userInterfaceIdiom == .pad {
                         Spacer()
                     }
-                    #endif
                     List {
                         Text("Name Device Message")
                         TextField(
@@ -46,13 +42,9 @@ struct NameDeviceView: View {
                     .listRowSeparator(.hidden)
                     .listRowSpacing(12)
                     .scrollContentBackground(.hidden)
-                    #if targetEnvironment(macCatalyst)
-                    Spacer()
-                    #else
                     if UIDevice.current.userInterfaceIdiom == .pad {
                         Spacer()
                     }
-                    #endif
                 }
             }
             .navigationTitle("Name Device Title")

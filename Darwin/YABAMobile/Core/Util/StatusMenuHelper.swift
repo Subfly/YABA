@@ -7,6 +7,7 @@
 //  Made with help of Adam Overholtzer
 //  See: https://blog.overdesigned.net/posts/2021-08-26-catalyst-status-menu/
 
+// TODO: REMOVE AS WE ARE NOW NATIVELY SUPPORTING MAC
 #if targetEnvironment(macCatalyst)
 import ServiceManagement
 

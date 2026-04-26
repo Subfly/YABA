@@ -56,13 +56,6 @@ struct AnnouncementView: View {
             baseView
                 .padding()
                 .background {
-                    #if targetEnvironment(macCatalyst)
-                    if isHovered {
-                        RoundedRectangle(cornerRadius: 16).fill(Color.gray.opacity(0.1))
-                    } else {
-                        RoundedRectangle(cornerRadius: 16).fill(Color.clear)
-                    }
-                    #else
                     if UIDevice.current.userInterfaceIdiom == .phone {
                         RoundedRectangle(cornerRadius: 24).fill(Color.gray.opacity(0.05))
                     } else if isHovered {
@@ -70,7 +63,6 @@ struct AnnouncementView: View {
                     } else {
                         RoundedRectangle(cornerRadius: 24).fill(Color.clear)
                     }
-                    #endif
                 }
                 .padding(.horizontal)
                 .contextMenu {
@@ -87,13 +79,6 @@ struct AnnouncementView: View {
                 }
         } else {
             baseView
-            #if targetEnvironment(macCatalyst)
-                .listRowBackground(
-                    isHovered
-                    ? RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
-                    : RoundedRectangle(cornerRadius: 8).fill(Color.clear)
-                )
-            #endif
         }
     }
     

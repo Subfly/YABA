@@ -15,6 +15,10 @@ struct YabaNavigationView: View {
 
     @State
     private var detailRouter = DetailColumnRouter()
+    
+    private var shouldUseCompactNavigation: Bool {
+        UIDevice.current.userInterfaceIdiom == .phone || horizontalSizeClass == .compact
+    }
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -41,14 +45,7 @@ struct YabaNavigationView: View {
         }
     }
 
-    private var shouldUseCompactNavigation: Bool {
-        #if targetEnvironment(macCatalyst)
-        false
-        #else
-        UIDevice.current.userInterfaceIdiom == .phone || horizontalSizeClass == .compact
-        #endif
-    }
-
+    @ViewBuilder
     private var homeContent: some View {
         HomeView(
             onOpenSearch: { detailRouter.openSearch() },

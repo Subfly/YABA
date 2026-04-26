@@ -7,8 +7,12 @@
 
 import Foundation
 import SwiftUI
+#if canImport(UIKit)
 import UIKit
 import UniformTypeIdentifiers
+#elseif canImport(AppKit)
+import AppKit
+#endif
 
 // MARK: - Models
 
@@ -100,6 +104,7 @@ public enum MarkdownExportSupport {
 
 // MARK: - Directory picker (export destination)
 
+#if canImport(UIKit)
 public struct MarkdownExportDirectoryPicker: UIViewControllerRepresentable {
     public let onPicked: (URL?) -> Void
 
@@ -145,3 +150,50 @@ public struct MarkdownExportDirectoryPicker: UIViewControllerRepresentable {
         }
     }
 }
+#elseif canImport(AppKit)
+public struct MarkdownExportDirectoryPicker: NSViewControllerRepresentable {
+    public let onPicked: (URL?) -> Void
+
+    public init(onPicked: @escaping (URL?) -> Void) {
+        self.onPicked = onPicked
+    }
+
+    public func makeCoordinator() -> Coordinator {
+        Coordinator(onPicked: onPicked)
+    }
+
+    public func makeNSViewController(context: Context) -> NSViewController {
+        let controller = NSViewController()
+        context.coordinator.presentOpenPanelIfNeeded()
+        return controller
+    }
+
+    public func updateNSViewController(_ nsViewController: NSViewController, context: Context) {}
+
+    public final class Coordinator: NSObject {
+        private let onPicked: (URL?) -> Void
+        private var didPresent = false
+
+        public init(onPicked: @escaping (URL?) -> Void) {
+            self.onPicked = onPicked
+        }
+
+        fileprivate func presentOpenPanelIfNeeded() {
+            guard !didPresent else { return }
+            didPresent = true
+            DispatchQueue.main.async { [onPicked] in
+                let panel = NSOpenPanel()
+                panel.canChooseFiles = false
+                panel.canChooseDirectories = true
+                panel.allowsMultipleSelection = false
+                panel.canCreateDirectories = true
+                if panel.runModal() == .OK, let url = panel.url {
+                    onPicked(url)
+                } else {
+                    onPicked(nil)
+                }
+            }
+        }
+    }
+}
+#endif

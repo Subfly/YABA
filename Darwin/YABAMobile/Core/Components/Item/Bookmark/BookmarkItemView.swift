@@ -604,22 +604,6 @@ private struct BookmarkOverflowMenuButton: View {
     var itemState: BookmarkItemState
 
     var body: some View {
-        #if targetEnvironment(macCatalyst)
-        if itemState.isHovered {
-            Menu {
-                BookmarkOverflowMenuContent(bookmark: bookmark, itemState: $itemState)
-            } label: {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(.tint.opacity(0.3))
-                    .frame(width: 34, height: 34)
-                    .overlay {
-                        YabaIconView(bundleKey: "more-horizontal-circle-02")
-                            .foregroundStyle(.tint)
-                            .frame(width: 24, height: 24)
-                    }
-            }
-        }
-        #else
         Menu {
             BookmarkOverflowMenuContent(bookmark: bookmark, itemState: $itemState)
         } label: {
@@ -632,7 +616,6 @@ private struct BookmarkOverflowMenuButton: View {
                         .frame(width: 24, height: 24)
                 }
         }
-        #endif
     }
 }
 

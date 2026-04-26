@@ -15,10 +15,6 @@ struct HowToTips: View {
         ZStack {
             AnimatedGradient(collectionColor: .green)
             List {
-                #if targetEnvironment(macCatalyst)
-                GeneralTips(width: 500)
-                    .listRowSeparator(.hidden)
-                #else
                 if UIDevice.current.userInterfaceIdiom == .pad {
                     GeneralTips(width: 500)
                         .listRowSeparator(.hidden)
@@ -26,7 +22,6 @@ struct HowToTips: View {
                     GeneralTips(width: 350)
                         .listRowSeparator(.hidden)
                 }
-                #endif
             }
             .listStyle(.sidebar)
             .scrollContentBackground(.hidden)

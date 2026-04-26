@@ -131,13 +131,11 @@
 				Core/Components/Item/Annotation/BaseAnnotationItemView.swift,
 				Core/Components/Item/Bookmark/BookmarkItemState.swift,
 				Core/Components/Item/Bookmark/BookmarkItemView.swift,
-				Core/Components/Item/Collection/CollectionItemOverflowMenu.swift,
 				Core/Components/Item/Collection/CollectionItemState.swift,
 				Core/Components/Item/Collection/FolderItemView.swift,
 				Core/Components/Item/Collection/PresentableFolderItemView.swift,
 				Core/Components/Item/Collection/PresentableTagItemView.swift,
 				Core/Components/Item/Collection/TagItemView.swift,
-				Core/Components/Item/Shared/ItemListRowChrome.swift,
 				Core/Components/MacSpecific/MacOSHoverableToolbarIcon.swift,
 				Core/Components/Media/CameraCapturePicker.swift,
 				Core/Components/Selection/SelectFolderContent.swift,
@@ -151,7 +149,6 @@
 				Core/Components/Toast/CoreToastOverlayView.swift,
 				Core/Components/ZoomablePannableView.swift,
 				Core/Navigation/BookmarkDetailRouterView.swift,
-				Core/Navigation/DeepLinkManager.swift,
 				Core/Navigation/DetailColumnPlaceholderView.swift,
 				Core/Navigation/DetailColumnRouter.swift,
 				Core/Navigation/NavigationDestination.swift,
@@ -237,13 +234,11 @@
 				Core/Components/Item/AnnouncementView.swift,
 				Core/Components/Item/Bookmark/BookmarkItemState.swift,
 				Core/Components/Item/Bookmark/BookmarkItemView.swift,
-				Core/Components/Item/Collection/CollectionItemOverflowMenu.swift,
 				Core/Components/Item/Collection/CollectionItemState.swift,
 				Core/Components/Item/Collection/FolderItemView.swift,
 				Core/Components/Item/Collection/PresentableFolderItemView.swift,
 				Core/Components/Item/Collection/PresentableTagItemView.swift,
 				Core/Components/Item/Collection/TagItemView.swift,
-				Core/Components/Item/Shared/ItemListRowChrome.swift,
 				Core/Components/MacSpecific/MacOSHoverableToolbarIcon.swift,
 				Core/Components/Media/CameraCapturePicker.swift,
 				Core/Components/Selection/SelectFolderContent.swift,
@@ -258,7 +253,6 @@
 				Core/Components/Toast/CoreToastOverlayView.swift,
 				Core/Components/ZoomablePannableView.swift,
 				Core/Navigation/BookmarkDetailRouterView.swift,
-				Core/Navigation/DeepLinkManager.swift,
 				Core/Navigation/DetailColumnPlaceholderView.swift,
 				Core/Navigation/DetailColumnRouter.swift,
 				Core/Navigation/NavigationDestination.swift,
@@ -346,13 +340,11 @@
 				Core/Components/Item/AnnouncementView.swift,
 				Core/Components/Item/Bookmark/BookmarkItemState.swift,
 				Core/Components/Item/Bookmark/BookmarkItemView.swift,
-				Core/Components/Item/Collection/CollectionItemOverflowMenu.swift,
 				Core/Components/Item/Collection/CollectionItemState.swift,
 				Core/Components/Item/Collection/FolderItemView.swift,
 				Core/Components/Item/Collection/PresentableFolderItemView.swift,
 				Core/Components/Item/Collection/PresentableTagItemView.swift,
 				Core/Components/Item/Collection/TagItemView.swift,
-				Core/Components/Item/Shared/ItemListRowChrome.swift,
 				Core/Components/MacSpecific/MacOSHoverableToolbarIcon.swift,
 				Core/Components/Media/CameraCapturePicker.swift,
 				Core/Components/Selection/SelectFolderContent.swift,
@@ -367,7 +359,6 @@
 				Core/Components/Toast/CoreToastOverlayView.swift,
 				Core/Components/ZoomablePannableView.swift,
 				Core/Navigation/BookmarkDetailRouterView.swift,
-				Core/Navigation/DeepLinkManager.swift,
 				Core/Navigation/DetailColumnPlaceholderView.swift,
 				Core/Navigation/DetailColumnRouter.swift,
 				Core/Navigation/NavigationDestination.swift,
@@ -450,13 +441,11 @@
 				Core/Components/Item/AnnouncementView.swift,
 				Core/Components/Item/Bookmark/BookmarkItemState.swift,
 				Core/Components/Item/Bookmark/BookmarkItemView.swift,
-				Core/Components/Item/Collection/CollectionItemOverflowMenu.swift,
 				Core/Components/Item/Collection/CollectionItemState.swift,
 				Core/Components/Item/Collection/FolderItemView.swift,
 				Core/Components/Item/Collection/PresentableFolderItemView.swift,
 				Core/Components/Item/Collection/PresentableTagItemView.swift,
 				Core/Components/Item/Collection/TagItemView.swift,
-				Core/Components/Item/Shared/ItemListRowChrome.swift,
 				Core/Components/MacSpecific/MacOSHoverableToolbarIcon.swift,
 				Core/Components/Media/CameraCapturePicker.swift,
 				Core/Components/Selection/SelectFolderContent.swift,
@@ -553,13 +542,11 @@
 				Core/Components/Item/AnnouncementView.swift,
 				Core/Components/Item/Bookmark/BookmarkItemState.swift,
 				Core/Components/Item/Bookmark/BookmarkItemView.swift,
-				Core/Components/Item/Collection/CollectionItemOverflowMenu.swift,
 				Core/Components/Item/Collection/CollectionItemState.swift,
 				Core/Components/Item/Collection/FolderItemView.swift,
 				Core/Components/Item/Collection/PresentableFolderItemView.swift,
 				Core/Components/Item/Collection/PresentableTagItemView.swift,
 				Core/Components/Item/Collection/TagItemView.swift,
-				Core/Components/Item/Shared/ItemListRowChrome.swift,
 				Core/Components/MacSpecific/MacOSHoverableToolbarIcon.swift,
 				Core/Components/Media/CameraCapturePicker.swift,
 				Core/Components/Selection/SelectFolderContent.swift,
@@ -574,7 +561,6 @@
 				Core/Components/Toast/CoreToastOverlayView.swift,
 				Core/Components/ZoomablePannableView.swift,
 				Core/Navigation/BookmarkDetailRouterView.swift,
-				Core/Navigation/DeepLinkManager.swift,
 				Core/Navigation/DetailColumnPlaceholderView.swift,
 				Core/Navigation/DetailColumnRouter.swift,
 				Core/Navigation/NavigationDestination.swift,
@@ -665,13 +651,11 @@
 				Core/Components/Item/AnnouncementView.swift = (ios, );
 				Core/Components/Item/Bookmark/BookmarkItemState.swift = (ios, );
 				Core/Components/Item/Bookmark/BookmarkItemView.swift = (ios, );
-				Core/Components/Item/Collection/CollectionItemOverflowMenu.swift = (ios, );
 				Core/Components/Item/Collection/CollectionItemState.swift = (ios, );
 				Core/Components/Item/Collection/FolderItemView.swift = (ios, );
 				Core/Components/Item/Collection/PresentableFolderItemView.swift = (ios, );
 				Core/Components/Item/Collection/PresentableTagItemView.swift = (ios, );
 				Core/Components/Item/Collection/TagItemView.swift = (ios, );
-				Core/Components/Item/Shared/ItemListRowChrome.swift = (ios, );
 				Core/Components/MacSpecific/MacOSHoverableToolbarIcon.swift = (ios, );
 				Core/Components/Media/CameraCapturePicker.swift = (ios, );
 				Core/Components/Selection/SelectFolderContent.swift = (ios, );
@@ -686,7 +670,6 @@
 				Core/Components/Toast/CoreToastOverlayView.swift = (ios, );
 				Core/Components/ZoomablePannableView.swift = (ios, );
 				Core/Navigation/BookmarkDetailRouterView.swift = (ios, );
-				Core/Navigation/DeepLinkManager.swift = (ios, );
 				Core/Navigation/DetailColumnPlaceholderView.swift = (ios, );
 				Core/Navigation/DetailColumnRouter.swift = (ios, );
 				Core/Navigation/NavigationDestination.swift = (ios, );
@@ -741,6 +724,76 @@
 				Search/SearchView.swift = (ios, );
 			};
 			target = 96A8DFC12DB2F5A500A47601 /* YABA */;
+		};
+		967242D22F9EC3C20087D617 /* Exceptions for "YABACore" folder in "YABAShare" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Navigation/DeepLinkManager.swift,
+			);
+			target = 96A8E0AD2DB5CAFF00A47601 /* YABAShare */;
+		};
+		967242D32F9EC3C20087D617 /* Exceptions for "YABACore" folder in "YABAShareMac" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Navigation/DeepLinkManager.swift,
+			);
+			target = 96EB67122DD94580009EB9EC /* YABAShareMac */;
+		};
+		967242D42F9EC3C20087D617 /* Exceptions for "YABACore" folder in "YABAStatusMenuItem" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Navigation/DeepLinkManager.swift,
+			);
+			target = 967B9A4A2DD8D3EF00181AA1 /* YABAStatusMenuItem */;
+		};
+		967242D52F9EC3C20087D617 /* Exceptions for "YABACore" folder in "YABAWidgetsExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Navigation/DeepLinkManager.swift,
+			);
+			target = 96EA39BA2E58EB8E00B8411D /* YABAWidgetsExtension */;
+		};
+		967242E62F9EC4810087D617 /* Exceptions for "YABAMac" folder in "YABA" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			platformFiltersByRelativePath = {
+				Core/Navigation/YabaNavigationView.swift = (macos, );
+			};
+			target = 96A8DFC12DB2F5A500A47601 /* YABA */;
+		};
+		967242E72F9EC4890087D617 /* Exceptions for "YABAMac" folder in "YABAShare" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Core/Navigation/YabaNavigationView.swift,
+			);
+			target = 96A8E0AD2DB5CAFF00A47601 /* YABAShare */;
+		};
+		967242E82F9EC48C0087D617 /* Exceptions for "YABAMac" folder in "YABAShareMac" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Core/Navigation/YabaNavigationView.swift,
+			);
+			target = 96EB67122DD94580009EB9EC /* YABAShareMac */;
+		};
+		967242E92F9EC48C0087D617 /* Exceptions for "YABAMac" folder in "YABAStatusMenuItem" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Core/Navigation/YabaNavigationView.swift,
+			);
+			target = 967B9A4A2DD8D3EF00181AA1 /* YABAStatusMenuItem */;
+		};
+		967242EA2F9EC48C0087D617 /* Exceptions for "YABAMac" folder in "YABAKeyboard" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Core/Navigation/YabaNavigationView.swift,
+			);
+			target = 96EA396B2E56380700B8411D /* YABAKeyboard */;
+		};
+		967242EB2F9EC48C0087D617 /* Exceptions for "YABAMac" folder in "YABAWidgetsExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Core/Navigation/YabaNavigationView.swift,
+			);
+			target = 96EA39BA2E58EB8E00B8411D /* YABAWidgetsExtension */;
 		};
 		96A8E0BC2DB5CAFF00A47601 /* Exceptions for "YABAShare" folder in "YABAShare" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
@@ -858,6 +911,14 @@
 		};
 		967242C02F9EB9D70087D617 /* YABAMac */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				967242E62F9EC4810087D617 /* Exceptions for "YABAMac" folder in "YABA" target */,
+				967242E72F9EC4890087D617 /* Exceptions for "YABAMac" folder in "YABAShare" target */,
+				967242E82F9EC48C0087D617 /* Exceptions for "YABAMac" folder in "YABAShareMac" target */,
+				967242E92F9EC48C0087D617 /* Exceptions for "YABAMac" folder in "YABAStatusMenuItem" target */,
+				967242EA2F9EC48C0087D617 /* Exceptions for "YABAMac" folder in "YABAKeyboard" target */,
+				967242EB2F9EC48C0087D617 /* Exceptions for "YABAMac" folder in "YABAWidgetsExtension" target */,
+			);
 			path = YABAMac;
 			sourceTree = "<group>";
 		};
@@ -889,6 +950,12 @@
 		};
 		96DC5EE92F892665005760E3 /* YABACore */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				967242D22F9EC3C20087D617 /* Exceptions for "YABACore" folder in "YABAShare" target */,
+				967242D32F9EC3C20087D617 /* Exceptions for "YABACore" folder in "YABAShareMac" target */,
+				967242D42F9EC3C20087D617 /* Exceptions for "YABACore" folder in "YABAStatusMenuItem" target */,
+				967242D52F9EC3C20087D617 /* Exceptions for "YABACore" folder in "YABAWidgetsExtension" target */,
+			);
 			path = YABACore;
 			sourceTree = "<group>";
 		};

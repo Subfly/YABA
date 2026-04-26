@@ -79,9 +79,7 @@ struct BookmarkCreateTwoStepSheetsModifier: ViewModifier {
                     }
                 )
                 .presentationDetents([.fraction(0.44)])
-                #if !targetEnvironment(macCatalyst)
                 .presentationDragIndicator(.visible)
-                #endif
             }
             .sheet(item: $kindLaunch) { launch in
                 BookmarkKindCreationSheet(launch: launch) {

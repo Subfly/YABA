@@ -5,7 +5,6 @@
 
 import Foundation
 import Photos
-import UIKit
 import SwiftUI
 
 @MainActor
@@ -109,16 +108,23 @@ public final class ImagemarkDetailStateMachine: YabaBaseObservableState<Imagemar
                 CoreToastManager.shared.showNotificationPermissionDeniedToast()
                 return
             }
-            guard let image = UIImage(data: payload.imageData) else {
+            let fileURL = FileManager.default.temporaryDirectory
+                .appendingPathComponent("YABA-export-photos-\(UUID().uuidString).jpg", isDirectory: false)
+            try payload.imageData.write(to: fileURL, options: .atomic)
+            defer { try? FileManager.default.removeItem(at: fileURL) }
+            var creationRequestFailed = false
+            try await PHPhotoLibrary.shared().performChanges {
+                if PHAssetChangeRequest.creationRequestForAssetFromImage(atFileURL: fileURL) == nil {
+                    creationRequestFailed = true
+                }
+            }
+            if creationRequestFailed {
                 CoreToastManager.shared.show(
                     message: "Bookmark Detail Image Error Title",
                     iconType: .error,
                     duration: .short
                 )
                 return
-            }
-            try await PHPhotoLibrary.shared().performChanges {
-                PHAssetChangeRequest.creationRequestForAsset(from: image)
             }
             CoreToastManager.shared.show(
                 message: LocalizedStringKey("Bookmark Detail Saved to Photos Message"),

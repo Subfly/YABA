@@ -35,14 +35,6 @@ struct ImagemarkCreationContent: View {
     @State
     private var previewContentAppearance: PreviewContentAppearance = .list
 
-    private var isCameraAvailable: Bool {
-        #if os(iOS) && !targetEnvironment(macCatalyst)
-        UIImagePickerController.isSourceTypeAvailable(.camera)
-        #else
-        false
-        #endif
-    }
-
     let preselectedFolderId: String?
     let preselectedTagIds: [String]
     let editingBookmarkId: String?
@@ -59,9 +51,7 @@ struct ImagemarkCreationContent: View {
                 uncategorizedCreationRequired: machine.state.uncategorizedFolderCreationRequired
             ) { folderForPresentation, mainTint in
                 ZStack {
-                    #if !targetEnvironment(macCatalyst)
                     AnimatedGradient(color: mainTint)
-                    #endif
                     formList(
                         mainTint: mainTint,
                         folderForPresentation: folderForPresentation
@@ -151,12 +141,12 @@ struct ImagemarkCreationContent: View {
                         }
                         .bookmarkCreationActionButtonLabelStyle(
                             mainTint: mainTint,
-                            isDisabled: isEditing || !isCameraAvailable
+                            isDisabled: isEditing
                         )
                     }
                     .buttonStyle(.plain)
                     .frame(maxWidth: .infinity)
-                    .disabled(isEditing || !isCameraAvailable)
+                    .disabled(isEditing)
                 }
                 .listRowBackground(Color.clear)
                 .listRowSeparator(.hidden)

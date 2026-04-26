@@ -15,10 +15,6 @@ struct HowToWidgets: View {
         ZStack {
             AnimatedGradient(collectionColor: .indigo)
             List {
-                #if targetEnvironment(macCatalyst)
-                MacWidgets()
-                    .listRowSeparator(.hidden)
-                #else
                 if UIDevice.current.userInterfaceIdiom == .pad {
                     GeneralWidgets(width: 500)
                         .listRowSeparator(.hidden)
@@ -26,54 +22,10 @@ struct HowToWidgets: View {
                     GeneralWidgets(width: 350)
                         .listRowSeparator(.hidden)
                 }
-                #endif
             }
             .listStyle(.sidebar)
             .scrollContentBackground(.hidden)
         }.navigationTitle("How To Widgets Title")
-    }
-}
-
-private struct MacWidgets: View {
-    let messages: [LocalizedStringKey] = [
-        "How To Widgets Mac Message 1",
-        "How To Widgets Mac Message 2",
-        "How To Widgets Mac Message 3",
-        "How To Widgets Mac Message 4",
-        "How To Widgets Mac Message 5"
-    ]
-    
-    let images: [UIImage] = [
-        .howToWidgetsMacAdd1,
-        .howToWidgetsMacAdd2,
-        .howToWidgetsMacEdit1,
-        .howToWidgetsMacEdit2,
-        .howToWidgetsMacEdit3
-    ]
-    
-    var body: some View {
-        ForEach(Array(0...4), id: \.self) { step in
-            Section {
-                Text(messages[step])
-                HStack {
-                    Spacer()
-                    Image(uiImage: images[step])
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 500)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                    Spacer()
-                }
-            } header: {
-                Label {
-                    Text("How To Step Label \(step+1)")
-                } icon: {
-                    YabaIconView(bundleKey: "grid")
-                        .scaledToFit()
-                        .frame(width: 18, height: 18)
-                }
-            }
-        }
     }
 }
 

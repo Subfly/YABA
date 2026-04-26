@@ -15,10 +15,6 @@ struct HowToSync: View {
         ZStack {
             AnimatedGradient(collectionColor: .orange)
             List {
-                #if targetEnvironment(macCatalyst)
-                GeneralSync(width: 500)
-                    .listRowSeparator(.hidden)
-                #else
                 if UIDevice.current.userInterfaceIdiom == .pad {
                     GeneralSync(width: 500)
                         .listRowSeparator(.hidden)
@@ -26,7 +22,6 @@ struct HowToSync: View {
                     GeneralSync(width: 350)
                         .listRowSeparator(.hidden)
                 }
-                #endif
             }
             .listStyle(.sidebar)
             .scrollContentBackground(.hidden)

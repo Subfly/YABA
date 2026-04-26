@@ -101,9 +101,7 @@ struct TagCreationContent: View {
             }
         }
         .presentationDetents([.fraction(0.2)])
-        #if !targetEnvironment(macCatalyst)
         .presentationDragIndicator(.visible)
-        #endif
         .task(id: existingTagId) {
             await hydrateIfNeeded()
         }

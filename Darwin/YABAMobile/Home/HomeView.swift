@@ -29,18 +29,14 @@ struct HomeView: View {
 
     var body: some View {
         ZStack {
-            #if !targetEnvironment(macCatalyst)
             AnimatedGradient(color: .accentColor)
-            #endif
             SequentialView(
                 onSelectFolder: onSelectFolder,
                 onSelectTag: onSelectTag,
                 onSelectBookmark: onSelectBookmark
             )
-                .scrollContentBackground(.hidden)
-                #if targetEnvironment(macCatalyst)
-                .listStyle(.sidebar)
-                #endif
+            .scrollContentBackground(.hidden)
+            .listStyle(.sidebar)
             
             HomeCreateContentFAB(
                 isActive: $homeState.isFABActive,
@@ -74,15 +70,9 @@ struct HomeView: View {
         }
         .bookmarkCreateTwoStepSheets(typeSelection: $homeState.bookmarkTypeSelection)
         // Sync UI disabled (see NetworkSyncManager / SyncView).
-        // #if !targetEnvironment(macCatalyst)
-        // .fullScreenCover(isPresented: $homeState.shouldShowSyncSheet) {
-        //     SyncView().interactiveDismissDisabled()
-        // }
-        // #else
         // .sheet(isPresented: $homeState.shouldShowSyncSheet) {
         //     SyncView().interactiveDismissDisabled()
         // }
-        // #endif
         .navigationTitle("YABA")
         .task {
             await homeStateMachine.send(.onInit)
@@ -90,61 +80,23 @@ struct HomeView: View {
         .toolbar {
             // Sync toolbar entry disabled.
             // ToolbarItem(placement: .topBarLeading) {
-            //     #if targetEnvironment(macCatalyst)
-            //     MacOSHoverableToolbarIcon(
-            //         bundleKey: "laptop-phone-sync",
-            //         tooltipKey: "Synchronize Label",
-            //         onPressed: {
-            //             homeState.shouldShowSyncSheet = true
-            //         }
-            //     )
-            //     #else
             //     Button {
             //         homeState.shouldShowSyncSheet = true
             //     } label: {
             //         YabaIconView(bundleKey: "laptop-phone-sync")
             //     }
-            //     #endif
             // }
             ToolbarItem(placement: .topBarTrailing) {
-                #if targetEnvironment(macCatalyst)
-                MacOSHoverableToolbarIcon(
-                    bundleKey: "search-01",
-                    tooltipKey: "Search Title",
-                    onPressed: onOpenSearch
-                )
-                #else
                 Button {
                     onOpenSearch()
                 } label: {
                     YabaIconView(bundleKey: "search-01")
                 }
-                #endif
             }
             if #available(iOS 26, *) {
                 ToolbarSpacer(.fixed, placement: .topBarTrailing)
             }
             ToolbarItem(placement: .topBarTrailing) {
-                #if targetEnvironment(macCatalyst)
-                Menu {
-                    SortingPicker(contentType: .collection)
-                    Button {
-                        // TODO: SHOW SETTINGS (Catalyst)
-                    } label: {
-                        Label {
-                            Text("Settings Title")
-                        } icon: {
-                            YabaIconView(bundleKey: "settings-02")
-                        }
-                    }
-                } label: {
-                    MacOSHoverableToolbarIcon(
-                        bundleKey:  "more-horizontal-circle-02",
-                        tooltipKey: "Show More Label",
-                        onPressed: {}
-                    )
-                }
-                #else
                 Menu {
                     SortingPicker(contentType: .collection)
                     Button {
@@ -159,7 +111,6 @@ struct HomeView: View {
                 } label: {
                     YabaIconView(bundleKey: "more-horizontal-circle-02")
                 }
-                #endif
             }
         }
         .onChange(of: deepLinkManager.saveRequest) { oldValue, newValue in

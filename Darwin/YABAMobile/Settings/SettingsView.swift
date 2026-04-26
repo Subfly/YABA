@@ -57,18 +57,6 @@ struct SettingsView: View {
         NavigationStack(path: $settingsState.settingsNavPath) {
             ZStack {
                 AnimatedGradient(collectionColor: .accentColor)
-                #if targetEnvironment(macCatalyst)
-                content
-                    .toolbar {
-                        ToolbarItem(placement: .confirmationAction) {
-                            Button {
-                                dismiss()
-                            } label: {
-                                Text("Done")
-                            }
-                        }
-                    }
-                #else
                 content
                     .toolbar {
                         ToolbarItem(placement: .confirmationAction) {
@@ -83,7 +71,6 @@ struct SettingsView: View {
                             }
                         }
                     }
-                #endif
             }
             .navigationDestination(for: SettingsNavigationDestination.self) { destination in
                 switch destination {
@@ -102,9 +89,7 @@ struct SettingsView: View {
         List {
             themeAndLangaugeSection
             appearanceSection
-            #if !targetEnvironment(macCatalyst)
             keyboardSection
-            #endif
             announcementsSection
             // syncSection
             dataSection
@@ -157,7 +142,6 @@ struct SettingsView: View {
                     }
                 }
             }
-            #if !targetEnvironment(macCatalyst)
             Toggle(isOn: $useSimplifiedShare) {
                 Label {
                     Text("Settings Simplified Share Sheet Title")
@@ -167,24 +151,6 @@ struct SettingsView: View {
                         .frame(width: 24, height: 24)
                 }
             }
-            #endif
-            #if targetEnvironment(macCatalyst)
-            Toggle(isOn: $showMenuBarItem) {
-                Label {
-                    Text("Settings Menu Item Visibility Title")
-                } icon: {
-                    YabaIconView(bundleKey: "bookmark-02")
-                        .scaledToFit()
-                        .frame(width: 24, height: 24)
-                }
-            }.onChange(of: showMenuBarItem) { _, newValue in
-                if newValue {
-                    StatusMenuHelper.setStatusMenuEnabled()
-                } else {
-                    StatusMenuHelper.setStatusMenuDisabled()
-                }
-            }
-            #endif
             Toggle(isOn: $disableBackgroundAnimation) {
                 Label {
                     Text("Settings Disable Background Animation Title")
@@ -194,11 +160,9 @@ struct SettingsView: View {
                         .frame(width: 24, height: 24)
                 }
             }
-            #if !targetEnvironment(macCatalyst)
             if UIDevice.current.userInterfaceIdiom == .phone {
                 FABLocationPicker()
             }
-            #endif
         } header: {
             Label {
                 Text("Settings Appearance Title")

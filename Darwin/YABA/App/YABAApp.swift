@@ -12,8 +12,11 @@ import WidgetKit
 
 @main
 struct YABAApp: App {
-    @UIApplicationDelegateAdaptor(AppDelegate.self)
-    private var appDelegate
+    #if os(iOS)
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+    #elseif os(macOS)
+    @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+    #endif
     
     @AppStorage(Constants.preferredThemeKey)
     private var preferredTheme: ThemePreference = .system

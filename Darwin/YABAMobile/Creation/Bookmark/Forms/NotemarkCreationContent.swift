@@ -43,9 +43,7 @@ struct NotemarkCreationContent: View {
                 uncategorizedCreationRequired: machine.state.uncategorizedFolderCreationRequired
             ) { folderForPresentation, mainTint in
                 ZStack {
-                    #if !targetEnvironment(macCatalyst)
                     AnimatedGradient(color: mainTint)
-                    #endif
                     formList(
                         mainTint: mainTint,
                         folderForPresentation: folderForPresentation

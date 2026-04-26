@@ -55,12 +55,6 @@ struct FolderItemView: View {
                 onDelete: { itemState.shouldShowDeleteDialog = true }
             )
         )
-        .listRowBackground(
-            ItemListRowChrome.listRowBackground(
-                cornerRadius: 8,
-                isHovered: itemState.isHovered
-            )
-        )
         .onHover { itemState.isHovered = $0 }
         .sheet(isPresented: $itemState.shouldShowEditSheet) {
             FolderCreationContent(existingFolderId: folder.folderId)

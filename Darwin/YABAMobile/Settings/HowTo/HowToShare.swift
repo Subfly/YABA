@@ -15,10 +15,6 @@ struct HowToShare: View {
         ZStack {
             AnimatedGradient(collectionColor: .blue)
             List {
-                #if targetEnvironment(macCatalyst)
-                MacShare()
-                    .listRowSeparator(.hidden)
-                #else
                 if UIDevice.current.userInterfaceIdiom == .pad {
                     iPadShare()
                         .listRowSeparator(.hidden)
@@ -26,50 +22,10 @@ struct HowToShare: View {
                     iPhoneShare()
                         .listRowSeparator(.hidden)
                 }
-                #endif
             }
             .listStyle(.sidebar)
             .scrollContentBackground(.hidden)
         }.navigationTitle("How To Share Title")
-    }
-}
-
-private struct MacShare: View {
-    private let messages: [LocalizedStringKey] = [
-        "How To Share Mac Message 1",
-        "How To Share Mac Message 2",
-        "How To Share Mac Message 3"
-    ]
-    
-    private let images: [UIImage] = [
-        .howToShareMacQuickKey,
-        .howToShareMacMenuBar,
-        .howToShareMacSettings
-    ]
-    
-    var body: some View {
-        ForEach(Array(0...2), id: \.self) { step in
-            Section {
-                Text(messages[step])
-                HStack {
-                    Spacer()
-                    Image(uiImage: images[step])
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 500)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                    Spacer()
-                }
-            } header: {
-                Label {
-                    Text("How To Step Label \(step+1)")
-                } icon: {
-                    YabaIconView(bundleKey: "grid")
-                        .scaledToFit()
-                        .frame(width: 18, height: 18)
-                }
-            }
-        }
     }
 }
 

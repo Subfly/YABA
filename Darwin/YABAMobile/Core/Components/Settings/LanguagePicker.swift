@@ -29,12 +29,7 @@ struct LanguagePicker: View {
         }
         .contentShape(Rectangle())
         .onTapGesture {
-            #if targetEnvironment(macCatalyst)
-            let settingsURL = URL(string: "x-apple.systempreferences:com.apple.Localization-Settings")
-            #else
-            let settingsURL = URL(string: UIApplication.openSettingsURLString)
-            #endif
-            if let url: URL = settingsURL, UIApplication.shared.canOpenURL(url) {
+            if let url: URL = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(url) {
                 UIApplication.shared.open(url)
             }
         }

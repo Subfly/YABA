@@ -46604,6 +46604,9 @@
         }
       }
     },
+    "UI rebuild" : {
+
+    },
     "Unable to Access File Message" : {
       "comment" : "Message to show when selected file could not be accessed somehow.",
       "extractionState" : "manual",

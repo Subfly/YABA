@@ -59,9 +59,7 @@ struct HowToGuideView: View {
             ZStack {
                 AnimatedGradient(collectionColor: .accentColor)
                 List {
-                    #if !targetEnvironment(macCatalyst)
                     generateHowToItem(for: .keyboard)
-                    #endif
                     generateHowToItem(for: .reminders)
                     generateHowToItem(for: .share)
                     generateHowToItem(for: .sync)

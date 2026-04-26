@@ -20,9 +20,7 @@ enum DeviceType: String, Codable, CaseIterable {
     
     /// Automatically detect current device type
     static var current: DeviceType {
-        #if targetEnvironment(macCatalyst)
-        return .computer
-        #elseif os(macOS)
+        #if os(macOS)
         return .computer
         #elseif os(iOS)
         if UIDevice.current.userInterfaceIdiom == .pad {

@@ -16,14 +16,6 @@ private struct HowToItem: Identifiable {
     let detail: LocalizedStringKey
     
     static func getItems() -> [HowToItem] {
-        #if targetEnvironment(macCatalyst)
-        return HowToItem.macItems()
-        #else
-        return HowToItem.generalItems()
-        #endif
-    }
-    
-    static func generalItems() -> [HowToItem] {
         return [
             .init(
                 title: LocalizedStringKey("Onboarding HowTo Page General Step 1 Title"),
@@ -40,27 +32,6 @@ private struct HowToItem: Identifiable {
             .init(
                 title: LocalizedStringKey("Onboarding HowTo Page Final Step Title"),
                 detail: LocalizedStringKey("Onboarding HowTo Page Final Step Detail")
-            )
-        ]
-    }
-    
-    static func macItems() -> [HowToItem] {
-        return [
-            .init(
-                title: "Onboarding HowTo Page Mac Step 1 Title",
-                detail: "Onboarding HowTo Page Mac Step 1 Detail"
-            ),
-            .init(
-                title: "Onboarding HowTo Page Mac Step 2 Title",
-                detail: "Onboarding HowTo Page Mac Step 2 Detail"
-            ),
-            .init(
-                title: "Onboarding HowTo Page Mac Step 3 Title",
-                detail: "Onboarding HowTo Page Mac Step 3 Detail"
-            ),
-            .init(
-                title: "Onboarding HowTo Page Final Step Mac Title",
-                detail: "Onboarding HowTo Page Final Step Mac Detail"
             )
         ]
     }
