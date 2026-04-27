@@ -31,6 +31,7 @@
 		96DCA2612F9D7002005760E3 /* EPUBKit in Frameworks */ = {isa = PBXBuildFile; productRef = 96DCA2492F9D6FE1005760E3 /* EPUBKit */; };
 		96DCA2622F9D7002005760E3 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 96DCA2462F9D6FD6005760E3 /* SwiftSoup */; };
 		96DCA2632F9D7002005760E3 /* EPUBKit in Frameworks */ = {isa = PBXBuildFile; productRef = 96DCA2492F9D6FE1005760E3 /* EPUBKit */; };
+		96DD37B72F9F8F1600E858C7 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 96DD37B62F9F8F1600E858C7 /* Kingfisher */; };
 		96EA39732E56380700B8411D /* YABAKeyboard.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 96EA396C2E56380700B8411D /* YABAKeyboard.appex */; platformFilters = (ios, xros, ); settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		96EA39BD2E58EB8F00B8411D /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96EA39BC2E58EB8F00B8411D /* WidgetKit.framework */; };
 		96EA39BF2E58EB8F00B8411D /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96EA39BE2E58EB8F00B8411D /* SwiftUI.framework */; };
@@ -747,6 +748,57 @@
 		967242D22F9EC3C20087D617 /* Exceptions for "YABACore" folder in "YABAShare" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Components/Markdown/Configuration/MarkdownConfiguration.swift,
+				Components/Markdown/Core/MarkdownASTConverter.swift,
+				Components/Markdown/Core/MarkdownKMPBlockRevision.swift,
+				Components/Markdown/Core/MarkdownKMPInterop.swift,
+				Components/Markdown/Core/MarkdownKMPStreamController.swift,
+				Components/Markdown/Core/MarkdownKMPTableSupport.swift,
+				Components/Markdown/Core/MarkdownKMPTypeAliases.swift,
+				Components/Markdown/Core/MarkdownTocContext.swift,
+				Components/Markdown/Core/Models/AbbreviationDefBlock.swift,
+				Components/Markdown/Core/Models/AdmonitionBlock.swift,
+				Components/Markdown/Core/Models/BibEntryBlock.swift,
+				Components/Markdown/Core/Models/ColumnBlock.swift,
+				Components/Markdown/Core/Models/CustomContainerBlock.swift,
+				Components/Markdown/Core/Models/DefinitionListItemBlock.swift,
+				Components/Markdown/Core/Models/DiagramBlockModel.swift,
+				Components/Markdown/Core/Models/DirectiveBlockModel.swift,
+				Components/Markdown/Core/Models/FencedCodeBlockModel.swift,
+				Components/Markdown/Core/Models/FigureBlock.swift,
+				Components/Markdown/Core/Models/FootnoteDefBlock.swift,
+				Components/Markdown/Core/Models/HeadingBlock.swift,
+				Components/Markdown/Core/Models/LinkRefDefBlock.swift,
+				Components/Markdown/Core/Models/ListBlockModel.swift,
+				Components/Markdown/Core/Models/MarkdownInlineContent.swift,
+				Components/Markdown/Core/Models/MarkdownRenderDocument.swift,
+				Components/Markdown/Core/Models/ParagraphBlock.swift,
+				Components/Markdown/Core/Models/TabItemBlock.swift,
+				Components/Markdown/Core/Models/TableBlock.swift,
+				Components/Markdown/Core/Models/TocBlock.swift,
+				Components/Markdown/Platform/MarkdownEditor.swift,
+				Components/Markdown/Platform/MarkdownPreviewTableBridge.swift,
+				Components/Markdown/Platform/MarkdownSyntaxHighlighter.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownBlockViews.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownHTMLBlockWebView.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownInDocumentTabView.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownKMPInDocumentTabView.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownKMPListBlockViews.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownKMPNodeBlockViews.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownKMPStringDictBridge.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownListBlockViews.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownTableBlockView.swift,
+				Components/Markdown/Rendering/Image/MarkdownImageAssetRegistry.swift,
+				Components/Markdown/Rendering/Image/MarkdownImageRowView.swift,
+				Components/Markdown/Rendering/Inline/MarkdownCombinedInlineText.swift,
+				Components/Markdown/Rendering/Inline/MarkdownEnvironment.swift,
+				Components/Markdown/Rendering/Inline/MarkdownInlineAssembler.swift,
+				Components/Markdown/Rendering/Inline/MarkdownInlineBlockView.swift,
+				Components/Markdown/Rendering/Inline/MarkdownInlineDisplayPiece.swift,
+				Components/Markdown/Rendering/Inline/MarkdownInlinePlainText.swift,
+				Components/Markdown/Rendering/MarkdownPreview.swift,
+				Components/Markdown/Rendering/MarkdownSampleContent.swift,
+				Components/Markdown/Theme/MarkdownThemeTokens.swift,
 				Navigation/DeepLinkManager.swift,
 			);
 			target = 96A8E0AD2DB5CAFF00A47601 /* YABAShare */;
@@ -754,6 +806,57 @@
 		967242D32F9EC3C20087D617 /* Exceptions for "YABACore" folder in "YABAShareMac" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Components/Markdown/Configuration/MarkdownConfiguration.swift,
+				Components/Markdown/Core/MarkdownASTConverter.swift,
+				Components/Markdown/Core/MarkdownKMPBlockRevision.swift,
+				Components/Markdown/Core/MarkdownKMPInterop.swift,
+				Components/Markdown/Core/MarkdownKMPStreamController.swift,
+				Components/Markdown/Core/MarkdownKMPTableSupport.swift,
+				Components/Markdown/Core/MarkdownKMPTypeAliases.swift,
+				Components/Markdown/Core/MarkdownTocContext.swift,
+				Components/Markdown/Core/Models/AbbreviationDefBlock.swift,
+				Components/Markdown/Core/Models/AdmonitionBlock.swift,
+				Components/Markdown/Core/Models/BibEntryBlock.swift,
+				Components/Markdown/Core/Models/ColumnBlock.swift,
+				Components/Markdown/Core/Models/CustomContainerBlock.swift,
+				Components/Markdown/Core/Models/DefinitionListItemBlock.swift,
+				Components/Markdown/Core/Models/DiagramBlockModel.swift,
+				Components/Markdown/Core/Models/DirectiveBlockModel.swift,
+				Components/Markdown/Core/Models/FencedCodeBlockModel.swift,
+				Components/Markdown/Core/Models/FigureBlock.swift,
+				Components/Markdown/Core/Models/FootnoteDefBlock.swift,
+				Components/Markdown/Core/Models/HeadingBlock.swift,
+				Components/Markdown/Core/Models/LinkRefDefBlock.swift,
+				Components/Markdown/Core/Models/ListBlockModel.swift,
+				Components/Markdown/Core/Models/MarkdownInlineContent.swift,
+				Components/Markdown/Core/Models/MarkdownRenderDocument.swift,
+				Components/Markdown/Core/Models/ParagraphBlock.swift,
+				Components/Markdown/Core/Models/TabItemBlock.swift,
+				Components/Markdown/Core/Models/TableBlock.swift,
+				Components/Markdown/Core/Models/TocBlock.swift,
+				Components/Markdown/Platform/MarkdownEditor.swift,
+				Components/Markdown/Platform/MarkdownPreviewTableBridge.swift,
+				Components/Markdown/Platform/MarkdownSyntaxHighlighter.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownBlockViews.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownHTMLBlockWebView.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownInDocumentTabView.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownKMPInDocumentTabView.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownKMPListBlockViews.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownKMPNodeBlockViews.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownKMPStringDictBridge.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownListBlockViews.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownTableBlockView.swift,
+				Components/Markdown/Rendering/Image/MarkdownImageAssetRegistry.swift,
+				Components/Markdown/Rendering/Image/MarkdownImageRowView.swift,
+				Components/Markdown/Rendering/Inline/MarkdownCombinedInlineText.swift,
+				Components/Markdown/Rendering/Inline/MarkdownEnvironment.swift,
+				Components/Markdown/Rendering/Inline/MarkdownInlineAssembler.swift,
+				Components/Markdown/Rendering/Inline/MarkdownInlineBlockView.swift,
+				Components/Markdown/Rendering/Inline/MarkdownInlineDisplayPiece.swift,
+				Components/Markdown/Rendering/Inline/MarkdownInlinePlainText.swift,
+				Components/Markdown/Rendering/MarkdownPreview.swift,
+				Components/Markdown/Rendering/MarkdownSampleContent.swift,
+				Components/Markdown/Theme/MarkdownThemeTokens.swift,
 				Navigation/DeepLinkManager.swift,
 			);
 			target = 96EB67122DD94580009EB9EC /* YABAShareMac */;
@@ -761,6 +864,57 @@
 		967242D42F9EC3C20087D617 /* Exceptions for "YABACore" folder in "YABAStatusMenuItem" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Components/Markdown/Configuration/MarkdownConfiguration.swift,
+				Components/Markdown/Core/MarkdownASTConverter.swift,
+				Components/Markdown/Core/MarkdownKMPBlockRevision.swift,
+				Components/Markdown/Core/MarkdownKMPInterop.swift,
+				Components/Markdown/Core/MarkdownKMPStreamController.swift,
+				Components/Markdown/Core/MarkdownKMPTableSupport.swift,
+				Components/Markdown/Core/MarkdownKMPTypeAliases.swift,
+				Components/Markdown/Core/MarkdownTocContext.swift,
+				Components/Markdown/Core/Models/AbbreviationDefBlock.swift,
+				Components/Markdown/Core/Models/AdmonitionBlock.swift,
+				Components/Markdown/Core/Models/BibEntryBlock.swift,
+				Components/Markdown/Core/Models/ColumnBlock.swift,
+				Components/Markdown/Core/Models/CustomContainerBlock.swift,
+				Components/Markdown/Core/Models/DefinitionListItemBlock.swift,
+				Components/Markdown/Core/Models/DiagramBlockModel.swift,
+				Components/Markdown/Core/Models/DirectiveBlockModel.swift,
+				Components/Markdown/Core/Models/FencedCodeBlockModel.swift,
+				Components/Markdown/Core/Models/FigureBlock.swift,
+				Components/Markdown/Core/Models/FootnoteDefBlock.swift,
+				Components/Markdown/Core/Models/HeadingBlock.swift,
+				Components/Markdown/Core/Models/LinkRefDefBlock.swift,
+				Components/Markdown/Core/Models/ListBlockModel.swift,
+				Components/Markdown/Core/Models/MarkdownInlineContent.swift,
+				Components/Markdown/Core/Models/MarkdownRenderDocument.swift,
+				Components/Markdown/Core/Models/ParagraphBlock.swift,
+				Components/Markdown/Core/Models/TabItemBlock.swift,
+				Components/Markdown/Core/Models/TableBlock.swift,
+				Components/Markdown/Core/Models/TocBlock.swift,
+				Components/Markdown/Platform/MarkdownEditor.swift,
+				Components/Markdown/Platform/MarkdownPreviewTableBridge.swift,
+				Components/Markdown/Platform/MarkdownSyntaxHighlighter.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownBlockViews.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownHTMLBlockWebView.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownInDocumentTabView.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownKMPInDocumentTabView.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownKMPListBlockViews.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownKMPNodeBlockViews.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownKMPStringDictBridge.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownListBlockViews.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownTableBlockView.swift,
+				Components/Markdown/Rendering/Image/MarkdownImageAssetRegistry.swift,
+				Components/Markdown/Rendering/Image/MarkdownImageRowView.swift,
+				Components/Markdown/Rendering/Inline/MarkdownCombinedInlineText.swift,
+				Components/Markdown/Rendering/Inline/MarkdownEnvironment.swift,
+				Components/Markdown/Rendering/Inline/MarkdownInlineAssembler.swift,
+				Components/Markdown/Rendering/Inline/MarkdownInlineBlockView.swift,
+				Components/Markdown/Rendering/Inline/MarkdownInlineDisplayPiece.swift,
+				Components/Markdown/Rendering/Inline/MarkdownInlinePlainText.swift,
+				Components/Markdown/Rendering/MarkdownPreview.swift,
+				Components/Markdown/Rendering/MarkdownSampleContent.swift,
+				Components/Markdown/Theme/MarkdownThemeTokens.swift,
 				Navigation/DeepLinkManager.swift,
 			);
 			target = 967B9A4A2DD8D3EF00181AA1 /* YABAStatusMenuItem */;
@@ -768,6 +922,57 @@
 		967242D52F9EC3C20087D617 /* Exceptions for "YABACore" folder in "YABAWidgetsExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Components/Markdown/Configuration/MarkdownConfiguration.swift,
+				Components/Markdown/Core/MarkdownASTConverter.swift,
+				Components/Markdown/Core/MarkdownKMPBlockRevision.swift,
+				Components/Markdown/Core/MarkdownKMPInterop.swift,
+				Components/Markdown/Core/MarkdownKMPStreamController.swift,
+				Components/Markdown/Core/MarkdownKMPTableSupport.swift,
+				Components/Markdown/Core/MarkdownKMPTypeAliases.swift,
+				Components/Markdown/Core/MarkdownTocContext.swift,
+				Components/Markdown/Core/Models/AbbreviationDefBlock.swift,
+				Components/Markdown/Core/Models/AdmonitionBlock.swift,
+				Components/Markdown/Core/Models/BibEntryBlock.swift,
+				Components/Markdown/Core/Models/ColumnBlock.swift,
+				Components/Markdown/Core/Models/CustomContainerBlock.swift,
+				Components/Markdown/Core/Models/DefinitionListItemBlock.swift,
+				Components/Markdown/Core/Models/DiagramBlockModel.swift,
+				Components/Markdown/Core/Models/DirectiveBlockModel.swift,
+				Components/Markdown/Core/Models/FencedCodeBlockModel.swift,
+				Components/Markdown/Core/Models/FigureBlock.swift,
+				Components/Markdown/Core/Models/FootnoteDefBlock.swift,
+				Components/Markdown/Core/Models/HeadingBlock.swift,
+				Components/Markdown/Core/Models/LinkRefDefBlock.swift,
+				Components/Markdown/Core/Models/ListBlockModel.swift,
+				Components/Markdown/Core/Models/MarkdownInlineContent.swift,
+				Components/Markdown/Core/Models/MarkdownRenderDocument.swift,
+				Components/Markdown/Core/Models/ParagraphBlock.swift,
+				Components/Markdown/Core/Models/TabItemBlock.swift,
+				Components/Markdown/Core/Models/TableBlock.swift,
+				Components/Markdown/Core/Models/TocBlock.swift,
+				Components/Markdown/Platform/MarkdownEditor.swift,
+				Components/Markdown/Platform/MarkdownPreviewTableBridge.swift,
+				Components/Markdown/Platform/MarkdownSyntaxHighlighter.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownBlockViews.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownHTMLBlockWebView.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownInDocumentTabView.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownKMPInDocumentTabView.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownKMPListBlockViews.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownKMPNodeBlockViews.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownKMPStringDictBridge.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownListBlockViews.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownTableBlockView.swift,
+				Components/Markdown/Rendering/Image/MarkdownImageAssetRegistry.swift,
+				Components/Markdown/Rendering/Image/MarkdownImageRowView.swift,
+				Components/Markdown/Rendering/Inline/MarkdownCombinedInlineText.swift,
+				Components/Markdown/Rendering/Inline/MarkdownEnvironment.swift,
+				Components/Markdown/Rendering/Inline/MarkdownInlineAssembler.swift,
+				Components/Markdown/Rendering/Inline/MarkdownInlineBlockView.swift,
+				Components/Markdown/Rendering/Inline/MarkdownInlineDisplayPiece.swift,
+				Components/Markdown/Rendering/Inline/MarkdownInlinePlainText.swift,
+				Components/Markdown/Rendering/MarkdownPreview.swift,
+				Components/Markdown/Rendering/MarkdownSampleContent.swift,
+				Components/Markdown/Theme/MarkdownThemeTokens.swift,
 				Navigation/DeepLinkManager.swift,
 			);
 			target = 96EA39BA2E58EB8E00B8411D /* YABAWidgetsExtension */;
@@ -833,6 +1038,63 @@
 				LaunchScreen.storyboard = (ios, );
 			};
 			target = 96A8E0AD2DB5CAFF00A47601 /* YABAShare */;
+		};
+		96DD38A72F9F9D8700E858C7 /* Exceptions for "YABACore" folder in "YABAKeyboard" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Components/Markdown/Configuration/MarkdownConfiguration.swift,
+				Components/Markdown/Core/MarkdownASTConverter.swift,
+				Components/Markdown/Core/MarkdownKMPBlockRevision.swift,
+				Components/Markdown/Core/MarkdownKMPInterop.swift,
+				Components/Markdown/Core/MarkdownKMPStreamController.swift,
+				Components/Markdown/Core/MarkdownKMPTableSupport.swift,
+				Components/Markdown/Core/MarkdownKMPTypeAliases.swift,
+				Components/Markdown/Core/MarkdownTocContext.swift,
+				Components/Markdown/Core/Models/AbbreviationDefBlock.swift,
+				Components/Markdown/Core/Models/AdmonitionBlock.swift,
+				Components/Markdown/Core/Models/BibEntryBlock.swift,
+				Components/Markdown/Core/Models/ColumnBlock.swift,
+				Components/Markdown/Core/Models/CustomContainerBlock.swift,
+				Components/Markdown/Core/Models/DefinitionListItemBlock.swift,
+				Components/Markdown/Core/Models/DiagramBlockModel.swift,
+				Components/Markdown/Core/Models/DirectiveBlockModel.swift,
+				Components/Markdown/Core/Models/FencedCodeBlockModel.swift,
+				Components/Markdown/Core/Models/FigureBlock.swift,
+				Components/Markdown/Core/Models/FootnoteDefBlock.swift,
+				Components/Markdown/Core/Models/HeadingBlock.swift,
+				Components/Markdown/Core/Models/LinkRefDefBlock.swift,
+				Components/Markdown/Core/Models/ListBlockModel.swift,
+				Components/Markdown/Core/Models/MarkdownInlineContent.swift,
+				Components/Markdown/Core/Models/MarkdownRenderDocument.swift,
+				Components/Markdown/Core/Models/ParagraphBlock.swift,
+				Components/Markdown/Core/Models/TabItemBlock.swift,
+				Components/Markdown/Core/Models/TableBlock.swift,
+				Components/Markdown/Core/Models/TocBlock.swift,
+				Components/Markdown/Platform/MarkdownEditor.swift,
+				Components/Markdown/Platform/MarkdownPreviewTableBridge.swift,
+				Components/Markdown/Platform/MarkdownSyntaxHighlighter.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownBlockViews.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownHTMLBlockWebView.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownInDocumentTabView.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownKMPInDocumentTabView.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownKMPListBlockViews.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownKMPNodeBlockViews.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownKMPStringDictBridge.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownListBlockViews.swift,
+				Components/Markdown/Rendering/Blocks/MarkdownTableBlockView.swift,
+				Components/Markdown/Rendering/Image/MarkdownImageAssetRegistry.swift,
+				Components/Markdown/Rendering/Image/MarkdownImageRowView.swift,
+				Components/Markdown/Rendering/Inline/MarkdownCombinedInlineText.swift,
+				Components/Markdown/Rendering/Inline/MarkdownEnvironment.swift,
+				Components/Markdown/Rendering/Inline/MarkdownInlineAssembler.swift,
+				Components/Markdown/Rendering/Inline/MarkdownInlineBlockView.swift,
+				Components/Markdown/Rendering/Inline/MarkdownInlineDisplayPiece.swift,
+				Components/Markdown/Rendering/Inline/MarkdownInlinePlainText.swift,
+				Components/Markdown/Rendering/MarkdownPreview.swift,
+				Components/Markdown/Rendering/MarkdownSampleContent.swift,
+				Components/Markdown/Theme/MarkdownThemeTokens.swift,
+			);
+			target = 96EA396B2E56380700B8411D /* YABAKeyboard */;
 		};
 		96EA39772E56380700B8411D /* Exceptions for "YABAKeyboard" folder in "YABAKeyboard" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
@@ -973,6 +1235,7 @@
 				967242D22F9EC3C20087D617 /* Exceptions for "YABACore" folder in "YABAShare" target */,
 				967242D32F9EC3C20087D617 /* Exceptions for "YABACore" folder in "YABAShareMac" target */,
 				967242D42F9EC3C20087D617 /* Exceptions for "YABACore" folder in "YABAStatusMenuItem" target */,
+				96DD38A72F9F9D8700E858C7 /* Exceptions for "YABACore" folder in "YABAKeyboard" target */,
 				967242D52F9EC3C20087D617 /* Exceptions for "YABACore" folder in "YABAWidgetsExtension" target */,
 			);
 			path = YABACore;
@@ -1019,6 +1282,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				96DD37B72F9F8F1600E858C7 /* Kingfisher in Frameworks */,
 				96DCA2472F9D6FD6005760E3 /* SwiftSoup in Frameworks */,
 				96DCA24A2F9D6FE1005760E3 /* EPUBKit in Frameworks */,
 				967242EE2F9ECF410087D617 /* MarkdownParser.xcframework in Frameworks */,
@@ -1169,6 +1433,7 @@
 			packageProductDependencies = (
 				96DCA2462F9D6FD6005760E3 /* SwiftSoup */,
 				96DCA2492F9D6FE1005760E3 /* EPUBKit */,
+				96DD37B62F9F8F1600E858C7 /* Kingfisher */,
 			);
 			productName = YABA;
 			productReference = 96A8DFC22DB2F5A500A47601 /* YABA.app */;
@@ -1329,6 +1594,7 @@
 			packageReferences = (
 				96DCA2452F9D6FD6005760E3 /* XCRemoteSwiftPackageReference "SwiftSoup" */,
 				96DCA2482F9D6FE1005760E3 /* XCRemoteSwiftPackageReference "EPUBKit" */,
+				96DD37B52F9F8F1600E858C7 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 96A8DFC32DB2F5A500A47601 /* Products */;
@@ -2148,6 +2414,14 @@
 				minimumVersion = 0.5.0;
 			};
 		};
+		96DD37B52F9F8F1600E858C7 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.8.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -2160,6 +2434,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 96DCA2482F9D6FE1005760E3 /* XCRemoteSwiftPackageReference "EPUBKit" */;
 			productName = EPUBKit;
+		};
+		96DD37B62F9F8F1600E858C7 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 96DD37B52F9F8F1600E858C7 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -21,10 +21,10 @@ enum InlineAssembler {
         if let t = node as? Text {
             return [.text(t.literal)]
         }
-        if let s = node as? SoftLineBreak {
+        if let _ = node as? SoftLineBreak {
             return [.lineBreak(soft: true)]
         }
-        if let h = node as? HardLineBreak {
+        if let _ = node as? HardLineBreak {
             return [.lineBreak(soft: false)]
         }
         if let n = node as? Emphasis {

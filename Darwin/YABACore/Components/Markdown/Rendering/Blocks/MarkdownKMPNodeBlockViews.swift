@@ -221,7 +221,7 @@ public struct MarkdownKMPNodeBlockView: View {
         } else if let n = node as? DirectiveBlock {
             VStack(alignment: .leading, spacing: 4) {
                 Text("::\(n.tagName)").font(.caption.monospaced())
-                let args = StringDictBridge.dict(n.args)
+                let args = MarkdownKMPStringDictBridge.dict(n.args)
                 if !args.isEmpty {
                     Text(args.map { "\($0.key)=\($0.value)" }.joined(separator: " "))
                         .font(.caption2)
@@ -315,7 +315,7 @@ public struct MarkdownKMPNodeBlockView: View {
     }
 
     private func fencedCodeView(from n: FencedCodeBlock, theme: MarkdownThemeTokens) -> some View {
-        let title = StringDictBridge.dict(n.attributes.pairs)["title"]
+        let title = MarkdownKMPStringDictBridge.dict(n.attributes.pairs)["title"]
         let c = FencedCodeBlockModel(
             language: n.language,
             info: n.info,
@@ -435,128 +435,6 @@ public struct MarkdownKMPNodeBlockView: View {
             EmptyView()
         } else {
             MarkdownKMPInDocumentTabView(tabs: tabs, listNesting: listNesting)
-        }
-    }
-}
-
-// MARK: - ObjC dictionary → [String: String] (Fenced `attributes.pairs`)
-private enum StringDictBridge {
-    static func dict(_ pairs: Any?) -> [String: String] {
-        if let d = pairs as? [String: String] { return d }
-        if let n = pairs as? NSDictionary {
-            var o: [String: String] = [:]
-            n.enumerateKeysAndObjects { k, v, _ in
-                if let ks = k as? String, let vs = v as? String { o[ks] = vs }
-            }
-            return o
-        }
-        return [:]
-    }
-}
-
-// MARK: - KMP list
-
-private struct KmpTab {
-    let title: String
-    let nodes: [Node]
-}
-
-private func collectKmpTabs(_ n: TabBlock) -> [KmpTab] {
-    var tabs: [KmpTab] = []
-    for c in n.children {
-        guard let t = c as? TabItem else { continue }
-        let nodes = (t as ContainerNode).children.filter { !($0 is BlankLine) }
-        tabs.append(KmpTab(title: t.title, nodes: nodes))
-    }
-    return tabs
-}
-
-private struct MarkdownKMPInDocumentTabView: View {
-    let tabs: [KmpTab]
-    var listNesting: Int
-    @State private var index: Int = 0
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            if tabs.count <= 4 {
-                Picker("Tab", selection: $index) {
-                    ForEach(tabs.indices, id: \.self) { i in
-                        Text(tabs[i].title).lineLimit(1).tag(i)
-                    }
-                }
-                .pickerStyle(.segmented)
-            } else {
-                Picker("Tab", selection: $index) {
-                    ForEach(tabs.indices, id: \.self) { i in
-                        Text(tabs[i].title).tag(i)
-                    }
-                }
-            }
-            if tabs.indices.contains(index) {
-                MarkdownKMPBlockStackView(nodes: tabs[index].nodes, listNesting: listNesting)
-            }
-        }
-    }
-}
-
-struct MarkdownKMPListBlockView: View {
-    let list: ListBlock
-    var listNesting: Int
-    @Environment(\.markdownPreviewConfiguration) private var configuration
-
-    var body: some View {
-        let items = list.children.compactMap { $0 as? ListItem }
-        VStack(alignment: .leading, spacing: list.tight ? 0 : 4) {
-            ForEach(Array(items.enumerated()), id: \.offset) { idx, li in
-                MarkdownKMPListItemView(
-                    item: li,
-                    index: list.ordered ? (Int(list.startNumber) + idx) : nil,
-                    bullet: Character(UnicodeScalar(UInt32(list.bulletChar))!),
-                    ordered: list.ordered,
-                    listNesting: listNesting
-                )
-            }
-        }
-        .padding(.leading, CGFloat(listNesting) * 16)
-    }
-}
-
-struct MarkdownKMPListItemView: View {
-    let item: ListItem
-    let index: Int?
-    let bullet: Character
-    let ordered: Bool
-    var listNesting: Int
-    @Environment(\.markdownPreviewConfiguration) private var configuration
-
-    var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 6) {
-            listMarker
-            VStack(alignment: .leading, spacing: 4) {
-                ForEach(Array(listItemChildNodes.enumerated()), id: \.offset) { _, ch in
-                    if let inner = ch as? ListBlock {
-                        MarkdownKMPListBlockView(list: inner, listNesting: listNesting + 1)
-                    } else {
-                        MarkdownKMPNodeBlockView(node: ch, tableIndex: 0, listNesting: listNesting)
-                    }
-                }
-            }
-        }
-    }
-
-    private var listItemChildNodes: [Node] {
-        (item as ContainerNode).children.filter { !($0 is BlankLine) }
-    }
-
-    @ViewBuilder
-    private var listMarker: some View {
-        if item.taskListItem {
-            Image(systemName: item.checked ? "checkmark.square.fill" : "square")
-                .foregroundColor(.secondary)
-        } else if ordered, let n = index {
-            Text("\(n).")
-        } else {
-            Text(verbatim: String(bullet))
         }
     }
 }
