@@ -25,14 +25,8 @@ struct LinkmarkDetailView: View {
     private var machine = LinkmarkDetailStateMachine()
 
     @State
-    private var showDetailSheet = false
-
-    @State
     private var sheetTab: LinkmarkDetailSheetTab = .info
-
-    @State
-    private var readerChromeVisible = true
-
+    
     @State
     private var readerCanAnnotate = false
 
@@ -40,8 +34,8 @@ struct LinkmarkDetailView: View {
     private var documentReloadToken = UUID()
 
     @State
-    private var measuredTopInset: CGFloat = 108
-
+    private var showDetailSheet = false
+    
     @State
     private var showEditSheet = false
 
@@ -50,12 +44,12 @@ struct LinkmarkDetailView: View {
 
     @State
     private var showShareURLSheet = false
+    
+    @State
+    private var showReminderSheet = false
 
     @State
     private var showDeleteAlert = false
-
-    @State
-    private var showReminderSheet = false
 
     @State
     private var reminderDraft = Date().addingTimeInterval(3600)
@@ -247,31 +241,49 @@ struct LinkmarkDetailView: View {
                 LinkmarkNoReadableVersionView(accent: folderTint)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-                GeometryReader { layoutGeo in
-                    ZStack(alignment: .top) {
-                        EmptyView()
-                        
-                        VStack {
-                            Spacer()
-                            LinkmarkReaderFloatingToolbar(
-                                folderAccent: folderTint,
-                                isVisible: readerChromeVisible || readerCanAnnotate,
-                                canAnnotate: readerCanAnnotate,
-                                readerTheme: machine.state.readerTheme,
-                                readerFontSize: machine.state.readerFontSize,
-                                readerLineHeight: machine.state.readerLineHeight,
-                                onSelectTheme: { r in Task { await machine.send(.onSetReaderTheme(r)) } },
-                                onSelectFontSize: { f in Task { await machine.send(.onSetReaderFontSize(f)) } },
-                                onSelectLineHeight: { lh in Task { await machine.send(.onSetReaderLineHeight(lh)) } },
-                                onStickyNote: {
-                                    openAnnotationCreator()
-                                }
-                            )
-                            .padding(.bottom, 24 + layoutGeo.safeAreaInsets.bottom)
-                        }
+                ZStack(alignment: .top) {
+                    linkmarkReaderBackground(readerTheme: machine.state.readerTheme)
+                    MarkdownPreview(
+                        markdown: readableBodyString(for: bm),
+                        configuration: MarkdownPreviewConfiguration(
+                            showFrontMatter: true,
+                            showLinkReferenceBlocks: true,
+                            useWebViewForHtmlBlocks: true,
+                            assetRegistry: imageAssetRegistry(for: bm),
+                            baseURLForRelativeLinks: linkSourceURL(for: bm)
+                        ),
+                        theme: markdownThemeTokens(
+                            state: machine.state,
+                            systemColorScheme: colorScheme
+                        )
+                    )
+                    .id("\(bm.bookmarkId)-\(documentReloadToken)")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+
+                    VStack {
+                        Spacer()
+                        LinkmarkReaderFloatingToolbar(
+                            folderAccent: folderTint,
+                            isVisible: readerCanAnnotate,
+                            canAnnotate: readerCanAnnotate,
+                            readerTheme: machine.state.readerTheme,
+                            readerFontSize: machine.state.readerFontSize,
+                            readerLineHeight: machine.state.readerLineHeight,
+                            onSelectTheme: { r in Task { await machine.send(.onSetReaderTheme(r)) } },
+                            onSelectFontSize: { f in Task { await machine.send(.onSetReaderFontSize(f)) } },
+                            onSelectLineHeight: { lh in Task { await machine.send(.onSetReaderLineHeight(lh)) } },
+                            onStickyNote: {
+                                openAnnotationCreator()
+                            }
+                        )
+                        .safeAreaPadding([.bottom])
+                        .padding(.bottom, 24)
                     }
-                    .frame(width: layoutGeo.size.width, height: layoutGeo.size.height)
                 }
+                .environment(
+                    \.colorScheme,
+                    effectiveReaderColorScheme(readerTheme: machine.state.readerTheme)
+                )
                 .ignoresSafeArea()
             }
         }
@@ -299,31 +311,6 @@ struct LinkmarkDetailView: View {
             }
         }
         .tint(folderTint)
-        .background {
-            if hasReadable {
-                GeometryReader { proxy in
-                    Color.clear
-                        .onAppear { updateReaderTopInset(proxy) }
-                        .onChange(of: proxy.size.height) { _, _ in updateReaderTopInset(proxy) }
-                        .onChange(of: proxy.size.width) { _, _ in updateReaderTopInset(proxy) }
-                }
-                .ignoresSafeArea()
-            }
-        }
-    }
-
-    private func updateReaderTopInset(_ proxy: GeometryProxy) {
-        // Content is laid out below the nav bar, so `proxy.safeAreaInsets.top` is often 0.
-        // Reader WebView ignores safe area; use the window’s top inset (status bar / notch) + bar height.
-        let windowTop: CGFloat
-        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let window = scene.windows.first(where: { $0.isKeyWindow }) ?? scene.windows.first {
-            windowTop = window.safeAreaInsets.top
-        } else {
-            windowTop = proxy.safeAreaInsets.top
-        }
-        let navigationBarHeight: CGFloat = 44
-        measuredTopInset = windowTop + navigationBarHeight + 12
     }
 
     private func folderColor(for bm: YabaBookmark) -> Color {
@@ -339,9 +326,64 @@ struct LinkmarkDetailView: View {
         bm.linkDetail?.markdown ?? ""
     }
 
-    private func inlineAssetTuples(for bm: YabaBookmark) -> [(assetId: String, bytes: Data)] {
-        guard let link = bm.linkDetail else { return [] }
-        return link.inlineAssets.map { ($0.assetId, $0.bytes ?? Data()) }
+    @ViewBuilder
+    private func linkmarkReaderBackground(readerTheme: ReaderTheme) -> some View {
+        if readerTheme == .sepia {
+            Color(red: 0.98, green: 0.95, blue: 0.88)
+        } else {
+            Color(.systemBackground)
+        }
+    }
+
+    private func effectiveReaderColorScheme(readerTheme: ReaderTheme) -> ColorScheme {
+        switch readerTheme {
+        case .light, .sepia: return .light
+        case .dark: return .dark
+        case .system: return colorScheme
+        }
+    }
+
+    private func linkSourceURL(for bm: YabaBookmark) -> URL? {
+        guard let s = bm.linkDetail?.url.trimmingCharacters(in: .whitespacesAndNewlines), !s.isEmpty else { return nil }
+        return URL(string: s)
+    }
+
+    private func imageAssetRegistry(for bm: YabaBookmark) -> MarkdownImageAssetRegistry {
+        guard let link = bm.linkDetail else { return MarkdownImageAssetRegistry() }
+        var map: [String: Data] = [:]
+        for a in link.inlineAssets {
+            guard let bytes = a.bytes, !bytes.isEmpty else { continue }
+            map[a.assetId] = bytes
+        }
+        return MarkdownImageAssetRegistry(assetsById: map)
+    }
+
+    private func markdownThemeTokens(
+        state: LinkmarkDetailUIState,
+        systemColorScheme: ColorScheme
+    ) -> MarkdownThemeTokens {
+        let effective: ColorScheme = {
+            switch state.readerTheme {
+            case .light: return .light
+            case .dark: return .dark
+            case .system: return systemColorScheme
+            case .sepia: return .light
+            }
+        }()
+        var tokens = MarkdownThemeTokens.standard(colorScheme: effective)
+        if state.readerTheme == .sepia {
+            tokens.codeBackground = Color(red: 0.94, green: 0.9, blue: 0.82)
+            tokens.tableHeader = Color(red: 0.96, green: 0.93, blue: 0.86)
+        }
+        let baseSize: CGFloat = switch state.readerFontSize {
+        case .small: 15
+        case .medium: 17
+        case .large: 20
+        }
+        tokens.body = .system(size: baseSize)
+        tokens.monospaced = .system(size: baseSize, design: .monospaced)
+        tokens.largeHeading = .system(size: baseSize + 9, weight: .bold)
+        return tokens
     }
 
     private func annotationsJson(for bm: YabaBookmark) -> String {
@@ -421,7 +463,7 @@ struct LinkmarkDetailView: View {
             Menu {
                 Button {
                     Task { @MainActor in
-                        startMarkdownExport(markdown: "", bookmark: bm)
+                        startMarkdownExport(markdown: readableBodyString(for: bm), bookmark: bm)
                     }
                 } label: {
                     overflowMenuItemLabel(

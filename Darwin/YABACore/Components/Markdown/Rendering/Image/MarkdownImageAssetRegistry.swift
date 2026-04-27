@@ -7,11 +7,11 @@
 
 import Foundation
 
-/// Resolves `yaba-asset://` and similar using `ReadableAssetPayload` bytes from the host.
+/// Resolves `yaba-asset://` using inline image `Data` keyed by asset id.
 public struct MarkdownImageAssetRegistry: Sendable {
-    public var assetsById: [String: ReadableAssetPayload]
+    public var assetsById: [String: Data]
 
-    public init(assetsById: [String: ReadableAssetPayload] = [:]) {
+    public init(assetsById: [String: Data] = [:]) {
         self.assetsById = assetsById
     }
 
@@ -25,6 +25,6 @@ public struct MarkdownImageAssetRegistry: Sendable {
             id = part.map { String($0) }
         }
         guard let id else { return nil }
-        return assetsById[id]?.bytes
+        return assetsById[id]
     }
 }
