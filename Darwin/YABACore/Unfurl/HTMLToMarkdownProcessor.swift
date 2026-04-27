@@ -2,7 +2,7 @@
 //  HTMLToMarkdownProcessor.swift
 //  YABACore
 //
-//  Loads the minified unified + rehype + remark bundle and converts HTML to Markdown on JavaScriptCore
+//  Loads the minified bundle (linkedom + Mozilla Readability, then unified + rehype + remark) and converts HTML to Markdown on JavaScriptCore
 //  (no WKWebView). The bundle is produced by `Extensions/yaba-web-components` (see
 //  `html-to-markdown.bundle.min.js`).
 //
@@ -29,7 +29,7 @@ public enum HTMLToMarkdownProcessor: Sendable {
     /// Serializes access with `lock`; do not use off-main without keeping the same isolation as `convert`.
     private static var cachedContext: JSContext?
 
-    /// Converts `html` to CommonMark + GFM markdown using `globalThis.HTMLToMarkdown` from the bundled script (rehype → remark).
+    /// Converts `html` to CommonMark + GFM markdown using `globalThis.HTMLToMarkdown` from the bundled script (Readability article HTML, then rehype → remark).
     /// - Parameter html: Full HTML (or a fragment) as fetched from the page.
     public static func convert(html: String) throws -> String {
         lock.lock()

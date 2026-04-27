@@ -2,12 +2,12 @@
 //  Unfurler.swift
 //  YABACore
 //
-//  Fetches remote HTML for linkmarks; native pipeline purifies HTML and extracts metadata + inline images.
+//  Fetches remote HTML for linkmarks; strips scripts, then Readability + rehype/remark in JSC for readable markdown + inline images.
 //
 
 import Foundation
 
-/// Native link unfurl: HTML → Markdown (Turndown via JSC) + inline image assets + metadata + preview bytes.
+/// Native link unfurl: HTML → script strip → Readability + Markdown (unified/rehype/remark via JSC) + inline image assets + metadata + preview bytes.
 public struct LinkUnfurlResult: Sendable {
     public var metadata: LinkMetadataResult
     public var readable: ReadableUnfurl
@@ -57,15 +57,25 @@ public enum Unfurler {
         let fetch = try await fetchRawHtml(urlString)
         let meta = try LinkMetadataExtractor.extract(html: fetch.html, pageUrl: fetch.normalizedUrl)
         let baseForAssets = meta.cleanedUrl.nilIfEmpty ?? fetch.normalizedUrl
+        
+        let htmlForMarkdown: String
+        do {
+            htmlForMarkdown = try HTMLPurifier.purify(fetch.html, baseUri: fetch.normalizedUrl)
+        } catch {
+            throw UnfurlError.htmlSanitizationFailed(String(describing: error))
+        }
+        
         let markdown: String
         do {
-            markdown = try HTMLToMarkdownProcessor.convert(html: fetch.html)
+            markdown = try HTMLToMarkdownProcessor.convert(html: htmlForMarkdown)
         } catch {
             throw UnfurlError.htmlToMarkdownFailed(String(describing: error))
         }
+        
         let readable = await MarkdownReadableAssetProcessor.process(markdown: markdown, baseURL: baseForAssets)
         let previewImageData = await downloadPreviewImageBytes(urlString: meta.image)
         let previewIconData = await downloadPreviewImageBytes(urlString: meta.logo)
+        
         return LinkUnfurlResult(
             metadata: meta,
             readable: readable,

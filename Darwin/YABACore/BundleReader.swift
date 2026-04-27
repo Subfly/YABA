@@ -116,7 +116,7 @@ public enum BundleReader {
         return nil
     }
     
-    /// Minified unified + rehype + remark script for [HTMLToMarkdownProcessor] (`html-to-markdown.bundle.min.js`).
+    /// Minified linkedom + Readability + unified/rehype/remark script for [HTMLToMarkdownProcessor] (`html-to-markdown.bundle.min.js`).
     public static func htmlToMarkdownBundleURL(in bundle: Bundle = .main) -> URL? {
         webComponentURL(named: "html-to-markdown.bundle.min.js", in: bundle)
     }

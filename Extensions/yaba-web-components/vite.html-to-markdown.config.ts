@@ -33,7 +33,7 @@ const jscShim = `(function (g) {
 `
 
 /**
- * Standalone IIFE for Darwin JavaScriptCore: unified + rehype + remark.
+ * Standalone IIFE for Darwin JavaScriptCore: linkedom + Readability, then unified + rehype + remark.
  * `vite-plugin-node-polyfills` supplies Buffer / process for the unified ecosystem.
  */
 export default defineConfig({

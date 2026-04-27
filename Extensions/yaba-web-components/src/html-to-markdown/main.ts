@@ -1,3 +1,5 @@
+import { Readability } from "@mozilla/readability"
+import { parseHTML } from "linkedom"
 import rehypeFormat from "rehype-format"
 import rehypeIgnore from "rehype-ignore"
 import rehypeParse from "rehype-parse"
@@ -12,7 +14,26 @@ import { unified } from "unified"
 
 type HtmlToMarkdownGlobal = (html: string) => string
 
+/** Article HTML from Mozilla Readability, or original HTML if extraction fails. */
+function extractReadableHtml(htmlStr: string): string {
+  const s = htmlStr ?? ""
+  if (!s.trim()) return s
+  try {
+    const { document } = parseHTML(s)
+    const reader = new Readability(document)
+    const article = reader.parse()
+    const content = article?.content?.trim()
+    if (content && content.length > 0) {
+      return content
+    }
+  } catch {
+    // fall through
+  }
+  return s
+}
+
 function htmlToMarkdown(htmlStr: string): string {
+  const readable = extractReadableHtml(htmlStr)
   const file = unified()
     .use(rehypeParse, { fragment: true })
     .use(rehypeSlug)
@@ -24,7 +45,7 @@ function htmlToMarkdown(htmlStr: string): string {
     .use(rehypeRemark)
     .use(remarkGfm)
     .use(remarkStringify, { rule: "*" })
-    .processSync(htmlStr)
+    .processSync(readable)
   return String(file)
 }
 

@@ -1,6 +1,6 @@
 # YABA Web Components
 
-WebView-hosted bundles for YABA: **TipTap** note editor, **read-it-later** (static HTML reader with selection + annotations), **Excalidraw** canvas, and **EPUB.js** reader, plus a standalone **`dist/html-to-markdown.bundle.min.js`** (Turndown + GFM) for Darwin JavaScriptCore. Built with Vite 7, React 19 (editor/canvas), and TypeScript.
+WebView-hosted bundles for YABA: **TipTap** note editor, **read-it-later** (static HTML reader with selection + annotations), **Excalidraw** canvas, and **EPUB.js** reader, plus a standalone **`dist/html-to-markdown.bundle.min.js`** (linkedom + Mozilla Readability, then unified/rehype/remark + GFM) for Darwin JavaScriptCore. Built with Vite 7, React 19 (editor/canvas), and TypeScript.
 
 ## Build
 
@@ -17,7 +17,7 @@ Output: `dist/editor.html`, `dist/read-it-later.html`, `dist/canvas.html`, `dist
 |------|---------|
 | `editor.html` | TipTap WYSIWYG note editor |
 | `read-it-later.html` | Saved link reader: injects HTML into the DOM; selection + annotation bridge (no TipTap) |
-| `html-to-markdown.bundle.min.js` | No HTML shell: `globalThis.HTMLToMarkdown(html, options?)` for native JSC (not a WebView bridge) |
+| `html-to-markdown.bundle.min.js` | No HTML shell: `globalThis.HTMLToMarkdown(html)` for native JSC (not a WebView bridge) |
 | `canvas.html` | Excalidraw canvas |
 | `epub-viewer.html` | EPUB reader (epub.js) |
 
