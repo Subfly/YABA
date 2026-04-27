@@ -21,7 +21,8 @@ Darwin/YABACore/Assets/WebComponents/
 AGENTS.md
 Knowledge/
 HugeIcons/
-Markdown/
+# KMP markdown library at repo root only (not Darwin/YABACore/Components/Markdown, etc.)
+/Markdown/
 
 # Local Milkdown API reference (./docs)
 docs/

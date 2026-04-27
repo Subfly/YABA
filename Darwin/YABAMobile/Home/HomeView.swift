@@ -5,8 +5,8 @@
 //  Created by Ali Taha on 19.04.2025.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct HomeView: View {
     @Environment(\.deepLinkManager)
@@ -26,6 +26,10 @@ struct HomeView: View {
 
     @State
     private var homeStateMachine = HomeStateMachine()
+    #if DEBUG
+    @State
+    private var isMarkdownComponentsDemoPresented: Bool = false
+    #endif
 
     var body: some View {
         ZStack {
@@ -98,6 +102,17 @@ struct HomeView: View {
             }
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
+                    #if DEBUG
+                    Button {
+                        isMarkdownComponentsDemoPresented = true
+                    } label: {
+                        Label {
+                            Text("Markdown gallery")
+                        } icon: {
+                            YabaIconView(bundleKey: "file-01")
+                        }
+                    }
+                    #endif
                     SortingPicker(contentType: .collection)
                     Button {
                         // TODO: SHOW SETTINGS SHEET
@@ -113,6 +128,13 @@ struct HomeView: View {
                 }
             }
         }
+        #if DEBUG
+        .sheet(isPresented: $isMarkdownComponentsDemoPresented) {
+            NavigationStack {
+                MarkdownComponentsDemoView()
+            }
+        }
+        #endif
         .onChange(of: deepLinkManager.saveRequest) { oldValue, newValue in
             if oldValue == nil, let newRequest = newValue {
                 homeState.bookmarkFlow = .deepLink(url: newRequest.link)
