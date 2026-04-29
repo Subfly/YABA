@@ -368,7 +368,14 @@ public enum MarkdownASTConverter {
         var cells: [InlineContent] = []
         for cell in row.children {
             if let tc = cell as? TableCell {
-                cells.append(InlineAssembler.build(from: tc))
+                var built = InlineAssembler.build(from: tc)
+                if built.runs.isEmpty {
+                    let raw = tc.rawContent.trimmingCharacters(in: .whitespacesAndNewlines)
+                    if !raw.isEmpty {
+                        built = InlineContent(runs: [.text(raw)])
+                    }
+                }
+                cells.append(built)
             }
         }
         return cells

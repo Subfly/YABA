@@ -84,9 +84,12 @@ public struct MarkdownBlockView: View {
             fencedCodeView(c, theme: theme)
         case .indentedCode(let s):
             ScrollView(.horizontal, showsIndicators: true) {
-                Text(s)
-                    .font(theme.monospaced)
-                    .textSelection(.enabled)
+                MarkdownSelectablePlainText(
+                    verbatim: MarkdownCodeBlockLiteralNormalization.forDisplay(s),
+                    semantic: .body,
+                    weight: .regular,
+                    monospaced: true
+                )
             }
             .padding(8)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -109,17 +112,25 @@ public struct MarkdownBlockView: View {
                     .frame(minHeight: 80)
             } else {
                 ScrollView {
-                    Text(raw)
-                        .font(theme.monospaced)
-                        .textSelection(.enabled)
+                    MarkdownSelectablePlainText(
+                        verbatim: raw,
+                        semantic: .body,
+                        weight: .regular,
+                        monospaced: true
+                    )
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
         case .linkReferenceDefinition(let d):
             if configuration.showLinkReferenceBlocks {
-                Text("[\(d.label)]: \(d.destination) \(d.title.map { " \"\($0)\"" } ?? "")")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
+                MarkdownSelectablePlainText(
+                    verbatim:
+                        "[\(d.label)]: \(d.destination) \(d.title.map { " \"\($0)\"" } ?? "")",
+                    semantic: .caption2,
+                    weight: .regular,
+                    monospaced: false,
+                    foreground: .secondary
+                )
             } else {
                 EmptyView()
             }
@@ -127,15 +138,22 @@ public struct MarkdownBlockView: View {
             MarkdownTableBlockView(table: t, theme: theme)
         case .footnoteDefinition(let f):
             VStack(alignment: .leading, spacing: 4) {
-                Text("^\(f.label) (\(f.index))")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                MarkdownSelectablePlainText(
+                    verbatim: "^\(f.label) (\(f.index))",
+                    semantic: .caption1,
+                    weight: .regular,
+                    monospaced: false,
+                    foreground: .secondary
+                )
                 MarkdownBlockStackView(blocks: f.children, listNesting: listNesting)
             }
         case .mathBlock(let s):
-            Text(s)
-                .font(theme.monospaced)
-                .textSelection(.enabled)
+            MarkdownSelectablePlainText(
+                verbatim: s,
+                semantic: .body,
+                weight: .regular,
+                monospaced: true
+            )
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(8)
                 .background(theme.mathBackground)
@@ -143,8 +161,7 @@ public struct MarkdownBlockView: View {
             VStack(alignment: .leading, spacing: 8) {
                 ForEach(Array(items.enumerated()), id: \.offset) { _, item in
                     VStack(alignment: .leading, spacing: 4) {
-                        MarkdownInlineBlockView(content: item.term)
-                            .fontWeight(.semibold)
+                        MarkdownInlineBlockView(content: item.term, typography: .definitionTerm)
                         MarkdownBlockStackView(blocks: item.definitions, listNesting: listNesting)
                     }
                 }
@@ -152,9 +169,20 @@ public struct MarkdownBlockView: View {
         case .admonition(let a):
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
-                    Text(a.type.uppercased())
-                        .font(.caption2).fontWeight(.bold)
-                    if !a.title.isEmpty { Text(a.title).font(.subheadline) }
+                    MarkdownSelectablePlainText(
+                        verbatim: a.type.uppercased(),
+                        semantic: .caption2,
+                        weight: .bold,
+                        monospaced: false
+                    )
+                    if !a.title.isEmpty {
+                        MarkdownSelectablePlainText(
+                            verbatim: a.title,
+                            semantic: .subheadline,
+                            weight: .regular,
+                            monospaced: false
+                        )
+                    }
                 }
                 MarkdownBlockStackView(blocks: a.children, listNesting: listNesting)
             }
@@ -163,10 +191,13 @@ public struct MarkdownBlockView: View {
             .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 8))
         case .frontMatter(let s, _):
             if configuration.showFrontMatter {
-                Text(s)
-                    .font(theme.monospaced)
-                    .textSelection(.enabled)
-                    .padding(8)
+                MarkdownSelectablePlainText(
+                    verbatim: s,
+                    semantic: .body,
+                    weight: .regular,
+                    monospaced: true
+                )
+                .padding(8)
                     .background(theme.codeBackground)
             } else {
                 EmptyView()
@@ -176,21 +207,41 @@ public struct MarkdownBlockView: View {
                 if !t.resolvedEntries.isEmpty {
                     ForEach(t.resolvedEntries) { e in
                         HStack(alignment: .firstTextBaseline) {
-                            Text(String(repeating: "  ", count: max(0, e.level - 1)))
-                            Text("• " + e.title)
-                                .font(e.level <= 1 ? .body : .subheadline)
+                            MarkdownSelectablePlainText(
+                                verbatim: String(repeating: "  ", count: max(0, e.level - 1)),
+                                semantic: .body,
+                                weight: .regular,
+                                monospaced: false
+                            )
+                            MarkdownSelectablePlainText(
+                                verbatim: "• " + e.title,
+                                semantic: e.level <= 1 ? MarkdownSemanticFont.body : .subheadline,
+                                weight: .regular,
+                                monospaced: false
+                            )
                         }
                     }
                 } else {
-                    Text("Table of contents")
-                        .font(.headline)
+                    MarkdownSelectablePlainText(
+                        verbatim: "Table of contents",
+                        semantic: .headline,
+                        weight: .semibold,
+                        monospaced: false
+                    )
                 }
             }
         case .abbreviationDefinition:
             EmptyView()
         case .customContainer(let c):
             VStack(alignment: .leading, spacing: 6) {
-                if !c.title.isEmpty { Text(c.title).fontWeight(.semibold) }
+                if !c.title.isEmpty {
+                    MarkdownSelectablePlainText(
+                        verbatim: c.title,
+                        semantic: .body,
+                        weight: .semibold,
+                        monospaced: false
+                    )
+                }
                 MarkdownBlockStackView(blocks: c.children, listNesting: listNesting)
             }
             .padding(8)
@@ -198,11 +249,18 @@ public struct MarkdownBlockView: View {
             .background(Color.secondary.opacity(0.05), in: RoundedRectangle(cornerRadius: 8))
         case .diagram(let d):
             VStack(alignment: .leading, spacing: 4) {
-                Text("Diagram: \(d.type)")
-                    .font(.headline)
-                Text(d.source)
-                    .font(.caption.monospaced())
-                    .lineLimit(8)
+                MarkdownSelectablePlainText(
+                    verbatim: "Diagram: \(d.type)",
+                    semantic: .headline,
+                    weight: .semibold,
+                    monospaced: false
+                )
+                MarkdownSelectablePlainText(
+                    verbatim: d.source,
+                    semantic: .caption1,
+                    weight: .regular,
+                    monospaced: true
+                )
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(10)
@@ -218,14 +276,31 @@ public struct MarkdownBlockView: View {
                 }
             }
         case .pageBreak:
-            HStack { Text("— page break —").font(.caption).foregroundColor(.secondary) }
+            HStack {
+                MarkdownSelectablePlainText(
+                    verbatim: "— page break —",
+                    semantic: .caption1,
+                    weight: .regular,
+                    monospaced: false,
+                    foreground: .secondary
+                )
+            }
         case .directiveBlock(let d):
             VStack(alignment: .leading, spacing: 4) {
-                Text("::\(d.tag)").font(.caption.monospaced())
+                MarkdownSelectablePlainText(
+                    verbatim: "::\(d.tag)",
+                    semantic: .caption1,
+                    weight: .regular,
+                    monospaced: true
+                )
                 if !d.args.isEmpty {
-                    Text(d.args.map { "\($0.key)=\($0.value)" }.joined(separator: " "))
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
+                    MarkdownSelectablePlainText(
+                        verbatim: d.args.map { "\($0.key)=\($0.value)" }.joined(separator: " "),
+                        semantic: .caption2,
+                        weight: .regular,
+                        monospaced: false,
+                        foreground: .secondary
+                    )
                 }
                 MarkdownBlockStackView(blocks: d.children, listNesting: listNesting)
             }
@@ -235,12 +310,26 @@ public struct MarkdownBlockView: View {
             } else { EmptyView() }
         case .bibliography(let b):
             VStack(alignment: .leading, spacing: 6) {
-                Text("References").font(.headline)
+                MarkdownSelectablePlainText(
+                    verbatim: "References",
+                    semantic: .headline,
+                    weight: .semibold,
+                    monospaced: false
+                )
                 ForEach(Array(b.enumerated()), id: \.offset) { _, e in
                     HStack(alignment: .top) {
-                        Text(e.key)
-                            .fontWeight(.semibold)
-                        Text(e.content)
+                        MarkdownSelectablePlainText(
+                            verbatim: e.key,
+                            semantic: .body,
+                            weight: .semibold,
+                            monospaced: false
+                        )
+                        MarkdownSelectablePlainText(
+                            verbatim: e.content,
+                            semantic: .body,
+                            weight: .regular,
+                            monospaced: false
+                        )
                     }
                 }
             }
@@ -253,39 +342,42 @@ public struct MarkdownBlockView: View {
                     height: f.height,
                     registry: configuration.assetRegistry
                 )
-                if !f.caption.isEmpty { Text(f.caption).font(.caption) }
+                if !f.caption.isEmpty {
+                    MarkdownSelectablePlainText(
+                        verbatim: f.caption,
+                        semantic: .caption1,
+                        weight: .regular,
+                        monospaced: false
+                    )
+                }
             }
         case .metadataOmitted:
             EmptyView()
         case .unsupportedNode(let name, let detail):
             VStack(alignment: .leading, spacing: 2) {
-                Text("Unsupported: \(name)")
-                    .font(.caption)
-                    .foregroundColor(.red)
+                MarkdownSelectablePlainText(
+                    verbatim: "Unsupported: \(name)",
+                    semantic: .caption1,
+                    weight: .regular,
+                    monospaced: false,
+                    foreground: .red
+                )
                 if let d = detail {
-                    Text(d)
-                        .font(.caption2.monospaced())
-                        .foregroundColor(.secondary)
+                    MarkdownSelectablePlainText(
+                        verbatim: d,
+                        semantic: .caption2,
+                        weight: .regular,
+                        monospaced: true,
+                        foreground: .secondary
+                    )
                 }
             }
         }
     }
 
     private func headingView(_ h: HeadingBlock, theme: MarkdownThemeTokens, isSetext: Bool) -> some View {
-        let font: Font = {
-            switch h.level {
-            case 1: return .largeTitle
-            case 2: return .title
-            case 3: return .title2
-            case 4: return .title3
-            case 5: return .headline
-            default: return .subheadline
-            }
-        }()
         return VStack(alignment: .leading, spacing: 2) {
-            MarkdownInlineBlockView(content: h.inline)
-                .font(font)
-                .fontWeight(h.level <= 2 ? .bold : .semibold)
+            MarkdownInlineBlockView(content: h.inline, typography: .heading(level: h.level))
             if isSetext {
                 if h.level <= 1 { Divider() }
             }
@@ -293,33 +385,6 @@ public struct MarkdownBlockView: View {
     }
 
     private func fencedCodeView(_ c: FencedCodeBlockModel, theme: MarkdownThemeTokens) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            HStack {
-                if !c.info.isEmpty { Text(c.info).font(.caption).foregroundColor(.secondary) }
-                if let t = c.title, !t.isEmpty { Text(t).font(.caption) }
-            }
-            ScrollView([.vertical, .horizontal], showsIndicators: true) {
-                if c.showLineNumbers {
-                    HStack(alignment: .top, spacing: 8) {
-                        VStack(alignment: .trailing) {
-                            ForEach(Array(c.code.split(separator: "\n", omittingEmptySubsequences: false).enumerated()), id: \.offset) { i, _ in
-                                Text("\(c.startLine + i)").font(.caption2.monospaced())
-                                    .foregroundColor(.secondary)
-                            }
-                        }
-                        Text(c.code)
-                            .font(theme.monospaced)
-                            .textSelection(.enabled)
-                    }
-                } else {
-                    Text(c.code)
-                        .font(theme.monospaced)
-                        .textSelection(.enabled)
-                }
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(8)
-        .background(theme.codeBackground, in: RoundedRectangle(cornerRadius: 6))
+        MarkdownFencedCodeBlockView(model: c, theme: theme)
     }
 }

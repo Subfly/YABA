@@ -15,6 +15,10 @@ import UIKit
 import AppKit
 #endif
 
+private enum MarkdownImageDisplayMetrics {
+    static let cornerRadius: CGFloat = 8
+}
+
 struct MarkdownImageRowView: View {
     let urlString: String
     let alt: InlineContent
@@ -62,7 +66,7 @@ struct MarkdownImageRowView: View {
         return KFImage.source(source)
             .placeholder { _ in
                 ZStack {
-                    RoundedRectangle(cornerRadius: 4)
+                    RoundedRectangle(cornerRadius: MarkdownImageDisplayMetrics.cornerRadius, style: .continuous)
                         .fill(theme.codeBackground)
                     ProgressView()
                 }
@@ -76,11 +80,12 @@ struct MarkdownImageRowView: View {
             .resizable()
             .scaledToFit()
             .frame(maxWidth: maxW, maxHeight: maxH)
+            .clipShape(RoundedRectangle(cornerRadius: MarkdownImageDisplayMetrics.cornerRadius, style: .continuous))
     }
 
     @ViewBuilder
     private func imageFailurePlaceholder(theme: MarkdownThemeTokens) -> some View {
-        RoundedRectangle(cornerRadius: 4)
+        RoundedRectangle(cornerRadius: MarkdownImageDisplayMetrics.cornerRadius, style: .continuous)
             .fill(theme.codeBackground)
             .frame(height: 64)
             .overlay {
@@ -132,6 +137,7 @@ private struct MarkdownYabaAssetImageView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(maxWidth: maxW, maxHeight: maxH)
+                    .clipShape(RoundedRectangle(cornerRadius: MarkdownImageDisplayMetrics.cornerRadius, style: .continuous))
             } else if loadFailed {
                 yabaFailure
             } else {
@@ -148,6 +154,7 @@ private struct MarkdownYabaAssetImageView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(maxWidth: maxW, maxHeight: maxH)
+                    .clipShape(RoundedRectangle(cornerRadius: MarkdownImageDisplayMetrics.cornerRadius, style: .continuous))
             } else if loadFailed {
                 yabaFailure
             } else {
@@ -164,7 +171,7 @@ private struct MarkdownYabaAssetImageView: View {
 
     private var yabaLoading: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 4)
+            RoundedRectangle(cornerRadius: MarkdownImageDisplayMetrics.cornerRadius, style: .continuous)
                 .fill(theme.codeBackground)
             ProgressView()
         }
@@ -172,7 +179,7 @@ private struct MarkdownYabaAssetImageView: View {
     }
 
     private var yabaFailure: some View {
-        RoundedRectangle(cornerRadius: 4)
+        RoundedRectangle(cornerRadius: MarkdownImageDisplayMetrics.cornerRadius, style: .continuous)
             .fill(theme.codeBackground)
             .frame(height: 64)
             .overlay {

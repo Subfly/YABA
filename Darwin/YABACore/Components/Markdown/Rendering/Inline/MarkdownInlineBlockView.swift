@@ -13,6 +13,12 @@ struct MarkdownInlineBlockView: View {
     @Environment(\.markdownPreviewConfiguration) private var config
 
     let content: InlineContent
+    var typography: MarkdownInlineTypography = .body
+
+    init(content: InlineContent, typography: MarkdownInlineTypography = .body) {
+        self.content = content
+        self.typography = typography
+    }
 
     var body: some View {
         let theme = themeOverride ?? MarkdownThemeTokens.standard(colorScheme: colorScheme)
@@ -24,6 +30,7 @@ struct MarkdownInlineBlockView: View {
                     case .text(let c):
                         MarkdownCombinedInlineText(
                             content: c,
+                            typography: typography,
                             theme: theme
                         ) { _ in }
                     case .image(let alt, let url, _, let w, let h, _):

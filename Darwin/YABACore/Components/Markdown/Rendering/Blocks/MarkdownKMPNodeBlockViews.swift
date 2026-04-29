@@ -96,7 +96,15 @@ public struct MarkdownKMPNodeBlockView: View {
         } else if node is ThematicBreak {
             Divider()
         } else if node is PageBreak {
-            HStack { Text("— page break —").font(.caption).foregroundColor(.secondary) }
+            HStack {
+                MarkdownSelectablePlainText(
+                    verbatim: "— page break —",
+                    semantic: .caption1,
+                    weight: .regular,
+                    monospaced: false,
+                    foreground: .secondary
+                )
+            }
         } else if let n = node as? Heading {
             headingView(level: Int(n.level), id: n.id, container: n, isSetext: false, theme: theme)
         } else if let n = node as? SetextHeading {
@@ -108,18 +116,24 @@ public struct MarkdownKMPNodeBlockView: View {
             fencedCodeView(from: n, theme: theme)
         } else if let n = node as? IndentedCodeBlock {
             ScrollView(.horizontal, showsIndicators: true) {
-                Text(n.literal)
-                    .font(theme.monospaced)
-                    .textSelection(.enabled)
+                MarkdownSelectablePlainText(
+                    verbatim: MarkdownCodeBlockLiteralNormalization.forDisplay(n.literal),
+                    semantic: .body,
+                    weight: .regular,
+                    monospaced: true
+                )
             }
             .padding(8)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(theme.codeBackground)
             .clipShape(RoundedRectangle(cornerRadius: 6))
         } else if let n = node as? MathBlock {
-            Text(n.literal)
-                .font(theme.monospaced)
-                .textSelection(.enabled)
+            MarkdownSelectablePlainText(
+                verbatim: n.literal,
+                semantic: .body,
+                weight: .regular,
+                monospaced: true
+            )
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(8)
                 .background(theme.mathBackground)
@@ -129,17 +143,24 @@ public struct MarkdownKMPNodeBlockView: View {
                     .frame(minHeight: 80)
             } else {
                 ScrollView {
-                    Text(n.literal)
-                        .font(theme.monospaced)
-                        .textSelection(.enabled)
+                    MarkdownSelectablePlainText(
+                        verbatim: n.literal,
+                        semantic: .body,
+                        weight: .regular,
+                        monospaced: true
+                    )
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
         } else if let n = node as? LinkReferenceDefinition {
             if configuration.showLinkReferenceBlocks {
-                Text("[\(n.label)]: \(n.destination) \(n.title.map { " \"\($0)\"" } ?? "")")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
+                MarkdownSelectablePlainText(
+                    verbatim: "[\(n.label)]: \(n.destination) \(n.title.map { " \"\($0)\"" } ?? "")",
+                    semantic: .caption2,
+                    weight: .regular,
+                    monospaced: false,
+                    foreground: .secondary
+                )
             } else { EmptyView() }
         } else if let n = node as? MarkdownKMPTableNode {
             MarkdownTableBlockView(table: MarkdownKMPTableSupport.tableBlock(from: n), theme: theme)
@@ -156,9 +177,13 @@ public struct MarkdownKMPNodeBlockView: View {
             MarkdownKMPListBlockView(list: n, listNesting: listNesting)
         } else if let n = node as? FootnoteDefinition {
             VStack(alignment: .leading, spacing: 4) {
-                Text("^\(n.label) (\(n.index))")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                MarkdownSelectablePlainText(
+                    verbatim: "^\(n.label) (\(n.index))",
+                    semantic: .caption1,
+                    weight: .regular,
+                    monospaced: false,
+                    foreground: .secondary
+                )
                 MarkdownKMPBlockStackView(container: n, listNesting: listNesting)
             }
         } else if let n = node as? DefinitionList {
@@ -166,9 +191,20 @@ public struct MarkdownKMPNodeBlockView: View {
         } else if let n = node as? Admonition {
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
-                    Text(n.type.uppercased())
-                        .font(.caption2).fontWeight(.bold)
-                    if !n.title.isEmpty { Text(n.title).font(.subheadline) }
+                    MarkdownSelectablePlainText(
+                        verbatim: n.type.uppercased(),
+                        semantic: .caption2,
+                        weight: .bold,
+                        monospaced: false
+                    )
+                    if !n.title.isEmpty {
+                        MarkdownSelectablePlainText(
+                            verbatim: n.title,
+                            semantic: .subheadline,
+                            weight: .regular,
+                            monospaced: false
+                        )
+                    }
                 }
                 MarkdownKMPBlockStackView(container: n, listNesting: listNesting)
             }
@@ -177,9 +213,12 @@ public struct MarkdownKMPNodeBlockView: View {
             .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 8))
         } else if let n = node as? FrontMatter {
             if configuration.showFrontMatter {
-                Text(n.literal)
-                    .font(theme.monospaced)
-                    .textSelection(.enabled)
+                MarkdownSelectablePlainText(
+                    verbatim: n.literal,
+                    semantic: .body,
+                    weight: .regular,
+                    monospaced: true
+                )
                     .padding(8)
                     .background(theme.codeBackground)
             } else { EmptyView() }
@@ -189,7 +228,14 @@ public struct MarkdownKMPNodeBlockView: View {
             EmptyView()
         } else if let n = node as? CustomContainer {
             VStack(alignment: .leading, spacing: 6) {
-                if !n.title.isEmpty { Text(n.title).fontWeight(.semibold) }
+                if !n.title.isEmpty {
+                    MarkdownSelectablePlainText(
+                        verbatim: n.title,
+                        semantic: .body,
+                        weight: .semibold,
+                        monospaced: false
+                    )
+                }
                 MarkdownKMPBlockStackView(container: n, listNesting: listNesting)
             }
             .padding(8)
@@ -197,11 +243,18 @@ public struct MarkdownKMPNodeBlockView: View {
             .background(Color.secondary.opacity(0.05), in: RoundedRectangle(cornerRadius: 8))
         } else if let n = node as? DiagramBlock {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Diagram: \(n.diagramType)")
-                    .font(.headline)
-                Text(n.literal)
-                    .font(.caption.monospaced())
-                    .lineLimit(8)
+                MarkdownSelectablePlainText(
+                    verbatim: "Diagram: \(n.diagramType)",
+                    semantic: .headline,
+                    weight: .semibold,
+                    monospaced: false
+                )
+                MarkdownSelectablePlainText(
+                    verbatim: n.literal,
+                    semantic: .caption1,
+                    weight: .regular,
+                    monospaced: true
+                )
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(10)
@@ -220,12 +273,21 @@ public struct MarkdownKMPNodeBlockView: View {
             }
         } else if let n = node as? DirectiveBlock {
             VStack(alignment: .leading, spacing: 4) {
-                Text("::\(n.tagName)").font(.caption.monospaced())
+                MarkdownSelectablePlainText(
+                    verbatim: "::\(n.tagName)",
+                    semantic: .caption1,
+                    weight: .regular,
+                    monospaced: true
+                )
                 let args = MarkdownKMPStringDictBridge.dict(n.args)
                 if !args.isEmpty {
-                    Text(args.map { "\($0.key)=\($0.value)" }.joined(separator: " "))
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
+                    MarkdownSelectablePlainText(
+                        verbatim: args.map { "\($0.key)=\($0.value)" }.joined(separator: " "),
+                        semantic: .caption2,
+                        weight: .regular,
+                        monospaced: false,
+                        foreground: .secondary
+                    )
                 }
                 MarkdownKMPBlockStackView(container: n, listNesting: listNesting)
             }
@@ -242,7 +304,14 @@ public struct MarkdownKMPNodeBlockView: View {
                     height: MarkdownKMPInterop.optionalInt32(from: n.imageHeight),
                     registry: configuration.assetRegistry
                 )
-                if !n.caption.isEmpty { Text(n.caption).font(.caption) }
+                if !n.caption.isEmpty {
+                    MarkdownSelectablePlainText(
+                        verbatim: n.caption,
+                        semantic: .caption1,
+                        weight: .regular,
+                        monospaced: false
+                    )
+                }
             }
         } else {
             unsupported
@@ -252,12 +321,26 @@ public struct MarkdownKMPNodeBlockView: View {
     private func bibliographyDefinitionView(_ n: BibliographyDefinition) -> some View {
         let entries = kmpBibEntryBlocks(from: n)
         return VStack(alignment: .leading, spacing: 6) {
-            Text("References").font(.headline)
+            MarkdownSelectablePlainText(
+                verbatim: "References",
+                semantic: .headline,
+                weight: .semibold,
+                monospaced: false
+            )
             ForEach(Array(entries.enumerated()), id: \.offset) { _, e in
                 HStack(alignment: .top) {
-                    Text(e.key)
-                        .fontWeight(.semibold)
-                    Text(e.content)
+                    MarkdownSelectablePlainText(
+                        verbatim: e.key,
+                        semantic: .body,
+                        weight: .semibold,
+                        monospaced: false
+                    )
+                    MarkdownSelectablePlainText(
+                        verbatim: e.content,
+                        semantic: .body,
+                        weight: .regular,
+                        monospaced: false
+                    )
                 }
             }
         }
@@ -278,12 +361,20 @@ public struct MarkdownKMPNodeBlockView: View {
     @ViewBuilder
     private var unsupported: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text("Unsupported: \(String(describing: type(of: node)))")
-                .font(.caption)
-                .foregroundColor(.red)
-            Text("stableKey=\(node.stableKey)")
-                .font(.caption2.monospaced())
-                .foregroundColor(.secondary)
+            MarkdownSelectablePlainText(
+                verbatim: "Unsupported: \(String(describing: type(of: node)))",
+                semantic: .caption1,
+                weight: .regular,
+                monospaced: false,
+                foreground: .red
+            )
+            MarkdownSelectablePlainText(
+                verbatim: "stableKey=\(node.stableKey)",
+                semantic: .caption2,
+                weight: .regular,
+                monospaced: true,
+                foreground: .secondary
+            )
         }
     }
 
@@ -296,20 +387,8 @@ public struct MarkdownKMPNodeBlockView: View {
         isSetext: Bool,
         theme: MarkdownThemeTokens
     ) -> some View {
-        let font: Font = {
-            switch level {
-            case 1: return .largeTitle
-            case 2: return .title
-            case 3: return .title2
-            case 4: return .title3
-            case 5: return .headline
-            default: return .subheadline
-            }
-        }()
         return VStack(alignment: .leading, spacing: 2) {
-            MarkdownInlineBlockView(content: InlineAssembler.build(from: container))
-                .font(font)
-                .fontWeight(level <= 2 ? .bold : .semibold)
+            MarkdownInlineBlockView(content: InlineAssembler.build(from: container), typography: .heading(level: level))
             if isSetext, level <= 1 { Divider() }
         }
     }
@@ -329,42 +408,14 @@ public struct MarkdownKMPNodeBlockView: View {
     }
 
     private func fencedCodeModelView(_ c: FencedCodeBlockModel, theme: MarkdownThemeTokens) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            HStack {
-                if !c.info.isEmpty { Text(c.info).font(.caption).foregroundColor(.secondary) }
-                if let t = c.title, !t.isEmpty { Text(t).font(.caption) }
-            }
-            ScrollView([.vertical, .horizontal], showsIndicators: true) {
-                if c.showLineNumbers {
-                    HStack(alignment: .top, spacing: 8) {
-                        VStack(alignment: .trailing) {
-                            ForEach(Array(c.code.split(separator: "\n", omittingEmptySubsequences: false).enumerated()), id: \.offset) { i, _ in
-                                Text("\(c.startLine + i)").font(.caption2.monospaced())
-                                    .foregroundColor(.secondary)
-                            }
-                        }
-                        Text(c.code)
-                            .font(theme.monospaced)
-                            .textSelection(.enabled)
-                    }
-                } else {
-                    Text(c.code)
-                        .font(theme.monospaced)
-                        .textSelection(.enabled)
-                }
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(8)
-        .background(theme.codeBackground, in: RoundedRectangle(cornerRadius: 6))
+        MarkdownFencedCodeBlockView(model: c, theme: theme)
     }
 
     private func definitionListView(_ list: DefinitionList) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             ForEach(Array(kmpDefinitionListItems(list).enumerated()), id: \.offset) { _, item in
                 VStack(alignment: .leading, spacing: 4) {
-                    MarkdownInlineBlockView(content: item.term)
-                        .fontWeight(.semibold)
+                    MarkdownInlineBlockView(content: item.term, typography: .definitionTerm)
                     MarkdownKMPBlockStackView(nodes: item.definitionNodes, listNesting: listNesting)
                 }
             }
@@ -416,14 +467,27 @@ public struct MarkdownKMPNodeBlockView: View {
             if !entries.isEmpty {
                 ForEach(entries) { e in
                     HStack(alignment: .firstTextBaseline) {
-                        Text(String(repeating: "  ", count: max(0, e.level - 1)))
-                        Text("• " + e.title)
-                            .font(e.level <= 1 ? .body : .subheadline)
+                        MarkdownSelectablePlainText(
+                            verbatim: String(repeating: "  ", count: max(0, e.level - 1)),
+                            semantic: .body,
+                            weight: .regular,
+                            monospaced: false
+                        )
+                        MarkdownSelectablePlainText(
+                            verbatim: "• " + e.title,
+                            semantic: e.level <= 1 ? MarkdownSemanticFont.body : .subheadline,
+                            weight: .regular,
+                            monospaced: false
+                        )
                     }
                 }
             } else {
-                Text("Table of contents")
-                    .font(.headline)
+                MarkdownSelectablePlainText(
+                    verbatim: "Table of contents",
+                    semantic: .headline,
+                    weight: .semibold,
+                    monospaced: false
+                )
             }
         }
     }

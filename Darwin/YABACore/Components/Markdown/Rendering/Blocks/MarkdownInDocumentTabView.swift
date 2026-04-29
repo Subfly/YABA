@@ -20,14 +20,17 @@ struct MarkdownInDocumentTabView: View {
             if tabs.count <= 4 {
                 Picker("Tab", selection: $index) {
                     ForEach(tabs.indices, id: \.self) { i in
-                        Text(tabs[i].title).lineLimit(1).tag(i)
+                        MarkdownSelectablePlainText(verbatim: tabs[i].title, semantic: .body, weight: .regular, monospaced: false)
+                            .lineLimit(1)
+                            .tag(i)
                     }
                 }
                 .pickerStyle(.segmented)
             } else {
                 Picker("Tab", selection: $index) {
                     ForEach(tabs.indices, id: \.self) { i in
-                        Text(tabs[i].title).tag(i)
+                        MarkdownSelectablePlainText(verbatim: tabs[i].title, semantic: .body, weight: .regular, monospaced: false)
+                            .tag(i)
                     }
                 }
             }

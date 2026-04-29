@@ -68,9 +68,14 @@ struct MarkdownListItemView: View {
             Image(systemName: item.checked ? "checkmark.square.fill" : "square")
                 .foregroundColor(.secondary)
         } else if ordered, let n = index {
-            Text("\(n).")
+            MarkdownSelectablePlainText(verbatim: "\(n).", semantic: .body, weight: .regular, monospaced: false)
         } else {
-            Text(verbatim: String(bullet))
+            MarkdownSelectablePlainText(
+                verbatim: MarkdownListMarkerFormatting.unorderedGlyph(forSourceBullet: bullet),
+                semantic: .body,
+                weight: .regular,
+                monospaced: false
+            )
         }
     }
 }
